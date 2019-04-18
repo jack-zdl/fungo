@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.game.common.mapper.GameToolsDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.game.common.entity.tool.GameTools">
+		<id column="id" property="id" />
+		<result column="tools_name" property="toolsName" />
+		<result column="tools_intro" property="toolsIntro" />
+		<result column="tools_icon" property="toolsIcon" />
+		<result column="version" property="version" />
+		<result column="tools_platform" property="toolsPlatform" />
+		<result column="created_at" property="createdAt" />
+		<result column="updated_at" property="updatedAt" />
+		<result column="created_by" property="createdBy" />
+		<result column="created_name" property="createdName" />
+		<result column="ext1" property="ext1" />
+		<result column="ext2" property="ext2" />
+		<result column="ext3" property="ext3" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, tools_name AS toolsName, tools_intro AS toolsIntro, tools_icon AS toolsIcon, version, tools_platform AS toolsPlatform, created_at AS createdAt, updated_at AS updatedAt, created_by AS createdBy, created_name AS createdName, ext1, ext2, ext3
+    </sql>
+
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.game.common.mall.mapper.MallLogsDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.game.common.mall.entity.MallLogs">
+        <id column="id" property="id" />
+        <result column="mb_id" property="mbId" />
+        <result column="page_url" property="pageUrl" />
+        <result column="i_url" property="iUrl" />
+        <result column="goods_id" property="goodsId" />
+        <result column="visit_ip" property="visitIp" />
+        <result column="action_type" property="actionType" />
+        <result column="creator_id" property="creatorId" />
+        <result column="creator_name" property="creatorName" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+        <result column="ext1" property="ext1" />
+        <result column="ext2" property="ext2" />
+        <result column="ext3" property="ext3" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, mb_id AS mbId, page_url AS pageUrl, i_url AS iUrl, goods_id AS goodsId, visit_ip AS visitIp, action_type AS actionType, creator_id AS creatorId, creator_name AS creatorName, created_at AS createdAt, updated_at AS updatedAt, ext1, ext2, ext3
+    </sql>
+
+</mapper>

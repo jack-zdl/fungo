@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.game.common.mapper.GameSurveyRelDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.game.common.entity.GameSurveyRel">
+		<id column="id" property="id" />
+		<result column="member_id" property="memberId" />
+		<result column="game_id" property="gameId" />
+		<result column="agree" property="agree" />
+		<result column="notice" property="notice" />
+		<result column="state" property="state" />
+		<result column="batch_no" property="batchNo" />
+		<result column="created_at" property="createdAt" />
+		<result column="updated_at" property="updatedAt" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, member_id AS memberId, game_id AS gameId, agree, notice, state, batch_no AS batchNo, created_at AS createdAt, updated_at AS updatedAt
+    </sql>
+
+</mapper>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.game.common.mapper.BasActionDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.game.common.entity.BasAction">
+		<id column="id" property="id" />
+		<result column="type" property="type" />
+		<result column="state" property="state" />
+		<result column="target_id" property="targetId" />
+		<result column="information" property="information" />
+		<result column="target_type" property="targetType" />
+		<result column="member_id" property="memberId" />
+		<result column="created_at" property="createdAt" />
+		<result column="updated_at" property="updatedAt" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, type, state, target_id AS targetId, information, target_type AS targetType, member_id AS memberId, created_at AS createdAt, updated_at AS updatedAt
+    </sql>
+ 
+    <!-- 计数器 -->
+	<update id="updateCountor" parameterType="java.util.Map">
+		update ${tableName} set 
+		<if test="type == 'add'">
+			${fieldName}=${fieldName}+1
+		</if>
+		<if test="type == 'sub'">
+			${fieldName}=${fieldName}-1
+		</if>
+		 where id = #{id}
+	</update>
+	
+	<!-- 计数器 -->
+	<update id="batchSubCountor" parameterType="java.util.Map">
+		update ${tableName} set ${fieldName}=${fieldName}-${count} where id = #{id}
+	</update>
+	
+	<!-- 获得发布用户id -->
+	<select id="getMemberIdByTargetId" resultType="string" parameterType="java.util.Map" >
+		select member_id from ${tableName} where id=#{id}
+	</select>
+
+
+	<!-- 获取我的收藏（文章） -->
+	<select id="getCollection" resultType="com.game.common.bean.CollectionBean" parameterType="String"><![CDATA[
+		select p.id,p.title,p.content,p.cover_image coverImage,p.video video,p.member_id memberId  ,
+		date_format(a.created_at, '%Y-%c-%d %H:%i:%s' ) as createdAt , date_format(a.updated_at, '%Y-%c-%d %h:%i:%s' ) as updatedAt
+		from t_cmm_post p ,t_bas_action a where 
+			a.member_id=#{memberId} and a.type=4 and a.state<>-1  
+			and a.target_id=p.id order by a.created_at desc
+	]]></select>
+	
+	
+	<!-- 获取关注社区 -->
+	<select id="getFollowerCommunity" resultType="java.util.HashMap" parameterType="String">
+		<!-- select c.name,c.intro,c.icon ,c.id as objectId,c.hot_value as hotNun,
+		date_format(a.created_at, '%Y-%c-%d %H:%i:%s' ) as created_at , 
+		date_format(a.updated_at, '%Y-%c-%d %H:%i:%s' ) as updated_at
+		from t_cmm_community c ,t_bas_action a where 
+			a.member_id=#{memberId} and a.type=5 and a.state<>-1 
+			and c.id=a.target_id -->
+	
+	<![CDATA[ 
+			select c.name,c.intro,c.icon ,c.id as objectId,SUM(c.followee_num + c.post_num) as hotNun,
+		date_format(a.created_at, '%Y-%c-%d %H:%i:%s' ) as created_at , 
+		date_format(a.updated_at, '%Y-%c-%d %H:%i:%s' ) as updated_at
+		from t_cmm_community c ,t_bas_action a where 
+			a.member_id=#{memberId} and a.type=5 and a.state<>-1 
+			and c.id=a.target_id GROUP BY objectId order by created_at desc
+	]]></select>
+	
+	<!-- 获取关注用户 -->
+	<select id="getFollowerUser" resultType="java.util.HashMap" parameterType="String">
+	<![CDATA[ 
+		select 
+			m.id as objectId,
+			m.user_name,
+			m.avatar,
+			m.level,
+			m.sign,
+			date_format(a.created_at, '%Y-%c-%d %H:%i:%s' ) as created_at
+		from t_member m ,t_bas_action a where  
+			a.member_id=#{memberId} and a.type=5 and a.state<>-1  
+			and a.target_id=m.id order by a.created_at desc
+	 ]]>
+	</select>
+	
+	<select id="getFollowerUserId" resultType="String" parameterType="String">
+	<!-- <![CDATA[ 
+		select 
+			m.id as objectId
+		from t_member m ,t_bas_action a where  
+			a.member_id=#{memberId} and a.type=5 and a.state<>-1  
+			and a.target_id=m.id order by a.created_at
+	 ]]> -->
+	 <![CDATA[ 
+		select follower_id as objectId from t_member_follower where member_id = #{memberId} and (state = 1 or state = 2) 
+	 ]]>
+	</select>
+	
+	<select id="getFollowerCommunityId" resultType="String" parameterType="String"><![CDATA[ 
+		select c.id as objectId
+		from t_cmm_community c ,t_bas_action a where 
+			a.member_id=#{memberId} and a.type=5 and a.state<>-1 
+			and c.id=a.target_id
+	]]></select>
+	
+	<!-- 用户时间线-帖子 新版已弃用 -->
+	<select id="getPostFeeds" resultType="java.util.HashMap" parameterType="java.util.Map">
+		select 
+			'1' as feed_type,
+			p.id as post_id,
+			m.id as user_id,
+			m.avatar as user_avatar,
+			m.user_name as user_name,
+			m.level as user_level,
+			c.id as community_id,
+			c.name as community_name,
+			c.icon as community_icon,
+			p.title as title,
+			p.content as content,
+			p.cover_image as cover_image,
+			p.like_num as like_num,
+			p.comment_num as comment_num,
+			date_format(p.edited_at, '%Y-%c-%d %H:%i:%s' ) as editedAt,
+			date_format(p.created_at, '%Y-%c-%d %H:%i:%s' ) as createdAt
+		from t_cmm_post p ,t_cmm_community c ,t_member m where  
+			p.community_id=c.id and p.member_id=m.id and m.id=#{memberId} and p.state = 1
+			and (p.id in <foreach collection="postIdList" item="item" index="index" open="(" separator="," close=")">  #{item}  </foreach>)
+	</select>
+	
+	<!-- 用户时间线-游戏评论 新版已弃用 -->
+	<select id="getEvaluationFeeds" resultType="java.util.HashMap" parameterType="java.util.Map">
+		select 
+		   4 as feed_type,   
+		   e.id as evaluation_id,
+		   e.rating as rating,   
+		   m.id as user_id,   
+		   m.avatar as user_avatar,   
+		   m.user_name as user_name,
+		   m.level as user_level,   
+		   e.content as content,   
+		   e.like_num as like_num,   
+		   e.reply_num as reply_num,   
+		   g.id as game_id,   
+		   g.name as game_name,
+		   g.icon as game_icon,   
+		   g.intro as game_intro, 
+		   date_format(e.updated_at, '%Y-%c-%d %H:%i:%s' )  as createdAt
+		from t_game g ,t_game_evaluation e ,t_member m where
+		e.game_id=g.id and e.member_id=m.id and m.id=#{memberId} and e.state != -1
+			and (e.id in <foreach collection="evaluationIdList" item="item" index="index" open="(" separator="," close=")">  #{item}  </foreach>)
+	</select>
+	
+	<!-- 用户时间线-心情 新版已弃用 -->
+	<select id="getMoodFeeds" resultType="java.util.HashMap" parameterType="java.util.Map">
+		select
+			2 as feed_type,
+			m.cover_image,
+			m.comment_num,
+			m.like_num,
+			m.content,
+			m.id as mood_id,
+			date_format(m.created_at, '%Y-%c-%d %H:%i:%s' )  as createdAt,
+			u.user_name,
+			u.id as user_id,
+			u.avatar as user_avatar
+		from t_member u,t_moo_mood m where m.member_id = u.id and u.id=#{memberId} and m.state = 0
+		and 
+		(m.id in <foreach collection="moodIdList" item="item" index="index" open="(" separator="," close=")">  #{item}  </foreach>)
+
+	</select>
+	
+	<update id="updateSort" parameterType="java.util.Map">
+  		update ${tableName} set sort=${sort} where id=#{bannerId}
+   </update>
+	
+	
+
+</mapper>

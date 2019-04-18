@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.game.common.mapper.BasNoticeDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.game.common.entity.BasNotice">
+		<id column="id" property="id" />
+		<result column="type" property="type" />
+		<result column="is_read" property="isRead" />
+		<result column="member_id" property="memberId" />
+		<result column="data" property="data" />
+		<result column="created_at" property="createdAt" />
+		<result column="updated_at" property="updatedAt" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, type, is_read AS isRead, member_id AS memberId, data, created_at AS createdAt, updated_at AS updatedAt
+    </sql>
+    
+    <!-- 设置消息为已读 -->
+    <update id="setIsRead" parameterType="java.util.Map">
+    	update t_bas_notice set is_read = 1 where member_id = #{memberId} and is_read = 0 and type in 
+    	<foreach collection="typeList" item="item" index="index" open="(" separator="," close=")"> 
+    	 #{item} 
+    	</foreach>
+    </update>
+    
+    <!-- 获取未推送的消息,按照用户分组 -->
+    <select id="getUnpushNotices" resultType="java.util.HashMap">
+    	SELECT member_id,COUNT(*) as count FROM t_bas_notice WHERE is_push = 0 AND type = 6 GROUP BY member_id
+    
+    </select>
+
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.game.common.mapper.BasTagDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.game.common.entity.BasTag">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="game_num" property="gameNum" />
+		<result column="group_id" property="groupId" />
+		<result column="created_at" property="createdAt" />
+		<result column="updated_at" property="updatedAt" />
+		<result column="sort" property="sort" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, game_num AS gameNum, group_id AS groupId, created_at AS createdAt, updated_at AS updatedAt, sort
+    </sql>
+    
+    <!-- 根据游戏id获取标签(后台设置) -->
+    <select id="getGameTags" resultType="com.game.common.bean.TagBean" parameterType="String">
+    	<!-- <![CDATA[ --> 
+    	select t.id,t.name,t.group_id as groupId
+		from t_game_tag gt,t_game g,t_bas_tag t 
+		where g.id = #{gameId} and gt.game_id = g.id and gt.tag_id = t.id and gt.type != 0
+    	
+    	<!-- ]]> -->
+    </select>
+    
+    <!-- 获取游戏后台分类标签 -->
+     <select id="getSortTags" resultType="com.game.common.bean.TagBean" parameterType="String">
+    	<!-- <![CDATA[ --> 
+    	select t.name
+		from t_game_tag gt,t_bas_tag t 
+		where gt.game_id = #{gameId} and gt.tag_id = t.id and gt.type = 1
+    	
+    	<!-- ]]> -->
+    </select>
+
+</mapper>

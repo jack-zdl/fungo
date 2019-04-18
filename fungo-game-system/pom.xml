@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+    <parent>
+		<groupId>com.fungo.game</groupId>
+		<artifactId>fungo-game-cloud</artifactId>
+		<version>1.0-SNAPSHOT</version>
+    </parent>
+	<artifactId>fungo-game-system</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>fungo-game-system</name>
+	<properties>
+		<docker.image.prefix>ramer</docker.image.prefix>
+	</properties>
+	<dependencies>
+		<!--勿删-->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+		<!--勿删-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+		</dependency>
+		<!-- 含有redis-->
+		<dependency>
+			<groupId>fungo-api</groupId>
+			<artifactId>fungo-api</artifactId>
+			<version>${fungo.fw.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fungo-web-app</groupId>
+			<artifactId>fungo-web-app</artifactId>
+			<version>${fungo.fw.version}</version>
+		</dependency>
+		<!--引入 common-->
+		<dependency>
+			<groupId>com.fungo.game</groupId>
+			<artifactId>fungo-game-common</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>fungo-web-app</groupId>
+			<artifactId>fungo-web-app</artifactId>
+			<version>${fungo.fw.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fungo-web-template</groupId>
+			<artifactId>fungo-web-template</artifactId>
+			<version>${fungo.fw.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fungo</groupId>
+			<artifactId>fungo-websocket</artifactId>
+			<version>${fungo.fw.version}</version>
+		</dependency>
+		<!-- javaMelody   引发错误的地方 start-->
+<!--		<dependency>-->
+<!--			<groupId>net.bull.javamelody</groupId>-->
+<!--			<artifactId>javamelody-spring-boot-starter</artifactId>-->
+<!--			<version>1.75.0</version>-->
+<!--		</dependency>-->
+		<!--  javaMelody end-->
+<!--		<dependency>-->
+<!--			<groupId>org.projectlombok</groupId>-->
+<!--			<artifactId>lombok</artifactId>-->
+<!--			<version>1.18.6</version>-->
+<!--		</dependency>-->
+		<!-- 以下二个是 config依赖-->
+		<!--重新获取和刷新-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-zipkin</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+		</dependency>
+	</dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

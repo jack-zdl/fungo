@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.game.common.mapper.CmmPostDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.game.common.entity.CmmPost">
+		<id column="id" property="id" />
+		<result column="collect_num" property="collectNum" />
+		<result column="tags" property="tags" />
+		<result column="html_origin" property="htmlOrigin" />
+		<result column="content" property="content" />
+		<result column="images" property="images" />
+		<result column="cover_image" property="coverImage" />
+		<result column="comment_num" property="commentNum" />
+		<result column="state" property="state" />
+		<result column="like_num" property="likeNum" />
+		<result column="editedAt" property="editedAt" />
+		<result column="community_id" property="communityId" />
+		<result column="title" property="title" />
+		<result column="member_id" property="memberId" />
+		<result column="origin" property="origin" />
+		<result column="watch_num" property="watchNum" />
+		<result column="report_num" property="reportNum" />
+		<result column="created_at" property="createdAt" />
+		<result column="updated_at" property="updatedAt" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, collect_num AS collectNum, tags, html_origin AS htmlOrigin, content, images, cover_image AS coverImage, comment_num AS commentNum, state, like_num AS likeNum, editedAt, community_id AS communityId, title, member_id AS memberId, origin, watch_num AS watchNum, report_num AS reportNum, created_at AS createdAt, updated_at AS updatedAt
+    </sql>
+    
+    <!-- 获取关注用户和社区的帖子 -->
+    <select id="getAllFollowerPost" resultType="com.game.common.entity.CmmPost"  parameterType="java.util.Map">
+   		SELECT * FROM t_cmm_post where ( 
+   		<trim prefixOverrides="or">
+	   		<if test="memberIdList != null">
+	   			member_id in <foreach collection="memberIdList" item="item" index="index" open="(" separator="," close=")">  #{item}  </foreach>
+	   		</if>
+   			<if test="communityIdList != null">
+   				or community_id in <foreach collection="communityIdList" item="item" index="index" open="(" separator="," close=")">  #{item}  </foreach>
+   			</if>
+   		</trim>
+   		 ) and state = 1 group by id order by updated_at desc
+    </select>
+    
+    <!-- 获取帖子最后回复时间 -->
+    <select id="getLastReplyTime" resultType="java.util.HashMap" parameterType="String">
+  	(SELECT id,created_at FROM t_cmm_comment WHERE post_id = #{postId} and state = 0 )
+	UNION
+	(SELECT id,created_at FROM t_reply WHERE target_id in 
+		(SELECT id FROM t_cmm_comment WHERE post_id = #{postId} and state = 0) 
+	and state = 0) 
+	ORDER BY created_at DESC Limit 1
+    
+    
+    </select>
+
+</mapper>

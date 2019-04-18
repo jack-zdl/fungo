@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.game.common.mapper.MooMessageDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.game.common.entity.MooMessage">
+		<id column="id" property="id" />
+		<result column="content" property="content" />
+		<result column="reply_num" property="replyNum" />
+		<result column="state" property="state" />
+		<result column="like_num" property="likeNum" />
+		<result column="member_id" property="memberId" />
+		<result column="mood_id" property="moodId" />
+		<result column="created_at" property="createdAt" />
+		<result column="updated_at" property="updatedAt" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, content, reply_num AS replyNum, state, like_num AS likeNum, member_id AS memberId, mood_id AS moodId, created_at AS createdAt, updated_at AS updatedAt,type
+    </sql>
+    
+    <!-- 后台运营  心情评论条件查询 -->
+    <select id="getMessagesAll" resultType="com.game.common.bean.CommentBean" parameterType="java.util.Map">
+    	select me.id,me.content,me.like_num as likeNum,m.user_name as username,mo.member_id as mooder,
+    	date_format(me.created_at, '%Y-%c-%d %h:%i:%s' ) as createdAt,mo.id as moodId
+    	from t_moo_message me,t_member m,t_moo_mood mo 
+    	<where>
+    		<if test="userId != null">
+    			me.member_id = #{userId}
+    		</if>
+    		<!-- 作者 -->
+    		<if test="authorId != null">
+    			<!-- and me.mood_id in (select id from t_moo_mood where member_id in 
+    			(select id from t_member where user_name LIKE CONCAT('%',#{author},'%'))
+    			) -->
+    			and mo.member_id = #{authorId}
+    		</if>
+    		<if test="startDate != null">
+    			and me.created_at > #{startDate}
+    		</if>
+    		<if test="endDate != null">
+    			and me.created_at <![CDATA[  < ]]> #{endDate}
+    		</if>
+    		<if test="true">
+    			and me.state != -1 and me.member_id = m.id and me.mood_id = mo.id
+    		</if>
+    	</where>
+    	order by me.created_at
+    	<if test="sortDate != 2">
+    		desc
+    	</if>
+    </select>
+
+</mapper>

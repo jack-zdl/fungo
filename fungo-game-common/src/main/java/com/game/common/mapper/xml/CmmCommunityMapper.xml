@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.game.common.mapper.CmmCommunityDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.game.common.entity.CmmCommunity">
+		<id column="id" property="id" />
+		<result column="game_id" property="gameId" />
+		<result column="name" property="name" />
+		<result column="icon" property="icon" />
+		<result column="intro" property="intro" />
+		<result column="cover_image" property="coverImage" />
+		<result column="type" property="type" />
+		<result column="state" property="state" />
+		<result column="followee_num" property="followeeNum" />
+		<result column="created_at" property="createdAt" />
+		<result column="updated_at" property="updatedAt" />
+		<result column="created_by" property="createdBy" />
+		<result column="updated_by" property="updatedBy" />
+		<result column="hot_value" property="hotValue" />
+		<result column="recommend_state" property="recommendState" />
+		<result column="sort" property="sort" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, game_id AS gameId, name, icon, intro, cover_image AS coverImage, type, state, followee_num AS followeeNum, created_at AS createdAt, updated_at AS updatedAt, created_by AS createdBy, updated_by AS updatedBy, hot_value AS hotValue, recommend_state AS recommendState, sort
+    </sql>
+    
+    <!-- 社区玩家榜 -->
+    <select id="getMemberOrder" resultType="com.game.common.bean.MemberPulishFromCommunity" parameterType="java.util.Map">
+	  SELECT sum(f.c) as postNum,sum(f.d) as commentNum,sum(f.f) as evaNum,f.member_id as memberId FROM (
+	  (SELECT COUNT(*) as c, 0 as d ,0 as f,member_id FROM t_cmm_post t WHERE community_id = #{communityId} and state = 1 GROUP BY t.member_id)
+	  UNION ALL
+	  (SELECT 0 as c,COUNT(*) as d,0 as f,member_id FROM t_cmm_comment t WHERE community_id = #{communityId} and state = 0 GROUP BY t.member_id)
+	  UNION ALL
+	  (SELECT 0 as c,0 as d,COUNT(*) as f,member_id FROM t_game_evaluation t WHERE game_id = #{gameId} and state = 0 GROUP BY t.member_id)
+	  ) f GROUP BY f.member_id ORDER BY SUM(f.c+f.d+f.f) DESC,f.member_id DESC
+    </select>
+    
+    <!-- 查询社区评论数 -->
+    <select id="getCommentNumOfCommunity" resultType="int" parameterType="String">
+    	SELECT COALESCE(SUM(comment_num),0) FROM t_cmm_post WHERE community_id = #{communityId} and state = 1
+    </select>
+
+</mapper>

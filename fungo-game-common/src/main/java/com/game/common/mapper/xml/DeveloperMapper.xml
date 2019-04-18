@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.game.common.mapper.DeveloperDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.game.common.entity.Developer">
+		<id column="id" property="id" />
+		<result column="company_name" property="companyName" />
+		<result column="liaison_name" property="liaisonName" />
+		<result column="liaison_phone" property="liaisonPhone" />
+		<result column="liaison_email" property="liaisonEmail" />
+		<result column="liaison_adress" property="liaisonAdress" />
+		<result column="liaisonId_number" property="liaisonIdNumber" />
+		<result column="liaison_id_image_front" property="liaisonIdImageFront" />
+		<result column="liaison_id_image_back" property="liaisonIdImageBack" />
+		<result column="company_full_name" property="companyFullName" />
+		<result column="company_short_name" property="companyShortName" />
+		<result column="logo" property="logo" />
+		<result column="business_license" property="businessLicense" />
+		<result column="business_license_image" property="businessLicenseImage" />
+		<result column="type" property="type" />
+		<result column="business_permit" property="businessPermit" />
+		<result column="business_permit_image" property="businessPermitImage" />
+		<result column="business_permit_limit_date" property="businessPermitLimitDate" />
+		<result column="state" property="state" />
+		<result column="created_at" property="createdAt" />
+		<result column="updated_at" property="updatedAt" />
+		<result column="approve_state" property="approveState" />
+		<result column="approve_info" property="approveInfo" />
+		<result column="approve_at" property="approveAt" />
+		<result column="approve_by" property="approveBy" />
+		<result column="approve_id" property="approveId" />
+		<result column="member_id" property="memberId" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, company_name AS companyName, liaison_name AS liaisonName, liaison_phone AS liaisonPhone, liaison_email AS liaisonEmail, liaison_adress AS liaisonAdress, liaisonId_number AS liaisonIdNumber, liaison_id_image_front AS liaisonIdImageFront, liaison_id_image_back AS liaisonIdImageBack, company_full_name AS companyFullName, company_short_name AS companyShortName, logo, business_license AS businessLicense, business_license_image AS businessLicenseImage, type, business_permit AS businessPermit, business_permit_image AS businessPermitImage, business_permit_limit_date AS businessPermitLimitDate, state, created_at AS createdAt, updated_at AS updatedAt, approve_state AS approveState, approve_info AS approveInfo, approve_at AS approveAt, approve_by AS approveBy, approve_id AS approveId, member_id AS memberId
+    </sql>
+
+</mapper>

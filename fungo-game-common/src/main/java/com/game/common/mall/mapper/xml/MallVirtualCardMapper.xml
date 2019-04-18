@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.game.common.mall.mapper.MallVirtualCardDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.game.common.mall.entity.MallVirtualCard">
+		<id column="id" property="id" />
+		<result column="goods_id" property="goodsId" />
+		<result column="card_sn" property="cardSn" />
+		<result column="card_pwd" property="cardPwd" />
+		<result column="card_end_date" property="cardEndDate" />
+		<result column="valid_period_intro" property="validPeriodIntro" />
+		<result column="is_saled" property="isSaled" />
+		<result column="order_sn" property="orderSn" />
+		<result column="card_crc32" property="cardCrc32" />
+		<result column="creator_id" property="creatorId" />
+		<result column="creator_name" property="creatorName" />
+		<result column="created_at" property="createdAt" />
+		<result column="updated_at" property="updatedAt" />
+		<result column="ext1" property="ext1" />
+		<result column="ext2" property="ext2" />
+		<result column="ext3" property="ext3" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, goods_id AS goodsId, card_sn AS cardSn, card_pwd AS cardPwd, card_end_date AS cardEndDate, valid_period_intro AS validPeriodIntro, is_saled AS isSaled, order_sn AS orderSn, card_crc32 AS cardCrc32, creator_id AS creatorId, creator_name AS creatorName, created_at AS createdAt, updated_at AS updatedAt, ext1, ext2, ext3
+    </sql>
+
+</mapper>
