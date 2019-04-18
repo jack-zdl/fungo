@@ -1,11 +1,10 @@
-package com.fungo.community;
+package com.fungo.games;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -16,18 +15,19 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.servlet.MultipartConfigElement;
 
 @SpringBootApplication
-@EnableDiscoveryClient
-@EnableFeignClients(basePackages = {"com.fungo.community"})
+@EnableEurekaClient
+@EnableFeignClients(basePackages = {"com.fungo.games.feign"})
 @EnableCaching
-@MapperScan("com.fungo.community.dao.*")
+@MapperScan("com.fungo.games.dao.*")
 @ComponentScan(basePackages = {"com.*"})
 @EnableHystrix
 @EnableTransactionManagement
-public class FungoGameCommunityApplication {
+public class FungoGamesApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(FungoGameCommunityApplication.class, args);
+		SpringApplication.run(FungoGamesApplication.class, args);
 	}
+
 	/**
 	 * 文件上传配置
 	 * @return
@@ -41,4 +41,5 @@ public class FungoGameCommunityApplication {
 		factory.setMaxRequestSize("102400KB");
 		return factory.createMultipartConfig();
 	}
+
 }
