@@ -1,8 +1,8 @@
 package com.fungo.system.service;
 
 import com.baomidou.mybatisplus.service.IService;
-import com.fungo.api.ResultDto;
 import com.fungo.system.entity.MessageCode;
+import com.game.common.dto.ResultDto;
 
 /**
  * <p>

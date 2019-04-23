@@ -1,8 +1,8 @@
 package com.fungo.system.service.impl;
 
-import com.fungo.api.ResultDto;
 import com.fungo.system.service.IGameProxy;
-import com.fungo.validate.utils.CommonUtil;
+import com.game.common.dto.ResultDto;
+import com.game.common.util.CommonUtil;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;

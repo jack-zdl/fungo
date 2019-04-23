@@ -1,6 +1,5 @@
 package com.fungo.system.dto;
 
-import com.fungo.system.entity.AuthorBean;
 
 public class CollectionOutBean {
 	private String content;

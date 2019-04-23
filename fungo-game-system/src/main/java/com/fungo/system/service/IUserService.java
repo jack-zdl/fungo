@@ -1,7 +1,8 @@
 package com.fungo.system.service;
 
-import com.fungo.api.ResultDto;
+import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
+import com.game.common.dto.ResultDto;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,7 @@ public interface IUserService {
     /**
      * 用户登录
      * http://{{host}}/api/user/login
-     * @param os
+     * @param
      * @throws Exception
      */
     public ResultDto<LoginMemberBean> login(String mobile, String password, String code, String appVersion) throws Exception;

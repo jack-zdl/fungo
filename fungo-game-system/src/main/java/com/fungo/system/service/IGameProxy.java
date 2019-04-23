@@ -1,7 +1,6 @@
 package com.fungo.system.service;
 
-import com.fungo.api.ResultDto;
-
+import com.game.common.dto.ResultDto;
 import java.io.IOException;
 import java.text.ParseException;
 

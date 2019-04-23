@@ -25,7 +25,7 @@ public class AccessFilter extends ZuulFilter {
     }
     @Override
     public Object run() {
-        System.out.println("gateway");
+        System.out.println("这个请求经过gateway");
         return null;
     }
 }

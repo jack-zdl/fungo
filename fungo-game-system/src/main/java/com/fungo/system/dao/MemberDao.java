@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.entity.Member;
 import com.game.common.bean.CommentBean;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
@@ -19,7 +18,7 @@ import java.util.Map;
  * @author lzh
  * @since 2018-06-15
  */
-public interface MemberDao extends BaseMapper<Member> {
+public interface MemberDao extends  BaseMapper<Member> {
 
 
     List<Member> getRandomMember(Map<String, Object> map);

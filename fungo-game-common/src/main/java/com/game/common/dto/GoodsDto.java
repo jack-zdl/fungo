@@ -2,8 +2,7 @@ package com.game.common.dto;
 
 import com.game.common.enums.GoodsTypeStatusEnum;
 import com.game.common.enums.ShippingStatusEnum;
-import com.game.common.utils.annotation.EnumConver;
-import org.omg.CORBA.PRIVATE_MEMBER;
+import com.game.common.util.annotation.EnumConver;
 
 import java.math.BigDecimal;
 import java.util.Date;

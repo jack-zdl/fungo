@@ -1,7 +1,7 @@
 package com.fungo.system.function;
 
-import com.fungo.websocket.api.LinkSession;
-import com.fungo.websocket.api.LocalLinkSessionPoolsImpl;
+import com.game.common.websocket.LinkSession;
+import com.game.common.websocket.LocalLinkSessionPoolsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -33,7 +33,7 @@ public class MemberLoginedStatisticsService {
             LinkSession link = new LinkSession();
             link.setUserId(mb_id);
             link.setAppversion(appVersion);
-            //add
+//            //add
             LocalLinkSessionPoolsImpl.getInstance().addChannel(link);
             int mbCount = LocalLinkSessionPoolsImpl.getInstance().size();
             logger.info("****************************有新用户登录mb_id:{}----当前在线人数：{}", mb_id, mbCount);

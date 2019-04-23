@@ -1,6 +1,6 @@
 package com.fungo.system.dto;
 
-import com.fungo.api.InputDto;
+import com.game.common.dto.InputDto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

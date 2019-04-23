@@ -1,8 +1,8 @@
 package com.fungo.system.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fungo.api.ResultDto;
 import com.fungo.system.dto.DeviceInput;
+import com.game.common.dto.ResultDto;
 
 public interface IPushService {
 

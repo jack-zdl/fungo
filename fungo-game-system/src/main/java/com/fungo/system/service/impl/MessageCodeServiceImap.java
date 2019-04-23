@@ -2,13 +2,13 @@ package com.fungo.system.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.fungo.api.ResultDto;
-import com.fungo.framework.suppert.msg.AliyunSendSmsClient;
-import com.fungo.framework.suppert.msg.MsgResult;
 import com.fungo.system.dao.MessageCodeDao;
 import com.fungo.system.entity.MessageCode;
 import com.fungo.system.service.MessageCodeService;
-import com.fungo.tools.DateTools;
+import com.game.common.dto.ResultDto;
+import com.game.common.aliyun.dysmsapi.AliyunSendSmsClient;
+import com.game.common.dto.MsgResult;
+import com.game.common.util.date.DateTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -43,6 +43,7 @@ public class MessageCodeServiceImap extends ServiceImpl<MessageCodeDao, MessageC
      * @return
      * @throws Exception
      */
+    @Override
     public ResultDto<String> sendCode(String type, String phone, String code, int times) throws Exception {
         MessageCode messageCode = new MessageCode();
         messageCode.setMsgType(type);
@@ -53,10 +54,11 @@ public class MessageCodeServiceImap extends ServiceImpl<MessageCodeDao, MessageC
         messageCode.setPhoneNumber(phone);
         messageCode.setState(1);
         this.insert(messageCode);
+
         //fix:使用新的短信模板[by mxf 2019-03-01]
         //历史短信模板：SMS_132401492
         MsgResult re = aliyunSendSmsClient.sendSms(phone, smsCodeLoginRegsTemp, "{\"code\":\"" + code + "\"}");
-        //end
+//        end
         if (!re.isSuccess()) {
             messageCode.setState(0);
             messageCode.setReMsg(re.getMsg());
@@ -70,9 +72,10 @@ public class MessageCodeServiceImap extends ServiceImpl<MessageCodeDao, MessageC
      * @param type
      * @param phone
      * @param code
-     * @param times
+//     * @param times
      * @return
      */
+    @Override
     public ResultDto<String> checkCode(String type, String phone, String code) {
         ResultDto<String> re = new ResultDto<String>();
         MessageCode messageCode = this.selectOne(new EntityWrapper<MessageCode>().eq("msg_type", type).eq("msg_code", code).eq("phone_number", phone).eq("is_used", "0"));
@@ -87,6 +90,7 @@ public class MessageCodeServiceImap extends ServiceImpl<MessageCodeDao, MessageC
     /**
      * 更新验证码作废
      */
+    @Override
     public ResultDto<String> updateCheckCodeSuccess(String msgId) {
         MessageCode messageCode = this.selectById(msgId);
         messageCode.setIsUsed("1");
@@ -98,6 +102,7 @@ public class MessageCodeServiceImap extends ServiceImpl<MessageCodeDao, MessageC
     /**
      * 验证短信码并且更新作废
      */
+    @Override
     public ResultDto<String> checkCodeAndSuccess(String type, String phone, String code) {
         MessageCode messageCode = this.selectOne(new EntityWrapper<MessageCode>().eq("msg_type", type).eq("msg_code", code).eq("phone_number", phone).eq("is_used", "0"));
         if (null == messageCode || messageCode.getExpiration().before(new Date())) {

@@ -1,8 +1,8 @@
 package com.game.common.repo.cache.facade;
 
 import com.game.common.repo.cache.redis.RedisHandler;
-import com.fungo.tools.SecurityMD5;
-import org.apache.commons.lang3.StringUtils;
+import com.game.common.util.SecurityMD5;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,9 @@
 package com.fungo.system.dao;
 
-import com.fungo.api.InputPageDto;
 
-public class FollowInptPageDao extends InputPageDto{
+import com.game.common.api.InputPageDto;
+
+public class FollowInptPageDao extends InputPageDto {
 	private static final long serialVersionUID = 1L;
 	private String memberId;
 	private int type=1;

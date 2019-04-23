@@ -4,7 +4,7 @@ package com.fungo.system.service.impl;
 import com.alibaba.fastjson.JSON;
 
 import com.fungo.system.service.*;
-import com.game.common.common.FungoCoreApiConstant;
+import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.repo.cache.facade.FungoCacheTask;
 import org.slf4j.Logger;

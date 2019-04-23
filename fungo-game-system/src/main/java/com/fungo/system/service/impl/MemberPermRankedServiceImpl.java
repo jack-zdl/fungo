@@ -3,11 +3,11 @@ package com.fungo.system.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.PropertyFilter;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.fungo.cache.FunGoEHCacheUtils;
 import com.fungo.system.entity.IncentMbPermRanked;
 import com.fungo.system.service.IMemberPermRankedService;
 import com.fungo.system.service.IncentMbPermRankedService;
 import com.game.common.consts.FunGoGameConsts;
+import com.game.common.util.FunGoEHCacheUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

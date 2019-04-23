@@ -1,6 +1,5 @@
 package com.game.common.enums;
 
-import io.swagger.models.auth.In;
 
 /**
  * <p></p>     * 0 微博

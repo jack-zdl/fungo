@@ -88,13 +88,14 @@ spring:
 #                virtual-host: /hostName
 
 mybatis-plus:
-  mapper-locations: classpath:mapping/*Mapper.xml
+#  mapper-locations: classpath:mapping/*Mapper.xml
   global-config:
     id-type: 3
     field-strategy: 2
     db-column-underline: true
   configuration:
     map-underscore-to-camel-case: true
+
 #  type-aliases-package: com.fungo.system.entity
 ## 当post /refresh方式刷新配置 时 ，会有个安全限制，关掉就可以了
 #management:

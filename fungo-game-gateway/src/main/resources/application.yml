@@ -14,16 +14,16 @@ spring:
     base-url: http://47.104.87.10:9411/
 
 ## 关闭安全限制
-##management:
-##  security:
-##    enabled: false
+#management:
+#  security:
+#    enabled: false
 #
-# # 路由配置
-#zuul:
-#  routes:
-#    api-a:
-#      path: /biz/**
-#      serviceId: ncyp-company-biz
+# 路由配置
+zuul:
+  routes:
+    fungo-game-system:
+      path: /system/**
+      serviceId: fungo-game-system
 #    api-b:
 #      path: /agreement/**
 #      serviceId: ncyp-company-triagreement

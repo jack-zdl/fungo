@@ -1,8 +1,8 @@
 package com.fungo.system.service;
 
 
-import com.fungo.framework.exceptions.BusinessException;
 import com.fungo.system.entity.IncentTaskedOut;
+import com.game.common.util.exception.BusinessException;
 
 import java.util.List;
 import java.util.Map;

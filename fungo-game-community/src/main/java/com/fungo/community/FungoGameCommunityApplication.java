@@ -1,6 +1,6 @@
 package com.fungo.community;
 
-import org.mybatis.spring.annotation.MapperScan;
+//import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
@@ -19,7 +19,7 @@ import javax.servlet.MultipartConfigElement;
 @EnableDiscoveryClient
 @EnableFeignClients(basePackages = {"com.fungo.community"})
 @EnableCaching
-@MapperScan("com.fungo.community.dao.*")
+//@MapperScan("com.fungo.community.dao.*")
 @ComponentScan(basePackages = {"com.*"})
 @EnableHystrix
 @EnableTransactionManagement

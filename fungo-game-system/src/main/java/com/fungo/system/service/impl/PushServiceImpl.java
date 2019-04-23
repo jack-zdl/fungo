@@ -1,20 +1,19 @@
 package com.fungo.system.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.fungo.api.ResultDto;
-import com.fungo.framework.supper.push.IAliyunPushServices;
-import com.fungo.framework.supper.push.PushConfig;
 import com.fungo.system.dto.DeviceInput;
 import com.fungo.system.entity.MemberDevice;
 import com.fungo.system.service.IMemberNoticeService;
 import com.fungo.system.service.IMemberService;
 import com.fungo.system.service.IPushService;
 import com.fungo.system.service.MemberDeviceService;
-import com.fungo.tools.AesUtil;
+import com.game.common.dto.ResultDto;
+import com.game.common.util.AesUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +34,12 @@ public class PushServiceImpl implements IPushService {
   	private String key;
 	
 	
-	@Autowired
-	private PushConfig pushConfig;
+//	@Autowired
+//	private PushConfig pushConfig;
 	@Autowired
 	private MemberDeviceService deviceService;
-	@Autowired
-	private IAliyunPushServices pushService;
+//	@Autowired
+//	private IAliyunPushServices pushService;
 	@Autowired
 	private IMemberService memberService;
 
@@ -51,10 +50,10 @@ public class PushServiceImpl implements IPushService {
 	private IMemberNoticeService iMemberNoticeService;
 
 	public DefaultAcsClient initConfig() {
-		String accessKeyId = pushConfig.getAccessKeyId();
-		String accessKeySecret = pushConfig.getAccessKeySecret();
+		String accessKeyId = "" ; // pushConfig.getAccessKeyId();
+		String accessKeySecret = "" ; // pushConfig.getAccessKeySecret();
 		Long appKey = (long) 25040749;
-		String regionId = pushConfig.getRegionId();
+		String regionId = "" ; // pushConfig.getRegionId();
 		
 		IClientProfile profile = DefaultProfile.getProfile(regionId, accessKeyId, accessKeySecret);
 		DefaultAcsClient client = new DefaultAcsClient(profile);

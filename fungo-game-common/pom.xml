@@ -24,6 +24,13 @@
 			<!--<artifactId>mybatis-plus-boot-starter</artifactId>-->
 			<!--<version>3.0.6</version>-->
 		<!--</dependency>-->
+
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatisplus-spring-boot-starter</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -71,6 +78,11 @@
             <artifactId>commons-codec</artifactId>
             <version>1.5</version>
         </dependency>
+		<dependency>
+			<groupId>com.vdurmont</groupId>
+			<artifactId>emoji-java</artifactId>
+			<version>4.0.0</version>
+		</dependency>
 		<!--校验数据
        -->
 		<dependency>
@@ -88,32 +100,106 @@
 			<artifactId>lombok</artifactId>
 			<version>1.18.6</version>
 		</dependency>
+
 		<dependency>
-			<groupId>fungo-dao</groupId>
-			<artifactId>fungo-dao</artifactId>
-			<version>${fungo.fw.version}</version>
+			<groupId>com.aliyun</groupId>
+			<artifactId>aliyun-java-sdk-core</artifactId>
+			<version>3.4.0</version>
 		</dependency>
 		<dependency>
-			<groupId>fungo_supperter_aliyun_dysmsapi</groupId>
-			<artifactId>fungo_supperter_aliyun_dysmsapi</artifactId>
-			<version>${fungo.fw.version}</version>
+			<groupId>com.aliyun.oss</groupId>
+			<artifactId>aliyun-sdk-oss</artifactId>
+			<version>3.3.0</version>
 		</dependency>
 		<dependency>
-			<groupId>fungo-supper-aliyun-vd</groupId>
-			<artifactId>fungo-supper-aliyun-vd</artifactId>
-			<version>${fungo.fw.version}</version>
+			<groupId>com.aliyun</groupId>
+			<artifactId>aliyun-java-sdk-vod</artifactId>
+			<version>2.11.5</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.aliyun</groupId>
+			<artifactId>aliyun-java-vod-upload</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.aliyun</groupId>
+			<artifactId>aliyun-java-sdk-dysmsapi</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>fungo-supperter-aliyun-oss</groupId>-->
+<!--			<artifactId>fungo-supperter-aliyun-oss</artifactId>-->
+<!--			<version>${fungo.fw.version}</version>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>fungo-dao</groupId>-->
+<!--			<artifactId>fungo-dao</artifactId>-->
+<!--			<version>${fungo.fw.version}</version>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>fungo_supperter_aliyun_dysmsapi</groupId>-->
+<!--			<artifactId>fungo_supperter_aliyun_dysmsapi</artifactId>-->
+<!--			<version>${fungo.fw.version}</version>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>fungo-supper-aliyun-vd</groupId>-->
+<!--			<artifactId>fungo-supper-aliyun-vd</artifactId>-->
+<!--			<version>${fungo.fw.version}</version>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>fungo-web-app</groupId>
-			<artifactId>fungo-web-app</artifactId>
-			<version>${fungo.fw.version}</version>
-			<scope>compile</scope>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.21</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>fungo-web-app</groupId>-->
+<!--			<artifactId>fungo-web-app</artifactId>-->
+<!--			<version>${fungo.fw.version}</version>-->
+<!--			<scope>compile</scope>-->
+<!--		</dependency>-->
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>2.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>2.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>27.0.1-jre</version>
+		</dependency>
+		<!-- 因为swagger依赖google的guava，而你当前项目的guava版本与之不匹配，而我因为使用当前最新的swagger2版本，我就将guava升到最新的版本	-->
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+		</dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.3</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

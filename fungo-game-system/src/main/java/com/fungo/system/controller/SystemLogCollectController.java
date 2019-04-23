@@ -1,11 +1,11 @@
 package com.fungo.system.controller;
 
 
-import com.fungo.api.ResultDto;
-import com.fungo.framework.MemberUserProfile;
-import com.fungo.framework.aop.Anonymous;
 import com.fungo.system.dto.LogCollectInput;
 import com.fungo.system.service.ISystemLogCollectService;
+import com.game.common.util.annotation.Anonymous;
+import com.game.common.dto.MemberUserProfile;
+import com.game.common.dto.ResultDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;

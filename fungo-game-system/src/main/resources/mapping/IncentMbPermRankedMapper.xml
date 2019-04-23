@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.system.dao.IncentMbPermRankedDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.fungo.system.entity.IncentMbPermRanked">
+		<id column="id" property="id" />
+		<result column="rank_id" property="rankId" />
+		<result column="rank_type" property="rankType" />
+		<result column="rank_idt" property="rankIdt" />
+		<result column="rank_name" property="rankName" />
+		<result column="task_id" property="taskId" />
+		<result column="task_code_idt" property="taskCodeIdt" />
+		<result column="perm_action_name" property="permActionName" />
+		<result column="perm_action_url" property="permActionUrl" />
+		<result column="ext1" property="ext1" />
+		<result column="ext2" property="ext2" />
+		<result column="ext3" property="ext3" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, rank_id AS rankId, rank_type AS rankType, rank_idt AS rankIdt, rank_name AS rankName, task_id AS taskId, task_code_idt AS taskCodeIdt, perm_action_name AS permActionName, perm_action_url AS permActionUrl, ext1, ext2, ext3
+    </sql>
+
+</mapper>

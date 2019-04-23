@@ -3,17 +3,18 @@ package com.fungo.system.controller;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fungo.api.ResultDto;
-import com.fungo.framework.MemberUserProfile;
-import com.fungo.framework.file.IFileService;
-import com.fungo.framework.token.TokenService;
+import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
 import com.fungo.system.function.MemberLoginedStatisticsService;
 import com.fungo.system.service.*;
-import com.fungo.validate.ValidateUtils;
-import com.game.common.GameConstant;
+import com.game.common.consts.GameConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
+import com.game.common.dto.MemberUserProfile;
+import com.game.common.dto.ResultDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
+import com.game.common.framework.file.IFileService;
+import com.game.common.util.ValidateUtils;
+import com.game.common.util.token.TokenService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -163,7 +164,6 @@ public class UserController {
     })
     public ResultDto<String> smscode(@RequestBody MsgInput msg) throws Exception {
         ValidateUtils.is(msg.getMobile()).notNull().maxLength(11).minLength(11);
-        ;
         return userService.smscode(msg.getMobile());
     }
 
@@ -175,7 +175,6 @@ public class UserController {
     })
     public ResultDto<String> verifymobile(@RequestBody MsgInput msg) {
         ValidateUtils.is(msg.getCode()).notNull().minLength(6).and(msg.getMobile()).notNull().maxLength(11).minLength(11);
-        ;
         return userService.verifymobile(msg.getCode(), msg.getMobile());
     }
 
@@ -197,7 +196,6 @@ public class UserController {
     })
     public void forgotpassword(@RequestBody MsgInput msg) {
         ValidateUtils.is(msg.getCode()).notNull().minLength(6).and(msg.getMobile()).notNull().maxLength(11).minLength(11);
-        ;
     }
 
     /*********************************************************************************/
@@ -383,10 +381,10 @@ public class UserController {
         String name = UUID.randomUUID().toString();
 //         File f = new File(name+"."+suffix);
 //         file.transferTo(f);
-//         CommonsMultipartFile cf = (CommonsMultipartFile) appFile;  
-//         InputStream fileContent = cf.getInputStream(); 
+//         CommonsMultipartFile cf = (CommonsMultipartFile) appFile;
+//         InputStream fileContent = cf.getInputStream();
 
-        String imagePath = fileService.saveFile(datePath + "/" + name + "." + suffix, suffix, appFile.getInputStream());
+        String imagePath =  fileService.saveFile(datePath + "/" + name + "." + suffix, suffix, appFile.getInputStream());
         Member member = this.memberService.selectById(memberUserPrefile.getLoginId());
         member.setAvatar(imagePath);
         member.updateById();

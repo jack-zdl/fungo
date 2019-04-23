@@ -1,8 +1,8 @@
 package com.fungo.system.service;
 
 
-import com.fungo.api.ResultDto;
-import com.fungo.framework.exceptions.BusinessException;
+import com.game.common.dto.ResultDto;
+import com.game.common.util.exception.BusinessException;
 
 import java.util.Map;
 

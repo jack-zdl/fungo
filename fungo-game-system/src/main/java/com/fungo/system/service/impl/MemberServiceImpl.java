@@ -1,32 +1,12 @@
 package com.fungo.system.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.mapper.Condition;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fungo.api.FungoPageResultDto;
-import com.fungo.api.InputPageDto;
-import com.fungo.api.ResultDto;
-import com.fungo.api.vd.StreamInfo;
-import com.fungo.emoji.FilterEmojiUtil;
-import com.fungo.framework.Setting;
-import com.fungo.framework.dao.PageTools;
 import com.fungo.system.dao.FollowInptPageDao;
 import com.fungo.system.dto.*;
-import com.fungo.system.entity.AuthorBean;
 import com.fungo.system.service.IMemberService;
-import com.fungo.tools.DateTools;
-import com.fungo.validate.utils.CommonUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.game.common.api.InputPageDto;
+import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service

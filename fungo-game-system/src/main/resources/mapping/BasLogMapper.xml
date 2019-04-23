@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.system.dao.BasLogDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.fungo.system.entity.BasLog">
+		<id column="id" property="id" />
+		<result column="created_at" property="createdAt" />
+		<result column="end_time" property="endTime" />
+		<result column="run_time" property="runTime" />
+		<result column="path" property="path" />
+		<result column="method" property="method" />
+		<result column="ip" property="ip" />
+		<result column="member_id" property="memberId" />
+		<result column="input_data" property="inputData" />
+		<result column="out_data" property="outData" />
+		<result column="channel" property="channel" />
+		<result column="biz_id" property="bizId" />
+		<result column="re_code" property="reCode" />
+		<result column="state" property="state" />
+		<result column="biz_code" property="bizCode" />
+		<result column="updated_at" property="updatedAt" />
+		<result column="token" property="token" />
+		<result column="brand" property="brand" />
+		<result column="user_agent" property="userAgent" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, created_at AS createdAt, end_time AS endTime, run_time AS runTime, path, method, ip, member_id AS memberId, input_data AS inputData, out_data AS outData, channel, biz_id AS bizId, re_code AS reCode, state, biz_code AS bizCode, updated_at AS updatedAt, token, brand, user_agent AS userAgent
+    </sql>
+
+</mapper>

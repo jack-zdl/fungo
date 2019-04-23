@@ -1,13 +1,10 @@
 package com.fungo.system.service;
 
-import com.fungo.api.FungoPageResultDto;
-import com.fungo.api.InputPageDto;
-import com.fungo.api.ResultDto;
 import com.fungo.system.dao.FollowInptPageDao;
 import com.fungo.system.dto.*;
-import com.fungo.system.entity.AuthorBean;
-
-import java.util.List;
+import com.game.common.api.InputPageDto;
+import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
 import java.util.Map;
 
 public interface IMemberService {

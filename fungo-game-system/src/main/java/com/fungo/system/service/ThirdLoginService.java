@@ -1,0 +1,21 @@
+package com.fungo.system.service;
+
+
+import com.fungo.system.dto.ThirdLoginInput;
+import com.game.common.dto.ResultDto;
+
+
+public interface ThirdLoginService {
+	/**
+	 * 验证用户是否合法
+	 * @param platformType
+	 * @param accessToken
+	 * @param openid
+	 * @return
+	 */
+	ResultDto<String> checkThirdParty(Integer platformType, String accessToken, String openid, String channel)throws Exception;
+	public ResultDto<ThirdLoginInput> sinaVerify(String host, String code) throws Exception;
+	public ResultDto<ThirdLoginInput> qqVerify(String host, String code) throws Exception;
+	public ResultDto<ThirdLoginInput> wxVerify(String host, String code) throws Exception;
+	
+}

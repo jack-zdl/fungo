@@ -2,11 +2,11 @@ package com.fungo.system.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fungo.api.ResultDto;
 import com.fungo.system.entity.IncentRuleRank;
 import com.fungo.system.entity.Member;
 import com.fungo.system.entity.ScoreLog;
 import com.fungo.system.entity.ScoreRule;
+import com.game.common.dto.ResultDto;
 
 import java.io.IOException;
 import java.text.ParseException;

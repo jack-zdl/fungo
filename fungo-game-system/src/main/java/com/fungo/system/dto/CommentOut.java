@@ -1,6 +1,5 @@
 package com.fungo.system.dto;
 
-import com.fungo.system.entity.AuthorBean;
 
 import java.util.ArrayList;
 import java.util.List;

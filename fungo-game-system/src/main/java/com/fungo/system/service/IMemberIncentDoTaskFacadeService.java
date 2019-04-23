@@ -1,7 +1,5 @@
 package com.fungo.system.service;
 
-import com.fungo.framework.exceptions.BusinessException;
-
 import java.util.Map;
 
 /**
@@ -70,7 +68,7 @@ public interface IMemberIncentDoTaskFacadeService {
      * @param type_code_idt     任务编码
      * @param target_id     任务执行对象的id(如：发布了文章，即文章的id)
      * @return {success:任务执行结果 false: 失败 true: 成功  ,  msg:任务执行描述}
-     * @throws BusinessException
+     * @throws
      */
     public Map<String, Object> exTask(String mb_id, int task_group_flag, int task_type, int type_code_idt, String target_id) throws Exception;
 

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.system.dao.IncentAccountScoreDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.fungo.system.entity.IncentAccountScore">
+		<id column="id" property="id" />
+		<result column="account_group_id" property="accountGroupId" />
+		<result column="account_code" property="accountCode" />
+		<result column="account_name" property="accountName" />
+		<result column="mb_id" property="mbId" />
+		<result column="mb_user_name" property="mbUserName" />
+		<result column="score_usable" property="scoreUsable" />
+		<result column="score_freeze" property="scoreFreeze" />
+		<result column="is_activate" property="isActivate" />
+		<result column="is_freeze" property="isFreeze" />
+		<result column="pay_pwd" property="payPwd" />
+		<result column="reset_pay_pwd_phone" property="resetPayPwdPhone" />
+		<result column="clear_zero_period" property="clearZeroPeriod" />
+		<result column="clear_zero_time" property="clearZeroTime" />
+		<result column="disabled_time" property="disabledTime" />
+		<result column="score_type" property="scoreType" />
+		<result column="ext1" property="ext1" />
+		<result column="ext2" property="ext2" />
+		<result column="ext3" property="ext3" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, account_group_id AS accountGroupId, account_code AS accountCode, account_name AS accountName, mb_id AS mbId, mb_user_name AS mbUserName, score_usable AS scoreUsable, score_freeze AS scoreFreeze, is_activate AS isActivate, is_freeze AS isFreeze, pay_pwd AS payPwd, reset_pay_pwd_phone AS resetPayPwdPhone, clear_zero_period AS clearZeroPeriod, clear_zero_time AS clearZeroTime, disabled_time AS disabledTime, score_type AS scoreType, ext1, ext2, ext3
+    </sql>
+
+</mapper>
