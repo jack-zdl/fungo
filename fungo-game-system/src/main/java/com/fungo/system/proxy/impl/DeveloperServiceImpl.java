@@ -1,7 +1,10 @@
 package com.fungo.system.proxy.impl;
 
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.fungo.system.entity.Developer;
 import com.fungo.system.proxy.IDeveloperService;
+import com.fungo.system.service.DeveloperService;
 import com.game.common.dto.DeveloperGame.DeveloperGameOut;
 import com.game.common.dto.DeveloperGame.DeveloperGamePageInput;
 import com.game.common.dto.DeveloperGame.DeveloperQueryIn;
@@ -11,6 +14,8 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.AddGameInputBean;
 import com.game.common.dto.game.GameHistoryOut;
 import com.game.common.dto.game.GameOutBean;
+import com.game.common.util.date.DateTools;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.util.*;
@@ -47,22 +52,14 @@ public class DeveloperServiceImpl implements IDeveloperService {
 		return null;
 	}
 
-	@Override
-	public ResultDto<List<Map<String, Object>>> messageList() {
-		return null;
-	}
 
 	@Override
 	public ResultDto<Map<String, Integer>> communityAnalyze(DeveloperQueryIn input) throws ParseException {
 		return null;
 	}
 
-	@Override
-	public boolean checkDpPower(String memberId) {
-		return false;
-	}
-//	@Autowired
-//	private DeveloperService developerService;
+	@Autowired
+	private DeveloperService developerService;
 //	@Autowired
 //	private DeveloperGameRelService dgrService;
 //	@Autowired
@@ -693,49 +690,49 @@ public class DeveloperServiceImpl implements IDeveloperService {
 //		return String.format("%.2f", c*100) + "%";
 //	}
 //
-//	@Override
-//	/*
-//	 * (non-Javadoc)
-//	 * @see com.fungo.game.api.IDeveloperService#messageList()
-//	 * 开发者消息,暂时没有这个功能
-//	 */
-//	public ResultDto<List<Map<String, Object>>> messageList() {
-//
-//
-//		List<Map<String, Object>> list = new ArrayList<>();
-//		Map<String,Object> m1 = new HashMap<>();
-//		m1.put("content","您的游戏'狂扁小朋友'更新成功");
-//		m1.put("createdAt", DateTools.fmtDate(new Date()));
-//		m1.put("type", "");
-//
-//		Map<String,Object> m2 = new HashMap<>();
-//		m2.put("content","第一届翔游争霸赛正式开幕");
-//		m2.put("createdAt", "2018-7-17 10:07:32");
-//		m2.put("type", "");
-//
-//		Map<String,Object> m3 = new HashMap<>();
-//		m3.put("content","用户心理学---论怎样骗氪");
-//		m3.put("createdAt", "2018-7-17 10:07:32");
-//		m3.put("type", "");
-//
-//		Map<String,Object> m4 = new HashMap<>();
-//		m4.put("content","你的app真不错,不过下一秒就是我的了---手把手教你借鉴");
-//		m4.put("createdAt", "2018-7-17 9:07:32");
-//		m4.put("type", "");
-//
-//		Map<String,Object> m5 = new HashMap<>();
-//		m5.put("content","您的账号被多次举报涉黄,请遵守用户守则,发表健康内容");
-//		m5.put("createdAt", new Date());
-//		m5.put("type", "");
-//
-//		list.add(m1);
-//		list.add(m2);
-//		list.add(m3);
-//		list.add(m4);
-//		list.add(m5);
-//
-//		return ResultDto.success(list);
-//	}
+	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see com.fungo.game.api.IDeveloperService#messageList()
+	 * 开发者消息,暂时没有这个功能
+	 */
+	public ResultDto<List<Map<String, Object>>> messageList() {
+
+
+		List<Map<String, Object>> list = new ArrayList<>();
+		Map<String,Object> m1 = new HashMap<>();
+		m1.put("content","您的游戏'狂扁小朋友'更新成功");
+		m1.put("createdAt", DateTools.fmtDate(new Date()));
+		m1.put("type", "");
+
+		Map<String,Object> m2 = new HashMap<>();
+		m2.put("content","第一届翔游争霸赛正式开幕");
+		m2.put("createdAt", "2018-7-17 10:07:32");
+		m2.put("type", "");
+
+		Map<String,Object> m3 = new HashMap<>();
+		m3.put("content","用户心理学---论怎样骗氪");
+		m3.put("createdAt", "2018-7-17 10:07:32");
+		m3.put("type", "");
+
+		Map<String,Object> m4 = new HashMap<>();
+		m4.put("content","你的app真不错,不过下一秒就是我的了---手把手教你借鉴");
+		m4.put("createdAt", "2018-7-17 9:07:32");
+		m4.put("type", "");
+
+		Map<String,Object> m5 = new HashMap<>();
+		m5.put("content","您的账号被多次举报涉黄,请遵守用户守则,发表健康内容");
+		m5.put("createdAt", new Date());
+		m5.put("type", "");
+
+		list.add(m1);
+		list.add(m2);
+		list.add(m3);
+		list.add(m4);
+		list.add(m5);
+
+		return ResultDto.success(list);
+	}
 //
 //	@Override
 //	public ResultDto<Map<String, Integer>> communityAnalyze(DeveloperQueryIn input) throws ParseException {
@@ -772,17 +769,17 @@ public class DeveloperServiceImpl implements IDeveloperService {
 //		return ResultDto.success(map);
 //	}
 //
-//	//检查是否有权限
-//	@Override
-//	public boolean checkDpPower(String memberId) {
-//		Developer developer = developerService.selectOne(new EntityWrapper<Developer>().eq("member_id", memberId));
-//		if(developer == null) {
-//			return false;
-//		}else if(developer.getApproveState() != 2 ) {
-//			return false;
-//		}
-//		return true;
-//	}
+	//检查是否有权限
+	@Override
+	public boolean checkDpPower(String memberId) {
+		Developer developer = developerService.selectOne(new EntityWrapper<Developer>().eq("member_id", memberId));
+		if(developer == null) {
+			return false;
+		}else if(developer.getApproveState() != 2 ) {
+			return false;
+		}
+		return true;
+	}
 //
 //	public ResultDto<String> copyGameTolog(AddGameInputBean input,MemberUserProfile memberUserPrefile,GameReleaseLog logGame, Developer developer) {
 //

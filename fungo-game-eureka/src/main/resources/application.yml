@@ -31,6 +31,8 @@ server:
 eureka:
   instance:
     hostname: peer1
+  server:
+#    enable-self-preservation: false
   client:
     registerWithEureka: true
     fetchRegistry: true

@@ -3,7 +3,7 @@ eureka:
     serviceUrl:
       defaultZone:  http://peer1:8761/eureka/
 server:
-  port: 8285
+  port: 8088
 spring:
   application:
     name: fungo-game-system

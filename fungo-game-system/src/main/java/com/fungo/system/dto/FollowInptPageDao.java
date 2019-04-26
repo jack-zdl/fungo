@@ -1,4 +1,4 @@
-package com.fungo.system.dao;
+package com.fungo.system.dto;
 
 
 import com.game.common.api.InputPageDto;

@@ -1,6 +1,6 @@
 package com.fungo.system.service;
 
-import com.fungo.system.dao.FollowInptPageDao;
+import com.fungo.system.dto.FollowInptPageDao;
 import com.fungo.system.dto.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
