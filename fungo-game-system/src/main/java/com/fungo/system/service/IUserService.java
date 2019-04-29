@@ -3,6 +3,7 @@ package com.fungo.system.service;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.user.MemberOutBean;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.List;

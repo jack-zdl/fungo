@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.games.dao.GameDao">
+
+    <!-- 通用查询映射结果 -->
+    <!-- 	<resultMap id="BaseResultMap" type="com.fungo.game.entity.Game">
+            <id column="id" property="id" />
+            <result column="recommend_num" property="recommendNum" />
+            <result column="tags" property="tags" />
+            <result column="video" property="video" />
+            <result column="update_log" property="updateLog" />
+            <result column="unrecommend_num" property="unrecommendNum" />
+            <result column="apk" property="apk" />
+            <result column="download_num" property="downloadNum" />
+            <result column="itunes_id" property="itunesId" />
+            <result column="compatibility" property="compatibility" />
+            <result column="version_child" property="versionChild" />
+            <result column="images" property="images" />
+            <result column="game_size" property="gameSize" />
+            <result column="release_image" property="releaseImage" />
+            <result column="name" property="name" />
+            <result column="cover_image" property="coverImage" />
+            <result column="state" property="state" />
+            <result column="image_ratio" property="imageRatio" />
+            <result column="icon" property="icon" />
+            <result column="edited_at" property="editedAt" />
+            <result column="community_id" property="communityId" />
+            <result column="member_id" property="memberId" />
+            <result column="origin" property="origin" />
+            <result column="intro" property="intro" />
+            <result column="developer" property="developer" />
+            <result column="version_main" property="versionMain" />
+            <result column="isbn_id" property="isbnId" />
+            <result column="detail" property="detail" />
+            <result column="created_at" property="createdAt" />
+            <result column="updated_at" property="updatedAt" />
+            <result column="created_by" property="createdBy" />
+            <result column="updated_by" property="updatedBy" />
+            <result column="ios_state" property="iosState" />
+            <result column="android_state" property="androidState" />
+            <result column="developer_id" property="developerId" />
+            <result column="test_number" property="testNumber" />
+            <result column="tset_date" property="tsetDate" />
+            <result column="isbn_image" property="isbnImage" />
+            <result column="copyright_id" property="copyrightId" />
+            <result column="copyright_image" property="copyrightImage" />
+            <result column="credentials" property="credentials" />
+            <result column="issue_id" property="issueId" />
+        </resultMap>
+     -->
+    <!-- 通用查询结果列 -->
+    <!--   <sql id="Base_Column_List">
+          id, recommend_num AS recommendNum, tags, video, update_log AS updateLog, unrecommend_num AS unrecommendNum, apk, download_num AS downloadNum, itunes_id AS itunesId, compatibility, version_child AS versionChild, images, game_size AS gameSize, release_image AS releaseImage, name, cover_image AS coverImage, state, image_ratio AS imageRatio, icon, edited_at AS editedAt, community_id AS communityId, member_id AS memberId, origin, intro, developer, version_main AS versionMain, isbn_id AS isbnId, detail, created_at AS createdAt, updated_at AS updatedAt, created_by AS createdBy, updated_by AS updatedBy, ios_state AS iosState, android_state AS androidState, developer_id AS developerId, test_number AS testNumber, tset_date AS tsetDate, isbn_image AS isbnImage, copyright_id AS copyrightId, copyright_image AS copyrightImage, credentials, issue_id AS issueId
+      </sql> -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.fungo.games.entity.Game">
+        <id column="id" property="id"/>
+        <result column="tags" property="tags"/>
+        <result column="video" property="video"/>
+        <result column="update_log" property="updateLog"/>
+        <result column="apk" property="apk"/>
+        <result column="download_num" property="downloadNum"/>
+        <result column="itunes_id" property="itunesId"/>
+        <result column="compatibility" property="compatibility"/>
+        <result column="version_child" property="versionChild"/>
+        <result column="images" property="images"/>
+        <result column="game_size" property="gameSize"/>
+        <result column="release_image" property="releaseImage"/>
+        <result column="name" property="name"/>
+        <result column="cover_image" property="coverImage"/>
+        <result column="image_ratio" property="imageRatio"/>
+        <result column="icon" property="icon"/>
+        <result column="edited_at" property="editedAt"/>
+        <result column="community_id" property="communityId"/>
+        <result column="member_id" property="memberId"/>
+        <result column="origin" property="origin"/>
+        <result column="recommend_num" property="recommendNum"/>
+        <result column="unrecommend_num" property="unrecommendNum"/>
+        <result column="state" property="state"/>
+        <result column="intro" property="intro"/>
+        <result column="developer" property="developer"/>
+        <result column="version_main" property="versionMain"/>
+        <result column="isbn_id" property="isbnId"/>
+        <result column="detail" property="detail"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="ios_state" property="iosState"/>
+        <result column="android_state" property="androidState"/>
+        <result column="developer_id" property="developerId"/>
+        <result column="test_number" property="testNumber"/>
+        <result column="tset_date" property="tsetDate"/>
+        <result column="isbn_image" property="isbnImage"/>
+        <result column="copyright_id" property="copyrightId"/>
+        <result column="copyright_image" property="copyrightImage"/>
+        <result column="credentials" property="credentials"/>
+        <result column="issue_id" property="issueId"/>
+        <result column="android_package_name" property="androidPackageName"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, tags, video, update_log AS updateLog, apk, download_num AS downloadNum, itunes_id AS itunesId, compatibility, version_child AS versionChild, images, game_size AS gameSize, release_image AS releaseImage, name, cover_image AS coverImage, image_ratio AS imageRatio, icon, edited_at AS editedAt, community_id AS communityId, member_id AS memberId, origin, recommend_num AS recommendNum, unrecommend_num AS unrecommendNum, state, intro, developer, version_main AS versionMain, isbn_id AS isbnId, detail, created_at AS createdAt, updated_at AS updatedAt, created_by AS createdBy, updated_by AS updatedBy, ios_state AS iosState, android_state AS androidState, developer_id AS developerId, test_number AS testNumber, tset_date AS tsetDate, isbn_image AS isbnImage, copyright_id AS copyrightId, copyright_image AS copyrightImage, credentials, issue_id AS issueId, android_package_name AS androidPackageName
+    </sql>
+
+
+    <update id="updateBatchState">
+        update t_game set state=#{state} where id in
+        <foreach item="item" index="index" collection="idList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <update id="updateTags">
+  	update t_game set tags=#{tags} where id=#{gameId}
+  </update>
+
+  <!-- 获取游戏评分 -->
+  <select id="getRateData" resultType="java.util.HashMap" parameterType="String">
+	<![CDATA[ 
+		select 
+			e.game_id as gameId,
+			ROUND(AVG(rating),1) as avgRating,
+			ROUND(AVG(trait1),1) as avgTrait1,
+			ROUND(AVG(trait2),1) as avgTrait2,
+			ROUND(AVG(trait3),1) as avgTrait3,
+			ROUND(AVG(trait4),1) as avgTrait4,
+			ROUND(AVG(trait5),1) as avgTrait5
+		from t_game_evaluation e where  
+		e.game_id = #{gameId} and e.state != -1
+
+
+        ]]>
+	</select>
+
+	
+	<!-- 获取游戏评分占比 -->
+	<select id="getPercentData" resultType="java.util.HashMap" parameterType="String">
+	<![CDATA[ 
+		SELECT
+			MAX(CASE b.rating WHEN 1 THEN percentage ELSE 0 END ) '1',
+			MAX(CASE b.rating WHEN 2 THEN percentage ELSE 0 END ) '2', 
+			MAX(CASE b.rating WHEN 3 THEN percentage ELSE 0 END ) '3', 
+			MAX(CASE b.rating WHEN 4 THEN percentage ELSE 0 END ) '4', 
+			MAX(CASE b.rating WHEN 5 THEN percentage ELSE 0 END ) '5', 
+			MAX(CASE b.rating WHEN 6 THEN percentage ELSE 0 END ) '6', 
+			MAX(CASE b.rating WHEN 7 THEN percentage ELSE 0 END ) '7', 
+			MAX(CASE b.rating WHEN 8 THEN percentage ELSE 0 END ) '8', 
+			MAX(CASE b.rating WHEN 9 THEN percentage ELSE 0 END ) '9', 
+			MAX(CASE b.rating WHEN 10 THEN percentage ELSE 0 END ) '10'
+		FROM 
+			(select COUNT(*) as total,rating as rating,ROUND(COUNT(*) * 100/(select COUNT(*) from t_game_evaluation where game_id = #{gameId} and state != -1),1) 
+			as percentage from t_game_evaluation where game_id = #{gameId} and state != -1 GROUP BY rating) as b
+
+
+        ]]>
+	</select>
+
+	
+	<!-- 获取一天内访问数前十的游戏 -->
+	<select id="getHotValue" resultType="com.game.common.bean.HotValue" parameterType="String">
+
+		select b.biz_id as gameId,b.total as totalCount,g.name as gameName 
+		from
+		(SELECT biz_id,count(*) as total from t_bas_log where path like '%game%' and biz_id is not null and TO_DAYS(CURDATE())-TO_DAYS(created_at) = 1 GROUP BY biz_id) 
+		as b,t_game as g where b.biz_id = g.Id ORDER BY b.total DESC limit 10;
+	</select>
+
+	
+	<!-- 获取用户最近评论的游戏 -->
+	<select id="getRecentCommentedGames" resultType="java.util.HashMap" parameterType="String">
+		select g.id as game_id,g.name,g.icon,g.tags,g.community_id,g.comment_num,e.content,e.updated_at 
+		from t_game g,t_game_evaluation e 
+		WHERE e.game_id = g.id AND e.member_id = #{memberId} 
+		ORDER BY e.updated_at DESC
+	</select>
+
+
+    <select id="query2018GameDownloadCount" resultType="java.util.HashMap">
+		SELECT
+		input_data ,created_at
+		FROM
+		t_bas_log
+		WHERE
+		path = '/api/action/download'
+		AND ( date_format( created_at, '%Y-%m-%d' )
+		<![CDATA[  >= ]]>
+		'2018-01-01' AND date_format( created_at, '%Y-%m-%d' ) <![CDATA[  <=   ]]> '2018-12-31' )
+		ORDER BY
+		created_at DESC
+	</select>
+
+</mapper>

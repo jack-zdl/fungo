@@ -12,6 +12,7 @@ import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.MemberLoginConsts;
 import com.game.common.consts.Setting;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.user.MemberOutBean;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.RandomsAndId;

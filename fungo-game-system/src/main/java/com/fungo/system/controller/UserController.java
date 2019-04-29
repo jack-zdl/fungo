@@ -11,6 +11,7 @@ import com.game.common.consts.GameConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.user.MemberOutBean;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.framework.file.IFileService;
 import com.game.common.util.ValidateUtils;
@@ -277,7 +278,6 @@ public class UserController {
         if (memberUserPrefile != null) {
             memberId = memberUserPrefile.getLoginId();
         }
-
         return userService.getUserInfo(memberId);
     }
 

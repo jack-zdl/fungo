@@ -56,11 +56,23 @@ spring:
   session:
     store-type: redis
   zipkin:
-    base-url: http://47.104.87.10:9411
+    base-url: http://localhost:9411  #http://47.104.87.10:19411
+    sender:
+      type: web
   sleuth:
     sampler:
-      percentage: 1.0
-## stream 绑定一个接受消息的input管道
+      probability: 1.0
+
+  rabbitmq:
+    host: 47.104.87.10
+    port: 5672
+    username: admin
+    password: admin
+    template:
+      retry:
+        enabled: true
+        initial-interval: 2s
+# stream 绑定一个接受消息的input管道
 #  cloud:
 #    stream:
 #      bindings:
@@ -74,18 +86,26 @@ spring:
 #          input:
 #            consumer:
 #              resetOffsets: true
-
 #      binders:
-#        rabbit1:
+#        defaultRabbit:
 #          type: rabbit
 #          environment:
 #            spring:
 #              rabbitmq:
-#                host: 137.0.0.1
+#              addresses: 47.104.87.10:5672
+#              username: admin
+#              password: admin
+#              virtual-host: /
+#                host: 47.104.87.10
 #                port: 5672
-#                username: guest
-#                password: guest
-#                virtual-host: /hostName
+#                username: admin
+#                password: admin
+#                virtual-host: /
+#      bindings:  # 服务的整合处理
+#        output:  # 这个名字是一个通道的名称，在分析具体源代码的时候会进行说明
+#          destination: studyExchange   # 表示要使用的Exchange名称定义
+#          content-type: application/json   # 设置消息类型，本次为对象json，如果是文本则设置“text/plain”
+#          binder:  defaultRabbit # 设置要绑定的消息服务的具体设置
 
 mybatis-plus:
 #  mapper-locations: classpath:mapping/*Mapper.xml
@@ -98,17 +118,34 @@ mybatis-plus:
 
 #  type-aliases-package: com.fungo.system.entity
 ## 当post /refresh方式刷新配置 时 ，会有个安全限制，关掉就可以了
-#management:
+#security:
+#  basic:
+#    enabled: false
+management:
 #  security:
 #    enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # 暴露所有服务监控端口，也可以只暴露 hystrix.stream端口
+
+turbine:
+  #  1.被监控的服务应用没有配置 context-path 的情况下
+  # 配置 Eureka 中的 serviceId 列表，指定要监控的服务
+  app-config: FUNGO-GAME-GAMES,FUNGO-GAME-SYSTEM
+  aggregator:
+    cluster-config: default
+  cluster-name-expression: new String("default")
+#  combine-host-port: true
 
 hystrix:
   command:
-    scyp-system:
+    default:
       execution:
         isolation:
+          strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
           thread:
-            timeoutInMilliseconds: 60000
+            timeoutInMilliseconds: 60000  #命令执行超时时间，默认1000ms
 ribbon:
   ConnectTimeout: 50000
   ReadTimeout: 50000

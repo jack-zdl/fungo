@@ -2,8 +2,10 @@ eureka:
   client:
     serviceUrl:
       defaultZone:  http://peer1:8761/eureka/
+  instance:
+    prefer-ip-address: true
 server:
-  port: 8189
+  port: 9411
 spring:
   application:
     name: fungo-game-bus
@@ -31,6 +33,11 @@ spring:
 management:
 #  security:
 #    enabled: false
+  metrics:
+    web:
+      server:
+        auto-time-requests: false
+
   endpoint:
     bus-refresh:
       enabled: true

@@ -2,7 +2,6 @@ package com.fungo.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.fungo.system.dto.MemberOutBean;
 import com.fungo.system.entity.*;
 import com.fungo.system.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
@@ -10,6 +9,7 @@ import com.game.common.consts.MemberActionTypeConsts;
 import com.game.common.consts.MemberIncentSignInConsts;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.user.MemberOutBean;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.date.DateTools;

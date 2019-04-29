@@ -3,8 +3,8 @@ package com.fungo.system.controller;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.dto.DeveloperBean;
 import com.fungo.system.entity.Developer;
-import com.fungo.system.proxy.IDeveloperService;
 import com.fungo.system.service.DeveloperService;
+import com.fungo.system.service.IDeveloperService;
 import com.game.common.dto.*;
 import com.game.common.dto.DeveloperGame.DeveloperGameOut;
 import com.game.common.dto.DeveloperGame.DeveloperGamePageInput;
@@ -184,5 +184,21 @@ public class DeveloperController {
 		return null;
 //		return iDeveloperService.updateGameState();
 	}
+
+
+	/**
+	 * @todo
+	 */
+	@ApiOperation(value="开发者更新游戏", notes="")
+	@RequestMapping(value="/api/developer/test", method= RequestMethod.POST)
+	@ApiImplicitParams({})
+	public ResultDto<String> test(){
+		return new ResultDto<>();
+	}
+
+
+
+
+
 
 }

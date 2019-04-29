@@ -34,16 +34,13 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
 		</dependency>
-		<!-- 含有redis-->
 		<dependency>
-			<groupId>fungo-api</groupId>
-			<artifactId>fungo-api</artifactId>
-			<version>${fungo.fw.version}</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>fungo-web-app</groupId>
-			<artifactId>fungo-web-app</artifactId>
-			<version>${fungo.fw.version}</version>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
 		</dependency>
 		<!--引入 common-->
 		<dependency>
@@ -51,60 +48,37 @@
 			<artifactId>fungo-game-common</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>fungo-web-app</groupId>
-			<artifactId>fungo-web-app</artifactId>
-			<version>${fungo.fw.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>fungo-web-template</groupId>
-			<artifactId>fungo-web-template</artifactId>
-			<version>${fungo.fw.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>fungo</groupId>
-			<artifactId>fungo-websocket</artifactId>
-			<version>${fungo.fw.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>fungo-supper-push</groupId>
-			<artifactId>fungo-supper-push</artifactId>
-			<version>${fungo.fw.version}</version>
-		</dependency>
 		<!-- grant poi start -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
 			<version>3.15</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
 			<version>3.15</version>
 		</dependency>
-		<!-- javaMelody   引发错误的地方 start-->
-		<!--		<dependency>-->
-		<!--			<groupId>net.bull.javamelody</groupId>-->
-		<!--			<artifactId>javamelody-spring-boot-starter</artifactId>-->
-		<!--			<version>1.75.0</version>-->
-		<!--		</dependency>-->
-		<!--  javaMelody end-->
-		<!--		<dependency>-->
-		<!--			<groupId>org.projectlombok</groupId>-->
-		<!--			<artifactId>lombok</artifactId>-->
-		<!--			<version>1.18.6</version>-->
-		<!--		</dependency>-->
-		<!-- 以下二个是 config依赖-->
-		<!--重新获取和刷新-->
+		<!-- 引入redis -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+
+		<!-- redis依赖commons-pool 这个依赖一定要添加 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-config</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-zipkin</artifactId>
@@ -118,6 +92,21 @@
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid-spring-boot-starter</artifactId>
 			<version>1.1.10</version>
+		</dependency>
+
+		<!--重新获取和刷新-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>RELEASE</version>
 		</dependency>
 		<!-- 与数据库操作相关的依赖 -->
 		<dependency>

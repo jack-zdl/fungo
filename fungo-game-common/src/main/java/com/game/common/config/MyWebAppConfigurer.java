@@ -8,6 +8,7 @@ import com.game.common.util.exception.BusinessException;
 import com.game.common.util.token.Constant;
 import com.game.common.util.token.TokenService;
 import io.jsonwebtoken.Claims;
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,8 @@ public class MyWebAppConfigurer extends WebMvcConfigurerAdapter {
 
     @Autowired
     private TokenService tokenService;
-
+    @Autowired
+    private MyThreadLocal myThreadLocal;
 
     //跨域
     @Override
@@ -72,6 +74,7 @@ public class MyWebAppConfigurer extends WebMvcConfigurerAdapter {
 class UserProfileArgumentResolver implements HandlerMethodArgumentResolver {
     private TokenService tokenService;
 
+
     public UserProfileArgumentResolver(TokenService tokenService) {
         this.tokenService = tokenService;
     }
@@ -88,10 +91,11 @@ class UserProfileArgumentResolver implements HandlerMethodArgumentResolver {
         return false;
     }
 
+
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-
         String token = webRequest.getHeader(Constant.requestTokenParamName);
+        MyThreadLocal.setToken(token);
         if (token == null || "".equals(token.trim()) || token.split("\\.").length != 3) {
             logger.info("请求头中未包含token");
             if (!parameter.hasParameterAnnotation(Anonymous.class)) {  //针对部分接口即支持会员访问又支持匿名访问拦截处理

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.system.dao.DeveloperGameRelDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.fungo.system.entity.DeveloperGameRel">
+		<id column="id" property="id" />
+		<result column="game_id" property="gameId" />
+		<result column="developer_id" property="developerId" />
+		<result column="state" property="state" />
+		<result column="created_at" property="createdAt" />
+		<result column="updated_at" property="updatedAt" />
+		<result column="member_id" property="memberId" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, game_id AS gameId, developer_id AS developerId, state, created_at AS createdAt, updated_at AS updatedAt, member_id AS memberId
+    </sql>
+    
+    <!-- 删除用户游戏关联 -->
+    <delete id="delLinkedMember" parameterType="java.util.Map">
+    	delete from t_developer_game_rel where game_id = #{gameId} and member_id != #{memberId}
+    </delete>
+
+</mapper>

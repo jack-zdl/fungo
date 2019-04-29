@@ -1,4 +1,4 @@
-package com.fungo.system.dto;
+package com.game.common.dto.user;
 
 import io.swagger.annotations.ApiModelProperty;
 

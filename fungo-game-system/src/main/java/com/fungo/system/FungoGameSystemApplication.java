@@ -1,6 +1,7 @@
 package com.fungo.system;
 
 import com.game.common.framework.MyProperties;
+import com.netflix.hystrix.contrib.metrics.eventstream.HystrixMetricsStreamServlet;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
@@ -9,11 +10,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.netflix.hystrix.EnableHystrix;
+import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboard;
+import org.springframework.cloud.netflix.turbine.EnableTurbine;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.servlet.MultipartConfigElement;
@@ -23,14 +29,28 @@ import javax.servlet.MultipartConfigElement;
 @EnableCaching
 @ComponentScan(basePackages = {"com.*"})
 @EnableHystrix
+@EnableTurbine
+@EnableHystrixDashboard
+@EnableCircuitBreaker   //使用@HystrixCommand
 @EnableTransactionManagement
 @EnableConfigurationProperties(MyProperties.class)
+@EnableRedisHttpSession
 public class FungoGameSystemApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(FungoGameSystemApplication.class, args);
 	}
 
+
+	@Bean
+	public ServletRegistrationBean getServlet() {
+		HystrixMetricsStreamServlet streamServlet = new HystrixMetricsStreamServlet();
+		ServletRegistrationBean registrationBean = new ServletRegistrationBean(streamServlet);
+		registrationBean.setLoadOnStartup(1);
+		registrationBean.addUrlMappings("/hystrix.stream");
+		registrationBean.setName("HystrixMetricsStreamServlet");
+		return registrationBean;
+	}
 
 	/**
 	 * 文件上传配置
