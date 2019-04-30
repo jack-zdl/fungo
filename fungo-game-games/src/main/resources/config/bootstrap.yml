@@ -6,7 +6,7 @@ spring:
     password: admin
   cloud:
     config:
-      uri: http://localhost:8768/
+      uri: http://47.104.87.10:8768/
       naem: application
       #      #指定当前所属环境
       profile: dev
