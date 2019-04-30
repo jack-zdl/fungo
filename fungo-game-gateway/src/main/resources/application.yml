@@ -1,7 +1,7 @@
 eureka:
   client:
     serviceUrl:
-      defaultZone:  http://localhost:8761/eureka/
+      defaultZone:  http://47.104.87.10:8761/eureka/
 server:
   port: 8182
 spring:
@@ -24,9 +24,9 @@ zuul:
     fungo-game-system:
       path: /system/**
       serviceId: fungo-game-system
-#    api-b:
-#      path: /agreement/**
-#      serviceId: ncyp-company-triagreement
+    fungo-game-games:
+      path: /games/**
+      serviceId: fungo-game-games
  # 配置超时时间断路器才有效果（加入Zuul）
 ribbon:
   ReadTimeout: 30000

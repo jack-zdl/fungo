@@ -12,6 +12,10 @@
 	<packaging>jar</packaging>
 	<name>fungo-game-system</name>
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<!--properties节点中设置docker镜像的前缀“springboot”-->
+		<java.version>1.8</java.version>
 		<docker.image.prefix>ramer</docker.image.prefix>
 	</properties>
 	<dependencies>
@@ -141,21 +145,30 @@
         </dependencies>
     </dependencyManagement>
 
-<!--	<build>-->
-<!--		<resources>-->
-<!--			<resource>-->
-<!--				<directory>src/main/java</directory>-->
-<!--				<includes>-->
-<!--					<include>**/*.properties</include>-->
-<!--					<include>**/*.xml</include>-->
-<!--				</includes>-->
-<!--				&lt;!&ndash; 是否替换资源中的属性&ndash;&gt;-->
-<!--				<filtering>false</filtering>-->
-<!--			</resource>-->
-<!--&lt;!&ndash;			<resource>&ndash;&gt;-->
-<!--&lt;!&ndash;				<directory>src/main/resources</directory>&ndash;&gt;-->
-<!--&lt;!&ndash;			</resource>&ndash;&gt;-->
-<!--		</resources>-->
-<!--	</build>-->
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.4.11</version>
+				<configuration>
+					<imageName>${docker.image.prefix}/${project.artifactId}</imageName>
+					<dockerDirectory>src/main/docker</dockerDirectory>
+					<resources>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>${project.build.finalName}.jar</include>
+						</resource>
+					</resources>
+				</configuration>
+			</plugin>
+		</plugins>
+		<finalName>fungo-game-games-8289</finalName>
+	</build>
 
 </project>

@@ -37,7 +37,11 @@ spring:
     view:
       prefix: /
       suffix: .html
-
+  rabbitmq:
+    host: 47.104.87.10
+    port: 5672
+    username: admin
+    password: admin
   redis:
     sentinel:
       master: mymaster
