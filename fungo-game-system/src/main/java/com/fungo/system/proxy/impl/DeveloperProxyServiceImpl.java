@@ -5,6 +5,7 @@ import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.proxy.IDeveloperProxyService;
 import com.game.common.config.MyThreadLocal;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.game.GameInputPageDto;
 import com.game.common.dto.game.GameItemInput;
 import com.game.common.dto.game.GameOutBean;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
@@ -29,6 +30,10 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 		gameItemInput.setGroup_id(ids);
 		gameItemInput.setLimit(limit);
 		gameItemInput.setPage(page);
+		GameInputPageDto gameInputPageDto = new GameInputPageDto();
+		gameInputPageDto.setLimit(limit);
+		gameInputPageDto.setPage(page);
+		gameInputPageDto.setId_list(collect.toArray(new String[collect.size()]));
 		FungoPageResultDto<GameOutBean>  gameOutBeans = gamesFeignClient.getGameList(gameItemInput);
 		return gameOutBeans;
 	}

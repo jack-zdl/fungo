@@ -1,12 +1,27 @@
 package com.fungo.games.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.aliyun.oss.common.utils.StringUtils;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.entity.Game;
+import com.fungo.games.entity.GameEvaluation;
+import com.fungo.games.entity.GameSurveyRel;
+import com.fungo.games.service.GameEvaluationService;
+import com.fungo.games.service.GameService;
+import com.fungo.games.service.GameSurveyRelService;
 import com.fungo.games.service.IGameService;
 import com.game.common.api.InputPageDto;
+import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.*;
+import com.game.common.repo.cache.facade.FungoCacheGame;
+import com.game.common.util.CommonUtil;
+import com.game.common.util.PageTools;
+import com.game.common.util.date.DateTools;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -16,8 +31,8 @@ import java.util.*;
 @Service
 public class GameServiceImpl implements IGameService {
 
-//    @Autowired
-//    private GameService gameService;
+    @Autowired
+    private GameService gameService;
 //
 //    @Autowired
 //    private BasActionService actionService;
@@ -25,17 +40,17 @@ public class GameServiceImpl implements IGameService {
 //    @Autowired
 //    private MemberService memberService;
 //
-//    @Autowired
-//    private GameEvaluationService gameEvaluationService;
-//
+    @Autowired
+    private GameEvaluationService gameEvaluationService;
+
 //    @Autowired
 //    private GameTagService gameTagService;
 //
 //    @Autowired
 //    private BasTagService bagTagService;
 //
-//    @Autowired
-//    private GameSurveyRelService surveyRelService;
+    @Autowired
+    private GameSurveyRelService surveyRelService;
 //    @Autowired
 //    private GameDao gameDao;
 //
@@ -44,8 +59,8 @@ public class GameServiceImpl implements IGameService {
 //    @Autowired
 //    private IUserService iuserService;
 //
-//    @Autowired
-//    private FungoCacheGame fungoCacheGame;
+    @Autowired
+    private FungoCacheGame fungoCacheGame;
 
 //    @Override
 //    public ResultDto<GameOut> getGameDetail(String gameId, String memberId, String ptype)
@@ -267,100 +282,100 @@ public class GameServiceImpl implements IGameService {
 //        return ResultDto.success(out);
 //    }
 
-//    @Override
-//    public FungoPageResultDto<GameOutPage> getGameList(GameInputPageDto gameInputDto, String memberId, String os) {
-//
-//        String keySuffix = JSON.toJSONString(gameInputDto) + os;
-//        FungoPageResultDto<GameOutPage> re = (FungoPageResultDto<GameOutPage> )fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_LIST + memberId, keySuffix);
-//        if (null != re  && null != re.getData() && re.getData().size() > 0){
-//            return  re;
-//        }
-//
-//        Wrapper wrapper = new EntityWrapper<Game>().where("state = {0}", 0);
-//        int limit = gameInputDto.getLimit();
-//        int page = gameInputDto.getPage();
-//        int sort = gameInputDto.getSort();
-//        String tag = gameInputDto.getTag();
-//        if (tag != null && tag.replace(" ", "") != "") {
-//            wrapper = wrapper.like("tags", tag);
-//        }
-//
+    @Override
+    public FungoPageResultDto<GameOutPage> getGameList(GameInputPageDto gameInputDto, String memberId, String os) {
+
+        String keySuffix = JSON.toJSONString(gameInputDto) + os;
+        FungoPageResultDto<GameOutPage> re = (FungoPageResultDto<GameOutPage> )fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_LIST + memberId, keySuffix);
+        if (null != re  && null != re.getData() && re.getData().size() > 0){
+            return  re;
+        }
+
+        Wrapper wrapper = new EntityWrapper<Game>().where("state = {0}", 0);
+        int limit = gameInputDto.getLimit();
+        int page = gameInputDto.getPage();
+        int sort = gameInputDto.getSort();
+        String tag = gameInputDto.getTag();
+        if (tag != null && tag.replace(" ", "") != "") {
+            wrapper = wrapper.like("tags", tag);
+        }
+
 //        @SuppressWarnings("unchecked")
-////		Page<Game> gamePage = gameService.selectPage(new Page<>(page, limit),wrapper);
-////		List<Game> gameList = gamePage.getRecords();
-//                List<Game> gameList = gameService.selectList(wrapper);
-//        if (gameList.size() == 0) {
-//            return new FungoPageResultDto<>();
-//        }
-//        Comparator<Game> hotFun = new HotFun();// 排序接口
-//        Comparator<Game> rateFun = new RateFun();// 排序接口
-//        Comparator<Game> dateFun = new DateFun();// 排序接口
-//
-//        if (sort == 1) {// 时间正序
-//            Collections.sort(gameList, dateFun);
-//        } else if (sort == 2) {// 时间倒序
-//            Collections.sort(gameList, Collections.reverseOrder(dateFun));
-//        } else if (sort == 3) {// 热力值正序
-//            Collections.sort(gameList, hotFun);
-//        } else if (sort == 4) {// 热力值倒序
-//            Collections.sort(gameList, Collections.reverseOrder(hotFun));
-//        } else if (sort == 5) {// 评分正序
-//            Collections.sort(gameList, rateFun);
-//        } else if (sort == 6) {// 评分倒序
-//            Collections.sort(gameList, Collections.reverseOrder(rateFun));
-//        } else {//默认排序 评分倒序
-//            Collections.sort(gameList, Collections.reverseOrder(rateFun));
-//        }
-//
-//        boolean m = false;
-//        if (!CommonUtil.isNull(memberId)) {
-//            m = true;
-//        }
-//
-//        Page<Game> p = pageFormat(gameList, page, limit);
-//        List<Game> records = p.getRecords();
-//        List<GameOutPage> dataList = new ArrayList<>();
-//        for (Game game : records) {
-//            GameOutPage out = new GameOutPage();
-//            out.setObjectId(game.getId());
-//            out.setName(game.getName());
-//            out.setIcon(game.getIcon());
-//            //2.4.3
-//            out.setAndroidState(game.getAndroidState());
-//            out.setIosState(game.getIosState());
-//            out.setRating(getGameRating(game.getId()));
-//            out.setApkUrl(game.getApk());
-//            out.setItunesId(game.getItunesId());
-//            out.setAndroidPackageName(game.getAndroidPackageName());
-//            out.setGame_size((long) game.getGameSize());
-//            //推荐数据 已弃用
-//            Integer recommend_total_count = game.getRecommendNum() + game.getUnrecommendNum();
-//            DecimalFormat df = new DecimalFormat("#.00");
-//            out.setRecommend_total_rate(recommend_total_count == 0 ? 0 : Double.parseDouble(df.format((double) game.getRecommendNum() / recommend_total_count * 100)));
-//            out.setRecommend_total_count(gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", game.getId()).and("state != -1")));
-//            //
-//
-//            out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
-//            out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
-//
-//            if (m) {
-//                GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", game.getId()).eq("phone_model", os).eq("state", 0));
-//                if (srel != null) {
-//                    out.setBinding(!StringUtils.isNullOrEmpty(srel.getAppleId()));
-//                    out.setClause(1 == srel.getAgree() ? true : false);
-//                    out.setMake(true);
-//                }
-//            }
-//
-//            dataList.add(out);
-//        }
-//        re = new FungoPageResultDto<GameOutPage>();
-//        PageTools.pageToResultDto(re, p);
-//        re.setData(dataList);
-//        //redis cache
-//        fungoCacheGame.excIndexCache(true,FungoCoreApiConstant.FUNGO_CORE_API_GAME_LIST + memberId, keySuffix,re);
-//        return re;
-//    }
+//		Page<Game> gamePage = gameService.selectPage(new Page<>(page, limit),wrapper);
+//		List<Game> gameList = gamePage.getRecords();
+                List<Game> gameList = gameService.selectList(wrapper);
+        if (gameList.size() == 0) {
+            return new FungoPageResultDto<>();
+        }
+        Comparator<Game> hotFun = new HotFun();// 排序接口
+        Comparator<Game> rateFun = new RateFun();// 排序接口
+        Comparator<Game> dateFun = new DateFun();// 排序接口
+
+        if (sort == 1) {// 时间正序
+            Collections.sort(gameList, dateFun);
+        } else if (sort == 2) {// 时间倒序
+            Collections.sort(gameList, Collections.reverseOrder(dateFun));
+        } else if (sort == 3) {// 热力值正序
+            Collections.sort(gameList, hotFun);
+        } else if (sort == 4) {// 热力值倒序
+            Collections.sort(gameList, Collections.reverseOrder(hotFun));
+        } else if (sort == 5) {// 评分正序
+            Collections.sort(gameList, rateFun);
+        } else if (sort == 6) {// 评分倒序
+            Collections.sort(gameList, Collections.reverseOrder(rateFun));
+        } else {//默认排序 评分倒序
+            Collections.sort(gameList, Collections.reverseOrder(rateFun));
+        }
+
+        boolean m = false;
+        if (!CommonUtil.isNull(memberId)) {
+            m = true;
+        }
+
+        Page<Game> p = pageFormat(gameList, page, limit);
+        List<Game> records = p.getRecords();
+        List<GameOutPage> dataList = new ArrayList<>();
+        for (Game game : records) {
+            GameOutPage out = new GameOutPage();
+            out.setObjectId(game.getId());
+            out.setName(game.getName());
+            out.setIcon(game.getIcon());
+            //2.4.3
+            out.setAndroidState(game.getAndroidState());
+            out.setIosState(game.getIosState());
+            out.setRating(getGameRating(game.getId()));
+            out.setApkUrl(game.getApk());
+            out.setItunesId(game.getItunesId());
+            out.setAndroidPackageName(game.getAndroidPackageName());
+            out.setGame_size((long) game.getGameSize());
+            //推荐数据 已弃用
+            Integer recommend_total_count = game.getRecommendNum() + game.getUnrecommendNum();
+            DecimalFormat df = new DecimalFormat("#.00");
+            out.setRecommend_total_rate(recommend_total_count == 0 ? 0 : Double.parseDouble(df.format((double) game.getRecommendNum() / recommend_total_count * 100)));
+            out.setRecommend_total_count(gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", game.getId()).and("state != -1")));
+            //
+
+            out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
+            out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
+
+            if (m) {
+                GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", game.getId()).eq("phone_model", os).eq("state", 0));
+                if (srel != null) {
+                    out.setBinding(!StringUtils.isNullOrEmpty(srel.getAppleId()));
+                    out.setClause(1 == srel.getAgree() ? true : false);
+                    out.setMake(true);
+                }
+            }
+
+            dataList.add(out);
+        }
+        re = new FungoPageResultDto<GameOutPage>();
+        PageTools.pageToResultDto(re, p);
+        re.setData(dataList);
+        //redis cache
+        fungoCacheGame.excIndexCache(true,FungoCoreApiConstant.FUNGO_CORE_API_GAME_LIST + memberId, keySuffix,re);
+        return re;
+    }
 
 //    @Override
 //    public ResultDto<List<TagOutPage>> getGameTags() {
@@ -504,10 +519,10 @@ public class GameServiceImpl implements IGameService {
         return null;
     }
 
-    @Override
-    public FungoPageResultDto<GameOutPage> getGameList(GameInputPageDto gameInputDto, String memberId, String os) {
-        return null;
-    }
+//    @Override
+//    public FungoPageResultDto<GameOutPage> getGameList(GameInputPageDto gameInputDto, String memberId, String os) {
+//        return null;
+//    }
 
     @Override
     public ResultDto<List<TagOutPage>> getGameTags() {

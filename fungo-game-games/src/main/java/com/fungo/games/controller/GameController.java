@@ -10,7 +10,6 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.*;
-import com.game.common.dto.user.MemberOutBean;
 import com.game.common.util.AesUtil;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.annotation.Anonymous;
@@ -18,7 +17,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -161,7 +159,7 @@ public class GameController {
      * @return
      */
     @ApiOperation(value = "根据id集合查询游戏合集项列表", notes = "")
-    @RequestMapping(value = "/api/content/gameList", method = RequestMethod.POST)
+        @RequestMapping(value = "/api/content/gameList", method = RequestMethod.POST)
     @ApiImplicitParams({
     })
     public FungoPageResultDto<GameOutBean> getGameList(HttpServletRequest request, HttpServletResponse response ,@Anonymous MemberUserProfile memberUserPrefile, @RequestBody GameItemInput input) {

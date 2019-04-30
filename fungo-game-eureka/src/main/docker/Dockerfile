@@ -1,5 +1,6 @@
 FROM java:8
 VOLUME /tmp
-ADD spring-boot-docker-0.1.0.jar app.jar
-RUN bash -c 'touch /app.jar'
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+ADD fungo-game-eureka-8761.jar fungo-game-eureka-8761.jar
+RUN bash -c 'touch /fungo-game-eureka-8761.jar'
+ENV JAVA_OPTS=""
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /fungo-game-eureka-8761.jar"]
