@@ -26,6 +26,7 @@ import java.util.Map;
 @RestController
 @Api(value="",description="开发者")
 public class DeveloperController {
+
 	@Autowired
 	private DeveloperService developerService;
 	@Autowired
@@ -68,7 +69,7 @@ public class DeveloperController {
 	}
 
 	/**
-	 * @todo 根据用户查询开发者的游戏列表
+	 *
 	 * @param memberUserPrefile
 	 * @param input
 	 * @return
@@ -94,7 +95,6 @@ public class DeveloperController {
 	}
 
 	/**
-	 * @todo 获取开发者游戏详情
 	 * @param memberUserPrefile
 	 * @param gameId
 	 * @return
@@ -179,12 +179,6 @@ public class DeveloperController {
 	public ResultDto<String> updateGame(MemberUserProfile memberUserPrefile,@RequestBody AddGameInputBean input){
 		return iDeveloperService.updateGame(memberUserPrefile,input);
 	}
-	
-	public ResultDto<String> updateGameState(DeveloperQueryIn input){
-		return null;
-//		return iDeveloperService.updateGameState();
-	}
-
 
 	/**
 	 * @todo
@@ -195,10 +189,5 @@ public class DeveloperController {
 	public ResultDto<String> test(){
 		return new ResultDto<>();
 	}
-
-
-
-
-
 
 }

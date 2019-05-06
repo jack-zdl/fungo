@@ -1,18 +1,13 @@
 package com.fungo.system.feign;
 
 import com.game.common.dto.FungoPageResultDto;
-import com.game.common.dto.MemberUserProfile;
-import com.game.common.dto.game.GameInputPageDto;
-import com.game.common.dto.game.GameItemInput;
-import com.game.common.dto.game.GameOutBean;
-import com.game.common.dto.game.GameOutPage;
-import com.game.common.util.annotation.Anonymous;
+import com.game.common.dto.GameDto;
+import com.game.common.dto.game.*;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * <p></p>
@@ -23,9 +18,19 @@ import javax.servlet.http.HttpServletRequest;
 public interface GamesFeignClient {
 
     @RequestMapping(value = "/api/content/gameList", method = RequestMethod.POST)
-    public FungoPageResultDto<GameOutBean> getGameList( @RequestBody GameItemInput input);
+    FungoPageResultDto<GameOutBean> getGameList( @RequestBody GameItemInput input);
 
     @RequestMapping(value = "/api/content/games", method = RequestMethod.POST)
-    public FungoPageResultDto<GameOutPage> getGameList(@RequestBody GameInputPageDto gameInputDto);
+    FungoPageResultDto<GameOutPage> getGameList(@RequestBody GameInputPageDto gameInputDto);
+
+
+    @RequestMapping(value = "/api/gamereleaselog", method = RequestMethod.POST)
+    FungoPageResultDto<GameReleaseLog> selectOne(GameReleaseLog GameReleaseLog);
+
+    @RequestMapping(value = "/api/game/{gameId}", method = RequestMethod.POST)
+    GameDto selectOne(@PathVariable("gameId") String gameId);
+
+    @RequestMapping(value = "/api/gameSurveyRel", method = RequestMethod.POST)
+    int selectCount(  GameSurveyRel gameSurveyRel);
 
     }

@@ -1,16 +1,13 @@
 package com.fungo.system.helper.mq;
 
-import com.alibaba.fastjson.JSON;
-import org.apache.log4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.AmqpAdmin;
+import com.game.common.entiry.CmmCommunity;
+import com.game.common.dto.GameDto;
 import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.stereotype.Component;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p></p>
@@ -18,13 +15,9 @@ import java.util.Map;
  * @Author: dl.zhang
  * @Date: 2019/4/26
  */
-@RestController
-//@EnableBinding(StreamClient.class)
+@Component
 public class MQProduct {
 
-
-    @Autowired
-    private  AmqpAdmin admin;
 
     @Autowired
     private  AmqpTemplate template;
@@ -61,10 +54,9 @@ public class MQProduct {
      * "topic.key1"  路由键
      * @param message
      */
-    public void sendTopic(Object message){
-        String msg = (String) message;
-        template.convertAndSend(MQConfig.TOPIC_EXCHANGE,"topic.key1",msg+"1");  // 可以匹配到 topic.# and topic.key1
-        template.convertAndSend(MQConfig.TOPIC_EXCHANGE,"topic.key2",msg+"2");  // 可以匹配到 topic.#
+    public void sendTopic(String topicExchange,String topicKey,Object message){
+        template.convertAndSend(topicExchange,topicKey,message);  // 可以匹配到 topic.# and topic.key1
+//        template.convertAndSend(MQConfig.TOPIC_EXCHANGE,"topic.key2",msg+"2");  // 可以匹配到 topic.#
     }
 
     /**
@@ -79,15 +71,23 @@ public class MQProduct {
         });
     }
 
-    @RequestMapping("/send")
-    public void send(){
-//        sendDirectMsg("cord", String.valueOf(System.currentTimeMillis()));
-        sendTopic("topic-exchange");
-//        BossMessage message = new BossMessage<>();
-//        message.setData(brand);
-//        message.setOpType(MqMessageProducer.ADD);
-//        message.setDataType(MqMessageProducer.BRAND);
-//        channel.send(MessageBuilder.withPayload(JSON.toJSONString("dasdsdasdasdasd")).build());
-        //        streamClient.output().send(MessageBuilder.withPayload("it is test message.").build()); //构建消息并且发送
+    public void communityInsert(CmmCommunity c){
+        sendTopic(MQConfig.TOPIC_EXCHANGE_COMMUNITY_INSERT,MQConfig.TOPIC_KEY_COMMUNITY_INSERT,c);
+    }
+
+    public void gameInsert(GameDto game){
+        sendTopic(MQConfig.TOPIC_EXCHANGE_GAME_INSERT,MQConfig.TOPIC_KEY_GAME_INSERT,game);
+    }
+
+    public void gameUpdate(GameDto game){
+        sendTopic(MQConfig.TOPIC_EXCHANGE_GAME_UPDATE,MQConfig.TOPIC_KEY_GAME_UPDATE,game);
+    }
+
+    public void addGameTag(List<String> tegList , String categoryId,String id){
+        Map<String,Object> map = new ConcurrentHashMap<>();
+        map.put("tegList",tegList);
+        map.put("categoryId",categoryId);
+        map.put("id",id);
+//        sendTopic(map);
     }
 }

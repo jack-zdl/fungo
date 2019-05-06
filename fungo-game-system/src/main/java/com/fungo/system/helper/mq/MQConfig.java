@@ -1,6 +1,9 @@
 package com.fungo.system.helper.mq;
 
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,6 +19,25 @@ import java.util.Map;
 @Configuration
 public class MQConfig {
 
+    @Value("${spring.rabbitmq.host}")
+    private String addresses;
+
+    @Value("${spring.rabbitmq.port}")
+    private String port;
+
+    @Value("${spring.rabbitmq.username}")
+    private String username;
+
+    @Value("${spring.rabbitmq.password}")
+    private String password;
+
+    @Value("${spring.rabbitmq.virtual-host}")
+    private String virtualHost;
+
+    @Value("${spring.rabbitmq.publisher-confirms}")
+    private boolean publisherConfirms;
+
+
     // 这样做  rabbitmq会讲路由键也是direct.queue，队列名称
     public static final String DIRECT_QUEUE = "direct.queue";
 
@@ -29,7 +51,19 @@ public class MQConfig {
     //topic 可以广播关键字匹配的队列
     public static final String TOPIC_QUEUE1 = "topic.queue1";
     public static final String TOPIC_QUEUE2 = "topic.queue2";
-    public static final String TOPIC_EXCHANGE = "topic.exchange";
+
+    public static final String TOPIC_EXCHANGE_GAME_INSERT = "topic.exchange.game.insert";
+    public static final String TOPIC_EXCHANGE_GAME_UPDATE = "topic.exchange.game.update";
+    public static final String TOPIC_EXCHANGE_COMMUNITY_INSERT = "topic.exchange.community.insert";
+
+    public static final String TOPIC_QUEUE_GAME_INSERT = "topic.queue.game.insert";
+    public static final String TOPIC_QUEUE_GAME_UPDATE = "topic.queue.game.update";
+    public static final String TOPIC_QUEUE_COMMUNITY_INSERT = "topic.queue.community.insert";
+
+    public static final String TOPIC_KEY_GAME_INSERT = "topic.key.game.insert";
+    public static final String TOPIC_KEY_GAME_UPDATE = "topic.key.game.update";
+    public static final String TOPIC_KEY_COMMUNITY_INSERT = "topic.key.community.insert";
+
     public static final String TOPIC_KEY1 = "topic.key1";
     public static final String TOPIC_KEY2 = "topic.#";
 
@@ -80,7 +114,6 @@ public class MQConfig {
 
     /**------------------fanout END ---------------------------*/
 
-
     /**------------------fanout START---------------------------*/
 
     /**
@@ -96,20 +129,57 @@ public class MQConfig {
         return new Queue(TOPIC_QUEUE2,true);
     }
     @Bean
-    public TopicExchange topicExchange(){
-        return new TopicExchange(TOPIC_EXCHANGE);
+    public TopicExchange topicExchangeGameInsert(){
+        return new TopicExchange(TOPIC_EXCHANGE_GAME_INSERT,true,true);
+    }
+
+    @Bean
+    public TopicExchange topicExchangeGameUpdate(){
+        return new TopicExchange(TOPIC_EXCHANGE_GAME_UPDATE,true,true);
+    }
+
+    @Bean
+    public TopicExchange topicExchangeCommunityInsert(){
+        return new TopicExchange(TOPIC_EXCHANGE_COMMUNITY_INSERT,true,true);
     }
     /**
      * 绑定 exchange and queue
      * 设置是精准匹配还是模糊匹配
      */
+//    @Bean
+//    public Binding topicBinding1(){
+//        return BindingBuilder.bind(topicQueue1()).to(topicExchange()).with(TOPIC_KEY1);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+//    }
+//    @Bean
+//    public Binding topicBinding2(){
+//        return BindingBuilder.bind(topicQueue2()).to(topicExchange()).with(TOPIC_KEY2);  // 模糊匹配，匹配成功则发送到 TOPIC_QUEUE2队列
+//    }
+
+    /***  start ***/
     @Bean
-    public Binding topicBinding1(){
-        return BindingBuilder.bind(topicQueue1()).to(topicExchange()).with(TOPIC_KEY1);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+    public Queue topicQueueGameInsert(){
+        return new Queue(TOPIC_QUEUE_GAME_INSERT,true);
     }
     @Bean
-    public Binding topicBinding2(){
-        return BindingBuilder.bind(topicQueue2()).to(topicExchange()).with(TOPIC_KEY2);  // 模糊匹配，匹配成功则发送到 TOPIC_QUEUE2队列
+    public Queue topicQueueGameUpdate(){
+        return new Queue(TOPIC_QUEUE_GAME_UPDATE,true);
+    }
+    @Bean
+    public Queue topicQueueCommunityInsert(){
+        return new Queue(TOPIC_QUEUE_COMMUNITY_INSERT,true);
+    }
+    @Bean
+    public Binding topicBindingGameUpdate(){
+        return BindingBuilder.bind(topicQueueGameUpdate()).to(topicExchangeGameUpdate()).with(TOPIC_KEY_GAME_UPDATE);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+    }
+    @Bean
+    public Binding topicBindingGameInsert(){
+        return BindingBuilder.bind(topicQueueGameInsert()).to(topicExchangeGameInsert()).with(TOPIC_KEY_GAME_INSERT);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+    }
+
+    @Bean
+    public Binding topicBindingCommunityInsert(){
+        return BindingBuilder.bind(topicQueueCommunityInsert()).to(topicExchangeCommunityInsert()).with(TOPIC_KEY_COMMUNITY_INSERT);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
     }
 
     /**-------------------fanout END--------------------------*/
@@ -136,4 +206,16 @@ public class MQConfig {
         return BindingBuilder.bind(headerQueue()).to(headersExchange()).whereAll(map).match();   // whereXxx() 方法代表了匹配规则
     }
     /**-------------------header END--------------------------*/
+
+//    @Bean
+//    public ConnectionFactory connectionFactory() {
+//        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+//        connectionFactory.setAddresses(addresses + ":" + port);
+//        connectionFactory.setUsername(username);
+//        connectionFactory.setPassword(password);
+//        connectionFactory.setVirtualHost(virtualHost);
+//        /** 如果要进行消息回调，则这里必须要设置为true */
+//        connectionFactory.setPublisherConfirms(publisherConfirms);
+//        return connectionFactory;
+//    }
 }
