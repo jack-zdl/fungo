@@ -29,7 +29,7 @@ import javax.servlet.MultipartConfigElement;
 @EnableCaching
 @ComponentScan(basePackages = {"com.*"})
 @EnableHystrix
-@EnableTurbine
+//@EnableTurbine
 @EnableHystrixDashboard
 @EnableCircuitBreaker   //使用@HystrixCommand
 @EnableTransactionManagement

@@ -2,7 +2,9 @@ package com.fungo.system.entity;
 
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,12 +16,15 @@ import java.util.Date;
  *
  * @author lzh
  * @since 2018-05-07
+ * @updater lyc
+ * @update 2019-05-05
  */
 @TableName("t_bas_action")
 public class BasAction extends Model<BasAction> {
 
     private static final long serialVersionUID = 1L;
 
+	@TableId(value = "id",type = IdType.UUID)
 	private String id;
     /**
      * 行为类型
