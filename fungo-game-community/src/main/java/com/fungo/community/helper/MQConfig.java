@@ -16,6 +16,6 @@ import java.util.Map;
 @Configuration
 public class MQConfig {
 
-    public static final String TOPIC_QUEUE_GAME_UPDATE = "topic.queue.game.update";
+    public static final String TOPIC_QUEUE_COMMUNITY_INSERT = "topic.queue.community.insert";
 
 }

@@ -1,4 +1,4 @@
-package com.game.common.dto.game;
+package com.fungo.games.entity;
 
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;

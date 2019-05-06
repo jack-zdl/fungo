@@ -25,12 +25,14 @@ public interface GamesFeignClient {
 
 
     @RequestMapping(value = "/api/gamereleaselog", method = RequestMethod.POST)
-    FungoPageResultDto<GameReleaseLog> selectOne(GameReleaseLog GameReleaseLog);
+    FungoPageResultDto<GameReleaseLogDto> selectOne(GameReleaseLogDto GameReleaseLog);
 
     @RequestMapping(value = "/api/game/{gameId}", method = RequestMethod.POST)
     GameDto selectOne(@PathVariable("gameId") String gameId);
 
     @RequestMapping(value = "/api/gameSurveyRel", method = RequestMethod.POST)
-    int selectCount(  GameSurveyRel gameSurveyRel);
+    int selectCount(  GameSurveyRelDto gameSurveyRel);
 
+    @RequestMapping(value = "/api/gameEvaluation", method = RequestMethod.POST)
+    int selectGameEvaluationCount(  GameEvaluationDto gameEvaluation);
     }

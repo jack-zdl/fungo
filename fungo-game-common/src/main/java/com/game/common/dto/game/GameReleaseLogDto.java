@@ -1,4 +1,4 @@
-package com.game.common.dto;
+package com.game.common.dto.game;
 
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
@@ -9,17 +9,19 @@ import java.util.Date;
 
 /**
  * <p>
- * 游戏
+ * 游戏版本日志审批
  * </p>
  *
  * @author lzh
- * @since 2019-01-02
+ * @since 2018-11-19
  */
-public class GameDto  implements Serializable{
+public class GameReleaseLogDto implements Serializable{
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 5696812430113649072L;
 
 	private String id;
+
+	private Integer recommendNum;
     /**
      * 标签
      */
@@ -32,6 +34,7 @@ public class GameDto  implements Serializable{
      * 更新日志
      */
 	private String updateLog;
+	private Integer unrecommendNum;
     /**
      * apk url
      */
@@ -53,7 +56,10 @@ public class GameDto  implements Serializable{
      * 图片s
      */
 	private String images;
-	private Long gameSize;
+    /**
+     * 游戏大小
+     */
+	private Integer gameSize;
     /**
      * 版本介绍图片
      */
@@ -67,8 +73,9 @@ public class GameDto  implements Serializable{
      */
 	private String coverImage;
     /**
-     * 图片样式类型，0横，1竖
+     * 状态
      */
+	private Integer state;
 	private Integer imageRatio;
     /**
      * 图标
@@ -91,18 +98,6 @@ public class GameDto  implements Serializable{
      */
 	private String origin;
     /**
-     * 推荐数
-     */
-	private Integer recommendNum;
-    /**
-     * 反对数
-     */
-	private Integer unrecommendNum;
-    /**
-     * 状态 0：上线，1：下架，-1：删除，3待审核
-     */
-	private Integer state;
-    /**
      * 介绍
      */
 	private String intro;
@@ -113,9 +108,7 @@ public class GameDto  implements Serializable{
     /**
      * 主版本号
      */
-	@TableField("version_main")
 	private String versionMain;
-	@TableField("isbn_id")
 	private String isbnId;
     /**
      * 详情
@@ -124,82 +117,79 @@ public class GameDto  implements Serializable{
     /**
      * 创建时间
      */
-	@TableField("created_at")
 	private Date createdAt;
     /**
      * 更新时间
      */
-	@TableField("updated_at")
 	private Date updatedAt;
     /**
      * 创建人
      */
-	@TableField("created_by")
 	private String createdBy;
     /**
      * 更新人
      */
-	@TableField("updated_by")
 	private String updatedBy;
     /**
-     * IOS状态 0:待开启，1预约。2.测试，3已上线,4：可下载
+     * 游戏主id
      */
-	@TableField("ios_state")
-	private Integer iosState;
-    /**
-     * 安卓状态 0:待开启，1预约。2.测试，3已上线
-     */
-	@TableField("android_state")
-	private Integer androidState;
+	private String gameId;
     /**
      * 开发者ID
      */
-	@TableField("developer_id")
 	private String developerId;
     /**
-     * 测试数量
+     * 审批状态 0未审核 1审核中 2通过 3审核失败
      */
-	@TableField("test_number")
-	private Integer testNumber;
+	private Integer approveState;
     /**
-     * 测试日期
+     * 审批意见
      */
-	@TableField("tset_date")
-	private Date tsetDate;
+	private String approveInfo;
     /**
      * 核发单图片
      */
-	@TableField("isbn_image")
 	private String isbnImage;
     /**
      * 软件著作权登记号
      */
-	@TableField("copyright_id")
 	private String copyrightId;
     /**
      * 软件著作权照片
      */
-	@TableField("copyright_image")
 	private String copyrightImage;
+    /**
+     * 游戏备案通知单号
+     */
+	private String issueId;
     /**
      * 其他证明文件
      */
 	private String credentials;
     /**
-     * 游戏备案通知单号
+     * 安卓状态 0: 待开启 1: 预约 2: 测试 3: 已上线
      */
-	@TableField("issue_id")
-	private String issueId;
+	private String androidState;
     /**
-     * 安卓 包名称
+     * iOS状态
      */
-	@TableField("android_package_name")
-	private String androidPackageName;
+	private String iosState;
     /**
-     * 游戏评论数
+     * 测试人数
      */
-	@TableField("comment_num")
-	private Integer commentNum;
+	private Integer testNumber;
+    /**
+     * 测试开启时间
+     */
+	private Date tsetDate;
+    /**
+     * 更新备注
+     */
+	private String remark;
+    /**
+     * 社区简介
+     */
+	private String communityIntro;
 
 
 	public String getId() {
@@ -208,6 +198,14 @@ public class GameDto  implements Serializable{
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public Integer getRecommendNum() {
+		return recommendNum;
+	}
+
+	public void setRecommendNum(Integer recommendNum) {
+		this.recommendNum = recommendNum;
 	}
 
 	public String getTags() {
@@ -232,6 +230,14 @@ public class GameDto  implements Serializable{
 
 	public void setUpdateLog(String updateLog) {
 		this.updateLog = updateLog;
+	}
+
+	public Integer getUnrecommendNum() {
+		return unrecommendNum;
+	}
+
+	public void setUnrecommendNum(Integer unrecommendNum) {
+		this.unrecommendNum = unrecommendNum;
 	}
 
 	public String getApk() {
@@ -282,11 +288,11 @@ public class GameDto  implements Serializable{
 		this.images = images;
 	}
 
-	public Long getGameSize() {
+	public Integer getGameSize() {
 		return gameSize;
 	}
 
-	public void setGameSize(Long gameSize) {
+	public void setGameSize(Integer gameSize) {
 		this.gameSize = gameSize;
 	}
 
@@ -312,6 +318,14 @@ public class GameDto  implements Serializable{
 
 	public void setCoverImage(String coverImage) {
 		this.coverImage = coverImage;
+	}
+
+	public Integer getState() {
+		return state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
 	}
 
 	public Integer getImageRatio() {
@@ -360,30 +374,6 @@ public class GameDto  implements Serializable{
 
 	public void setOrigin(String origin) {
 		this.origin = origin;
-	}
-
-	public Integer getRecommendNum() {
-		return recommendNum;
-	}
-
-	public void setRecommendNum(Integer recommendNum) {
-		this.recommendNum = recommendNum;
-	}
-
-	public Integer getUnrecommendNum() {
-		return unrecommendNum;
-	}
-
-	public void setUnrecommendNum(Integer unrecommendNum) {
-		this.unrecommendNum = unrecommendNum;
-	}
-
-	public Integer getState() {
-		return state;
-	}
-
-	public void setState(Integer state) {
-		this.state = state;
 	}
 
 	public String getIntro() {
@@ -458,20 +448,12 @@ public class GameDto  implements Serializable{
 		this.updatedBy = updatedBy;
 	}
 
-	public Integer getIosState() {
-		return iosState;
+	public String getGameId() {
+		return gameId;
 	}
 
-	public void setIosState(Integer iosState) {
-		this.iosState = iosState;
-	}
-
-	public Integer getAndroidState() {
-		return androidState;
-	}
-
-	public void setAndroidState(Integer androidState) {
-		this.androidState = androidState;
+	public void setGameId(String gameId) {
+		this.gameId = gameId;
 	}
 
 	public String getDeveloperId() {
@@ -482,20 +464,20 @@ public class GameDto  implements Serializable{
 		this.developerId = developerId;
 	}
 
-	public Integer getTestNumber() {
-		return testNumber;
+	public Integer getApproveState() {
+		return approveState;
 	}
 
-	public void setTestNumber(Integer testNumber) {
-		this.testNumber = testNumber;
+	public void setApproveState(Integer approveState) {
+		this.approveState = approveState;
 	}
 
-	public Date getTsetDate() {
-		return tsetDate;
+	public String getApproveInfo() {
+		return approveInfo;
 	}
 
-	public void setTsetDate(Date tsetDate) {
-		this.tsetDate = tsetDate;
+	public void setApproveInfo(String approveInfo) {
+		this.approveInfo = approveInfo;
 	}
 
 	public String getIsbnImage() {
@@ -522,14 +504,6 @@ public class GameDto  implements Serializable{
 		this.copyrightImage = copyrightImage;
 	}
 
-	public String getCredentials() {
-		return credentials;
-	}
-
-	public void setCredentials(String credentials) {
-		this.credentials = credentials;
-	}
-
 	public String getIssueId() {
 		return issueId;
 	}
@@ -538,69 +512,61 @@ public class GameDto  implements Serializable{
 		this.issueId = issueId;
 	}
 
-	public String getAndroidPackageName() {
-		return androidPackageName;
+	public String getCredentials() {
+		return credentials;
 	}
 
-	public void setAndroidPackageName(String androidPackageName) {
-		this.androidPackageName = androidPackageName;
+	public void setCredentials(String credentials) {
+		this.credentials = credentials;
 	}
 
-	public Integer getCommentNum() {
-		return commentNum;
+	public String getAndroidState() {
+		return androidState;
 	}
 
-	public void setCommentNum(Integer commentNum) {
-		this.commentNum = commentNum;
+	public void setAndroidState(String androidState) {
+		this.androidState = androidState;
 	}
 
-	@Override
-	public String toString() {
-		return "Game{" +
-				"id='" + id + '\'' +
-				", tags='" + tags + '\'' +
-				", video='" + video + '\'' +
-				", updateLog='" + updateLog + '\'' +
-				", apk='" + apk + '\'' +
-				", downloadNum=" + downloadNum +
-				", itunesId='" + itunesId + '\'' +
-				", compatibility='" + compatibility + '\'' +
-				", versionChild='" + versionChild + '\'' +
-				", images='" + images + '\'' +
-				", gameSize=" + gameSize +
-				", releaseImage='" + releaseImage + '\'' +
-				", name='" + name + '\'' +
-				", coverImage='" + coverImage + '\'' +
-				", imageRatio=" + imageRatio +
-				", icon='" + icon + '\'' +
-				", editedAt=" + editedAt +
-				", communityId='" + communityId + '\'' +
-				", memberId='" + memberId + '\'' +
-				", origin='" + origin + '\'' +
-				", recommendNum=" + recommendNum +
-				", unrecommendNum=" + unrecommendNum +
-				", state=" + state +
-				", intro='" + intro + '\'' +
-				", developer='" + developer + '\'' +
-				", versionMain='" + versionMain + '\'' +
-				", isbnId='" + isbnId + '\'' +
-				", detail='" + detail + '\'' +
-				", createdAt=" + createdAt +
-				", updatedAt=" + updatedAt +
-				", createdBy='" + createdBy + '\'' +
-				", updatedBy='" + updatedBy + '\'' +
-				", iosState=" + iosState +
-				", androidState=" + androidState +
-				", developerId='" + developerId + '\'' +
-				", testNumber=" + testNumber +
-				", tsetDate=" + tsetDate +
-				", isbnImage='" + isbnImage + '\'' +
-				", copyrightId='" + copyrightId + '\'' +
-				", copyrightImage='" + copyrightImage + '\'' +
-				", credentials='" + credentials + '\'' +
-				", issueId='" + issueId + '\'' +
-				", androidPackageName='" + androidPackageName + '\'' +
-				", commentNum=" + commentNum +
-				'}';
+	public String getIosState() {
+		return iosState;
 	}
+
+	public void setIosState(String iosState) {
+		this.iosState = iosState;
+	}
+
+	public Integer getTestNumber() {
+		return testNumber;
+	}
+
+	public void setTestNumber(Integer testNumber) {
+		this.testNumber = testNumber;
+	}
+
+	public Date getTsetDate() {
+		return tsetDate;
+	}
+
+	public void setTsetDate(Date tsetDate) {
+		this.tsetDate = tsetDate;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public String getCommunityIntro() {
+		return communityIntro;
+	}
+
+	public void setCommunityIntro(String communityIntro) {
+		this.communityIntro = communityIntro;
+	}
+
+
 }

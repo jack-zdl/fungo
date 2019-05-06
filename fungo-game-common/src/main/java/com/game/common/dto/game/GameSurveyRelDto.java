@@ -12,7 +12,7 @@ import java.util.Date;
  * @author lzh
  * @since 2018-06-14
  */
-public class GameSurveyRel  {
+public class GameSurveyRelDto  {
 
 	private String id;
     /**

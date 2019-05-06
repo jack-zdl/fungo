@@ -58,4 +58,13 @@ public interface IGameService {
 	 * @return
 	 */
 	double getGameRating(String gameId);
+
+	/**
+	 * 游戏列表
+	 * @param input
+	 * @param memberId
+	 * @return
+	 */
+	FungoPageResultDto<GameOutBean> getGameList(GameListVO input, String memberId);
+
 }

@@ -3,6 +3,7 @@ package com.fungo.games.controller;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.games.entity.Game;
+import com.fungo.games.entity.GameEvaluation;
 import com.fungo.games.entity.GameSurveyRel;
 import com.fungo.games.feign.SystemFeignClient;
 import com.fungo.games.service.GameService;
@@ -168,19 +169,17 @@ public class GameController {
         @RequestMapping(value = "/api/content/gameList", method = RequestMethod.POST)
     @ApiImplicitParams({
     })
-    public FungoPageResultDto<GameOutBean> getGameList(HttpServletRequest request, HttpServletResponse response ,@Anonymous MemberUserProfile memberUserPrefile, @RequestBody GameItemInput input) {
-        FungoPageResultDto<GameOutBean> re = null;
+    public FungoPageResultDto<GameOutBean> getGameList(HttpServletRequest request, HttpServletResponse response ,@Anonymous MemberUserProfile memberUserPrefile, @RequestBody GameListVO input) {
         try {
-            Map map = new HashMap();
-            map.put("sessionId", request.getSession().getId());
-            map.put("message", request.getSession().getAttribute("imageCode"));
-            String imageCode = (String) request.getSession().getAttribute("imageCode");
-            System.out.println("HttpSession session" + imageCode);
-            ResultDto<String>  test = systemFeignClient.test();
+//            Map map = new HashMap();
+//            map.put("sessionId", request.getSession().getId());
+//            map.put("message", request.getSession().getAttribute("imageCode"));
+//            String imageCode = (String) request.getSession().getAttribute("imageCode");
+//            System.out.println("HttpSession session" + imageCode);
+//            ResultDto<String>  test = systemFeignClient.test();
 //            ResultDto<MemberOutBean> memberOutBeanResultDto = systemFeignClient.getUserInfo();
-            re = new FungoPageResultDto<>();
-            GameOutBean game = new GameOutBean();
-            re.setData(Arrays.asList(game));
+
+            FungoPageResultDto<GameOutBean>  re = gameService.getGameList(input, memberUserPrefile.getLoginId());
             return  re;
         }catch (Exception e){
            return FungoPageResultDto.error("-1", "未指定用户");
@@ -196,8 +195,8 @@ public class GameController {
     @RequestMapping(value = "/api/gamereleaselog", method = RequestMethod.POST)
     @ApiImplicitParams({
     })
-    public FungoPageResultDto<GameReleaseLog> selectOne(GameReleaseLog GameReleaseLog){
-        return new FungoPageResultDto<GameReleaseLog>();
+    public FungoPageResultDto<GameReleaseLogDto> selectOne(GameReleaseLogDto GameReleaseLog){
+        return new FungoPageResultDto<GameReleaseLogDto>();
     }
 
     /**
@@ -215,7 +214,18 @@ public class GameController {
      * @return
      */
     @RequestMapping(value = "/api/gameSurveyRel", method = RequestMethod.POST)
-    public int selectCount(  GameSurveyRel gameSurveyRel){
+    public int selectCount(  GameSurveyRelDto gameSurveyRel){
+//        new EntityWrapper<GameSurveyRel>().eq("game_id", gameId).eq("phone_model", "Android");
+//        gameSurveyRelService.selectCount();
+        return 1;
+    }
+
+    /**
+     * 游戏评价 服务类
+     * @return
+     */
+    @RequestMapping(value = "/api/gameEvaluation", method = RequestMethod.POST)
+    public int selectGameEvaluationCount(  GameEvaluationDto gameEvaluation){
 //        new EntityWrapper<GameSurveyRel>().eq("game_id", gameId).eq("phone_model", "Android");
 //        gameSurveyRelService.selectCount();
         return 1;

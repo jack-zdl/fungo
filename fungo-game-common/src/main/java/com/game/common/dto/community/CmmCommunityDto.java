@@ -1,8 +1,6 @@
-package com.game.common.entiry;
+package com.game.common.dto.community;
 
-import com.baomidou.mybatisplus.activerecord.Model;
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableName;
+
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,16 +13,15 @@ import java.util.Date;
  * @author lzh
  * @since 2018-12-12
  */
-@TableName("t_cmm_community")
-public class CmmCommunity extends Model<CmmCommunity> {
+public class CmmCommunityDto implements Serializable{
 
-    private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = 1809130108573632639L;
 
 	private String id;
     /**
      * 游戏id
      */
-	@TableField("game_id")
 	private String gameId;
     /**
      * 名称
@@ -41,7 +38,6 @@ public class CmmCommunity extends Model<CmmCommunity> {
     /**
      * 图片
      */
-	@TableField("cover_image")
 	private String coverImage;
     /**
      * 社区类型
@@ -54,37 +50,30 @@ public class CmmCommunity extends Model<CmmCommunity> {
     /**
      * 推荐数
      */
-	@TableField("followee_num")
 	private Integer followeeNum;
     /**
      * 创建时间
      */
-	@TableField("created_at")
 	private Date createdAt;
     /**
      * 更新时间
      */
-	@TableField("updated_at")
 	private Date updatedAt;
     /**
      * 创建人
      */
-	@TableField("created_by")
 	private String createdBy;
     /**
      * 更新人
      */
-	@TableField("updated_by")
 	private String updatedBy;
     /**
      * 热度值
      */
-	@TableField("hot_value")
 	private Integer hotValue;
     /**
      * 推荐状态 0:未推荐,1:推荐
      */
-	@TableField("recommend_state")
 	private Integer recommendState;
     /**
      * 标记
@@ -93,7 +82,6 @@ public class CmmCommunity extends Model<CmmCommunity> {
     /**
      * 帖子数
      */
-	@TableField("post_num")
 	private Integer postNum;
 
 
@@ -231,11 +219,6 @@ public class CmmCommunity extends Model<CmmCommunity> {
 
 	public void setPostNum(Integer postNum) {
 		this.postNum = postNum;
-	}
-
-	@Override
-	protected Serializable pkVal() {
-		return this.id;
 	}
 
 }

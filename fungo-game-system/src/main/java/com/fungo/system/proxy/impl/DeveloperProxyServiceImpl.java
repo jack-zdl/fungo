@@ -1,17 +1,17 @@
 package com.fungo.system.proxy.impl;
 
 
+import com.fungo.system.feign.CommunityFeginClient;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.proxy.IDeveloperProxyService;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
-import com.game.common.dto.game.GameInputPageDto;
-import com.game.common.dto.game.GameItemInput;
-import com.game.common.dto.game.GameOutBean;
-import com.game.common.dto.game.GameReleaseLog;
+import com.game.common.dto.community.CmmPostDto;
+import com.game.common.dto.game.*;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
@@ -21,6 +21,9 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 
 	@Autowired
 	private GamesFeignClient gamesFeignClient;
+
+	@Autowired
+	private CommunityFeginClient communityFeginClient;
 
 	@HystrixCommand(fallbackMethod = "hystrixGameList",ignoreExceptions = {Exception.class},
 			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
@@ -42,8 +45,8 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 	@HystrixCommand(fallbackMethod = "hystrixSelectReleaseLog",ignoreExceptions = {Exception.class},
 			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
 	@Override
-	public  List<GameReleaseLog> selectGameReleaseLog(GameReleaseLog gameReleaseLog) {
-		FungoPageResultDto<GameReleaseLog>  gameReleases = gamesFeignClient.selectOne(gameReleaseLog);
+	public  List<GameReleaseLogDto> selectGameReleaseLog(GameReleaseLogDto gameReleaseLog) {
+		FungoPageResultDto<GameReleaseLogDto>  gameReleases = gamesFeignClient.selectOne(gameReleaseLog);
 		return gameReleases.getData();
 	}
 
@@ -59,6 +62,38 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 		return gamesFeignClient.selectOne(gameId);
 	}
 
+	@HystrixCommand(fallbackMethod = "hystrixSelectCount",ignoreExceptions = {Exception.class},
+			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+	@Override
+	public int selectCount(GameSurveyRelDto gameSurveyRel) {
+		return gamesFeignClient.selectCount(gameSurveyRel);
+	}
+
+	@HystrixCommand(fallbackMethod = "hystrixSelectGameEvaluationCount",ignoreExceptions = {Exception.class},
+			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+	@Override
+	public int selectGameEvaluationCount(GameEvaluationDto gameEvaluation) {
+		return gamesFeignClient.selectGameEvaluationCount(gameEvaluation);
+	}
+
+	@HystrixCommand(fallbackMethod = "hystrixSelectPostCount",ignoreExceptions = {Exception.class},
+			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+	@Override
+	public int selectPostCount(CmmPostDto cmmPostDto) {
+		return communityFeginClient.selectPostCount(cmmPostDto);
+	}
+
+	public int hystrixSelectPostCount(CmmPostDto cmmPostDto){
+		return 0;
+	}
+	public int hystrixSelectGameEvaluationCount(GameEvaluationDto gameEvaluation){
+		return 0;
+	}
+
+	public int hystrixSelectCount(GameSurveyRelDto gameSurveyRel){
+		return 0;
+	}
+
 	public FungoPageResultDto<GameOutBean> hystrixGameList(List<String> collect,int page, int limit){
 		FungoPageResultDto<GameOutBean>  gameOutBeans = new FungoPageResultDto();
 		GameOutBean gameOutBean = new GameOutBean();
@@ -67,7 +102,7 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 		return  FungoPageResultDto.error("-1", "访问games微服务发生失败");
 	}
 
-	public GameReleaseLog hystrixSelectReleaseLog(GameReleaseLog gameReleaseLog){
+	public List<GameReleaseLogDto> hystrixSelectReleaseLog(GameReleaseLogDto gameReleaseLog){
 		return null;
 	}
 

@@ -2,16 +2,15 @@ package com.fungo.games.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.aliyun.oss.common.utils.StringUtils;
+import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameEvaluation;
+import com.fungo.games.entity.GameReleaseLog;
 import com.fungo.games.entity.GameSurveyRel;
-import com.fungo.games.service.GameEvaluationService;
-import com.fungo.games.service.GameService;
-import com.fungo.games.service.GameSurveyRelService;
-import com.fungo.games.service.IGameService;
+import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
@@ -21,6 +20,8 @@ import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.text.DecimalFormat;
@@ -31,8 +32,12 @@ import java.util.*;
 @Service
 public class GameServiceImpl implements IGameService {
 
+    private static Logger logger = LoggerFactory.getLogger(GameServiceImpl.class);
+
     @Autowired
     private GameService gameService;
+    @Autowired
+    private GameReleaseLogService logService;
 //
 //    @Autowired
 //    private BasActionService actionService;
@@ -542,6 +547,43 @@ public class GameServiceImpl implements IGameService {
     @Override
     public double getGameRating(String gameId) {
         return 0;
+    }
+
+    @Override
+    public FungoPageResultDto<GameOutBean> getGameList(GameListVO input, String memberId) {
+        List<Game> gameList = new ArrayList<>();
+        FungoPageResultDto<GameOutBean> re = new FungoPageResultDto<GameOutBean>();
+        try {
+            Wrapper<Game> wrapper = new EntityWrapper<Game>().in("id", input.getGameids());
+            if(!CommonUtil.isNull(input.getKey())) {
+                wrapper.like("name", input.getKey());
+            }
+            Page<Game> page = gameService.selectPage(new Page<>(input.getPage(), input.getLimit()),wrapper);
+            gameList = page.getRecords();
+            PageTools.pageToResultDto(re, page);
+            List<GameOutBean> relist = new ArrayList<>();
+            for (Game game : gameList) {
+                GameOutBean out = new GameOutBean();
+                out.setAndroidState(game.getAndroidState() == null ? 0 : game.getAndroidState());
+//			out.setCheckState(3);
+                GameReleaseLog log = logService.selectOne(Condition.create().setSqlSelect("id,approve_state").eq("game_id",game.getId()).orderBy("created_at",false));
+                if(log != null){
+                    out.setCheckState(log.getApproveState());
+                    out.setiOState(game.getIosState() == null ? 0 : game.getIosState());
+                    out.setCoverImage(game.getCoverImage());
+                    out.setEditedAt(DateTools.fmtDate(game.getEditedAt()));
+                    out.setGameId(game.getId());
+                    out.setIcon(game.getIcon());
+                    out.setName(game.getName());
+                    relist.add(out);
+                }
+            }
+            re.setData(relist);
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("根据id集合查询游戏合集项列表失败",e);
+        }
+        return re;
     }
 
 //    //分数区间

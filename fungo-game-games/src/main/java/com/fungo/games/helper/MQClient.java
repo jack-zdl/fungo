@@ -33,30 +33,30 @@ public class MQClient {
 
     @RabbitListener(queues = MQConfig.TOPIC_QUEUE_GAME_UPDATE)
     public void topicReceiveGameUpdate(@Payload GameDto gameDto, Message message, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag, Channel channel){
+        logger.info("mq消费开始"+MQConfig.TOPIC_QUEUE_GAME_UPDATE);
+        System.out.println("mq消费信息" + gameDto.toString());
         boolean autoAck=false;
         //消息消费完成确认
         try {
-            channel.basicNack(message.getMessageProperties().getDeliveryTag(), false,false);
             Consumer consumer =  new DefaultConsumer(channel)
             {
                 @Override
                 public void handleDelivery(String consumerTag,Envelope envelope,AMQP.BasicProperties properties,byte[] body) throws IOException {
                     try {
-                        System.out.println("receive direct message:" + gameDto.toString());
-
                         Game game = new Game();
                         BeanUtils.copyProperties(gameDto, game);
-                        gameService.insert(game);
-                        channel.basicAck(envelope.getDeliveryTag(), true);
-//                        channel.basicReject(envelope.getDeliveryTag(), false);
-//                        channel.basicNack(envelope.getDeliveryTag(), false, true);
-//                        channel.basicReject(envelope.getDeliveryTag(), true);  //true: 重新放入队列
-//                        channel.basicAck(envelope.getDeliveryTag(), false);// 确认消费
+                        if(1 == 1){
+                            throw new Exception("自定义异常");
+                        }
+                        gameService.updateById(game);
+                        channel.basicAck(envelope.getDeliveryTag(), false); //确认消费
                     }catch (Exception e) {
                         logger.error("游戏插入失败",e);
-                        channel.abort();  //此操作中的所有异常将被丢弃
+                        channel.basicReject(envelope.getDeliveryTag(), true); // 消费者拒绝消费,重新放入队列
+                        //channel.abort();  //此操作中的所有异常将被丢弃
                     }finally {
 //                        channel.basicAck(envelope.getDeliveryTag(),false);
+                        logger.info("mq消费结束"+MQConfig.TOPIC_QUEUE_GAME_UPDATE);
                     }
                 }
             };
@@ -69,40 +69,37 @@ public class MQClient {
     }
 
     @RabbitListener(queues = MQConfig.TOPIC_QUEUE_GAME_INSERT)
-    public void topicReceiveGameInsert( GameDto gameDto){
+    public void topicReceiveGameInsert( @Payload GameDto gameDto, Message message, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag, Channel channel){
+        logger.info("mq消费开始"+MQConfig.TOPIC_QUEUE_GAME_INSERT);
+        System.out.println("mq消费信息" + gameDto.toString());
         boolean autoAck=false;
-//        //消息消费完成确认
-//        try {
-//            channel.basicNack(message.getMessageProperties().getDeliveryTag(), false,false);
-//            Consumer consumer =  new DefaultConsumer(channel)
-//            {
-//                @Override
-//                public void handleDelivery(String consumerTag,Envelope envelope,AMQP.BasicProperties properties,byte[] body) throws IOException {
-//                    try {
-//                        System.out.println("receive direct message:" + gameDto.toString());
-//
-//                        Game game = new Game();
-//                        BeanUtils.copyProperties(gameDto, game);
-//                        gameService.insert(game);
-//                        channel.basicAck(envelope.getDeliveryTag(), true);
-////                        channel.basicReject(envelope.getDeliveryTag(), false);
-////                        channel.basicNack(envelope.getDeliveryTag(), false, true);
-////                        channel.basicReject(envelope.getDeliveryTag(), true);  //true: 重新放入队列
-////                        channel.basicAck(envelope.getDeliveryTag(), false);// 确认消费
-//                    }catch (Exception e) {
-//                        logger.error("游戏插入失败",e);
-//                        channel.abort();  //此操作中的所有异常将被丢弃
-//                    }finally {
-////                        channel.basicAck(envelope.getDeliveryTag(),false);
-//                    }
-//                }
-//            };
-//            channel.basicConsume(MQConfig.TOPIC_QUEUE_GAME_UPDATE, autoAck,consumer);
-//        }catch (IOException e) {
-//            logger.error("mq消费异常",e);
-//            e.printStackTrace();
-//        }
-
+        //消息消费完成确认
+        try {
+            Consumer consumer =  new DefaultConsumer(channel)
+            {
+                @Override
+                public void handleDelivery(String consumerTag,Envelope envelope,AMQP.BasicProperties properties,byte[] body) throws IOException {
+                    try {
+                        Game game = new Game();
+                        BeanUtils.copyProperties(gameDto, game);
+                        if(1 == 1){
+                            throw new Exception("自定义异常");
+                        }
+                        gameService.insert(game);
+                        channel.basicAck(envelope.getDeliveryTag(), true);
+                    }catch (Exception e) {
+                        logger.error("游戏插入失败",e);
+                        channel.basicReject(envelope.getDeliveryTag(), true); // 消费者拒绝消费,重新放入队列
+                    }finally {
+                        logger.info("mq消费结束"+MQConfig.TOPIC_QUEUE_GAME_UPDATE);
+                    }
+                }
+            };
+            channel.basicConsume(MQConfig.TOPIC_QUEUE_GAME_UPDATE, autoAck,consumer);
+        }catch (IOException e) {
+            logger.error("mq消费异常",e);
+            e.printStackTrace();
+        }
     }
 
 }

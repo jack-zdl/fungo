@@ -36,36 +36,7 @@ public class DeveloperController {
 	@RequestMapping(value="/api/developer/addUser", method= RequestMethod.POST)
 	@ApiImplicitParams({})
 	public ResultDto<String> addDeveloper (MemberUserProfile memberUserPrefile, @RequestBody DeveloperBean input){
-		Developer developer=developerService.selectOne(new EntityWrapper<Developer>().eq("member_id",memberUserPrefile.getLoginId()));
-		if(developer!=null) {
-			return ResultDto.error("7001", "对不起，您已绑定开发者信息");
-		}else {
-			developer=new Developer();
-			developer.setBusinessLicense(input.getBusinessLicense());
-			developer.setBusinessLicenseImage(input.getBusinessLicenseImage());
-//			developer.setBusinessPermitLimitDate(input.getBusinessPermitLimitDate());
-			developer.setCompanyFullName(input.getCompanyFullName());
-			developer.setCompanyName(input.getCompanyName());
-			developer.setCompanyShortName(input.getCompanyShortName());
-			developer.setCreatedAt(new Date());
-			developer.setLiaisonAdress(input.getLiaisonAdress());
-			developer.setLiaisonEmail(input.getLiaisonEmail());
-			developer.setLiaisonIdImageBack(input.getLiaisonIdImageBack());
-			developer.setLiaisonIdNumber(input.getLiaisonIdNumber());
-			developer.setLiaisonIdImageFront(input.getLiaisonIdImageFront());
-			developer.setLiaisonName(input.getLiaisonName());
-			developer.setLiaisonPhone(input.getLiaisonPhone());
-			developer.setLogo(input.getLogo());
-			developer.setMemberId(memberUserPrefile.getLoginId());
-			developer.setState(0);
-			developer.setUpdatedAt(new Date());
-			developer.setApproveState(2);
-			developerService.insert(developer);
-
-		}
-		ResultDto<String> re=new ResultDto<String>();
-		re.setMessage("绑定成功");
-		return re;
+		return iDeveloperService.addDeveloper(memberUserPrefile.getLoginId(),input);
 	}
 
 	/**
@@ -124,7 +95,7 @@ public class DeveloperController {
 	}
 
 	/**
-	 * @todo
+	 *
 	 * @param memberUserPrefile
 	 * @param input
 	 * @return
