@@ -1,6 +1,7 @@
 package com.fungo.system.controller;
 
 import com.fungo.system.feign.GamesFeignClient;
+import com.fungo.system.proxy.IDeveloperProxyService;
 import com.fungo.system.service.IActionService;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.MemberUserProfile;
@@ -34,7 +35,10 @@ public class ActionController {
     private IActionService actionService;
 
     /*@Autowired
-    private GamesFeignClient gamesFeignClient;*/
+    private GamesFeignClient gamesFeignClient;
+
+    @Autowired
+    private IDeveloperProxyService iDeveloperProxyService;*/
 
     @ApiOperation(value="点赞", notes="")
     @RequestMapping(value="/api/action/like", method= RequestMethod.POST)
@@ -185,7 +189,7 @@ public class ActionController {
         map.put("fieldName", "like_num");
         map.put("id", "003bd43296a54fa28a47426920225c42");
         map.put("type", "sub");
-        return gamesFeignClient.updateCountor(map);
+        return iDeveloperProxyService.updateCounter(map);
     }*/
 
 }

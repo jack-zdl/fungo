@@ -11,6 +11,7 @@ import com.fungo.system.entity.BasNotice;
 import com.fungo.system.entity.MemberFollower;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
+import com.fungo.system.proxy.IDeveloperProxyService;
 import com.fungo.system.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
@@ -63,8 +64,11 @@ public class ActionServiceImpl implements IActionService {
     @Autowired
     private CommunityFeignClient communityFeignClient;
 
+    /*@Autowired
+    private GamesFeignClient gamesFeignClient;*/
+
     @Autowired
-    private GamesFeignClient gamesFeignClient;
+    private IDeveloperProxyService iDeveloperProxyService;
 
 
     //用户成长业务
@@ -643,7 +647,7 @@ public class ActionServiceImpl implements IActionService {
         map.put("fieldName", "download_num");
         map.put("id", inputDto.getTarget_id());
         map.put("type", "add");
-        gamesFeignClient.updateCounter(map);
+        iDeveloperProxyService.updateCounter(map);
     }
 
     //忽略
@@ -722,7 +726,7 @@ public class ActionServiceImpl implements IActionService {
         }
         if (CommonlyConst.getGameList().contains(inputDto.getTarget_type())){
 //            feign客户端调用游戏服务
-            return gamesFeignClient.updateCounter(map);
+            return iDeveloperProxyService.updateCounter(map);
         }
         if (CommonlyConst.getSystemList().contains(inputDto.getTarget_type())){
             return actionDao.updateCountor(map);

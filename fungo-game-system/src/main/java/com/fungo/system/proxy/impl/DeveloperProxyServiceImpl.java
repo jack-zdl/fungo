@@ -38,6 +38,20 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 		return gameOutBeans;
 	}
 
+//	updateCounter
+
+	@HystrixCommand(fallbackMethod = "hystrixUpdateCounter",ignoreExceptions = {Exception.class},
+			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+	public boolean updateCounter(Map<String,String> map) {
+		return gamesFeignClient.updateCounter(map);
+	}
+
+
+	public boolean hystrixUpdateCounter(Map<String,String> map){
+		return  false;
+	}
+
+
 	public FungoPageResultDto<GameOutBean> hystrixGameList(List<String> collect,int page, int limit){
 		FungoPageResultDto<GameOutBean>  gameOutBeans = new FungoPageResultDto();
 		GameOutBean gameOutBean = new GameOutBean();

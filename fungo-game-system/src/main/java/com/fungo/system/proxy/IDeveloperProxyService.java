@@ -3,6 +3,7 @@ package com.fungo.system.proxy;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.game.GameOutBean;
 import java.util.List;
+import java.util.Map;
 
 public interface IDeveloperProxyService {
 
@@ -14,4 +15,5 @@ public interface IDeveloperProxyService {
 	public FungoPageResultDto<GameOutBean> gameList(List<String> collect,int page, int limit );
 
 
+	boolean updateCounter(Map<String, String> map);
 }

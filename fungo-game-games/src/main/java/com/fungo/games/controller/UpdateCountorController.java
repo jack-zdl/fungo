@@ -28,11 +28,9 @@ public class UpdateCountorController {
 
 
     @ApiOperation(value = "更新计数器", notes = "")
-    @RequestMapping(value = "/api/update/countor", method = RequestMethod.POST)
-    public Boolean updateCountor(@RequestBody Map<String,String> map) {
+    @RequestMapping(value = "/api/update/counter", method = RequestMethod.POST)
+    public Boolean updateCounter(@RequestBody Map<String,String> map) {
 //        根据表名(动态)修改
-        System.out.println(map.toString());
         return iGameService.updateCountor(map);
-//        return true;
     }
 }
