@@ -1,5 +1,6 @@
 package com.fungo.system.controller;
 
+import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.service.IActionService;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.MemberUserProfile;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 用户行为
@@ -29,6 +32,9 @@ public class ActionController {
 
     @Autowired
     private IActionService actionService;
+
+    /*@Autowired
+    private GamesFeignClient gamesFeignClient;*/
 
     @ApiOperation(value="点赞", notes="")
     @RequestMapping(value="/api/action/like", method= RequestMethod.POST)
@@ -169,5 +175,17 @@ public class ActionController {
         return actionService.whetherIsDone(memberUserPrefile.getLoginId(), inputDto);
     }
 
+
+//    gamesFeignClient.updateCountor(map);
+   /* @ApiOperation(value="测试", notes="")
+    @RequestMapping(value="/api/action/ceshi", method= RequestMethod.POST)
+    public Boolean whetherIsDone() throws Exception {
+        Map<String, String> map = new HashMap<>();
+        map.put("tableName", "t_game_evaluation");
+        map.put("fieldName", "like_num");
+        map.put("id", "003bd43296a54fa28a47426920225c42");
+        map.put("type", "sub");
+        return gamesFeignClient.updateCountor(map);
+    }*/
 
 }

@@ -7,6 +7,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IGameService {
 
@@ -58,4 +59,6 @@ public interface IGameService {
 	 * @return
 	 */
 	double getGameRating(String gameId);
+	//        根据表名(动态)修改
+	Boolean updateCountor(Map<String, String> map);
 }

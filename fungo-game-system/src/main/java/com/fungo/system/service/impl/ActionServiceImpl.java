@@ -4,10 +4,13 @@ package com.fungo.system.service.impl;
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.system.constts.CommonlyConst;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.entity.BasAction;
 import com.fungo.system.entity.BasNotice;
 import com.fungo.system.entity.MemberFollower;
+import com.fungo.system.feign.CommunityFeignClient;
+import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
@@ -57,6 +60,12 @@ public class ActionServiceImpl implements IActionService {
     @Autowired
     private FungoCacheCommunity fungoCacheCommunity;
 
+    @Autowired
+    private CommunityFeignClient communityFeignClient;
+
+    @Autowired
+    private GamesFeignClient gamesFeignClient;
+
 
     //用户成长业务
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
@@ -68,13 +77,8 @@ public class ActionServiceImpl implements IActionService {
         BasAction action = this.getAction(memberId, Setting.ACTION_TYPE_LIKE, inputDto);
 
         if (action == null) {//点赞记录不存在
-
-
             action = this.buildAction(memberId, Setting.ACTION_TYPE_LIKE, inputDto);
-
-
             actionService.insert(action);
-
             this.addCounter(memberId, Setting.ACTION_TYPE_LIKE, inputDto);
 
             //点赞他人内容 点赞他人游戏评价 被点赞
@@ -281,18 +285,8 @@ public class ActionServiceImpl implements IActionService {
             }
         }
 
-        //更新用户我的收藏Redis cache
-        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_COLLECTION + memberId;
-        fungoCacheMember.excIndexCache(false, keyPrefix, "", null);
-        if (Setting.RES_TYPE_POST == inputDto.getTarget_type()) {
-            //帖子详情
-            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, inputDto.getTarget_id(), null);
-            //帖子/心情评论列表 + inputDto.getTarget_id()
-            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
-        }
-
-        //首页文章帖子列表(v2.4)
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
+        //更新用户我的收藏Redis cache 2019-05-06 抽取冗余代码
+        updateMyCollectionRedisCache(memberId, inputDto);
         return ResultDto.success("收藏成功");
     }
 
@@ -306,8 +300,18 @@ public class ActionServiceImpl implements IActionService {
             //收藏数-1
             this.subCounter(memberId, Setting.ACTION_TYPE_COLLECT, inputDto);
         }
+        //更新用户我的收藏Redis cache 2019-05-06 抽取冗余代码
+        updateMyCollectionRedisCache(memberId, inputDto);
 
-        //更新用户我的收藏Redis cache
+        return ResultDto.success("取消成功");
+    }
+
+    /**
+     * 更新用户我的收藏Redis cache 2019-05-06 抽取冗余代码
+     * @param memberId
+     * @param inputDto
+     */
+    private void updateMyCollectionRedisCache(String memberId, ActionInput inputDto) {
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_COLLECTION + memberId;
         fungoCacheMember.excIndexCache(false, keyPrefix, "", null);
 
@@ -319,8 +323,6 @@ public class ActionServiceImpl implements IActionService {
         }
         //首页文章帖子列表(v2.4)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
-
-        return ResultDto.success("取消成功");
     }
 
     //关注
@@ -335,7 +337,6 @@ public class ActionServiceImpl implements IActionService {
 
         //对象是否是用户
         boolean isMember = false;
-
         if (action == null) {
             action = this.buildAction(memberId, Setting.ACTION_TYPE_FOLLOW, inputDto);
             this.actionService.insert(action);
@@ -565,8 +566,11 @@ public class ActionServiceImpl implements IActionService {
                 action = this.buildAction(memberId, Setting.ACTION_TYPE_DOWNLOAD, inputDto);
 
                 this.actionService.insert(action);
+//                    19-05-06 切换feign客户端 调用
+//                counterService.addCounter("t_game", "download_num", inputDto.getTarget_id());//增加下载数
+//                切换feign客户端 调用游戏服务
+                gameFeignClientUpdateCounterByDownLoad(inputDto);
 
-                counterService.addCounter("t_game", "download_num", inputDto.getTarget_id());//增加下载数
             }
 
             //登录用户下载游戏后  clear redis cache
@@ -574,7 +578,10 @@ public class ActionServiceImpl implements IActionService {
             fungoCacheMember.excIndexCache(false, keyPrefix, "", null);
 
         } else {
-            counterService.addCounter("t_game", "download_num", inputDto.getTarget_id());//增加下载数
+            //                    19-05-06 切换feign客户端 调用
+//            counterService.addCounter("t_game", "download_num", inputDto.getTarget_id());//增加下载数
+            //                切换feign客户端 调用游戏服务
+            gameFeignClientUpdateCounterByDownLoad(inputDto);
         }
 
         //V2.4.6之前版本任务
@@ -628,6 +635,15 @@ public class ActionServiceImpl implements IActionService {
         fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + inputDto.getTarget_id(), "", null);
 
         return re;
+    }
+//  切换feign客户端 调用游戏服务
+    private void gameFeignClientUpdateCounterByDownLoad(ActionInput inputDto) {
+        Map<String, String> map = new HashMap<>();
+        map.put("tableName", "t_game");
+        map.put("fieldName", "download_num");
+        map.put("id", inputDto.getTarget_id());
+        map.put("type", "add");
+        gamesFeignClient.updateCounter(map);
     }
 
     //忽略
@@ -696,7 +712,22 @@ public class ActionServiceImpl implements IActionService {
         map.put("fieldName", getFieldName(type));
         map.put("id", inputDto.getTarget_id());
         map.put("type", "add");
-        return actionDao.updateCountor(map);
+        return getCounterBoolean(inputDto, map);
+    }
+
+    private boolean getCounterBoolean(ActionInput inputDto, Map<String, String> map) {
+        if (CommonlyConst.getCommunityList().contains(inputDto.getTarget_type())){
+//            社区服务空缺 19-05-07
+            return communityFeignClient.updateCounter(map);
+        }
+        if (CommonlyConst.getGameList().contains(inputDto.getTarget_type())){
+//            feign客户端调用游戏服务
+            return gamesFeignClient.updateCounter(map);
+        }
+        if (CommonlyConst.getSystemList().contains(inputDto.getTarget_type())){
+            return actionDao.updateCountor(map);
+        }
+        return false;
     }
 
     //表字段 减数
@@ -706,7 +737,7 @@ public class ActionServiceImpl implements IActionService {
         map.put("fieldName", getFieldName(type));
         map.put("id", inputDto.getTarget_id());
         map.put("type", "sub");
-        return actionDao.updateCountor(map);
+        return getCounterBoolean(inputDto, map);
     }
 
     //根据资源类型获取表名

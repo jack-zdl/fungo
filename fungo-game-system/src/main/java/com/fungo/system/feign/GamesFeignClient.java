@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * <p></p>
@@ -28,4 +29,6 @@ public interface GamesFeignClient {
     @RequestMapping(value = "/api/content/games", method = RequestMethod.POST)
     public FungoPageResultDto<GameOutPage> getGameList(@RequestBody GameInputPageDto gameInputDto);
 
-    }
+    @RequestMapping(value = "/api/update/counter", method = RequestMethod.POST)
+    boolean updateCounter(@RequestBody Map<String, String> map);
+}

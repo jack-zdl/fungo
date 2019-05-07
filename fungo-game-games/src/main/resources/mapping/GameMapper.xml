@@ -192,4 +192,16 @@
 		created_at DESC
 	</select>
 
+
+    <!--updateCountor 根据表名(动态)修改-->
+    <update id="updateCountor" parameterType="java.util.Map">
+        update ${tableName} set
+        <if test="type == 'add'">
+            ${fieldName}=${fieldName}+1
+        </if>
+        <if test="type == 'sub'">
+            ${fieldName}=${fieldName}-1
+        </if>
+        where id = #{id}
+    </update>
 </mapper>

@@ -188,6 +188,7 @@ spring.aop.auto: true
 logging:
   level:
     com.fungo.game.mall.mapper: DEBUG
+    com.fungo.games.dao: DEBUG
 
 #数据迁移接口授权秘钥
 fgoTransfAuth: adfe35cf834349b0b98b549292c1d65b

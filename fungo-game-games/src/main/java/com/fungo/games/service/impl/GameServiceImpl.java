@@ -5,6 +5,7 @@ import com.aliyun.oss.common.utils.StringUtils;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameEvaluation;
 import com.fungo.games.entity.GameSurveyRel;
@@ -51,8 +52,8 @@ public class GameServiceImpl implements IGameService {
 //
     @Autowired
     private GameSurveyRelService surveyRelService;
-//    @Autowired
-//    private GameDao gameDao;
+    @Autowired
+    private GameDao gameDao;
 //
 //    @Autowired
 //    private GameCollectionItemService gameCollectionItemService;
@@ -542,6 +543,11 @@ public class GameServiceImpl implements IGameService {
     @Override
     public double getGameRating(String gameId) {
         return 0;
+    }
+
+    @Override
+    public Boolean updateCountor(Map<String, String> map) {
+        return gameDao.updateCountor(map);
     }
 
 //    //分数区间
