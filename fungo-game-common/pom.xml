@@ -12,18 +12,6 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
-		<!--引入 Repository-->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<!--<version>3.2.9.RELEASE</version>-->
-		</dependency>
-		<!--mybatis-->
-		<!--<dependency>-->
-			<!--<groupId>com.baomidou</groupId>-->
-			<!--<artifactId>mybatis-plus-boot-starter</artifactId>-->
-			<!--<version>3.0.6</version>-->
-		<!--</dependency>-->
 
 		<dependency>
 			<groupId>com.baomidou</groupId>
@@ -40,7 +28,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
-			<!--<version>1.5.9.RELEASE</version>-->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -127,26 +114,6 @@
 			<artifactId>aliyun-java-sdk-dysmsapi</artifactId>
 			<version>1.1.0</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>fungo-supperter-aliyun-oss</groupId>-->
-<!--			<artifactId>fungo-supperter-aliyun-oss</artifactId>-->
-<!--			<version>${fungo.fw.version}</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>fungo-dao</groupId>-->
-<!--			<artifactId>fungo-dao</artifactId>-->
-<!--			<version>${fungo.fw.version}</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>fungo_supperter_aliyun_dysmsapi</groupId>-->
-<!--			<artifactId>fungo_supperter_aliyun_dysmsapi</artifactId>-->
-<!--			<version>${fungo.fw.version}</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>fungo-supper-aliyun-vd</groupId>-->
-<!--			<artifactId>fungo-supper-aliyun-vd</artifactId>-->
-<!--			<version>${fungo.fw.version}</version>-->
-<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -161,12 +128,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>fungo-web-app</groupId>-->
-<!--			<artifactId>fungo-web-app</artifactId>-->
-<!--			<version>${fungo.fw.version}</version>-->
-<!--			<scope>compile</scope>-->
-<!--		</dependency>-->
 
 		<dependency>
 			<groupId>io.springfox</groupId>

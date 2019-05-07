@@ -1,10 +1,16 @@
 eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
   client:
     serviceUrl:
       defaultZone:  http://47.104.87.10:8761/eureka/
 server:
   port: 8088
 spring:
+  cloud:
+    client:
+      ipAddress:  192.168.10.196
   application:
     name: fungo-game-system
   datasource:
@@ -68,10 +74,25 @@ spring:
     port: 5672
     username: admin
     password: admin
+    virtual-host: /
+    publisher-confirms: true  # 开启发送确认
+    publisher-returns: true   # 开启发送失败退回
+    listener:
+      direct:
+        acknowledge-mode: manual
+      simple:
+        acknowledge-mode: manual
+
     template:
       retry:
         enabled: true
         initial-interval: 2s
+  #热部署
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
 # stream 绑定一个接受消息的input管道
 #  cloud:
 #    stream:
@@ -124,6 +145,13 @@ mybatis-plus:
 management:
 #  security:
 #    enabled: false
+  endpoint:
+    shutdown:
+      enabled: true
+    dbcheck:
+      enabled: true
+    health:
+      show-details: always
   endpoints:
     web:
       exposure:
