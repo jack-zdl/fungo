@@ -1,11 +1,11 @@
 package com.game.common.dto.community;
 
+
 import com.game.common.api.InputPageDto;
 
 public class CommunityInputPageDto extends InputPageDto {
 
-
-	private static final long serialVersionUID = 8231698396441444397L;
+	private static final long serialVersionUID = 1L;
 	private String key_word;
 	private String communityId;
 	public String getKey_word() {
