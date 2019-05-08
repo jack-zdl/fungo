@@ -76,9 +76,10 @@ public class CommunityController {
     }
 
     @RequestMapping(value = "/api/content/community/post", method = RequestMethod.POST)
-    public int selectPostCount(CmmPostDto cmmPost){
+    public int selectPostCount(CmmPostDto cmmPost) {
         return 1;
     }
 
-    //修改
+    //-----------
+
 }
