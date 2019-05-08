@@ -22,7 +22,7 @@
     </sql>
     
     <!-- 管控台  文章评论条件查询 -->
-    <select id="getCommentsAll" resultType="com.fungo.community.dto.CommentBean" parameterType="java.util.Map">
+    <select id="getCommentsAll" resultType="com.game.common.dto.community.CommentBean" parameterType="java.util.Map">
     	select m.user_name as username,c.id,c.content,c.like_num as likeNum,p.member_id as poster,p.title,p.community_id as communityId,
     	date_format(c.created_at, '%Y-%m-%d %H:%i:%s' ) as createdAt,p.id as postId
     	from t_cmm_post p,t_cmm_comment c,t_member m
@@ -53,4 +53,16 @@
    
     </select>
 
+
+	<!-- 计数器 -->
+	<update id="updateCountor" parameterType="java.util.Map">
+		update ${tableName} set
+		<if test="type == 'add'">
+			${fieldName}=${fieldName}+1
+		</if>
+		<if test="type == 'sub'">
+			${fieldName}=${fieldName}-1
+		</if>
+		where id = #{id}
+	</update>
 </mapper>

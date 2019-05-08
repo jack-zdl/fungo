@@ -31,7 +31,7 @@
     </sql>
     
     <!-- 获取关注用户和社区的帖子分页数据 -->
-    <select id="getAllFollowerPost" resultType="com.fungo.community.dto.CmmPostBean"  parameterType="java.util.Map">
+    <select id="getAllFollowerPost" resultType="com.game.common.dto.community.CmmPostBean"  parameterType="java.util.Map">
    		SELECT * FROM t_cmm_post where ( 
    		<trim prefixOverrides="or">
 	   		<if test="memberIdList != null">
@@ -48,7 +48,7 @@
 
 
 	<!-- 获取关注用户和社区的帖子分页数据 -->
-	<select id="getAllFollowerPostWithPage" resultType="com.fungo.community.dto.CmmPostBean"  parameterType="java.util.Map">
+	<select id="getAllFollowerPostWithPage" resultType="com.game.common.dto.community.CmmPostBean"  parameterType="java.util.Map">
 		SELECT * FROM t_cmm_post where (
 		<trim prefixOverrides="or">
 			<if test="memberIdList != null">

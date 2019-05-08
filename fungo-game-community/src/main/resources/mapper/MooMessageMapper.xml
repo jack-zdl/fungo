@@ -21,7 +21,7 @@
     </sql>
     
     <!-- 后台运营  心情评论条件查询 -->
-    <select id="getMessagesAll" resultType="com.fungo.community.dto.CommentBean" parameterType="java.util.Map">
+    <select id="getMessagesAll" resultType="com.game.common.dto.community.CommentBean" parameterType="java.util.Map">
     	select me.id,me.content,me.like_num as likeNum,m.user_name as username,mo.member_id as mooder,
     	date_format(me.created_at, '%Y-%c-%d %h:%i:%s' ) as createdAt,mo.id as moodId
     	from t_moo_message me,t_member m,t_moo_mood mo 
