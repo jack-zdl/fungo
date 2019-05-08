@@ -18,6 +18,9 @@ import java.util.Map;
  */
 public interface CmmCommentDao extends BaseMapper<CmmComment> {
 
+	//计数器
+	public boolean updateCountor(Map<String,String> map);
+
 	/**
 	 * 管控台  文章评论条件查询
 	 * @param page
