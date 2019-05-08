@@ -1,4 +1,4 @@
-package com.fungo.community.dto;
+package com.game.common.dto.community;
 
 import java.util.Date;
 
