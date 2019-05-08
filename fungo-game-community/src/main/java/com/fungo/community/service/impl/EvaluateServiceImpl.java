@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.community.dao.service.*;
 import com.fungo.community.entity.*;
+import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IEvaluateService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
@@ -1175,4 +1176,5 @@ public class EvaluateServiceImpl implements IEvaluateService {
         return replybean;
     }
 
+    //----------
 }

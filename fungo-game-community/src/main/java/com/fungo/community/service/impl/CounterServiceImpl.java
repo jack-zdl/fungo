@@ -10,6 +10,7 @@ import java.util.Map;
 
 @Service
 public class CounterServiceImpl implements ICounterService {
+
 	@Autowired
 	private CmmCommentDao actionDao;
 	

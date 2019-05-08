@@ -13,6 +13,8 @@ import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.function.FungoLivelyCalculateUtils;
+import com.fungo.community.function.SerUtils;
+import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IPostService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
@@ -32,6 +34,7 @@ import com.game.common.util.emoji.EmojiDealUtil;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import com.game.common.util.exception.BusinessException;
 import com.sun.corba.se.spi.ior.ObjectId;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,10 +61,17 @@ public class PostServiceImpl implements IPostService {
     private CmmPostDaoService postService;
 
     @Autowired
-    private MemberService memberService;
+    private CmmCommunityDaoService communityService;
 
     @Autowired
-    private CmmCommunityDaoService communityService;
+    private ICounterService iCountService;
+
+    @Value("${sys.config.fungo.cluster.index}")
+    private String clusterIndex;
+
+
+    @Autowired
+    private MemberService memberService;
 
     @Autowired
     private BasActionService actionService;
@@ -83,8 +93,7 @@ public class PostServiceImpl implements IPostService {
     private IGameProxy gameProxyService;
     @Autowired
     private IUserService iUserService;
-    @Autowired
-    private ICounterService iCountService;
+
     @Autowired
     private IVideoService vdoService;
 
@@ -111,8 +120,7 @@ public class PostServiceImpl implements IPostService {
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
 
-    @Value("${sys.config.fungo.cluster.index}")
-    private String clusterIndex;
+
 
 
     @Override

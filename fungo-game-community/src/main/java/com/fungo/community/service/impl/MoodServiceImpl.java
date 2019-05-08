@@ -343,4 +343,5 @@ public class MoodServiceImpl implements IMoodService {
         return re;
     }
 
+    //------------
 }

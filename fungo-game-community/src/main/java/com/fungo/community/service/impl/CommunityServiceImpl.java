@@ -36,18 +36,20 @@ import java.util.*;
 @Service
 public class CommunityServiceImpl implements ICommunityService {
 
-
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunityServiceImpl.class);
 
     @Autowired
     private CmmCommunityDaoService communityService;
 
-
-
     @Autowired
     private CmmPostDaoService postService;
+
     @Autowired
     private CmmCommunityDao communityDao;
+
+    @Autowired
+    private FungoCacheCommunity fungoCacheCommunity;
+
 
     //@Autowired
     //private GameService gameService;
@@ -72,9 +74,6 @@ public class CommunityServiceImpl implements ICommunityService {
     @Autowired
     private MemberDao memberDao;
 
-
-    @Autowired
-    private FungoCacheCommunity fungoCacheCommunity;
 
     @Override
     public ResultDto<CommunityOut> getCommunityDetail(String communityId, String userId)
@@ -332,6 +331,9 @@ public class CommunityServiceImpl implements ICommunityService {
         return re;
     }
 
+
+
+
     @Override
     public FungoPageResultDto<CommunityMember> memberList(String userId, CommunityInputPageDto input) {
         FungoPageResultDto<CommunityMember> re = new FungoPageResultDto<CommunityMember>();
@@ -372,6 +374,8 @@ public class CommunityServiceImpl implements ICommunityService {
 
         return re;
     }
+
+
 
 
     @Override
@@ -427,6 +431,8 @@ public class CommunityServiceImpl implements ICommunityService {
         return recommendedMbsList;
 
     }
+
+
 
     /**
      * 查询当前登录用户所关注的其他用户
