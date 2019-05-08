@@ -12,6 +12,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,9 +26,14 @@ import org.springframework.web.bind.annotation.*;
 @Api(value="",description="心情")
 public class MoodController {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(MoodController.class);
+
 	@Autowired
 	private IMoodService moodService;
-	
+
+
+
+
 	@ApiOperation(value="发布心情", notes="")
 	@RequestMapping(value="/api/content/mood", method= RequestMethod.POST)
 	@ApiImplicitParams({
@@ -38,6 +45,9 @@ public class MoodController {
 		
 		return moodService.addMood(memberUserPrefile.getLoginId(),input);
 	}
+
+
+
 	
 	@ApiOperation(value="删心情", notes="")
 	@RequestMapping(value="/api/content/mood/{moodId}", method= RequestMethod.DELETE)
@@ -47,7 +57,9 @@ public class MoodController {
 	public ResultDto<String> delMood(MemberUserProfile memberUserPrefile, @PathVariable("moodId") String moodId) {
 		return this.moodService.delMood(memberUserPrefile.getLoginId(), moodId);
 	}
-	
+
+
+
 	
 	@ApiOperation(value="获取心情", notes="")
 	@RequestMapping(value="/api/content/mood/{moodId}", method= RequestMethod.GET)
@@ -64,4 +76,5 @@ public class MoodController {
 	}
 	
 
+	//----------
 }

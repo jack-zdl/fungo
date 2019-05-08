@@ -34,6 +34,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +55,8 @@ import java.util.*;
 @EnableAsync
 public class PostController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PostController.class);
+
     @Autowired
     private CmmPostDaoService daoPostService;
 
@@ -63,13 +67,15 @@ public class PostController {
     private CmmCommunityDaoService communityService;
 
     @Autowired
-    private IGameService iGameService;
-
-    @Autowired
     private FungoCacheArticle fungoCacheArticle;
 
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
+
+
+    @Autowired
+    private IGameService iGameService;
+
 
     @ApiOperation(value = "发帖", notes = "")
     @RequestMapping(value = "/api/content/post", method = RequestMethod.POST)
@@ -87,6 +93,7 @@ public class PostController {
         return bsPostService.addPost(postInput, userId);
     }
 
+
     @ApiOperation(value = "删帖", notes = "")
     @RequestMapping(value = "/api/content/post/{postId}", method = RequestMethod.DELETE)
     @ApiImplicitParams({
@@ -96,6 +103,7 @@ public class PostController {
         String userId = memberUserPrefile.getLoginId();
         return bsPostService.deletePost(postId, userId);
     }
+
 
     @ApiOperation(value = "修改帖子", notes = "")
     @RequestMapping(value = "/api/content/post", method = RequestMethod.PUT)
@@ -116,6 +124,7 @@ public class PostController {
         return bsPostService.editPost(postInput, userId, os);
 //		return ResultDto.success();
     }
+
 
     @ApiOperation(value = "帖子详情", notes = "")
     @RequestMapping(value = "/api/content/post/{postId}", method = RequestMethod.GET)
@@ -160,6 +169,7 @@ public class PostController {
             return FungoPageResultDto.error("-1", "操作失败");
         }
     }
+
 
     @ApiOperation(value = "帖子内容html", notes = "")
     @RequestMapping(value = "/api/content/post/html/{postId}", method = RequestMethod.GET)
@@ -579,6 +589,7 @@ public class PostController {
         return re;
     }
 
+
     /**
      * 设置社区-帖子|文章分页查询条件
      * @param rowId
@@ -591,4 +602,6 @@ public class PostController {
             postEntityWrapper.le("updated_at", lastUpdateDate);
         }
     }
+
+    //--------
 }

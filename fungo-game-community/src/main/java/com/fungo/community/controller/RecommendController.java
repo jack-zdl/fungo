@@ -56,6 +56,9 @@ public class RecommendController {
     private ICommunityService iCommunityService;
 
 
+    @Autowired
+    private FungoCacheMood fungoCacheMood;
+
 
     @Autowired
     private IUserService userService;
@@ -76,11 +79,6 @@ public class RecommendController {
 
     @Autowired
     private IncentRankedService incentRankedService;
-
-    @Autowired
-    private FungoCacheMood fungoCacheMood;
-
-
 
 
     /**
@@ -312,7 +310,7 @@ public class RecommendController {
      *
      */
     @Autowired
-    MemberDao memberDao;
+    private MemberDao memberDao;
 
     @ApiOperation(value = "推荐用户列表(v2.3)", notes = "")
     @RequestMapping(value = "/api/recommend/users", method = RequestMethod.POST)
@@ -376,6 +374,7 @@ public class RecommendController {
         return re;
     }
 
+
     @ApiOperation(value = "社区推荐列表(v2.3)", notes = "")
     @RequestMapping(value = "/api/recommend/communitys", method = RequestMethod.POST)
     @ApiImplicitParams({
@@ -403,6 +402,7 @@ public class RecommendController {
         }
         return re;
     }
+
 
     //手动分页
     public Page<Member> pageFormat(List<Member> members, int page, int limit) {
@@ -440,4 +440,5 @@ public class RecommendController {
         }
     }
 
+    //-----
 }

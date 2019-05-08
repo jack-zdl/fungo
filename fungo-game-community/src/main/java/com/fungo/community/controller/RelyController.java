@@ -14,6 +14,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @Api(value = "", description = "回复")
 public class RelyController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RelyController.class);
+
 
     @Autowired
     private IEvaluateService evaluateService;
@@ -73,4 +78,6 @@ public class RelyController {
         }
         return this.evaluateService.getReplyList(memberId, commentPage);
     }
+
+    //-------
 }
