@@ -113,6 +113,8 @@ public class ActionServiceImpl implements IActionService {
             //被点赞用户的id
             String targetMemberId = gameProxy.getMemberID(inputDto.getTarget_id(), inputDto.getTarget_type());
 
+
+
             //V2.4.6版本之前任务 废弃
             //被点赞玩家获得奖励
             //ResultDto<Integer> expTask = scoreLogService.expTask(targetMemberId, 41, "", inputDto.getTarget_id(), inputDto.getTarget_type());
@@ -570,9 +572,12 @@ public class ActionServiceImpl implements IActionService {
                 action = this.buildAction(memberId, Setting.ACTION_TYPE_DOWNLOAD, inputDto);
 
                 this.actionService.insert(action);
-//                    19-05-06 切换feign客户端 调用
+//                    19-05-06
+//                    切换feign客户端 调用
+//                    lyc
 //                counterService.addCounter("t_game", "download_num", inputDto.getTarget_id());//增加下载数
 //                切换feign客户端 调用游戏服务
+//                lyc
                 gameFeignClientUpdateCounterByDownLoad(inputDto);
 
             }
@@ -582,7 +587,9 @@ public class ActionServiceImpl implements IActionService {
             fungoCacheMember.excIndexCache(false, keyPrefix, "", null);
 
         } else {
-            //                    19-05-06 切换feign客户端 调用
+            //                    19-05-06
+            //                    切换feign客户端 调用
+            //                    lyc
 //            counterService.addCounter("t_game", "download_num", inputDto.getTarget_id());//增加下载数
             //                切换feign客户端 调用游戏服务
             gameFeignClientUpdateCounterByDownLoad(inputDto);
@@ -722,7 +729,9 @@ public class ActionServiceImpl implements IActionService {
     private boolean getCounterBoolean(ActionInput inputDto, Map<String, String> map) {
         if (CommonlyConst.getCommunityList().contains(inputDto.getTarget_type())){
 //            社区服务空缺 19-05-07
-            return communityFeignClient.updateCounter(map);
+            if (false){
+                return communityFeignClient.updateCounter(map);
+            }
         }
         if (CommonlyConst.getGameList().contains(inputDto.getTarget_type())){
 //            feign客户端调用游戏服务

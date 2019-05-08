@@ -59,6 +59,26 @@ public interface IGameService {
 	 * @return
 	 */
 	double getGameRating(String gameId);
-	//        根据表名(动态)修改
+
+	/**
+	 * 游戏列表
+	 * @param input
+	 * @param memberId
+	 * @return
+	 */
+	FungoPageResultDto<GameOutBean> getGameList(GameListVO input, String memberId);
+
+	/**
+	 * 根据表名(动态)修改
+	 * @param map
+	 * @return
+	 */
 	Boolean updateCountor(Map<String, String> map);
+
+	/**
+	 * 被点赞用户的id
+	 * @param map
+	 * @return
+	 */
+    String getMemberIdByTargetId(Map<String, String> map);
 }

@@ -26,6 +26,7 @@ import java.util.Map;
 @RestController
 @Api(value="",description="开发者")
 public class DeveloperController {
+
 	@Autowired
 	private DeveloperService developerService;
 	@Autowired
@@ -35,40 +36,11 @@ public class DeveloperController {
 	@RequestMapping(value="/api/developer/addUser", method= RequestMethod.POST)
 	@ApiImplicitParams({})
 	public ResultDto<String> addDeveloper (MemberUserProfile memberUserPrefile, @RequestBody DeveloperBean input){
-		Developer developer=developerService.selectOne(new EntityWrapper<Developer>().eq("member_id",memberUserPrefile.getLoginId()));
-		if(developer!=null) {
-			return ResultDto.error("7001", "对不起，您已绑定开发者信息");
-		}else {
-			developer=new Developer();
-			developer.setBusinessLicense(input.getBusinessLicense());
-			developer.setBusinessLicenseImage(input.getBusinessLicenseImage());
-//			developer.setBusinessPermitLimitDate(input.getBusinessPermitLimitDate());
-			developer.setCompanyFullName(input.getCompanyFullName());
-			developer.setCompanyName(input.getCompanyName());
-			developer.setCompanyShortName(input.getCompanyShortName());
-			developer.setCreatedAt(new Date());
-			developer.setLiaisonAdress(input.getLiaisonAdress());
-			developer.setLiaisonEmail(input.getLiaisonEmail());
-			developer.setLiaisonIdImageBack(input.getLiaisonIdImageBack());
-			developer.setLiaisonIdNumber(input.getLiaisonIdNumber());
-			developer.setLiaisonIdImageFront(input.getLiaisonIdImageFront());
-			developer.setLiaisonName(input.getLiaisonName());
-			developer.setLiaisonPhone(input.getLiaisonPhone());
-			developer.setLogo(input.getLogo());
-			developer.setMemberId(memberUserPrefile.getLoginId());
-			developer.setState(0);
-			developer.setUpdatedAt(new Date());
-			developer.setApproveState(2);
-			developerService.insert(developer);
-
-		}
-		ResultDto<String> re=new ResultDto<String>();
-		re.setMessage("绑定成功");
-		return re;
+		return iDeveloperService.addDeveloper(memberUserPrefile.getLoginId(),input);
 	}
 
 	/**
-	 * @todo 根据用户查询开发者的游戏列表
+	 *
 	 * @param memberUserPrefile
 	 * @param input
 	 * @return
@@ -94,7 +66,6 @@ public class DeveloperController {
 	}
 
 	/**
-	 * @todo 获取开发者游戏详情
 	 * @param memberUserPrefile
 	 * @param gameId
 	 * @return
@@ -124,7 +95,7 @@ public class DeveloperController {
 	}
 
 	/**
-	 * @todo
+	 *
 	 * @param memberUserPrefile
 	 * @param input
 	 * @return
@@ -179,12 +150,6 @@ public class DeveloperController {
 	public ResultDto<String> updateGame(MemberUserProfile memberUserPrefile,@RequestBody AddGameInputBean input){
 		return iDeveloperService.updateGame(memberUserPrefile,input);
 	}
-	
-	public ResultDto<String> updateGameState(DeveloperQueryIn input){
-		return null;
-//		return iDeveloperService.updateGameState();
-	}
-
 
 	/**
 	 * @todo
@@ -195,10 +160,5 @@ public class DeveloperController {
 	public ResultDto<String> test(){
 		return new ResultDto<>();
 	}
-
-
-
-
-
 
 }

@@ -131,6 +131,33 @@
 			<artifactId>spring-boot-starter-amqp</artifactId>
 			<version>2.1.4.RELEASE</version>
 		</dependency>
+		<!-- java监控-->
+		<dependency>
+			<groupId>net.bull.javamelody</groupId>
+			<artifactId>javamelody-spring-boot-starter</artifactId>
+			<version>1.75.0</version>
+		</dependency>
+		<!-- 热部署 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<!-- 表示依赖不会传递 -->
+			<optional>true</optional>
+		</dependency>
+
+		<!-- grant poi start -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.15</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.15</version>
+		</dependency>
+		<!-- grant poi end-->
 
 	</dependencies>
     <dependencyManagement>

@@ -1,5 +1,6 @@
 package com.fungo.system.service;
 
+import com.fungo.system.dto.DeveloperBean;
 import com.game.common.dto.DeveloperGame.DeveloperGameOut;
 import com.game.common.dto.DeveloperGame.DeveloperGamePageInput;
 import com.game.common.dto.DeveloperGame.DeveloperQueryIn;
@@ -21,6 +22,8 @@ import java.util.Map;
  * @Date: 2019/4/28
  */
 public interface IDeveloperService {
+
+    ResultDto<String> addDeveloper(String loginId, DeveloperBean input);
     /**
      * 开发者上传游戏
      * @param memberUserPrefile

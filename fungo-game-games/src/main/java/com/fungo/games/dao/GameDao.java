@@ -22,6 +22,8 @@ public interface GameDao extends BaseMapper<Game> {
     public List<HotValue> getHotValue();
     //获取用户最近评论的游戏
     public List<HashMap<String,Object>> getRecentCommentedGames(Page page, String memberId);
-//    根据表名(动态)修改
+    //根据表名(动态)修改
     Boolean updateCountor(Map<String, String> map);
+    //被点赞用户的id
+    String getMemberIdByTargetId(Map<String, String> map);
 }

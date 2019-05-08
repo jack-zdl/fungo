@@ -1,9 +1,13 @@
 package com.fungo.games.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.games.entity.Game;
+import com.fungo.games.entity.GameEvaluation;
+import com.fungo.games.entity.GameSurveyRel;
 import com.fungo.games.feign.SystemFeignClient;
 import com.fungo.games.service.GameService;
+import com.fungo.games.service.GameSurveyRelService;
 import com.fungo.games.service.IGameService;
 import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
@@ -41,6 +45,9 @@ public class GameController {
 
     @Autowired
     private GameService gameServicer;
+
+    @Autowired
+    private GameSurveyRelService gameSurveyRelService;
 
     @ApiOperation(value = "游戏详情(2.4修改/api/content/evaluations|)", notes = "")
     @RequestMapping(value = "/api/content/game/{gameId}", method = RequestMethod.GET)
@@ -162,23 +169,66 @@ public class GameController {
         @RequestMapping(value = "/api/content/gameList", method = RequestMethod.POST)
     @ApiImplicitParams({
     })
-    public FungoPageResultDto<GameOutBean> getGameList(HttpServletRequest request, HttpServletResponse response ,@Anonymous MemberUserProfile memberUserPrefile, @RequestBody GameItemInput input) {
-        FungoPageResultDto<GameOutBean> re = null;
+    public FungoPageResultDto<GameOutBean> getGameList(HttpServletRequest request, HttpServletResponse response ,@Anonymous MemberUserProfile memberUserPrefile, @RequestBody GameListVO input) {
         try {
-            Map map = new HashMap();
-            map.put("sessionId", request.getSession().getId());
-            map.put("message", request.getSession().getAttribute("imageCode"));
-            String imageCode = (String) request.getSession().getAttribute("imageCode");
-            System.out.println("HttpSession session" + imageCode);
-            ResultDto<String>  test = systemFeignClient.test();
+//            Map map = new HashMap();
+//            map.put("sessionId", request.getSession().getId());
+//            map.put("message", request.getSession().getAttribute("imageCode"));
+//            String imageCode = (String) request.getSession().getAttribute("imageCode");
+//            System.out.println("HttpSession session" + imageCode);
+//            ResultDto<String>  test = systemFeignClient.test();
 //            ResultDto<MemberOutBean> memberOutBeanResultDto = systemFeignClient.getUserInfo();
-            re = new FungoPageResultDto<>();
-            GameOutBean game = new GameOutBean();
-            re.setData(Arrays.asList(game));
+
+            FungoPageResultDto<GameOutBean>  re = gameService.getGameList(input, memberUserPrefile.getLoginId());
             return  re;
         }catch (Exception e){
            return FungoPageResultDto.error("-1", "未指定用户");
         }
+    }
+
+    /**
+     * @todo
+     * @param GameReleaseLog
+     * @return
+     */
+    @ApiOperation(value = "根据id游戏版本日志审批", notes = "")
+    @RequestMapping(value = "/api/gamereleaselog", method = RequestMethod.POST)
+    @ApiImplicitParams({
+    })
+    public FungoPageResultDto<GameReleaseLogDto> selectOne(GameReleaseLogDto GameReleaseLog){
+        return new FungoPageResultDto<GameReleaseLogDto>();
+    }
+
+    /**
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/game/{gameId}", method = RequestMethod.POST)
+    public Game selectOne( @PathVariable("gameId") String gameId){
+         Game game =  gameServicer.selectById(gameId);
+        return game;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/gameSurveyRel", method = RequestMethod.POST)
+    public int selectCount(  GameSurveyRelDto gameSurveyRel){
+//        new EntityWrapper<GameSurveyRel>().eq("game_id", gameId).eq("phone_model", "Android");
+//        gameSurveyRelService.selectCount();
+        return 1;
+    }
+
+    /**
+     * 游戏评价 服务类
+     * @return
+     */
+    @RequestMapping(value = "/api/gameEvaluation", method = RequestMethod.POST)
+    public int selectGameEvaluationCount(  GameEvaluationDto gameEvaluation){
+//        new EntityWrapper<GameSurveyRel>().eq("game_id", gameId).eq("phone_model", "Android");
+//        gameSurveyRelService.selectCount();
+        return 1;
     }
 
 

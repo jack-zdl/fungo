@@ -66,6 +66,9 @@ public class MemberIncentTaskRuleServiceImpl implements IMemberIncentTaskRuleSer
         try {
             String keyPrefix = "ScoreRuleListV2.4.6";
 
+            Object indexCache = fungoCacheTask.getIndexCache(keyPrefix, "");
+
+
             scoreRuleList = (List<ScoreRule>) fungoCacheTask.getIndexCache(keyPrefix, "");
             if (null != scoreRuleList && !scoreRuleList.isEmpty()) {
                 return scoreRuleList;

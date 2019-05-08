@@ -1,13 +1,10 @@
 package com.fungo.system.feign;
 
 import com.game.common.dto.FungoPageResultDto;
-import com.game.common.dto.MemberUserProfile;
-import com.game.common.dto.game.GameInputPageDto;
-import com.game.common.dto.game.GameItemInput;
-import com.game.common.dto.game.GameOutBean;
-import com.game.common.dto.game.GameOutPage;
-import com.game.common.util.annotation.Anonymous;
+import com.game.common.dto.GameDto;
+import com.game.common.dto.game.*;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,11 +21,37 @@ import java.util.Map;
 public interface GamesFeignClient {
 
     @RequestMapping(value = "/api/content/gameList", method = RequestMethod.POST)
-    public FungoPageResultDto<GameOutBean> getGameList( @RequestBody GameItemInput input);
+    FungoPageResultDto<GameOutBean> getGameList( @RequestBody GameItemInput input);
 
     @RequestMapping(value = "/api/content/games", method = RequestMethod.POST)
-    public FungoPageResultDto<GameOutPage> getGameList(@RequestBody GameInputPageDto gameInputDto);
+    FungoPageResultDto<GameOutPage> getGameList(@RequestBody GameInputPageDto gameInputDto);
 
+
+    @RequestMapping(value = "/api/gamereleaselog", method = RequestMethod.POST)
+    FungoPageResultDto<GameReleaseLogDto> selectOne(GameReleaseLogDto GameReleaseLog);
+
+    @RequestMapping(value = "/api/game/{gameId}", method = RequestMethod.POST)
+    GameDto selectOne(@PathVariable("gameId") String gameId);
+
+    /**
+     * 动态表 辅助计数器
+     * @param map
+     * @return
+     */
     @RequestMapping(value = "/api/update/counter", method = RequestMethod.POST)
     boolean updateCounter(@RequestBody Map<String, String> map);
+
+    @RequestMapping(value = "/api/gameSurveyRel", method = RequestMethod.POST)
+    int selectCount(  GameSurveyRelDto gameSurveyRel);
+
+    @RequestMapping(value = "/api/gameEvaluation", method = RequestMethod.POST)
+    int selectGameEvaluationCount(  GameEvaluationDto gameEvaluation);
+
+    /**
+     * 被点赞用户的id
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "/api/getMemberIdByTargetId", method = RequestMethod.POST)
+    String getMemberIdByTargetId(@RequestBody Map<String, String> map);
 }

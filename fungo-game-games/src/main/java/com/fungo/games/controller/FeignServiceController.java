@@ -15,13 +15,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
- * 辅助 计数器
+ * feignService 调用中心
  * @Author lyc
  * @create 2019/5/7 11:48
  */
 @RestController
-@Api(value = "", description = "计数器")
-public class UpdateCountorController {
+@Api(value = "", description = "feignService 调用中心")
+public class FeignServiceController {
 
     @Autowired
     private IGameService iGameService;
@@ -32,5 +32,11 @@ public class UpdateCountorController {
     public Boolean updateCounter(@RequestBody Map<String,String> map) {
 //        根据表名(动态)修改
         return iGameService.updateCountor(map);
+    }
+
+    @ApiOperation(value = "被点赞用户的id", notes = "")
+    @RequestMapping(value = "/api/getMemberIdByTargetId", method = RequestMethod.POST)
+    String getMemberIdByTargetId(@RequestBody Map<String, String> map){
+        return iGameService.getMemberIdByTargetId(map);
     }
 }

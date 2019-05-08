@@ -204,4 +204,8 @@
         </if>
         where id = #{id}
     </update>
+    <!--getMemberIdByTargetId 被点赞用户的id-->
+    <select id="getMemberIdByTargetId" resultType="string" parameterType="java.util.Map" >
+		select member_id from ${tableName} where id=#{id}
+	</select>
 </mapper>
