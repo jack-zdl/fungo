@@ -71,7 +71,7 @@ public interface IMemberService {
 //	public ResultDto<MemberLevelBean> getMemberLevel(String loginId);
 //	//用户回复列表
 //	public FungoPageResultDto<MyCommentBean> getMyComments(String loginId, InputPageDto input);
-//	public void initRank() throws Exception;
+	public void initRank() throws Exception;
 //	//获取用户等级图标
 //	String getLevelRankUrl(int level, List<IncentRuleRank> levelRankList);
 

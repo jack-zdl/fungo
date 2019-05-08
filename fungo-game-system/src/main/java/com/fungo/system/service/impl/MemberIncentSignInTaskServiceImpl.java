@@ -641,7 +641,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
 
         //若用户没有fungo币账户，则创建
         if (null == accountCoin) {
-            accountCoin = memberAccountDaoService.createAccountCoin(member);
+            accountCoin = memberAccountDaoService.createAccountCoin(member.getId());
         }
 
         accountCoin.setCoinUsable(accountCoin.getCoinUsable().add(new BigDecimal(funCoin)));

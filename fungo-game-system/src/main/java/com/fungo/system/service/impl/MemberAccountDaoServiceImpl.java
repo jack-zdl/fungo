@@ -35,7 +35,7 @@ public class MemberAccountDaoServiceImpl extends ServiceImpl<IncentAccountScoreD
 
 
     @Override
-    public IncentAccountCoin createAccountCoin(Member member) {
+    public IncentAccountCoin createAccountCoin(String mb_id) {
 
         int clusterIndex_i = Integer.parseInt(clusterIndex);
 
@@ -43,7 +43,7 @@ public class MemberAccountDaoServiceImpl extends ServiceImpl<IncentAccountScoreD
 
         accountCoin.setId(PKUtil.getInstance(clusterIndex_i).longPK());
 
-        String phoneNum = member.getMobilePhoneNum();
+        String phoneNum = "";
 
         if (StringUtils.isNotBlank(phoneNum)) {
             accountCoin.setAccountCode("C68" + phoneNum);
@@ -52,7 +52,7 @@ public class MemberAccountDaoServiceImpl extends ServiceImpl<IncentAccountScoreD
         }
 
         accountCoin.setAccountGroupId((long) 3);
-        accountCoin.setMbId(member.getId());
+        accountCoin.setMbId(mb_id);
         accountCoin.setCoinUsable(BigDecimal.ZERO);
         accountCoin.setCoinFreeze(BigDecimal.ZERO);
         accountCoin.setClearZeroPeriod(-1);

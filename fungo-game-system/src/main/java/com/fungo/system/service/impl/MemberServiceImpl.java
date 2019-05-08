@@ -91,6 +91,11 @@ public class MemberServiceImpl implements IMemberService {
         return null;
     }
 
+    @Override
+    public void initRank() throws Exception {
+
+    }
+
 
 //    private static final Logger logger = LoggerFactory.getLogger(MemberServiceImpl.class);
 //    @Autowired

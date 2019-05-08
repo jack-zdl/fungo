@@ -23,12 +23,10 @@ public interface IMemberAccountScoreDaoService extends IService<IncentAccountSco
 
     /**
      * 新建用户funbi账户
-     * @param member
+     * @param mb_id
      * @return
      */
-    public IncentAccountCoin createAccountCoin(Member member);
-
-
+    public IncentAccountCoin createAccountCoin(String  mb_id);
     /**
      * 新建用户fun积分账户
      * @param member
