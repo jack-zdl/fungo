@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
+
 /**
  * <p></p>
  * @Author: dl.zhang
@@ -30,9 +33,25 @@ public interface GamesFeignClient {
     @RequestMapping(value = "/api/game/{gameId}", method = RequestMethod.POST)
     GameDto selectOne(@PathVariable("gameId") String gameId);
 
+    /**
+     * 动态表 辅助计数器
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "/api/update/counter", method = RequestMethod.POST)
+    boolean updateCounter(@RequestBody Map<String, String> map);
+
     @RequestMapping(value = "/api/gameSurveyRel", method = RequestMethod.POST)
     int selectCount(  GameSurveyRelDto gameSurveyRel);
 
     @RequestMapping(value = "/api/gameEvaluation", method = RequestMethod.POST)
     int selectGameEvaluationCount(  GameEvaluationDto gameEvaluation);
-    }
+
+    /**
+     * 被点赞用户的id
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "/api/getMemberIdByTargetId", method = RequestMethod.POST)
+    String getMemberIdByTargetId(@RequestBody Map<String, String> map);
+}

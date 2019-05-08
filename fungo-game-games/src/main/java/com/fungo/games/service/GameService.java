@@ -12,5 +12,5 @@ import com.fungo.games.entity.Game;
  * @since 2018-12-07
  */
 public interface GameService extends IService<Game> {
-	
+
 }

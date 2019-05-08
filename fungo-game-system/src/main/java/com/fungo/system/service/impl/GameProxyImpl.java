@@ -1,8 +1,13 @@
 package com.fungo.system.service.impl;
 
+import com.fungo.system.constts.CommonlyConst;
+import com.fungo.system.dao.BasActionDao;
+import com.fungo.system.feign.CommunityFeignClient;
+import com.fungo.system.proxy.IDeveloperProxyService;
 import com.fungo.system.service.IGameProxy;
 import com.game.common.dto.ResultDto;
 import com.game.common.util.CommonUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -24,8 +29,8 @@ public class GameProxyImpl implements IGameProxy {
 //	private CmmPostService postService;
 //	@Autowired
 //	private MemberService memberService;
-//	@Autowired
-//	private BasActionDao actionDao;
+	@Autowired
+	private BasActionDao actionDao;
 //	@Autowired
 //	private MooMoodService moodService;
 //	@Autowired
@@ -44,6 +49,11 @@ public class GameProxyImpl implements IGameProxy {
 //	@Autowired
 //	//private ScoreRuleServiceImap scoreRuleService;
 //	private ScoreRuleService scoreRuleService;
+	@Autowired
+	private CommunityFeignClient communityFeignClient;
+
+	@Autowired
+	private IDeveloperProxyService iDeveloperProxyService;
 	
 	/**
 	 * information --> content
@@ -403,13 +413,35 @@ public class GameProxyImpl implements IGameProxy {
 		
 		return  1 ;//count;
 	}
-	
+
+	/**
+	 * 被点赞用户的id
+	 * # 迁移变动
+	 * @param target_id
+	 * @param target_type
+	 * @return
+	 */
 	@Override
 	public String getMemberID(String target_id ,int target_type ) {
 		Map<String,String> map =new HashMap<String,String>();
 		map.put("tableName", getTableName(target_type));
 		map.put("id",target_id);
-		return  "" ;//this.actionDao.getMemberIdByTargetId(map);
+		if (CommonlyConst.getCommunityList().contains(target_type)){
+//            社区服务空缺 19-05-07
+			if (false){
+//				被点赞用户的id
+				return communityFeignClient.getMemberIdByTargetId(map);
+			}
+//            return false;
+		}
+		if (CommonlyConst.getGameList().contains(target_type)){
+//            feign客户端调用游戏服务 被点赞用户的id
+			return iDeveloperProxyService.getMemberIdByTargetId(map);
+		}
+		if (CommonlyConst.getSystemList().contains(target_type)){
+			return this.actionDao.getMemberIdByTargetId(map);
+		}
+		return  "";
 	}
 	
 	//根据资源类型获取表名

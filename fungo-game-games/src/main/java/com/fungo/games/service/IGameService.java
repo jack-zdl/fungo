@@ -7,6 +7,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.*;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IGameService {
 
@@ -67,4 +68,17 @@ public interface IGameService {
 	 */
 	FungoPageResultDto<GameOutBean> getGameList(GameListVO input, String memberId);
 
+	/**
+	 * 根据表名(动态)修改
+	 * @param map
+	 * @return
+	 */
+	Boolean updateCountor(Map<String, String> map);
+
+	/**
+	 * 被点赞用户的id
+	 * @param map
+	 * @return
+	 */
+    String getMemberIdByTargetId(Map<String, String> map);
 }
