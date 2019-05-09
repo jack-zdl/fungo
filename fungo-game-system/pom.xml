@@ -185,6 +185,13 @@
 		</dependency>
 		<!-- grant poi end-->
 
+		<!-- 依赖lang2-->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+		<!-- 依赖lang2-->
+
 	</dependencies>
     <dependencyManagement>
         <dependencies>
