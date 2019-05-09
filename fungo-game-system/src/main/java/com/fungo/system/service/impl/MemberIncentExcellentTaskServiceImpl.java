@@ -265,7 +265,7 @@ public class MemberIncentExcellentTaskServiceImpl implements IMemberIncentExcell
                 eq("account_group_id", FunGoGameConsts.INCENT_ACCOUNT_TYPE_COIN_ID));
         if (coinAccount == null) {
             Member member = memberService.selectById(mb_id);
-            coinAccount = accountScoreDaoService.createAccountCoin(member);
+            coinAccount = accountScoreDaoService.createAccountCoin(mb_id);
         }
 
         logger.info("执行精品任务---经验值任务--用户fungo币账户历史数据-scoreAccount:{}", JSON.toJSONString(coinAccount));

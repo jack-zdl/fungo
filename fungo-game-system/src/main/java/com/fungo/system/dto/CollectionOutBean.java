@@ -1,6 +1,8 @@
 package com.fungo.system.dto;
 
 
+import com.game.common.dto.AuthorBean;
+
 public class CollectionOutBean {
 	private String content;
 	private String cover_image;

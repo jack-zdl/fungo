@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface GameDao extends BaseMapper<Game> {
     public boolean updateBatchState(@Param("state")Integer state, @Param("idList")String[] idList);
@@ -21,4 +22,8 @@ public interface GameDao extends BaseMapper<Game> {
     public List<HotValue> getHotValue();
     //获取用户最近评论的游戏
     public List<HashMap<String,Object>> getRecentCommentedGames(Page page, String memberId);
+    //根据表名(动态)修改
+    Boolean updateCountor(Map<String, String> map);
+    //被点赞用户的id
+    String getMemberIdByTargetId(Map<String, String> map);
 }

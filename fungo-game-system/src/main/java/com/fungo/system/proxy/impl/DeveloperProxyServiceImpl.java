@@ -2,6 +2,7 @@ package com.fungo.system.proxy.impl;
 
 
 import com.fungo.system.feign.CommunityFeginClient;
+import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.proxy.IDeveloperProxyService;
 import com.game.common.dto.FungoPageResultDto;
@@ -23,7 +24,7 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 	private GamesFeignClient gamesFeignClient;
 
 	@Autowired
-	private CommunityFeginClient communityFeginClient;
+	private CommunityFeignClient communityFeignClient;
 
 	@HystrixCommand(fallbackMethod = "hystrixGameList",ignoreExceptions = {Exception.class},
 			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
@@ -41,6 +42,18 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 		FungoPageResultDto<GameOutBean>  gameOutBeans = gamesFeignClient.getGameList(gameItemInput);
 		return gameOutBeans;
 	}
+
+//	updateCounter
+
+	@HystrixCommand(fallbackMethod = "hystrixUpdateCounter",ignoreExceptions = {Exception.class},
+			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+	public boolean updateCounter(Map<String,String> map) {
+		return gamesFeignClient.updateCounter(map);
+	}
+
+
+
+
 
 	@HystrixCommand(fallbackMethod = "hystrixSelectReleaseLog",ignoreExceptions = {Exception.class},
 			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
@@ -80,7 +93,13 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
 	@Override
 	public int selectPostCount(CmmPostDto cmmPostDto) {
-		return communityFeginClient.selectPostCount(cmmPostDto);
+		return communityFeignClient.selectPostCount(cmmPostDto);
+	}
+	@HystrixCommand(fallbackMethod = "hystrixGetMemberIdByTargetId",ignoreExceptions = {Exception.class},
+			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+	@Override
+	public String getMemberIdByTargetId(Map<String, String> map) {
+		return gamesFeignClient.getMemberIdByTargetId(map);
 	}
 
 	public int hystrixSelectPostCount(CmmPostDto cmmPostDto){
@@ -108,5 +127,9 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 
 	public GameDto hystrixSelectGame(String gameId){
 		return null;
+	}
+
+	public boolean hystrixUpdateCounter(Map<String,String> map){
+		return  false;
 	}
 }

@@ -446,7 +446,7 @@ public class ScoreLogServiceImap extends ServiceImpl<ScoreLogDao, ScoreLog> impl
         //更新账户
         IncentAccountCoin coinAccount = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", userId).eq("account_group_id", 3));
         if (coinAccount == null) {
-            coinAccount = IAccountDaoService.createAccountCoin(user);
+            coinAccount = IAccountDaoService.createAccountCoin(userId);
         }
 
         coinAccount.setCoinUsable(coinAccount.getCoinUsable().add(new BigDecimal(score)));

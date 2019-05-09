@@ -31,6 +31,7 @@ public class RedisHandler {
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
 
+
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 

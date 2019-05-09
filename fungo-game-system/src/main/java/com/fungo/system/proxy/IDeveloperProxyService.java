@@ -10,6 +10,7 @@ import com.game.common.dto.game.GameReleaseLogDto;
 import com.game.common.dto.game.GameSurveyRelDto;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IDeveloperProxyService {
 
@@ -24,6 +25,7 @@ public interface IDeveloperProxyService {
 
 	ResultDto<String> addGameTag(List<String> tags, String categoryId, String gameId);
 
+	boolean updateCounter(Map<String, String> map);
 	GameDto selectGame(String gameId);
 
 	int selectCount(  GameSurveyRelDto gameSurveyRel);
@@ -31,5 +33,7 @@ public interface IDeveloperProxyService {
 	int selectGameEvaluationCount(  GameEvaluationDto gameEvaluation);
 
 	int selectPostCount(CmmPostDto cmmPostDto);
+
+    String getMemberIdByTargetId(Map<String, String> map);
 }
 

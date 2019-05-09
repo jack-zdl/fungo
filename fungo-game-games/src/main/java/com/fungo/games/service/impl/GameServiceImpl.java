@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameEvaluation;
 import com.fungo.games.entity.GameReleaseLog;
@@ -56,8 +57,8 @@ public class GameServiceImpl implements IGameService {
 //
     @Autowired
     private GameSurveyRelService surveyRelService;
-//    @Autowired
-//    private GameDao gameDao;
+    @Autowired
+    private GameDao gameDao;
 //
 //    @Autowired
 //    private GameCollectionItemService gameCollectionItemService;
@@ -584,6 +585,16 @@ public class GameServiceImpl implements IGameService {
             logger.error("根据id集合查询游戏合集项列表失败",e);
         }
         return re;
+    }
+
+    @Override
+    public Boolean updateCountor(Map<String, String> map) {
+        return gameDao.updateCountor(map);
+    }
+
+    @Override
+    public String getMemberIdByTargetId(Map<String, String> map) {
+        return gameDao.getMemberIdByTargetId(map);
     }
 
 //    //分数区间

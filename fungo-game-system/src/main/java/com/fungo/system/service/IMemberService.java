@@ -2,9 +2,15 @@ package com.fungo.system.service;
 
 import com.fungo.system.dto.FollowInptPageDao;
 import com.fungo.system.dto.*;
+import com.fungo.system.entity.IncentRuleRank;
 import com.game.common.api.InputPageDto;
+import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.MyCommentBean;
+import com.game.common.dto.community.MyPublishBean;
+
+import java.util.List;
 import java.util.Map;
 
 public interface IMemberService {
@@ -63,17 +69,17 @@ public interface IMemberService {
 	public ResultDto<Map<String,Integer>> getPublishCount(String loginId);
 	//用户游戏评论
 	public FungoPageResultDto<MyEvaluationBean> getMyEvaluationList(String loginId, InputPageDto input) throws Exception;
-//	//用户帖子
-//	public FungoPageResultDto<MyPublishBean> getMyPosts(String loginId, InputPageDto input) throws Exception;
-//	//用户心情
-//	public FungoPageResultDto<MyPublishBean> getMyMoods(String loginId, InputPageDto input) throws Exception;
-//	//用户等级信息
-//	public ResultDto<MemberLevelBean> getMemberLevel(String loginId);
-//	//用户回复列表
-//	public FungoPageResultDto<MyCommentBean> getMyComments(String loginId, InputPageDto input);
-//	public void initRank() throws Exception;
-//	//获取用户等级图标
-//	String getLevelRankUrl(int level, List<IncentRuleRank> levelRankList);
+	//用户帖子
+	public FungoPageResultDto<MyPublishBean> getMyPosts(String loginId, InputPageDto input) throws Exception;
+	//用户心情
+	public FungoPageResultDto<MyPublishBean> getMyMoods(String loginId, InputPageDto input) throws Exception;
+	//用户等级信息
+	public ResultDto<MemberLevelBean> getMemberLevel(String loginId);
+	//用户回复列表
+	public FungoPageResultDto<MyCommentBean> getMyComments(String loginId, InputPageDto input);
+	public void initRank() throws Exception;
+	//获取用户等级图标
+	String getLevelRankUrl(int level, List<IncentRuleRank> levelRankList);
 
 	
 
