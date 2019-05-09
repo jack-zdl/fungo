@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
 public class MemberDataController {
@@ -55,12 +56,13 @@ public class MemberDataController {
 		//文章精选 评测精选 收到点赞
 		
 		LOGGER.info("开始添加用户徽章");
-		
+		//@todo 社区微服务
 		//精品文章
-		List<Map> postMapList = memberDao.getHonorQualificationOfEssencePost();
-		
+		List<Map> postMapList = new CopyOnWriteArrayList<>(); //memberDao.getHonorQualificationOfEssencePost();
+
+		//@todo 游戏微服务
 		//精品评测
-		List<Map> evaMapList = memberDao.getHonorQualificationOfEssenceEva();
+		List<Map> evaMapList = new CopyOnWriteArrayList<>(); //memberDao.getHonorQualificationOfEssenceEva();
 		
 		//点赞
 		List<Map> likeMapList = memberDao.getHonorQualificationOfBeLiked();
