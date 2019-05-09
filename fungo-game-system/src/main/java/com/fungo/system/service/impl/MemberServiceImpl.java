@@ -865,7 +865,7 @@ public class MemberServiceImpl implements IMemberService {
         }
 
         re = new FungoPageResultDto<MyPublishBean>();
-        // @todo
+        // @todo  游戏分页查询
         Page<CmmPostDto> page = new  Page<CmmPostDto>(); // postService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<CmmPost>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
         List<CmmPostDto> plist = page.getRecords();
         List<MyPublishBean> blist = new ArrayList<>();
@@ -901,7 +901,7 @@ public class MemberServiceImpl implements IMemberService {
             bean.setTitle(post.getTitle());
             bean.setVideo(post.getVideo());
             bean.setUpdatedAt(DateTools.fmtDate(post.getUpdatedAt()));
-            //@todo
+            //@todo  社区主键查询
             CmmCommunityDto community = new CmmCommunityDto(); //communityService.selectById(post.getCommunityId());
             if (community != null) {
                 Map<String, Object> communityMap = new HashMap<>();
