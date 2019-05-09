@@ -8,19 +8,23 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.community.dao.service.BasVideoJobDaoService;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
+import com.fungo.community.entity.BasVideoJob;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.function.FungoLivelyCalculateUtils;
 import com.fungo.community.function.SerUtils;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IPostService;
+import com.fungo.community.service.IVideoService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ObjectId;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.*;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
@@ -33,7 +37,6 @@ import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.EmojiDealUtil;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import com.game.common.util.exception.BusinessException;
-import com.sun.corba.se.spi.ior.ObjectId;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +69,17 @@ public class PostServiceImpl implements IPostService {
     @Autowired
     private ICounterService iCountService;
 
+    @Autowired
+    private BasVideoJobDaoService videoJobService;
+
+    @Autowired
+    private IVideoService vdoService;
+
+
+    @Autowired
+    private FungoCacheArticle fungoCacheArticle;
+
+
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
 
@@ -79,8 +93,7 @@ public class PostServiceImpl implements IPostService {
     private ScoreLogService logService;
     @Autowired
     private IActionService iActionService;
-    @Autowired
-    private BasVideoJobService videoJobService;
+
     @Autowired
     private IVdService vdService;
     @Autowired
@@ -94,8 +107,7 @@ public class PostServiceImpl implements IPostService {
     @Autowired
     private IUserService iUserService;
 
-    @Autowired
-    private IVideoService vdoService;
+
 
     @Autowired
     private IncentAccountScoreService accountScoreService;
@@ -112,9 +124,6 @@ public class PostServiceImpl implements IPostService {
 
     @Autowired
     private IGameService iGameService;
-
-    @Autowired
-    private FungoCacheArticle fungoCacheArticle;
 
     //用户成长业务
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
@@ -137,10 +146,12 @@ public class PostServiceImpl implements IPostService {
         if (user_id == null) {
             return ResultDto.error("126", "不存在的用户");
         }
+
         Member member = memberService.selectById(user_id);
         if (member == null) {
             return ResultDto.error("126", "不存在的用户");
         }
+
         if (member.getLevel() < 2) {
             return ResultDto.error("-1", "等级达到lv2才可发布内容");
         }
@@ -374,7 +385,9 @@ public class PostServiceImpl implements IPostService {
         if (userId == null) {
             return ResultDto.error("211", "找不到用户id");
         }
+
         Member user = memberService.selectById(userId);
+
         if (user == null) {
             return ResultDto.error("126", "用户不存在");
         }
@@ -390,6 +403,7 @@ public class PostServiceImpl implements IPostService {
 
         //扣除经验
         int score = 3;
+        //!fixme
         IncentAccountScore scoreCount = accountScoreService.selectOne(new EntityWrapper<IncentAccountScore>().eq("mb_id", userId).eq("account_group_id", 1));
         if (scoreCount == null) {
             scoreCount = IAccountDaoService.createAccountScore(user, 1);

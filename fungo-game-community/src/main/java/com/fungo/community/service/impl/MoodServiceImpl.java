@@ -3,11 +3,15 @@ package com.fungo.community.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.community.dao.service.BasVideoJobDaoService;
 import com.fungo.community.dao.service.MooMoodDaoService;
+import com.fungo.community.entity.BasVideoJob;
 import com.fungo.community.entity.MooMood;
 import com.fungo.community.service.IMoodService;
+import com.fungo.community.service.IVideoService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
+import com.game.common.dto.ObjectId;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.MoodBean;
 import com.game.common.dto.community.MoodInput;
@@ -20,7 +24,7 @@ import com.game.common.util.CommonUtils;
 import com.game.common.util.PKUtil;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
-import com.sun.corba.se.spi.ior.ObjectId;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,22 +44,10 @@ public class MoodServiceImpl implements IMoodService {
 
     @Autowired
     private MooMoodDaoService moodService;
+
     @Autowired
-    private IUserService userService;
-    @Autowired
-    private IActionService iactionService;
-    @Autowired
-    private GameProxyImpl proxy;
-    @Autowired
-    private BasVideoJobService videoJobService;
-    @Autowired
-    private IVdService vdService;
-    @Autowired
-    private GameService gameService;
-    @Autowired
-    private GameDao gameDao;
-    @Autowired
-    private MemberService memberService;
+    private BasVideoJobDaoService videoJobDaoService;
+
     @Autowired
     private IVideoService vdoService;
 
@@ -65,12 +57,34 @@ public class MoodServiceImpl implements IMoodService {
     @Autowired
     private FungoCacheMood fungoCacheMood;
 
+    @Value("${sys.config.fungo.cluster.index}")
+    private String clusterIndex;
+
+
+    @Autowired
+    private IUserService userService;
+    @Autowired
+    private IActionService iactionService;
+    @Autowired
+    private GameProxyImpl proxy;
+
+
+    @Autowired
+    private IVdService vdService;
+    @Autowired
+    private GameService gameService;
+    @Autowired
+    private GameDao gameDao;
+    @Autowired
+    private MemberService memberService;
+
+    @Autowired
+    private BasActionService actionService;
+
+
     //用户成长业务
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
-
-    @Value("${sys.config.fungo.cluster.index}")
-    private String clusterIndex;
 
 
     @Override
@@ -136,7 +150,7 @@ public class MoodServiceImpl implements IMoodService {
 
         //视频处理
         if (!CommonUtil.isNull(input.getVideoId())) {
-            BasVideoJob videoJob = videoJobService.selectOne(new EntityWrapper<BasVideoJob>().eq("video_id", input.getVideoId()));
+            BasVideoJob videoJob = videoJobDaoService.selectOne(new EntityWrapper<BasVideoJob>().eq("video_id", input.getVideoId()));
             if (videoJob != null) {
                 videoJob.setBizType(2);
                 videoJob.setBizId(mood.getId());
@@ -148,7 +162,7 @@ public class MoodServiceImpl implements IMoodService {
                 mood.setState(0);
                 mood.updateById();
 //				videoJob.updateById();
-                videoJobService.deleteById(videoJob);
+                videoJobDaoService.deleteById(videoJob);
             } else {
                 videoJob = new BasVideoJob();
                 videoJob.setBizId(mood.getId());
@@ -157,7 +171,7 @@ public class MoodServiceImpl implements IMoodService {
                 videoJob.setCreatedAt(new Date());
                 videoJob.setUpdatedAt(new Date());
                 videoJob.setStatus(0);
-                videoJobService.insert(videoJob);
+                videoJobDaoService.insert(videoJob);
             }
         }
 //		
@@ -171,14 +185,17 @@ public class MoodServiceImpl implements IMoodService {
 //			videoJob.setCreatedAt(new Date());
 //			videoJob.setUpdatedAt(new Date());
 //			videoJob.setStatus(0);
-//			videoJobService.insert(videoJob);
+//			videoJobDaoService.insert(videoJob);
 //			//压缩
 //			vdService.compress(videoJob.getId(), mood.getVideo());
 //		}
-        //行为记录
+
+        //!fixme  行为记录
         iactionService.addAction(memberId, 2, 14, mood.getId(), "");
+
 //		proxy.addScore(Setting.ACTION_TYPE_MOOD, memberId, mood.getId(), Setting.RES_TYPE_MOOD);
-        //V2.4.6版本之前的任务
+
+        //!fixme  V2.4.6版本之前的任务
         //每日任务
         //int addTaskCore = proxy.addTaskCore(Setting.ACTION_TYPE_MOOD, memberId, mood.getId(), Setting.RES_TYPE_MOOD);
         //V2.4.6版本任务
@@ -206,9 +223,12 @@ public class MoodServiceImpl implements IMoodService {
         //end
 
         ResultDto<ObjectId> re = new ResultDto<ObjectId>();
+
         ObjectId o = new ObjectId();
         o.setId(mood.getId());
+
         re.setData(o);
+
         if (StringUtils.isNotBlank(tips)) {
             re.show(tips);
         } else {
@@ -246,20 +266,27 @@ public class MoodServiceImpl implements IMoodService {
         }
     }
 
-    @Autowired
-    BasActionService actionService;
 
     @Override
     public ResultDto<MoodBean> getMood(String memberId, String moodId) throws Exception {
+
         ResultDto<MoodBean> re = new ResultDto<MoodBean>();
+
         MooMood mood = moodService.selectOne(new EntityWrapper<MooMood>().ne("state", -1).eq("id", moodId));
+
         if (mood == null) {
             return ResultDto.error("-1", "心情不存在或已被删除");
         }
+
         MoodBean moodBean = new MoodBean();
+
+        //!fixme 获取用户数据
         moodBean.setAuthor(this.userService.getAuthor(mood.getMemberId()));
+
         ObjectMapper objectMapper = new ObjectMapper();
+
         ArrayList<String> imgs = null;
+
         try {
             if (mood.getImages() != null) {
                 imgs = (ArrayList<String>) objectMapper.readValue(mood.getImages(), ArrayList.class);
@@ -285,7 +312,9 @@ public class MoodServiceImpl implements IMoodService {
         if ("".equals(memberId) || memberId == null) {
             moodBean.setIs_liked(false);
         } else {
+            //!fixme 获取点赞数
             int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", mood.getId()).eq("member_id", memberId));
+
             moodBean.setIs_liked(liked > 0 ? true : false);
         }
         moodBean.setCover_image(mood.getCoverImage());
@@ -316,7 +345,10 @@ public class MoodServiceImpl implements IMoodService {
             ArrayList<String> gameIdList = objectMapper.readValue(mood.getGameList(), ArrayList.class);
             List<Map<String, Object>> gameList = new ArrayList<>();
             for (String gameId : gameIdList) {
+
+                //!fixme 获取游戏数据
                 Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", 0));
+
                 if (game != null) {
                     Map<String, Object> map = new HashMap<>();
                     map.put("gameId", game.getId());

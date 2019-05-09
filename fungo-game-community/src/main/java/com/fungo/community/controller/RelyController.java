@@ -39,8 +39,9 @@ public class RelyController {
     @Autowired
     private IEvaluateService evaluateService;
 
-    @Autowired
-    private IPushService pushService;
+    //没用到
+    //@Autowired
+    //private IPushService pushService;
 
 
     @ApiOperation(value = "发表回复", notes = "")

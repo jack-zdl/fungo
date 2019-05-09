@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.community.dao.mapper.CmmPostDao;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.entity.CmmCommunity;
@@ -62,6 +63,9 @@ public class PostController {
 
     @Autowired
     private IPostService bsPostService;
+
+    @Autowired
+    private CmmPostDao cmmPostDao;
 
     @Autowired
     private CmmCommunityDaoService communityService;
@@ -310,7 +314,7 @@ public class PostController {
         } else if ("1".equals(filter)) {
 
             if (memberUserPrefile != null) {
-
+                //!fixme 获取关注社区id集合
                 List<String> olist = actionDao.getFollowerCommunityId(memberUserPrefile.getLoginId());
 
                 if (olist.size() > 0) {
@@ -348,7 +352,10 @@ public class PostController {
 
         } else if ("2".equals(filter)) {
             if (memberUserPrefile != null) {
+
+                //!fixme 获取关注用户id集合
                 List<String> olist = actionDao.getFollowerUserId(memberUserPrefile.getLoginId());
+
                 if (olist.size() > 0) {
 
                     EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<CmmPost>();
@@ -416,9 +423,11 @@ public class PostController {
         } else if ("4".equals(filter)) {
 
             if (memberUserPrefile != null) {
-
+                //!fixme 获取关注用户id集合 和 社区ID集合
                 List<String> memberIdList = actionDao.getFollowerUserId(memberUserPrefile.getLoginId());
                 List<String> communityIdList = actionDao.getFollowerCommunityId(memberUserPrefile.getLoginId());
+
+
                 Map<String, Object> map = new HashMap<String, Object>();
                 if (memberIdList.size() > 0) {
                     map.put("memberIdList", memberIdList);
@@ -437,10 +446,10 @@ public class PostController {
                     map.put("pageSize", inputPageDto.getLimit());
 
                     //查询分页数据
-                    plist = postDao.getAllFollowerPostWithPage(map);
+                    plist = cmmPostDao.getAllFollowerPostWithPage(map);
 
                     //查询总记录数
-                    Map<String, Object> postCountMap = postDao.getAllFollowerPostCount(pageAllLook, map);
+                    Map<String, Object> postCountMap = cmmPostDao.getAllFollowerPostCount(pageAllLook, map);
                     if (null != postCountMap && postCountMap.containsKey("ct")) {
                         Long ct = (Long) postCountMap.get("ct");
                         if (null != ct) {
@@ -520,7 +529,10 @@ public class PostController {
 //				page.setTotal(page.getTotal() - 1);
                 continue;
             }
+
+            //!fixme 根据用户id查询用户详情
             bean.setAuthor(userService.getAuthor(cmmPost.getMemberId()));
+
             if (bean.getAuthor() == null) {
                 continue;
             }
@@ -568,6 +580,7 @@ public class PostController {
             if (memberUserPrefile == null) {
                 bean.setLiked(false);
             } else {
+                //!fixme 获取点赞数
                 int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", cmmPost.getId()).eq("member_id", memberUserPrefile.getLoginId()));
                 bean.setLiked(liked > 0 ? true : false);
             }

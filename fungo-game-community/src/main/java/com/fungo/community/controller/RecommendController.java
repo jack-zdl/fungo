@@ -14,6 +14,7 @@ import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.community.CommunityOutBean;
+import com.game.common.dto.community.FollowUserOutBean;
 import com.game.common.dto.community.MoodInputPageDto;
 import com.game.common.dto.community.MoodOutBean;
 import com.game.common.repo.cache.facade.FungoCacheMood;
@@ -136,8 +137,11 @@ public class RecommendController {
             if (memberUserPrefile == null) {
                 return re;
             }
+            //!fixme 获取关注用户id集合
             List<String> olist = actionDao.getFollowerUserId(memberUserPrefile.getLoginId());
+
             if (olist.size() > 0) {
+
                 EntityWrapper moodEntityWrapper = new EntityWrapper<MooMood>();
                 moodEntityWrapper.in("member_id", olist);
                 moodEntityWrapper.eq("state", 0);
@@ -210,7 +214,10 @@ public class RecommendController {
 
         for (MooMood mooMood : plist) {
             MoodOutBean bean = new MoodOutBean();
+
+            //!fixme 根据用户id查询用户详情
             bean.setAuthor(userService.getAuthor(mooMood.getMemberId()));
+
             if (StringUtils.isNotBlank(mooMood.getContent())) {
                 String interactContent = FilterEmojiUtil.decodeEmoji(mooMood.getContent());
                 mooMood.setContent(interactContent);
@@ -238,6 +245,7 @@ public class RecommendController {
             bean.setImages(imgs);
             bean.setLiked(false);
             if (memberUserPrefile != null) {
+                //!fixme   获取粉丝数
                 int followed = actionService.selectCount(new EntityWrapper<BasAction>().notIn("state", "-1").eq("type", 0).eq("target_id", mooMood.getId()).eq("member_id", memberUserPrefile.getLoginId()));
                 bean.setLiked(followed > 0 ? true : false);
             }
@@ -262,7 +270,10 @@ public class RecommendController {
                 ArrayList<String> gameIdList = objectMapper.readValue(mooMood.getGameList(), ArrayList.class);
                 List<HashMap<String, Object>> gameList = new ArrayList<>();
                 for (String gameId : gameIdList) {
+
+                    //!fixme 根据游戏id和状态查询游戏详情
                     Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", 0));
+
                     if (game != null) {
                         HashMap<String, Object> map = new HashMap<>();
                         map.put("gameId", game.getId());
@@ -332,6 +343,7 @@ public class RecommendController {
             memberId = memberUserPrefile.getLoginId();
         }
 
+        //!fixme 关联用户 和 游戏评论
         //按规则一 查询出官方推荐的玩家数据
         List<Member> members = iCommunityService.getRecomMembers(inputPageDto.getLimit(), memberId);
 
@@ -392,6 +404,7 @@ public class RecommendController {
             bean.setFollowed(false);
             bean.setIntro(cmmCommunity.getIntro());
             if (memberUserPrefile != null) {
+                //!fixme 根据社区id，状态，类型，用户id获取 粉丝数量
                 int followed = actionService.selectCount(new EntityWrapper<BasAction>().eq("state", 0).eq("type", 5).eq("target_id", cmmCommunity.getId()).eq("member_id", memberUserPrefile.getLoginId()));
                 bean.setFollowed(followed > 0 ? true : false);
             }

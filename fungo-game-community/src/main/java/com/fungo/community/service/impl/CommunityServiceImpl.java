@@ -121,7 +121,9 @@ public class CommunityServiceImpl implements ICommunityService {
 
         out.setFollowee_num(community.getFolloweeNum());
 
-        if (menberService.selectById(userId) != null) {// 查询是否关注
+        //!fixme 查询是否关注 根据用户id查询用户详情
+        if (menberService.selectById(userId) != null) {
+            //!fixme 从动作表中 根据用户id,类型，目标id，目前类型，状态等查询 社区关注数量
             int count = actionService.selectCount(new EntityWrapper<BasAction>().eq("member_id", userId)
                     .eq("type", 5).eq("target_id", communityId).eq("target_type", 4).and("state = 0"));
             out.setIs_followed(count == 0 ? false : true);
@@ -154,7 +156,10 @@ public class CommunityServiceImpl implements ICommunityService {
             if (!CommonUtil.isNull(community.getGameId())) {
                 map.put("gameId", community.getGameId());
             }
+
+            //!fixme 从文章表、社区一级评论表和游戏评论表获取用户数量
             List<MemberPulishFromCommunity> mlist = communityDao.getMemberOrder(page, map);
+
             ObjectMapper mapper = new ObjectMapper();
             for (MemberPulishFromCommunity m : mlist) {
                 Map<String, Object> mp = new HashMap<>();
@@ -164,6 +169,7 @@ public class CommunityServiceImpl implements ICommunityService {
                     mp.put("avatar", member.getAvatar());
                 }
 
+                //!fixme 根据用户id和用户权益(等级、身份、荣誉)类型，获取用户权益数据
                 IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", member.getId()).eq("rank_type", 2));
                 if (ranked != null) {
                     IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
@@ -181,7 +187,7 @@ public class CommunityServiceImpl implements ICommunityService {
             }
         }
         out.setEliteMembers(userList);
-        //社区关注数
+        //!fixme 社区关注数
         int c = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).eq("target_id", communityId).eq("target_type", 4).and("state = 0"));
         out.setMemberNum(c);
 
@@ -227,7 +233,7 @@ public class CommunityServiceImpl implements ICommunityService {
         List<CommunityOutPageDto> dataList = new ArrayList<>();
         re.setData(dataList);
 
-        // 过滤
+        //!fixme 获取用户详情 过滤
         Member user = menberService.selectById(userId);
         if (filter.equals("official")) {
             //官方社区
@@ -239,6 +245,8 @@ public class CommunityServiceImpl implements ICommunityService {
             if (user == null) {
                 return FungoPageResultDto.error("1", "找不到用户");
             }
+
+            //!fixme 根据用户id，动作类型，目前类型，状态获取目前id集合
             List<BasAction> actionList = actionService.selectList(Condition.create().setSqlSelect("target_id")
                     .eq("member_id", userId).eq("type", 5).eq("target_type", 4).and("state = 0"));
 //			if(actionList == null || actionList.size() == 0) {
@@ -312,7 +320,8 @@ public class CommunityServiceImpl implements ICommunityService {
             out.setHot_value(community.getFolloweeNum() + community.getPostNum() + commentNum);
             out.setType(community.getType());
 
-            if (user != null) {//是否关注
+            if (user != null) {
+                //!fixme  是否关注
                 int selectCount = actionService.selectCount(new EntityWrapper<BasAction>().eq("target_id", community.getId())
                         .eq("target_type", 4).eq("type", 5).eq("member_id", userId).and("state = 0"));
                 if (selectCount != 0) {
