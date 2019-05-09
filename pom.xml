@@ -20,6 +20,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
+
+
         <!-- fingo game version -->
         <fungo.game.version>2.4.3-SNAPSHOT</fungo.game.version>
         <!-- fingo fw version -->
