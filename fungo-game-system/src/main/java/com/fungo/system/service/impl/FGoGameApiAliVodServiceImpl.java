@@ -2,12 +2,12 @@ package com.fungo.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fungo.system.dto.StreamInfo;
 import com.fungo.system.dto.VideoBean;
 import com.fungo.system.dto.VodIntroInput;
 import com.fungo.system.service.IFGoGameApiAliVodService;
 import com.fungo.system.service.IVdService;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.StreamInfo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

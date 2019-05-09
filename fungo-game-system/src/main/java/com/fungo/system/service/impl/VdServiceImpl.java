@@ -2,12 +2,12 @@ package com.fungo.system.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fungo.system.dto.StreamInfo;
 import com.fungo.system.dto.VideoBean;
 import com.fungo.system.entity.BasVideoJob;
 import com.fungo.system.service.BasVideoJobService;
 import com.fungo.system.service.IVdService;
 import com.fungo.system.service.IVideoService;
+import com.game.common.dto.StreamInfo;
 import com.game.common.util.CommonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
