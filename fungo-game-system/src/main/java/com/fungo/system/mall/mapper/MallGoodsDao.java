@@ -1,6 +1,7 @@
 package com.fungo.system.mall.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.fungo.system.mall.entity.MallGoods;
 
 /**
  * <p>
