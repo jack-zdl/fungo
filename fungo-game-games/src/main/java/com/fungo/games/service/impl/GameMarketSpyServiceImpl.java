@@ -4,7 +4,7 @@ package com.fungo.games.service.impl;
 
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.fungo.games.dao.GameMarketSpyDaoService;
+import com.fungo.games.service.GameMarketSpyDaoService;
 import com.fungo.games.entity.GameMarketSpy;
 import com.fungo.games.service.IGameMarketSpyService;
 import com.game.common.dto.market.GameMarketSpyInput;

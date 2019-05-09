@@ -1,4 +1,4 @@
-package com.fungo.games.dao;
+package com.fungo.games.service;
 
 
 import com.baomidou.mybatisplus.service.IService;

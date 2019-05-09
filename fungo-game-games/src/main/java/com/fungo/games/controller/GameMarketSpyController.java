@@ -67,6 +67,7 @@ public class GameMarketSpyController {
      * 验证app端是否安装过某游戏接口
      * @throws Exception
      */
+    @ApiOperation(value = "验证app端是否安装过某游戏接口", notes = "")
     @RequestMapping(value = "/gm/gmid", method = RequestMethod.POST)
     public ResultDto<HashMap<String, Object>> queryMarketSpyActionWithGameId(@Anonymous MemberUserProfile memberprofile,
                                                                              @RequestBody GameMarketSpyInput gameMarketSpyInput) throws Exception {

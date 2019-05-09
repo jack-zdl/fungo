@@ -4,7 +4,7 @@ package com.fungo.games.service.impl;
 
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.fungo.games.dao.GameFungoappRefDaoService;
+import com.fungo.games.service.GameFungoappRefDaoService;
 import com.fungo.games.entity.GameFungoappRef;
 import com.fungo.games.service.IGameFungoAppRefService;
 import org.slf4j.Logger;
@@ -26,6 +26,12 @@ public class GameFungoAppRefServiceImpl implements IGameFungoAppRefService {
     private GameFungoappRefDaoService gameFungoappRefDaoService;
 
 
+    /**
+     * 迁移变动 entityWrapper.setSqlSelect("id,fungo_app_url as fungoAppUrl");
+     * @param game_id 游戏ID
+     * @param fungo_channel_id fungo apk渠道id
+     * @return
+     */
     @Override
     public GameFungoappRef queryGameFungoappRef(String game_id, String fungo_channel_id) {
 
@@ -43,8 +49,12 @@ public class GameFungoAppRefServiceImpl implements IGameFungoAppRefService {
             }
 
             EntityWrapper<GameFungoappRef> entityWrapper = new EntityWrapper<GameFungoappRef>();
+//            entityWrapper.setSqlSelect("id,fungo_app_url");
+//            迁移变动
+//            2019-05-09
+//            lyc
+            entityWrapper.setSqlSelect("id,fungo_app_url as fungoAppUrl");
             entityWrapper.allEq(identityHashMap);
-            entityWrapper.setSqlSelect("id,fungo_app_url");
             entityWrapper.orderBy("created_at", false);
 
             List<GameFungoappRef> gameFungoappRefList = gameFungoappRefDaoService.selectList(entityWrapper);
