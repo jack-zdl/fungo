@@ -10,7 +10,7 @@ server:
 spring:
   cloud:
     client:
-      ipAddress:  192.168.10.196
+      ipAddress:  47.104.87.10
   application:
     name: fungo-game-system
   datasource:
