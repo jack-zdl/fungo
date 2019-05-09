@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -268,6 +267,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
         if (developer == null || developer.getApproveState() != 2) {
             return ResultDto.error("14", "该用户没有开发者权限");
         }
+        //@todo 根据游戏id查询游戏
         GameDto game =iDeveloperProxyService.selectGame(gameId); //   gameService.selectById(gameId);
 
         if (CommonUtil.isNull(gameId)) {
@@ -280,6 +280,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
 
         GameReleaseLogDto param = new GameReleaseLogDto();
         param.setGameId(gameId);
+        // @todo   根据游戏版本日志审批对象查询集合
         List<GameReleaseLogDto> logs =  iDeveloperProxyService.selectGameReleaseLog(param);
         GameReleaseLogDto log = logs.get(0);
         //logService.selectOne(
@@ -382,6 +383,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
                 gameSurveyRelParam.setGameId(game.getId());
                 gameSurveyRelParam.setMemberId(memberUserPrefile.getLoginId());
                 gameSurveyRelParam.setPhoneModel("iOS");
+                // @todo 根据游戏测试会员关联表对象查询总数
                 int selectCount = iDeveloperProxyService.selectCount(gameSurveyRelParam);
                         //surveyRelService.selectCount(new EntityWrapper<GameSurveyRel>().eq("game_id",game.getId()).eq("member_id",memberUserPrefile.getLoginId()).eq("phone_model","iOS"));
                 if(selectCount < 1) {
@@ -575,6 +577,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
         GameReleaseLogDto param = new GameReleaseLogDto();
         param.setGameId(gameId);
         param.setMemberId(userId);
+        //@todo 游戏接口
         List<GameReleaseLogDto> list = iDeveloperProxyService.selectGameReleaseLog(param);
         //logService.selectPage(new Page<>(input.getPage(), input.getLimit()),
 //                new EntityWrapper<GameReleaseLog>().eq("game_id", gameId).eq("member_id", userId);
@@ -609,9 +612,9 @@ public class DeveloperServiceImpl implements IDeveloperService {
         //浏览 下载 预约 测试 评价 推荐率
         List<Map<String,Object>> list = new ArrayList<>();
         //浏览
-        int abrowses = baslogService.selectCount(new EntityWrapper<BasLog>().eq("path", "/api/content/game/"+gameId).eq("channel", "Android"));
-        int ibrowses = baslogService.selectCount(new EntityWrapper<BasLog>().eq("path", "/api/content/game/"+gameId).eq("channel", "iOS"));
-        int totalbrowse = baslogService.selectCount(new EntityWrapper<BasLog>().eq("path", "/api/content/game/"+gameId));
+        int abrowses = 0; //baslogService.selectCount(new EntityWrapper<BasLog>().eq("path", "/api/content/game/"+gameId).eq("channel", "Android"));
+        int ibrowses = 0; //baslogService.selectCount(new EntityWrapper<BasLog>().eq("path", "/api/content/game/"+gameId).eq("channel", "iOS"));
+        int totalbrowse = 0; //baslogService.selectCount(new EntityWrapper<BasLog>().eq("path", "/api/content/game/"+gameId));
         int wbrowses = totalbrowse - abrowses -ibrowses;
         Map<String,Object> browse = new HashMap<>();
         browse.put("name","浏览量");
@@ -621,9 +624,9 @@ public class DeveloperServiceImpl implements IDeveloperService {
         browse.put("total", totalbrowse);
         list.add(browse);
         //下载
-        int ad = baslogService.selectCount(new EntityWrapper<BasLog>().eq("path", "/api/action/download").eq("channel", "Android").like("input_data",gameId));
-        int id = baslogService.selectCount(new EntityWrapper<BasLog>().eq("path", "/api/action/download").eq("channel", "IOS").like("input_data",gameId));
-        int td = baslogService.selectCount(new EntityWrapper<BasLog>().eq("path", "/api/action/download").like("input_data",gameId));
+        int ad = 0; //baslogService.selectCount(new EntityWrapper<BasLog>().eq("path", "/api/action/download").eq("channel", "Android").like("input_data",gameId));
+        int id = 0; //baslogService.selectCount(new EntityWrapper<BasLog>().eq("path", "/api/action/download").eq("channel", "IOS").like("input_data",gameId));
+        int td = 0; //baslogService.selectCount(new EntityWrapper<BasLog>().eq("path", "/api/action/download").like("input_data",gameId));
         int wd = td - ad -id;
         Map<String,Object> down = new HashMap<>();
         down.put("name","下载请求数");
@@ -746,22 +749,21 @@ public class DeveloperServiceImpl implements IDeveloperService {
         SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
         Date nowData = format.parse(format.format(new Date()));
         //浏览
-        int tpv = baslogService.selectCount(new EntityWrapper<BasLog>().eq("path","/api/content/community/"+cid));
-        int dpv = baslogService.selectCount(new EntityWrapper<BasLog>().eq("path","/api/content/community/"+cid).ge("created_at", nowData));
+        int tpv = 0;//baslogService.selectCount(new EntityWrapper<BasLog>().eq("path","/api/content/community/"+cid));
+        int dpv = 0;//baslogService.selectCount(new EntityWrapper<BasLog>().eq("path","/api/content/community/"+cid).ge("created_at", nowData));
         map.put("todayPV", dpv);
         map.put("totalPV", tpv);
         //文章
-        // TODO: 2019/5/5
         CmmPostDto cmmPostDto = new CmmPostDto();
         cmmPostDto.setCommunityId(cid);
-        int tpo =  iDeveloperProxyService.selectPostCount(cmmPostDto); //postService.selectCount(new EntityWrapper<CmmPost>().eq("community_id",cid));
+        int tpo =  0;//iDeveloperProxyService.selectPostCount(cmmPostDto); //postService.selectCount(new EntityWrapper<CmmPost>().eq("community_id",cid));
         cmmPostDto.setCreatedAt(nowData);
-        int dpo =  iDeveloperProxyService.selectPostCount(cmmPostDto);  //postService.selectCount(new EntityWrapper<CmmPost>().eq("community_id",cid).ge("created_at", nowData));
+        int dpo =  0;//iDeveloperProxyService.selectPostCount(cmmPostDto);  //postService.selectCount(new EntityWrapper<CmmPost>().eq("community_id",cid).ge("created_at", nowData));
         map.put("todayPost", dpo);
         map.put("totalPost", tpo);
         //关注 type 5 target_id target_type;
-        int tf = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).eq("target_id", cid));
-        int df = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).eq("target_id", cid).ge("created_at", nowData));
+        int tf = 0;//actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).eq("target_id", cid));
+        int df = 0;//actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).eq("target_id", cid).ge("created_at", nowData));
         map.put("todayFollow", df);
         map.put("totalFollow", tf);
         //热度

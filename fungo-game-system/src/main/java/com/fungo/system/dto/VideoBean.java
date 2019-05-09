@@ -1,5 +1,7 @@
 package com.fungo.system.dto;
 
+import com.game.common.dto.StreamInfo;
+
 import java.util.List;
 
 public class VideoBean {

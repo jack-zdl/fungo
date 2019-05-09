@@ -1,6 +1,8 @@
 package com.fungo.system.dto;
 
 
+import com.game.common.dto.AuthorBean;
+
 import java.util.ArrayList;
 import java.util.List;
 

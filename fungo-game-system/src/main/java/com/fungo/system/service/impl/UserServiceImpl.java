@@ -11,6 +11,7 @@ import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.MemberLoginConsts;
 import com.game.common.consts.Setting;
+import com.game.common.dto.AuthorBean;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.user.MemberOutBean;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
