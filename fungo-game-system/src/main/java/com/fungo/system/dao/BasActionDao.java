@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.entity.BasAction;
 import com.game.common.bean.CollectionBean;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.Map;
  * @author lzh
  * @since 2018-05-07
  */
+@Repository
 public interface BasActionDao extends BaseMapper<BasAction> {
 	//计数器
 	public boolean updateCountor(Map<String, String> map);

@@ -51,7 +51,7 @@ public class InputPageDto extends InputDto implements Serializable {
 	public void setPage(int page) {
 		this.page = page;
 	}
-	public int getSort() {
+	public Integer getSort() {
 		return sort;
 	}
 	public void setSort(int sort) {
