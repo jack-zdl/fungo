@@ -1,0 +1,176 @@
+server:
+  port: 8088
+
+
+spring:
+  aop:
+    proxy-target-class: true
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #RDS主实例内网地址
+    #url: jdbc:mysql://rm-bp145sizta1yg4585.mysql.rds.aliyuncs.com:3306/fungo_pro?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    #RDS主实例外网地址
+    url: jdbc:mysql://rm-bp145sizta1yg4585xo.mysql.rds.aliyuncs.com:3306/fungo_pro?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    #RDS读写分离地址（内网）
+    #url: jdbc:mysql://rm-bp145sizta1yg4585rw.mysql.rds.aliyuncs.com:3306/fungo_pro?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: fungo_pros
+    password: Fungo_123
+    # 连接池配置
+    hikari:
+      # 连接池标题
+      pool-name: funGoApiHikariCP
+      # 最小空闲连接数量
+      minimum-idle: 5
+      # 连接池最大连接数，默认是10
+      maximum-pool-size: 15
+      # 空闲连接存活最大时间，默认600000（10分钟）
+      idle-timeout: 600000
+      # 控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
+      max-lifetime: 1800000
+      # 数据库连接超时时间,默认30秒，即30000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+      # 控制从池返回的连接的默认自动提交行为,默认值：true
+      auto-commit: true
+  #配置ehcache缓存
+  cache:
+    ehcache:
+      config: classpath:ehcache.xml
+  #配置系统默认页面
+  mvc:
+    view:
+      prefix: /
+      suffix: .html
+
+
+  #Redis基于哨兵机制的主从
+  redis:
+    sentinel:
+      master: mymaster
+      #内网地址
+      #nodes: 172.16.162.89:26379,172.16.162.88:26380,172.16.162.90:26381,172.16.162.88:26382,172.16.162.90:26383
+      #外网地址
+      nodes: 47.110.52.254:26379,47.96.126.86:26380,47.111.22.80:26381,47.96.126.86:26382,47.111.22.80:26383
+    database: 0
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 1
+    #连接超时时间（毫秒）
+    timeout: 3000
+    password: fungoRedisPro4f58
+
+#db mybatis
+mybatis-plus:
+  mapper-locations: classpath:com/fungo/game/mapper/xml/*Mapper.xml,classpath:com/fungo/game/mall/mapper/xml/*Mapper.xml,classpath:com/fungo/game/market/mapper/xml/*Mapper.xml,classpath:com/fungo/game/sys/mapper/xml/*Mapper.xml
+  global-config:
+    id-type: 3
+    field-strategy: 2
+    db-column-underline: true
+  configuration:
+    map-underscore-to-camel-case: true
+
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+
+#----------------------------------------------------------------------------------------------------------------------
+
+aliyun.oss:
+  endpoint: http://oss-cn-beijing.aliyuncs.com
+  accessKeyId: LTAIsW4qLBG6M3Vf
+  accessKeySecret: EBQbTTZGhPptMw3tGJ1grmG4r6uD7l
+  bucket: output-mingbo
+  imgDomain: https://output-mingbo.oss-cn-beijing.aliyuncs.com/
+  regionId : cn-hangzhou
+
+
+#阿里云云视频点播服务鉴权秘钥
+aliyun.vod:
+  vodAccessKeyId: LTAILu78tcMMnOwk
+  vodAccessKeySecret: uk03aCbczR2HcMRSzNOYp4zonjCPi2
+  vodRegionId: cn-shanghai
+  #阿里云视频点播分类id
+  vodCateId: 1000010425
+
+#阿里云短信模板
+aliyun.sms:
+  template.code: SMS_158942300
+
+
+
+#系统推送鉴权秘钥配置
+#1.华为平台
+push.config:
+  huawei:
+    appId: 100163669
+    appSecret: 67f34a89c11a4c656797eda8c32d8310
+
+
+
+
+#fungo 接口和商城加解密秘钥
+fungo:
+  secretKey: asdfl9989822jjjjasdaauxaa1
+  mall:
+    seckill:
+      aesSecretKey: a612e866e73bf05f15aa9d98cff38016
+  api:
+    sKey: 021a0af9720f1c005f35c9618839cc3b
+
+
+#fungo系统配置-集群编号
+sys.config.fungo:
+  cluster.index: 6
+
+
+#fungo安全机制接口身份key
+fungo.security:
+  core.api:
+    secret.key: 3d0c79bd1393502f15855747ba5f4bb5
+
+
+
+spring.aop.auto: true
+  #spring.aop.proxy-target-class: true
+
+
+#fungo 数据迁移接口授权秘钥
+fgoTransfAuth: afb8ad6700f5494da2c9a9ef3fd19f17
+#----------------------------------------------------------------------------------------------------------------------
+
+
+#sql控制台输出
+logging:
+  level:
+    com.fungo.game.mall.mapper: DEBUG
+    com.fungo.game.market.mapper: DEBUG
+    com.fungo.game.mapper: DEBUG
+
+
+
+
+
+#系统监控配置
+#javamelody:
+#  enabled: true
+#  excluded-datasources: secretSource,topSecretSource
+#  spring-monitoring-enabled: true
+#  advisor-auto-proxy-creator-enabled: false
+#  scheduled-monitoring-enabled: true
+#  init-parameters:
+#    log: true
+    # to exclude images, css, fonts and js urls from the monitoring:
+    #url-exclude-pattern: (/webjars/.*|/css/.*|/images/.*|/fonts/.*|/js/.*)
+    # to aggregate digits in http requests:
+    #http-transform-pattern: \d+
+    # to add basic auth:
+#    authorized-users: mingboMelody:Bc84fC09256D023478fF092
+    # to change the default storage directory:
+#    storage-directory: /tmp/javamelody_node8088
+    # to change the default "/monitoring" path:
+    #monitoring-path: /admin/performance

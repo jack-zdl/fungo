@@ -144,6 +144,12 @@ V2.4.3版本添加
 	private Long postId;
 
 
+	/**
+	 * 虚假浏览量字段
+	 */
+	@TableField("boom_watch_num")
+	private Long boomWatchNum;
+
 
 	public String getCommunityId() {
 		return communityId;
@@ -372,5 +378,13 @@ V2.4.3版本添加
 
 	public void setPostId(Long postId) {
 		this.postId = postId;
+	}
+
+	public Long getBoomWatchNum() {
+		return boomWatchNum;
+	}
+
+	public void setBoomWatchNum(Long boomWatchNum) {
+		this.boomWatchNum = boomWatchNum;
 	}
 }
