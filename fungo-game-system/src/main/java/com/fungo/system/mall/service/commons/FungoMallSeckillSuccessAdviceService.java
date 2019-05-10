@@ -3,6 +3,7 @@ package com.fungo.system.mall.service.commons;
 
 import com.alibaba.fastjson.JSON;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
+import com.fungo.system.service.IFungoAdvicePushService;
 import com.fungo.system.service.IPushService;
 import com.game.common.bean.advice.BasNoticeDto;
 import com.game.common.consts.Setting;

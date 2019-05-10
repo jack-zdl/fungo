@@ -18,6 +18,7 @@ import com.game.common.bean.CommentBean;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.Setting;
 import com.game.common.dto.*;
+import com.game.common.dto.StreamInfo;
 import com.game.common.dto.community.*;
 import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.game.ReplyDto;
