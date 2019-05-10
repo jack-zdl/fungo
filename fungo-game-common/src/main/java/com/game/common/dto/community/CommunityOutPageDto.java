@@ -1,7 +1,5 @@
 package com.game.common.dto.community;
 
-import io.swagger.annotations.ApiModelProperty;
-
 public class CommunityOutPageDto {
 
 	private String name;
@@ -10,7 +8,10 @@ public class CommunityOutPageDto {
 	private String updatedAt;
 	private String intro;
 	private int hot_value;
-	@ApiModelProperty(value="社区类型 0普通 1官方",example="")
+
+    /**
+     * 社区类型 0普通 1官方
+	 */
 	private int type;
 	
 	public String getIntro() {

@@ -1,17 +1,18 @@
 package com.game.common.dto.community;
 
-import java.io.Serializable;
+import com.game.common.api.InputPageDto;
+
 import java.util.Date;
 
 /**
  * <p>
- * 社区帖子
+ * 		社区帖子
  * </p>
  *
  * @author lzh
  * @since 2018-12-27
  */
-public class CmmPostDto implements Serializable {
+public class CmmPostDto extends InputPageDto {
 
 
 	private static final long serialVersionUID = -2160150540329361706L;
@@ -89,10 +90,7 @@ public class CmmPostDto implements Serializable {
      * 类型 1:普通 2:精华 3:置顶
      */
 	private Integer type;
-    /**
-     * 标记
-     */
-	private Integer sort;
+
     /**
      * 视频 v2.4
      */
@@ -281,14 +279,6 @@ V2.4.3版本添加
 
 	public void setType(Integer type) {
 		this.type = type;
-	}
-
-	public Integer getSort() {
-		return sort;
-	}
-
-	public void setSort(Integer sort) {
-		this.sort = sort;
 	}
 
 	public String getVideo() {

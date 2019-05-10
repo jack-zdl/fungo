@@ -1,7 +1,5 @@
 package com.game.common.dto.community;
 
-import io.swagger.annotations.ApiModelProperty;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,11 +19,20 @@ public class CommunityOut {
 	private int followee_num;
 	private int hot_value;
 	private boolean is_followed;
-	@ApiModelProperty(value="社区成员数(2.4.3)",example="")
+
+	/**
+	 * 区成员数(2.4.3)
+	 */
 	private int memberNum;
-	@ApiModelProperty(value="玩家排行(2.4.3) objectId avatar",example="")
+
+	/**
+	 * 玩家排行(2.4.3) objectId avatar
+	 */
 	private List<Map<String,Object>> eliteMembers = new ArrayList<>();;
-	@ApiModelProperty(value="置顶帖(2.4.3) objectId title ",example="")
+
+    /**
+     * 置顶帖(2.4.3) objectId title
+	 */
 	private List<Map<String,String>> topicPosts = new ArrayList<>();
 	
 	public Boolean getIs_followed() {

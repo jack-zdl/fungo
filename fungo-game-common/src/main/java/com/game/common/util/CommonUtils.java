@@ -1,5 +1,6 @@
 package com.game.common.util;
 
+import java.io.*;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -189,6 +190,24 @@ public class CommonUtils {
     	System.out.println(versionAdapte("2.4.2","2.4.3"));
 	}
 
-    
-    //------------
+	/**
+	 * 功能描述: 
+	 * @param: [src] 原先的对象集合 [T] 目标类
+	 * @return: java.util.List<T> 拷贝后的新对象集合
+	 * @auther: dl.zhang
+	 * @date: 2019/5/10 16:28
+	 */
+	public static <T> List<T> deepCopy(List src,Class T) throws IOException, ClassNotFoundException {
+		ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+		ObjectOutputStream out = new ObjectOutputStream(byteOut);
+		out.writeObject(src);
+
+		ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
+		ObjectInputStream in = new ObjectInputStream(byteIn);
+		@SuppressWarnings("unchecked")
+		List<T> dest = (List<T>) in.readObject();
+		return dest;
+	}
+
+		//------------
 }

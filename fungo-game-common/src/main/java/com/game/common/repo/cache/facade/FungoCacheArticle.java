@@ -25,6 +25,14 @@ public class FungoCacheArticle {
 
     private final Logger LOGGER = LoggerFactory.getLogger(FungoCacheArticle.class);
 
+
+    /**
+     * 帖子(文章)详情Redis key
+     */
+    public static final String FUNGO_CORE_API_POST_CONTENT_DETAIL_WATCHNUM = "cmmPostWatchNum";
+
+
+
     /**
      * Redis 默认缓存时间: 秒
      */
