@@ -97,6 +97,9 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
                 postEntityWrapper.orNew("content like '%" + content + "%'");
             }
 
+            //根据修改时间倒叙
+            postEntityWrapper.orderBy("updated_at", false);
+
             List<CmmPost> selectRecords = null;
 
             if (null != cmmPostPage) {
