@@ -1,13 +1,17 @@
 package com.fungo.community.msService.post;
 
 
-import com.game.common.dto.ResultDto;
+import com.fungo.community.service.msService.IMSServicePostService;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.community.CmmPostDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>
@@ -22,16 +26,25 @@ public class MSServicePostController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MSServicePostController.class);
 
+    @Autowired
+    private IMSServicePostService imsServicePostService;
+
     /**
      * 查询社区帖子|文章数据
      * @return
      */
     @PostMapping("/ms/service/cmm/posts")
-    public ResultDto<String> queryCmmPostList(@RequestBody CmmPostDto param) {
+    public FungoPageResultDto<CmmPostDto> queryCmmPostList(@RequestBody CmmPostDto cmmPostDto) {
 
+        FungoPageResultDto<CmmPostDto> resultDto = new FungoPageResultDto<CmmPostDto>();
 
-        return ResultDto.error("-1", "添加商品数据失败");
+        List<CmmPostDto> cmmPostDtoList = imsServicePostService.queryCmmPostList(cmmPostDto);
+
+        resultDto.setData(cmmPostDtoList);
+
+        return resultDto;
     }
 
 
+    //--------
 }
