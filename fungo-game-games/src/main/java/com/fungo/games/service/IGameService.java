@@ -3,6 +3,7 @@ package com.fungo.games.service;
 
 import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.*;
 
@@ -81,4 +82,5 @@ public interface IGameService {
 	 * @return
 	 */
     String getMemberIdByTargetId(Map<String, String> map);
+
 }

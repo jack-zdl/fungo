@@ -15,6 +15,7 @@ import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.*;
 import com.game.common.repo.cache.facade.FungoCacheGame;
@@ -587,15 +588,7 @@ public class GameServiceImpl implements IGameService {
         return re;
     }
 
-    @Override
-    public Boolean updateCountor(Map<String, String> map) {
-        return gameDao.updateCountor(map);
-    }
 
-    @Override
-    public String getMemberIdByTargetId(Map<String, String> map) {
-        return gameDao.getMemberIdByTargetId(map);
-    }
 
 //    //分数区间
 //    public List<RatingBean> rateFormat(HashMap<String, Double> perMap) {
@@ -761,7 +754,27 @@ public class GameServiceImpl implements IGameService {
 //        return re;
 //    }
 
+    /**
+     * ********************************Fein方法区*****************************************
+     */
+    @Override
+    public Boolean updateCountor(Map<String, String> map) {
+        return gameDao.updateCountor(map);
+    }
 
+    @Override
+    public String getMemberIdByTargetId(Map<String, String> map) {
+        return gameDao.getMemberIdByTargetId(map);
+    }
+
+
+
+
+
+
+    /**
+     * ********************************Fein方法区*****************************************
+     */
 
 }
 
