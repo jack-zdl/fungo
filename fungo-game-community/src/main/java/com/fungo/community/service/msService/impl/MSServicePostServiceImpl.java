@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -118,20 +119,31 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
 
                 cmmPostList = new ArrayList<CmmPostDto>();
 
-                for (CmmPost cmmPost : selectRecords) {
+                for (CmmPost cmmPostEntity : selectRecords) {
 
                     CmmPostDto cmmPostDto = new CmmPostDto();
 
-                    BeanUtils.copyProperties(cmmPostDto, cmmPost);
+                    BeanUtils.copyProperties(cmmPostEntity, cmmPostDto);
 
                     cmmPostList.add(cmmPostDto);
                 }
             }
 
         } catch (Exception ex) {
-            LOGGER.error("/ms/service/cmm/posts--queryCmmPostList-出现异常:", ex);
+            LOGGER.error("/ms/service/cmm/post/lists--queryCmmPostList-出现异常:", ex);
         }
         return cmmPostList;
+    }
+
+
+    @Override
+    public List<Map> getHonorQualificationOfEssencePost() {
+        try {
+            return postDaoService.getHonorQualificationOfEssencePost();
+        } catch (Exception ex) {
+            LOGGER.error("/ms/service/cmm/post/essences--getHonorQualificationOfEssencePost-出现异常:", ex);
+        }
+        return null;
     }
 
 

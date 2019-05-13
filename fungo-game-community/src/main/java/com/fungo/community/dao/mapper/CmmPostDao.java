@@ -44,4 +44,13 @@ public interface CmmPostDao extends BaseMapper<CmmPost> {
      * @return
      */
     public List<HashMap<String, Object>> getLastReplyTime(String postId);
+
+
+    /**
+     * 精品帖子数大于2的用户
+     * @return
+     */
+    public List<Map> getHonorQualificationOfEssencePost();
+
+
 }
