@@ -22,4 +22,6 @@ public interface SystemService {
     FungoPageResultDto<MemberDto> getMemberDtoList(MemberDto memberDto);
 
     FungoPageResultDto<IncentRankedDto> getIncentRankedList(IncentRankedDto incentRankedDto);
+
+    ResultDto<String> changeMemberLevel(MemberDto memberDto);
 }

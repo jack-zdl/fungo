@@ -14,6 +14,7 @@ import com.fungo.system.service.MemberFollowerService;
 import com.fungo.system.service.MemberService;
 import com.fungo.system.service.SystemService;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
@@ -158,6 +159,18 @@ public class SystemServiceImpl implements SystemService {
             re =  FungoPageResultDto.error("-1", "找不到目标");
         }
         return re;
+    }
+
+    @Override
+    public ResultDto<String> changeMemberLevel(MemberDto memberDto) {
+        Member user = memberServiceImap.selectById(memberDto.getId());
+        if(user==null){
+            return ResultDto.error("126", "用户不存在");
+        }
+        // TODO 向调用方确认是否需要做变更校验避免可能的校验不通过问题 ，确认t_incent_ranked是否变更
+        user.setLevel(memberDto.getLevel());
+        memberServiceImap.updateById(user);
+        return ResultDto.success();
     }
 
 

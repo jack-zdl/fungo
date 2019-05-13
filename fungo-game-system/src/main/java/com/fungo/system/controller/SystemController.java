@@ -1,12 +1,17 @@
 package com.fungo.system.controller;
 
+import com.fungo.system.entity.Member;
 import com.fungo.system.service.SystemService;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.vo.MemberFollowerVo;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,6 +106,28 @@ public class SystemController {
             e.printStackTrace();
             LOGGER.error("SystemController.getFollowerUserId",e);
             re = FungoPageResultDto.error("-1", "SystemController.getMemberFollowerList执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+    @PostMapping(value = "/changeMemberLevel")
+    @ApiOperation(value="变更用户等级", notes="")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id",value = "用户id",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "level",value = "期望变更到的等级",paramType = "form",dataType = "integer")
+    })
+    public ResultDto<String> changeMemberLevel(@RequestBody MemberDto memberDto){
+        ResultDto<String> re = null;
+        if(memberDto.getId()==null||memberDto.getLevel()==null){
+            re = ResultDto.error("-1", "SystemController.changeMemberLevel参数缺失");
+            return re;
+        }
+        try {
+            re =  systemService.changeMemberLevel(memberDto);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("SystemController.changeMemberLevel",e);
+            re = ResultDto.error("-1", "SystemController.changeMemberLevel执行service出现异常");
         }finally {
             return re;
         }
