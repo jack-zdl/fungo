@@ -1,10 +1,7 @@
 package com.game.common.dto.community;
 
-import com.baomidou.mybatisplus.activerecord.Model;
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableName;
+import com.game.common.api.InputPageDto;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -15,7 +12,7 @@ import java.util.Date;
  * @author lzh
  * @since 2018-12-29
  */
-public class MooMoodDto implements Serializable{
+public class MooMoodDto  extends InputPageDto {
 
 	private static final long serialVersionUID = -831216539130416959L;
 
