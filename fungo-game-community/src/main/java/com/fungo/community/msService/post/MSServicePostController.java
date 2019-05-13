@@ -33,7 +33,7 @@ public class MSServicePostController {
      * 查询社区帖子|文章数据
      * @return
      */
-    @PostMapping("/ms/service/cmm/posts")
+    @PostMapping("/ms/service/cmm/post/lists")
     public FungoPageResultDto<CmmPostDto> queryCmmPostList(@RequestBody CmmPostDto cmmPostDto) {
 
         FungoPageResultDto<CmmPostDto> resultDto = new FungoPageResultDto<CmmPostDto>();
