@@ -6,7 +6,7 @@ eureka:
     lease-renewal-interval-in-seconds: 5
   client:
     serviceUrl:
-      defaultZone:  http://47.104.87.10:8761/eureka/
+      defaultZone:  http://47.92.146.75:8761/eureka/
 server:
   port: 8088
 spring:

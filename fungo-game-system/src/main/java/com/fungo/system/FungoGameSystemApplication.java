@@ -1,6 +1,7 @@
 package com.fungo.system;
 
 import com.game.common.framework.MyProperties;
+import com.game.common.framework.runtime.SpringUtils;
 import com.netflix.hystrix.contrib.metrics.eventstream.HystrixMetricsStreamServlet;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.Banner;
@@ -19,6 +20,7 @@ import org.springframework.cloud.netflix.turbine.EnableTurbine;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -35,6 +37,7 @@ import javax.servlet.MultipartConfigElement;
 @EnableTransactionManagement
 @EnableConfigurationProperties(MyProperties.class)
 @EnableRedisHttpSession
+@Import(SpringUtils.class)
 public class FungoGameSystemApplication {
 
 	public static void main(String[] args) {
