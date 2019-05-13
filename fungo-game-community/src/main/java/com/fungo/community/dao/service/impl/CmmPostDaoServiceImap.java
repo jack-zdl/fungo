@@ -4,7 +4,12 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.fungo.community.dao.mapper.CmmPostDao;
 import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.entity.CmmPost;
+import net.bytebuddy.asm.Advice;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -16,5 +21,19 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class CmmPostDaoServiceImap extends ServiceImpl<CmmPostDao, CmmPost> implements CmmPostDaoService {
-	
+
+
+    @Autowired
+    private CmmPostDao cmmPostDao;
+
+
+    /**
+     * 精品帖子数大于2的用户
+     * @return
+     */
+    @Override
+    public List<Map> getHonorQualificationOfEssencePost() {
+        return cmmPostDao.getHonorQualificationOfEssencePost();
+    }
+    //------
 }

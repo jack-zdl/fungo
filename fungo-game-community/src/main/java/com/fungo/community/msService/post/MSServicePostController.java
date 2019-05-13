@@ -7,11 +7,13 @@ import com.game.common.dto.community.CmmPostDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -37,14 +39,24 @@ public class MSServicePostController {
     public FungoPageResultDto<CmmPostDto> queryCmmPostList(@RequestBody CmmPostDto cmmPostDto) {
 
         FungoPageResultDto<CmmPostDto> resultDto = new FungoPageResultDto<CmmPostDto>();
-
         List<CmmPostDto> cmmPostDtoList = imsServicePostService.queryCmmPostList(cmmPostDto);
-
         resultDto.setData(cmmPostDtoList);
-
         return resultDto;
     }
 
 
+
+    /**
+     * 精品帖子数大于2的用户数据
+     * @return
+     */
+    @GetMapping("/ms/service/cmm/post/essences")
+    public FungoPageResultDto<Map> queryCmmPostEssenceList() {
+
+        FungoPageResultDto<Map> resultDto = new FungoPageResultDto<Map>();
+        List<Map> essencePostList = imsServicePostService.getHonorQualificationOfEssencePost();
+        resultDto.setData(essencePostList);
+        return resultDto;
+    }
     //--------
 }
