@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.games.dao.GameFungoappRefDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.fungo.games.entity.GameFungoappRef">
+		<id column="id" property="id" />
+		<result column="game_id" property="gameId" />
+		<result column="game_name" property="gameName" />
+		<result column="fungo_channel_id" property="fungoChannelId" />
+		<result column="fungo_channel_name" property="fungoChannelName" />
+		<result column="fungo_app_url" property="fungoAppUrl" />
+		<result column="created_at" property="createdAt" />
+		<result column="updated_at" property="updatedAt" />
+		<result column="ext1" property="ext1" />
+		<result column="ext2" property="ext2" />
+		<result column="ext3" property="ext3" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, game_id AS gameId, game_name AS gameName, fungo_channel_id AS fungoChannelId, fungo_channel_name AS fungoChannelName, fungo_app_url AS fungoAppUrl, created_at AS createdAt, updated_at AS updatedAt, ext1, ext2, ext3
+    </sql>
+
+</mapper>
