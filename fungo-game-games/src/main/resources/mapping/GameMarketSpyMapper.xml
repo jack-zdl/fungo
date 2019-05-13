@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.games.dao.GameMarketSpyDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.fungo.games.entity.GameMarketSpy">
+		<id column="id" property="id" />
+		<result column="device_imei" property="deviceImei" />
+		<result column="device_imsi" property="deviceImsi" />
+		<result column="device_model" property="deviceModel" />
+		<result column="device_vendor" property="deviceVendor" />
+		<result column="device_uuid" property="deviceUuid" />
+		<result column="os" property="os" />
+		<result column="device_mac" property="deviceMac" />
+		<result column="android_id" property="androidId" />
+		<result column="game_id" property="gameId" />
+		<result column="game_name" property="gameName" />
+		<result column="is_obtain" property="isObtain" />
+		<result column="created_at" property="createdAt" />
+		<result column="updated_at" property="updatedAt" />
+		<result column="ext1" property="ext1" />
+		<result column="ext2" property="ext2" />
+		<result column="ext3" property="ext3" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, device_imei AS deviceImei, device_imsi AS deviceImsi, device_model AS deviceModel, device_vendor AS deviceVendor, device_uuid AS deviceUuid, os, device_mac AS deviceMac, android_id AS androidId, game_id AS gameId, game_name AS gameName,is_obtain,AS isObtain created_at AS createdAt, updated_at AS updatedAt, ext1, ext2, ext3
+    </sql>
+
+</mapper>
