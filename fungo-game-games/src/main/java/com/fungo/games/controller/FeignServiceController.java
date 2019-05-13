@@ -2,9 +2,17 @@ package com.fungo.games.controller;
 
 
 
+import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.fungo.games.entity.GameSurveyRel;
+import com.fungo.games.helper.MQClient;
+import com.fungo.games.service.GameSurveyRelService;
 import com.fungo.games.service.IGameService;
+import com.game.common.dto.GameDto;
+import com.game.common.dto.game.GameSurveyRelDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,10 +29,14 @@ import java.util.Map;
  */
 @RestController
 @Api(value = "", description = "feignService 调用中心")
+@RequestMapping("/ms/service")
 public class FeignServiceController {
 
     @Autowired
     private IGameService iGameService;
+
+    @Autowired
+    private GameSurveyRelService gameSurveyRelService;
 
 
     @ApiOperation(value = "更新计数器", notes = "")
@@ -39,4 +51,28 @@ public class FeignServiceController {
     String getMemberIdByTargetId(@RequestBody Map<String, String> map){
         return iGameService.getMemberIdByTargetId(map);
     }
+
+
+    @ApiOperation(value = "查询游戏测试会员关联表总数", notes = "")
+    @RequestMapping(value = "/api/selectCount", method = RequestMethod.POST)
+    int selectCount(@RequestBody GameSurveyRelDto gameSurveyRelDto){
+        GameSurveyRel gameSurveyRel = new GameSurveyRel();
+        BeanUtils.copyProperties(gameSurveyRelDto, gameSurveyRel);
+        boolean notBlank = StringUtils.isNotBlank(gameSurveyRel.getId());
+        return gameSurveyRelService.selectCount(new EntityWrapper<GameSurveyRel>());
+    }
+
+
+    public static void main(String[] args) {
+        GameSurveyRel gameSurveyRel = new GameSurveyRel();
+//        boolean notBlank = StringUtils.isNotBlank(gameSurveyRel.getAgree());
+    }
+
+
+
+
+
+
+
+
 }
