@@ -6,6 +6,7 @@ import com.fungo.community.dao.service.MooMoodDaoService;
 import com.fungo.community.entity.MooMood;
 import com.fungo.community.service.msService.IMSServiceMoodService;
 import com.game.common.dto.community.MooMoodDto;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -50,9 +51,31 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
                 mooMoodPage = new Page<MooMood>(page, limit);
             }
 
+            //会员id
+            String member_id = mooMoodDto.getMemberId();
+            if (StringUtils.isNotBlank(member_id)){
+                param.put("member_id", member_id);
+            }
+
+            //状态 0正常 1视频处理中 -1删除
+            Integer state = mooMoodDto.getState();
+            if (null != state){
+                param.put("state", state);
+            }
 
 
 
+            //类型 1:普通 2:精选
+            Integer type = mooMoodDto.getType();
+            if (null != type){
+                param.put("type", type);
+            }
+
+            //内容
+            String content = mooMoodDto.getContent();
+            if (StringUtils.isNotBlank(content)) {
+                moodDtoEntityWrapper.orNew("content like '%" + content + "%'");
+            }
 
 
 
