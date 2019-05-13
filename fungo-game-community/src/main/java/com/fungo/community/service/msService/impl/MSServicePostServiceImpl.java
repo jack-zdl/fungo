@@ -118,18 +118,18 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
 
                 cmmPostList = new ArrayList<CmmPostDto>();
 
-                for (CmmPost cmmPost : selectRecords) {
+                for (CmmPost cmmPostEntity : selectRecords) {
 
                     CmmPostDto cmmPostDto = new CmmPostDto();
 
-                    BeanUtils.copyProperties(cmmPostDto, cmmPost);
+                    BeanUtils.copyProperties(cmmPostEntity, cmmPostDto);
 
                     cmmPostList.add(cmmPostDto);
                 }
             }
 
         } catch (Exception ex) {
-            LOGGER.error("/ms/service/cmm/posts--queryCmmPostList-出现异常:", ex);
+            LOGGER.error("/ms/service/cmm/post/lists--queryCmmPostList-出现异常:", ex);
         }
         return cmmPostList;
     }
