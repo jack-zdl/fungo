@@ -1,14 +1,7 @@
 package com.fungo.system.helper.mq;
 
-import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <p></p>
@@ -19,23 +12,23 @@ import java.util.Map;
 @Configuration
 public class MQConfig {
 
-    @Value("${spring.rabbitmq.host}")
-    private String addresses;
-
-    @Value("${spring.rabbitmq.port}")
-    private String port;
-
-    @Value("${spring.rabbitmq.username}")
-    private String username;
-
-    @Value("${spring.rabbitmq.password}")
-    private String password;
-
-    @Value("${spring.rabbitmq.virtual-host}")
-    private String virtualHost;
-
-    @Value("${spring.rabbitmq.publisher-confirms}")
-    private boolean publisherConfirms;
+//    @Value("${spring.rabbitmq.host}")
+//    private String addresses;
+//
+//    @Value("${spring.rabbitmq.port}")
+//    private String port;
+//
+//    @Value("${spring.rabbitmq.username}")
+//    private String username;
+//
+//    @Value("${spring.rabbitmq.password}")
+//    private String password;
+//
+//    @Value("${spring.rabbitmq.virtual-host}")
+//    private String virtualHost;
+//
+//    @Value("${spring.rabbitmq.publisher-confirms}")
+//    private boolean publisherConfirms;
 
 
     // 这样做  rabbitmq会讲路由键也是direct.queue，队列名称
@@ -134,30 +127,30 @@ public class MQConfig {
 //    public Queue topicQueue2(){
 //        return new Queue(TOPIC_QUEUE2,true);
 //    }
-    @Bean
-    public TopicExchange topicExchangeGameInsert(){
-        return new TopicExchange(TOPIC_EXCHANGE_GAME_INSERT);
-    }
-
-    @Bean
-    public TopicExchange topicExchangeGameUpdate(){
-        return new TopicExchange(TOPIC_EXCHANGE_GAME_UPDATE);
-    }
-
-    @Bean
-    public TopicExchange topicExchangeCommunityInsert(){
-        return new TopicExchange(TOPIC_EXCHANGE_COMMUNITY_INSERT);
-    }
-
-    @Bean
-    public TopicExchange topicExchangeGameTag(){
-        return new TopicExchange(TOPIC_EXCHANGE_GAME_TAG);
-    }
-
-    @Bean
-    public TopicExchange topicExchangeGamereleaselogInsert(){
-        return new TopicExchange(TOPIC_EXCHANGE_GAMERELEASELOG_INSERT);
-    }
+//    @Bean
+//    public TopicExchange topicExchangeGameInsert(){
+//        return new TopicExchange(TOPIC_EXCHANGE_GAME_INSERT);
+//    }
+//
+//    @Bean
+//    public TopicExchange topicExchangeGameUpdate(){
+//        return new TopicExchange(TOPIC_EXCHANGE_GAME_UPDATE);
+//    }
+//
+//    @Bean
+//    public TopicExchange topicExchangeCommunityInsert(){
+//        return new TopicExchange(TOPIC_EXCHANGE_COMMUNITY_INSERT);
+//    }
+//
+//    @Bean
+//    public TopicExchange topicExchangeGameTag(){
+//        return new TopicExchange(TOPIC_EXCHANGE_GAME_TAG);
+//    }
+//
+//    @Bean
+//    public TopicExchange topicExchangeGamereleaselogInsert(){
+//        return new TopicExchange(TOPIC_EXCHANGE_GAMERELEASELOG_INSERT);
+//    }
     /**
      * 绑定 exchange and queue
      * 设置是精准匹配还是模糊匹配
@@ -172,53 +165,53 @@ public class MQConfig {
 //    }
 
     /***  start ***/
-    @Bean
-    public Queue topicQueueGameInsert(){
-        return new Queue(TOPIC_QUEUE_GAME_INSERT,true);
-    }
-    @Bean
-    public Queue topicQueueGameUpdate(){
-        return new Queue(TOPIC_QUEUE_GAME_UPDATE,true);
-    }
-    @Bean
-    public Queue topicQueueCommunityInsert(){
-        return new Queue(TOPIC_QUEUE_COMMUNITY_INSERT,true);
-    }
-    @Bean
-    public Queue topicQueueGameTag(){
-        return new Queue(TOPIC_QUEUE_GAME_TAG,true);
-    }
-
-    @Bean
-    public Queue topicQueueGamereleaselogInsert(){
-        return new Queue(TOPIC_QUEUE_GAMERELEASELOG_INSERT,true);
-    }
-
-
-    @Bean
-    public Binding topicBindingGameUpdate(){
-        return BindingBuilder.bind(topicQueueGameUpdate()).to(topicExchangeGameUpdate()).with(TOPIC_KEY_GAME_UPDATE);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
-    }
-
-    @Bean
-    public Binding topicBindingGameInsert(){
-        return BindingBuilder.bind(topicQueueGameInsert()).to(topicExchangeGameInsert()).with(TOPIC_KEY_GAME_INSERT);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
-    }
-
-    @Bean
-    public Binding topicBindingCommunityInsert(){
-        return BindingBuilder.bind(topicQueueCommunityInsert()).to(topicExchangeCommunityInsert()).with(TOPIC_KEY_COMMUNITY_INSERT);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
-    }
-
-    @Bean
-    public Binding topicBindingGameTag(){
-        return BindingBuilder.bind(topicQueueGameTag()).to(topicExchangeGameTag()).with(TOPIC_KEY_GAME_TAG);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
-    }
-
-    @Bean
-    public Binding topicBindingGamereleaselogInsert(){
-        return BindingBuilder.bind(topicQueueGamereleaselogInsert()).to(topicExchangeGamereleaselogInsert()).with(TOPIC_KEY_GAMERELEASELOG_INSERT);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
-    }
+//    @Bean
+//    public Queue topicQueueGameInsert(){
+//        return new Queue(TOPIC_QUEUE_GAME_INSERT,true);
+//    }
+//    @Bean
+//    public Queue topicQueueGameUpdate(){
+//        return new Queue(TOPIC_QUEUE_GAME_UPDATE,true);
+//    }
+//    @Bean
+//    public Queue topicQueueCommunityInsert(){
+//        return new Queue(TOPIC_QUEUE_COMMUNITY_INSERT,true);
+//    }
+//    @Bean
+//    public Queue topicQueueGameTag(){
+//        return new Queue(TOPIC_QUEUE_GAME_TAG,true);
+//    }
+//
+//    @Bean
+//    public Queue topicQueueGamereleaselogInsert(){
+//        return new Queue(TOPIC_QUEUE_GAMERELEASELOG_INSERT,true);
+//    }
+//
+//
+//    @Bean
+//    public Binding topicBindingGameUpdate(){
+//        return BindingBuilder.bind(topicQueueGameUpdate()).to(topicExchangeGameUpdate()).with(TOPIC_KEY_GAME_UPDATE);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+//    }
+//
+//    @Bean
+//    public Binding topicBindingGameInsert(){
+//        return BindingBuilder.bind(topicQueueGameInsert()).to(topicExchangeGameInsert()).with(TOPIC_KEY_GAME_INSERT);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+//    }
+//
+//    @Bean
+//    public Binding topicBindingCommunityInsert(){
+//        return BindingBuilder.bind(topicQueueCommunityInsert()).to(topicExchangeCommunityInsert()).with(TOPIC_KEY_COMMUNITY_INSERT);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+//    }
+//
+//    @Bean
+//    public Binding topicBindingGameTag(){
+//        return BindingBuilder.bind(topicQueueGameTag()).to(topicExchangeGameTag()).with(TOPIC_KEY_GAME_TAG);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+//    }
+//
+//    @Bean
+//    public Binding topicBindingGamereleaselogInsert(){
+//        return BindingBuilder.bind(topicQueueGamereleaselogInsert()).to(topicExchangeGamereleaselogInsert()).with(TOPIC_KEY_GAMERELEASELOG_INSERT);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+//    }
 
     /**-------------------fanout END--------------------------*/
 

@@ -14,15 +14,15 @@ public class GetPropertyFromConfigServerController {
 
     private static Logger logger = LoggerFactory.getLogger(GetPropertyFromConfigServerController.class);
 
-    @Value("${com.fungo.system.status}")
-    String appName;
+//    @Value("${com.fungo.system.status}")
+//    String appName;
 
 //    @Value("${my-config.appName}")
 //    String message;
 
     @RequestMapping("/getPropertyFromConfigServer")
     public String getPropertyFromConfigServer() {
-        String msg = "hello, i am " +appName  + ", i'm come from config server";
+        String msg = "hello, i am " ; //+appName  + ", i'm come from config server";
         logger.info(msg);
         return msg;
     }
