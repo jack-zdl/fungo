@@ -11,6 +11,7 @@ import com.netflix.zuul.ZuulFilter;
 
 public class AccessFilter extends ZuulFilter {
 
+
     @Override
     public String filterType() {
         return "pre";

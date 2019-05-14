@@ -1,7 +1,7 @@
 eureka:
   client:
     serviceUrl:
-      defaultZone:  http://47.92.146.75:8761/eureka/
+      defaultZone:  http://127.0.0.1:8761/eureka/
   instance:
     prefer-ip-address: true
 server:
@@ -9,11 +9,11 @@ server:
 spring:
   application:
     name: fungo-game-bus
-  rabbitmq:
-    host: 47.104.87.10
-    port: 5672
-    username: admin
-    password: admin
+#  rabbitmq:
+#    host: 47.104.87.10
+#    port: 5672
+#    username: admin
+#    password: admin
 #  cloud:
 #    config:
 #      uri: http://localhost:8768/

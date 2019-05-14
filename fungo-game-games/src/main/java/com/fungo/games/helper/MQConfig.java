@@ -1,12 +1,6 @@
 package com.fungo.games.helper;
 
-import org.springframework.amqp.core.*;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * <p></p>
@@ -21,23 +15,23 @@ public class MQConfig {
 //    public static final String TOPIC_QUEUE_GAME_INSERT = "topic.queue.game.insert";
 //    public static final String TOPIC_QUEUE_GAME_UPDATE = "topic.queue.game.update";
 
-    @Value("${spring.rabbitmq.host}")
-    private String addresses;
-
-    @Value("${spring.rabbitmq.port}")
-    private String port;
-
-    @Value("${spring.rabbitmq.username}")
-    private String username;
-
-    @Value("${spring.rabbitmq.password}")
-    private String password;
-
-    @Value("${spring.rabbitmq.virtual-host}")
-    private String virtualHost;
-
-    @Value("${spring.rabbitmq.publisher-confirms}")
-    private boolean publisherConfirms;
+//    @Value("${spring.rabbitmq.host}")
+//    private String addresses;
+//
+//    @Value("${spring.rabbitmq.port}")
+//    private String port;
+//
+//    @Value("${spring.rabbitmq.username}")
+//    private String username;
+//
+//    @Value("${spring.rabbitmq.password}")
+//    private String password;
+//
+//    @Value("${spring.rabbitmq.virtual-host}")
+//    private String virtualHost;
+//
+//    @Value("${spring.rabbitmq.publisher-confirms}")
+//    private boolean publisherConfirms;
 
 
     // 这样做  rabbitmq会讲路由键也是direct.queue，队列名称
@@ -146,15 +140,15 @@ public class MQConfig {
 //        return new Queue(TOPIC_QUEUE2,true);
 //    }
     /***************************交换机**************************************/
-    @Bean
-    public TopicExchange topicExchangeGameInsert(){
-        return new TopicExchange(TOPIC_EXCHANGE_GAME_INSERT);
-    }
-
-    @Bean
-    public TopicExchange topicExchangeGameUpdate(){
-        return new TopicExchange(TOPIC_EXCHANGE_GAME_UPDATE);
-    }
+//    @Bean
+//    public TopicExchange topicExchangeGameInsert(){
+//        return new TopicExchange(TOPIC_EXCHANGE_GAME_INSERT);
+//    }
+//
+//    @Bean
+//    public TopicExchange topicExchangeGameUpdate(){
+//        return new TopicExchange(TOPIC_EXCHANGE_GAME_UPDATE);
+//    }
 
     /*@Bean
     public TopicExchange topicExchangeCommunityInsert(){
@@ -177,15 +171,15 @@ public class MQConfig {
         return new TopicExchange(TOPIC_EXCHANGE_BASACTION_INSERT);
     }*/
 //    2019-05-10
-    @Bean
-    public TopicExchange topicExchangeBasActionInsertAllColumn(){
-        return new TopicExchange(TOPIC_EXCHANGE_BASACTION_INSERTALLCOLUMN);
-    }
-    //    2019-05-10
-    @Bean
-    public TopicExchange topicExchangeBasActionSelectOneAndUpdateAllColumnById(){
-        return new TopicExchange(TOPIC_EXCHANGE_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID);
-    }
+//    @Bean
+//    public TopicExchange topicExchangeBasActionInsertAllColumn(){
+//        return new TopicExchange(TOPIC_EXCHANGE_BASACTION_INSERTALLCOLUMN);
+//    }
+//    //    2019-05-10
+//    @Bean
+//    public TopicExchange topicExchangeBasActionSelectOneAndUpdateAllColumnById(){
+//        return new TopicExchange(TOPIC_EXCHANGE_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID);
+//    }
 
 
 
@@ -205,14 +199,14 @@ public class MQConfig {
 
     /***  start ***/
     /********************创建Queue***********************************/
-    @Bean
-    public Queue topicQueueGameInsert(){
-        return new Queue(TOPIC_QUEUE_GAME_INSERT,true);
-    }
-    @Bean
-    public Queue topicQueueGameUpdate(){
-        return new Queue(TOPIC_QUEUE_GAME_UPDATE,true);
-    }
+//    @Bean
+//    public Queue topicQueueGameInsert(){
+//        return new Queue(TOPIC_QUEUE_GAME_INSERT,true);
+//    }
+//    @Bean
+//    public Queue topicQueueGameUpdate(){
+//        return new Queue(TOPIC_QUEUE_GAME_UPDATE,true);
+//    }
    /* @Bean
     public Queue topicQueueCommunityInsert(){
         return new Queue(TOPIC_QUEUE_COMMUNITY_INSERT,true);
@@ -232,27 +226,27 @@ public class MQConfig {
         return new Queue(TOPIC_QUEUE_BASACTION_INSERT,true);
     }*/
     //    2019-05-10
-    @Bean
-    public Queue topicQueueBasActionInsertAllColumn(){
-        return new Queue(TOPIC_QUEUE_BASACTION_INSERTALLCOLUMN,true);
-    }
-    //    2019-05-10
-    @Bean
-    public Queue topicQueueBasActionSelectOneAndUpdateAllColumnById(){
-        return new Queue(TOPIC_QUEUE_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID,true);
-    }
+//    @Bean
+//    public Queue topicQueueBasActionInsertAllColumn(){
+//        return new Queue(TOPIC_QUEUE_BASACTION_INSERTALLCOLUMN,true);
+//    }
+//    //    2019-05-10
+//    @Bean
+//    public Queue topicQueueBasActionSelectOneAndUpdateAllColumnById(){
+//        return new Queue(TOPIC_QUEUE_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID,true);
+//    }
 
     /*****************************************绑定Queue******************************************************************/
 
-    @Bean
-    public Binding topicBindingGameUpdate(){
-        return BindingBuilder.bind(topicQueueGameUpdate()).to(topicExchangeGameUpdate()).with(TOPIC_KEY_GAME_UPDATE);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
-    }
-
-    @Bean
-    public Binding topicBindingGameInsert(){
-        return BindingBuilder.bind(topicQueueGameInsert()).to(topicExchangeGameInsert()).with(TOPIC_KEY_GAME_INSERT);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
-    }
+//    @Bean
+//    public Binding topicBindingGameUpdate(){
+//        return BindingBuilder.bind(topicQueueGameUpdate()).to(topicExchangeGameUpdate()).with(TOPIC_KEY_GAME_UPDATE);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+//    }
+//
+//    @Bean
+//    public Binding topicBindingGameInsert(){
+//        return BindingBuilder.bind(topicQueueGameInsert()).to(topicExchangeGameInsert()).with(TOPIC_KEY_GAME_INSERT);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+//    }
 
     /*@Bean
     public Binding topicBindingCommunityInsert(){
@@ -274,15 +268,15 @@ public class MQConfig {
         return BindingBuilder.bind(topicQueueBasActionInsert()).to(topicExchangeBasActionInsert()).with(TOPIC_KEY_BASACTION_INSERT);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
     }*/
 //    2019-05-10
-    @Bean
-    public Binding topicBindingBasActionInsertAllColumn(){
-        return BindingBuilder.bind(topicQueueBasActionInsertAllColumn()).to(topicExchangeBasActionInsertAllColumn()).with(TOPIC_KEY_BASACTION_INSERTALLCOLUMN);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
-    }
-//    2019-05-10
-    @Bean
-    public Binding topicBindingBasActionSelectOneAndUpdateAllColumnById(){
-        return BindingBuilder.bind(topicQueueBasActionSelectOneAndUpdateAllColumnById()).to(topicExchangeBasActionSelectOneAndUpdateAllColumnById()).with(TOPIC_KEY_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
-    }
+//    @Bean
+//    public Binding topicBindingBasActionInsertAllColumn(){
+//        return BindingBuilder.bind(topicQueueBasActionInsertAllColumn()).to(topicExchangeBasActionInsertAllColumn()).with(TOPIC_KEY_BASACTION_INSERTALLCOLUMN);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+//    }
+////    2019-05-10
+//    @Bean
+//    public Binding topicBindingBasActionSelectOneAndUpdateAllColumnById(){
+//        return BindingBuilder.bind(topicQueueBasActionSelectOneAndUpdateAllColumnById()).to(topicExchangeBasActionSelectOneAndUpdateAllColumnById()).with(TOPIC_KEY_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+//    }
 
 
     /**-------------------fanout END--------------------------*/
