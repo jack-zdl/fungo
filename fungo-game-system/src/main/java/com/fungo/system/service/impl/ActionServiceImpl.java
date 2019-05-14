@@ -77,6 +77,7 @@ public class ActionServiceImpl implements IActionService {
 
 
     //点赞
+    @Transactional
     public ResultDto<String> like(String memberId, ActionInput inputDto, String appVersion) throws Exception {
         BasAction action = this.getAction(memberId, Setting.ACTION_TYPE_LIKE, inputDto);
 
@@ -730,11 +731,13 @@ public class ActionServiceImpl implements IActionService {
         if (CommonlyConst.getCommunityList().contains(inputDto.getTarget_type())){
 //            社区服务空缺 19-05-07
             if (false){
+                //@todo mq 消息
                 return communityFeignClient.updateCounter(map);
             }
         }
         if (CommonlyConst.getGameList().contains(inputDto.getTarget_type())){
 //            feign客户端调用游戏服务
+            //@todo mq 消息
             return iDeveloperProxyService.updateCounter(map);
         }
         if (CommonlyConst.getSystemList().contains(inputDto.getTarget_type())){

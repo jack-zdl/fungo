@@ -95,6 +95,8 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 	public int selectPostCount(CmmPostDto cmmPostDto) {
 		return communityFeignClient.selectPostCount(cmmPostDto);
 	}
+
+
 	@HystrixCommand(fallbackMethod = "hystrixGetMemberIdByTargetId",ignoreExceptions = {Exception.class},
 			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
 	@Override

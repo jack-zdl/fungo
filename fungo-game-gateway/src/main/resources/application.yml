@@ -35,12 +35,22 @@ management:
 # 路由配置
 zuul:
   routes:
-    fungo-game-system:
-      path: /api/action/**,/api/report/**
+    fungo-game-system-1:
+      path: /api/action/**
       serviceId: FUNGO-GAME-SYSTEM
       sensitiveHeaders:
       strip-prefix: false
-
+    fungo-game-system-2:
+      path: /api/report/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-3:
+      path: /api/user/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+#common.ribbon.listOfServers=http://10.0.0.1:8081/common,http://10.0.0.2:8081/common  #请求需要使用功能区进行负载平衡。
  # 配置超时时间断路器才有效果（加入Zuul）
 
 
