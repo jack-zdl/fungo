@@ -20,17 +20,17 @@ import java.util.Map;
 @FeignClient(name = "FUNGO-GAME-GAMES")
 public interface GamesFeignClient {
 
-    @RequestMapping(value = "/api/content/gameList", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/api/content/gameList", method = RequestMethod.POST)
     FungoPageResultDto<GameOutBean> getGameList( @RequestBody GameItemInput input);
 
-    @RequestMapping(value = "/api/content/games", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/api/content/games", method = RequestMethod.POST)
     FungoPageResultDto<GameOutPage> getGameList(@RequestBody GameInputPageDto gameInputDto);
 
 
-    @RequestMapping(value = "/api/gamereleaselog", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/api/gamereleaselog", method = RequestMethod.POST)
     FungoPageResultDto<GameReleaseLogDto> selectOne(GameReleaseLogDto GameReleaseLog);
 
-    @RequestMapping(value = "/api/game/{gameId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/api/game/{gameId}", method = RequestMethod.POST)
     GameDto selectOne(@PathVariable("gameId") String gameId);
 
     /**
@@ -38,13 +38,13 @@ public interface GamesFeignClient {
      * @param map
      * @return
      */
-    @RequestMapping(value = "/api/update/counter", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/api/update/counter", method = RequestMethod.POST)
     boolean updateCounter(@RequestBody Map<String, String> map);
 
-    @RequestMapping(value = "/api/gameSurveyRel", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/api/gameSurveyRel", method = RequestMethod.POST)
     int selectCount(  GameSurveyRelDto gameSurveyRel);
 
-    @RequestMapping(value = "/api/gameEvaluation", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/api/gameEvaluation", method = RequestMethod.POST)
     int selectGameEvaluationCount(  GameEvaluationDto gameEvaluation);
 
     /**
@@ -52,6 +52,6 @@ public interface GamesFeignClient {
      * @param map
      * @return
      */
-    @RequestMapping(value = "/api/getMemberIdByTargetId", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/api/getMemberIdByTargetId", method = RequestMethod.POST)
     String getMemberIdByTargetId(@RequestBody Map<String, String> map);
 }

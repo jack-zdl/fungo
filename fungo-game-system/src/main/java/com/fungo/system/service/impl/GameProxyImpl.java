@@ -476,6 +476,7 @@ public class GameProxyImpl implements IGameProxy {
 		}
 		if (CommonlyConst.getGameList().contains(target_type)){
 //            feign客户端调用游戏服务 被点赞用户的id
+			// @todo 社区
 			return iDeveloperProxyService.getMemberIdByTargetId(map);
 		}
 		if (CommonlyConst.getSystemList().contains(target_type)){
