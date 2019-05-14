@@ -101,10 +101,9 @@
 	</select>
 	
 	<select id="getFollowerCommunityId" resultType="String" parameterType="String"><![CDATA[ 
-		select c.id as objectId
-		from t_cmm_community c ,t_bas_action a where 
-			a.member_id=#{memberId} and a.type=5 and a.state<>-1 
-			and c.id=a.target_id
+		select a.target_id as objectId
+		from t_bas_action a where
+			a.member_id=#{memberId} and a.type=5 and a.state<>-1
 	]]></select>
 	
 	<!-- 用户时间线-帖子 新版已弃用 -->
