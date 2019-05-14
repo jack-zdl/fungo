@@ -1,6 +1,8 @@
 package com.fungo.system.proxy.impl;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.feign.CommunityFeignClient;
+import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.proxy.IGameProxyService;
 import com.fungo.system.service.impl.MemberIncentRiskServiceImpl;
 import com.game.common.dto.FungoPageResultDto;
@@ -34,6 +36,9 @@ public class GameProxyServiceImpl implements IGameProxyService {
 
     @Autowired
     private CommunityFeignClient communityFeignClient;
+
+    @Autowired
+    private GamesFeignClient gamesFeignClient;
 
     /**
      * 功能描述: 
@@ -112,11 +117,17 @@ public class GameProxyServiceImpl implements IGameProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public GameEvaluationDto selectGameEvaluationById(String id) {
-        return null;
+         GameEvaluationDto param = new GameEvaluationDto();
+         param.setId(id);
+         Page<GameEvaluationDto> gameEvaluationDtoPage = gamesFeignClient.getGameEvaluationPage(param);
+         if(gameEvaluationDtoPage.getRecords().size() > 0){
+             param = gameEvaluationDtoPage.getRecords().get(0);
+         }
+        return param;
     }
 
 
-    public GameEvaluationDto hystrixSelectGameEvaluationById(){
+    public GameEvaluationDto hystrixSelectGameEvaluationById(String id){
         logger.warn("GameProxyServiceImpl.selectGameEvaluationById根据主键查询游戏评价异常");
         return null;
     }
