@@ -46,7 +46,7 @@ import java.util.Map;
 @SuppressWarnings("all")
 @RestController
 @Api(value = "", description = "feignService 调用中心")
-@RequestMapping("/ms/service")
+@RequestMapping("/ms/service/game")
 public class FeignServiceController {
     private static final Logger LOGGER = LoggerFactory.getLogger(FeignServiceController.class);
 
