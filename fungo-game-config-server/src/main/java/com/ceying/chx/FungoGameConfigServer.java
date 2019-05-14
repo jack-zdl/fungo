@@ -6,8 +6,6 @@ import org.springframework.cloud.config.server.EnableConfigServer;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 @SpringBootApplication
-@EnableEurekaClient
-@EnableConfigServer
 public class FungoGameConfigServer {
 	public static void main(String[] args) {
 		SpringApplication.run(FungoGameConfigServer.class, args);

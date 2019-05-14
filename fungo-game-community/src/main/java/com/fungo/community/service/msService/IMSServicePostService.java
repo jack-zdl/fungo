@@ -5,6 +5,7 @@ import com.game.common.dto.community.CmmPostDto;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -23,4 +24,11 @@ public interface IMSServicePostService {
      */
     public List<CmmPostDto> queryCmmPostList(@RequestBody CmmPostDto postDto);
 
+
+
+    /**
+     * 精品帖子数大于2的用户
+     * @return
+     */
+    public List<Map> getHonorQualificationOfEssencePost();
 }

@@ -1,8 +1,8 @@
 package com.game.common.dto.community;
 
 
+import com.game.common.api.InputPageDto;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -13,7 +13,7 @@ import java.util.Date;
  * @author lzh
  * @since 2018-12-12
  */
-public class CmmCommunityDto implements Serializable{
+public class CmmCommunityDto  extends InputPageDto {
 
 
 	private static final long serialVersionUID = 1809130108573632639L;

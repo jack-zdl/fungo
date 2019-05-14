@@ -75,7 +75,7 @@ spring:
   session:
     store-type: redis
   zipkin:
-    base-url:  http://47.104.87.10:9411
+    base-url:  http://127.0.0.1:9411
     sender:
       type: web
   sleuth:
