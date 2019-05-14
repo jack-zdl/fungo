@@ -3,6 +3,7 @@ package com.game.common.dto.game;
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.game.common.api.InputPageDto;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,7 +16,7 @@ import java.util.Date;
  * @author lzh
  * @since 2018-11-19
  */
-public class GameReleaseLogDto implements Serializable{
+public class GameReleaseLogDto extends InputPageDto implements Serializable{
 
 	private static final long serialVersionUID = 5696812430113649072L;
 
