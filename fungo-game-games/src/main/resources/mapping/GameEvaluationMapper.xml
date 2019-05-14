@@ -23,4 +23,41 @@
         id, content, images, phone_model AS phoneModel, reply_num AS replyNum, state, like_num AS likeNum, game_id AS gameId, member_id AS memberId, is_recommend AS isRecommend, created_at AS createdAt, updated_at AS updatedAt
     </sql>
 
+	<!-- 查询游戏评论表中发表评论大于14条，前10名的用户 -->
+	<select id="getRecommendMembersFromEvaluation" resultType="String">
+		SELECT
+		member_id
+		FROM
+		( SELECT member_id, count( member_id ) AS ecnt FROM t_game_evaluation
+		<where>
+			state = 0
+			<if test="wathMbsSet != null and wathMbsSet.size > 0">
+				AND   member_id NOT IN
+				<foreach item="item" index="index" collection="wathMbsSet" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+		GROUP BY member_id
+		ORDER BY ecnt desc
+		) AS evalcnt
+		WHERE
+		<![CDATA[ evalcnt.ecnt >= #{ecnt} ]]>
+		<if test="limitSize > 0">
+			LIMIT  #{limitSize}
+		</if>
+	</select>
+
+	<!--getMemberOrder 根据游戏id查询参与评论的用户-->
+	<select id="getMemberOrder" resultType="com.game.common.bean.MemberPulishFromCommunity" parameterType="java.util.Map">
+	  	SELECT sum(f.c) as postNum,sum(f.d) as commentNum,sum(f.f) as evaNum,f.member_id as memberId FROM (
+	  	SELECT 0 as c,0 as d,COUNT(*) as f,member_id FROM t_game_evaluation t WHERE game_id = #{gameId} and state = 0 GROUP BY t.member_id
+	  	) f GROUP BY f.member_id ORDER BY SUM(f.c+f.d+f.f) DESC,f.member_id DESC
+    </select>
+	<!--getUserGameReviewBoutiqueNumber 用户游戏评测精品数-->
+	<select id="getUserGameReviewBoutiqueNumber" resultType="java.util.Map">
+		SELECT * FROM
+		(SELECT member_id,0 as post_count,COUNT(*) as eva_count,0 as like_count FROM t_game_evaluation WHERE type = 2 GROUP BY member_id)
+		a WHERE a.eva_count >= 2
+	</select>
 </mapper>

@@ -39,7 +39,7 @@ public class EvaluateController {
 		return this.evaluateService.addGameEvaluation(memberUserPrefile.getLoginId(), commentInput);
 	}
 	
-	/*@ApiOperation(value="游戏评价详情", notes="")
+	@ApiOperation(value="游戏评价详情", notes="")
 	@RequestMapping(value="/api/content/evaluation/{evaluationId}", method= RequestMethod.GET)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "evaluation_id",value = "心情id",paramType = "path",dataType = "string"),
@@ -80,9 +80,8 @@ public class EvaluateController {
 		if(memberUserPrefile != null) {
 			memberId = memberUserPrefile.getLoginId();
 		}
-		
 		return evaluateService.anliEvaluationDetail(memberId,evaluationId);
-	}*/
+	}
 
 	/**********************************************回复*******************************************************************/
 

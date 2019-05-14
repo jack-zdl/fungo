@@ -3,6 +3,7 @@ package com.game.common.dto.evaluation;
 
 
 import com.game.common.dto.AuthorBean;
+import com.game.common.dto.community.ReplyBean;
 
 import java.util.ArrayList;
 import java.util.List;

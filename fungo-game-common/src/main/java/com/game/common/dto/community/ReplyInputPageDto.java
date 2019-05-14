@@ -2,7 +2,12 @@ package com.game.common.dto.community;
 
 
 import com.game.common.api.InputPageDto;
+import lombok.Data;
 
+/**
+ * 微服务迁移新增 state属性
+ */
+@Data
 public class ReplyInputPageDto  extends InputPageDto {
 	private static final long serialVersionUID = 1L;
 	private String target_id;
@@ -19,5 +24,7 @@ public class ReplyInputPageDto  extends InputPageDto {
 	public void setUser_id(String user_id) {
 		this.user_id = user_id;
 	}
+
+	private Integer state;
 	
 }
