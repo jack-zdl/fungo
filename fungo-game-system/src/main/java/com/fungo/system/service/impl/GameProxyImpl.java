@@ -5,8 +5,8 @@ import com.fungo.system.constts.CommonlyConst;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.entity.BasNotice;
 import com.fungo.system.entity.Member;
-import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.proxy.IDeveloperProxyService;
+import com.fungo.system.proxy.IGameProxyService;
 import com.fungo.system.service.*;
 import com.game.common.consts.Setting;
 import com.game.common.dto.GameDto;
@@ -63,8 +63,9 @@ public class GameProxyImpl implements IGameProxy {
 //	@Autowired
 //	//private ScoreRuleServiceImap scoreRuleService;
 //	private ScoreRuleService scoreRuleService;
+
 	@Autowired
-	private CommunityFeignClient communityFeignClient;
+	private IGameProxyService gameProxyServiceImpl;
 
 	@Autowired
 	private IDeveloperProxyService iDeveloperProxyService;
@@ -466,7 +467,7 @@ public class GameProxyImpl implements IGameProxy {
 //            社区服务空缺 19-05-07
 			if (false){
 //				被点赞用户的id
-				return communityFeignClient.getMemberIdByTargetId(map);
+				return iDeveloperProxyService.getMemberIdByTargetId(map); //  communityFeignClient.getMemberIdByTargetId(map);
 			}
 //            return false;
 		}

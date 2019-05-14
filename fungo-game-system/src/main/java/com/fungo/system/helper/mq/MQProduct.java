@@ -3,8 +3,6 @@ package com.fungo.system.helper.mq;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.game.GameReleaseLogDto;
-import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -20,11 +18,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class MQProduct {
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
-
-    @Autowired
-    private  AmqpTemplate template;
+//    @Autowired
+//    private RabbitTemplate rabbitTemplate;
+//
+//    @Autowired
+//    private  AmqpTemplate template;
 
 
 //    /** DIRECT模式
@@ -60,7 +58,7 @@ public class MQProduct {
      */
     public void sendTopic(String topicExchange,String topicKey,Object message){
 //        rabbitTemplate.setConfirmCallback((message,))
-        template.convertAndSend(topicExchange,topicKey,message);  // 可以匹配到 topic.# and topic.key1
+//        template.convertAndSend(topicExchange,topicKey,message);  // 可以匹配到 topic.# and topic.key1
 //        template.convertAndSend(MQConfig.TOPIC_EXCHANGE,"topic.key2",msg+"2");  // 可以匹配到 topic.#
     }
 

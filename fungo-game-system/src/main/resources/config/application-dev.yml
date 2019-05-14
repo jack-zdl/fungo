@@ -6,7 +6,7 @@ eureka:
     lease-renewal-interval-in-seconds: 5
   client:
     serviceUrl:
-      defaultZone:  http://47.104.87.10:8761/eureka/
+      defaultZone:  http://127.0.0.1:8761/eureka/
 server:
   port: 8088
 spring:
@@ -64,31 +64,31 @@ spring:
   session:
     store-type: redis
   zipkin:
-    base-url: http://47.104.87.10:9411
+    base-url: http://127.0.0.1:9411
     sender:
       type: web
   sleuth:
     sampler:
       probability: 1.0
 
-  rabbitmq:
-    host: 47.104.87.10
-    port: 5672
-    username: admin
-    password: admin
-    virtual-host: /
-    publisher-confirms: true  # 开启发送确认
-    publisher-returns: true   # 开启发送失败退回
-    listener:
-      direct:
-        acknowledge-mode: manual
-      simple:
-        acknowledge-mode: manual
-
-    template:
-      retry:
-        enabled: true
-        initial-interval: 2s
+#  rabbitmq:
+#    host: 47.104.87.10
+#    port: 5672
+#    username: admin
+#    password: admin
+#    virtual-host: /
+#    publisher-confirms: true  # 开启发送确认
+#    publisher-returns: true   # 开启发送失败退回
+#    listener:
+#      direct:
+#        acknowledge-mode: manual
+#      simple:
+#        acknowledge-mode: manual
+#
+#    template:
+#      retry:
+#        enabled: true
+#        initial-interval: 2s
   #热部署
   devtools:
     livereload:

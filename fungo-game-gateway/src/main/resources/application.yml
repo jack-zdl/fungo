@@ -1,7 +1,11 @@
 eureka:
   client:
     serviceUrl:
-      defaultZone:  http://47.104.87.10:8761/eureka/
+      defaultZone:  http://127.0.0.1:8761/eureka/
+  instance:
+    instance-id: ${spring.application.name}:${spring.cloud.client.ipAddress}:${spring.application.instance_id:${server.port}}
+    prefer-ip-address: true
+    appname: scyp-gateway
 server:
   port: 8182
 spring:
@@ -11,23 +15,36 @@ spring:
     sampler:
       percentage: 1.0
   zipkin:
-    base-url: http://47.104.87.10:9411/
+    base-url: http://127.0.0.1:9411/
 
 ## 关闭安全限制
 #management:
 #  security:
 #    enabled: false
+#显示路由zuul的端口配置，不配置无法访问 /routes
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
 #
 # 路由配置
 zuul:
   routes:
     fungo-game-system:
-      path: /system/**
-      serviceId: fungo-game-system
-    fungo-game-games:
-      path: /games/**
-      serviceId: fungo-game-games
+      path: /api/action/**,/api/report/**
+      serviceId: FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+
  # 配置超时时间断路器才有效果（加入Zuul）
+
+
+
 ribbon:
   ReadTimeout: 30000
   ConnectTimeout: 30000
@@ -38,3 +55,8 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 10000
+
+logging:
+  level:
+    ROOT: INFO
+    org.springframework.web: DEBUG
