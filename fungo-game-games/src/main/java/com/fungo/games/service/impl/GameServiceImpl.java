@@ -6,18 +6,19 @@ import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.games.dao.GameDao;
-import com.fungo.games.entity.Game;
-import com.fungo.games.entity.GameEvaluation;
-import com.fungo.games.entity.GameReleaseLog;
-import com.fungo.games.entity.GameSurveyRel;
+import com.fungo.games.entity.*;
+import com.fungo.games.proxy.IEvaluateProxyService;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.consts.Setting;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.*;
+import com.game.common.dto.user.MemberDto;
 import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
@@ -26,10 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class GameServiceImpl implements IGameService {
@@ -50,8 +54,8 @@ public class GameServiceImpl implements IGameService {
     @Autowired
     private GameEvaluationService gameEvaluationService;
 
-//    @Autowired
-//    private GameTagService gameTagService;
+    @Autowired
+    private GameTagService gameTagService;
 //
 //    @Autowired
 //    private BasTagService bagTagService;
@@ -61,14 +65,16 @@ public class GameServiceImpl implements IGameService {
     @Autowired
     private GameDao gameDao;
 //
-//    @Autowired
-//    private GameCollectionItemService gameCollectionItemService;
+    @Autowired
+    private GameCollectionItemService gameCollectionItemService;
 //    @Autowired
 //    private IUserService iuserService;
 //
     @Autowired
     private FungoCacheGame fungoCacheGame;
 
+    @Autowired
+    private IEvaluateProxyService iEvaluateProxyService;
 //    @Override
 //    public ResultDto<GameOut> getGameDetail(String gameId, String memberId, String ptype)
 //            throws Exception {
@@ -291,11 +297,10 @@ public class GameServiceImpl implements IGameService {
 
     @Override
     public FungoPageResultDto<GameOutPage> getGameList(GameInputPageDto gameInputDto, String memberId, String os) {
-
         String keySuffix = JSON.toJSONString(gameInputDto) + os;
-        FungoPageResultDto<GameOutPage> re = (FungoPageResultDto<GameOutPage> )fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_LIST + memberId, keySuffix);
-        if (null != re  && null != re.getData() && re.getData().size() > 0){
-            return  re;
+        FungoPageResultDto<GameOutPage> re = (FungoPageResultDto<GameOutPage>) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_LIST + memberId, keySuffix);
+        if (null != re && null != re.getData() && re.getData().size() > 0) {
+            return re;
         }
 
         Wrapper wrapper = new EntityWrapper<Game>().where("state = {0}", 0);
@@ -307,7 +312,7 @@ public class GameServiceImpl implements IGameService {
             wrapper = wrapper.like("tags", tag);
         }
 
-//        @SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked")
 //		Page<Game> gamePage = gameService.selectPage(new Page<>(page, limit),wrapper);
 //		List<Game> gameList = gamePage.getRecords();
                 List<Game> gameList = gameService.selectList(wrapper);
@@ -380,7 +385,7 @@ public class GameServiceImpl implements IGameService {
         PageTools.pageToResultDto(re, p);
         re.setData(dataList);
         //redis cache
-        fungoCacheGame.excIndexCache(true,FungoCoreApiConstant.FUNGO_CORE_API_GAME_LIST + memberId, keySuffix,re);
+        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_LIST + memberId, keySuffix, re);
         return re;
     }
 
@@ -455,20 +460,20 @@ public class GameServiceImpl implements IGameService {
     }
 
 
-//    public List<TraitBean> traitFormat(HashMap<String, BigDecimal> rateData) {
-//        List<TraitBean> traitList = new ArrayList<>();
-//
-//        if (traitList.size() == 0) {
-//            for (int i = 1; i <= 5; i++) {
-//                TraitBean tb = new TraitBean();
-//                tb.setKey("avgTrait" + i);
-//                tb.setKeyName(transKey(tb.getKey()));
-//                tb.setValue(rateData.get(tb.getKey()) == null ? BigDecimal.valueOf(0) : rateData.get(tb.getKey()));
-//                traitList.add(tb);
-//            }
-//        }
-//        return traitList;
-//    }
+    public List<TraitBean> traitFormat(HashMap<String, BigDecimal> rateData) {
+        List<TraitBean> traitList = new ArrayList<>();
+
+        if (traitList.size() == 0) {
+            for (int i = 1; i <= 5; i++) {
+                TraitBean tb = new TraitBean();
+                tb.setKey("avgTrait" + i);
+                tb.setKeyName(transKey(tb.getKey()));
+                tb.setValue(rateData.get(tb.getKey()) == null ? BigDecimal.valueOf(0) : rateData.get(tb.getKey()));
+                traitList.add(tb);
+            }
+        }
+        return traitList;
+    }
 
     public String transKey(String key) {
         if (key.contains("1")) {
@@ -523,7 +528,243 @@ public class GameServiceImpl implements IGameService {
 
     @Override
     public ResultDto<GameOut> getGameDetail(String gameId, String memberId, String ptype) throws Exception {
-        return null;
+        GameOut outResult = (GameOut) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, memberId + ptype);
+        if (null != outResult) {
+            return ResultDto.success(outResult);
+        }
+
+        Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", "0"));
+        if (game == null) {
+            return ResultDto.error("211", "找不到目标游戏");
+        }
+        // 根据图片比例数据生成相应的返回字段
+        int width = 16, height = 9;
+        if (game.getImageRatio() == 1) {
+            width = 9;
+            height = 16;
+        }
+        GameOut out = new GameOut();
+        out.setName(game.getName());
+        out.setGame_size(formatGameSize(game.getGameSize()));
+        out.setImage_height(height);
+        out.setImage_width(width);
+        out.setVersion(game.getVersionMain() + "." + game.getVersionChild());
+
+
+        //根据当前运行环境生成链接
+        String env = Setting.RUN_ENVIRONMENT;
+        if (env.equals("dev")) {
+            out.setLink_url(Setting.DEFAULT_SHARE_URL_DEV + "/game/" + gameId);
+        } else if (env.equals("pro")) {
+            out.setLink_url(Setting.DEFAULT_SHARE_URL_PRO + "/game/" + gameId);
+        } else if (env.equals("uat")) {
+            out.setLink_url(Setting.DEFAULT_SHARE_URL_DEV + "/game/" + gameId);
+        }
+
+        // 上架计划增加下载按钮的开关（关）
+        out.setIs_download(false);
+        try {
+            if (game.getCompatibility() != null) {
+                ObjectMapper mapper = new ObjectMapper();
+                out.setCompatibility((ArrayList<String>) mapper.readValue(game.getCompatibility(), ArrayList.class));
+            }
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+        out.setPackageName(game.getAndroidPackageName());
+
+        out.setVideo(game.getVideo());
+        out.setApk(game.getApk());
+        out.setCover_image(game.getCoverImage());
+        out.setDetail(game.getDetail());
+        out.setDeveloper(game.getDeveloper());
+        out.setIcon(game.getIcon());
+        out.setImage_ratio(game.getImageRatio());
+        out.setIsbn_id(game.getIsbnId());
+        out.setIntro(game.getIntro());
+        out.setItunes_id(game.getItunesId());
+        out.setObjectId(game.getId());
+        out.setLink_community(game.getCommunityId());
+        out.setOrigin(game.getOrigin());
+        out.setRelease_image(game.getReleaseImage());
+        out.setState(game.getState());
+        out.setUpdate_log(game.getUpdateLog());
+        out.setVersion_child(game.getVersionChild());
+        out.setVersion_main(game.getVersionMain());
+
+        // 生成推荐相关数据
+        //fix bug: 修改排序规则 按时间升序 [by mxf 2019-03-01]
+        List<GameEvaluation> recoList = gameEvaluationService.selectList(new EntityWrapper<GameEvaluation>().eq("game_id", gameId).eq("state", 0).orderBy("created_at", true));
+        //end
+//		List<BasAction> recoList = actionService.selectList(new EntityWrapper<BasAction>().eq("target_id", gameId).in("type", new Integer[] { 8, 9 }).and("state != -1").orderBy("created_at", false));
+        // List<String> userIdList =
+        // actionList.stream().map(BasAction::getMemberId).collect(Collectors.toList());
+//		int likeCountRecent = 0;
+//		int unlikeCountRecent = 0;
+//		int recentDayCount = 7;
+//		int recentTime = recentDayCount * 24 * 60 * 60 * 1000;
+//		boolean isRecent = true;
+        List<Map<String, Object>> recommendList = new ArrayList<>();
+        if (recoList != null && recoList.size() != 0) {
+            for (GameEvaluation g : recoList) {
+                if (recommendList.size() < 8) {
+                    Map<String, Object> map = new HashMap<>();
+//                    迁移 微服务 根据用户id获取memberDto feign执行
+//                    2019-05-11
+//                    lyc
+//                    Member user = memberService.selectById(g.getMemberId());
+                    MemberDto memberDto = new MemberDto();
+                    memberDto.setId(g.getMemberId());
+                    MemberDto user = iEvaluateProxyService.getMemberDtoBySelectOne(memberDto);
+                    if (null != user) {
+                        map.put("username", user.getUserName());
+                        map.put("avatar", user.getAvatar());
+//                        迁移 微服务 根据用户id获取用户身份图标
+//                        2019-05-11
+//                        lyc
+//                        map.put("statusImg", iuserService.getStatusImage(memberId));
+                        List<HashMap<String, Object>> list =  iEvaluateProxyService.getStatusImageByMemberId(memberId);
+                        map.put("statusImg", list);
+                        recommendList.add(map);
+                    }
+                }
+//				if (isRecent && new Date().getTime() - g.getCreatedAt().getTime() <= recentTime) {
+//					if ("1".equals(g.getIsRecommend())) {
+//						likeCountRecent = likeCountRecent + 1;
+//					} else {
+//						unlikeCountRecent = unlikeCountRecent + 1;
+//					}
+//				} else {
+//					isRecent = false;
+//				}
+            }
+            out.setRecommend_list(recommendList);
+        }
+//		int recommend_recent_count = likeCountRecent + unlikeCountRecent;
+//		int recommend_total_count = game.getRecommendNum() + game.getUnrecommendNum();
+//		//gameMap.put("recommend_list", recommendList);
+//		out.setRecent_day_count(recentDayCount);
+//		out.setRecommend_recent_count(recommend_recent_count);
+//		DecimalFormat df = new DecimalFormat("#.00");
+//		out.setRecommend_recent_rate(recommend_recent_count == 0 ? 0 : Double.parseDouble(df.format((double)likeCountRecent / recommend_recent_count * 100)));
+//		out.setRecommend_total_rate(recommend_total_count == 0 ? 0 :  Double.parseDouble(df.format((double)game.getRecommendNum() / recommend_total_count * 100)));
+//		out.setRecommend_total_count(recommend_total_count);
+
+        //fix:游戏下载量使用虚假字段 [by mxf 2019-05-07]
+        int downloadNum = 0;
+        if (null == game.getBoomDownloadNum() || 0 == game.getBoomDownloadNum()) {
+            downloadNum = game.getDownloadNum();
+        } else {
+            downloadNum = game.getBoomDownloadNum().intValue();
+        }
+        out.setDownload_num(downloadNum);
+        //ends
+
+        // 查询评论数量
+        int evaCount = gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", gameId).and("state != -1"));
+        out.setEvaluation_num(evaCount);
+
+        //2.4  平均分 每颗星占比 雷达图
+        //没人评分 有人评分
+        int count = gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", gameId));
+        if (count > 0) {
+            HashMap<String, BigDecimal> rateData = gameDao.getRateData(gameId);
+            if (rateData != null) {
+                if (rateData.get("avgRating") != null) {
+                    out.setRating(Double.parseDouble(rateData.get("avgRating").toString()));
+                }
+                rateData.remove("gameId");
+                rateData.remove("avgRating");
+            } else {
+                rateData = new HashMap<String, BigDecimal>();
+                rateData.put("avgTrait1", BigDecimal.valueOf(0));
+                rateData.put("avgTrait2", BigDecimal.valueOf(0));
+                rateData.put("avgTrait3", BigDecimal.valueOf(0));
+                rateData.put("avgTrait4", BigDecimal.valueOf(0));
+                rateData.put("avgTrait5", BigDecimal.valueOf(0));
+            }
+            out.setTraitList(traitFormat(rateData));
+
+            //获取每个游戏评分所占百分比 key:评分  value:百分比
+            HashMap<String, BigDecimal> percentData = gameDao.getPercentData(gameId);
+            HashMap<String, Double> perMap = new HashMap<>();
+
+            if (percentData != null) {//评分两两分组,统计占比 1：1-2分， 2：3-4分， 3：5-6分， 4：7-8分， 5：9-10分
+                perMap.put("1", percentData.get("1").doubleValue() + percentData.get("2").doubleValue());
+                perMap.put("2", percentData.get("3").doubleValue() + percentData.get("4").doubleValue());
+                perMap.put("3", percentData.get("5").doubleValue() + percentData.get("6").doubleValue());
+                perMap.put("4", percentData.get("7").doubleValue() + percentData.get("8").doubleValue());
+                perMap.put("5", percentData.get("9").doubleValue() + percentData.get("10").doubleValue());
+            } else {
+                perMap.put("1", 0.0);
+                perMap.put("2", 0.0);
+                perMap.put("3", 0.0);
+                perMap.put("4", 0.0);
+                perMap.put("5", 0.0);
+            }
+            perMap = percentFormat(perMap);
+
+            out.setRatingList(rateFormat(perMap));
+        } else {
+            List<TraitBean> traitList = new ArrayList<>();
+            for (int i = 1; i <= 5; i++) {
+                TraitBean tb = new TraitBean();
+                tb.setKey("avgTrait" + i);
+                tb.setKeyName(transKey(tb.getKey()));
+                tb.setValue(BigDecimal.valueOf(0));
+                traitList.add(tb);
+            }
+            out.setTraitList(traitList);
+        }
+
+        // 查询游戏标签
+        List<GameTag> gameTagList = gameTagService.selectList(new EntityWrapper<GameTag>().eq("game_id", gameId).eq("type", 1));
+        //andNew("type = {0}",1).or("like_num > {0}",5).orderBy("like_num", false).last("LIMIT 5"));
+        if (gameTagList != null && gameTagList.size() > 0) {
+//            迁移微服务 根据判断集合id获取BasTagList集合
+//            List<BasTag> tagList = bagTagService.selectList(new EntityWrapper<BasTag>().in("id",
+//                    gameTagList.stream().map(GameTag::getTagId).collect(Collectors.toList())));
+            List<String> collect = gameTagList.stream().map(GameTag::getTagId).collect(Collectors.toList());
+            List<BasTagDto> tagList = iEvaluateProxyService.getBasTagBySelectListInId(collect);
+            if (tagList != null && tagList.size() > 0) {
+                List<String> tagNames = new ArrayList<>();
+                tagList.forEach(tag -> tagNames.add(tag.getName()));
+                //gameMap.put("tags", tagNames);
+                out.setTags(tagNames);
+            }
+        }
+
+        out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
+        out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
+        try {
+            if (game.getImages() != null) {
+                ObjectMapper mapper = new ObjectMapper();
+                out.setImages((ArrayList<String>) mapper.readValue(game.getImages(), ArrayList.class));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        out.setAuthor(game.getMemberId());
+
+        if (game.getAndroidState() != null) {
+            out.setAndroidState(game.getAndroidState());
+        }
+        if (game.getIosState() != null) {
+            out.setIosState(game.getIosState());
+        }
+
+        if (!"".equals(memberId) && !"".equals(ptype)) {//游戏预约测试信息
+            GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", game.getId()).eq("phone_model", ptype).eq("state", 0));
+            if (srel != null) {
+                out.setBinding(!StringUtils.isNullOrEmpty(srel.getAppleId()));
+                out.setClause(1 == srel.getAgree() ? true : false);
+                out.setMake(true);
+            }
+        }
+
+        //redis cache
+        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, memberId + ptype, out);
+        return ResultDto.success(out);
     }
 
 //    @Override
@@ -533,22 +774,159 @@ public class GameServiceImpl implements IGameService {
 
     @Override
     public ResultDto<List<TagOutPage>> getGameTags() {
-        return null;
+        List<TagOutPage> outList = (List<TagOutPage>) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_TAG, "");
+        if (null != outList && !outList.isEmpty()) {
+            return ResultDto.success(outList);
+        }
+        //官方标签
+//        迁移微服务 根据group_id获取BasTag集合
+//        2019-05-13
+//        lyc
+//        List<BasTag> tagList = bagTagService.selectList(new EntityWrapper<BasTag>().eq("group_id", "5ad55eb4ac502e0042ae29d9"));
+        BasTagDto basTagDto = new BasTagDto();
+        basTagDto.setGroupId("5ad55eb4ac502e0042ae29d9");
+        List<BasTagDto> tagList = iEvaluateProxyService.getBasTagBySelectListGroupId(basTagDto);
+        outList = new ArrayList<>();
+        for (BasTagDto tag : tagList) {
+            TagOutPage out = new TagOutPage();
+            out.setObjectId(tag.getId());
+            out.setName(tag.getName());
+            out.setGroupId(tag.getGroupId());
+            out.setGameNum(tag.getGameNum());
+            out.setSort(tag.getSort());
+            out.setCreatedAt(DateTools.fmtDate(tag.getCreatedAt()));
+            out.setUpdatedAt(DateTools.fmtDate(tag.getUpdatedAt()));
+            outList.add(out);
+        }
+        //redis cache
+        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_TAG, "", outList);
+        return ResultDto.success(outList);
     }
 
     @Override
     public FungoPageResultDto<GameOutPage> recentEvaluatedGamesByMember(String userId, InputPageDto input) {
-        return null;
+        String keySuffix = JSON.toJSONString(input);
+        FungoPageResultDto<GameOutPage> re = (FungoPageResultDto<GameOutPage>) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_RECENTEVA + userId,
+                keySuffix);
+        if (null != re && null != re.getData() && re.getData().size() > 0) {
+            return re;
+        }
+
+        Page page = new Page<>(input.getPage(), input.getLimit());
+        List<HashMap<String, Object>> list = gameDao.getRecentCommentedGames(page, userId);
+        List<GameOutPage> olist = new ArrayList<>();
+
+        for (HashMap<String, Object> map : list) {
+            GameOutPage out = new GameOutPage();
+            out.setIcon((String) map.get("icon"));
+            out.setName((String) map.get("name"));
+            out.setObjectId((String) map.get("game_id"));
+            HashMap<String, BigDecimal> rateData = gameDao.getRateData((String) map.get("game_id"));
+            if (rateData != null) {
+                if (rateData.get("avgRating") != null) {
+                    out.setRating(Double.parseDouble(rateData.get("avgRating").toString()));
+                } else {
+                    out.setRating(0.0);
+                }
+            } else {
+                out.setRating(0.0);
+            }
+            out.setComment_num((int) map.get("comment_num"));
+            out.setLink_community((String) map.get("community_id"));
+            out.setCategory((String) map.get("tags"));
+            olist.add(out);
+        }
+        re = new FungoPageResultDto<GameOutPage>();
+        PageTools.pageToResultDto(re, page);
+        re.setData(olist);
+
+        //redis cache
+        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_RECENTEVA + userId, keySuffix, re);
+        return re;
     }
 
     @Override
     public FungoPageResultDto<GameItem> getGameItems(String memberId, GameItemInput input, String os) {
-        return null;
+        //通过id找出合集项
+        //找出游戏 一个一个配
+        String keySuffix = memberId + JSON.toJSONString(input) + os;
+        FungoPageResultDto<GameItem> re = (FungoPageResultDto<GameItem>) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_ITEMS,
+                keySuffix);
+
+        if (null != re && null != re.getData() && re.getData().size() > 0) {
+            return re;
+        }
+
+        boolean m = false;
+        if (!CommonUtil.isNull(memberId)) {//是否为登录用户
+            m = true;
+        }
+
+        re = new FungoPageResultDto<GameItem>();
+        List<GameItem> ilist = new ArrayList<>();
+        Page<GameCollectionItem> itemPage =
+                gameCollectionItemService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameCollectionItem>().eq("group_id", input.getGroup_id()));
+
+        List<GameCollectionItem> glist = itemPage.getRecords();
+        List<String> gameIdList = new ArrayList<>();
+        if (glist.size() > 0) {
+            gameIdList = glist.stream().map(GameCollectionItem::getGameId).collect(Collectors.toList());
+        }
+        if (gameIdList.size() > 0) {
+            List<Game> gamel = gameService.selectList(new EntityWrapper<Game>().in("id", gameIdList));
+            for (Game game : gamel) {
+                GameItem it = new GameItem();
+                it.setAndroidPackageName(game.getAndroidPackageName());
+                it.setAndroidState(game.getAndroidState());
+                it.setApkUrl(game.getApk());
+                if (m) {
+                    GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", game.getId()).eq("phone_model", os).eq("state", 0));
+                    if (srel != null) {
+                        it.setBinding(!StringUtils.isNullOrEmpty(srel.getAppleId()));
+                        it.setClause(1 == srel.getAgree() ? true : false);
+                        it.setMake(true);
+                    }
+                }
+                it.setIcon(game.getIcon());
+                it.setObjectId(game.getId());
+                it.setName(game.getName());
+                it.setIosState(game.getIosState());
+                it.setItunesId(game.getItunesId());
+
+                HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
+                if (rateData != null) {
+                    if (rateData.get("avgRating") != null) {
+                        it.setRating(Double.parseDouble(rateData.get("avgRating").toString()));
+                    } else {
+                        it.setRating(0.0);
+                    }
+                } else {
+                    it.setRating(0.0);
+                }
+                it.setCategory(game.getTags());
+
+                ilist.add(it);
+            }
+            PageTools.pageToResultDto(re, itemPage);
+            re.setData(ilist);
+        }
+        //redis cache
+        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_ITEMS, keySuffix, re);
+        return re;
     }
 
     @Override
     public double getGameRating(String gameId) {
-        return 0;
+        HashMap<String, BigDecimal> rateData = gameDao.getRateData(gameId);
+        if (rateData != null) {
+            if (rateData.get("avgRating") != null) {
+                return Double.parseDouble(rateData.get("avgRating").toString());
+            } else {
+                return 0.0;
+            }
+        } else {
+            return 0.0;
+        }
     }
 
     @Override
@@ -590,41 +968,41 @@ public class GameServiceImpl implements IGameService {
 
 
 
-//    //分数区间
-//    public List<RatingBean> rateFormat(HashMap<String, Double> perMap) {
-//        List<RatingBean> blist = new ArrayList<>();
-//        RatingBean bean1 = new RatingBean();
-//        bean1.setKey("1-2分");
-//        bean1.setValue(perMap.get("1"));
-//
-//
-//        RatingBean bean2 = new RatingBean();
-//        bean2.setKey("3-4分");
-//        bean2.setValue(perMap.get("2"));
-//
-//
-//        RatingBean bean3 = new RatingBean();
-//        bean3.setKey("5-6分");
-//        bean3.setValue(perMap.get("3"));
-//
-//
-//        RatingBean bean4 = new RatingBean();
-//        bean4.setKey("7-8分");
-//        bean4.setValue(perMap.get("4"));
-//
-//
-//        RatingBean bean5 = new RatingBean();
-//        bean5.setKey("9-10分");
-//        bean5.setValue(perMap.get("5"));
-//        blist.add(bean5);
-//        blist.add(bean4);
-//        blist.add(bean3);
-//        blist.add(bean2);
-//        blist.add(bean1);
-//
-//        return blist;
-//
-//    }
+    //分数区间
+    public List<RatingBean> rateFormat(HashMap<String, Double> perMap) {
+        List<RatingBean> blist = new ArrayList<>();
+        RatingBean bean1 = new RatingBean();
+        bean1.setKey("1-2分");
+        bean1.setValue(perMap.get("1"));
+
+
+        RatingBean bean2 = new RatingBean();
+        bean2.setKey("3-4分");
+        bean2.setValue(perMap.get("2"));
+
+
+        RatingBean bean3 = new RatingBean();
+        bean3.setKey("5-6分");
+        bean3.setValue(perMap.get("3"));
+
+
+        RatingBean bean4 = new RatingBean();
+        bean4.setKey("7-8分");
+        bean4.setValue(perMap.get("4"));
+
+
+        RatingBean bean5 = new RatingBean();
+        bean5.setKey("9-10分");
+        bean5.setValue(perMap.get("5"));
+        blist.add(bean5);
+        blist.add(bean4);
+        blist.add(bean3);
+        blist.add(bean2);
+        blist.add(bean1);
+
+        return blist;
+
+    }
 
 //    @Override
 //    public FungoPageResultDto<GameOutPage> recentEvaluatedGamesByMember(String userId, InputPageDto input) {

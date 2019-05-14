@@ -8,23 +8,28 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameEvaluation;
-import com.fungo.games.feign.SystemFeignClient;
+import com.fungo.games.entity.GameTag;
 import com.fungo.games.helper.MQProduct;
-import com.fungo.games.service.GameEvaluationService;
-import com.fungo.games.service.GameService;
-import com.fungo.games.service.ICounterService;
-import com.fungo.games.service.IEvaluateService;
+import com.fungo.games.proxy.IEvaluateProxyService;
+import com.fungo.games.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.community.ReplyBean;
+import com.game.common.dto.community.ReplyInputPageDto;
 import com.game.common.dto.evaluation.*;
+import com.game.common.dto.game.BasTagDto;
+import com.game.common.dto.game.ReplyDto;
+import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheGame;
+import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
@@ -93,14 +98,26 @@ public class EvaluateServiceImpl implements IEvaluateService {
     /**
      * 系统feignClient
      */
+    /*@Autowired
+    private SystemFeignClient systemFeignClient;*/
+
+    /**
+     * 系统feignClient的hystrix代理
+     */
     @Autowired
-    private SystemFeignClient systemFeignClient;
+    private IEvaluateProxyService iEvaluateProxyService;
 
     /**
      * MQ
      */
     @Autowired
     private MQProduct mqProduct;
+
+    @Autowired
+    private GameTagService gameTagService;
+
+    @Autowired
+    private GameDao gameDao;
 
     @Override
     @Transactional
@@ -193,7 +210,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 //            迁移微服务后 SystemFeignClient调用 用户成长fungo币
 //            2019-05-10
 //            lyc
-            Map<String, Object> resMapCoin = systemFeignClient.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+            Map<String, Object> resMapCoin = iEvaluateProxyService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                     MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code());
 
             //2 经验值
@@ -202,7 +219,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 //            迁移微服务后 SystemFeignClient调用 用户成长经验值
 //            2019-05-10
 //            lyc
-            Map<String, Object> resMapExp = systemFeignClient.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+            Map<String, Object> resMapExp = iEvaluateProxyService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                     MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
 
             if (null != resMapCoin && !resMapCoin.isEmpty()) {
@@ -308,7 +325,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 //        迁移微服务 feignClient调用 根据用户id获取authorBean
 //        2019-05-10
 //        lyc
-        t.setAuthor(systemFeignClient.getAuthor(memberId));
+        t.setAuthor(iEvaluateProxyService.getAuthor(memberId));
 
         t.setContent(CommonUtils.filterWord(commentInput.getContent()));
         t.setObjectId(evaluation.getId());
@@ -343,7 +360,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         return re;
     }
 
-    /*@Override
+    @Override
     public ResultDto<EvaluationOutBean> getEvaluationDetail(String memberId, String commentId) {
         ResultDto<EvaluationOutBean> re = new ResultDto<EvaluationOutBean>();
         EvaluationOutBean bean = new EvaluationOutBean();
@@ -356,8 +373,11 @@ public class EvaluateServiceImpl implements IEvaluateService {
             bean.setRating(evaluation.getRating());
         }
         bean.setSort(evaluation.getSort());
-
-        bean.setAuthor(this.userService.getAuthor(evaluation.getMemberId()));
+//        迁移 微服务后 变动 根据用户id获取authorbean
+//        2019-05-11
+//        lyc
+//        bean.setAuthor(this.userService.getAuthor(evaluation.getMemberId()));
+        bean.setAuthor(iEvaluateProxyService.getAuthor(evaluation.getMemberId()));
         bean.setContent(CommonUtils.filterWord(evaluation.getContent()));
         bean.setCreatedAt(DateTools.fmtDate(evaluation.getCreatedAt()));
         ObjectMapper objectMapper = new ObjectMapper();
@@ -386,14 +406,23 @@ public class EvaluateServiceImpl implements IEvaluateService {
         if ("".equals(memberId) || memberId == null) {
             bean.setIs_liked(false);
         } else {
-            int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", evaluation.getId()).eq("member_id", memberId));
+//            迁移微服务 根据条件判断查询总数(有notIn) feign客户端
+//            2019-05-11
+//            lyc
+//            int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", evaluation.getId()).eq("member_id", memberId));
+            BasActionDto basActionDto = new BasActionDto();
+            basActionDto.setType(0);
+            basActionDto.setState(0);
+            basActionDto.setTargetId(evaluation.getId());
+            basActionDto.setMemberId(memberId);
+            int liked = iEvaluateProxyService.getBasActionSelectCount(basActionDto);
             bean.setIs_liked(liked > 0 ? true : false);
         }
         re.setData(bean);
         return re;
-    }*/
+    }
 
-    /*@Override
+    @Override
     public FungoPageResultDto<EvaluationOutPageDto> getEvaluationList(String memberId, EvaluationInputPageDto pageDto) {
 
         FungoPageResultDto<EvaluationOutPageDto> re = null;
@@ -447,29 +476,49 @@ public class EvaluateServiceImpl implements IEvaluateService {
             ctem.setPhone_model(cmmComment.getPhoneModel());
             ctem.setReply_count(cmmComment.getReplyNum());
             ctem.setUpdatedAt(DateTools.fmtDate(cmmComment.getUpdatedAt()));
-            ctem.setAuthor(this.userService.getAuthor(cmmComment.getMemberId()));
+//            迁移微服务 根据用户id获取authorbean对象 feignclient
+//            ctem.setAuthor(this.userService.getAuthor(cmmComment.getMemberId()));
+//            2019-05-11
+//            lyc
+            ctem.setAuthor(iEvaluateProxyService.getAuthor(cmmComment.getMemberId()));
             //2.4 评分
             if (cmmComment.getRating() != null) {
                 ctem.setRating(cmmComment.getRating());
             }
+
             //回复
-            Page<Reply> replyList = replyService.selectPage(new Page<>(1, 3), new EntityWrapper<Reply>().eq("target_id", cmmComment.getId()).eq("state", 0).orderBy("created_at", true));
+//            迁移微服务 根据条件判断获取ReplyDtoList集合
+//            2019-05-11
+//            lyc
+//            Page<ReplyDto> replyList = replyService.selectPage(new Page<>(1, 3), new EntityWrapper<Reply>().eq("target_id", cmmComment.getId()).eq("state", 0).orderBy("created_at", true));
+            ReplyInputPageDto replyInputPageDto = new ReplyInputPageDto();
+            replyInputPageDto.setPage(1);
+            replyInputPageDto.setPageSize(3);
+            replyInputPageDto.setTarget_id(cmmComment.getId());
+            replyInputPageDto.setState(0);
+            Page<ReplyDto> replyList = iEvaluateProxyService.getReplyDtoBysSelectPageOrderByCreatedAt(replyInputPageDto);
             int i = 0;
-            for (Reply reply : replyList.getRecords()) {
+            for (ReplyDto reply : replyList.getRecords()) {
                 i = i + 1;
                 if (i == 3) {
                     ctem.setReply_more(true);
                     break;
                 }
                 ReplyBean replybean = new ReplyBean();
-                replybean.setAuthor(this.userService.getAuthor(reply.getMemberId()));
+                replybean.setAuthor(iEvaluateProxyService.getAuthor(reply.getMemberId()));
                 replybean.setContent(CommonUtils.filterWord(reply.getContent()));
                 replybean.setCreatedAt(DateTools.fmtDate(reply.getCreatedAt()));
                 replybean.setObjectId(reply.getId());
                 replybean.setUpdatedAt(DateTools.fmtDate(reply.getUpdatedAt()));
                 replybean.setLike_num(reply.getLikeNum());
                 replybean.setReplyToId(reply.getReplayToId());
-                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
+//                微服务 根据条件判断获取memberDto对象
+//                2019-05-11
+//                lyc
+//                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
+                MemberDto md = new MemberDto();
+                md.setId(reply.getReplayToId());
+                MemberDto m = iEvaluateProxyService.getMemberDtoBySelectOne(md);
                 if (m != null) {
                     replybean.setReplyToName(m.getUserName());
                 }
@@ -480,8 +529,16 @@ public class EvaluateServiceImpl implements IEvaluateService {
             if ("".equals(memberId) || memberId == null) {
                 ctem.setIs_liked(false);
             } else {
-                int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", cmmComment.getId()).eq("member_id", memberId));
+//                int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", cmmComment.getId()).eq("member_id", memberId));
+                BasActionDto basActionDto = new BasActionDto();
+                basActionDto.setType(0);
+                basActionDto.setState(0);
+                basActionDto.setTargetId(cmmComment.getId());
+                basActionDto.setMemberId(memberId);
+                int liked = iEvaluateProxyService.getBasActionSelectCount(basActionDto);
                 ctem.setIs_liked(liked > 0 ? true : false);
+
+
             }
             relist.add(ctem);
         }
@@ -492,11 +549,11 @@ public class EvaluateServiceImpl implements IEvaluateService {
         fungoCacheGame.excIndexCache(true, keyPrefix, keySuffix, re);
 
         return re;
-    }*/
+    }
 
 
 
-    /*@Override
+    @Override
     public ResultDto<EvaluationOutBean> anliEvaluationDetail(String memberId, String evaId) {
         //根据sort和时间来排行
         ResultDto<EvaluationOutBean> result = this.getEvaluationDetail(memberId, evaId);
@@ -522,9 +579,148 @@ public class EvaluateServiceImpl implements IEvaluateService {
         }
 
         return result;
-    }*/
+    }
 
+    /**
+     * 根据后台标签id集合，分类标签，游戏id
+     * @param tags
+     * @param categoryId
+     * @param gameId
+     * @return
+     */
+    @SuppressWarnings("all")
+    @Override
+    @Transactional
+    public boolean feignAddGameTagInsert(List<String> tags, String categoryId, String gameId) {
+        if (tags.size() > 3) {
+            return false;
+        }
+        // 获取游戏的官方标签(分类) 后台标签 type = 1 type = 2
+        List<GameTag> gameTagList = gameTagService
+                .selectList(Condition.create().setSqlSelect("id,tag_id").eq("game_id", gameId).eq("type", 2));//1
+        GameTag cTag = gameTagService
+                .selectOne(Condition.create().setSqlSelect("id,tag_id").eq("game_id", gameId).eq("type", 1));//2
+        List<String> preTagIdList = new ArrayList<String>();//已有后台标签
+        String preCategory = null;
+        if(gameTagList != null && gameTagList.size()>0) {
+            for(GameTag gameTag:gameTagList) {
+                preTagIdList.add(gameTag.getTagId());
+            }
+        }
+        if(cTag != null) {//是否存在官方标签
+            preCategory = cTag.getTagId();
+        }
+        // 对比，增删
+        List<String> newTagIdList = tags;
+        newTagIdList = new ArrayList<String>(newTagIdList);
+        List<String> tempIdList = new ArrayList<String>();
+        preTagIdList.forEach(s -> tempIdList.add(s));
 
+        // 删除id
+        preTagIdList.removeAll(newTagIdList);
+        // 添加id
+        newTagIdList.removeAll(tempIdList);
+
+        Game game = gameService.selectById(gameId);
+
+        String tagsFormGame = game.getTags();
+        //官方标签处理
+        if(!CommonUtil.isNull(preCategory)) i:{//官方标签存在
+            if(CommonUtil.isNull(categoryId)) {
+                break i;
+            }
+            if(!preCategory.equals(categoryId)) {//如果不同
+                //删旧(type=0)
+                GameTag gameTag = gameTagService
+                        .selectOne(new EntityWrapper<GameTag>().eq("tag_id", preCategory).eq("game_id", gameId));
+                gameTag.setType(-1);
+                gameTag.updateById();
+                //添新
+                GameTag ofTag = gameTagService
+                        .selectOne(new EntityWrapper<GameTag>().eq("tag_id", categoryId).eq("game_id", gameId));
+                if(ofTag != null) {
+                    ofTag.setType(1);
+                    gameTagService.updateById(ofTag);
+                }else {
+                    GameTag newGameTag = new GameTag();
+                    newGameTag.setTagId(categoryId);
+                    Date date = new Date();
+                    newGameTag.setType(1);
+                    newGameTag.setGameId(gameId);
+                    newGameTag.setCreatedAt(date);
+                    newGameTag.setUpdatedAt(date);
+                    gameTagService.insert(newGameTag);
+
+                }
+//                迁移微服务 根据bastagid获取basTag对象
+//                2019-05-14
+//                lyc
+//                BasTag tag = tagService.selectById(categoryId);
+                BasTagDto basTagDto = new BasTagDto();
+                basTagDto.setId(categoryId);
+                BasTagDto tag = iEvaluateProxyService.getBasTagBySelectById(basTagDto);
+                tagsFormGame = tag.getName();
+            }
+        }else {//官方标签不存在(1)
+            //添新
+            GameTag ofTag = gameTagService //有,改成官方
+                    .selectOne(new EntityWrapper<GameTag>().eq("tag_id", categoryId).eq("game_id", gameId));
+            if(ofTag != null) {
+                ofTag.setType(1);
+                gameTagService.updateById(ofTag);
+            }else {
+                GameTag newGameTag = new GameTag();
+                newGameTag.setTagId(categoryId);
+                Date date = new Date();
+                newGameTag.setType(1);
+                newGameTag.setGameId(gameId);
+                newGameTag.setCreatedAt(date);
+                newGameTag.setUpdatedAt(date);
+                gameTagService.insert(newGameTag);
+
+            }
+//                迁移微服务 根据bastagid获取basTag对象
+//                2019-05-14
+//                lyc
+//            BasTag tag = tagService.selectById(categoryId);
+            BasTagDto basTagDto = new BasTagDto();
+            basTagDto.setId(categoryId);
+            BasTagDto tag = iEvaluateProxyService.getBasTagBySelectById(basTagDto);
+            tagsFormGame = tag.getName();
+        }
+
+        //后台标签处理
+        for (String delTagId : preTagIdList) {// 删除后台标签(type=0)
+            GameTag gameTag = gameTagService
+                    .selectOne(new EntityWrapper<GameTag>().eq("tag_id", delTagId).eq("game_id", gameId));
+
+            if(gameTag != null ) {
+                gameTag.setType(0);
+                gameTagService.updateById(gameTag);
+            }
+        }
+        for (String updateId : newTagIdList) {// 更新
+            GameTag gameTag = gameTagService
+                    .selectOne(new EntityWrapper<GameTag>().eq("tag_id", updateId).eq("game_id", gameId));
+            if(gameTag == null) {
+                GameTag newGameTag = new GameTag();
+                newGameTag.setTagId(updateId);
+                Date date = new Date();
+                newGameTag.setGameId(gameId);
+                newGameTag.setCreatedAt(date);
+                newGameTag.setUpdatedAt(date);
+                newGameTag.setType(2);
+                gameTagService.insert(newGameTag);
+            }else if(gameTag.getType() == 0) {
+                gameTag.setType(2);
+                gameTagService.updateById(gameTag);
+            }
+
+        }
+
+        gameDao.updateTags(gameId,tagsFormGame);
+        return true;
+    }
 
 
 }

@@ -1,4 +1,4 @@
-package com.ceying.chx;
+package com.fungo.gateway.chx;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,7 +1,7 @@
 eureka:
   client:
     serviceUrl:
-      defaultZone:  http://peer1:8761/eureka/
+      defaultZone:  http://127.0.0.1:8761/eureka/
   instance:
     prefer-ip-address: true
 server:
@@ -9,27 +9,27 @@ server:
 spring:
   application:
     name: fungo-game-bus
-  rabbitmq:
-    host: 47.104.87.10
-    port: 5672
-    username: admin
-    password: admin
-  cloud:
-    config:
-      uri: http://localhost:8768/
-      naem: application
-      #      #指定当前所属环境
-      profile: dev
-      discovery:
-        #      #开启通过服务访问config-server的功能
-        enabled: true
-        #        #指定配置中心注册到eureka的serviceId(即config-server的application-name)
-        serviceId: fungo-game-config
-      #        #git仓库分支
-      label: master
-    bus:
-      trace:
-        enabled: true
+#  rabbitmq:
+#    host: 47.104.87.10
+#    port: 5672
+#    username: admin
+#    password: admin
+#  cloud:
+#    config:
+#      uri: http://localhost:8768/
+#      naem: application
+#      #      #指定当前所属环境
+#      profile: dev
+#      discovery:
+#        #      #开启通过服务访问config-server的功能
+#        enabled: true
+#        #        #指定配置中心注册到eureka的serviceId(即config-server的application-name)
+#        serviceId: fungo-game-config
+#      #        #git仓库分支
+#      label: master
+#    bus:
+#      trace:
+#        enabled: true
 management:
 #  security:
 #    enabled: false

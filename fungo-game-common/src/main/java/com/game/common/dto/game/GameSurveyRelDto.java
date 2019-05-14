@@ -1,6 +1,8 @@
 package com.game.common.dto.game;
 
 
+import com.game.common.api.InputPageDto;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -12,7 +14,7 @@ import java.util.Date;
  * @author lzh
  * @since 2018-06-14
  */
-public class GameSurveyRelDto  {
+public class GameSurveyRelDto extends InputPageDto {
 
 	private String id;
     /**
