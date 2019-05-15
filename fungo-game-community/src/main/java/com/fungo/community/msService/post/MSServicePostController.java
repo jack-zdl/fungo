@@ -3,6 +3,7 @@ package com.fungo.community.msService.post;
 
 import com.fungo.community.service.msService.IMSServicePostService;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmPostDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,6 @@ public class MSServicePostController {
     }
 
 
-
     /**
      * 精品帖子数大于2的用户数据
      * @return
@@ -58,5 +58,20 @@ public class MSServicePostController {
         resultDto.setData(essencePostList);
         return resultDto;
     }
+
+
+    /**
+     * 查询 社区帖子总数
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/post/count")
+    public ResultDto<Integer> queryCmmPostCount(@RequestBody CmmPostDto cmmPostDto) {
+        ResultDto<Integer> resultDto = new ResultDto<Integer>();
+        Integer cmmPostCount = imsServicePostService.queryCmmPostCount(cmmPostDto);
+        resultDto.setData(cmmPostCount);
+        return resultDto;
+    }
+
+
     //--------
 }

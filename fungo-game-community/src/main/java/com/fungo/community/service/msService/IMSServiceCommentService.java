@@ -2,7 +2,7 @@ package com.fungo.community.service.msService;
 
 
 import com.game.common.dto.community.CmmCmtReplyDto;
-import org.springframework.web.bind.annotation.RequestBody;
+import com.game.common.dto.community.CmmCommentDto;
 
 import java.util.List;
 
@@ -21,6 +21,20 @@ public interface IMSServiceCommentService {
      * 分页查询 二级评论数据列表
      * @return
      */
-    public List<CmmCmtReplyDto> querySecondLevelCmtList(@RequestBody CmmCmtReplyDto replyDto);
+    public List<CmmCmtReplyDto> querySecondLevelCmtList(CmmCmtReplyDto replyDto);
 
+
+    /**
+     * 分页查询 一级评论数据列表
+     * @return
+     */
+    public List<CmmCommentDto> queryFirstLevelCmtList(CmmCommentDto cmmCommentDto);
+
+
+
+    /**
+     * 二级评论总数
+     * @return
+     */
+    public Integer querySecondLevelCmtCount(CmmCmtReplyDto replyDto);
 }

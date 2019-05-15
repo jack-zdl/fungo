@@ -68,6 +68,12 @@ public class CmmComment extends Model<CmmComment> {
      */
 	private Integer type;
 
+	/**
+	 * 社区id
+	 */
+	@TableField("community_id")
+	private String communityId;
+
 
 	public String getId() {
 		return id;
@@ -162,4 +168,11 @@ public class CmmComment extends Model<CmmComment> {
 		return this.id;
 	}
 
+	public String getCommunityId() {
+		return communityId;
+	}
+
+	public void setCommunityId(String communityId) {
+		this.communityId = communityId;
+	}
 }
