@@ -44,6 +44,7 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 
 //	updateCounter
 
+
 	@HystrixCommand(fallbackMethod = "hystrixUpdateCounter",ignoreExceptions = {Exception.class},
 			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
 	public boolean updateCounter(Map<String,String> map) {
@@ -51,8 +52,11 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 	}
 
 
-
-
+	@HystrixCommand(fallbackMethod = "hystrixUpdateCounter",ignoreExceptions = {Exception.class},
+			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+	public boolean updatecommunityCounter(Map<String,String> map) {
+		return gamesFeignClient.updateCounter(map);
+	}
 
 	@HystrixCommand(fallbackMethod = "hystrixSelectReleaseLog",ignoreExceptions = {Exception.class},
 			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )

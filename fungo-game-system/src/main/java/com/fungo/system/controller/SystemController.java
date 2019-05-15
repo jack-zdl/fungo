@@ -118,14 +118,6 @@ public class SystemController {
         }
     }
 
-    public static void main(String[] args) {
-        ArrayList list = new ArrayList();
-        list.add("aaa");
-        list.add("aab");
-        Object json = JSON.toJSON(list);
-        System.out.println(json);
-    }
-
     /**
      *  根据用户id和用户权益(等级、身份、荣誉)类型，获取用户权益数据
      */

@@ -22,17 +22,17 @@ import java.util.Map;
 @FeignClient(name = "FUNGO-GAME-GAMES")
 public interface GamesFeignClient {
 
-    @RequestMapping(value = "/ms/service/api/content/gameList", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/game/api/content/gameList", method = RequestMethod.POST)
     FungoPageResultDto<GameOutBean> getGameList( @RequestBody GameItemInput input);
 
-    @RequestMapping(value = "/ms/service/api/content/games", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/game/api/content/games", method = RequestMethod.POST)
     FungoPageResultDto<GameOutPage> getGameList(@RequestBody GameInputPageDto gameInputDto);
 
 
-    @RequestMapping(value = "/ms/service/api/gamereleaselog", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/game/api/gamereleaselog", method = RequestMethod.POST)
     FungoPageResultDto<GameReleaseLogDto> selectOne(GameReleaseLogDto GameReleaseLog);
 
-    @RequestMapping(value = "/ms/service/api/game/{gameId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/game/api/game/{gameId}", method = RequestMethod.POST)
     GameDto selectOne(@PathVariable("gameId") String gameId);
 
     /**
@@ -40,13 +40,13 @@ public interface GamesFeignClient {
      * @param map
      * @return
      */
-    @RequestMapping(value = "/ms/service/api/update/counter", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/game/api/update/counter", method = RequestMethod.POST)
     boolean updateCounter(@RequestBody Map<String, String> map);
 
-    @RequestMapping(value = "/ms/service/api/gameSurveyRel", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/game/api/gameSurveyRel", method = RequestMethod.POST)
     int selectCount(  GameSurveyRelDto gameSurveyRel);
 
-    @RequestMapping(value = "/ms/service/api/gameEvaluation", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/game/api/gameEvaluation", method = RequestMethod.POST)
     int selectGameEvaluationCount(  GameEvaluationDto gameEvaluation);
 
     /**
@@ -54,7 +54,7 @@ public interface GamesFeignClient {
      * @param map
      * @return
      */
-    @RequestMapping(value = "/ms/service/api/getMemberIdByTargetId", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/game/api/getMemberIdByTargetId", method = RequestMethod.POST)
     String getMemberIdByTargetId(@RequestBody Map<String, String> map);
 
 
@@ -64,6 +64,10 @@ public interface GamesFeignClient {
      * @return
      */
     @ApiOperation(value = "游戏评价的分页查询", notes = "")
-    @RequestMapping(value = "/ms/service/api/evaluation/getGameEvaluationPage", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/game/api/evaluation/getGameEvaluationPage", method = RequestMethod.POST)
     Page<GameEvaluationDto> getGameEvaluationPage(@RequestBody GameEvaluationDto gameEvaluationDto);
+
+    @ApiOperation(value = "根据游戏对象查询集合", notes = "")
+    @RequestMapping(value = "/api/geme/getGamePage", method = RequestMethod.POST)
+    Page<GameDto> getGamePage(@RequestBody GameDto gameDto);
 }

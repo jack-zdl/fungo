@@ -32,6 +32,7 @@ import javax.validation.constraints.Size;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>系统微服务对外服务实现类</p>
@@ -304,9 +305,13 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public ResultDto<List<String>> listtargetId(BasActionDto basActionDto) {
+
         //Wrapper<BasAction> wrapper = Condition.create().setSqlSelect("target_id");
-        EntityWrapper<BasAction> wrapper = new EntityWrapper<>();
+       // EntityWrapper<BasAction> wrapper = new EntityWrapper<>();
        // wrapper.setSqlSelect("target_id");
+
+        Wrapper<BasAction> wrapper = Condition.create().setSqlSelect(" target_id as targetId");
+
         if(basActionDto.getMemberId()!=null){
             wrapper.eq("member_id", basActionDto.getMemberId());
         }
@@ -320,12 +325,21 @@ public class SystemServiceImpl implements SystemService {
             wrapper.eq("state", basActionDto.getState());
         }
         //List<BasAction> list = basActionDao.selectList(wrapper);
-        List<BasAction> actionList = actionServiceImap.selectList(wrapper);
+       /* List<BasAction> actionList = actionServiceImap.selectList(wrapper);
         ArrayList<String> list = new ArrayList<>();
         for (BasAction basAction : actionList) {
             list.add(basAction.getTargetId());
         }
-        return ResultDto.success(list);
+        return ResultDto.success(list);*/
+        List<BasAction> actionList = actionServiceImap.selectList(wrapper);
+        LOGGER.info(actionList.size()+"");
+        List<String> ids = actionList.stream().filter(li -> {return li != null && li.getTargetId() != null && li.getTargetId() != "";}).map(BasAction::getTargetId).collect(Collectors.toList());
+      /*  ArrayList<String> list = new ArrayList<>();
+        for (BasAction basAction : actionList) {
+            list.add(basAction.getTargetId());
+        }*/
+        return ResultDto.success(ids);
+
     }
 
 
