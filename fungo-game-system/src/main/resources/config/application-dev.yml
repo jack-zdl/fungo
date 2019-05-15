@@ -89,6 +89,21 @@ spring:
 #      retry:
 #        enabled: true
 #        initial-interval: 2s
+
+#---------------------------------------mq----------------------------------------------
+  rabbitmq:
+      host: 1811420479436984.mq-amqp.cn-hangzhou-a.aliyuncs.com
+      port: 5672
+      username: LTAIsW4qLBG6M3Vf
+      password: EBQbTTZGhPptMw3tGJ1grmG4r6uD7l
+      virtual-host: dev
+      template:
+        mandatory: true
+      publisher-confirms: true
+      publisher-returns: true
+  #---------------------------------------mq----------------------------------------------
+
+
   #热部署
   devtools:
     livereload:
@@ -263,7 +278,7 @@ javamelody:
 
 #---------------MQ重发参数------------------
 ##message timeout (消息存放超过下面设置的时间才可以取出处理  时间单位：秒)
- message:
+message:
     handle.duration: 180
   ##消息最多发送次数
     max.send.times: 5
