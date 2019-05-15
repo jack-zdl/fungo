@@ -1,6 +1,7 @@
-package com.ceying.triagreement.stream;
+package com.fungo.gateway.filter;
 
 import com.netflix.zuul.ZuulFilter;
+import org.springframework.stereotype.Component;
 
 /**
  * 功能说明: <br>
@@ -8,7 +9,6 @@ import com.netflix.zuul.ZuulFilter;
  * 开发人员: zhangdl <br>
  * 开发时间: 2018/3/1 17:22<br>
  */
-
 public class AccessFilter extends ZuulFilter {
 
 

@@ -26,6 +26,10 @@ public interface IDeveloperProxyService {
 	ResultDto<String> addGameTag(List<String> tags, String categoryId, String gameId);
 
 	boolean updateCounter(Map<String, String> map);
+
+	boolean updatecommunityCounter(Map<String, String> map);
+
+
 	GameDto selectGame(String gameId);
 
 	int selectCount(  GameSurveyRelDto gameSurveyRel);

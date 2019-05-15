@@ -11,6 +11,7 @@ import com.fungo.system.dao.MemberDao;
 import com.fungo.system.dto.FollowInptPageDao;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
+import com.fungo.system.proxy.IMemeberProxyService;
 import com.fungo.system.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.bean.CollectionBean;
@@ -75,6 +76,9 @@ public class MemberServiceImpl implements IMemberService {
 //    private GameEvaluationService evaluationService;
     @Autowired
     private MemberDao memberDao;
+
+    @Autowired
+    private IMemeberProxyService iMemeberProxyService;
 //    @Autowired
 //    private CmmCommentService commentService;
 //    @Autowired
@@ -340,13 +344,13 @@ public class MemberServiceImpl implements IMemberService {
                 map = objectMapper.readValue(noticeData, Map.class);
                 // @todo 文章的接口
                 if ((int) map.get("type") == 0) {
-//                    map.put("msg_template", "赞了我的文章");
-//                    CmmPost post = postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
-//                    if (post != null) {
-//                        if (!CommonUtil.isNull(post.getVideo())) {
-//                            map.put("video", post.getVideo());
-//                        }
-//                    }
+                    map.put("msg_template", "赞了我的文章");
+                    CmmPostDto post = iMemeberProxyService.selectCmmPost((String) map.get("post_id"));   //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
+                    if (post != null) {
+                        if (!CommonUtil.isNull(post.getVideo())) {
+                            map.put("video", post.getVideo());
+                        }
+                    }
                     // @todo 文章的评论的接口
                 } else if ((int) map.get("type") == 1) {//basNotice.getType()==1
 //                    map.put("msg_template", "赞了我的评论");

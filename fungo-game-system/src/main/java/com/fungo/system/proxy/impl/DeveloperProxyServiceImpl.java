@@ -1,7 +1,6 @@
 package com.fungo.system.proxy.impl;
 
 
-import com.fungo.system.feign.CommunityFeginClient;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.proxy.IDeveloperProxyService;
@@ -45,6 +44,7 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 
 //	updateCounter
 
+
 	@HystrixCommand(fallbackMethod = "hystrixUpdateCounter",ignoreExceptions = {Exception.class},
 			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
 	public boolean updateCounter(Map<String,String> map) {
@@ -52,8 +52,11 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 	}
 
 
-
-
+	@HystrixCommand(fallbackMethod = "hystrixUpdateCounter",ignoreExceptions = {Exception.class},
+			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+	public boolean updatecommunityCounter(Map<String,String> map) {
+		return gamesFeignClient.updateCounter(map);
+	}
 
 	@HystrixCommand(fallbackMethod = "hystrixSelectReleaseLog",ignoreExceptions = {Exception.class},
 			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
@@ -95,6 +98,8 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 	public int selectPostCount(CmmPostDto cmmPostDto) {
 		return communityFeignClient.selectPostCount(cmmPostDto);
 	}
+
+
 	@HystrixCommand(fallbackMethod = "hystrixGetMemberIdByTargetId",ignoreExceptions = {Exception.class},
 			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
 	@Override

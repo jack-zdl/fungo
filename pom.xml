@@ -32,7 +32,7 @@
         <module>fungo-game-common</module>
         <module>fungo-game-eureka</module>
         <module>fungo-game-system</module>
-<!--        <module>fungo-game-community</module>-->
+        <module>fungo-game-community</module>
         <module>fungo-game-games</module>
         <module>fungo-game-gateway</module>
         <module>fungo-game-quartz</module>
