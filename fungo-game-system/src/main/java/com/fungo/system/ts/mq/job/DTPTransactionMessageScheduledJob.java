@@ -28,7 +28,7 @@ public class DTPTransactionMessageScheduledJob   {
     @Scheduled(cron = "0/60 * * * * ?")
     public void execute() {
 
-        LOGGER.info(".......DTPTransactionMessageScheduledJob-execute-stat...." );
+        LOGGER.info(".......DTPTransactionMessageScheduledJob-execute-start...." );
 
         Map<String ,Object> param = new HashMap<String ,Object>();
 

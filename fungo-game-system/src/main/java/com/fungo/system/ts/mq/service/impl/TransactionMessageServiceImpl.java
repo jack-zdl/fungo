@@ -99,7 +99,7 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
         //向MQ发送
         MQMessageSender msgSender = new MQMessageSender();
         msgSender.setExchange(RabbitMQEnum.Exchange.EXCHANGE_TOPIC.getName());
-        msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_ORDER.getName());
+        msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
         msgSender.setContent(JSONObject.toJSONString(message));
 
         try {
@@ -137,17 +137,18 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
         messageDomain.setCreateTime(currentDate);
         messageDomain.setEditTime(currentDate);
 
+        boolean isInsert = messageDomain.insert();
 
         //向MQ发送
         MQMessageSender msgSender = new MQMessageSender();
         msgSender.setExchange(RabbitMQEnum.Exchange.EXCHANGE_TOPIC.getName());
-        msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_ORDER.getName());
+        msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
         msgSender.setContent(JSONObject.toJSONString(messageDomain));
 
         try {
             mQDataSendService.sendMQTopic(msgSender);
 
-            LOGGER.info("--ts--mq---存储并发送消息执行完成--msgSenderDto:{}", JSON.toJSON(msgSender));
+            LOGGER.info("--ts--mq---存储并发送消息执行完成--msgSenderDto:{}----isInsert:{}", JSON.toJSON(msgSender), isInsert);
 
             isOK = 1;
 
@@ -172,7 +173,7 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
         //向MQ发送
         MQMessageSender msgSender = new MQMessageSender();
         msgSender.setExchange(RabbitMQEnum.Exchange.EXCHANGE_TOPIC.getName());
-        msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_ORDER.getName());
+        msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
         msgSender.setContent(JSONObject.toJSONString(transactionMessageDto));
 
         try {
@@ -217,7 +218,7 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
         //向MQ发送
         MQMessageSender msgSender = new MQMessageSender();
         msgSender.setExchange(RabbitMQEnum.Exchange.EXCHANGE_TOPIC.getName());
-        msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_ORDER.getName());
+        msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
         msgSender.setContent(JSONObject.toJSONString(messageDomain));
 
         try {
@@ -249,7 +250,7 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
         //向MQ发送
         MQMessageSender msgSender = new MQMessageSender();
         msgSender.setExchange(RabbitMQEnum.Exchange.EXCHANGE_TOPIC.getName());
-        msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_ORDER.getName());
+        msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
         msgSender.setContent(JSONObject.toJSONString(message));
 
         try {
@@ -344,7 +345,7 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
             //向MQ发送
             MQMessageSender msgSender = new MQMessageSender();
             msgSender.setExchange(RabbitMQEnum.Exchange.EXCHANGE_TOPIC.getName());
-            msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_ORDER.getName());
+            msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
             msgSender.setContent(JSONObject.toJSONString(message));
 
             try {
@@ -365,7 +366,7 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
 
         Page<TransactionMessageDomain> selectPage = this.sysTsMsgDaoService.selectPage(domainPage, messageDomainEntityWrapper);
 
-        int total = 0;
+        Long total = 0L;
         List<TransactionMessageDomain> messageDomainList = null;
 
         if (null != selectPage) {
@@ -373,7 +374,8 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
             messageDomainList = selectPage.getRecords();
 
             //rows
-            total = selectPage.getTotal();
+            int rows = selectPage.getTotal();
+            total = Long.parseLong(String.valueOf(rows));
         }
 
         Map<String, Object> resultMap = new HashMap<String, Object>();
