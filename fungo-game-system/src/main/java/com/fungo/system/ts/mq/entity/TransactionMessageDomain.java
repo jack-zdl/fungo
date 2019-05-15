@@ -41,6 +41,13 @@ public class TransactionMessageDomain extends Model<TransactionMessageDomain> {
      */
     @TableField("consumer_queue")
     private String consumerQueue;
+
+    /**
+     * 消息路由key
+     */
+    @TableField("routing_key")
+    private String routingKey;
+
     /**
      * 消息重发次数 最大5
      */
@@ -194,6 +201,13 @@ public class TransactionMessageDomain extends Model<TransactionMessageDomain> {
         return this.messageId;
     }
 
+    public String getRoutingKey() {
+        return routingKey;
+    }
+
+    public void setRoutingKey(String routingKey) {
+        this.routingKey = routingKey;
+    }
 
     /**
      * 消息发送次数
