@@ -242,6 +242,9 @@ public class SystemServiceImpl implements SystemService {
         return ResultDto.success();
     }
 
+    /**
+     * 扣减指定用户经验值
+     */
     @Override
     public ResultDto<String> decMemberExp(MemberDto memberDto) {
         Member user = memberServiceImap.selectById(memberDto.getId());
@@ -261,6 +264,9 @@ public class SystemServiceImpl implements SystemService {
         return ResultDto.success();
     }
 
+    /**
+     *获取用户关注的社区id列表
+     */
     @Override
     public ResultDto<List<String>> listFollowerCommunityId(String memberId) {
         List<String>  ids = basActionDao.getFollowerCommunityId(memberId);
@@ -268,6 +274,9 @@ public class SystemServiceImpl implements SystemService {
 
     }
 
+    /**
+     * 获取动作数量(比如点赞)
+     */
     @Override
     public ResultDto<Integer> countActionNum(BasActionDto basActionDto) {
         //条件拼接
@@ -292,9 +301,12 @@ public class SystemServiceImpl implements SystemService {
         return ResultDto.success(count);
     }
 
+
     @Override
     public ResultDto<List<String>> listtargetId(BasActionDto basActionDto) {
-        Wrapper wrapper = Condition.create().setSqlSelect("target_id");
+        //Wrapper<BasAction> wrapper = Condition.create().setSqlSelect("target_id");
+        EntityWrapper<BasAction> wrapper = new EntityWrapper<>();
+       // wrapper.setSqlSelect("target_id");
         if(basActionDto.getMemberId()!=null){
             wrapper.eq("member_id", basActionDto.getMemberId());
         }
@@ -307,17 +319,19 @@ public class SystemServiceImpl implements SystemService {
         if(basActionDto.getState()!=null){
             wrapper.eq("state", basActionDto.getState());
         }
-        List<String> actionList = actionServiceImap.selectList(wrapper);
-        LOGGER.info(actionList.size()+"");
-
-      /*  ArrayList<String> list = new ArrayList<>();
+        //List<BasAction> list = basActionDao.selectList(wrapper);
+        List<BasAction> actionList = actionServiceImap.selectList(wrapper);
+        ArrayList<String> list = new ArrayList<>();
         for (BasAction basAction : actionList) {
             list.add(basAction.getTargetId());
-        }*/
-        return ResultDto.success(actionList);
+        }
+        return ResultDto.success(list);
     }
 
 
+    /**
+     * 新增用户行为记录
+     */
     @Override
     public ResultDto<String> addAction(BasActionDto basActionDto) {
         BasAction action = new BasAction();
@@ -331,6 +345,37 @@ public class SystemServiceImpl implements SystemService {
         action.setUpdatedAt(new Date());
         action.insert();
         return ResultDto.success("");
+    }
+
+    @Override
+    public ResultDto<List<MemberDto>> listMembersByids(List<String> ids) {
+        EntityWrapper<Member> wrapper = new EntityWrapper<>();
+        wrapper.in("id",ids);
+        List<Member> members = memberServiceImap.selectList(wrapper);
+        List<MemberDto> memberFollowerDtos = null;
+        try {
+            memberFollowerDtos = CommonUtils.deepCopy(members, MemberDto.class);
+        } catch (Exception e) {
+            LOGGER.error("SystemService.listMembersByids error",e);
+            return  ResultDto.error("-1","SystemService.listMembersByids error");
+        }
+        return ResultDto.success(memberFollowerDtos);
+    }
+
+    @Override
+    public ResultDto<List<IncentRankedDto>> listIncentrankeByids(List<String> ids, Integer rankType) {
+        EntityWrapper<IncentRanked> wrapper = new EntityWrapper<>();
+        wrapper.in("mb_id",ids);
+        wrapper.eq("rank_type",rankType);
+        List<IncentRanked> incentRankeds = incentRankedServiceImap.selectList(wrapper);
+        List<IncentRankedDto> rankDtos = null;
+        try {
+            rankDtos = CommonUtils.deepCopy(incentRankeds, IncentRankedDto.class);
+        } catch (Exception e) {
+            LOGGER.error("SystemService.listIncentrankeByids error",e);
+            return  ResultDto.error("-1","SystemService.listIncentrankeByids error");
+        }
+        return ResultDto.success(rankDtos);
     }
 
 }

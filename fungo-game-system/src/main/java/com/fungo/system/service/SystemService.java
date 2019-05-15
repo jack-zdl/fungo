@@ -38,4 +38,8 @@ public interface SystemService {
 
     public ResultDto<String> addAction(BasActionDto basActionDto);
 
+    ResultDto<List<MemberDto>> listMembersByids(List<String> ids);
+
+    ResultDto<List<IncentRankedDto>> listIncentrankeByids(List<String> ids, Integer rankType);
+
 }

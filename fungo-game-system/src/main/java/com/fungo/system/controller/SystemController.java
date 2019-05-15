@@ -1,5 +1,6 @@
 package com.fungo.system.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.fungo.system.entity.Member;
 import com.fungo.system.service.SystemService;
 import com.game.common.dto.FungoPageResultDto;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -94,6 +96,48 @@ public class SystemController {
             e.printStackTrace();
             LOGGER.error("SystemController.getFollowerUserId",e);
             re = FungoPageResultDto.error("-1", "SystemController.getMemberFollowerList执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
+    /**
+     * 功能描述: 根据用户id集合查询用户详情
+     */
+    @GetMapping(value = "/listMembersByids")
+    public ResultDto<List<MemberDto>> listMembersByids(@RequestBody List<String> ids){
+        ResultDto<List<MemberDto>> re = null;
+        try {
+            re =  systemService.listMembersByids(ids);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("SystemController.listMembersByids",e);
+            re = ResultDto.error("-1", "SystemController.listMembersByids执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
+    public static void main(String[] args) {
+        ArrayList list = new ArrayList();
+        list.add("aaa");
+        list.add("aab");
+        Object json = JSON.toJSON(list);
+        System.out.println(json);
+    }
+
+    /**
+     *  根据用户id和用户权益(等级、身份、荣誉)类型，获取用户权益数据
+     */
+    @GetMapping(value = "/listIncentrankeByids")
+    public ResultDto<List<IncentRankedDto>> listIncentrankeByids(@RequestBody List<String> ids,@RequestParam("rankType") Integer rankType){
+        ResultDto<List<IncentRankedDto>> re = null;
+        try {
+            re =  systemService.listIncentrankeByids(ids,rankType);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("SystemController.listIncentrankeByids",e);
+            re = ResultDto.error("-1", "SystemController.listIncentrankeByids执行service出现异常");
         }finally {
             return re;
         }
@@ -246,6 +290,8 @@ public class SystemController {
             return re;
         }
     }
+
+
 
 
 
