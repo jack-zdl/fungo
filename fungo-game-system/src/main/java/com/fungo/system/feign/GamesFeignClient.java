@@ -70,4 +70,14 @@ public interface GamesFeignClient {
     @ApiOperation(value = "根据游戏对象查询集合", notes = "")
     @RequestMapping(value = "/api/geme/getGamePage", method = RequestMethod.POST)
     Page<GameDto> getGamePage(@RequestBody GameDto gameDto);
+
+    /**
+     * 游戏测试会员关联表的分页查询
+     * @param gameSurveyDto
+     * @return
+     */
+    @SuppressWarnings("all")
+    @ApiOperation(value = "游戏测试会员关联表的分页查询", notes = "")
+    @RequestMapping(value = "/api/evaluation/getGameSurveyRelPage", method = RequestMethod.POST)
+    Page<GameSurveyRelDto> getGameSurveyRelPage(@RequestBody GameSurveyRelDto gameSurveyDto);
 }

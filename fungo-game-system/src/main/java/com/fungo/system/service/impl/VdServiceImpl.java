@@ -149,7 +149,7 @@ public class VdServiceImpl implements IVdService {
 
 
     /**
-     * @todo  注释的部分
+     * @todo  注释的部分  阿里云视频模块不用处理
      * @param videoJob
      * @param video
      * @param streamInfos

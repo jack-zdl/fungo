@@ -12,12 +12,16 @@ import com.game.common.dto.game.*;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import org.checkerframework.checker.units.qual.A;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
 public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
+
+	private static final Logger logger = LoggerFactory.getLogger(DeveloperProxyServiceImpl.class);
 
 	@Autowired
 	private GamesFeignClient gamesFeignClient;
@@ -108,17 +112,22 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 	}
 
 	public int hystrixSelectPostCount(CmmPostDto cmmPostDto){
+		logger.warn("DeveloperProxyServiceImpl.selectPostCount根据主键查询游戏评价异常");
 		return 0;
 	}
+
 	public int hystrixSelectGameEvaluationCount(GameEvaluationDto gameEvaluation){
+		logger.warn("DeveloperProxyServiceImpl.selectGameEvaluationCount根据主键查询游戏评价异常");
 		return 0;
 	}
 
 	public int hystrixSelectCount(GameSurveyRelDto gameSurveyRel){
+		logger.warn("DeveloperProxyServiceImpl.selectCount根据主键查询游戏评价异常");
 		return 0;
 	}
 
 	public FungoPageResultDto<GameOutBean> hystrixGameList(List<String> collect,int page, int limit){
+		logger.warn("DeveloperProxyServiceImpl.gameList根据主键查询游戏评价异常");
 		FungoPageResultDto<GameOutBean>  gameOutBeans = new FungoPageResultDto();
 		GameOutBean gameOutBean = new GameOutBean();
 		gameOutBeans.setData(Arrays.asList(gameOutBean));
@@ -127,14 +136,17 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 	}
 
 	public List<GameReleaseLogDto> hystrixSelectReleaseLog(GameReleaseLogDto gameReleaseLog){
+		logger.warn("DeveloperProxyServiceImpl.ReleaseLog根据主键查询游戏评价异常");
 		return null;
 	}
 
 	public GameDto hystrixSelectGame(String gameId){
+		logger.warn("DeveloperProxyServiceImpl.game根据主键查询游戏评价异常");
 		return null;
 	}
 
 	public boolean hystrixUpdateCounter(Map<String,String> map){
+		logger.warn("DeveloperProxyServiceImpl.UpdateCounter根据主键查询游戏评价异常");
 		return  false;
 	}
 }

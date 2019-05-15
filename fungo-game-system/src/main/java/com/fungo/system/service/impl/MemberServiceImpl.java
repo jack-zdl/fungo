@@ -11,6 +11,8 @@ import com.fungo.system.dao.MemberDao;
 import com.fungo.system.dto.FollowInptPageDao;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
+import com.fungo.system.proxy.IDeveloperProxyService;
+import com.fungo.system.proxy.IGameProxyService;
 import com.fungo.system.proxy.IMemeberProxyService;
 import com.fungo.system.service.*;
 import com.game.common.api.InputPageDto;
@@ -22,6 +24,7 @@ import com.game.common.dto.*;
 import com.game.common.dto.StreamInfo;
 import com.game.common.dto.community.*;
 import com.game.common.dto.game.GameEvaluationDto;
+import com.game.common.dto.game.GameSurveyRelDto;
 import com.game.common.dto.game.ReplyDto;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheGame;
@@ -33,6 +36,7 @@ import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import org.apache.commons.lang.StringUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +83,12 @@ public class MemberServiceImpl implements IMemberService {
 
     @Autowired
     private IMemeberProxyService iMemeberProxyService;
+
+    @Autowired
+    private IGameProxyService iGameProxyService;
+
+    @Autowired
+    private IDeveloperProxyService iDeveloperProxyService;
 //    @Autowired
 //    private CmmCommentService commentService;
 //    @Autowired
@@ -353,13 +363,13 @@ public class MemberServiceImpl implements IMemberService {
                     }
                     // @todo 文章的评论的接口
                 } else if ((int) map.get("type") == 1) {//basNotice.getType()==1
-//                    map.put("msg_template", "赞了我的评论");
-//                    CmmPost post = postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
-//                    if (post != null) {
-//                        if (!CommonUtil.isNull(post.getVideo())) {
-//                            map.put("video", post.getVideo());
-//                        }
-//                    }
+                    map.put("msg_template", "赞了我的评论");
+                    CmmPostDto post = iMemeberProxyService.selectCmmPost((String) map.get("post_id"));  //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
+                    if (post != null) {
+                        if (!CommonUtil.isNull(post.getVideo())) {
+                            map.put("video", post.getVideo());
+                        }
+                    }
                 } else if ((int) map.get("type") == 2) {
                     map.put("msg_template", "赞了我的游戏评价");
                 } else if (basNotice.getType() == 7) {
@@ -460,22 +470,22 @@ public class MemberServiceImpl implements IMemberService {
                 map = objectMapper.readValue(basNotice.getData(), Map.class);
                 if (basNotice.getType() == 3) {
                     //@todo  文章的接口
-//                    map.put("msg_template", "评论了我的文章");
-//                    CmmPost post = postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
-//                    if (post != null) {
-//                        if (!CommonUtil.isNull(post.getVideo())) {
-//                            map.put("video", post.getVideo());
-//                        }
-//                    }
+                    map.put("msg_template", "评论了我的文章");
+                    CmmPostDto post = iMemeberProxyService.selectCmmPost((String) map.get("post_id")); //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
+                    if (post != null) {
+                        if (!CommonUtil.isNull(post.getVideo())) {
+                            map.put("video", post.getVideo());
+                        }
+                    }
                 } else if (basNotice.getType() == 4) {
                     //@todo  文章的评论的接口
-//                    map.put("msg_template", "回复了我的评论");
-//                    CmmPost post = postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
-//                    if (post != null) {
-//                        if (!CommonUtil.isNull(post.getVideo())) {
-//                            map.put("video", post.getVideo());
-//                        }
-//                    }
+                    map.put("msg_template", "回复了我的评论");
+                    CmmPostDto post = iMemeberProxyService.selectCmmPost((String) map.get("post_id")); //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
+                    if (post != null) {
+                        if (!CommonUtil.isNull(post.getVideo())) {
+                            map.put("video", post.getVideo());
+                        }
+                    }
                 } else if (basNotice.getType() == 5) {
                     map.put("msg_template", "回复了我的游戏评价");
                 } else if (basNotice.getType() == 8) {
@@ -487,12 +497,12 @@ public class MemberServiceImpl implements IMemberService {
 
                     if (map.get("post_id") != null) {
                         //@todo  文章的评论的接口
-//                        CmmPost post = postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
-//                        if (post != null) {
-//                            if (!CommonUtil.isNull(post.getVideo())) {
-//                                map.put("video", post.getVideo());
-//                            }
-//                        }
+                        CmmPostDto post = iMemeberProxyService.selectCmmPost((String) map.get("post_id")); //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
+                        if (post != null) {
+                            if (!CommonUtil.isNull(post.getVideo())) {
+                                map.put("video", post.getVideo());
+                            }
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -634,10 +644,10 @@ public class MemberServiceImpl implements IMemberService {
                     Integer targetType = Integer.valueOf(map.get("targetType"));
                     if (targetType == 1) {
                         // @todo  文章的接口
-//                        CmmPost post = postService.selectById(map.get("targetId"));
-//                        if (!CommonUtil.isNull(post.getVideo())) {
-//                            bean.setVideo(post.getVideo());
-//                        }
+                        CmmPostDto post = iMemeberProxyService.selectCmmPost(map.get("targetId")); //postService.selectById(map.get("targetId"));
+                        if (!CommonUtil.isNull(post.getVideo())) {
+                            bean.setVideo(post.getVideo());
+                        }
                     }
                     bean.setHref(map.get("href"));
                     bean.setMsgId(basNotice.getId());
@@ -697,21 +707,23 @@ public class MemberServiceImpl implements IMemberService {
 
         if (2 == inputPage.getType()) {
             // @todo 游戏的接口
-//            Page<GameSurveyRel> page = gameSurveyRelService.selectPage(new Page<GameSurveyRel>(inputPage.getPage(), inputPage.getLimit()), new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0));
-//            List<GameSurveyRel> plist = page.getRecords();
-//            for (GameSurveyRel gameSurveyRel : plist) {
-//                Game game = gameService.selectById(gameSurveyRel.getGameId());
-//                MyGameBean bean = new MyGameBean();
-//                bean.setAndroidState(game.getAndroidState());
-//                bean.setGameContent(game.getDetail());
-//                bean.setGameIcon(game.getIcon());
-//                bean.setGameId(gameSurveyRel.getGameId());
-//                bean.setGameName(game.getName());
-//                bean.setIosState(game.getIosState());
-//                bean.setMsgCount(0);
-//                bean.setPhoneModel(gameSurveyRel.getPhoneModel());
-//                list.add((os == null || os.equalsIgnoreCase(""))? bean:(os.equalsIgnoreCase(bean.getPhoneModel())?bean:null));
-//            }
+            Page<GameSurveyRelDto> page =  iMemeberProxyService.selectGameSurveyRelPage(inputPage.getPage(), inputPage.getLimit() ,memberId,0); //gameSurveyRelService.selectPage(new Page<GameSurveyRel>(inputPage.getPage(), inputPage.getLimit()), new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0));
+            List<GameSurveyRelDto> plist = page.getRecords();
+            for (GameSurveyRelDto gameSurveyRel : plist) {
+                GameDto param = new GameDto();
+                param.setId(gameSurveyRel.getGameId());
+                GameDto game = iGameProxyService.selectGameById(param);   //gameService.selectById(gameSurveyRel.getGameId());
+                MyGameBean bean = new MyGameBean();
+                bean.setAndroidState(game.getAndroidState());
+                bean.setGameContent(game.getDetail());
+                bean.setGameIcon(game.getIcon());
+                bean.setGameId(gameSurveyRel.getGameId());
+                bean.setGameName(game.getName());
+                bean.setIosState(game.getIosState());
+                bean.setMsgCount(0);
+                bean.setPhoneModel(gameSurveyRel.getPhoneModel());
+                list.add((os == null || os.equalsIgnoreCase(""))? bean:(os.equalsIgnoreCase(bean.getPhoneModel())?bean:null));
+            }
         }
 
         //redis cache
@@ -789,9 +801,16 @@ public class MemberServiceImpl implements IMemberService {
             return ResultDto.success(map);
         }
         // @todo  游戏 社区的接口
-        int postCount =  1 ;//postService.selectCount(new EntityWrapper<CmmPost>().eq("member_id", userId).eq("state", 1));
-        int moodCount = 1 ;//moodService.selectCount(new EntityWrapper<MooMood>().eq("member_id", userId).eq("state", 0));
-        int repluCount = 1 ;//replyService.selectCount(new EntityWrapper<Reply>().eq("member_id", userId).eq("state", 0));
+        CmmPostDto cmmPostDto = new CmmPostDto();
+        cmmPostDto.setMemberId(userId);cmmPostDto.setState(1);
+        int postCount = iDeveloperProxyService.selectPostCount(cmmPostDto)   ;//postService.selectCount(new EntityWrapper<CmmPost>().eq("member_id", userId).eq("state", 1));
+        MooMoodDto mooMoodDto = new MooMoodDto();
+        mooMoodDto.setMemberId(userId);mooMoodDto.setState(0);
+        int moodCount = iMemeberProxyService.selectMooMoodCount(mooMoodDto) ;//moodService.selectCount(new EntityWrapper<MooMood>().eq("member_id", userId).eq("state", 0));
+        ReplyDto replyDto = new ReplyDto();
+        replyDto.setMemberId(userId);
+        replyDto.setState(0);
+        int repluCount = iMemeberProxyService.selectReplyCount(replyDto) ;//replyService.selectCount(new EntityWrapper<Reply>().eq("member_id", userId).eq("state", 0));
 
 
         map = new HashMap<String, Integer>();
@@ -819,7 +838,10 @@ public class MemberServiceImpl implements IMemberService {
 
         re = new FungoPageResultDto<MyEvaluationBean>();
         //@todo 游戏接口
-        Page<GameEvaluationDto> p =    new Page<>();  // evaluationService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameEvaluation>()
+        GameEvaluationDto param = new GameEvaluationDto();
+        param.setMemberId(loginId); param.setState(0);
+        param.setPage(input.getPage());param.setLikeNum(input.getLimit());
+        Page<GameEvaluationDto> p =   iMemeberProxyService.selectGameEvaluationPage(param); // evaluationService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameEvaluation>()
 //                .eq("member_id", loginId).eq("state", 0).orderBy("updated_at", false));
         List<GameEvaluationDto> elist = p.getRecords();
         List<MyEvaluationBean> olist = new ArrayList<>();
@@ -842,7 +864,9 @@ public class MemberServiceImpl implements IMemberService {
                 bean.setImages(images);
             }
             // @todo 游戏接口
-            GameDto game = new GameDto(); // gameService.selectOne(Condition.create().setSqlSelect("id,icon,name").eq("id", eva.getGameId()));
+            GameDto gameDto = new GameDto();
+            gameDto.setId(eva.getGameId());
+            GameDto game =  iGameProxyService.selectGameById(gameDto);  //  gameService.selectOne(Condition.create().setSqlSelect("id,icon,name").eq("id", eva.getGameId()));
             if (game != null) {
                 bean.setIcon(game.getIcon());
                 bean.setGameName(game.getName());
@@ -871,7 +895,10 @@ public class MemberServiceImpl implements IMemberService {
 
         re = new FungoPageResultDto<MyPublishBean>();
         // @todo  游戏分页查询
-        Page<CmmPostDto> page = new  Page<CmmPostDto>(); // postService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<CmmPost>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
+        CmmPostDto param = new CmmPostDto();
+        param.setPage(input.getPage());
+        param.setLimit(input.getLimit());param.setMemberId(loginId); param.setState(-1);
+        Page<CmmPostDto> page = iMemeberProxyService.selectCmmPostpage(param); // postService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<CmmPost>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
         List<CmmPostDto> plist = page.getRecords();
         List<MyPublishBean> blist = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
@@ -907,7 +934,9 @@ public class MemberServiceImpl implements IMemberService {
             bean.setVideo(post.getVideo());
             bean.setUpdatedAt(DateTools.fmtDate(post.getUpdatedAt()));
             //@todo  社区主键查询
-            CmmCommunityDto community = new CmmCommunityDto(); //communityService.selectById(post.getCommunityId());
+            CmmCommunityDto cmmParam  = new CmmCommunityDto();
+            cmmParam.setId(post.getCommunityId());
+            CmmCommunityDto community = iMemeberProxyService.selectCmmCommunityById(cmmParam); //communityService.selectById(post.getCommunityId());
             if (community != null) {
                 Map<String, Object> communityMap = new HashMap<>();
                 communityMap.put("objectId", community.getId());
@@ -946,7 +975,10 @@ public class MemberServiceImpl implements IMemberService {
 
         re = new FungoPageResultDto<MyPublishBean>();
         // @todo 社区接口
-        Page<MooMoodDto> page = new  Page<MooMoodDto>(); //moodService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<MooMood>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
+        MooMoodDto moomoodParam = new MooMoodDto();
+        moomoodParam.setPage(input.getPage());moomoodParam.setLimit(input.getLimit());
+        moomoodParam.setId(loginId);moomoodParam.setState(-1);
+        Page<MooMoodDto> page = iMemeberProxyService.selectMooMoodPage(moomoodParam); //moodService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<MooMood>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
         List<MooMoodDto> mlist = page.getRecords();
         List<MyPublishBean> blist = new ArrayList<>();
         // TODO Auto-generated method stub
@@ -969,7 +1001,10 @@ public class MemberServiceImpl implements IMemberService {
                 List<Map<String, String>> gameList = new ArrayList<>();
                 for (String gameId : gameIdList) {
                     // @TODO 游戏社区
-                    GameDto game =  new GameDto();//gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", 0));
+                    GameDto gameDto = new GameDto();
+                    gameDto.setId(gameId);
+                    gameDto.setState(0);
+                    GameDto game =  iGameProxyService.selectGameById(gameDto); //new GameDto();//gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", 0));
                     if (game != null) {
                         Map<String, String> map = new HashMap<>();
                         map.put("gameId", game.getId());
@@ -1155,7 +1190,9 @@ public class MemberServiceImpl implements IMemberService {
                 }
 
                 // @todo 二级回复
-                ReplyDto reply =  new ReplyDto();// replyService.selectById(c.getReplyContentId());
+                ReplyDto replyDto = new ReplyDto();
+                replyDto.setId(c.getReplyContentId());
+                ReplyDto reply = iMemeberProxyService.selectReplyById(replyDto);   //new ReplyDto();// replyService.selectById(c.getReplyContentId());
                 if (reply != null) {
 
                     String replyContent = reply.getContent();
@@ -1172,7 +1209,9 @@ public class MemberServiceImpl implements IMemberService {
             }
             if (c.getTargetType() == 1) {// 1帖子 2心情 5帖子评论 6游戏评论 8心情评论
                 // @todo 社区评论
-                CmmPostDto post = new CmmPostDto();  //postService.selectOne(Condition.create().setSqlSelect("id,content,title,video").eq("id", c.getTargetId()));
+                CmmPostDto cmmPostDto = new CmmPostDto();
+                cmmPostDto.setId( c.getTargetId());
+                CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto);    //postService.selectOne(Condition.create().setSqlSelect("id,content,title,video").eq("id", c.getTargetId()));
                 if (post != null) {
 
                     String title = CommonUtils.filterWord(post.getTitle());
@@ -1189,7 +1228,7 @@ public class MemberServiceImpl implements IMemberService {
                 }
             } else if (c.getTargetType() == 2) {
                 // @todo 心情
-                MooMoodDto mood =  new MooMoodDto();// moodService.selectOne(Condition.create().setSqlSelect("id,content").eq("id", c.getTargetId()));
+                MooMoodDto mood = iGameProxyService.selectMooMoodById(c.getTargetId());  // new MooMoodDto();// moodService.selectOne(Condition.create().setSqlSelect("id,content").eq("id", c.getTargetId()));
                 if (mood != null) {
 
                     String contentMood = CommonUtils.filterWord(CommonUtils.reduceString(mood.getContent(), 50));
@@ -1205,7 +1244,7 @@ public class MemberServiceImpl implements IMemberService {
                 }
             } else if (c.getTargetType() == 5) {
                 // @todo 评论
-                CmmCommentDto comment = new CmmCommentDto(); //commentService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                CmmCommentDto comment = iGameProxyService.selectCmmCommentById(c.getTargetId()); //commentService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                 if (comment != null) {
 
                     String contentCmmComment = CommonUtils.filterWord(CommonUtils.reduceString(comment.getContent(), 50));
@@ -1222,7 +1261,9 @@ public class MemberServiceImpl implements IMemberService {
                 }
             } else if (c.getTargetType() == 6) {
                 // @todo 游戏评论
-                GameEvaluationDto evaluation = new GameEvaluationDto(); //evaluationService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                GameEvaluationDto param = new GameEvaluationDto();
+                param.setId(c.getTargetId());
+                GameEvaluationDto evaluation = iGameProxyService.selectGameEvaluationById(param); //evaluationService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                 if (evaluation != null) {
 
                     String contentGameEval = CommonUtils.filterWord(CommonUtils.reduceString(evaluation.getContent(), 50));
@@ -1239,7 +1280,7 @@ public class MemberServiceImpl implements IMemberService {
                 }
             } else if (c.getTargetType() == 8) {
                 // @todo 社区接口
-                MooMessageDto message =  new MooMessageDto();//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                MooMessageDto message = iGameProxyService.selectMooMessageById(c.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                 if (message != null) {
 
                     String contentMoodMsg = CommonUtils.filterWord(CommonUtils.reduceString(message.getContent(), 50));
