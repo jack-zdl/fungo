@@ -258,5 +258,86 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
     }
 
 
+    @Override
+    public Integer querySecondLevelCmtCount(CmmCmtReplyDto replyDto) {
+
+        try {
+
+            EntityWrapper<Reply> replyEntityWrapper = new EntityWrapper<Reply>();
+            HashMap<String, Object> param = new HashMap<String, Object>();
+
+
+            //PK
+            String id = replyDto.getId();
+            if (StringUtils.isNotBlank(id)) {
+                param.put("id", id);
+            }
+
+            //评价ID
+            String targetId = replyDto.getTargetId();
+            if (StringUtils.isNotBlank(targetId)) {
+                param.put("target_id", targetId);
+            }
+
+            //会员Id
+            String member_id = replyDto.getMemberId();
+            if (StringUtils.isNotBlank(member_id)) {
+                param.put("member_id", member_id);
+            }
+
+
+            //回复会员Id
+            String replay_to_id = replyDto.getReplayToId();
+            if (StringUtils.isNotBlank(replay_to_id)) {
+                param.put("replay_to_id", replay_to_id);
+            }
+
+
+            //状态 0正常 -1删除
+            Integer state = replyDto.getState();
+            if (null != state) {
+                param.put("state", state);
+            }
+
+
+            //类型，游戏，社区，心情
+            Integer target_type = replyDto.getTargetType();
+            if (null != target_type) {
+                param.put("target_type", target_type);
+            }
+
+
+            //被回复二级回复的用户名
+            String reply_name = replyDto.getReplyName();
+            if (StringUtils.isNotBlank(reply_name)) {
+                param.put("reply_name", reply_name);
+            }
+
+
+            //被回复二级回复的id
+            String reply_to_content_id = replyDto.getReplyToContentId();
+            if (StringUtils.isNotBlank(reply_to_content_id)) {
+                param.put("reply_to_content_id", reply_to_content_id);
+            }
+
+
+            //内容
+            String content = replyDto.getReplayToId();
+            if (StringUtils.isNotBlank(content)) {
+                replyEntityWrapper.orNew("content like '%" + content + "%'");
+            }
+
+            int selectCount = replyDaoService.selectCount(replyEntityWrapper);
+            return selectCount;
+
+        } catch (Exception ex) {
+            LOGGER.error("/ms/service/cmm/cmt/s/count--querySecondLevelCmtCount-出现异常:", ex);
+        }
+
+        return 0;
+
+    }
+
+
     //------
 }

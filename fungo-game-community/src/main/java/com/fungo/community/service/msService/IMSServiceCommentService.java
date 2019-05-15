@@ -29,4 +29,12 @@ public interface IMSServiceCommentService {
      * @return
      */
     public List<CmmCommentDto> queryFirstLevelCmtList(CmmCommentDto cmmCommentDto);
+
+
+
+    /**
+     * 二级评论总数
+     * @return
+     */
+    public Integer querySecondLevelCmtCount(CmmCmtReplyDto replyDto);
 }

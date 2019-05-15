@@ -3,6 +3,7 @@ package com.fungo.community.msService.comment;
 
 import com.fungo.community.service.msService.IMSServiceCommentService;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.CmmCommentDto;
 import org.slf4j.Logger;
@@ -63,6 +64,18 @@ public class MSServiceCommentController {
         return resultDto;
     }
 
+
+    /**
+     * 二级评论总数
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/cmt/s/count")
+    public ResultDto<Integer> querySecondLevelCmtCount(@RequestBody CmmCmtReplyDto replyDto) {
+        ResultDto<Integer> resultDto = new ResultDto<Integer>();
+        Integer cmtCount = imsServiceCommentService.querySecondLevelCmtCount(replyDto);
+        resultDto.setData(cmtCount);
+        return resultDto;
+    }
 
     //--------
 }
