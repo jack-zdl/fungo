@@ -97,9 +97,14 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
         message.updateById();
 
         //向MQ发送
+        String routingKey = message.getRoutingKey();
+        if (StringUtils.isBlank(routingKey)) {
+            routingKey = RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName();
+        }
+
         MQMessageSender msgSender = new MQMessageSender();
         msgSender.setExchange(RabbitMQEnum.Exchange.EXCHANGE_TOPIC.getName());
-        msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
+        msgSender.setRoutingKey(routingKey);
         msgSender.setContent(JSONObject.toJSONString(message));
 
         try {
@@ -140,9 +145,14 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
         boolean isInsert = messageDomain.insert();
 
         //向MQ发送
+        String routingKey = messageDomain.getRoutingKey();
+        if (StringUtils.isBlank(routingKey)) {
+            routingKey = RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName();
+        }
+
         MQMessageSender msgSender = new MQMessageSender();
         msgSender.setExchange(RabbitMQEnum.Exchange.EXCHANGE_TOPIC.getName());
-        msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
+        msgSender.setRoutingKey(routingKey);
         msgSender.setContent(JSONObject.toJSONString(messageDomain));
 
         try {
@@ -171,9 +181,14 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
         }
 
         //向MQ发送
+        String routingKey = transactionMessageDto.getRoutingKey();
+        if (StringUtils.isBlank(routingKey)) {
+            routingKey = RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName();
+        }
+
         MQMessageSender msgSender = new MQMessageSender();
         msgSender.setExchange(RabbitMQEnum.Exchange.EXCHANGE_TOPIC.getName());
-        msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
+        msgSender.setRoutingKey(routingKey);
         msgSender.setContent(JSONObject.toJSONString(transactionMessageDto));
 
         try {
@@ -216,9 +231,13 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
         messageDomain.updateById();
 
         //向MQ发送
+        String routingKey = transactionMessageDto.getRoutingKey();
+        if (StringUtils.isBlank(routingKey)) {
+            routingKey = RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName();
+        }
         MQMessageSender msgSender = new MQMessageSender();
         msgSender.setExchange(RabbitMQEnum.Exchange.EXCHANGE_TOPIC.getName());
-        msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
+        msgSender.setRoutingKey(routingKey);
         msgSender.setContent(JSONObject.toJSONString(messageDomain));
 
         try {
@@ -248,9 +267,13 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
         message.updateById();
 
         //向MQ发送
+        String routingKey = message.getRoutingKey();
+        if (StringUtils.isBlank(routingKey)) {
+            routingKey = RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName();
+        }
         MQMessageSender msgSender = new MQMessageSender();
         msgSender.setExchange(RabbitMQEnum.Exchange.EXCHANGE_TOPIC.getName());
-        msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
+        msgSender.setRoutingKey(routingKey);
         msgSender.setContent(JSONObject.toJSONString(message));
 
         try {
@@ -343,9 +366,13 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
             message.updateById();
 
             //向MQ发送
+            String routingKey = message.getRoutingKey();
+            if (StringUtils.isBlank(routingKey)) {
+                routingKey = RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName();
+            }
             MQMessageSender msgSender = new MQMessageSender();
             msgSender.setExchange(RabbitMQEnum.Exchange.EXCHANGE_TOPIC.getName());
-            msgSender.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
+            msgSender.setRoutingKey(routingKey);
             msgSender.setContent(JSONObject.toJSONString(message));
 
             try {
