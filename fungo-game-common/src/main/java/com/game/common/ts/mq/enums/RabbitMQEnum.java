@@ -33,9 +33,9 @@ public class RabbitMQEnum {
 
     public enum MQQueueName {
 
-        MQ_QUEUE_TOPIC_NAME_ORDER(1, "msgFungoTopicQueue"),
+        MQ_QUEUE_TOPIC_NAME_DEFAULT(1, "msgFungoTopicQueue"),
 
-        MQ_QUEUE_DIRECT_NAME_ORDER(2, "msgFungoDirectQueue");
+        MQ_QUEUE_DIRECT_NAME_DEFAULT(2, "msgFungoDirectQueue");
 
         private int code;
         private String name;
@@ -56,7 +56,7 @@ public class RabbitMQEnum {
 
 
     public enum QueueRouteKey {
-        QUEUE_ROUTE_KEY_ORDER(1, "msgFungo.#");
+        QUEUE_ROUTE_KEY_DEFAULT(1, "msgFungo.#");
 
         private int code;
         private String name;
