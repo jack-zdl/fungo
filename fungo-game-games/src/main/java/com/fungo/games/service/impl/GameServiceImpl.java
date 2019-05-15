@@ -1524,6 +1524,47 @@ public class GameServiceImpl implements IGameService {
         return ResultDto.success(out);
     }
 
+    /**
+     * 根据游戏id集合获取FungoPageResultDto<GameOutBean>
+     * @param input
+     * @return
+     */
+    @Override
+    public FungoPageResultDto<GameOutBean> getGameList1(GameItemInput input) {
+        String[] split = input.getGroup_id().split(",");
+        List<String> mlist = Arrays.asList(split);
+        List<Game> gameList = new ArrayList<Game>();
+        FungoPageResultDto<GameOutBean> re = new FungoPageResultDto<GameOutBean>();
+        if (mlist != null && mlist.size()>0){
+                Wrapper<Game> wrapper = new EntityWrapper<Game>().in("id", mlist);
+                if(!CommonUtil.isNull(input.getName())) {
+                    wrapper.like("name", input.getName());
+                }
+                Page<Game> page = gameService.selectPage(new Page<>(input.getPage(), input.getLimit()),wrapper);
+                gameList = page.getRecords();
+                PageTools.pageToResultDto(re, page);
+            List<GameOutBean> relist = new ArrayList<>();
+            for (Game game : gameList) {
+                GameOutBean out = new GameOutBean();
+                out.setAndroidState(game.getAndroidState() == null ? 0 : game.getAndroidState());
+//			out.setCheckState(3);
+                GameReleaseLog log = logService.selectOne(Condition.create().setSqlSelect("id,approve_state as approveState").eq("game_id",game.getId()).orderBy("created_at",false));
+                if (log != null){
+                    out.setCheckState(log.getApproveState());
+                }
+                out.setiOState(game.getIosState() == null ? 0 : game.getIosState());
+                out.setCoverImage(game.getCoverImage());
+                out.setEditedAt(DateTools.fmtDate(game.getEditedAt()));
+                out.setGameId(game.getId());
+                out.setIcon(game.getIcon());
+                out.setName(game.getName());
+                relist.add(out);
+            }
+            re.setData(relist);
+        }
+        return re;
+    }
+
     //可修改
     private ResultDto<List<Map<String, Object>>> getTagByGameId(String gameId, List<String> TagIdList) {
         //获得全部分类以及标签，在选中的打勾

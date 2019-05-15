@@ -147,4 +147,11 @@ public interface IGameService {
 	 * @return
 	 */
 	ResultDto<TagSelectOut> getSelectTagList(MemberUserProfile memberUserPrefile, TagInput tagInput);
+
+	/**
+	 * 根据游戏id集合获取FungoPageResultDto<GameOutBean>
+	 * @param input
+	 * @return
+	 */
+    FungoPageResultDto<GameOutBean> getGameList1(GameItemInput input);
 }
