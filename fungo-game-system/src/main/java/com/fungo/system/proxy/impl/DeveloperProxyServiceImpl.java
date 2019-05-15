@@ -1,7 +1,6 @@
 package com.fungo.system.proxy.impl;
 
 
-import com.fungo.system.feign.CommunityFeginClient;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.proxy.IDeveloperProxyService;
@@ -95,6 +94,8 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 	public int selectPostCount(CmmPostDto cmmPostDto) {
 		return communityFeignClient.selectPostCount(cmmPostDto);
 	}
+
+
 	@HystrixCommand(fallbackMethod = "hystrixGetMemberIdByTargetId",ignoreExceptions = {Exception.class},
 			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
 	@Override

@@ -1,6 +1,12 @@
 package com.fungo.games.helper;
 
+import org.springframework.amqp.core.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p></p>
@@ -15,23 +21,23 @@ public class MQConfig {
 //    public static final String TOPIC_QUEUE_GAME_INSERT = "topic.queue.game.insert";
 //    public static final String TOPIC_QUEUE_GAME_UPDATE = "topic.queue.game.update";
 
-//    @Value("${spring.rabbitmq.host}")
-//    private String addresses;
-//
-//    @Value("${spring.rabbitmq.port}")
-//    private String port;
-//
-//    @Value("${spring.rabbitmq.username}")
-//    private String username;
-//
-//    @Value("${spring.rabbitmq.password}")
-//    private String password;
-//
-//    @Value("${spring.rabbitmq.virtual-host}")
-//    private String virtualHost;
-//
-//    @Value("${spring.rabbitmq.publisher-confirms}")
-//    private boolean publisherConfirms;
+    @Value("${spring.rabbitmq.host}")
+    private String addresses;
+
+    @Value("${spring.rabbitmq.port}")
+    private String port;
+
+    @Value("${spring.rabbitmq.username}")
+    private String username;
+
+    @Value("${spring.rabbitmq.password}")
+    private String password;
+
+    @Value("${spring.rabbitmq.virtual-host}")
+    private String virtualHost;
+
+    @Value("${spring.rabbitmq.publisher-confirms}")
+    private boolean publisherConfirms;
 
 
     // 这样做  rabbitmq会讲路由键也是direct.queue，队列名称
@@ -56,6 +62,9 @@ public class MQConfig {
     public static final String TOPIC_EXCHANGE_BASACTION_INSERT = "topic.exchange.basaction.insert";*/
     public static final String TOPIC_EXCHANGE_BASACTION_INSERTALLCOLUMN = "topic.exchange.basaction.insertallcolumn";
     public static final String TOPIC_EXCHANGE_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID = "topic.exchange.basaction.selectoneandupdateallcolumnbyid";
+    public static final String TOPIC_EXCHANGE_BASNOTICE_BASNOTICEUPDATEBYID = "topic.exchange.basnotice.basnoticeupdatebyid";
+    public static final String TOPIC_EXCHANGE_BASNOTICE_INSERTANDGAMEINVITERETURNID = "topic.exchange.basnotice.insertandgameinviterereturnid";
+    public static final String TOPIC_EXCHANGE_MEMBER_PUSH = "topic.exchange.member.push";
 
     public static final String TOPIC_QUEUE_GAME_INSERT = "topic.queue.game.insert";
     public static final String TOPIC_QUEUE_GAME_UPDATE = "topic.queue.game.update";
@@ -65,6 +74,9 @@ public class MQConfig {
     public static final String TOPIC_QUEUE_BASACTION_INSERT = "topic.queue.basaction.insert";*/
     public static final String TOPIC_QUEUE_BASACTION_INSERTALLCOLUMN = "topic.queue.basaction.insertallcolumn";
     public static final String TOPIC_QUEUE_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID = "topic.queue.basaction.selectoneandupdateallcolumnbyid";
+    public static final String TOPIC_QUEUE_BASNOTICE_BASNOTICEUPDATEBYID = "topic.queue.basnotice.basnoticeupdatebyid";
+    public static final String TOPIC_QUEUE_BASNOTICE_INSERTANDGAMEINVITERETURNID = "topic.queue.basnotice.insertandgameinviterereturnid";
+    public static final String TOPIC_QUEUE_MEMBER_PUSH = "topic.queue.member.push";
 
     public static final String TOPIC_KEY_GAME_INSERT = "topic.key.game.insert";
     public static final String TOPIC_KEY_GAME_UPDATE = "topic.key.game.update";
@@ -74,6 +86,9 @@ public class MQConfig {
     public static final String TOPIC_KEY_BASACTION_INSERT = "topic.key.basaction.insert";*/
     public static final String TOPIC_KEY_BASACTION_INSERTALLCOLUMN = "topic.key.basaction.insertallcolumn";
     public static final String TOPIC_KEY_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID = "topic.key.basaction.selectoneandupdateallcolumnbyid";
+    public static final String TOPIC_KEY_BASNOTICE_BASNOTICEUPDATEBYID = "topic.key.basnotice.basnoticeupdatebyid";
+    public static final String TOPIC_KEY_BASNOTICE_INSERTANDGAMEINVITERETURNID = "topic.key.basnotice.insertandgameinviterereturnid";
+    public static final String TOPIC_KEY_MEMBER_PUSH = "topic.key.member.push";
 
     public static final String TOPIC_KEY1 = "topic.key1";
     public static final String TOPIC_KEY2 = "topic.#";
@@ -140,15 +155,15 @@ public class MQConfig {
 //        return new Queue(TOPIC_QUEUE2,true);
 //    }
     /***************************交换机**************************************/
-//    @Bean
-//    public TopicExchange topicExchangeGameInsert(){
-//        return new TopicExchange(TOPIC_EXCHANGE_GAME_INSERT);
-//    }
-//
-//    @Bean
-//    public TopicExchange topicExchangeGameUpdate(){
-//        return new TopicExchange(TOPIC_EXCHANGE_GAME_UPDATE);
-//    }
+    @Bean
+    public TopicExchange topicExchangeGameInsert(){
+        return new TopicExchange(TOPIC_EXCHANGE_GAME_INSERT);
+    }
+
+    @Bean
+    public TopicExchange topicExchangeGameUpdate(){
+        return new TopicExchange(TOPIC_EXCHANGE_GAME_UPDATE);
+    }
 
     /*@Bean
     public TopicExchange topicExchangeCommunityInsert(){
@@ -171,15 +186,31 @@ public class MQConfig {
         return new TopicExchange(TOPIC_EXCHANGE_BASACTION_INSERT);
     }*/
 //    2019-05-10
-//    @Bean
-//    public TopicExchange topicExchangeBasActionInsertAllColumn(){
-//        return new TopicExchange(TOPIC_EXCHANGE_BASACTION_INSERTALLCOLUMN);
-//    }
-//    //    2019-05-10
-//    @Bean
-//    public TopicExchange topicExchangeBasActionSelectOneAndUpdateAllColumnById(){
-//        return new TopicExchange(TOPIC_EXCHANGE_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID);
-//    }
+    @Bean
+    public TopicExchange topicExchangeBasActionInsertAllColumn(){
+        return new TopicExchange(TOPIC_EXCHANGE_BASACTION_INSERTALLCOLUMN);
+    }
+    //    2019-05-10
+    @Bean
+    public TopicExchange topicExchangeBasActionSelectOneAndUpdateAllColumnById(){
+        return new TopicExchange(TOPIC_EXCHANGE_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID);
+    }
+//    2019-05-13
+    @Bean
+    public TopicExchange topicExchangeBasNoticeBasNoticeUpdateById(){
+        return new TopicExchange(TOPIC_EXCHANGE_BASNOTICE_BASNOTICEUPDATEBYID);
+    }
+    //    2019-05-13
+    @Bean
+    public TopicExchange topicExchangeBasNoticeInsertAndGameInviteReturnId(){
+        return new TopicExchange(TOPIC_EXCHANGE_BASNOTICE_INSERTANDGAMEINVITERETURNID);
+    }
+    //    2019-05-14
+    @Bean
+    public TopicExchange topicExchangeMemberPush(){
+        return new TopicExchange(TOPIC_EXCHANGE_MEMBER_PUSH);
+    }
+
 
 
 
@@ -199,14 +230,14 @@ public class MQConfig {
 
     /***  start ***/
     /********************创建Queue***********************************/
-//    @Bean
-//    public Queue topicQueueGameInsert(){
-//        return new Queue(TOPIC_QUEUE_GAME_INSERT,true);
-//    }
-//    @Bean
-//    public Queue topicQueueGameUpdate(){
-//        return new Queue(TOPIC_QUEUE_GAME_UPDATE,true);
-//    }
+    @Bean
+    public Queue topicQueueGameInsert(){
+        return new Queue(TOPIC_QUEUE_GAME_INSERT,true);
+    }
+    @Bean
+    public Queue topicQueueGameUpdate(){
+        return new Queue(TOPIC_QUEUE_GAME_UPDATE,true);
+    }
    /* @Bean
     public Queue topicQueueCommunityInsert(){
         return new Queue(TOPIC_QUEUE_COMMUNITY_INSERT,true);
@@ -226,27 +257,43 @@ public class MQConfig {
         return new Queue(TOPIC_QUEUE_BASACTION_INSERT,true);
     }*/
     //    2019-05-10
-//    @Bean
-//    public Queue topicQueueBasActionInsertAllColumn(){
-//        return new Queue(TOPIC_QUEUE_BASACTION_INSERTALLCOLUMN,true);
-//    }
-//    //    2019-05-10
-//    @Bean
-//    public Queue topicQueueBasActionSelectOneAndUpdateAllColumnById(){
-//        return new Queue(TOPIC_QUEUE_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID,true);
-//    }
+    @Bean
+    public Queue topicQueueBasActionInsertAllColumn(){
+        return new Queue(TOPIC_QUEUE_BASACTION_INSERTALLCOLUMN,true);
+    }
+    //    2019-05-10
+    @Bean
+    public Queue topicQueueBasActionSelectOneAndUpdateAllColumnById(){
+        return new Queue(TOPIC_QUEUE_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID,true);
+    }
+    //    2019-05-13
+    @Bean
+    public Queue topicQueueBasNoticeBasNoticeUpdateById(){
+        return new Queue(TOPIC_QUEUE_BASNOTICE_BASNOTICEUPDATEBYID,true);
+    }
+    //    2019-05-13
+    @Bean
+    public Queue topicQueueBasNoticeInsertAndGameInviteReturnId(){
+        return new Queue(TOPIC_QUEUE_BASNOTICE_INSERTANDGAMEINVITERETURNID,true);
+    }
+    //    2019-05-14
+    @Bean
+    public Queue topicQueueMemberPush(){
+        return new Queue(TOPIC_QUEUE_MEMBER_PUSH,true);
+    }
+
 
     /*****************************************绑定Queue******************************************************************/
 
-//    @Bean
-//    public Binding topicBindingGameUpdate(){
-//        return BindingBuilder.bind(topicQueueGameUpdate()).to(topicExchangeGameUpdate()).with(TOPIC_KEY_GAME_UPDATE);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
-//    }
-//
-//    @Bean
-//    public Binding topicBindingGameInsert(){
-//        return BindingBuilder.bind(topicQueueGameInsert()).to(topicExchangeGameInsert()).with(TOPIC_KEY_GAME_INSERT);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
-//    }
+    @Bean
+    public Binding topicBindingGameUpdate(){
+        return BindingBuilder.bind(topicQueueGameUpdate()).to(topicExchangeGameUpdate()).with(TOPIC_KEY_GAME_UPDATE);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+    }
+
+    @Bean
+    public Binding topicBindingGameInsert(){
+        return BindingBuilder.bind(topicQueueGameInsert()).to(topicExchangeGameInsert()).with(TOPIC_KEY_GAME_INSERT);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+    }
 
     /*@Bean
     public Binding topicBindingCommunityInsert(){
@@ -268,15 +315,30 @@ public class MQConfig {
         return BindingBuilder.bind(topicQueueBasActionInsert()).to(topicExchangeBasActionInsert()).with(TOPIC_KEY_BASACTION_INSERT);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
     }*/
 //    2019-05-10
-//    @Bean
-//    public Binding topicBindingBasActionInsertAllColumn(){
-//        return BindingBuilder.bind(topicQueueBasActionInsertAllColumn()).to(topicExchangeBasActionInsertAllColumn()).with(TOPIC_KEY_BASACTION_INSERTALLCOLUMN);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
-//    }
-////    2019-05-10
-//    @Bean
-//    public Binding topicBindingBasActionSelectOneAndUpdateAllColumnById(){
-//        return BindingBuilder.bind(topicQueueBasActionSelectOneAndUpdateAllColumnById()).to(topicExchangeBasActionSelectOneAndUpdateAllColumnById()).with(TOPIC_KEY_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
-//    }
+    @Bean
+    public Binding topicBindingBasActionInsertAllColumn(){
+        return BindingBuilder.bind(topicQueueBasActionInsertAllColumn()).to(topicExchangeBasActionInsertAllColumn()).with(TOPIC_KEY_BASACTION_INSERTALLCOLUMN);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+    }
+//    2019-05-10
+    @Bean
+    public Binding topicBindingBasActionSelectOneAndUpdateAllColumnById(){
+        return BindingBuilder.bind(topicQueueBasActionSelectOneAndUpdateAllColumnById()).to(topicExchangeBasActionSelectOneAndUpdateAllColumnById()).with(TOPIC_KEY_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+    }
+//    2019-05-13
+    @Bean
+    public Binding topicBindingBasNoticeBasNoticeUpdateById(){
+        return BindingBuilder.bind(topicQueueBasNoticeBasNoticeUpdateById()).to(topicExchangeBasNoticeBasNoticeUpdateById()).with(TOPIC_KEY_BASNOTICE_BASNOTICEUPDATEBYID);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+    }
+    //    2019-05-13
+    @Bean
+    public Binding topicBindingBasNoticeInsertAndGameInviteReturnId(){
+        return BindingBuilder.bind(topicQueueBasNoticeInsertAndGameInviteReturnId()).to(topicExchangeBasNoticeInsertAndGameInviteReturnId()).with(TOPIC_KEY_BASNOTICE_INSERTANDGAMEINVITERETURNID);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+    }
+    //    2019-05-14
+    @Bean
+    public Binding topicBindingMemberPush(){
+        return BindingBuilder.bind(topicQueueMemberPush()).to(topicExchangeMemberPush()).with(TOPIC_KEY_MEMBER_PUSH);  // 精确匹配, 匹配成功则发送到 TOPIC_QUEUE1队列
+    }
 
 
     /**-------------------fanout END--------------------------*/

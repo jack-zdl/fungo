@@ -1,11 +1,18 @@
 package com.fungo.games.helper;
 
+import com.alibaba.fastjson.JSON;
+import com.game.common.bean.advice.BasNoticeDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.CmmCommunityDto;
+import com.game.common.dto.game.GameInviteDto;
+import com.game.common.dto.game.GameReleaseLogDto;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,11 +25,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 public class MQProduct {
-//    @Autowired
-//    private RabbitTemplate rabbitTemplate;
-//
-//    @Autowired
-//    private  AmqpTemplate template;
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private  AmqpTemplate template;
 
 
 //    /** DIRECT模式
@@ -58,7 +65,7 @@ public class MQProduct {
      */
     public void sendTopic(String topicExchange,String topicKey,Object message){
 //        rabbitTemplate.setConfirmCallback((message,))
-//        template.convertAndSend(topicExchange,topicKey,message);  // 可以匹配到 topic.# and topic.key1
+        template.convertAndSend(topicExchange,topicKey,message);  // 可以匹配到 topic.# and topic.key1
 //        template.convertAndSend(MQConfig.TOPIC_EXCHANGE,"topic.key2",msg+"2");  // 可以匹配到 topic.#
     }
 
@@ -115,5 +122,40 @@ public class MQProduct {
         map.put("type",type);
         map.put("state",state);
         sendTopic(MQConfig.TOPIC_EXCHANGE_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID,MQConfig.TOPIC_KEY_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID,map);
+    }
+
+    /**
+     * 逻辑块变动,根据id修改basNotice数据
+     * @param basNoticeDto
+     */
+    public void basNoticeUpdateById(BasNoticeDto basNoticeDto) {
+        sendTopic(MQConfig.TOPIC_EXCHANGE_BASNOTICE_BASNOTICEUPDATEBYID,MQConfig.TOPIC_KEY_BASNOTICE_BASNOTICEUPDATEBYID,basNoticeDto);
+    }
+
+    /**
+     * 添加插入BasNotice数据返回主键
+     * @param basNoticeDto
+     * @param gameInviteDto
+     */
+    public void basNoticeInsertAndGameInviteReturnId(BasNoticeDto basNoticeDto, GameInviteDto gameInviteDto,String appVersion) {
+        Map<String, String> map = new HashMap<>();
+        map.put("basNotice", JSON.toJSONString(basNoticeDto));
+        map.put("gameInvite", JSON.toJSONString(gameInviteDto));
+        map.put("appVersion", JSON.toJSONString(appVersion));
+        sendTopic(MQConfig.TOPIC_EXCHANGE_BASNOTICE_INSERTANDGAMEINVITERETURNID,MQConfig.TOPIC_KEY_BASNOTICE_INSERTANDGAMEINVITERETURNID,map);
+    }
+
+    /**
+     * 插入消息记录
+     * @param inviteMemberId
+     * @param i
+     * @param appVersion
+     */
+    public void push(String inviteMemberId, int i, String appVersion) {
+        Map<String, String> map = new HashMap<>();
+        map.put("inviteMemberId", inviteMemberId);
+        map.put("code", i+"");
+        map.put("appVersion", appVersion);
+        sendTopic(MQConfig.TOPIC_EXCHANGE_MEMBER_PUSH,MQConfig.TOPIC_KEY_MEMBER_PUSH,map);
     }
 }

@@ -216,6 +216,13 @@ public class Game extends Model<Game> {
 	private Integer commentNum;
 
 
+	/**
+	 * 虚假下载量
+	 */
+	@TableField("boom_download_num")
+	private Long boomDownloadNum;
+
+
 	public String getId() {
 		return id;
 	}
@@ -566,6 +573,14 @@ public class Game extends Model<Game> {
 
 	public void setCommentNum(Integer commentNum) {
 		this.commentNum = commentNum;
+	}
+
+	public Long getBoomDownloadNum() {
+		return boomDownloadNum;
+	}
+
+	public void setBoomDownloadNum(Long boomDownloadNum) {
+		this.boomDownloadNum = boomDownloadNum;
 	}
 
 	@Override

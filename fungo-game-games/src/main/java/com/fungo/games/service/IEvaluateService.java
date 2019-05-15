@@ -6,17 +6,20 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.evaluation.*;
 
+import java.util.List;
 import java.util.Set;
 
 public interface IEvaluateService {
 
 	public ResultDto<EvaluationBean> addGameEvaluation(String memberId, EvaluationInput commentInput)throws Exception;//评价游戏
 
-//	public ResultDto<EvaluationOutBean> getEvaluationDetail(String memberId, String evaluationId);//获取游戏评价详情
+	public ResultDto<EvaluationOutBean> getEvaluationDetail(String memberId, String evaluationId);//获取游戏评价详情
 
-//	public FungoPageResultDto<EvaluationOutPageDto> getEvaluationList(String memberId, EvaluationInputPageDto pagedto);//获取评价列表(默认获取两条回复)
+	public FungoPageResultDto<EvaluationOutPageDto> getEvaluationList(String memberId, EvaluationInputPageDto pagedto);//获取评价列表(默认获取两条回复)
 
-//	public ResultDto<EvaluationOutBean> anliEvaluationDetail(String memberId, String evaluationId);//安利墙游戏评价详情
+	public ResultDto<EvaluationOutBean> anliEvaluationDetail(String memberId, String evaluationId);//安利墙游戏评价详情
+//	根据后台标签id集合，分类标签，游戏id
+	boolean feignAddGameTagInsert(List<String> tags, String categoryId, String gameId);
 
 
 	/**

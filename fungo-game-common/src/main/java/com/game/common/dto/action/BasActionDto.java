@@ -1,5 +1,6 @@
 package com.game.common.dto.action;
 
+import com.game.common.api.InputPageDto;
 import lombok.Data;
 
 import java.util.Date;
@@ -10,7 +11,7 @@ import java.util.Date;
  * @create 2019/5/10 14:18
  */
 @Data
-public class BasActionDto {
+public class BasActionDto extends InputPageDto {
     private String id;
     /**
      * 行为类型

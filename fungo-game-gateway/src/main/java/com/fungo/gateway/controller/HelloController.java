@@ -1,4 +1,4 @@
-package com.ceying.chx.controller;
+package com.fungo.gateway.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

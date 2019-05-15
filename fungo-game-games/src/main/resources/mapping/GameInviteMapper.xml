@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.games.dao.GameInviteDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.fungo.games.entity.GameInvite">
+		<id column="id" property="id" />
+		<result column="member_id" property="memberId" />
+		<result column="game_id" property="gameId" />
+		<result column="state" property="state" />
+		<result column="created_at" property="createdAt" />
+		<result column="updated_at" property="updatedAt" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, member_id AS memberId, game_id AS gameId, state, created_at AS createdAt, updated_at AS updatedAt
+    </sql>
+
+</mapper>
