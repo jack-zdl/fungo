@@ -1,7 +1,6 @@
 package com.fungo.system.proxy.impl;
 
 
-import com.fungo.system.feign.CommunityFeginClient;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.proxy.IDeveloperProxyService;

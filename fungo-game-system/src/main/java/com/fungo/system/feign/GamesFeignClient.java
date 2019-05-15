@@ -1,8 +1,10 @@
 package com.fungo.system.feign;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.game.*;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,4 +56,14 @@ public interface GamesFeignClient {
      */
     @RequestMapping(value = "/ms/service/api/getMemberIdByTargetId", method = RequestMethod.POST)
     String getMemberIdByTargetId(@RequestBody Map<String, String> map);
+
+
+    /**
+     * 游戏评价的分页查询
+     * @param gameEvaluationDto
+     * @return
+     */
+    @ApiOperation(value = "游戏评价的分页查询", notes = "")
+    @RequestMapping(value = "/ms/service/api/evaluation/getGameEvaluationPage", method = RequestMethod.POST)
+    Page<GameEvaluationDto> getGameEvaluationPage(@RequestBody GameEvaluationDto gameEvaluationDto);
 }

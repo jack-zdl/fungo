@@ -82,6 +82,8 @@ public class GameProxyImpl implements IGameProxy {
 		Map<String,Object> date=new HashMap<String,Object>();
 		getMemberInfo(memberId,date);
 		boolean push = true;
+		eventType = Setting.ACTION_TYPE_LIKE ;
+		target_type = Setting.RES_TYPE_EVALUATION;
 		if(Setting.ACTION_TYPE_LIKE == eventType && Setting.RES_TYPE_POST==target_type) {// 点赞帖子
 			// @todo 社区帖子的
 			CmmPostDto post =   iGameProxyService.selectCmmPostById(target_id);  //this.postService.selectById(target_id);
