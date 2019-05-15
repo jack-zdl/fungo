@@ -20,7 +20,7 @@ public class MQProduct {
 
 //    @Autowired
 //    private RabbitTemplate rabbitTemplate;
-//
+
 //    @Autowired
 //    private  AmqpTemplate template;
 
@@ -97,4 +97,6 @@ public class MQProduct {
     public void gamereleaselogInsert(GameReleaseLogDto gameReleaseLogDto){
         sendTopic(MQConfig.TOPIC_EXCHANGE_GAMERELEASELOG_INSERT,MQConfig.TOPIC_KEY_GAMERELEASELOG_INSERT,gameReleaseLogDto);
     }
+
+
 }

@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public interface IGameProxyService {
 
-    String getMemberIdByTargetId(Map<String, String> map);
+
 
     CmmPostDto selectCmmPostById(String id);
 

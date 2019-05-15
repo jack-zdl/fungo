@@ -267,7 +267,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
         if (developer == null || developer.getApproveState() != 2) {
             return ResultDto.error("14", "该用户没有开发者权限");
         }
-        //@todo 根据游戏id查询游戏
+        //DONE:根据游戏id查询游戏
         GameDto game =iDeveloperProxyService.selectGame(gameId); //   gameService.selectById(gameId);
 
         if (CommonUtil.isNull(gameId)) {
@@ -280,7 +280,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
 
         GameReleaseLogDto param = new GameReleaseLogDto();
         param.setGameId(gameId);
-        // @todo   根据游戏版本日志审批对象查询集合
+        // DONE:   根据游戏版本日志审批对象查询集合
         List<GameReleaseLogDto> logs =  iDeveloperProxyService.selectGameReleaseLog(param);
         GameReleaseLogDto log = logs.get(0);
         //logService.selectOne(
@@ -383,7 +383,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
                 gameSurveyRelParam.setGameId(game.getId());
                 gameSurveyRelParam.setMemberId(memberUserPrefile.getLoginId());
                 gameSurveyRelParam.setPhoneModel("iOS");
-                // @todo 根据游戏测试会员关联表对象查询总数
+                // DONE: 根据游戏测试会员关联表对象查询总数
                 int selectCount = iDeveloperProxyService.selectCount(gameSurveyRelParam);
                         //surveyRelService.selectCount(new EntityWrapper<GameSurveyRel>().eq("game_id",game.getId()).eq("member_id",memberUserPrefile.getLoginId()).eq("phone_model","iOS"));
                 if(selectCount < 1) {
@@ -577,7 +577,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
         GameReleaseLogDto param = new GameReleaseLogDto();
         param.setGameId(gameId);
         param.setMemberId(userId);
-        //@todo 游戏接口
+        //DONE 游戏接口
         List<GameReleaseLogDto> list = iDeveloperProxyService.selectGameReleaseLog(param);
         //logService.selectPage(new Page<>(input.getPage(), input.getLimit()),
 //                new EntityWrapper<GameReleaseLog>().eq("game_id", gameId).eq("member_id", userId);
@@ -636,7 +636,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
         down.put("total", td);
         list.add(down);
         //预约
-        // TODO: 2019/5/5
+        // DONE: 2019/5/5
         GameSurveyRelDto gameSurveyRelParam = new GameSurveyRelDto();
         gameSurveyRelParam.setGameId(gameId);
         int tr =   iDeveloperProxyService.selectCount(gameSurveyRelParam); //surveyRelService.selectCount(new EntityWrapper<GameSurveyRel>().eq("game_id", gameId));
@@ -661,7 +661,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
         test.put("total", 0);
         list.add(test);
         //评价
-        // TODO: 2019/5/5
+        // DONE: 2019/5/5
         GameEvaluationDto gameEvaluationParam = new GameEvaluationDto();
         gameEvaluationParam.setGameId(gameId);
         int te = iDeveloperProxyService.selectGameEvaluationCount(gameEvaluationParam);//evaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", gameId));
@@ -919,7 +919,8 @@ public class DeveloperServiceImpl implements IDeveloperService {
         logGame.setState(0);
 
 //        logGame.insert();
-        // @todo   logGame.insert()
+        // @todo  mq
+        mqProduct.gamereleaselogInsert(logGame);
         return ResultDto.success();
     }
 
