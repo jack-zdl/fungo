@@ -46,7 +46,7 @@ import java.util.Map;
 @SuppressWarnings("all")
 @RestController
 @Api(value = "", description = "feignService 调用中心")
-@RequestMapping("/ms/service")
+@RequestMapping("/ms/service/game")
 public class FeignServiceController {
     private static final Logger LOGGER = LoggerFactory.getLogger(FeignServiceController.class);
 
@@ -201,7 +201,7 @@ public class FeignServiceController {
             }
 
         } catch (Exception ex) {
-            LOGGER.error("/ms/service/cmm/posts--queryCmmPostList-出现异常:", ex);
+            LOGGER.error("/ms/service/game/api/evaluation/getGameEvaluationPage--getGameEvaluationPage-出现异常:", ex);
         }
         Page<GameEvaluationDto> gameEvaluationDtoPage = new Page<>();
         gameEvaluationDtoPage.setRecords(gameEvaluationList);
@@ -305,7 +305,7 @@ public class FeignServiceController {
             }
 
         } catch (Exception ex) {
-            LOGGER.error("/ms/service/cmm/posts--queryCmmPostList-出现异常:", ex);
+            LOGGER.error("/ms/service/game/api/evaluation/getGameSurveyRelPage--getGameSurveyRelPage-出现异常:", ex);
         }
         Page<GameSurveyRelDto> gameEvaluationDtoPage = new Page<>();
         gameEvaluationDtoPage.setRecords(gameSurveyList);
@@ -412,11 +412,148 @@ public class FeignServiceController {
                 }
             }
         } catch (Exception ex) {
-            LOGGER.error("/ms/service/cmm/posts--queryCmmPostList-出现异常:", ex);
+            LOGGER.error("/ms/service/game/api/evaluation/getGameReleaseLogPage--getGameReleaseLogPage-出现异常:", ex);
         }
         Page<GameReleaseLogDto> gameReleaseLogDtoPage = new Page<>();
         gameReleaseLogDtoPage.setRecords(gameReleaseLogList);
         return gameReleaseLogDtoPage;
+    }
+
+    @ApiOperation(value = "根据游戏对象查询集合", notes = "")
+    @RequestMapping(value = "/api/geme/getGamePage", method = RequestMethod.POST)
+    Page<GameDto> getGamePage(@RequestBody GameDto gameDto){
+        List<GameDto> gameList = null;
+        try {
+            int page = gameDto.getPage();
+            int limit = gameDto.getLimit();
+            EntityWrapper<Game> gameWrapper = new EntityWrapper<Game>();
+            HashMap<String, Object> param = new HashMap<String, Object>();
+            Page<Game> gamePage = null;
+            if (page > 0 && limit > 0) {
+                gamePage = new Page<>(page, limit);
+            }
+            gameFun(gameDto, param);
+            gameWrapper.allEq(param);
+            //根据修改时间倒叙
+            gameWrapper.orderBy("updated_at", false);
+
+            List<Game> selectRecords = null;
+
+            if (null != gamePage) {
+
+                Page<Game> gamePageSelect = this.gameService.selectPage(gamePage, gameWrapper);
+
+                if (null != gamePageSelect) {
+                    selectRecords = gamePageSelect.getRecords();
+                }
+            } else {
+                selectRecords = this.gameService.selectList(gameWrapper);
+            }
+            if (null != selectRecords) {
+
+                gameList = new ArrayList<GameDto>();
+
+                for (Game game : selectRecords) {
+
+                    GameDto gameDto1 = new GameDto();
+
+                    BeanUtils.copyProperties(game, gameDto1);
+
+                    gameList.add(gameDto1);
+                }
+            }
+        } catch (Exception ex) {
+            LOGGER.error("/ms/service/game/api/geme/getGamePage--getGamePage-出现异常:", ex);
+        }
+        Page<GameDto> gameDtoPage = new Page<>();
+        gameDtoPage.setRecords(gameList);
+        return gameDtoPage;
+    }
+
+    private void gameFun(GameDto gameDto, HashMap<String, Object> param) {
+        //            主键ID
+        String gameId = gameDto.getId();
+        if (StringUtils.isNotBlank(gameId)) {
+            param.put("id", gameId);
+        }
+        //苹果商店
+        String itunesId1 = gameDto.getItunesId();
+        if (StringUtils.isNotBlank(itunesId1)) {
+            param.put("itunes_id", itunesId1);
+        }
+        //标签
+        String tags = gameDto.getTags();
+        if (StringUtils.isNotBlank(tags)) {
+            param.put("tags", tags);
+        }
+        //苹果商店
+        String itunesId = gameDto.getItunesId();
+        if (StringUtils.isNotBlank(itunesId)) {
+            param.put("itunes_id", itunesId);
+        }
+        //游戏版本
+        String versionChild = gameDto.getVersionChild();
+        if (StringUtils.isNotBlank(versionChild)) {
+            param.put("version_child", versionChild);
+        }
+        //状态
+        Integer state = gameDto.getState();
+        if (null != state) {
+            param.put("state", state);
+        }
+        Integer imageRatio = gameDto.getImageRatio();
+        if (null != imageRatio) {
+            param.put("image_ratio", imageRatio);
+        }
+        //社区ID
+        String communityId = gameDto.getCommunityId();
+        if (StringUtils.isNotBlank(communityId)) {
+            param.put("community_id", communityId);
+        }
+        //名称
+        String name = gameDto.getName();
+        if (StringUtils.isNotBlank(name)) {
+            param.put("name", name);
+        }
+        //国家
+        String origin = gameDto.getOrigin();
+        if (StringUtils.isNotBlank(origin)) {
+            param.put("origin", origin);
+        }
+        //主版本号
+        String versionMain = gameDto.getVersionMain();
+        if (StringUtils.isNotBlank(versionMain)) {
+            param.put("version_main", versionMain);
+        }
+        String isbnId = gameDto.getIsbnId();
+        if (StringUtils.isNotBlank(isbnId)) {
+            param.put("isbn_id", isbnId);
+        }
+        //开发者ID
+        String developerId = gameDto.getDeveloperId();
+        if (StringUtils.isNotBlank(developerId)) {
+            param.put("developer_id", developerId);
+        }
+        //软件著作权登记号
+        String copyrightId = gameDto.getCopyrightId();
+        if (StringUtils.isNotBlank(copyrightId)) {
+            param.put("copyright_id", copyrightId);
+        }
+        //游戏备案通知单号
+        String issueId = gameDto.getIssueId();
+        if (StringUtils.isNotBlank(issueId)) {
+            param.put("issue_id", issueId);
+        }
+        //安卓状态
+        Integer androidState = gameDto.getAndroidState();
+        if (null != androidState) {
+            param.put("android_state", androidState);
+        }
+        //iOS状态
+        Integer iosState = gameDto.getIosState();
+        if (null != iosState) {
+            param.put("ios_state", iosState);
+        }
     }
 
     private void gameReleaseLogFun(GameReleaseLogDto gameReleaseLogDto, HashMap<String, Object> param) {
