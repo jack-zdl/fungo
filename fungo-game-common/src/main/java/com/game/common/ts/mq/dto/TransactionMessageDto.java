@@ -72,6 +72,11 @@ public class TransactionMessageDto extends InputPageDto {
      */
     private String ext3;
 
+    /**
+     * mq 路由key
+     */
+    private String routingKey;
+
 
     public Long getMessageId() {
         return messageId;
@@ -177,5 +182,13 @@ public class TransactionMessageDto extends InputPageDto {
 
     public void setCasVersion(Integer casVersion) {
         this.casVersion = casVersion;
+    }
+
+    public String getRoutingKey() {
+        return routingKey;
+    }
+
+    public void setRoutingKey(String routingKey) {
+        this.routingKey = routingKey;
     }
 }
