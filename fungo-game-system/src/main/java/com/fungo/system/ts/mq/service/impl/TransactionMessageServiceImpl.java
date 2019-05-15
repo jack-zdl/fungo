@@ -2,6 +2,8 @@ package com.fungo.system.ts.mq.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.ts.mq.dao.service.SysTsMsgDaoService;
 import com.fungo.system.ts.mq.entity.TransactionMessageDomain;
 import com.fungo.system.ts.mq.service.ITransactionMessageService;
@@ -355,7 +357,30 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
 
     @Override
     public Map<String, Object> listPage(int pageNum, int pageSize, TransactionMessageDto transactionMessageDto) throws BusinessException {
-        return null;
+
+        EntityWrapper<TransactionMessageDomain> messageDomainEntityWrapper = new EntityWrapper<TransactionMessageDomain>();
+        messageDomainEntityWrapper.orderBy("create_time", true);
+
+        Page<TransactionMessageDomain> domainPage = new Page<>(pageNum, pageSize);
+
+        Page<TransactionMessageDomain> selectPage = this.sysTsMsgDaoService.selectPage(domainPage, messageDomainEntityWrapper);
+
+        int total = 0;
+        List<TransactionMessageDomain> messageDomainList = null;
+
+        if (null != selectPage) {
+            //msgList
+            messageDomainList = selectPage.getRecords();
+
+            //rows
+            total = selectPage.getTotal();
+        }
+
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("rows", total);
+        resultMap.put("msgList", messageDomainList);
+
+        return resultMap;
     }
 
     @Override
