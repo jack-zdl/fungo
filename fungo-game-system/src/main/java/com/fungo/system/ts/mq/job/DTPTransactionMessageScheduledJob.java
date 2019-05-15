@@ -14,7 +14,7 @@ import java.util.Map;
  * @Description:分布式事务之消息状态监控定时任务<br/> 主要分为两步：  <br/>
  * 1.处理状态为“待确认”但已超时的消息 <br/>
  * 2.处理状态为“发送中”但超时没有被成功消费确认的消息 <br/>
- * @Date: Create in 2018/5/8
+ * @Date: Create in 2019-05-14
  */
 @Component
 public class DTPTransactionMessageScheduledJob   {

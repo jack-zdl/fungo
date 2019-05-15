@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * @Author:Mxf <a href="mailto:m-java@163.com">m-java@163.com</a>
  * @Description:分布式事务之消息服务接口<br/>
- * @Date: Create in 2018/5/8
+ * @Date: Create in 2019-05-14
  */
 public interface ITransactionMessageService {
 
