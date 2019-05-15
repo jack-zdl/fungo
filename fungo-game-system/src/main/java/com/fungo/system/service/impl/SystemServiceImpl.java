@@ -32,6 +32,7 @@ import javax.validation.constraints.Size;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>系统微服务对外服务实现类</p>
@@ -294,7 +295,7 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public ResultDto<List<String>> listtargetId(BasActionDto basActionDto) {
-        Wrapper wrapper = Condition.create().setSqlSelect("target_id");
+        Wrapper<BasAction> wrapper = Condition.create().setSqlSelect(" target_id as targetId");
         if(basActionDto.getMemberId()!=null){
             wrapper.eq("member_id", basActionDto.getMemberId());
         }
@@ -307,14 +308,14 @@ public class SystemServiceImpl implements SystemService {
         if(basActionDto.getState()!=null){
             wrapper.eq("state", basActionDto.getState());
         }
-        List<String> actionList = actionServiceImap.selectList(wrapper);
+        List<BasAction> actionList = actionServiceImap.selectList(wrapper);
         LOGGER.info(actionList.size()+"");
-
+        List<String> ids = actionList.stream().filter(li -> {return li != null && li.getTargetId() != null && li.getTargetId() != "";}).map(BasAction::getTargetId).collect(Collectors.toList());
       /*  ArrayList<String> list = new ArrayList<>();
         for (BasAction basAction : actionList) {
             list.add(basAction.getTargetId());
         }*/
-        return ResultDto.success(actionList);
+        return ResultDto.success(ids);
     }
 
 
