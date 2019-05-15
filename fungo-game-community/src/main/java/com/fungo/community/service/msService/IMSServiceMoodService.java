@@ -30,4 +30,14 @@ public interface IMSServiceMoodService {
      * @return
      */
     public List<MooMessageDto> queryCmmMoodCommentList(@RequestBody MooMessageDto mooMessageDto);
+
+
+
+    /**
+     * 查询 社区心情总数
+     * @return
+     */
+    public Integer queryCmmMoodCount(@RequestBody MooMoodDto mooMoodDto);
+
+
 }

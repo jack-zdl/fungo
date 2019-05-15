@@ -218,6 +218,57 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
         return mooMessageDtoList;
     }
 
+    @Override
+    public Integer queryCmmMoodCount(MooMoodDto mooMoodDto) {
+        try {
+
+
+            int page = mooMoodDto.getPage();
+            int limit = mooMoodDto.getLimit();
+
+
+            EntityWrapper<MooMood> moodDtoEntityWrapper = new EntityWrapper<MooMood>();
+            HashMap<String, Object> param = new HashMap<String, Object>();
+
+            Page<MooMood> mooMoodPage = null;
+
+            if (page > 0 && limit > 0) {
+                mooMoodPage = new Page<MooMood>(page, limit);
+            }
+
+            //会员id
+            String member_id = mooMoodDto.getMemberId();
+            if (StringUtils.isNotBlank(member_id)) {
+                param.put("member_id", member_id);
+            }
+
+            //状态 0正常 1视频处理中 -1删除
+            Integer state = mooMoodDto.getState();
+            if (null != state) {
+                param.put("state", state);
+            }
+
+
+            //类型 1:普通 2:精选
+            Integer type = mooMoodDto.getType();
+            if (null != type) {
+                param.put("type", type);
+            }
+
+            //内容
+            String content = mooMoodDto.getContent();
+            if (StringUtils.isNotBlank(content)) {
+                moodDtoEntityWrapper.orNew("content like '%" + content + "%'");
+            }
+
+            return mooMoodDaoService.selectCount(moodDtoEntityWrapper);
+
+        } catch (Exception ex) {
+            LOGGER.error("/ms/service/cmm/mood/count----queryCmmPostList-出现异常:", ex);
+        }
+        return 0;
+    }
+
 
     //------
 }

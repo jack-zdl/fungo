@@ -3,6 +3,7 @@ package com.fungo.community.msService.mood;
 
 import com.fungo.community.service.msService.IMSServiceMoodService;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.MooMessageDto;
 import com.game.common.dto.community.MooMoodDto;
 import org.slf4j.Logger;
@@ -47,7 +48,6 @@ public class MSServiceMoodController {
     }
 
 
-
     /**
      * 心情评论的 分页查询
      * @return
@@ -65,6 +65,21 @@ public class MSServiceMoodController {
     }
 
 
+    /**
+     * 查询 社区心情总数
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/mood/count")
+    public ResultDto<Integer> queryCmmMoodCount(@RequestBody MooMoodDto mooMoodDto) {
+
+        ResultDto<Integer> resultDto = new ResultDto<Integer>();
+
+        Integer cmmMoodCount = imsServiceMoodService.queryCmmMoodCount(mooMoodDto);
+
+        resultDto.setData(cmmMoodCount);
+
+        return resultDto;
+    }
 
     //--------
 }
