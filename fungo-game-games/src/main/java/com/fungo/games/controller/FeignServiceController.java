@@ -17,10 +17,9 @@ import com.fungo.games.service.GameSurveyRelService;
 import com.fungo.games.service.IGameService;
 import com.fungo.games.service.impl.GameEvaluationServiceImap;
 import com.game.common.bean.MemberPulishFromCommunity;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
-import com.game.common.dto.game.GameEvaluationDto;
-import com.game.common.dto.game.GameReleaseLogDto;
-import com.game.common.dto.game.GameSurveyRelDto;
+import com.game.common.dto.game.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -650,6 +649,11 @@ public class FeignServiceController {
         if (StringUtils.isNotBlank(iosState)) {
             param.put("ios_state", iosState);
         }
+    }
+    @ApiOperation(value = "根据游戏id集合获取FungoPageResultDto<GameOutBean>", notes = "")
+    @RequestMapping(value = "/api/content/gameList", method = RequestMethod.POST)
+    FungoPageResultDto<GameOutBean> getGameList(@RequestBody GameItemInput input){
+        return iGameService.getGameList1(input);
     }
 
 
