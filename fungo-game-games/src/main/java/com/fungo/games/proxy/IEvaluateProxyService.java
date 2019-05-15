@@ -6,6 +6,7 @@ import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.ReplyInputPageDto;
 import com.game.common.dto.game.BasTagDto;
+import com.game.common.dto.game.BasTagGroupDto;
 import com.game.common.dto.game.ReplyDto;
 import com.game.common.dto.user.MemberDto;
 
@@ -100,4 +101,11 @@ public interface IEvaluateProxyService {
      * @return
      */
     BasTagDto getBasTagBySelectById(BasTagDto basTagDto);
+
+    /**
+     * 判断BasTagGroup属性值获取BasTagGroup集合
+     * @param basTagGroupDto
+     * @return
+     */
+    List<BasTagGroupDto> getBasTagGroupBySelectList(BasTagGroupDto basTagGroupDto);
 }

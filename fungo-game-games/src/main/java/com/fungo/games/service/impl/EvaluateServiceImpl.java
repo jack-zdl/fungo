@@ -15,6 +15,7 @@ import com.fungo.games.entity.GameTag;
 import com.fungo.games.helper.MQProduct;
 import com.fungo.games.proxy.IEvaluateProxyService;
 import com.fungo.games.service.*;
+import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.dto.FungoPageResultDto;
@@ -24,6 +25,7 @@ import com.game.common.dto.community.ReplyBean;
 import com.game.common.dto.community.ReplyInputPageDto;
 import com.game.common.dto.evaluation.*;
 import com.game.common.dto.game.BasTagDto;
+import com.game.common.dto.game.MermberSearchInput;
 import com.game.common.dto.game.ReplyDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
@@ -40,6 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -118,6 +121,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
     @Autowired
     private GameDao gameDao;
+
+    @Autowired
+    private GameEvaluationService evaluationService;
 
     @Override
     @Transactional
@@ -720,6 +726,62 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         gameDao.updateTags(gameId,tagsFormGame);
         return true;
+    }
+
+    /**
+     * 我的游戏评测(2.4.3)
+     * @param loginId
+     * @param input
+     * @return
+     */
+    @Override
+    public FungoPageResultDto<MyEvaluationBean> getMyEvaluationList(String loginId, InputPageDto input) throws IOException {
+        FungoPageResultDto<MyEvaluationBean> re = null;
+
+        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_EVALUATIONLIST;
+        String keySuffix = loginId + JSON.toJSONString(input);
+        re = (FungoPageResultDto<MyEvaluationBean>) fungoCacheGame.getIndexCache(keyPrefix, keySuffix);
+        if (null != re && null != re.getData() && re.getData().size() > 0) {
+            return re;
+        }
+
+        re = new FungoPageResultDto<MyEvaluationBean>();
+        Page<GameEvaluation> p = evaluationService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameEvaluation>()
+                .eq("member_id", loginId).eq("state", 0).orderBy("updated_at", false));
+        List<GameEvaluation> elist = p.getRecords();
+        List<MyEvaluationBean> olist = new ArrayList<>();
+
+//		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+//		Date today = format.parse(format.format(new Date()));
+//		Long time = (long) (24 * 60 * 60 * 1000); // 一天
+//		SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
+        ObjectMapper mapper = new ObjectMapper();
+        for (GameEvaluation eva : elist) {
+            MyEvaluationBean bean = new MyEvaluationBean();
+            bean.setContent(eva.getContent());
+//			bean.setGameName(eva.getGameName());
+            bean.setRating(eva.getRating());
+            bean.setUpdatedAt(DateTools.fmtDate(eva.getUpdatedAt()));
+            bean.setGameId(eva.getGameId());
+            bean.setEvaId(eva.getId());
+            if (eva.getImages() != null) {
+                ArrayList<String> images = mapper.readValue(eva.getImages(), ArrayList.class);
+                bean.setImages(images);
+            }
+            Game game = gameService.selectOne(Condition.create().setSqlSelect("id,icon,name").eq("id", eva.getGameId()));
+            if (game != null) {
+                bean.setIcon(game.getIcon());
+                bean.setGameName(game.getName());
+            }
+
+            olist.add(bean);
+        }
+        PageTools.pageToResultDto(re, p);
+        re.setData(olist);
+
+        //redis cache
+        fungoCacheGame.excIndexCache(true, keyPrefix, keySuffix, re);
+        return re;
     }
 
 

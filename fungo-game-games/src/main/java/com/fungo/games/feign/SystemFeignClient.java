@@ -6,6 +6,7 @@ import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.game.BasTagDto;
+import com.game.common.dto.game.BasTagGroupDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberOutBean;
 import io.swagger.annotations.ApiImplicitParams;
@@ -110,4 +111,12 @@ public interface SystemFeignClient {
      */
     @RequestMapping(value="/api/system/getBasTagBySelectById", method= RequestMethod.POST)
     BasTagDto getBasTagBySelectById(@RequestBody BasTagDto basTagDto);
+
+    /**
+     * 判断BasTagGroup属性值获取BasTagGroup集合
+     * @param basTagGroupDto
+     * @return
+     */
+    @RequestMapping(value="/api/system/getBasTagGroupBySelectList", method= RequestMethod.POST)
+    List<BasTagGroupDto> getBasTagGroupBySelectList(@RequestBody BasTagGroupDto basTagGroupDto);
 }
