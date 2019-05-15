@@ -2,10 +2,13 @@ package com.fungo.community.service.msService.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.community.dao.service.CmmCommentDaoService;
 import com.fungo.community.dao.service.ReplyDaoService;
+import com.fungo.community.entity.CmmComment;
 import com.fungo.community.entity.Reply;
 import com.fungo.community.service.msService.IMSServiceCommentService;
 import com.game.common.dto.community.CmmCmtReplyDto;
+import com.game.common.dto.community.CmmCommentDto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +29,9 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
 
     @Autowired
     private ReplyDaoService replyDaoService;
+
+    @Autowired
+    private CmmCommentDaoService cmmCommentDaoService;
 
     @Override
     public List<CmmCmtReplyDto> querySecondLevelCmtList(CmmCmtReplyDto postDto) {
@@ -145,6 +151,110 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
             LOGGER.error("/ms/service/cmm/cmt/s/list--querySecondLevelCmtList-出现异常:", ex);
         }
         return cmmCmtReplyDtoList;
+    }
+
+    @Override
+    public List<CmmCommentDto> queryFirstLevelCmtList(CmmCommentDto cmmCommentDto) {
+
+        List<CmmCommentDto> cmmCommentDtoList = null;
+
+        try {
+
+            int page = cmmCommentDto.getPage();
+            int limit = cmmCommentDto.getLimit();
+
+
+            EntityWrapper<CmmComment> cmmCommentEntityWrapper = new EntityWrapper<CmmComment>();
+            HashMap<String, Object> param = new HashMap<String, Object>();
+
+            Page<CmmComment> cmmCommentPage = null;
+
+            if (page > 0 && limit > 0) {
+                cmmCommentPage = new Page<CmmComment>(page, limit);
+            }
+
+            //pk
+            String id = cmmCommentDto.getId();
+            if (StringUtils.isNotBlank(id)) {
+                param.put("id", id);
+            }
+
+            //回复会员id
+            String replyMemberId = cmmCommentDto.getMemberId();
+            if (StringUtils.isNotBlank(replyMemberId)) {
+                param.put("member_id", replyMemberId);
+            }
+
+
+            //帖子id
+            String post_id = cmmCommentDto.getPostId();
+            if (StringUtils.isNotBlank(post_id)) {
+                param.put("post_id", post_id);
+            }
+
+            //帖子id
+            Integer state = cmmCommentDto.getState();
+            if (null != state) {
+                param.put("state", state);
+            }
+
+
+            //资源类型
+            Integer type = cmmCommentDto.getType();
+            if (null != type) {
+                param.put("type", type);
+            }
+
+            // 社区id
+            String communityId = cmmCommentDto.getCommunityId();
+            if (StringUtils.isNotBlank(communityId)) {
+                param.put("community_id", communityId);
+            }
+
+            //内容
+            String content = cmmCommentDto.getContent();
+            if (StringUtils.isNotBlank(content)) {
+                cmmCommentEntityWrapper.orNew("content like '%" + content + "%'");
+            }
+
+
+            //根据修改时间倒叙
+            cmmCommentEntityWrapper.orderBy("updated_at", false);
+
+            List<CmmComment> selectRecords = null;
+
+            if (null != cmmCommentPage) {
+
+                Page<CmmComment> cmmCommentPageList = this.cmmCommentDaoService.selectPage(cmmCommentPage, cmmCommentEntityWrapper);
+
+                if (null != cmmCommentPageList) {
+                    selectRecords = cmmCommentPageList.getRecords();
+                }
+
+            } else {
+                selectRecords = this.cmmCommentDaoService.selectList(cmmCommentEntityWrapper);
+            }
+
+            if (null != selectRecords) {
+
+                cmmCommentDtoList = new ArrayList<CmmCommentDto>();
+
+                for (CmmComment cmmComment : selectRecords) {
+
+                    CmmCommentDto cmmCommentDtoResult = new CmmCommentDto();
+
+                    BeanUtils.copyProperties(cmmComment, cmmCommentDtoResult);
+
+                    cmmCommentDtoList.add(cmmCommentDtoResult);
+                }
+            }
+
+
+        } catch (Exception ex) {
+            LOGGER.error("/ms/service/cmm/cmt/f/lists--queryFirstLevelCmtList-出现异常:", ex);
+        }
+
+        return cmmCommentDtoList;
     }
 
 

@@ -4,6 +4,7 @@ package com.fungo.community.msService.comment;
 import com.fungo.community.service.msService.IMSServiceCommentService;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.community.CmmCmtReplyDto;
+import com.game.common.dto.community.CmmCommentDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +35,28 @@ public class MSServiceCommentController {
      * @return
      */
     @PostMapping("/ms/service/cmm/cmt/s/lists")
-    public FungoPageResultDto<CmmCmtReplyDto> queryCmmPostList(@RequestBody CmmCmtReplyDto replyDto) {
+    public FungoPageResultDto<CmmCmtReplyDto> querySecondLevelCmtList(@RequestBody CmmCmtReplyDto replyDto) {
 
         FungoPageResultDto<CmmCmtReplyDto> resultDto = new FungoPageResultDto<CmmCmtReplyDto>();
 
         List<CmmCmtReplyDto> cmmPostDtoList = imsServiceCommentService.querySecondLevelCmtList(replyDto);
+
+        resultDto.setData(cmmPostDtoList);
+
+        return resultDto;
+    }
+
+
+    /**
+     * 分页查询 一级评论 数据
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/cmt/f/lists")
+    public FungoPageResultDto<CmmCommentDto> queryFirstLevelCmtList(@RequestBody CmmCommentDto cmmCommentDto) {
+
+        FungoPageResultDto<CmmCommentDto> resultDto = new FungoPageResultDto<CmmCommentDto>();
+
+        List<CmmCommentDto> cmmPostDtoList = imsServiceCommentService.queryFirstLevelCmtList(cmmCommentDto);
 
         resultDto.setData(cmmPostDtoList);
 
