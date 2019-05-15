@@ -40,24 +40,24 @@ public class GameProxyServiceImpl implements IGameProxyService {
     @Autowired
     private GamesFeignClient gamesFeignClient;
 
-    /**
-     * 功能描述: 
-     * @param: [map]
-     * @return: java.lang.String
-     * @auther: dl.zhang
-     * @date: 2019/5/14 11:12
-     */
-    @HystrixCommand(fallbackMethod = "hystrixGetMemberIdByTargetId",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
-    @Override
-    public String getMemberIdByTargetId(Map<String, String> map) {
-        return communityFeignClient.getMemberIdByTargetId(map);
-    }
-
-    public String hystrixGetMemberIdByTargetId(Map<String, String> map){
-        logger.warn("GameProxyServiceImpl.getMemberIdByTargetId获取被点赞用户的id异常");
-        return null;
-    }
+//    /**
+//     * 功能描述:
+//     * @param: [map]
+//     * @return: java.lang.String
+//     * @auther: dl.zhang
+//     * @date: 2019/5/14 11:12
+//     */
+//    @HystrixCommand(fallbackMethod = "hystrixGetMemberIdByTargetId",ignoreExceptions = {Exception.class},
+//            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+//    @Override
+//    public String getMemberIdByTargetId(Map<String, String> map) {
+//        return communityFeignClient.getMemberIdByTargetId(map);
+//    }
+//
+//    public String hystrixGetMemberIdByTargetId(Map<String, String> map){
+//        logger.warn("GameProxyServiceImpl.getMemberIdByTargetId获取被点赞用户的id异常");
+//        return null;
+//    }
     
     /**
      * 功能描述:  根据主键获取社区帖子
@@ -144,7 +144,13 @@ public class GameProxyServiceImpl implements IGameProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public GameDto selectGameById(String id) {
-        return null;
+        GameDto param = new GameDto();
+        param.setId(id);
+        Page<GameDto> gamePage =   gamesFeignClient.getGamePage(param);
+        if(gamePage.getRecords().size() > 0 ){
+            param = gamePage.getRecords().get(0);
+        }
+        return param;
     }
 
 
@@ -163,17 +169,21 @@ public class GameProxyServiceImpl implements IGameProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public MooMoodDto selectMooMoodById(String id) {
-        return null;
+        MooMoodDto param = new MooMoodDto();
+        param.setId(id);
+        FungoPageResultDto<MooMoodDto> re = communityFeignClient.queryCmmMoodList(param);
+        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
+            param = re.getData().get(0);
+        }
+        return param;
     }
-
-
 
     public MooMoodDto hystrixSelectMooMoodById(String id) {
         return null;
     }
 
-    
     /**
+     * @todo 心情评论
      * 功能描述: 根据心情评论主键查询心情评论
      * @param: [id] 心情评论主键
      * @return: com.game.common.dto.community.MooMessageDto

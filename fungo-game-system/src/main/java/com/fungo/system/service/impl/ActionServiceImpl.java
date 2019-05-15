@@ -649,7 +649,7 @@ public class ActionServiceImpl implements IActionService {
         return re;
     }
 //  切换feign客户端 调用游戏服务
-    //@todo 调用游戏服务
+    //@todo  mq  调用游戏服务
     private void gameFeignClientUpdateCounterByDownLoad(ActionInput inputDto) {
         Map<String, String> map = new HashMap<>();
         map.put("tableName", "t_game");
