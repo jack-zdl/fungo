@@ -4,9 +4,12 @@ package com.fungo.games.service;
 import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
+import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.*;
+import com.game.common.dto.search.GameSearchOut;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -83,4 +86,72 @@ public interface IGameService {
 	 */
     String getMemberIdByTargetId(Map<String, String> map);
 
+	/**
+	 * 我的游戏列表
+	 * @param loginId
+	 * @param inputPage
+	 * @param os
+	 * @return
+	 */
+	FungoPageResultDto<MyGameBean> getMyGameList(String loginId, MyGameInputPageDto inputPage, String os);
+
+	/**
+	 * 搜索游戏
+	 * @param page
+	 * @param limit
+	 * @param keyword
+	 * @param tag
+	 * @param sort
+	 * @param os
+	 * @param memberId
+	 * @return
+	 */
+    FungoPageResultDto<GameSearchOut> searchGames(int page, int limit, String keyword, String tag, String sort, String os, String memberId) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException;
+
+	/**
+	 * 根据游戏ID获取游戏标签列表
+	 * @param gameId
+	 * @param userId
+	 * @return
+	 */
+    ResultDto<List> getGameTagList(String gameId, String userId);
+
+	/**
+	 * 新增游戏标签
+	 * @param idList
+	 * @param userId
+	 * @param gameId
+	 * @return
+	 */
+	ResultDto<String> addGameTag(String[] idList, String userId, String gameId);
+
+	/**
+	 * 发表游戏态度
+	 * @param userId
+	 * @param tagRelId
+	 * @param attitude
+	 * @return
+	 */
+	ResultDto<String> addGameTagAttitude(String userId, String tagRelId, Integer attitude);
+
+	/**
+	 * 获取热门游戏标签
+	 * @return
+	 */
+	ResultDto<List> getHotTagList();
+
+	/**
+	 * 获取游戏预选标签
+	 * @param memberUserPrefile
+	 * @param tagInput
+	 * @return
+	 */
+	ResultDto<TagSelectOut> getSelectTagList(MemberUserProfile memberUserPrefile, TagInput tagInput);
+
+	/**
+	 * 根据游戏id集合获取FungoPageResultDto<GameOutBean>
+	 * @param input
+	 * @return
+	 */
+    FungoPageResultDto<GameOutBean> getGameList1(GameItemInput input);
 }

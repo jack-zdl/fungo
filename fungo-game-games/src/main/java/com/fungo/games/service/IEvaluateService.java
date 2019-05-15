@@ -2,10 +2,13 @@ package com.fungo.games.service;
 
 
 
+import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.evaluation.*;
+import com.game.common.dto.game.MermberSearchInput;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -21,8 +24,11 @@ public interface IEvaluateService {
 //	根据后台标签id集合，分类标签，游戏id
 	boolean feignAddGameTagInsert(List<String> tags, String categoryId, String gameId);
 
+//	我的游戏评测(2.4.3)
+    FungoPageResultDto<MyEvaluationBean> getMyEvaluationList(String loginId, InputPageDto input) throws IOException;
 
-	/**
+
+    /**
 	 * 查看用户在指定时间段内游戏评论上热门和安利墙的评论数量
 	 * @param mb_id
 	 * @param startDate
