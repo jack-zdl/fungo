@@ -103,7 +103,7 @@
 	<select id="getFollowerCommunityId" resultType="String" parameterType="String"><![CDATA[ 
 		select a.target_id as objectId
 		from t_bas_action a where
-			a.member_id=#{memberId} and a.type=5 and a.state<>-1
+			a.member_id=#{memberId} and a.type=5 and a.state<>-1 and a.target_type = 4
 	]]></select>
 	
 	<!-- 用户时间线-帖子 新版已弃用 -->

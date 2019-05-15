@@ -256,6 +256,8 @@ public class SystemServiceImpl implements SystemService {
         scoreCount.setScoreUsable(scoreCount.getScoreUsable().subtract((new BigDecimal(memberDto.getExp()))));
         scoreCount.setUpdatedAt(new Date());
         scoreCount.updateById();
+        user.setExp(scoreCount.getScoreUsable().intValue());
+        memberServiceImap.updateById(user);
         return ResultDto.success();
     }
 
@@ -305,13 +307,14 @@ public class SystemServiceImpl implements SystemService {
         if(basActionDto.getState()!=null){
             wrapper.eq("state", basActionDto.getState());
         }
-        List<BasAction> actionList = actionServiceImap.selectList(wrapper);
+        List<String> actionList = actionServiceImap.selectList(wrapper);
+        LOGGER.info(actionList.size()+"");
 
-        ArrayList<String> list = new ArrayList<>();
+      /*  ArrayList<String> list = new ArrayList<>();
         for (BasAction basAction : actionList) {
             list.add(basAction.getTargetId());
-        }
-        return ResultDto.success(list);
+        }*/
+        return ResultDto.success(actionList);
     }
 
 
@@ -324,7 +327,7 @@ public class SystemServiceImpl implements SystemService {
         action.setState(0);
         action.setTargetId(basActionDto.getTargetId());
         action.setTargetType(basActionDto.getTargetType());
-        action.setType(basActionDto.getTargetType());
+        action.setType(basActionDto.getType());
         action.setUpdatedAt(new Date());
         action.insert();
         return ResultDto.success("");

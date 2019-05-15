@@ -113,12 +113,13 @@ public class SystemController {
             return re;
         }
     }
-    @PostMapping(value = "/changeMemberLevel")
-    @ApiOperation(value="根据指定用户id变更用户到指定等级")
+
+   @ApiOperation(value="根据指定用户id变更用户到指定等级")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id",value = "用户id",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "level",value = "期望变更到的等级",paramType = "form",dataType = "integer")
     })
+  @PostMapping(value = "/changeMemberLevel")
     public ResultDto<String> changeMemberLevel(@RequestBody MemberDto memberDto){
         ResultDto<String> re = null;
         if(memberDto.getId()==null||memberDto.getLevel()==null){
@@ -160,12 +161,12 @@ public class SystemController {
     }
 
 
-    @PostMapping(value = "/listFollowerCommunityId")
+    @GetMapping(value = "/listFollowerCommunityId")
     @ApiOperation(value="获取关注社区id集合")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "memberId",value = "用户id",paramType = "form",dataType = "string")
     })
-    public ResultDto<List<String>> decMemberExp(@RequestParam String memberId){
+    public ResultDto<List<String>> listFollowerCommunityId(@RequestParam String memberId){
         ResultDto<List<String>> re = null;
         if(memberId==null){
             re = ResultDto.error("-1", "SystemController.listFollowerCommunityId参数缺失");
@@ -181,7 +182,7 @@ public class SystemController {
             return re;
         }
     }
-    @PostMapping(value = "/countActionNum")
+    @GetMapping(value = "/countActionNum")
     @ApiOperation(value="获取动作数量(比如点赞)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "type",value = "行为类型",paramType = "form",dataType = "integer"),
@@ -203,7 +204,7 @@ public class SystemController {
         }
     }
 
-    @PostMapping(value = "/listtargetId")
+    @GetMapping(value = "/listtargetId")
     @ApiOperation(value=" 根据用户id，动作类型，目前类型，状态获取目前id集合")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "type",value = "行为类型",paramType = "form",dataType = "integer"),
@@ -225,7 +226,7 @@ public class SystemController {
     }
 
     @PostMapping(value = "/addAction")
-    @ApiOperation(value="行为记录")
+    @ApiOperation(value="新增用户行为记录")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "type",value = "行为类型",paramType = "form",dataType = "integer"),
             @ApiImplicitParam(name = "targetType",value = "业务类型",paramType = "form",dataType = "integer"),
