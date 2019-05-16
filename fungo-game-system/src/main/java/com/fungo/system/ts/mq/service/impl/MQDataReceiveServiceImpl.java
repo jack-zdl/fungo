@@ -33,9 +33,8 @@ public class MQDataReceiveServiceImpl implements MQDataReceiveService {
         }
         try {
             //调用业务方处理消息
-
+          //  systemMQWrap.excte(msgData);
             LOGGER.info("MQDataReceiveServiceImpl-onMessageWithMQTopic-msg:{}", msgData);
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
