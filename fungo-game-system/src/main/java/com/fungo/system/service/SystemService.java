@@ -1,6 +1,7 @@
 package com.fungo.system.service;
 
 import com.fungo.system.dto.TaskDto;
+import com.fungo.system.entity.Member;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
@@ -11,6 +12,7 @@ import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.vo.MemberFollowerVo;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,4 +60,6 @@ public interface SystemService {
     ResultDto<List<HashMap<String,Object>>> getStatusImage(String memberId);
 
     ResultDto<List<BasTagDto>> listBasTags(List<String> collect);
+
+    ResultDto<List<MemberDto>> listWatchMebmber(Integer limit, String currentMbId) throws IOException, ClassNotFoundException;
 }

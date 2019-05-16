@@ -468,7 +468,7 @@ public class SystemServiceImpl implements SystemService {
         List<BasTag> tagList = bagTagService.selectList(new EntityWrapper<BasTag>().in("id", collect));
         List<BasTagDto> tagDtoList = null;
         try {
-            tagDtoList = CommonUtils.deepCopy(tagList, MemberDto.class);
+            tagDtoList = CommonUtils.deepCopy(tagList, BasTagDto.class);
         } catch (Exception e) {
             LOGGER.error("SystemService.listBasTags error", e);
             return ResultDto.error("-1", "SystemService.listBasTags error");
@@ -476,5 +476,42 @@ public class SystemServiceImpl implements SystemService {
         return ResultDto.success(tagDtoList);
     }
 
+    @Override
+    public ResultDto<List<MemberDto>> listWatchMebmber(Integer limit, String currentMbId) {
+        List<MemberDto> memberDtoList = new ArrayList<>();
+        EntityWrapper actionEntityWrapper = new EntityWrapper<BasAction>();
+        actionEntityWrapper.setSqlSelect("target_id");
+
+        //target_type 0 关注用户
+        actionEntityWrapper.eq("state", "0").eq("type", 5).eq("member_id", currentMbId).eq("target_type", 0);
+        actionEntityWrapper.orderBy("created_at", false);
+        if (limit > 0) {
+            actionEntityWrapper.last("limit " + limit);
+        }
+        List<BasAction> watchMebmberIdsList = actionServiceImap.selectList(actionEntityWrapper);
+
+        if (null != watchMebmberIdsList && !watchMebmberIdsList.isEmpty()) {
+            StringBuffer mbIds = new StringBuffer();
+            for (BasAction basAction : watchMebmberIdsList) {
+                if (null != basAction) {
+                    mbIds = mbIds.append(basAction.getTargetId());
+                    mbIds = mbIds.append(",");
+                }
+            }
+            mbIds.deleteCharAt(mbIds.length() - 1);
+
+            //查询出符合推荐条件用户的详情数据
+            if (mbIds.length() > 0) {
+                List<Member> watchMebmberList = memberServiceImap.selectList(new EntityWrapper<Member>().in("id", mbIds.toString()).eq("state", 0));
+                try {
+                    memberDtoList = CommonUtils.deepCopy(watchMebmberList, MemberDto.class);
+                } catch (Exception e) {
+                    LOGGER.error("SystemService.listBasTags error", e);
+                    return ResultDto.error("-1", "SystemService.listBasTags error");
+                }
+            }
+        }
+        return ResultDto.success(memberDtoList);
+    }
 
 }

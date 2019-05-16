@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -332,7 +333,7 @@ public class SystemController {
         }
     }
 
-    @GetMapping("/updateActionUpdatedAtByCondition")
+    @PostMapping("/updateActionUpdatedAtByCondition")
     @ApiOperation(value="根据指定的行为条件更新行为操作日期")
     public ResultDto<String> updateActionUpdatedAtByCondition(@RequestBody Map<String,Object> map){
         ResultDto<String> re = null;
@@ -346,8 +347,10 @@ public class SystemController {
         }
     }
 
+
+
     @GetMapping("/getStatusImage")
-    @ApiOperation(value="根据指定的行为条件更新行为操作日期")
+    @ApiOperation(value="根据用户id获取用户身份图标")
    public ResultDto<List<HashMap<String, Object>>> getStatusImage(@RequestParam("memberId") String memberId){
         ResultDto<List<HashMap<String, Object>>> re = null;
         try {
@@ -372,10 +375,23 @@ public class SystemController {
       }finally {
           return re;
       }
-
-
     }
 
-
+    /**
+     * 查询指定用户所关注的其他用户列表
+     */
+    @GetMapping("/listWatchMebmber")
+    @ApiOperation(value="查询指定用户所关注的其他用户列表")
+    public ResultDto<List<MemberDto>> listWatchMebmber(@RequestParam("limit") Integer limit, @RequestParam("currentMbId") String currentMbId){
+        ResultDto<List<MemberDto>> re = null;
+        try {
+            re =  systemService.listWatchMebmber(limit,currentMbId);
+        }catch (Exception e){
+            LOGGER.error("SystemController.listWatchMebmber",e);
+            re = ResultDto.error("-1", "SystemController.listWatchMebmber执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
 
 }
