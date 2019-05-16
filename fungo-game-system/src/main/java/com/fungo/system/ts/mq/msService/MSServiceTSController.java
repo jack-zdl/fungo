@@ -33,18 +33,18 @@ public class MSServiceTSController {
      * @return 返回 -1 失败，1 成功
      */
     @PostMapping(value = "/saveMsgWC", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
-    public ResultDto saveMessageWaitingConfirm(@RequestBody TransactionMessageDto transactionMessageDto) {
-        ResultDto<Object> resultDto = ResultDto.error("-1", "预存储消息失败");
-        ;
+    public ResultDto<Long> saveMessageWaitingConfirm(@RequestBody TransactionMessageDto transactionMessageDto) {
+        ResultDto<Long> resultDto = ResultDto.error("-1", "预存储消息失败");
+
         if (null == transactionMessageDto) {
             resultDto = ResultDto.error("-1", "预存储消息失败-【消息不能为空】");
             return resultDto;
         }
         try {
 
-            iTransactionMessageService.saveMessageWaitingConfirm(transactionMessageDto);
+            Long messageId = iTransactionMessageService.saveMessageWaitingConfirm(transactionMessageDto);
+            resultDto.setData(messageId);
             resultDto = ResultDto.success("预存储消息成功");
-
         } catch (Exception ex) {
             LOGGER.error("DTP-MQ 预存储消息发生异常", ex);
         }
@@ -84,15 +84,16 @@ public class MSServiceTSController {
      * @return 返回 -1 失败，1 成功
      */
     @PostMapping(value = "/saveSendMsg", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
-    public ResultDto saveAndSendMessage(@RequestBody TransactionMessageDto transactionMessageDto) {
-        ResultDto<Object> resultDto = ResultDto.error("-1", "存储并发送消息失败");
+    public ResultDto<Long> saveAndSendMessage(@RequestBody TransactionMessageDto transactionMessageDto) {
+        ResultDto<Long> resultDto = ResultDto.error("-1", "存储并发送消息失败");
         if (null == transactionMessageDto) {
             resultDto = ResultDto.error("-1", "存储并发送消息失败-【消息不能为空】");
             return resultDto;
         }
         try {
 
-            iTransactionMessageService.saveAndSendMessage(transactionMessageDto);
+            Long messageId = iTransactionMessageService.saveAndSendMessage(transactionMessageDto);
+            resultDto.setData(messageId);
             resultDto = ResultDto.success("存储并发送消息成功");
 
         } catch (Exception ex) {
