@@ -9,6 +9,7 @@ import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
+import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.function.SerUtils;
 import com.fungo.community.function.TemplateUtil;
 import com.fungo.community.service.IPostService;
@@ -16,6 +17,7 @@ import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.PostInput;
 import com.game.common.dto.community.PostInputPageDto;
 import com.game.common.dto.community.PostOut;
@@ -76,6 +78,10 @@ public class PostController {
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
 
+
+    //依赖系统和用户微服务
+    @Autowired
+    private SystemFeignClient systemFeignClient;
 
     @Autowired
     private IGameService iGameService;
@@ -533,6 +539,8 @@ public class PostController {
             //!fixme 根据用户id查询用户详情
             bean.setAuthor(userService.getAuthor(cmmPost.getMemberId()));
 
+            //systemFeignClient.list
+
             if (bean.getAuthor() == null) {
                 continue;
             }
@@ -578,10 +586,25 @@ public class PostController {
 
             //是否点赞
             if (memberUserPrefile == null) {
+
                 bean.setLiked(false);
+
             } else {
+
                 //!fixme 获取点赞数
-                int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", cmmPost.getId()).eq("member_id", memberUserPrefile.getLoginId()));
+                //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", cmmPost.getId()).eq("member_id", memberUserPrefile.getLoginId()));
+
+                BasActionDto basActionDto = new BasActionDto();
+
+                basActionDto.setMemberId(memberUserPrefile.getLoginId());
+                basActionDto.setType(0);
+                basActionDto.setState(0);
+                basActionDto.setTargetId( cmmPost.getId());
+
+                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                int liked  = resultDto.getData();
+
                 bean.setLiked(liked > 0 ? true : false);
             }
 
