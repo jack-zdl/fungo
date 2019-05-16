@@ -57,7 +57,6 @@ public class SystemController {
         try {
             re =  systemService.getFollowerUserId(memberFollowerVo.getMemberId());
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("SystemController.getFollowerUserId",e);
             re = FungoPageResultDto.error("-1", "SystemController.getFollowerUserId执行service出现异常");
         }finally {
@@ -78,7 +77,6 @@ public class SystemController {
         try {
             re =  systemService.getMemberFollowerList(memberFollowerVo);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("SystemController.getFollowerUserId",e);
             re = FungoPageResultDto.error("-1", "SystemController.getMemberFollowerList执行service出现异常");
         }finally {
@@ -99,7 +97,6 @@ public class SystemController {
         try {
             re =  systemService.getMemberDtoList(memberDto);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("SystemController.getFollowerUserId",e);
             re = FungoPageResultDto.error("-1", "SystemController.getMemberFollowerList执行service出现异常");
         }finally {
@@ -108,17 +105,32 @@ public class SystemController {
     }
 
     /**
-     * 功能描述: 根据用户id集合查询用户详情
+     * 功能描述: 根据用户id集合查询用户详情 state为null就不根据状态查询
      */
     @GetMapping(value = "/listMembersByids")
-    public ResultDto<List<MemberDto>> listMembersByids(@RequestBody List<String> ids){
+    public ResultDto<List<MemberDto>> listMembersByids(@RequestBody List<String> ids,@RequestParam("state") Integer state){
         ResultDto<List<MemberDto>> re = null;
         try {
-            re =  systemService.listMembersByids(ids);
+            re =  systemService.listMembersByids(ids,state);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("SystemController.listMembersByids",e);
             re = ResultDto.error("-1", "SystemController.listMembersByids执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
+    /**
+     * 功能描述: .找出官方推荐玩家
+     */
+    @GetMapping(value = "/listRecommendedMebmber")
+    public ResultDto<List<MemberDto>> listRecommendedMebmber(@RequestParam("limit") Integer limit,@RequestParam("currentMbId") String currentMbId,@RequestBody List<String> wathMbsSet){
+        ResultDto<List<MemberDto>> re = null;
+        try {
+            re =  systemService.listRecommendedMebmber(limit,currentMbId,wathMbsSet);
+        }catch (Exception e){
+            LOGGER.error("SystemController.listWatchMebmber",e);
+            re = ResultDto.error("-1", "SystemController.listWatchMebmber执行service出现异常");
         }finally {
             return re;
         }
@@ -393,5 +405,7 @@ public class SystemController {
             return re;
         }
     }
+
+
 
 }

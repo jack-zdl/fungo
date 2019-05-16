@@ -1,7 +1,6 @@
 package com.fungo.system.service;
 
 import com.fungo.system.dto.TaskDto;
-import com.fungo.system.entity.Member;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
@@ -45,7 +44,7 @@ public interface SystemService {
 
     public ResultDto<String> addAction(BasActionDto basActionDto);
 
-    ResultDto<List<MemberDto>> listMembersByids(List<String> ids);
+    ResultDto<List<MemberDto>> listMembersByids(List<String> ids, Integer state);
 
     ResultDto<List<IncentRankedDto>> listIncentrankeByids(List<String> ids, Integer rankType);
 
@@ -53,7 +52,7 @@ public interface SystemService {
 
     ResultDto<AuthorBean> getAuthor(String memberId);
 
-    public ResultDto<String> updateActionUpdatedAtByCondition(Map<String,Object> map);
+    ResultDto<String> updateActionUpdatedAtByCondition(Map<String,Object> map);
 
     ResultDto<MemberDto> getMembersByid(String id);
 
@@ -62,4 +61,7 @@ public interface SystemService {
     ResultDto<List<BasTagDto>> listBasTags(List<String> collect);
 
     ResultDto<List<MemberDto>> listWatchMebmber(Integer limit, String currentMbId) throws IOException, ClassNotFoundException;
+
+    ResultDto<List<MemberDto>> listRecommendedMebmber(Integer limit,String currentMbId,List<String> wathMbsSet);
+
 }
