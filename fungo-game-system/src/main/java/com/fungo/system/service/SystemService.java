@@ -1,14 +1,21 @@
 package com.fungo.system.service;
 
+import com.fungo.system.dto.TaskDto;
+import com.fungo.system.entity.Member;
+import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.game.BasTagDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.vo.MemberFollowerVo;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>系统微服务对外服务层</p>
@@ -38,4 +45,21 @@ public interface SystemService {
 
     public ResultDto<String> addAction(BasActionDto basActionDto);
 
+    ResultDto<List<MemberDto>> listMembersByids(List<String> ids);
+
+    ResultDto<List<IncentRankedDto>> listIncentrankeByids(List<String> ids, Integer rankType);
+
+    ResultDto<Map<String, Object>> exTask(TaskDto taskDto);
+
+    ResultDto<AuthorBean> getAuthor(String memberId);
+
+    public ResultDto<String> updateActionUpdatedAtByCondition(Map<String,Object> map);
+
+    ResultDto<MemberDto> getMembersByid(String id);
+
+    ResultDto<List<HashMap<String,Object>>> getStatusImage(String memberId);
+
+    ResultDto<List<BasTagDto>> listBasTags(List<String> collect);
+
+    ResultDto<List<MemberDto>> listWatchMebmber(Integer limit, String currentMbId) throws IOException, ClassNotFoundException;
 }
