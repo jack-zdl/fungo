@@ -6,9 +6,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fungo.system.controller.MemberIncentHonorController;
 import com.fungo.system.dao.BasActionDao;
-import com.fungo.system.dao.MemberFollowerDao;
 import com.fungo.system.dto.TaskDto;
 import com.fungo.system.entity.*;
 import com.fungo.system.service.*;
@@ -26,16 +24,14 @@ import com.game.common.util.StringUtil;
 import com.game.common.vo.MemberFollowerVo;
 import com.sun.istack.NotNull;
 import org.apache.commons.beanutils.BeanUtils;
-import org.checkerframework.checker.units.qual.A;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.Size;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -369,9 +365,12 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public ResultDto<List<MemberDto>> listMembersByids(List<String> ids) {
+    public ResultDto<List<MemberDto>> listMembersByids(List<String> ids, Integer state) {
         EntityWrapper<Member> wrapper = new EntityWrapper<>();
         wrapper.in("id", ids);
+        if(state!=null){
+            wrapper.eq("state",state);
+        }
         List<Member> members = memberServiceImap.selectList(wrapper);
         List<MemberDto> memberFollowerDtos = null;
         try {
@@ -514,4 +513,25 @@ public class SystemServiceImpl implements SystemService {
         return ResultDto.success(memberDtoList);
     }
 
+
+    public ResultDto<List<MemberDto>> listRecommendedMebmber(Integer limit,String currentMbId,List<String> wathMbsSet){
+        List<MemberDto> memberDtoList ;
+        EntityWrapper memberSqlWrapper = new EntityWrapper<Member>();
+        memberSqlWrapper.eq("type", 2).eq("state", 0);
+        //去除当前登录用户和已经关注用户
+        if (StringUtils.isNotBlank(currentMbId) || !wathMbsSet.isEmpty()) {
+            wathMbsSet.add(currentMbId);
+            memberSqlWrapper.notIn("id", wathMbsSet);
+        }
+        memberSqlWrapper.orderBy("sort", false);
+        memberSqlWrapper.last("limit " + limit);
+        List<Member> ml1 = memberServiceImap.selectList(memberSqlWrapper);
+        try {
+            memberDtoList = CommonUtils.deepCopy(ml1, MemberDto.class);
+        } catch (Exception e) {
+            LOGGER.error("SystemService.listBasTags error", e);
+            return ResultDto.error("-1", "SystemService.listBasTags error");
+        }
+        return ResultDto.success(memberDtoList);
+    }
 }
