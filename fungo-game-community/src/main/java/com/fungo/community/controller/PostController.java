@@ -15,6 +15,7 @@ import com.fungo.community.function.SerUtils;
 import com.fungo.community.function.TemplateUtil;
 import com.fungo.community.service.IPostService;
 import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
@@ -23,6 +24,7 @@ import com.game.common.dto.community.PostInput;
 import com.game.common.dto.community.PostInputPageDto;
 import com.game.common.dto.community.PostOut;
 import com.game.common.dto.community.PostOutBean;
+import com.game.common.dto.user.MemberDto;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.CommonUtil;
@@ -34,6 +36,7 @@ import com.game.common.util.emoji.EmojiDealUtil;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import com.game.common.vo.MemberFollowerVo;
 import com.sun.corba.se.spi.ior.ObjectId;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -41,6 +44,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
@@ -592,7 +596,14 @@ public class PostController {
             }
 
             //!fixme 根据用户id查询用户详情
-            bean.setAuthor(userService.getAuthor(cmmPost.getMemberId()));
+            //bean.setAuthor(userService.getAuthor(cmmPost.getMemberId()));
+
+            AuthorBean authorBean = new AuthorBean();
+            ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(cmmPost.getMemberId());
+            if (null != beanResultDto){
+                authorBean = beanResultDto.getData();
+            }
+            bean.setAuthor(authorBean);
 
             //systemFeignClient.list
 
