@@ -66,12 +66,25 @@ public class RabbitMQExchangeQueueBindConfig {
     }
 
     //3 社区-文章队列
-
+    @Bean("topicQueueCommunityPOST")
+    Queue topicQueueCommunityPOST() {
+        //队列持久化
+        Queue queue = new Queue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_COMMUNITY_POST.getName(), true, false, false);
+        LOGGER.info("RabbitMqExchangeQueueBindConfig-topicQueue-create-success");
+        return queue;
+    }
 
     //4 社区-心情队列
+    @Bean("topicQueueCommunityMood")
+    Queue topicQueueCommunityMood() {
+        //队列持久化
+        Queue queue = new Queue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_COMMUNITY_MOOD.getName(), true, false, false);
+        LOGGER.info("RabbitMqExchangeQueueBindConfig-topicQueue-create-success");
+        return queue;
+    }
 
 
-
+    //----------------------------------队列绑定交换机------------------------------------------------
     @Bean("bindingDirectExchageQueue")
     Binding bindingDirectExchageQueue() {
         Binding binding = BindingBuilder.bind(directQueue()).to(createDirectExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
@@ -87,8 +100,19 @@ public class RabbitMQExchangeQueueBindConfig {
     }
 
     //3 社区-文章队列 绑定 msgFungo_Topic交换机
-
+    @Bean("bindingTopicExchageQueueCommunityPOST")
+    Binding bindingTopicExchageQueueCommunityPOST() {
+        Binding binding = BindingBuilder.bind(topicQueueCommunityPOST()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
+        LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingTopicExchageQueueCommunityPOST-create-success");
+        return binding;
+    }
 
     //4 社区-心情队列 绑定 msgFungo_Topic交换机
-
+    @Bean("bindingTopicExchageQueueCommunityMood")
+    Binding bindingTopicExchageQueueCommunityMood() {
+        Binding binding = BindingBuilder.bind(topicQueueCommunityMood()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
+        LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingTopicExchageQueueCommunityMood-create-success");
+        return binding;
+    }
+    //
 }
