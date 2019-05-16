@@ -31,4 +31,11 @@ public interface IMSServicePostService {
      * @return
      */
     public List<Map> getHonorQualificationOfEssencePost();
+
+
+    /**
+     * 查询 社区帖子总数
+     * @return
+     */
+    public Integer queryCmmPostCount(@RequestBody CmmPostDto postDto);
 }

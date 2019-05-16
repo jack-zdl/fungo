@@ -9,6 +9,7 @@ import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.ReplyInputPageDto;
 import com.game.common.dto.game.BasTagDto;
+import com.game.common.dto.game.BasTagGroupDto;
 import com.game.common.dto.game.ReplyDto;
 import com.game.common.dto.user.MemberDto;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
@@ -147,6 +148,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param i
      * @param appVersion
      */
+    @HystrixCommand(fallbackMethod = "hystrixPush",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public void push(String inviteMemberId, int i, String appVersion) {
         systemFeignClient.push(inviteMemberId,i,appVersion);
@@ -157,9 +160,23 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param basTagDto
      * @return
      */
+    @HystrixCommand(fallbackMethod = "hystrixGetBasTagBySelectById",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public BasTagDto getBasTagBySelectById(BasTagDto basTagDto) {
         return systemFeignClient.getBasTagBySelectById(basTagDto);
+    }
+
+    /**
+     * 判断BasTagGroup属性值获取BasTagGroup集合
+     * @param basTagGroupDto
+     * @return
+     */
+    @HystrixCommand(fallbackMethod = "hystrixGetBasTagGroupBySelectList",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    @Override
+    public List<BasTagGroupDto> getBasTagGroupBySelectList(BasTagGroupDto basTagGroupDto) {
+        return systemFeignClient.getBasTagGroupBySelectList(basTagGroupDto);
     }
 
 

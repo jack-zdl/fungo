@@ -1,10 +1,7 @@
 package com.game.common.dto.community;
 
-import com.baomidou.mybatisplus.activerecord.Model;
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableName;
+import com.game.common.api.InputPageDto;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -15,7 +12,7 @@ import java.util.Date;
  * @author lzh
  * @since 2018-07-02
  */
-public class CmmCommentDto implements Serializable {
+public class CmmCommentDto extends InputPageDto {
 
     private static final long serialVersionUID = 1L;
 
@@ -60,6 +57,11 @@ public class CmmCommentDto implements Serializable {
      * 资源类型
      */
 	private Integer type;
+
+	/**
+	 * 社区id
+	 */
+	private String communityId;
 
 
 	public String getId() {
@@ -150,4 +152,11 @@ public class CmmCommentDto implements Serializable {
 		this.type = type;
 	}
 
+	public String getCommunityId() {
+		return communityId;
+	}
+
+	public void setCommunityId(String communityId) {
+		this.communityId = communityId;
+	}
 }
