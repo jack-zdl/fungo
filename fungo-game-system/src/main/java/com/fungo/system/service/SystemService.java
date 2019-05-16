@@ -5,6 +5,7 @@ import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.game.BasTagDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
@@ -55,4 +56,6 @@ public interface SystemService {
     ResultDto<MemberDto> getMembersByid(String id);
 
     ResultDto<List<HashMap<String,Object>>> getStatusImage(String memberId);
+
+    ResultDto<List<BasTagDto>> listBasTags(List<String> collect);
 }

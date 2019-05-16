@@ -16,6 +16,7 @@ import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.game.BasTagDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
@@ -83,6 +84,9 @@ public class SystemServiceImpl implements SystemService {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private BasTagService bagTagService;
 
     /**
      * 功能描述: 根据用户id查询被关注人的id集合
@@ -457,6 +461,19 @@ public class SystemServiceImpl implements SystemService {
             return ResultDto.error("-1", "异常");
         }
         return ResultDto.success(image);
+    }
+
+    @Override
+    public ResultDto<List<BasTagDto>> listBasTags(List<String> collect) {
+        List<BasTag> tagList = bagTagService.selectList(new EntityWrapper<BasTag>().in("id", collect));
+        List<BasTagDto> tagDtoList = null;
+        try {
+            tagDtoList = CommonUtils.deepCopy(tagList, MemberDto.class);
+        } catch (Exception e) {
+            LOGGER.error("SystemService.listBasTags error", e);
+            return ResultDto.error("-1", "SystemService.listBasTags error");
+        }
+        return ResultDto.success(tagDtoList);
     }
 
 

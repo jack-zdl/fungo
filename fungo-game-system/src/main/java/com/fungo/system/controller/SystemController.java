@@ -360,8 +360,20 @@ public class SystemController {
         }
    }
 
+   @GetMapping("/listBasTags")
+   @ApiOperation(value="根据标签id集合获取标签集合")
   public ResultDto<List<BasTagDto>> listBasTags (@RequestBody List<String> collect){
-        return null;
+      ResultDto<List<BasTagDto>> re = null;
+      try {
+          re =  systemService.listBasTags(collect);
+      }catch (Exception e){
+          LOGGER.error("SystemController.listBasTags",e);
+          re = ResultDto.error("-1", "SystemController.listBasTags执行service出现异常");
+      }finally {
+          return re;
+      }
+
+
     }
 
 
