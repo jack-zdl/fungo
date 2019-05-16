@@ -21,6 +21,7 @@ import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.ReplyBean;
 import com.game.common.dto.community.ReplyInputPageDto;
 import com.game.common.dto.evaluation.*;
@@ -499,12 +500,12 @@ public class EvaluateServiceImpl implements IEvaluateService {
 //            Page<ReplyDto> replyList = replyService.selectPage(new Page<>(1, 3), new EntityWrapper<Reply>().eq("target_id", cmmComment.getId()).eq("state", 0).orderBy("created_at", true));
             ReplyInputPageDto replyInputPageDto = new ReplyInputPageDto();
             replyInputPageDto.setPage(1);
-            replyInputPageDto.setPageSize(3);
+            replyInputPageDto.setLimit(3);
             replyInputPageDto.setTarget_id(cmmComment.getId());
             replyInputPageDto.setState(0);
-            Page<ReplyDto> replyList = iEvaluateProxyService.getReplyDtoBysSelectPageOrderByCreatedAt(replyInputPageDto);
+            Page<CmmCmtReplyDto> replyList = iEvaluateProxyService.getReplyDtoBysSelectPageOrderByCreatedAt(replyInputPageDto);
             int i = 0;
-            for (ReplyDto reply : replyList.getRecords()) {
+            for (CmmCmtReplyDto reply : replyList.getRecords()) {
                 i = i + 1;
                 if (i == 3) {
                     ctem.setReply_more(true);
