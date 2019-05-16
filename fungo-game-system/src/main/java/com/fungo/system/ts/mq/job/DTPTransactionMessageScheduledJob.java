@@ -25,7 +25,7 @@ public class DTPTransactionMessageScheduledJob   {
     private DTPTransactionMessageScheduledService dTPTransactionMessageScheduledService;
 
     //每60秒 执行任务
-    @Scheduled(cron = "0/60 * * * * ?")
+//    @Scheduled(cron = "0/60 * * * * ?")
     public void execute() {
 
         LOGGER.info(".......DTPTransactionMessageScheduledJob-execute-start...." );

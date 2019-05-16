@@ -32,7 +32,8 @@ public class RabbitMQProduct {
         TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
         transactionMessageDto.setMessageBody(JSON.toJSONString(map));
         transactionMessageDto.setMessageDataType(2);
-//        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_UPDATECOUNTER.getName());
-//        iTransactionMessageService.saveAndSendMessage(transactionMessageDto);
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_UPDATECOUNTER.getName());
+        transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT_UPDATECOUNTER.getName());
+        iTransactionMessageService.saveAndSendMessage(transactionMessageDto);
     }
 }
