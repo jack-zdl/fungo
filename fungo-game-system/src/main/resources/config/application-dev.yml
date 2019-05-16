@@ -16,6 +16,7 @@ spring:
   application:
     name: fungo-game-system
   datasource:
+
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.jdbc.Driver
     url:  jdbc:mysql://39.105.18.214:3306/fungo_system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
