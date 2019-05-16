@@ -93,7 +93,10 @@ spring:
 
 #---------------------------------------mq----------------------------------------------
   rabbitmq:
+      #外网
       host: 1811420479436984.mq-amqp.cn-hangzhou-a.aliyuncs.com
+      #内网
+      #host: 1811420479436984.mq-amqp.cn-hangzhou-a.aliyuncs.com
       port: 5672
       username: LTAIsW4qLBG6M3Vf
       password: EBQbTTZGhPptMw3tGJ1grmG4r6uD7l
