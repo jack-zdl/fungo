@@ -25,9 +25,13 @@ public class TransactionMessageDto extends InputPageDto {
      */
     private String messageBody;
     /**
-     * 消息数据类型:
-     1 任务
-     2 商城
+     * 消息业务领域类型:
+     * 1 系统
+     * 2 用户
+     * 3 社区-文章
+     * 4 社区-心情
+     * 5 游戏
+     * 6 首页
      */
     private Integer messageDataType;
     /**
@@ -133,7 +137,6 @@ public class TransactionMessageDto extends InputPageDto {
     public void setStatus(Integer status) {
         this.status = status;
     }
-
 
 
     public Date getCreateTime() {
