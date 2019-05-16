@@ -1,4 +1,4 @@
-package com.fungo.system.ts.mq.service.impl;
+package com.fungo.community.ts.mq.service;
 
 import com.game.common.ts.mq.service.MQDataReceiveService;
 import org.apache.commons.lang3.StringUtils;
@@ -33,8 +33,9 @@ public class MQDataReceiveServiceImpl implements MQDataReceiveService {
         }
         try {
             //调用业务方处理消息
-          //  systemMQWrap.excte(msgData);
+
             LOGGER.info("MQDataReceiveServiceImpl-onMessageWithMQTopic-msg:{}", msgData);
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }

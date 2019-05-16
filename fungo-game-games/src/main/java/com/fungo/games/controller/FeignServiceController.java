@@ -19,7 +19,9 @@ import com.fungo.games.service.impl.GameEvaluationServiceImap;
 import com.game.common.bean.MemberPulishFromCommunity;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.*;
+import com.game.common.util.PageTools;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -131,8 +133,9 @@ public class FeignServiceController {
      */
     @ApiOperation(value = "用户游戏评测精品数", notes = "")
     @RequestMapping(value = "/api/game/getUserGameReviewBoutiqueNumber", method = RequestMethod.POST)
-    Map<String,Object> getUserGameReviewBoutiqueNumber(){
-        return gameEvaluationDao.getUserGameReviewBoutiqueNumber();
+    ResultDto<Map<String,Object>> getUserGameReviewBoutiqueNumber(){
+        Map<String, Object> userGameReviewBoutiqueNumber = gameEvaluationDao.getUserGameReviewBoutiqueNumber();
+        return ResultDto.success(userGameReviewBoutiqueNumber);
     }
 
     /**
@@ -142,8 +145,9 @@ public class FeignServiceController {
      */
     @ApiOperation(value = "游戏评价的分页查询", notes = "")
     @RequestMapping(value = "/api/evaluation/getGameEvaluationPage", method = RequestMethod.POST)
-    Page<GameEvaluationDto> getGameEvaluationPage(@RequestBody GameEvaluationDto gameEvaluationDto){
+    FungoPageResultDto<GameEvaluationDto> getGameEvaluationPage(@RequestBody GameEvaluationDto gameEvaluationDto){
         List<GameEvaluationDto> gameEvaluationList = null;
+        FungoPageResultDto<GameEvaluationDto> fungoPageResultDto = new FungoPageResultDto<>();
         try {
             int page = gameEvaluationDto.getPage();
             int limit = gameEvaluationDto.getLimit();
@@ -178,6 +182,7 @@ public class FeignServiceController {
                 Page<GameEvaluation> cmmPostPageSelect = this.gameEvaluationServiceImap.selectPage(gameEvaluationPage, evaluationWrapper);
 
                 if (null != cmmPostPageSelect) {
+                    PageTools.pageToResultDto(fungoPageResultDto, cmmPostPageSelect);
                     selectRecords = cmmPostPageSelect.getRecords();
                 }
 
@@ -204,7 +209,8 @@ public class FeignServiceController {
         }
         Page<GameEvaluationDto> gameEvaluationDtoPage = new Page<>();
         gameEvaluationDtoPage.setRecords(gameEvaluationList);
-        return gameEvaluationDtoPage;
+        fungoPageResultDto.setData(gameEvaluationList);
+        return fungoPageResultDto;
     }
 
     private void gameEvaluationFun(GameEvaluationDto gameEvaluationDto, HashMap<String, Object> param) {
@@ -259,8 +265,9 @@ public class FeignServiceController {
     @SuppressWarnings("all")
     @ApiOperation(value = "游戏测试会员关联表的分页查询", notes = "")
     @RequestMapping(value = "/api/evaluation/getGameSurveyRelPage", method = RequestMethod.POST)
-    Page<GameSurveyRelDto> getGameSurveyRelPage(@RequestBody GameSurveyRelDto gameSurveyDto){
+    FungoPageResultDto<GameSurveyRelDto> getGameSurveyRelPage(@RequestBody GameSurveyRelDto gameSurveyDto){
         List<GameSurveyRelDto> gameSurveyList = null;
+        FungoPageResultDto<GameSurveyRelDto> fungoPageResultDto = new FungoPageResultDto<>();
         try {
             int page = gameSurveyDto.getPage();
             int limit = gameSurveyDto.getLimit();
@@ -284,6 +291,7 @@ public class FeignServiceController {
                 Page<GameSurveyRel> gameSurveyRelPageSelect = this.gameSurveyRelService.selectPage(gameSurveyPage, surveyWrapper);
 
                 if (null != gameSurveyRelPageSelect) {
+                    PageTools.pageToResultDto(fungoPageResultDto, gameSurveyRelPageSelect);
                     selectRecords = gameSurveyRelPageSelect.getRecords();
                 }
             } else {
@@ -308,7 +316,8 @@ public class FeignServiceController {
         }
         Page<GameSurveyRelDto> gameEvaluationDtoPage = new Page<>();
         gameEvaluationDtoPage.setRecords(gameSurveyList);
-        return gameEvaluationDtoPage;
+        fungoPageResultDto.setData(gameSurveyList);
+        return fungoPageResultDto;
     }
 
 
@@ -369,8 +378,9 @@ public class FeignServiceController {
     @SuppressWarnings("all")
     @ApiOperation(value = "根据游戏版本日志审批对象查询集合", notes = "")
     @RequestMapping(value = "/api/evaluation/getGameReleaseLogPage", method = RequestMethod.POST)
-    Page<GameReleaseLogDto> getGameReleaseLogPage(@RequestBody GameReleaseLogDto gameReleaseLogDto){
+    FungoPageResultDto<GameReleaseLogDto> getGameReleaseLogPage(@RequestBody GameReleaseLogDto gameReleaseLogDto){
         List<GameReleaseLogDto> gameReleaseLogList = null;
+        FungoPageResultDto<GameReleaseLogDto> fungoPageResultDto = new FungoPageResultDto<>();
         try {
             int page = gameReleaseLogDto.getPage();
             int limit = gameReleaseLogDto.getLimit();
@@ -392,6 +402,7 @@ public class FeignServiceController {
                 Page<GameReleaseLog> gameSurveyRelPageSelect = this.gameReleaseLogService.selectPage(gameReleaseLogPage, gameReleaseLogWrapper);
 
                 if (null != gameSurveyRelPageSelect) {
+                    PageTools.pageToResultDto(fungoPageResultDto, gameSurveyRelPageSelect);
                     selectRecords = gameSurveyRelPageSelect.getRecords();
                 }
             } else {
@@ -415,13 +426,15 @@ public class FeignServiceController {
         }
         Page<GameReleaseLogDto> gameReleaseLogDtoPage = new Page<>();
         gameReleaseLogDtoPage.setRecords(gameReleaseLogList);
-        return gameReleaseLogDtoPage;
+        fungoPageResultDto.setData(gameReleaseLogList);
+        return fungoPageResultDto;
     }
 
     @ApiOperation(value = "根据游戏对象查询集合", notes = "")
     @RequestMapping(value = "/api/geme/getGamePage", method = RequestMethod.POST)
-    Page<GameDto> getGamePage(@RequestBody GameDto gameDto){
+    FungoPageResultDto<GameDto> getGamePage(@RequestBody GameDto gameDto){
         List<GameDto> gameList = null;
+        FungoPageResultDto<GameDto> fungoPageResultDto = new FungoPageResultDto<>();
         try {
             int page = gameDto.getPage();
             int limit = gameDto.getLimit();
@@ -443,6 +456,7 @@ public class FeignServiceController {
                 Page<Game> gamePageSelect = this.gameService.selectPage(gamePage, gameWrapper);
 
                 if (null != gamePageSelect) {
+                    PageTools.pageToResultDto(fungoPageResultDto, gamePageSelect);
                     selectRecords = gamePageSelect.getRecords();
                 }
             } else {
@@ -466,7 +480,8 @@ public class FeignServiceController {
         }
         Page<GameDto> gameDtoPage = new Page<>();
         gameDtoPage.setRecords(gameList);
-        return gameDtoPage;
+        fungoPageResultDto.setData(gameList);
+        return fungoPageResultDto;
     }
 
     private void gameFun(GameDto gameDto, HashMap<String, Object> param) {
@@ -678,11 +693,11 @@ public class FeignServiceController {
      */
     @ApiOperation(value = "根据游戏id和状态查询游戏详情", notes = "")
     @RequestMapping(value = "/api/game/details", method = RequestMethod.POST)
-    GameDto selectGameDetails(String gameId,Integer state){
+    ResultDto<GameDto> selectGameDetails(String gameId,Integer state){
         Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", state));
         GameDto gameDto = new GameDto();
         BeanUtils.copyProperties(game,gameDto);
-        return gameDto;
+        return ResultDto.success(gameDto);
     }
 
     /**
@@ -693,11 +708,11 @@ public class FeignServiceController {
      */
     @ApiOperation(value = "查询游戏评论表中发表评论大于X条，前Y名的用户", notes = "")
     @RequestMapping(value = "/api/game/getRecommendMembersFromEvaluation", method = RequestMethod.POST)
-    List<String> getRecommendMembersFromEvaluation(Integer x,Integer y){
+    ResultDto<List<String>> getRecommendMembersFromEvaluation(Integer x,Integer y){
         List<String> wathMbsSet = new ArrayList<>();
         List<String> sendCommentMembers = gameEvaluationDao.getRecommendMembersFromEvaluation(x,
                 y, wathMbsSet);
-        return sendCommentMembers;
+        return ResultDto.success(sendCommentMembers);
     }
 
     /**
@@ -708,12 +723,12 @@ public class FeignServiceController {
      */
     @ApiOperation(value = "根据游戏id查询参与评论的用户", notes = "")
     @RequestMapping(value = "/api/game/getMemberOrder", method = RequestMethod.POST)
-    List<MemberPulishFromCommunity> getMemberOrder(String gameId,Integer state){
+    ResultDto<List<MemberPulishFromCommunity>> getMemberOrder(String gameId,Integer state){
         Map<String, Object> map = new HashMap<>();
         Page page = new Page<>(1, 6);
         map.put("gameId", gameId);
         List<MemberPulishFromCommunity> list = gameEvaluationDao.getMemberOrder(page, map);
-        return list;
+        return ResultDto.success(list);
     }
 
 
