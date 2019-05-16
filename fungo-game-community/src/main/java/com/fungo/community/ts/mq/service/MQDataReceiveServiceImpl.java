@@ -1,4 +1,4 @@
-package com.fungo.system.ts.mq.service.impl;
+package com.fungo.community.ts.mq.service;
 
 import com.game.common.ts.mq.service.MQDataReceiveService;
 import org.apache.commons.lang3.StringUtils;
