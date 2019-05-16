@@ -56,9 +56,11 @@ public class RabbitMQListenerConfig {
                 LOGGER.info("mqDirectMessageListener-onMessage-msgBody:{}", msgBody);
 
                 //同步 业务处理
-                mQDataReceiveService.onMessageWithMQDirect(msgBody);
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-                //channel.basicNack(message.getMessageProperties().getDeliveryTag(),false,true);
+               boolean isExcute = mQDataReceiveService.onMessageWithMQDirect(msgBody);
+               if (isExcute) {
+                   channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                   //channel.basicNack(message.getMessageProperties().getDeliveryTag(),false,true);
+               }
             }
         };
     }
@@ -87,8 +89,10 @@ public class RabbitMQListenerConfig {
                 LOGGER.info("MQTopicQueueListener-onMessage-msgBody:{}", msgBody);
 
                 //同步业务处理
-                mQDataReceiveService.onMessageWithMQTopic(msgBody);
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                boolean isExcute = mQDataReceiveService.onMessageWithMQTopic(msgBody);
+                if (isExcute) {
+                    channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                }
             }
         };
     }
