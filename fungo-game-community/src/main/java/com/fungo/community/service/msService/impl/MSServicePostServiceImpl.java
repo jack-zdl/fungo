@@ -146,6 +146,78 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
         return null;
     }
 
+    @Override
+    public Integer queryCmmPostCount(CmmPostDto postDto) {
+
+        try {
+
+            int page = postDto.getPage();
+            int limit = postDto.getLimit();
+
+            EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<CmmPost>();
+            HashMap<String, Object> param = new HashMap<String, Object>();
+
+            //社区ID
+            String communityId = postDto.getCommunityId();
+            if (StringUtils.isNotBlank(communityId)) {
+                param.put("community_id", communityId);
+            }
+
+            //帖子ID
+            String id = postDto.getId();
+            if (StringUtils.isNotBlank(id)) {
+                param.put("id", id);
+            }
+
+            //会员ID
+            String memberId = postDto.getMemberId();
+            if (StringUtils.isNotBlank(memberId)) {
+                param.put("member_id", memberId);
+            }
+
+            //类型
+            Integer type = postDto.getType();
+            if (null != type) {
+                param.put("type", type);
+            }
+
+            //置顶状态
+            Integer topic = postDto.getTopic();
+            if (null != topic) {
+                param.put("topic", topic);
+            }
+
+
+            postEntityWrapper.allEq(param);
+
+            //标题
+            String title = postDto.getTitle();
+            if (StringUtils.isNotBlank(title)) {
+                postEntityWrapper.orNew("title like '%" + title + "%'");
+            }
+            //标签
+            String tags = postDto.getTags();
+            if (StringUtils.isNotBlank(tags)) {
+                postEntityWrapper.orNew("tags like '%" + tags + "%'");
+            }
+            //帖子内容
+            String content = postDto.getContent();
+            if (StringUtils.isNotBlank(content)) {
+                postEntityWrapper.orNew("content like '%" + content + "%'");
+            }
+
+
+            int selectCount = postDaoService.selectCount(postEntityWrapper);
+
+            return selectCount;
+
+        } catch (Exception ex) {
+            LOGGER.error("/ms/service/cmm/post/count--queryCmmPostCount-出现异常:", ex);
+        }
+
+        return 0;
+    }
+
 
     //------
 }
