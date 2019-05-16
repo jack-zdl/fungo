@@ -2,7 +2,9 @@ package com.fungo.system.entity;
 
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -20,6 +22,7 @@ public class IncentRuleRank extends Model<IncentRuleRank> {
 
     private static final long serialVersionUID = 1L;
 
+	@TableId(value = "id",type = IdType.UUID)
 	private Long id;
     /**
      * 属于的规则种类ID

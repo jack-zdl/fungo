@@ -51,9 +51,6 @@ public class ActionController {
 
         String appVersion = "";
         appVersion = request.getHeader("appversion");
-        if(1 == 1){
-            throw new Exception("点赞");
-        }
         return actionService.like(memberUserPrefile.getLoginId(), inputDto,appVersion);
     }
 
