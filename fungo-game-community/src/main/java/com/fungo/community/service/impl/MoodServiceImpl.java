@@ -60,14 +60,13 @@ public class MoodServiceImpl implements IMoodService {
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
 
-
+    /*
     @Autowired
     private IUserService userService;
     @Autowired
     private IActionService iactionService;
     @Autowired
     private GameProxyImpl proxy;
-
 
     @Autowired
     private IVdService vdService;
@@ -85,6 +84,7 @@ public class MoodServiceImpl implements IMoodService {
     //用户成长业务
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
+    */
 
 
     @Override

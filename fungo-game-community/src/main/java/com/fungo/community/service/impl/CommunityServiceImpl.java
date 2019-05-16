@@ -11,15 +11,19 @@ import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
+import com.fungo.community.feign.GameFeignClient;
+import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.service.ICommunityService;
 import com.game.common.bean.MemberPulishFromCommunity;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.CommunityInputPageDto;
 import com.game.common.dto.community.CommunityMember;
 import com.game.common.dto.community.CommunityOut;
 import com.game.common.dto.community.CommunityOutPageDto;
+import com.game.common.dto.user.MemberDto;
 import com.game.common.repo.cache.facade.FungoCacheCommunity;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
@@ -50,10 +54,19 @@ public class CommunityServiceImpl implements ICommunityService {
     @Autowired
     private FungoCacheCommunity fungoCacheCommunity;
 
+    //依赖系统和用户微服务
+    @Autowired
+    private SystemFeignClient systemFeignClient;
+
+    //依赖游戏微服务
+    @Autowired
+    private GameFeignClient gameFeignClient;
+
 
     //@Autowired
     //private GameService gameService;
 
+  /*
     @Autowired
     private MemberService menberService;
 
@@ -65,7 +78,6 @@ public class CommunityServiceImpl implements ICommunityService {
     @Autowired
     private IncentRankedService rankedService;
 
-
     @Autowired
     private IUserService userService;
     @Autowired
@@ -73,7 +85,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
     @Autowired
     private MemberDao memberDao;
-
+*/
 
     @Override
     public ResultDto<CommunityOut> getCommunityDetail(String communityId, String userId)
@@ -84,9 +96,9 @@ public class CommunityServiceImpl implements ICommunityService {
         //from redis cache
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_DETAIL + communityId;
         String keySuffix = userId;
-        out =  (CommunityOut)fungoCacheCommunity.getIndexCache(keyPrefix, keySuffix);
+        out = (CommunityOut) fungoCacheCommunity.getIndexCache(keyPrefix, keySuffix);
 
-        if (null != out){
+        if (null != out) {
             return ResultDto.success(out);
         }
 
@@ -122,10 +134,40 @@ public class CommunityServiceImpl implements ICommunityService {
         out.setFollowee_num(community.getFolloweeNum());
 
         //!fixme 查询是否关注 根据用户id查询用户详情
-        if (menberService.selectById(userId) != null) {
+        List<String> idsList = new ArrayList<String>();
+        idsList.add(userId);
+        ResultDto<List<MemberDto>> mbsListResultDto = systemFeignClient.listMembersByids(idsList);
+
+        MemberDto memberDto = null;
+        if (null != mbsListResultDto) {
+            final List<MemberDto> memberDtoList = mbsListResultDto.getData();
+            if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                memberDto = memberDtoList.get(0);
+            }
+        }
+        //历史代码
+        //if (menberService.selectById(userId) != null) {
+        if (null != memberDto) {
             //!fixme 从动作表中 根据用户id,类型，目标id，目前类型，状态等查询 社区关注数量
-            int count = actionService.selectCount(new EntityWrapper<BasAction>().eq("member_id", userId)
-                    .eq("type", 5).eq("target_id", communityId).eq("target_type", 4).and("state = 0"));
+            //int count = actionService.selectCount(new EntityWrapper<BasAction>().eq("member_id", userId)
+            // .eq("type", 5).eq("target_id", communityId).eq("target_type", 4).and("state = 0"));
+
+            BasActionDto basActionDto = new BasActionDto();
+
+            basActionDto.setMemberId(userId);
+            basActionDto.setType(5);
+            basActionDto.setState(0);
+            basActionDto.setTargetType(4);
+            basActionDto.setTargetId(communityId);
+
+            ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+            int count = 0;
+            if (null != resultDto) {
+                count = resultDto.getData();
+            }
+
+
             out.setIs_followed(count == 0 ? false : true);
         }
 
@@ -341,8 +383,6 @@ public class CommunityServiceImpl implements ICommunityService {
     }
 
 
-
-
     @Override
     public FungoPageResultDto<CommunityMember> memberList(String userId, CommunityInputPageDto input) {
         FungoPageResultDto<CommunityMember> re = new FungoPageResultDto<CommunityMember>();
@@ -383,8 +423,6 @@ public class CommunityServiceImpl implements ICommunityService {
 
         return re;
     }
-
-
 
 
     @Override
@@ -440,7 +478,6 @@ public class CommunityServiceImpl implements ICommunityService {
         return recommendedMbsList;
 
     }
-
 
 
     /**

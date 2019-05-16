@@ -84,7 +84,8 @@ public class PostServiceImpl implements IPostService {
     private String clusterIndex;
 
 
-    @Autowired
+  /*
+   @Autowired
     private MemberService memberService;
 
     @Autowired
@@ -107,8 +108,6 @@ public class PostServiceImpl implements IPostService {
     @Autowired
     private IUserService iUserService;
 
-
-
     @Autowired
     private IncentAccountScoreService accountScoreService;
 
@@ -128,6 +127,7 @@ public class PostServiceImpl implements IPostService {
     //用户成长业务
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
+    */
 
 
 
