@@ -13,23 +13,23 @@ public class MQDataReceiveServiceImpl implements MQDataReceiveService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MQDataReceiveServiceImpl.class);
 
 
-
     @Override
-    public void onMessageWithMQDirect(String msgData) throws Exception {
+    public boolean onMessageWithMQDirect(String msgData) throws Exception {
         if (StringUtils.isBlank(msgData)) {
-            return;
+            return true;
         }
         try {
             LOGGER.info("MQDataReceiveServiceImpl-onMessageWithMQDirect-msg:{}", msgData);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        return false;
     }
 
     @Override
-    public void onMessageWithMQTopic(String msgData) {
+    public boolean onMessageWithMQTopic(String msgData) {
         if (StringUtils.isBlank(msgData)) {
-            return;
+            return true;
         }
         try {
             //调用业务方处理消息
@@ -39,5 +39,6 @@ public class MQDataReceiveServiceImpl implements MQDataReceiveService {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        return false;
     }
 }

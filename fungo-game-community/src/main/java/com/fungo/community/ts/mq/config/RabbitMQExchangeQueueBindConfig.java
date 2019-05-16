@@ -65,6 +65,13 @@ public class RabbitMQExchangeQueueBindConfig {
         return queue;
     }
 
+    //3 社区-文章队列
+
+
+    //4 社区-心情队列
+
+
+
     @Bean("bindingDirectExchageQueue")
     Binding bindingDirectExchageQueue() {
         Binding binding = BindingBuilder.bind(directQueue()).to(createDirectExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
@@ -78,5 +85,10 @@ public class RabbitMQExchangeQueueBindConfig {
         LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingTopicExchageQueue-create-success");
         return binding;
     }
+
+    //3 社区-文章队列 绑定 msgFungo_Topic交换机
+
+
+    //4 社区-心情队列 绑定 msgFungo_Topic交换机
 
 }
