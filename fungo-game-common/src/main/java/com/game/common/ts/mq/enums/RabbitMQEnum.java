@@ -35,7 +35,13 @@ public class RabbitMQEnum {
 
         MQ_QUEUE_TOPIC_NAME_DEFAULT(1, "msgFungoTopicQueue"),
 
-        MQ_QUEUE_DIRECT_NAME_DEFAULT(2, "msgFungoDirectQueue");
+        MQ_QUEUE_DIRECT_NAME_DEFAULT(2, "msgFungoDirectQueue"),
+
+        //3 社区-文章队列
+        MQ_QUEUE_TOPIC_NAME_Community_POST(3, "msgFungoTopicQueue"),
+
+        //4 社区-心情队列
+        MQ_QUEUE_TOPIC_NAME_Community_MOOD(4, "msgFungoTopicQueue");
 
         private int code;
         private String name;
