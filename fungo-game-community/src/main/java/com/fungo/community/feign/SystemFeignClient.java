@@ -1,6 +1,7 @@
 package com.fungo.community.feign;
 
 
+import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
@@ -39,6 +40,14 @@ public interface SystemFeignClient {
     @RequestMapping(value = "/followerids", method = RequestMethod.POST)
     public FungoPageResultDto<String> getFollowerUserId(@RequestBody MemberFollowerVo memberFollowerVo);
 
+
+
+    /**
+     * 功能描述: 根据用户id集合查询用户详情
+     * mxf
+     */
+    @GetMapping(value = "/listMembersByids")
+    public ResultDto<List<MemberDto>> listMembersByids(@RequestBody List<String> ids);
 
 
     /**
@@ -117,6 +126,9 @@ public interface SystemFeignClient {
 
 
 
+    @GetMapping("/getAuthor")
+    @ApiOperation(value="获取会员信息")
+    public ResultDto<AuthorBean> getAuthor(String memberId);
 
 
 
