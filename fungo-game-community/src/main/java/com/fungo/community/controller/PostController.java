@@ -24,7 +24,6 @@ import com.game.common.dto.community.PostInput;
 import com.game.common.dto.community.PostInputPageDto;
 import com.game.common.dto.community.PostOut;
 import com.game.common.dto.community.PostOutBean;
-import com.game.common.dto.user.MemberDto;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.CommonUtil;
@@ -36,7 +35,6 @@ import com.game.common.util.emoji.EmojiDealUtil;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import com.game.common.vo.MemberFollowerVo;
 import com.sun.corba.se.spi.ior.ObjectId;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -44,7 +42,6 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
@@ -600,7 +597,7 @@ public class PostController {
 
             AuthorBean authorBean = new AuthorBean();
             ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(cmmPost.getMemberId());
-            if (null != beanResultDto){
+            if (null != beanResultDto) {
                 authorBean = beanResultDto.getData();
             }
             bean.setAuthor(authorBean);
@@ -658,6 +655,8 @@ public class PostController {
             } else {
 
                 //!fixme 获取点赞数
+                //行为类型
+                //点赞 | 0
                 //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", cmmPost.getId()).eq("member_id", memberUserPrefile.getLoginId()));
 
                 BasActionDto basActionDto = new BasActionDto();
@@ -668,9 +667,10 @@ public class PostController {
                 basActionDto.setTargetId(cmmPost.getId());
 
                 ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
-
-                int liked = resultDto.getData();
-
+                int liked = 0;
+                if (null != resultDto) {
+                    liked = resultDto.getData();
+                }
                 bean.setLiked(liked > 0 ? true : false);
             }
 

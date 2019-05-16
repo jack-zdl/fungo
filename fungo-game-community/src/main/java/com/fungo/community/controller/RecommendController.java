@@ -8,11 +8,13 @@ import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.MooMoodDaoService;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.MooMood;
+import com.fungo.community.feign.GameFeignClient;
+import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.service.ICommunityService;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
-import com.game.common.dto.FungoPageResultDto;
-import com.game.common.dto.MemberUserProfile;
+import com.game.common.dto.*;
+import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.CommunityOutBean;
 import com.game.common.dto.community.FollowUserOutBean;
 import com.game.common.dto.community.MoodInputPageDto;
@@ -24,6 +26,7 @@ import com.game.common.util.PageTools;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
+import com.game.common.vo.MemberFollowerVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -61,7 +64,17 @@ public class RecommendController {
     private FungoCacheMood fungoCacheMood;
 
 
+    //依赖系统和用户微服务
     @Autowired
+    private SystemFeignClient systemFeignClient;
+
+
+    //依赖游戏微服务
+    @Autowired
+    private GameFeignClient gameFeignClient;
+
+ /*
+  @Autowired
     private IUserService userService;
 
     @Autowired
@@ -80,6 +93,10 @@ public class RecommendController {
 
     @Autowired
     private IncentRankedService incentRankedService;
+
+    @Autowired
+    private MemberDao memberDao;
+    */
 
 
     /**
@@ -138,7 +155,19 @@ public class RecommendController {
                 return re;
             }
             //!fixme 获取关注用户id集合
-            List<String> olist = actionDao.getFollowerUserId(memberUserPrefile.getLoginId());
+            //List<String> olist = actionDao.getFollowerUserId(memberUserPrefile.getLoginId());
+
+            //获取关注用户id集合
+            List<String> olist = new ArrayList<String>();
+
+            MemberFollowerVo memberFollowerVo = new MemberFollowerVo();
+            memberFollowerVo.setMemberId(memberUserPrefile.getLoginId());
+
+            FungoPageResultDto<String> followerUserIdResult = systemFeignClient.getFollowerUserId(memberFollowerVo);
+
+            if (null != followerUserIdResult) {
+                olist.addAll(followerUserIdResult.getData());
+            }
 
             if (olist.size() > 0) {
 
@@ -216,7 +245,16 @@ public class RecommendController {
             MoodOutBean bean = new MoodOutBean();
 
             //!fixme 根据用户id查询用户详情
-            bean.setAuthor(userService.getAuthor(mooMood.getMemberId()));
+            //bean.setAuthor(userService.getAuthor(mooMood.getMemberId()));
+
+            AuthorBean authorBean = new AuthorBean();
+            ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(mooMood.getMemberId());
+            if (null != beanResultDto) {
+                authorBean = beanResultDto.getData();
+            }
+
+            bean.setAuthor(authorBean);
+
 
             if (StringUtils.isNotBlank(mooMood.getContent())) {
                 String interactContent = FilterEmojiUtil.decodeEmoji(mooMood.getContent());
@@ -245,8 +283,21 @@ public class RecommendController {
             bean.setImages(imgs);
             bean.setLiked(false);
             if (memberUserPrefile != null) {
-                //!fixme   获取粉丝数
-                int followed = actionService.selectCount(new EntityWrapper<BasAction>().notIn("state", "-1").eq("type", 0).eq("target_id", mooMood.getId()).eq("member_id", memberUserPrefile.getLoginId()));
+                //!fixme 获取点赞数 行为类型 点赞 | 0
+                //int followed = actionService.selectCount(new EntityWrapper<BasAction>().notIn("state", "-1").eq("type", 0).eq("target_id", mooMood.getId()).eq("member_id", memberUserPrefile.getLoginId()));
+
+                //获取点赞数 行为类型 点赞 | 0
+                BasActionDto basActionDto = new BasActionDto();
+
+                basActionDto.setMemberId(memberUserPrefile.getLoginId());
+                basActionDto.setType(0);
+                basActionDto.setState(0);
+                basActionDto.setTargetId(mooMood.getId());
+
+                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                int followed = resultDto.getData();
+
                 bean.setLiked(followed > 0 ? true : false);
             }
             bean.setLikeNum(mooMood.getLikeNum());
@@ -272,14 +323,26 @@ public class RecommendController {
                 for (String gameId : gameIdList) {
 
                     //!fixme 根据游戏id和状态查询游戏详情
-                    Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", 0));
+                    //Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", 0));
 
-                    if (game != null) {
+                    GameDto gameDto = null;
+                    ResultDto<GameDto> gameDtoResultDto = gameFeignClient.selectGameDetails(gameId, 0);
+                    if (null != gameDtoResultDto) {
+                        gameDtoResultDto.getData();
+                    }
+
+
+                    if (gameDto != null) {
                         HashMap<String, Object> map = new HashMap<>();
-                        map.put("gameId", game.getId());
-                        map.put("gameName", game.getName());
-                        map.put("gameIcon", game.getIcon());
+                        map.put("gameId", gameDto.getId());
+                        map.put("gameName", gameDto.getName());
+                        map.put("gameIcon", gameDto.getIcon());
+
+
+                        //!fixme 获取游戏平均分
+                        /*
                         HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
+
                         if (rateData != null) {
                             if (rateData.get("avgRating") != null) {
                                 map.put("gameRating", (Double.parseDouble(rateData.get("avgRating").toString())));
@@ -289,7 +352,13 @@ public class RecommendController {
                         } else {
                             map.put("gameRating", 0.0);
                         }
-                        map.put("category", game.getTags());
+                        */
+
+                        //获取游戏平均分
+                        double gameAverage = gameFeignClient.selectGameAverage(gameDto.getId(), 0);
+                        map.put("gameRating", gameAverage);
+
+                        map.put("category", gameDto.getTags());
                         gameList.add(map);
                     }
                 }
@@ -320,9 +389,6 @@ public class RecommendController {
      *    2.若有新的推荐用户，且未关注，替换到玩家已关注列表的前面。且 该类别数量恒定10人
      *
      */
-    @Autowired
-    private MemberDao memberDao;
-
     @ApiOperation(value = "推荐用户列表(v2.3)", notes = "")
     @RequestMapping(value = "/api/recommend/users", method = RequestMethod.POST)
     @ApiImplicitParams({
@@ -404,8 +470,26 @@ public class RecommendController {
             bean.setFollowed(false);
             bean.setIntro(cmmCommunity.getIntro());
             if (memberUserPrefile != null) {
+
                 //!fixme 根据社区id，状态，类型，用户id获取 粉丝数量
-                int followed = actionService.selectCount(new EntityWrapper<BasAction>().eq("state", 0).eq("type", 5).eq("target_id", cmmCommunity.getId()).eq("member_id", memberUserPrefile.getLoginId()));
+                //行为类型
+                //关注 | 5
+                //int followed = actionService.selectCount(new EntityWrapper<BasAction>().eq("state", 0).eq("type", 5).eq("target_id", cmmCommunity.getId()).eq("member_id", memberUserPrefile.getLoginId()));
+
+                BasActionDto basActionDto = new BasActionDto();
+
+                basActionDto.setMemberId(memberUserPrefile.getLoginId());
+                basActionDto.setType(5);
+                basActionDto.setState(0);
+                basActionDto.setTargetId(cmmCommunity.getId());
+
+                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                int followed = 0;
+                if (null != resultDto) {
+                    followed = resultDto.getData();
+                }
+
                 bean.setFollowed(followed > 0 ? true : false);
             }
             bean.setHotNun(cmmCommunity.getFolloweeNum() + cmmCommunity.getPostNum());
@@ -415,6 +499,8 @@ public class RecommendController {
         }
         return re;
     }
+
+
 
 
     //手动分页
@@ -431,7 +517,7 @@ public class RecommendController {
             members = members.subList(limit * (page - 1), limit * page);
         }
 
-        Page<Member> memberPage = new Page<>(page, limit);
+        Page<Member> memberPage = new Page<Member>(page, limit);
         memberPage.setRecords(members);
         memberPage.setCurrent(page);
         memberPage.setTotal(totalCount);
