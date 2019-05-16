@@ -5,7 +5,9 @@ import com.fungo.games.feign.CommunityFeignClient;
 import com.fungo.games.feign.SystemFeignClient;
 import com.fungo.games.proxy.IEvaluateProxyService;
 import com.game.common.dto.AuthorBean;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.ReplyInputPageDto;
 import com.game.common.dto.game.BasTagDto;
@@ -78,8 +80,18 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
     @HystrixCommand(fallbackMethod = "hystrixGetReplyDtoBysSelectPageOrderByCreatedAt",ignoreExceptions = {Exception.class},
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
-    public Page<ReplyDto> getReplyDtoBysSelectPageOrderByCreatedAt(ReplyInputPageDto replyInputPageDto) {
-        return communityFeignClient.getReplyDtoBysSelectPageOrderByCreatedAt(replyInputPageDto);
+    public Page<CmmCmtReplyDto> getReplyDtoBysSelectPageOrderByCreatedAt(ReplyInputPageDto replyInputPageDto) {
+        CmmCmtReplyDto ssrd = new CmmCmtReplyDto();
+        ssrd.setPage(replyInputPageDto.getPage());
+        ssrd.setLimit(replyInputPageDto.getLimit());
+        ssrd.setTargetId(replyInputPageDto.getTarget_id());
+        ssrd.setMemberId(replyInputPageDto.getUser_id());
+        ssrd.setState(replyInputPageDto.getState());
+        FungoPageResultDto<CmmCmtReplyDto> replyDtoBysSelectPageOrderByCreatedAt = communityFeignClient.getReplyDtoBysSelectPageOrderByCreatedAt(ssrd);
+        List<CmmCmtReplyDto> data = replyDtoBysSelectPageOrderByCreatedAt.getData();
+        Page<CmmCmtReplyDto> replyDtoPage = new Page<>();
+        replyDtoPage.setRecords(data);
+        return replyDtoPage;
     }
 
     /**
@@ -139,7 +151,13 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public CmmCommunityDto getCmmCommunitySelectOneById(CmmCommunityDto ccd) {
-        return communityFeignClient.getCmmCommunitySelectOneById(ccd);
+        FungoPageResultDto<CmmCommunityDto> cmmCommunitySelectOneById = communityFeignClient.getCmmCommunitySelectOneById(ccd);
+        List<CmmCommunityDto> data = cmmCommunitySelectOneById.getData();
+        CmmCommunityDto cmmCommunityDto = new CmmCommunityDto();
+        if (data != null && data.size() > 0){
+            cmmCommunityDto = data.get(0);
+        }
+        return cmmCommunityDto;
     }
 
     /**

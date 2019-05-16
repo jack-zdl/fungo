@@ -1,6 +1,8 @@
 package com.fungo.games.feign;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.community.ReplyInputPageDto;
@@ -18,21 +20,22 @@ import java.util.Map;
  * @create 2019/5/7 10:26
  */
 @FeignClient(name = "FUNGO-GAME-COMMUNITY")
+@RequestMapping("/ms/service/cmm")
 public interface CommunityFeignClient {
 
     /**
      * 根据条件判断获取ReplyDtoList集合
-     * @param replyInputPageDto
+     * @param replyDto
      * @return
      */
-    @RequestMapping(value="/api/evaluations/getReplyDtoBysSelectPageOrderByCreatedAt", method= RequestMethod.POST)
-    Page<ReplyDto> getReplyDtoBysSelectPageOrderByCreatedAt(@RequestBody ReplyInputPageDto replyInputPageDto);
+    @RequestMapping(value="/cmt/s/lists", method= RequestMethod.POST)
+    FungoPageResultDto<CmmCmtReplyDto>  getReplyDtoBysSelectPageOrderByCreatedAt(@RequestBody CmmCmtReplyDto replyDto);
 
     /**
      * 根据id获取cmmcomunity单个对象
-     * @param ccd
+     * @param cmmCommunityDto
      * @return
      */
-    @RequestMapping(value="/api/cmmCommunity/getCmmCommunitySelectOneById", method= RequestMethod.POST)
-    CmmCommunityDto getCmmCommunitySelectOneById(@RequestBody CmmCommunityDto ccd);
+    @RequestMapping(value="/cty/lists", method= RequestMethod.POST)
+    FungoPageResultDto<CmmCommunityDto> getCmmCommunitySelectOneById(@RequestBody CmmCommunityDto cmmCommunityDto);
 }

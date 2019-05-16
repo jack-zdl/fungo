@@ -3,6 +3,7 @@ package com.fungo.games.proxy;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.ReplyInputPageDto;
 import com.game.common.dto.game.BasTagDto;
@@ -50,7 +51,7 @@ public interface IEvaluateProxyService {
      * @param replyInputPageDto
      * @return
      */
-    Page<ReplyDto> getReplyDtoBysSelectPageOrderByCreatedAt(ReplyInputPageDto replyInputPageDto);
+    Page<CmmCmtReplyDto> getReplyDtoBysSelectPageOrderByCreatedAt(ReplyInputPageDto replyInputPageDto);
 
     /**
      * 根据条件判断获取memberDto对象
