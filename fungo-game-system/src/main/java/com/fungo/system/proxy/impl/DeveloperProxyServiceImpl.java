@@ -1,6 +1,7 @@
 package com.fungo.system.proxy.impl;
 
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.proxy.IDeveloperProxyService;
@@ -66,8 +67,8 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
 	@Override
 	public  List<GameReleaseLogDto> selectGameReleaseLog(GameReleaseLogDto gameReleaseLog) {
-		FungoPageResultDto<GameReleaseLogDto>  gameReleases = gamesFeignClient.selectOne(gameReleaseLog);
-		return gameReleases.getData();
+		Page<GameReleaseLogDto> gameReleases = gamesFeignClient.getGameReleaseLogPage(gameReleaseLog);
+		return gameReleases.getRecords();
 	}
 
 	@Override
@@ -86,14 +87,14 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
 	@Override
 	public int selectCount(GameSurveyRelDto gameSurveyRel) {
-		return gamesFeignClient.selectCount(gameSurveyRel);
+		return gamesFeignClient.gameSurveySelectCount(gameSurveyRel);
 	}
 
 	@HystrixCommand(fallbackMethod = "hystrixSelectGameEvaluationCount",ignoreExceptions = {Exception.class},
 			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
 	@Override
 	public int selectGameEvaluationCount(GameEvaluationDto gameEvaluation) {
-		return gamesFeignClient.selectGameEvaluationCount(gameEvaluation);
+		return gamesFeignClient.gameEvaluationSelectCount(gameEvaluation);
 	}
 
 	@HystrixCommand(fallbackMethod = "hystrixSelectPostCount",ignoreExceptions = {Exception.class},

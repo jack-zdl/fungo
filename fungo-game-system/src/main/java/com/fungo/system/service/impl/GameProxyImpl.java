@@ -82,8 +82,6 @@ public class GameProxyImpl implements IGameProxy {
 		Map<String,Object> date=new HashMap<String,Object>();
 		getMemberInfo(memberId,date);
 		boolean push = true;
-		eventType = Setting.ACTION_TYPE_LIKE ;
-		target_type = Setting.RES_TYPE_EVALUATION;
 		if(Setting.ACTION_TYPE_LIKE == eventType && Setting.RES_TYPE_POST==target_type) {// 点赞帖子
 			// @todo 社区帖子的
 			CmmPostDto cmmPostParam = new CmmPostDto();cmmPostParam.setId(target_id);
@@ -97,7 +95,6 @@ public class GameProxyImpl implements IGameProxy {
 			msgType = 0;
 		}else if(Setting.ACTION_TYPE_LIKE == eventType && Setting.RES_TYPE_COMMENT==target_type){// 点赞评论
 			// @todo 社区一级评论
-
 			CmmCommentDto comment= iGameProxyService.selectCmmCommentById(target_id); //this.commentService.selectById(target_id);
 			notiveMemberId=comment.getMemberId();
 			date.put("comment_content", reduceString(comment.getContent()));
