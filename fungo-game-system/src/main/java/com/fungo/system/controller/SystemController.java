@@ -1,12 +1,15 @@
 package com.fungo.system.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.fungo.system.dto.TaskDto;
 import com.fungo.system.entity.Member;
 import com.fungo.system.service.SystemService;
+import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.game.BasTagDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
@@ -20,7 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -46,7 +51,7 @@ public class SystemController {
      * @date: 2019/5/10 11:34
      */
     @GetMapping(value = "/followerids")
-    public FungoPageResultDto<String> getFollowerUserId(MemberUserProfile memberUserPrefile, @RequestBody MemberFollowerVo memberFollowerVo){
+    public FungoPageResultDto<String> getFollowerUserId(@RequestBody MemberFollowerVo memberFollowerVo){
         FungoPageResultDto<String> re = null;
         try {
             re =  systemService.getFollowerUserId(memberFollowerVo.getMemberId());
@@ -67,7 +72,7 @@ public class SystemController {
      * @date: 2019/5/10 17:15
      */
     @GetMapping(value = "/memberFollowers")
-    public FungoPageResultDto<MemberFollowerDto> getMemberFollowerList(MemberUserProfile memberUserPrefile, @RequestBody MemberFollowerVo memberFollowerVo){
+    public FungoPageResultDto<MemberFollowerDto> getMemberFollowerList( @RequestBody MemberFollowerVo memberFollowerVo){
         FungoPageResultDto<MemberFollowerDto> re = null;
         try {
             re =  systemService.getMemberFollowerList(memberFollowerVo);
@@ -88,7 +93,7 @@ public class SystemController {
      * @date: 2019/5/10 17:41
      */
     @GetMapping(value = "/members")
-    public FungoPageResultDto<MemberDto> getMemberDtoList(MemberUserProfile memberUserPrefile, @RequestBody MemberDto memberDto){
+    public FungoPageResultDto<MemberDto> getMemberDtoList(@RequestBody MemberDto memberDto){
         FungoPageResultDto<MemberDto> re = null;
         try {
             re =  systemService.getMemberDtoList(memberDto);
@@ -119,6 +124,23 @@ public class SystemController {
     }
 
     /**
+     * 功能描述: 根据用户id查询用户详情
+     */
+    @GetMapping(value = "/getMembersByid")
+    public ResultDto<MemberDto> getMembersByid(@RequestParam("id") String id){
+        ResultDto<MemberDto> re = null;
+        try {
+            re =  systemService.getMembersByid(id);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("SystemController.getMembersByid",e);
+            re = ResultDto.error("-1", "SystemController.getMembersByid执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
+    /**
      *  根据用户id和用户权益(等级、身份、荣誉)类型，获取用户权益数据
      */
     @GetMapping(value = "/listIncentrankeByids")
@@ -137,7 +159,7 @@ public class SystemController {
 
 
     @GetMapping(value = "/incentrankes")
-    public FungoPageResultDto<IncentRankedDto> getIncentRankedList(MemberUserProfile memberUserPrefile, @RequestBody IncentRankedDto incentRankedDto){
+    public FungoPageResultDto<IncentRankedDto> getIncentRankedList(@RequestBody IncentRankedDto incentRankedDto){
         FungoPageResultDto<IncentRankedDto> re = null;
         try {
             re =  systemService.getIncentRankedList(incentRankedDto);
@@ -253,7 +275,6 @@ public class SystemController {
         try {
             re =  systemService.listtargetId(basActionDto);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("SystemController.listtargetId",e);
             re = ResultDto.error("-1", "SystemController.listtargetId执行service出现异常");
         }finally {
@@ -275,7 +296,6 @@ public class SystemController {
         try {
             re =  systemService.addAction(basActionDto);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("SystemController.addAction",e);
             re = ResultDto.error("-1", "SystemController.addAction执行service出现异常");
         }finally {
@@ -283,11 +303,66 @@ public class SystemController {
         }
     }
 
+    @PostMapping(value = "/exTask")
+    @ApiOperation(value="执行任务")
+    public ResultDto<Map<String, Object>> exTask(@RequestBody TaskDto taskDto){
+        ResultDto<Map<String, Object>> re = null;
+        try {
+            re =  systemService.exTask(taskDto);
+        }catch (Exception e){
+            LOGGER.error("SystemController.exTask",e);
+            re = ResultDto.error("-1", "SystemController.exTask执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
 
 
+    @GetMapping("/getAuthor")
+    @ApiOperation(value="获取会员信息")
+    public ResultDto<AuthorBean> getAuthor(String memberId){
+        ResultDto<AuthorBean> re = null;
+        try {
+            re = systemService.getAuthor(memberId);
+        }catch (Exception e){
+            LOGGER.error("SystemController.getAuthor",e);
+            re = ResultDto.error("-1", "SystemController.getAuthor执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
 
+    @GetMapping("/updateActionUpdatedAtByCondition")
+    @ApiOperation(value="根据指定的行为条件更新行为操作日期")
+    public ResultDto<String> updateActionUpdatedAtByCondition(@RequestBody Map<String,Object> map){
+        ResultDto<String> re = null;
+        try {
+            re = systemService.updateActionUpdatedAtByCondition(map);
+        }catch (Exception e){
+            LOGGER.error("SystemController.updateActionUpdatedAtByCondition",e);
+            re = ResultDto.error("-1", "SystemController.updateActionUpdatedAtByCondition执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
 
+    @GetMapping("/getStatusImage")
+    @ApiOperation(value="根据指定的行为条件更新行为操作日期")
+   public ResultDto<List<HashMap<String, Object>>> getStatusImage(@RequestParam("memberId") String memberId){
+        ResultDto<List<HashMap<String, Object>>> re = null;
+        try {
+            re = systemService.getStatusImage(memberId);
+        }catch (Exception e){
+            LOGGER.error("SystemController.getStatusImage",e);
+            re = ResultDto.error("-1", "SystemController.getStatusImage执行service出现异常");
+        }finally {
+            return re;
+        }
+   }
 
+  public ResultDto<List<BasTagDto>> listBasTags (@RequestBody List<String> collect){
+        return null;
+    }
 
 
 

@@ -9,8 +9,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.controller.MemberIncentHonorController;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.dao.MemberFollowerDao;
+import com.fungo.system.dto.TaskDto;
 import com.fungo.system.entity.*;
 import com.fungo.system.service.*;
+import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
@@ -19,6 +21,7 @@ import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
+import com.game.common.util.StringUtil;
 import com.game.common.vo.MemberFollowerVo;
 import com.sun.istack.NotNull;
 import org.apache.commons.beanutils.BeanUtils;
@@ -28,8 +31,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.validation.constraints.Size;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -72,6 +77,13 @@ public class SystemServiceImpl implements SystemService {
 
     @Autowired
     private BasActionService actionServiceImap;
+
+    @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
+    private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
+
+    @Autowired
+    private IUserService userService;
+
     /**
      * 功能描述: 根据用户id查询被关注人的id集合
      *
@@ -266,11 +278,11 @@ public class SystemServiceImpl implements SystemService {
     }
 
     /**
-     *获取用户关注的社区id列表
+     * 获取用户关注的社区id列表
      */
     @Override
     public ResultDto<List<String>> listFollowerCommunityId(String memberId) {
-        List<String>  ids = basActionDao.getFollowerCommunityId(memberId);
+        List<String> ids = basActionDao.getFollowerCommunityId(memberId);
         return ResultDto.success(ids);
 
     }
@@ -282,19 +294,19 @@ public class SystemServiceImpl implements SystemService {
     public ResultDto<Integer> countActionNum(BasActionDto basActionDto) {
         //条件拼接
         EntityWrapper<BasAction> actionEntityWrapper = new EntityWrapper<>();
-        if(basActionDto.getMemberId()!=null){
+        if (basActionDto.getMemberId() != null) {
             actionEntityWrapper.eq("member_id", basActionDto.getMemberId());
         }
-        if(basActionDto.getType()!=null){
+        if (basActionDto.getType() != null) {
             actionEntityWrapper.eq("type", basActionDto.getType());
         }
-        if(basActionDto.getTargetType()!=null){
+        if (basActionDto.getTargetType() != null) {
             actionEntityWrapper.eq("target_type", basActionDto.getTargetType());
         }
-        if(basActionDto.getTargetId()!=null){
+        if (basActionDto.getTargetId() != null) {
             actionEntityWrapper.eq("target_id", basActionDto.getTargetId());
         }
-        if(basActionDto.getState()!=null){
+        if (basActionDto.getState() != null) {
             actionEntityWrapper.eq("state", basActionDto.getState());
         }
         //根据条件查询
@@ -307,37 +319,28 @@ public class SystemServiceImpl implements SystemService {
     public ResultDto<List<String>> listtargetId(BasActionDto basActionDto) {
 
         //Wrapper<BasAction> wrapper = Condition.create().setSqlSelect("target_id");
-       // EntityWrapper<BasAction> wrapper = new EntityWrapper<>();
-       // wrapper.setSqlSelect("target_id");
+        // EntityWrapper<BasAction> wrapper = new EntityWrapper<>();
+        // wrapper.setSqlSelect("target_id");
 
         Wrapper<BasAction> wrapper = Condition.create().setSqlSelect(" target_id as targetId");
 
-        if(basActionDto.getMemberId()!=null){
+        if (basActionDto.getMemberId() != null) {
             wrapper.eq("member_id", basActionDto.getMemberId());
         }
-        if(basActionDto.getType()!=null){
+        if (basActionDto.getType() != null) {
             wrapper.eq("type", basActionDto.getType());
         }
-        if(basActionDto.getTargetType()!=null){
+        if (basActionDto.getTargetType() != null) {
             wrapper.eq("target_type", basActionDto.getTargetType());
         }
-        if(basActionDto.getState()!=null){
+        if (basActionDto.getState() != null) {
             wrapper.eq("state", basActionDto.getState());
         }
-        //List<BasAction> list = basActionDao.selectList(wrapper);
-       /* List<BasAction> actionList = actionServiceImap.selectList(wrapper);
-        ArrayList<String> list = new ArrayList<>();
-        for (BasAction basAction : actionList) {
-            list.add(basAction.getTargetId());
-        }
-        return ResultDto.success(list);*/
         List<BasAction> actionList = actionServiceImap.selectList(wrapper);
-        LOGGER.info(actionList.size()+"");
-        List<String> ids = actionList.stream().filter(li -> {return li != null && li.getTargetId() != null && li.getTargetId() != "";}).map(BasAction::getTargetId).collect(Collectors.toList());
-      /*  ArrayList<String> list = new ArrayList<>();
-        for (BasAction basAction : actionList) {
-            list.add(basAction.getTargetId());
-        }*/
+        LOGGER.info(actionList.size() + "");
+        List<String> ids = actionList.stream().filter(li -> {
+            return li != null && li.getTargetId() != null && !"".equals(li.getTargetId());
+        }).map(BasAction::getTargetId).collect(Collectors.toList());
         return ResultDto.success(ids);
 
     }
@@ -364,14 +367,14 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public ResultDto<List<MemberDto>> listMembersByids(List<String> ids) {
         EntityWrapper<Member> wrapper = new EntityWrapper<>();
-        wrapper.in("id",ids);
+        wrapper.in("id", ids);
         List<Member> members = memberServiceImap.selectList(wrapper);
         List<MemberDto> memberFollowerDtos = null;
         try {
             memberFollowerDtos = CommonUtils.deepCopy(members, MemberDto.class);
         } catch (Exception e) {
-            LOGGER.error("SystemService.listMembersByids error",e);
-            return  ResultDto.error("-1","SystemService.listMembersByids error");
+            LOGGER.error("SystemService.listMembersByids error", e);
+            return ResultDto.error("-1", "SystemService.listMembersByids error");
         }
         return ResultDto.success(memberFollowerDtos);
     }
@@ -379,17 +382,82 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public ResultDto<List<IncentRankedDto>> listIncentrankeByids(List<String> ids, Integer rankType) {
         EntityWrapper<IncentRanked> wrapper = new EntityWrapper<>();
-        wrapper.in("mb_id",ids);
-        wrapper.eq("rank_type",rankType);
+        wrapper.in("mb_id", ids);
+        wrapper.eq("rank_type", rankType);
         List<IncentRanked> incentRankeds = incentRankedServiceImap.selectList(wrapper);
         List<IncentRankedDto> rankDtos = null;
         try {
             rankDtos = CommonUtils.deepCopy(incentRankeds, IncentRankedDto.class);
         } catch (Exception e) {
-            LOGGER.error("SystemService.listIncentrankeByids error",e);
-            return  ResultDto.error("-1","SystemService.listIncentrankeByids error");
+            LOGGER.error("SystemService.listIncentrankeByids error", e);
+            return ResultDto.error("-1", "SystemService.listIncentrankeByids error");
         }
         return ResultDto.success(rankDtos);
     }
+
+    @Override
+    public ResultDto<Map<String, Object>> exTask(TaskDto taskDto) {
+        ResultDto<Map<String, Object>> re = null;
+        Map<String, Object> map = null;
+        try {
+            if (StringUtil.isNull(taskDto.getTargetId())) {
+                map = iMemberIncentDoTaskFacadeService.exTask(taskDto.getMbId(), taskDto.getTaskGroupFlag(), taskDto.getTaskType(), taskDto.getTypeCodeIdt());
+            } else {
+                map = iMemberIncentDoTaskFacadeService.exTask(taskDto.getMbId(), taskDto.getTaskGroupFlag(), taskDto.getTaskType(), taskDto.getTypeCodeIdt(), taskDto.getTargetId());
+            }
+            re = ResultDto.success(map);
+        } catch (Exception e) {
+            LOGGER.error("SystemServiceImpl.exTask", e);
+            re = ResultDto.error("-1", "任务执行异常");
+        }
+        return re;
+    }
+
+    @Override
+    public ResultDto<AuthorBean> getAuthor(String memberId) {
+        AuthorBean author = userService.getAuthor(memberId);
+        return ResultDto.success(author);
+    }
+
+    public ResultDto<String> updateActionUpdatedAtByCondition(Map<String, Object> map) {
+        BasAction action = actionServiceImap.selectOne(new EntityWrapper<BasAction>()
+                .eq("member_id", map.get("memberId"))
+                .eq("target_id", map.get("targetId"))
+                .eq("target_type", map.get("targetType"))
+                .eq("type", map.get("type"))
+                .eq("state", map.get("state")));
+        if (action != null) {
+            action.setUpdatedAt(new Date());
+            actionServiceImap.updateAllColumnById(action);
+        }
+        return ResultDto.success();
+    }
+
+    @Override
+    public ResultDto<MemberDto> getMembersByid(String id) {
+        Member member = memberServiceImap.selectById(id);
+        MemberDto memberDto = new MemberDto();
+        try {
+            BeanUtils.copyProperties(memberDto, member);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("SystemServiceImpl.getMembersByid", e);
+            return ResultDto.error("-1", "异常");
+        }
+        return ResultDto.success(memberDto);
+    }
+
+    @Override
+    public ResultDto<List<HashMap<String, Object>>> getStatusImage(String memberId) {
+        List<HashMap<String, Object>> image;
+        try {
+            image = userService.getStatusImage(memberId);
+        } catch (Exception e) {
+            LOGGER.error("SystemServiceImpl.getStatusImage", e);
+            return ResultDto.error("-1", "异常");
+        }
+        return ResultDto.success(image);
+    }
+
 
 }
