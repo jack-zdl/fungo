@@ -520,11 +520,11 @@ public class PostServiceImpl implements IPostService {
         transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
 
         //发送的队列
-        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_COMMUNITY_POST.getName());
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
 
         //路由key
-        StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_COMMUNITY_POST.getName());
-        routinKey.deleteCharAt(routinKey.length()-1);
+        StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+        routinKey.deleteCharAt(routinKey.length() - 1 );
         routinKey.append("deletePostSubtractExpLevel");
 
         transactionMessageDto.setRoutingKey(routinKey.toString());
