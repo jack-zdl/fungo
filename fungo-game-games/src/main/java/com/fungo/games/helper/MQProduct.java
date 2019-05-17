@@ -1,12 +1,16 @@
 package com.fungo.games.helper;
 
 import com.alibaba.fastjson.JSON;
+import com.fungo.games.feign.SystemFeignClient;
 import com.game.common.bean.advice.BasNoticeDto;
 import com.game.common.dto.GameDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.game.GameInviteDto;
 import com.game.common.dto.game.GameReleaseLogDto;
+import com.game.common.ts.mq.dto.TransactionMessageDto;
+import com.rabbitmq.client.Return;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +30,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class MQProduct {
     @Autowired
-    private RabbitTemplate rabbitTemplate;
+    private AmqpTemplate template;
 
     @Autowired
-    private  AmqpTemplate template;
+    private SystemFeignClient systemFeignClient;
 
 
 //    /** DIRECT模式
@@ -111,7 +115,13 @@ public class MQProduct {
     }*/
 
     public void basActionInsertAllColumn(BasActionDto basActionDto) {
-        sendTopic(MQConfig.TOPIC_EXCHANGE_BASACTION_INSERTALLCOLUMN,MQConfig.TOPIC_KEY_BASACTION_INSERTALLCOLUMN,basActionDto);
+//        sendTopic(MQConfig.TOPIC_EXCHANGE_BASACTION_INSERTALLCOLUMN,MQConfig.TOPIC_KEY_BASACTION_INSERTALLCOLUMN,basActionDto);
+        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+        transactionMessageDto.setMessageBody(JSON.toJSONString(basActionDto));
+        transactionMessageDto.setConsumerQueue(MQConfig.TOPIC_QUEUE_BASACTION_INSERTALLCOLUMN);
+        transactionMessageDto.setRoutingKey(MQConfig.TOPIC_KEY_BASACTION_INSERTALLCOLUMN);
+        transactionMessageDto.setMessageDataType(1);
+        sendFeignMq(transactionMessageDto);
     }
 
     public void selectOneAndUpdateAllColumnById(String memberId, String targetId, int targetType, int type, int state) {
@@ -158,4 +168,14 @@ public class MQProduct {
         map.put("appVersion", appVersion);
         sendTopic(MQConfig.TOPIC_EXCHANGE_MEMBER_PUSH,MQConfig.TOPIC_KEY_MEMBER_PUSH,map);
     }
+
+
+
+
+    private ResultDto sendFeignMq(TransactionMessageDto transactionMessageDto){
+        ResultDto resultDto = systemFeignClient.saveAndSendMessage(transactionMessageDto);
+        return resultDto;
+    }
+
+
 }
