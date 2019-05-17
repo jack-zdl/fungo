@@ -677,7 +677,7 @@ public class PostServiceImpl implements IPostService {
         ActionInput actioninput = new ActionInput();
         actioninput.setTarget_type(4);
         actioninput.setTarget_id(cmmPost.getCommunityId());
-        boolean b = iCounterService.subCounter(userId, 7, actioninput);
+        boolean b = iCountService.subCounter(userId, 7, actioninput);
 
         //clear redis cache
         //文章内容html-内容
@@ -720,9 +720,32 @@ public class PostServiceImpl implements IPostService {
         if (post == null) {
             return ResultDto.error("223", "帖子不存在");
         }
-        if (memberService.selectById(userId) == null) {
+
+
+        //!fixme 查询用户数据
+        /*
+            if (memberService.selectById(userId) == null) {
             return ResultDto.error("126", "用户不存在");
         }
+        */
+
+        List<String> idsList = new ArrayList<String>();
+        idsList.add(userId);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+
+        MemberDto memberDto = null;
+        if (null != listMembersByids) {
+            List<MemberDto> memberDtoList = listMembersByids.getData();
+            if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                memberDto = memberDtoList.get(0);
+            }
+        }
+
+        if (memberDto == null) {
+            return ResultDto.error("126", "用户不存在");
+        }
+
+
         if (!post.getMemberId().equals(userId)) {
             return ResultDto.error("224", "用户和帖子不匹配");
         }
@@ -982,7 +1005,15 @@ public class PostServiceImpl implements IPostService {
         if (cmmPost.getGameList() != null) {
             gameMapList = mapper.readValue(cmmPost.getGameList(), ArrayList.class);
             for (Map<String, Object> m : gameMapList) {
-                m.put("rating", iGameService.getGameRating((String) m.get("objectId")) + "");
+
+                //!fixme 获取游戏平均分
+                //m.put("rating", iGameService.getGameRating((String) m.get("objectId")) + "");
+
+                //获取游戏平均分
+                String gameId = (String) m.get("objectId");
+                double gameAverage = gameFeignClient.selectGameAverage(gameId, 0);
+                m.put("gameRating", gameAverage);
+
             }
         }
 
@@ -1120,16 +1151,62 @@ public class PostServiceImpl implements IPostService {
         //查询是否关注、收藏、点赞
         if (userId != null) {
 
-            Member user = memberService.selectById(userId);
+            //!fixme 查询用户数据
+            //Member user = memberService.selectById(userId);
 
-            if (user != null) {
+            List<String> idsList = new ArrayList<String>();
+            idsList.add(userId);
+            ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
 
+            MemberDto memberDto = null;
+            if (null != listMembersByids) {
+                List<MemberDto> memberDtoList = listMembersByids.getData();
+                if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                    memberDto = memberDtoList.get(0);
+                }
+            }
+
+            if (memberDto != null) {
+
+                //!fixme 查询点赞数和收藏数
                 // 	int followed = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).eq("target_id", author.getId()).eq("state", 0).eq("member_id", userId));
+               /*
                 int like =
                         actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).eq("target_id", cmmPost.getId()).eq("state", 0).eq("member_id", userId));
                 int collected =
                         actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 4).eq("target_id", cmmPost.getId()).eq("state", 0).eq("member_id", userId));
+                 */
 
+                //---like 点赞 | 0
+                BasActionDto basActionDtoLike = new BasActionDto();
+
+                basActionDtoLike.setMemberId(userId);
+                basActionDtoLike.setType(0);
+                basActionDtoLike.setState(0);
+                basActionDtoLike.setTargetId(cmmPost.getId());
+
+                ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
+
+                int like = 0;
+                if (null != resultDtoLike) {
+                    like = resultDtoLike.getData();
+                }
+
+
+                //--收藏 | 4
+                BasActionDto basActionDtoCollected = new BasActionDto();
+
+                basActionDtoCollected.setMemberId(userId);
+                basActionDtoCollected.setType(4);
+                basActionDtoCollected.setState(0);
+                basActionDtoCollected.setTargetId(cmmPost.getId());
+
+                ResultDto<Integer> resultDtoCollected = systemFeignClient.countActionNum(basActionDtoCollected);
+
+                int collected = 0;
+                if (null != resultDtoCollected) {
+                    collected = resultDtoCollected.getData();
+                }
 
                 //boolean is_followed = followed >0 ? true:false;
                 boolean is_liked = like > 0 ? true : false;
@@ -1144,7 +1221,13 @@ public class PostServiceImpl implements IPostService {
         out.setLink_community(communityMap);
 
         //!fixme 获取用户数据
-        out.setAuthor(IUserService.getUserCard(cmmPost.getMemberId(), userId));
+        //out.setAuthor(IUserService.getUserCard(cmmPost.getMemberId(), userId));
+
+        ResultDto<AuthorBean> userCardResult = systemFeignClient.getUserCard(cmmPost.getMemberId(), userId);
+        if (null != userCardResult) {
+            AuthorBean authorBean = userCardResult.getData();
+            out.setAuthor(authorBean);
+        }
 
 
         out.setType(cmmPost.getType());
@@ -1245,7 +1328,15 @@ public class PostServiceImpl implements IPostService {
 
             PostOutBean bean = new PostOutBean();
 
-            bean.setAuthor(iUserService.getAuthor(post.getMemberId()));
+            //!fixme 查询用户数据
+            //bean.setAuthor(iUserService.getAuthor(post.getMemberId()));
+
+            ResultDto<AuthorBean> authorBeanResultDto = systemFeignClient.getAuthor(post.getMemberId());
+            if (null != authorBeanResultDto) {
+                AuthorBean authorBean = authorBeanResultDto.getData();
+                bean.setAuthor(authorBean);
+            }
+
             if (bean.getAuthor() == null) {
                 continue;
             }
@@ -1298,7 +1389,25 @@ public class PostServiceImpl implements IPostService {
             if (CommonUtil.isNull(userId)) {
                 bean.setLiked(false);
             } else {
-                int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", post.getId()).eq("member_id", userId));
+
+                //!fixme 查询用户点赞数
+                //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", post.getId()).eq("member_id", userId));
+
+
+                BasActionDto basActionDto = new BasActionDto();
+                basActionDto.setMemberId(userId);
+                basActionDto.setType(0);
+                basActionDto.setState(0);
+                basActionDto.setTargetId(post.getId());
+
+                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                int liked = 0;
+                if (null != resultDto) {
+                    liked = resultDto.getData();
+                }
+
+
                 bean.setLiked(liked > 0 ? true : false);
             }
 
