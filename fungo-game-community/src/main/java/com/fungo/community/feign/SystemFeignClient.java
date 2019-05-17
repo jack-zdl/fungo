@@ -5,6 +5,7 @@ import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
@@ -16,6 +17,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -132,6 +134,9 @@ public interface SystemFeignClient {
 
 
 
+    @PostMapping(value = "/exTask")
+    @ApiOperation(value="执行任务")
+    public ResultDto<Map<String, Object>> exTask(@RequestBody TaskDto taskDto);
 
 
 
