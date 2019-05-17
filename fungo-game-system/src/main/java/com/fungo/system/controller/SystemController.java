@@ -1,12 +1,12 @@
 package com.fungo.system.controller;
 
-import com.fungo.system.dto.TaskDto;
 import com.fungo.system.service.SystemService;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.game.BasTagDto;
+import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
@@ -103,7 +103,7 @@ public class SystemController {
      * 功能描述: 根据用户id集合查询用户详情 state为null就不根据状态查询
      */
     @GetMapping(value = "/listMembersByids")
-    public ResultDto<List<MemberDto>> listMembersByids(@RequestBody List<String> ids,@RequestParam("state") Integer state){
+    public ResultDto<List<MemberDto>> listMembersByids(@RequestBody List<String> ids,@RequestParam(value = "state",required = false) Integer state){
         ResultDto<List<MemberDto>> re = null;
         try {
             re =  systemService.listMembersByids(ids,state);
@@ -335,6 +335,20 @@ public class SystemController {
         }catch (Exception e){
             LOGGER.error("SystemController.getAuthor",e);
             re = ResultDto.error("-1", "SystemController.getAuthor执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
+    @GetMapping("/getUserCard")
+    @ApiOperation(value="获取会员信息")
+    public ResultDto<AuthorBean> getUserCard(@RequestParam("cardId") String cardId, @RequestParam("memberId") String memberId){
+        ResultDto<AuthorBean> re = null;
+        try {
+            re = systemService.getUserCard(cardId,memberId);
+        }catch (Exception e){
+            LOGGER.error("SystemController.getUserCard",e);
+            re = ResultDto.error("-1", "SystemController.getUserCard执行service出现异常");
         }finally {
             return re;
         }
