@@ -16,7 +16,7 @@ import javax.sql.DataSource;
 
 
 @Configuration
-@MapperScan("com.fungo.games.daoService")
+@MapperScan("com.fungo.games.dao")
 public class MybatisPlus4MysqlConfig {
 
     @Autowired

@@ -6,6 +6,7 @@ import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameEvaluation;
 import com.fungo.games.entity.GameSurveyRel;
 import com.fungo.games.feign.SystemFeignClient;
+import com.fungo.games.helper.MQProduct;
 import com.fungo.games.service.GameService;
 import com.fungo.games.service.GameSurveyRelService;
 import com.fungo.games.service.IGameService;
@@ -13,6 +14,7 @@ import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.game.*;
 import com.game.common.util.AesUtil;
 import com.game.common.util.CommonUtil;
@@ -228,6 +230,24 @@ public class GameController {
     public int selectGameEvaluationCount(  GameEvaluationDto gameEvaluation){
 //        new EntityWrapper<GameSurveyRel>().eq("game_id", gameId).eq("phone_model", "Android");
 //        gameSurveyRelService.selectCount();
+        return 1;
+    }
+    @Autowired
+    private MQProduct mqProduct;
+
+    /**
+     * ceshi
+     * @return
+     */
+    @RequestMapping(value = "/api/feignMQDemo", method = RequestMethod.GET)
+    public int feignMQDemo(){
+        BasActionDto basActionDto = new BasActionDto();
+        basActionDto.setMemberId("111111");
+        basActionDto.setTargetId("测试");
+        basActionDto.setState(0);
+        basActionDto.setType(1);
+        basActionDto.setId("ceshi");
+        mqProduct.basActionInsertAllColumn(basActionDto);
         return 1;
     }
 

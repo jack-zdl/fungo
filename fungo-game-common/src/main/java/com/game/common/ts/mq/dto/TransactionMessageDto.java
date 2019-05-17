@@ -17,6 +17,44 @@ import java.util.Date;
  */
 public class TransactionMessageDto extends InputPageDto {
 
+
+    //消息业务领域类型常量定义
+    /**
+     * 1 系统
+     */
+    public static final int MESSAGE_DATA_TYPE_SYSTEM = 1;
+
+    /**
+     * 2 用户
+     */
+    public static final int MESSAGE_DATA_TYPE_USER = 2;
+
+
+    /**
+     * 3 社区-文章
+     */
+    public static final int MESSAGE_DATA_TYPE_POST = 3;
+
+
+    /**
+     * 4 社区-心情
+     */
+    public static final int MESSAGE_DATA_TYPE_MOOD = 4;
+
+
+    /**
+     * 5 游戏
+     */
+    public static final int MESSAGE_DATA_TYPE_GAME = 5;
+
+
+    /**
+     * 6 首页
+     */
+    public static final int MESSAGE_DATA_TYPE_PORTAL = 6;
+
+
+
     private static final long serialVersionUID = 1L;
 
     private Long messageId;

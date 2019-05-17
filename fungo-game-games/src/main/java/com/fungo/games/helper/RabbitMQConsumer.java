@@ -19,7 +19,7 @@ import java.io.IOException;
  * @Author: dl.zhang
  * @Date: 2019/5/16
  */
-@Component
+//@Component
 public class RabbitMQConsumer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQConsumer.class);

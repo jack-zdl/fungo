@@ -2,7 +2,6 @@ package com.fungo.community.service.impl;
 
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -14,6 +13,9 @@ import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.entity.BasVideoJob;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
+import com.fungo.community.feign.GameFeignClient;
+import com.fungo.community.feign.SystemFeignClient;
+import com.fungo.community.feign.TSFeignClient;
 import com.fungo.community.function.FungoLivelyCalculateUtils;
 import com.fungo.community.function.SerUtils;
 import com.fungo.community.service.ICounterService;
@@ -22,13 +24,16 @@ import com.fungo.community.service.IVideoService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
-import com.game.common.dto.ActionInput;
-import com.game.common.dto.FungoPageResultDto;
-import com.game.common.dto.ObjectId;
-import com.game.common.dto.ResultDto;
+import com.game.common.dto.*;
 import com.game.common.dto.community.*;
+import com.game.common.dto.community.StreamInfo;
+import com.game.common.dto.user.MemberDto;
+import com.game.common.enums.CommunityEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
+import com.game.common.ts.mq.dto.MQResultDto;
+import com.game.common.ts.mq.dto.TransactionMessageDto;
+import com.game.common.ts.mq.enums.RabbitMQEnum;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PKUtil;
@@ -46,9 +51,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,6 +85,18 @@ public class PostServiceImpl implements IPostService {
 
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
+
+
+    //依赖系统和用户微服务
+    @Autowired
+    private SystemFeignClient systemFeignClient;
+
+    //依赖游戏微服务
+    @Autowired
+    private GameFeignClient gameFeignClient;
+
+    @Autowired
+    private TSFeignClient tsFeignClient;
 
 
   /*
@@ -130,8 +145,6 @@ public class PostServiceImpl implements IPostService {
     */
 
 
-
-
     @Override
     @Transactional
     public ResultDto<ObjectId> addPost(PostInput postInput, String user_id) throws Exception {
@@ -147,12 +160,27 @@ public class PostServiceImpl implements IPostService {
             return ResultDto.error("126", "不存在的用户");
         }
 
-        Member member = memberService.selectById(user_id);
-        if (member == null) {
+        //!fixme 查询用户数据
+        //Member member = memberService.selectById(user_id);
+
+        List<String> idsList = new ArrayList<String>();
+        idsList.add(user_id);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+
+        MemberDto memberDto = null;
+        if (null != listMembersByids) {
+            List<MemberDto> memberDtoList = listMembersByids.getData();
+            if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                memberDto = memberDtoList.get(0);
+            }
+        }
+
+
+        if (memberDto == null) {
             return ResultDto.error("126", "不存在的用户");
         }
 
-        if (member.getLevel() < 2) {
+        if (memberDto.getLevel() < 2) {
             return ResultDto.error("-1", "等级达到lv2才可发布内容");
         }
 
@@ -190,7 +218,7 @@ public class PostServiceImpl implements IPostService {
         post.setTitle(postInput.getTitle());
         //vedio
         if (!CommonUtil.isNull(postInput.getVideo()) || !CommonUtil.isNull(postInput.getVideoId())) {
-            if (member.getLevel() < 3) {
+            if (memberDto.getLevel() < 3) {
                 return ResultDto.error("-1", "等级达到lv3才可发布视频");
             }
 //          post.setVideo(postInput.getVideo());
@@ -386,9 +414,22 @@ public class PostServiceImpl implements IPostService {
             return ResultDto.error("211", "找不到用户id");
         }
 
-        Member user = memberService.selectById(userId);
+        //!fixme 查询用户数据
+        //Member user = memberService.selectById(userId);
 
-        if (user == null) {
+        List<String> idsList = new ArrayList<String>();
+        idsList.add(userId);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+
+        MemberDto memberDto = null;
+        if (null != listMembersByids) {
+            List<MemberDto> memberDtoList = listMembersByids.getData();
+            if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                memberDto = memberDtoList.get(0);
+            }
+        }
+
+        if (memberDto == null) {
             return ResultDto.error("126", "用户不存在");
         }
         if (!cmmPost.getMemberId().equals(userId)) {
@@ -403,7 +444,9 @@ public class PostServiceImpl implements IPostService {
 
         //扣除经验
         int score = 3;
-        //!fixme
+
+        //!fixme 扣减用户经验值 MQ
+     /*
         IncentAccountScore scoreCount = accountScoreService.selectOne(new EntityWrapper<IncentAccountScore>().eq("mb_id", userId).eq("account_group_id", 1));
         if (scoreCount == null) {
             scoreCount = IAccountDaoService.createAccountScore(user, 1);
@@ -414,16 +457,24 @@ public class PostServiceImpl implements IPostService {
 
         user.setExp(scoreCount.getScoreUsable().intValue());
         user = scoreLogService.updateLevel(user);
+        */
         //scoreLogService
 
+        //!fixme 更新用户等级数据
+      /*
         IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", userId).eq("rank_type", 1));
-        Long prelevel = ranked.getCurrentRankId();//记录中的等级 可能需要修改
+
+        Long prelevel = incentRankedDtoResult.getCurrentRankId();//记录中的等级 可能需要修改
         int curLevel = scoreLogService.getLevel(scoreCount.getScoreUsable().intValue());//现在应有的等级
+
         //用户需不需要变更等级
         ObjectMapper mapper = new ObjectMapper();
         if (curLevel != prelevel) {
+
             ranked.setCurrentRankId((long) curLevel);
+
             ranked.setCurrentRankName("Lv" + curLevel);
+
             String rankIdtIds = ranked.getRankIdtIds();
             List<HashMap<String, String>> rankList = new ArrayList<>();
             try {
@@ -457,6 +508,30 @@ public class PostServiceImpl implements IPostService {
             scoreLogService.addRankLog(userId, rankRule);
 
         }
+        */
+
+        //走MQ 业务数据发送给系统用户业务处理
+
+        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+        //消息类型
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
+        //发送的队列
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_COMMUNITY_POST.getName());
+
+
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(CommunityEnum.CMT_POST_MQ_TYPE_DELETE_POST_SUBTRACT_EXP_LEVEL.getCode());
+
+        HashMap<String, Object> hashMap = new HashMap<String, Object>();
+        hashMap.put("mb_id", userId);
+        hashMap.put("score", score);
+
+        mqResultDto.setBody(hashMap);
+
+        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+        //执行MQ发送
+        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        logger.info("--删除帖子执行扣减用户经验值和等级--MQ执行结果：messageResult", JSON.toJSONString(messageResult));
 
 
         ActionInput actioninput = new ActionInput();
@@ -858,6 +933,9 @@ public class PostServiceImpl implements IPostService {
             //游戏社区的评分 标签
             if (community.getType() == 0) {
                 communityMap.put("gameId", community.getGameId());
+
+                //!fixme 游戏平均分
+              /*
                 HashMap<String, BigDecimal> rateData = gameDao.getRateData(community.getGameId());
                 if (rateData != null) {
                     if (rateData.get("avgRating") != null) {
@@ -868,14 +946,32 @@ public class PostServiceImpl implements IPostService {
                 } else {
                     communityMap.put("gameRating", 0.0);
                 }
+                */
+
+                //获取游戏平均分
+                double gameAverage = gameFeignClient.selectGameAverage(community.getGameId(), 0);
+                communityMap.put("gameRating", gameAverage);
+
+
             }
             if (!CommonUtil.isNull(community.getGameId())) {
-                Game game = gameService.selectOne(Condition.create().setSqlSelect("id,tags").eq("id", community.getGameId()).eq("state", 0));
-                if (game != null) {
-                    communityMap.put("gameTags", game.getTags() == null ? new String[0] : game.getTags().split(","));
+
+                //!fixme 查询游戏详情
+                //Game game = gameService.selectOne(Condition.create().setSqlSelect("id,tags").eq("id", community.getGameId()).eq("state", 0));
+
+                GameDto gameDto = null;
+                ResultDto<GameDto> gameDtoResultDto = gameFeignClient.selectGameDetails(community.getGameId(), 0);
+                if (null != gameDtoResultDto) {
+                    gameDtoResultDto.getData();
+                }
+
+                if (gameDto != null) {
+                    communityMap.put("gameTags", gameDto.getTags() == null ? new String[0] : gameDto.getTags().split(","));
                 } else {
                     communityMap.put("gameTags", new ArrayList<String>());
                 }
+
+
             } else {
                 communityMap.put("gameTags", new ArrayList<String>());
             }
@@ -883,27 +979,33 @@ public class PostServiceImpl implements IPostService {
 
         //查询是否关注、收藏、点赞
         if (userId != null) {
+
             Member user = memberService.selectById(userId);
+
             if (user != null) {
-//				int followed = 
-//						actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).eq("target_id", author.getId()).eq("state", 0).eq("member_id", userId));
+
+                // 	int followed = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).eq("target_id", author.getId()).eq("state", 0).eq("member_id", userId));
                 int like =
                         actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).eq("target_id", cmmPost.getId()).eq("state", 0).eq("member_id", userId));
                 int collected =
                         actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 4).eq("target_id", cmmPost.getId()).eq("state", 0).eq("member_id", userId));
-//				boolean is_followed = followed >0 ? true:false;
+
+
+                //boolean is_followed = followed >0 ? true:false;
                 boolean is_liked = like > 0 ? true : false;
                 boolean is_collected = collected > 0 ? true : false;
                 out.setIs_liked(is_liked);
                 out.setIs_collected(is_collected);
-//				authorMap.put("is_followed", is_followed);
+                //authorMap.put("is_followed", is_followed);
             }
         }
 
 
         out.setLink_community(communityMap);
 
+        //!fixme 获取用户数据
         out.setAuthor(IUserService.getUserCard(cmmPost.getMemberId(), userId));
+
 
         out.setType(cmmPost.getType());
 
