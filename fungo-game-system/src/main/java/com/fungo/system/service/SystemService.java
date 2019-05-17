@@ -11,6 +11,7 @@ import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.vo.MemberFollowerVo;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,7 @@ public interface SystemService {
 
     public ResultDto<String> addAction(BasActionDto basActionDto);
 
-    ResultDto<List<MemberDto>> listMembersByids(List<String> ids);
+    ResultDto<List<MemberDto>> listMembersByids(List<String> ids, Integer state);
 
     ResultDto<List<IncentRankedDto>> listIncentrankeByids(List<String> ids, Integer rankType);
 
@@ -51,11 +52,16 @@ public interface SystemService {
 
     ResultDto<AuthorBean> getAuthor(String memberId);
 
-    public ResultDto<String> updateActionUpdatedAtByCondition(Map<String,Object> map);
+    ResultDto<String> updateActionUpdatedAtByCondition(Map<String,Object> map);
 
     ResultDto<MemberDto> getMembersByid(String id);
 
     ResultDto<List<HashMap<String,Object>>> getStatusImage(String memberId);
 
     ResultDto<List<BasTagDto>> listBasTags(List<String> collect);
+
+    ResultDto<List<MemberDto>> listWatchMebmber(Integer limit, String currentMbId) throws IOException, ClassNotFoundException;
+
+    ResultDto<List<MemberDto>> listRecommendedMebmber(Integer limit,String currentMbId,List<String> wathMbsSet);
+
 }

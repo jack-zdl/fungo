@@ -5,6 +5,8 @@ import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.proxy.IMemeberProxyService;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.community.MooMoodDto;
@@ -18,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 /**
  * <p></p>
@@ -89,7 +92,13 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public int selectMooMoodCount(MooMoodDto mooMoodDto) {
-        return 0;
+        ResultDto<Integer> re =  communityFeignClient.queryCmmMoodCount(mooMoodDto);
+        if(re.isSuccess()){
+            return re.getData();
+        }else {
+            logger.warn("根据心情参数获取总数异常");
+            return 0;
+        }
     }
     
     /**
@@ -103,7 +112,13 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public Page<MooMoodDto> selectMooMoodPage(MooMoodDto mooMoodDto) {
-        return null;
+        Page<MooMoodDto> mooMoodPage = new Page<>();
+        FungoPageResultDto<MooMoodDto> re = communityFeignClient.queryCmmMoodList(mooMoodDto);
+        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
+            mooMoodPage.setRecords(re.getData());
+            mooMoodPage.setTotal(re.getCount());
+        }
+        return mooMoodPage;
     }
 
     /**
@@ -116,8 +131,9 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
     @HystrixCommand(fallbackMethod = "hystrixSelectReplyCount",ignoreExceptions = {Exception.class},
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
-    public int selectReplyCount(ReplyDto replyDto) {
-        return 0;
+    public int selectReplyCount(CmmCmtReplyDto replyDto) {
+        ResultDto<Integer> re = communityFeignClient.querySecondLevelCmtCount(replyDto);
+        return re.getData();
     }
 
     /**
@@ -130,8 +146,13 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
     @HystrixCommand(fallbackMethod = "hystrixSelectReplyById",ignoreExceptions = {Exception.class},
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
-    public ReplyDto selectReplyById(ReplyDto replyDto) {
-        return null;
+    public CmmCmtReplyDto selectReplyById(CmmCmtReplyDto replyDto) {
+        CmmCmtReplyDto reply = new CmmCmtReplyDto();
+        FungoPageResultDto<CmmCmtReplyDto>  re = communityFeignClient.querySecondLevelCmtList(replyDto);
+        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
+            reply =  re.getData().get(0);
+        }
+        return reply;
     }
 
     /**
@@ -178,27 +199,38 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public CmmCommunityDto selectCmmCommunityById(CmmCommunityDto cmmCommunityDto) {
-        return null;
+        CmmCommunityDto communityDto = new CmmCommunityDto();
+        FungoPageResultDto<CmmCommunityDto> re = communityFeignClient.queryCmmPostList(cmmCommunityDto);
+        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
+            communityDto = re.getData().get(0);
+        }
+        return communityDto;
     }
 
+
     public CmmPostDto hystrixSelectCmmPost(CmmPostDto cmmPostDto) {
+        logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");
         return null;
     }
 
 
     public Page<GameSurveyRelDto> hystrixSelectGameSurveyRelPage(int page, int limit, String memberId, int status) {
+        logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");
         return null;
     }
 
     public int hystrixSelectMooMoodCount(MooMoodDto mooMoodDto) {
+        logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");
         return 0;
     }
 
     public Page<MooMoodDto> hystrixSelectMooMoodPage(MooMoodDto mooMoodDto) {
+        logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");
         return null;
     }
 
     public int hystrixSelectReplyCount(ReplyDto replyDto) {
+        logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");
         return 0;
     }
 
@@ -207,15 +239,18 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
     }
 
     public Page<GameEvaluationDto> hystrixSelectGameEvaluationPage(GameEvaluationDto gameEvaluationDto) {
+        logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");
         return null;
     }
 
 
     public Page<CmmPostDto> hystrixSelectCmmPostpage(CmmPostDto cmmPostDto) {
+        logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");
         return null;
     }
 
     public CmmCommunityDto hystrixSelectCmmCommunityById(CmmCommunityDto cmmCommunityDto) {
+        logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");
         return null;
     }
 }

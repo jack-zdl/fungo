@@ -1,7 +1,6 @@
 package com.fungo.system.controller;
 
-import com.fungo.system.feign.GamesFeignClient;
-import com.fungo.system.proxy.IDeveloperProxyService;
+import com.fungo.system.helper.RabbitMQProduct;
 import com.fungo.system.service.IActionService;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.MemberUserProfile;
@@ -34,6 +33,9 @@ public class ActionController {
     @Autowired
     private IActionService actionService;
 
+    @Autowired
+    private RabbitMQProduct rabbitMQProduct;
+
     /*@Autowired
     private GamesFeignClient gamesFeignClient;
 
@@ -48,7 +50,9 @@ public class ActionController {
             @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
     })
     public ResultDto<String> like(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody ActionInput inputDto) throws Exception {
-
+        Map<String,String> hashmap = new HashMap<>();
+        hashmap.put("key","value");
+        rabbitMQProduct.updateCounter(hashmap);
         String appVersion = "";
         appVersion = request.getHeader("appversion");
         return actionService.like(memberUserPrefile.getLoginId(), inputDto,appVersion);

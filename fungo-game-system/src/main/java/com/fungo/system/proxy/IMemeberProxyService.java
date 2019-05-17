@@ -1,6 +1,7 @@
 package com.fungo.system.proxy;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.community.MooMoodDto;
@@ -23,9 +24,9 @@ public interface IMemeberProxyService {
 
     Page<MooMoodDto> selectMooMoodPage(MooMoodDto mooMoodDto);
 
-    int selectReplyCount(ReplyDto replyDto);
+    int selectReplyCount(CmmCmtReplyDto replyDto);
 
-    ReplyDto selectReplyById(ReplyDto replyDto);
+    CmmCmtReplyDto selectReplyById(CmmCmtReplyDto replyDto);
 
     Page<GameEvaluationDto> selectGameEvaluationPage(GameEvaluationDto gameEvaluationDto);
 

@@ -57,6 +57,14 @@ public class RabbitMQExchangeQueueBindConfig {
         return queue;
     }
 
+    @Bean("topicQueueUpdateCounter")
+    Queue topicQueueUpdateCounter() {
+        //队列持久化
+        Queue queue = new Queue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_UPDATECOUNTER.getName(), true, false, false);
+        LOGGER.info("RabbitMqExchangeQueueBindConfig-topicQueue-create-success");
+        return queue;
+    }
+
     @Bean("directQueue")
     Queue directQueue() {
         //队列持久化
@@ -75,6 +83,13 @@ public class RabbitMQExchangeQueueBindConfig {
     @Bean("bindingTopicExchageQueue")
     Binding bindingTopicExchageQueue() {
         Binding binding = BindingBuilder.bind(topicQueue()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
+        LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingTopicExchageQueue-create-success");
+        return binding;
+    }
+
+    @Bean("bindingTopicExchageQueueUpdateCounter")
+    Binding bindingTopicExchageQueueUpdateCounter() {
+        Binding binding = BindingBuilder.bind(topicQueueUpdateCounter()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT_UPDATECOUNTER.getName());
         LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingTopicExchageQueue-create-success");
         return binding;
     }

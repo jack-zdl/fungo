@@ -163,7 +163,13 @@ public class GameProxyServiceImpl implements IGameProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public MooMessageDto selectMooMessageById(String id) {
-        return null;
+        MooMessageDto mooMessageDto = new MooMessageDto();
+        mooMessageDto.setId(id);
+        FungoPageResultDto<MooMessageDto>  re = communityFeignClient.queryCmmMoodCommentList(mooMessageDto);
+        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
+            mooMessageDto = re.getData().get(0);
+        }
+        return mooMessageDto;
     }
 
     public CmmPostDto hystrixSelectCmmPostById(CmmPostDto param){

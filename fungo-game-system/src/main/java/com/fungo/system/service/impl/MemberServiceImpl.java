@@ -807,7 +807,7 @@ public class MemberServiceImpl implements IMemberService {
         MooMoodDto mooMoodDto = new MooMoodDto();
         mooMoodDto.setMemberId(userId);mooMoodDto.setState(0);
         int moodCount = iMemeberProxyService.selectMooMoodCount(mooMoodDto) ;//moodService.selectCount(new EntityWrapper<MooMood>().eq("member_id", userId).eq("state", 0));
-        ReplyDto replyDto = new ReplyDto();
+        CmmCmtReplyDto replyDto = new CmmCmtReplyDto();
         replyDto.setMemberId(userId);
         replyDto.setState(0);
         int repluCount = iMemeberProxyService.selectReplyCount(replyDto) ;//replyService.selectCount(new EntityWrapper<Reply>().eq("member_id", userId).eq("state", 0));
@@ -1190,9 +1190,9 @@ public class MemberServiceImpl implements IMemberService {
                 }
 
                 // @todo 二级回复
-                ReplyDto replyDto = new ReplyDto();
+                CmmCmtReplyDto replyDto = new CmmCmtReplyDto();
                 replyDto.setId(c.getReplyContentId());
-                ReplyDto reply = iMemeberProxyService.selectReplyById(replyDto);   //new ReplyDto();// replyService.selectById(c.getReplyContentId());
+                CmmCmtReplyDto  reply = iMemeberProxyService.selectReplyById(replyDto);   //new ReplyDto();// replyService.selectById(c.getReplyContentId());
                 if (reply != null) {
 
                     String replyContent = reply.getContent();

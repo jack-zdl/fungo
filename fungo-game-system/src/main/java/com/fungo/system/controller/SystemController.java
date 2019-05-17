@@ -1,12 +1,9 @@
 package com.fungo.system.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.fungo.system.dto.TaskDto;
-import com.fungo.system.entity.Member;
 import com.fungo.system.service.SystemService;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
-import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.game.BasTagDto;
@@ -22,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +52,6 @@ public class SystemController {
         try {
             re =  systemService.getFollowerUserId(memberFollowerVo.getMemberId());
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("SystemController.getFollowerUserId",e);
             re = FungoPageResultDto.error("-1", "SystemController.getFollowerUserId执行service出现异常");
         }finally {
@@ -77,7 +72,6 @@ public class SystemController {
         try {
             re =  systemService.getMemberFollowerList(memberFollowerVo);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("SystemController.getFollowerUserId",e);
             re = FungoPageResultDto.error("-1", "SystemController.getMemberFollowerList执行service出现异常");
         }finally {
@@ -98,7 +92,6 @@ public class SystemController {
         try {
             re =  systemService.getMemberDtoList(memberDto);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("SystemController.getFollowerUserId",e);
             re = FungoPageResultDto.error("-1", "SystemController.getMemberFollowerList执行service出现异常");
         }finally {
@@ -107,17 +100,32 @@ public class SystemController {
     }
 
     /**
-     * 功能描述: 根据用户id集合查询用户详情
+     * 功能描述: 根据用户id集合查询用户详情 state为null就不根据状态查询
      */
     @GetMapping(value = "/listMembersByids")
-    public ResultDto<List<MemberDto>> listMembersByids(@RequestBody List<String> ids){
+    public ResultDto<List<MemberDto>> listMembersByids(@RequestBody List<String> ids,@RequestParam("state") Integer state){
         ResultDto<List<MemberDto>> re = null;
         try {
-            re =  systemService.listMembersByids(ids);
+            re =  systemService.listMembersByids(ids,state);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("SystemController.listMembersByids",e);
             re = ResultDto.error("-1", "SystemController.listMembersByids执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
+    /**
+     * 功能描述: .找出官方推荐玩家
+     */
+    @GetMapping(value = "/listRecommendedMebmber")
+    public ResultDto<List<MemberDto>> listRecommendedMebmber(@RequestParam("limit") Integer limit,@RequestParam("currentMbId") String currentMbId,@RequestBody List<String> wathMbsSet){
+        ResultDto<List<MemberDto>> re = null;
+        try {
+            re =  systemService.listRecommendedMebmber(limit,currentMbId,wathMbsSet);
+        }catch (Exception e){
+            LOGGER.error("SystemController.listWatchMebmber",e);
+            re = ResultDto.error("-1", "SystemController.listWatchMebmber执行service出现异常");
         }finally {
             return re;
         }
@@ -332,7 +340,7 @@ public class SystemController {
         }
     }
 
-    @GetMapping("/updateActionUpdatedAtByCondition")
+    @PostMapping("/updateActionUpdatedAtByCondition")
     @ApiOperation(value="根据指定的行为条件更新行为操作日期")
     public ResultDto<String> updateActionUpdatedAtByCondition(@RequestBody Map<String,Object> map){
         ResultDto<String> re = null;
@@ -346,8 +354,10 @@ public class SystemController {
         }
     }
 
+
+
     @GetMapping("/getStatusImage")
-    @ApiOperation(value="根据指定的行为条件更新行为操作日期")
+    @ApiOperation(value="根据用户id获取用户身份图标")
    public ResultDto<List<HashMap<String, Object>>> getStatusImage(@RequestParam("memberId") String memberId){
         ResultDto<List<HashMap<String, Object>>> re = null;
         try {
@@ -372,8 +382,23 @@ public class SystemController {
       }finally {
           return re;
       }
+    }
 
-
+    /**
+     * 查询指定用户所关注的其他用户列表
+     */
+    @GetMapping("/listWatchMebmber")
+    @ApiOperation(value="查询指定用户所关注的其他用户列表")
+    public ResultDto<List<MemberDto>> listWatchMebmber(@RequestParam("limit") Integer limit, @RequestParam("currentMbId") String currentMbId){
+        ResultDto<List<MemberDto>> re = null;
+        try {
+            re =  systemService.listWatchMebmber(limit,currentMbId);
+        }catch (Exception e){
+            LOGGER.error("SystemController.listWatchMebmber",e);
+            re = ResultDto.error("-1", "SystemController.listWatchMebmber执行service出现异常");
+        }finally {
+            return re;
+        }
     }
 
 

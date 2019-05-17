@@ -10,20 +10,23 @@ package com.game.common.ts.mq.service;
 public interface MQDataReceiveService {
 
 
+
     /**
-     * 直连路由(Direct)
-     * @param msgData 消息数据
+     *  直连路由(Direct)
+     * @param msgData
+     * @return true 消息被正常处理，false未被处理
      * @throws Exception
      */
-    public void onMessageWithMQDirect(String msgData) throws Exception;
+    public boolean onMessageWithMQDirect(String msgData) throws Exception;
 
 
     /**
      * 通配符(Topic)
      * @param msgData 消息数据
+     * @return true 消息被正常处理，false未被处理
      * @throws Exception
      */
-    public void onMessageWithMQTopic(String msgData) throws Exception;
+    public boolean onMessageWithMQTopic(String msgData) throws Exception;
 
 
 }
