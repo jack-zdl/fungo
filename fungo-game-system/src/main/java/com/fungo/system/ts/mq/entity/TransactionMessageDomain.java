@@ -30,9 +30,13 @@ public class TransactionMessageDomain extends Model<TransactionMessageDomain> {
     @TableField("message_body")
     private String messageBody;
     /**
-     * 消息数据类型:
-     1 任务
-     2 商城
+     * 消息业务领域类型:
+     * 1 系统
+     * 2 用户
+     * 3 社区-文章
+     * 4 社区-心情
+     * 5 游戏
+     * 6 首页
      */
     @TableField("message_dataType")
     private Integer messageDataType;
