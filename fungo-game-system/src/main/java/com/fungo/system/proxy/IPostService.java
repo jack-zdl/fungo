@@ -12,7 +12,7 @@ public interface IPostService {
 	 * @param endDate
 	 * @return
 	 */
-	public Set<String> getArticleRecomAndTopCount(String mb_id, String startDate, String endDate);
+	Set<String> getArticleRecomAndTopCount(String mb_id, String startDate, String endDate);
 
 
 }

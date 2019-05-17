@@ -57,6 +57,22 @@ public class RabbitMQExchangeQueueBindConfig {
         return queue;
     }
 
+    @Bean("topicQueueSystem")
+    Queue topicQueueSystem() {
+        //队列持久化
+        Queue queue = new Queue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM.getName(), true, false, false);
+        LOGGER.info("RabbitMqExchangeQueueBindConfig-topicQueue-create-success");
+        return queue;
+    }
+
+    @Bean("topicQueueSystemUser")
+    Queue topicQueueSystemUser() {
+        //队列持久化
+        Queue queue = new Queue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName(), true, false, false);
+        LOGGER.info("RabbitMqExchangeQueueBindConfig-topicQueue-create-success");
+        return queue;
+    }
+
     @Bean("directQueue")
     Queue directQueue() {
         //队列持久化
@@ -64,6 +80,8 @@ public class RabbitMQExchangeQueueBindConfig {
         LOGGER.info("RabbitMqExchangeQueueBindConfig-directQueue-create-success");
         return queue;
     }
+
+
 
     @Bean("bindingDirectExchageQueue")
     Binding bindingDirectExchageQueue() {
@@ -75,6 +93,20 @@ public class RabbitMQExchangeQueueBindConfig {
     @Bean("bindingTopicExchageQueue")
     Binding bindingTopicExchageQueue() {
         Binding binding = BindingBuilder.bind(topicQueue()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
+        LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingTopicExchageQueue-create-success");
+        return binding;
+    }
+
+    @Bean("bindingTopicExchageQueueSystem")
+    Binding bindingTopicExchageQueueSystem() {
+        Binding binding = BindingBuilder.bind(topicQueueSystemUser()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM.getName());
+        LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingTopicExchageQueue-create-success");
+        return binding;
+    }
+
+    @Bean("bindingTopicExchageQueueSystemUser")
+    Binding bindingTopicExchageQueueSystemUser() {
+        Binding binding = BindingBuilder.bind(topicQueueSystemUser()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM.getName());
         LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingTopicExchageQueue-create-success");
         return binding;
     }

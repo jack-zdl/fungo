@@ -53,7 +53,7 @@ public class RabbitMQExchangeQueueBindConfig {
     @Bean("topicQueue")
     Queue topicQueue() {
         //队列持久化
-        Queue queue = new Queue(MQConfig.TOPIC_QUEUE_BASACTION_INSERTALLCOLUMN, true, false, false);
+        Queue queue = new Queue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_GAMES.getName(), true, false, false);
         LOGGER.info("RabbitMqExchangeQueueBindConfig-topicQueue-create-success 自定义创建队列");
         return queue;
     }
@@ -75,7 +75,7 @@ public class RabbitMQExchangeQueueBindConfig {
 
     @Bean("bindingTopicExchageQueue")
     Binding bindingTopicExchageQueue() {
-        Binding binding = BindingBuilder.bind(topicQueue()).to(createTopicExchange()).with(MQConfig.TOPIC_KEY_BASACTION_INSERTALLCOLUMN);
+        Binding binding = BindingBuilder.bind(topicQueue()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_GAMES.getName());
         LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingTopicExchageQueue-create-success 自定义绑定交换机和队列");
         return binding;
     }

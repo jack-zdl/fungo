@@ -82,7 +82,7 @@ public class DeveloperController {
 	}
 
 	/**
-	 * @todo 开发者上传游戏详情
+	 *
 	 * @param memberUserPrefile
 	 * @param input
 	 * @return
@@ -108,7 +108,7 @@ public class DeveloperController {
 	}
 
 	/**
-	 * @todo
+	 *
 	 * @param memberUserPrefile
 	 * @param input
 	 * @return
@@ -122,7 +122,7 @@ public class DeveloperController {
 	}
 
 	/**
-	 * @todo
+	 *
 	 * @param memberUserPrefile
 	 * @param input
 	 * @return
@@ -139,7 +139,7 @@ public class DeveloperController {
 	}
 
 	/**
-	 * @todo
+	 *
 	 * @param memberUserPrefile
 	 * @param input
 	 * @return

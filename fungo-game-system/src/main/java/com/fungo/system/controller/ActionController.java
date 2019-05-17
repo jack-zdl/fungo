@@ -1,7 +1,6 @@
 package com.fungo.system.controller;
 
-import com.fungo.system.feign.GamesFeignClient;
-import com.fungo.system.proxy.IDeveloperProxyService;
+import com.fungo.system.helper.RabbitMQProduct;
 import com.fungo.system.service.IActionService;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.MemberUserProfile;
@@ -34,6 +33,9 @@ public class ActionController {
     @Autowired
     private IActionService actionService;
 
+    @Autowired
+    private RabbitMQProduct rabbitMQProduct;
+
     /*@Autowired
     private GamesFeignClient gamesFeignClient;
 
@@ -51,9 +53,6 @@ public class ActionController {
 
         String appVersion = "";
         appVersion = request.getHeader("appversion");
-        if(1 == 1){
-            throw new Exception("点赞");
-        }
         return actionService.like(memberUserPrefile.getLoginId(), inputDto,appVersion);
     }
 

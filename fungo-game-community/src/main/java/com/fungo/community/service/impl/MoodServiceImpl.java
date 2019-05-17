@@ -7,15 +7,21 @@ import com.fungo.community.dao.service.BasVideoJobDaoService;
 import com.fungo.community.dao.service.MooMoodDaoService;
 import com.fungo.community.entity.BasVideoJob;
 import com.fungo.community.entity.MooMood;
+import com.fungo.community.feign.GameFeignClient;
+import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.service.IMoodService;
 import com.fungo.community.service.IVideoService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
+import com.game.common.dto.AuthorBean;
+import com.game.common.dto.GameDto;
 import com.game.common.dto.ObjectId;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.MoodBean;
 import com.game.common.dto.community.MoodInput;
 import com.game.common.dto.community.StreamInfo;
+import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheMood;
@@ -32,8 +38,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -62,12 +66,21 @@ public class MoodServiceImpl implements IMoodService {
 
 
     @Autowired
+    private GameFeignClient gameFeignClient;
+
+    @Autowired
+    private SystemFeignClient systemFeignClient;
+
+
+
+
+    /*
+    @Autowired
     private IUserService userService;
     @Autowired
     private IActionService iactionService;
     @Autowired
     private GameProxyImpl proxy;
-
 
     @Autowired
     private IVdService vdService;
@@ -85,6 +98,7 @@ public class MoodServiceImpl implements IMoodService {
     //用户成长业务
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
+    */
 
 
     @Override
@@ -96,15 +110,30 @@ public class MoodServiceImpl implements IMoodService {
 //        	return ResultDto.error("-1", "内容不能为空!");
 //        }
 
-        Member member = memberService.selectById(memberId);
-        if (member == null) {
+        //!fixme 获取用户数据
+        //Member member = memberService.selectById(memberId);
+
+        List<String> idsList = new ArrayList<String>();
+        idsList.add(memberId);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+
+        MemberDto memberDto = null;
+        if (null != listMembersByids) {
+            List<MemberDto> memberDtoList = listMembersByids.getData();
+            if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                memberDto = memberDtoList.get(0);
+            }
+        }
+
+
+        if (memberDto == null) {
             return ResultDto.error("-1", "用户不存在!");
         }
-        if (member.getLevel() < 2) {
+        if (memberDto.getLevel() < 2) {
             return ResultDto.error("-1", "等级达到Lv2才可发布内容");
         }
         if (!CommonUtil.isNull(input.getVideo()) || !CommonUtil.isNull(input.getVideoId())) {
-            if (member.getLevel() < 3) {
+            if (memberDto.getLevel() < 3) {
                 return ResultDto.error("-1", "等级达到Lv3才可发布视频");
             }
         }
@@ -193,6 +222,10 @@ public class MoodServiceImpl implements IMoodService {
         //!fixme  行为记录
         iactionService.addAction(memberId, 2, 14, mood.getId(), "");
 
+
+
+
+
 //		proxy.addScore(Setting.ACTION_TYPE_MOOD, memberId, mood.getId(), Setting.RES_TYPE_MOOD);
 
         //!fixme  V2.4.6版本之前的任务
@@ -207,6 +240,9 @@ public class MoodServiceImpl implements IMoodService {
         //2 经验值
         Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                 MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_MOOD_EXP.code());
+
+
+
 
         if (null != resMapCoin && !resMapCoin.isEmpty()) {
             if (null != resMapExp && !resMapExp.isEmpty()) {
@@ -281,7 +317,16 @@ public class MoodServiceImpl implements IMoodService {
         MoodBean moodBean = new MoodBean();
 
         //!fixme 获取用户数据
-        moodBean.setAuthor(this.userService.getAuthor(mood.getMemberId()));
+        //moodBean.setAuthor(this.userService.getAuthor(mood.getMemberId()));
+
+        AuthorBean authorBean = new AuthorBean();
+        ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(mood.getMemberId());
+        if (null != beanResultDto) {
+            authorBean = beanResultDto.getData();
+        }
+
+        moodBean.setAuthor(authorBean);
+
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -313,7 +358,21 @@ public class MoodServiceImpl implements IMoodService {
             moodBean.setIs_liked(false);
         } else {
             //!fixme 获取点赞数
-            int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", mood.getId()).eq("member_id", memberId));
+            //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", mood.getId()).eq("member_id", memberId));
+
+            BasActionDto basActionDto = new BasActionDto();
+
+            basActionDto.setMemberId(memberId);
+            basActionDto.setType(0);
+            basActionDto.setState(0);
+            basActionDto.setTargetId(mood.getId());
+
+            ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+            int liked = 0;
+            if (null != resultDto) {
+                liked = resultDto.getData();
+            }
 
             moodBean.setIs_liked(liked > 0 ? true : false);
         }
@@ -347,13 +406,22 @@ public class MoodServiceImpl implements IMoodService {
             for (String gameId : gameIdList) {
 
                 //!fixme 获取游戏数据
-                Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", 0));
+                //Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", 0));
 
-                if (game != null) {
+                GameDto gameDto = null;
+                ResultDto<GameDto> gameDtoResultDto = gameFeignClient.selectGameDetails(gameId, 0);
+                if (null != gameDtoResultDto) {
+                    gameDtoResultDto.getData();
+                }
+
+                if (gameDto != null) {
                     Map<String, Object> map = new HashMap<>();
-                    map.put("gameId", game.getId());
-                    map.put("gameName", game.getName());
-                    map.put("gameIcon", game.getIcon());
+                    map.put("gameId", gameDto.getId());
+                    map.put("gameName", gameDto.getName());
+                    map.put("gameIcon", gameDto.getIcon());
+
+                    //!fixme 游戏平均分
+                    /*
                     HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
                     if (rateData != null) {
                         if (rateData.get("avgRating") != null) {
@@ -365,6 +433,13 @@ public class MoodServiceImpl implements IMoodService {
                         map.put("gameRating", 0.0);
                     }
                     map.put("category", game.getTags());
+                    */
+
+                    //获取游戏平均分
+                    double gameAverage = gameFeignClient.selectGameAverage(gameDto.getId(), 0);
+                    map.put("gameRating", gameAverage);
+
+
                     gameList.add(map);
                 }
             }

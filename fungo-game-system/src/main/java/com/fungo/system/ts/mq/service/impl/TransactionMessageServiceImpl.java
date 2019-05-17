@@ -48,7 +48,7 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
 
 
     @Override
-    public void saveMessageWaitingConfirm(TransactionMessageDto transactionMessageDto) throws BusinessException {
+    public Long saveMessageWaitingConfirm(TransactionMessageDto transactionMessageDto) throws BusinessException {
 
         if (transactionMessageDto == null) {
             throw new BusinessException("-1", "保存的消息为空");
@@ -80,6 +80,8 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
         boolean isInsert = messageDomain.insert();
 
         LOGGER.info("--ts--mq---预存储消息--isInsert:{}---messageDomain:{}", isInsert, JSON.toJSON(messageDomain));
+
+        return messageDomain.getMessageId();
     }
 
 
@@ -116,7 +118,7 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
     }
 
     @Override
-    public int saveAndSendMessage(TransactionMessageDto transactionMessageDto) throws BusinessException {
+    public Long saveAndSendMessage(TransactionMessageDto transactionMessageDto) throws BusinessException {
         if (transactionMessageDto == null) {
             throw new BusinessException("-1", "保存的消息为空");
         }
@@ -125,7 +127,6 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
             throw new BusinessException("-1", "消息的消费队列不能为空 ");
         }
 
-        int isOK = -1;
 
         TransactionMessageDomain messageDomain = new TransactionMessageDomain();
 
@@ -156,17 +157,16 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
         msgSender.setContent(JSONObject.toJSONString(messageDomain));
 
         try {
+
             mQDataSendService.sendMQTopic(msgSender);
 
             LOGGER.info("--ts--mq---存储并发送消息执行完成--msgSenderDto:{}----isInsert:{}", JSON.toJSON(msgSender), isInsert);
-
-            isOK = 1;
 
         } catch (Exception e) {
             LOGGER.error("--ts--mq---存储并发送消息--发送失败", e);
         }
 
-        return isOK;
+        return messageDomain.getMessageId();
     }
 
 

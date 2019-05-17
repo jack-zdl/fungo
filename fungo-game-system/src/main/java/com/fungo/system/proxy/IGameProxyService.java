@@ -18,13 +18,13 @@ public interface IGameProxyService {
 
 
 
-    CmmPostDto selectCmmPostById(String id);
+    CmmPostDto selectCmmPostById(CmmPostDto param);
 
     CmmCommentDto selectCmmCommentById(String id);
 
-    GameEvaluationDto selectGameEvaluationById(String id);
+    GameEvaluationDto selectGameEvaluationById(GameEvaluationDto gameEvaluationDto);
 
-    GameDto selectGameById(String id);
+    GameDto selectGameById(GameDto param);
 
     MooMoodDto selectMooMoodById(String id);
 

@@ -9,6 +9,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.community.dao.service.*;
 import com.fungo.community.entity.*;
+import com.fungo.community.feign.GameFeignClient;
+import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IEvaluateService;
 import com.game.common.consts.FungoCoreApiConstant;
@@ -17,7 +19,9 @@ import com.game.common.consts.Setting;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.*;
+import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheComment;
@@ -36,7 +40,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.*;
 
 @Service
@@ -72,11 +75,22 @@ public class EvaluateServiceImpl implements IEvaluateService {
     @Autowired
     private FungoCacheComment fungoCacheComment;
 
-
-    @Autowired
-    private MemberService memberService;
     @Autowired
     private ICounterService counterService;
+
+
+    //依赖系统和用户微服务
+    @Autowired
+    private SystemFeignClient systemFeignClient;
+
+    //依赖游戏微服务
+    @Autowired
+    private GameFeignClient gameFeignClient;
+
+    /*
+    @Autowired
+    private MemberService memberService;
+
 
     @Autowired
     BasActionService actionService;
@@ -97,7 +111,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
     //用户成长业务
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
-
+    */
 
 
     @Override
@@ -145,8 +159,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
             counterService.addCounter("t_cmm_post", "comment_num", commentInput.getTarget_id());//增加评论数
 
 
-            //推送通知
+            //!fixme 推送通知
             gameProxy.addNotice(Setting.ACTION_TYPE_COMMENT, memberId, commentInput.getTarget_id(), Setting.RES_TYPE_COMMENT, commentInput.getContent(), appVersion, "");
+
         } else if (2 == commentInput.getTarget_type()) {//心情评论
 
             MooMessage comment = new MooMessage();
@@ -176,11 +191,23 @@ public class EvaluateServiceImpl implements IEvaluateService {
             }
             id = comment.getId();
             counterService.addCounter("t_moo_mood", "comment_num", commentInput.getTarget_id());//增加评论数
+
+            //!fixme 通知
             gameProxy.addNotice(Setting.MSG_TYPE_MOOD, memberId, commentInput.getTarget_id(), Setting.RES_TYPE_COMMENT, commentInput.getContent(), appVersion, "");
 
         }
 
-        t.setAuthor(userService.getAuthor(memberId));
+        //!fixme 查询用户数据
+        //t.setAuthor(userService.getAuthor(memberId));
+
+        AuthorBean author = null;
+        ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(memberId);
+        if (null != beanResultDto) {
+            author = beanResultDto.getData();
+        }
+
+        t.setAuthor(author);
+
         t.setContent(CommonUtils.filterWord(commentInput.getContent()));
         t.setFloor(floor + 1);
         t.setObjectId(id);
@@ -267,19 +294,47 @@ public class EvaluateServiceImpl implements IEvaluateService {
             if (StringUtils.isNotBlank(content)) {
                 content = FilterEmojiUtil.decodeEmoji(content);
             }
-            bean.setContent(CommonUtils.filterWord(content) );
+            bean.setContent(CommonUtils.filterWord(content));
         }
         bean.setCreatedAt(DateTools.fmtDate(comment.getCreatedAt()));
         bean.setLike_num(comment.getLikeNum());
         bean.setReply_num(comment.getReplyNum());
         bean.setState(comment.getState());
         bean.setUpdatedAt(DateTools.fmtDate(comment.getUpdatedAt()));
-        bean.setAuthor(this.userService.getAuthor(comment.getMemberId()));
+
+        //!fixme 获取用户数据
+        //bean.setAuthor(this.userService.getAuthor(comment.getMemberId()));
+
+        AuthorBean authorBean = new AuthorBean();
+        ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(comment.getMemberId());
+        if (null != beanResultDto) {
+            authorBean = beanResultDto.getData();
+        }
+        bean.setAuthor(authorBean);
+
+
         bean.setFloor(comment.getFloor());
         if ("".equals(memberId) || memberId == null) {
             bean.setIs_liked(false);
         } else {
-            int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", comment.getId()).eq("member_id", memberId));
+
+            //!fixme 获取点赞数
+            //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", comment.getId()).eq("member_id", memberId));
+
+            BasActionDto basActionDto = new BasActionDto();
+
+            basActionDto.setMemberId(memberId);
+            basActionDto.setType(0);
+            basActionDto.setState(0);
+            basActionDto.setTargetId(comment.getId());
+
+            ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+            int liked = 0;
+            if (null != resultDto) {
+                liked = resultDto.getData();
+            }
+
             bean.setIs_liked(liked > 0 ? true : false);
         }
         re.setData(bean);
@@ -319,12 +374,41 @@ public class EvaluateServiceImpl implements IEvaluateService {
         bean.setReply_num(comment.getReplyNum());
         bean.setState(comment.getState());
         bean.setUpdatedAt(DateTools.fmtDate(comment.getUpdatedAt()));
-        bean.setAuthor(this.userService.getAuthor(comment.getMemberId()));
+
+        //!fixme 获取用户数据
+        //bean.setAuthor(this.userService.getAuthor(comment.getMemberId()));
+
+        AuthorBean authorBean = new AuthorBean();
+        ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(comment.getMemberId());
+        if (null != beanResultDto) {
+            authorBean = beanResultDto.getData();
+        }
+        bean.setAuthor(authorBean);
+
         //是否点赞
         if ("".equals(memberId) || memberId == null) {
             bean.setIs_liked(false);
         } else {
-            int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", comment.getId()).eq("member_id", memberId));
+
+            //!fixme 获取点赞数
+            //行为类型
+            //点赞 | 0
+            //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", comment.getId()).eq("member_id", memberId));
+
+            BasActionDto basActionDto = new BasActionDto();
+
+            basActionDto.setMemberId(memberId);
+            basActionDto.setType(0);
+            basActionDto.setState(0);
+            basActionDto.setTargetId(comment.getId());
+
+            ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+            int liked = 0;
+            if (null != resultDto) {
+                liked = resultDto.getData();
+            }
+
             bean.setIs_liked(liked > 0 ? true : false);
         }
         re.setData(bean);
@@ -415,7 +499,15 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 }
                 ctem.setLike_num(mooMessage.getLikeNum());
 
-                AuthorBean author = userService.getAuthor(mooMessage.getMemberId());
+                //!fixme 获取用户数据
+                //AuthorBean author = userService.getAuthor(mooMessage.getMemberId());
+
+                AuthorBean author = null;
+                ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(mooMessage.getMemberId());
+                if (null != beanResultDto) {
+                    author = beanResultDto.getData();
+                }
+
                 if (null != author) {
                     ctem.setAuthor(author);
                 }
@@ -431,7 +523,15 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     }
                     ReplyBean replybean = new ReplyBean();
 
-                    AuthorBean replyAuthor = userService.getAuthor(reply.getMemberId());
+                    //!fixme 获取用户数据
+                    //AuthorBean replyAuthor = userService.getAuthor(reply.getMemberId());
+
+                    AuthorBean replyAuthor = null;
+                    ResultDto<AuthorBean> beanResultDtoReply = systemFeignClient.getAuthor(mooMessage.getMemberId());
+                    if (null != beanResultDtoReply) {
+                        replyAuthor = beanResultDtoReply.getData();
+                    }
+
                     if (null != replyAuthor) {
                         replybean.setAuthor(replyAuthor);
                     }
@@ -446,9 +546,24 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     replybean.setObjectId(reply.getId());
                     replybean.setUpdatedAt(DateTools.fmtDate(reply.getUpdatedAt()));
                     replybean.setReplyToId(reply.getReplayToId());
-                    Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
-                    if (m != null) {
-                        replybean.setReplyToName(m.getUserName());
+
+                    //!fixme 查询用户数据
+                    //Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
+
+                    List<String> idsList = new ArrayList<String>();
+                    idsList.add(reply.getReplayToId());
+                    ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+
+                    MemberDto memberDto = null;
+                    if (null != listMembersByids) {
+                        List<MemberDto> memberDtoList = listMembersByids.getData();
+                        if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                            memberDto = memberDtoList.get(0);
+                        }
+                    }
+
+                    if (memberDto != null) {
+                        replybean.setReplyToName(memberDto.getUserName());
                     }
                     ctem.getReplys().add(replybean);
                 }
@@ -456,7 +571,24 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 if ("".equals(memberId) || memberId == null) {
                     ctem.setIs_liked(false);
                 } else {
-                    int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", mooMessage.getId()).eq("member_id", memberId));
+
+                    //!fixme 获取点赞数
+                    //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", mooMessage.getId()).eq("member_id", memberId));
+
+                    BasActionDto basActionDto = new BasActionDto();
+
+                    basActionDto.setMemberId(memberId);
+                    basActionDto.setType(0);
+                    basActionDto.setState(0);
+                    basActionDto.setTargetId(mooMessage.getId());
+
+                    ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                    int liked = 0;
+                    if (null != resultDto) {
+                        liked = resultDto.getData();
+                    }
+
                     ctem.setIs_liked(liked > 0 ? true : false);
                 }
                 relist.add(ctem);
@@ -506,7 +638,17 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     ctem.setIs_host(true);
                 }
                 ctem.setLike_num(cmmComment.getLikeNum());
-                AuthorBean author = userService.getAuthor(cmmComment.getMemberId());
+
+                //!fixme 获取用户数据
+                //AuthorBean author = userService.getAuthor(cmmComment.getMemberId());
+
+                AuthorBean author = null;
+                ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(cmmComment.getMemberId());
+                if (null != beanResultDto) {
+                    author = beanResultDto.getData();
+                }
+
+
                 if (null != author) {
                     ctem.setAuthor(author);
                 }
@@ -521,7 +663,16 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     }
                     ReplyBean replybean = new ReplyBean();
 
-                    AuthorBean authorReply = userService.getAuthor(reply.getMemberId());
+                    //!fixme 获取用户数据
+                    //AuthorBean authorReply = userService.getAuthor(reply.getMemberId());
+
+                    AuthorBean authorReply = null;
+                    ResultDto<AuthorBean> beanResultDtoReply = systemFeignClient.getAuthor(reply.getMemberId());
+                    if (null != beanResultDtoReply) {
+                        authorReply = beanResultDtoReply.getData();
+                    }
+
+
                     if (null != authorReply) {
                         replybean.setAuthor(authorReply);
                     }
@@ -537,10 +688,35 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     replybean.setUpdatedAt(DateTools.fmtDate(reply.getUpdatedAt()));
                     replybean.setLike_num(reply.getLikeNum());
                     replybean.setReplyToId(reply.getReplayToId());
+
+
+                 /*
                     Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
+
+
                     if (m != null) {
                         replybean.setReplyToName(m.getUserName());
                     }
+                    */
+
+                    List<String> idsList = new ArrayList<String>();
+                    idsList.add(reply.getReplayToId());
+
+                    ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+
+                    MemberDto memberDto = null;
+                    if (null != listMembersByids) {
+                        List<MemberDto> memberDtoList = listMembersByids.getData();
+                        if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                            memberDto = memberDtoList.get(0);
+                        }
+                    }
+
+
+                    if (memberDto != null) {
+                        replybean.setReplyToName(memberDto.getUserName());
+                    }
+
                     ctem.getReplys().add(replybean);
 
                 }
@@ -548,7 +724,24 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 if ("".equals(memberId) || memberId == null) {
                     ctem.setIs_liked(false);
                 } else {
-                    int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", cmmComment.getId()).eq("member_id", memberId));
+
+                    //!fixme 查询点赞数
+                    //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", cmmComment.getId()).eq("member_id", memberId));
+
+                    BasActionDto basActionDto = new BasActionDto();
+
+                    basActionDto.setMemberId(memberId);
+                    basActionDto.setType(0);
+                    basActionDto.setState(0);
+                    basActionDto.setTargetId(cmmComment.getId());
+
+                    ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                    int liked = 0;
+                    if (null != resultDto) {
+                        liked = resultDto.getData();
+                    }
+
                     ctem.setIs_liked(liked > 0 ? true : false);
                 }
                 relist.add(ctem);
@@ -681,7 +874,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
             action.setState(0);
             action.setUpdatedAt(new Date());
             this.actionService.insertAllColumn(action);
+
         } else {//用户对该游戏发表过评论，修改
+
             //2.4
             evaluation.setRating(commentInput.getRating());
 
@@ -735,10 +930,20 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         }
 
-        //返回评论内容
-        t.setAuthor(userService.getAuthor(memberId));
+        //!fixme 返回评论内容
+        //t.setAuthor(userService.getAuthor(memberId));
+
+        AuthorBean author = new AuthorBean();
+        ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(memberId);
+        if (null != beanResultDto) {
+            author = beanResultDto.getData();
+        }
+        t.setAuthor(author);
+
         t.setContent(CommonUtils.filterWord(commentInput.getContent()));
+
         t.setObjectId(evaluation.getId());
+
         t.setCreatedAt(DateTools.fmtDate(new Date()));
         t.setReply_count(0);
         t.setRating(commentInput.getRating());
@@ -759,7 +964,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //清除该用户的评论游戏redis cache
         fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_RECENTEVA + memberId, "", null);
         //清除 我的游戏评测(2.4.3)
-        fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_EVALUATIONLIST , memberId, null);
+        fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_EVALUATIONLIST, memberId, null);
         //游戏详情
         fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + commentInput.getTarget_id(), "", null);
         // 获取最近评论的游戏
@@ -772,8 +977,10 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
     @Override
     public ResultDto<EvaluationOutBean> getEvaluationDetail(String memberId, String commentId) {
+
         ResultDto<EvaluationOutBean> re = new ResultDto<EvaluationOutBean>();
         EvaluationOutBean bean = new EvaluationOutBean();
+
         GameEvaluation evaluation = gameEvaluationService.selectById(commentId);
         if (evaluation == null) {
             return ResultDto.error("-1", "该评论详情不存在");
@@ -784,11 +991,26 @@ public class EvaluateServiceImpl implements IEvaluateService {
         }
         bean.setSort(evaluation.getSort());
 
-        bean.setAuthor(this.userService.getAuthor(evaluation.getMemberId()));
+
+        //!fixme 查询用户数据
+        //bean.setAuthor(this.userService.getAuthor(evaluation.getMemberId()));
+
+        AuthorBean replyAuthor = null;
+        ResultDto<AuthorBean> beanResultDtoReply = systemFeignClient.getAuthor(evaluation.getMemberId());
+        if (null != beanResultDtoReply) {
+            replyAuthor = beanResultDtoReply.getData();
+        }
+        bean.setAuthor(replyAuthor);
+
+
         bean.setContent(CommonUtils.filterWord(evaluation.getContent()));
+
         bean.setCreatedAt(DateTools.fmtDate(evaluation.getCreatedAt()));
+
         ObjectMapper objectMapper = new ObjectMapper();
+
         ArrayList<String> imgs = null;
+
         try {
             if (evaluation.getImages() != null) {
                 imgs = (ArrayList<String>) objectMapper.readValue(evaluation.getImages(), ArrayList.class);
@@ -809,11 +1031,30 @@ public class EvaluateServiceImpl implements IEvaluateService {
         bean.setState(evaluation.getState());
         bean.setUpdatedAt(DateTools.fmtDate(evaluation.getUpdatedAt()));
         bean.setObjectId(evaluation.getId());
+
         //是否点赞
         if ("".equals(memberId) || memberId == null) {
             bean.setIs_liked(false);
         } else {
-            int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", evaluation.getId()).eq("member_id", memberId));
+
+            //!fixme 查询点赞数
+            //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", evaluation.getId()).eq("member_id", memberId));
+
+            BasActionDto basActionDto = new BasActionDto();
+
+            basActionDto.setMemberId(memberId);
+            basActionDto.setType(0);
+            basActionDto.setState(0);
+            basActionDto.setTargetId(bean.getGameId());
+
+            ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+            int liked = 0;
+            if (null != resultDto) {
+                liked = resultDto.getData();
+            }
+
+
             bean.setIs_liked(liked > 0 ? true : false);
         }
         re.setData(bean);
@@ -834,6 +1075,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         }
         re = new FungoPageResultDto<EvaluationOutPageDto>();
         List<EvaluationOutPageDto> relist = new ArrayList<EvaluationOutPageDto>();
+
         Game game = gameService.selectById(pageDto.getGame_id());
         if (game == null) {
             return FungoPageResultDto.error("-1", "游戏不存在");
@@ -874,7 +1116,17 @@ public class EvaluateServiceImpl implements IEvaluateService {
             ctem.setPhone_model(cmmComment.getPhoneModel());
             ctem.setReply_count(cmmComment.getReplyNum());
             ctem.setUpdatedAt(DateTools.fmtDate(cmmComment.getUpdatedAt()));
-            ctem.setAuthor(this.userService.getAuthor(cmmComment.getMemberId()));
+
+            //!fixme
+            //ctem.setAuthor(this.userService.getAuthor(cmmComment.getMemberId()));
+
+            AuthorBean replyAuthor = null;
+            ResultDto<AuthorBean> beanResultDtoReply = systemFeignClient.getAuthor(cmmComment.getMemberId());
+            if (null != beanResultDtoReply) {
+                replyAuthor = beanResultDtoReply.getData();
+            }
+            ctem.setAuthor(replyAuthor);
+
             //2.4 评分
             if (cmmComment.getRating() != null) {
                 ctem.setRating(cmmComment.getRating());
@@ -888,18 +1140,52 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     ctem.setReply_more(true);
                     break;
                 }
+
                 ReplyBean replybean = new ReplyBean();
-                replybean.setAuthor(this.userService.getAuthor(reply.getMemberId()));
+
+                //replybean.setAuthor(this.userService.getAuthor(reply.getMemberId()));
+
+                AuthorBean authorBean = null;
+                ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(reply.getMemberId());
+                if (null != beanResultDto) {
+                    authorBean = beanResultDto.getData();
+                }
+                replybean.setAuthor(authorBean);
+
                 replybean.setContent(CommonUtils.filterWord(reply.getContent()));
                 replybean.setCreatedAt(DateTools.fmtDate(reply.getCreatedAt()));
                 replybean.setObjectId(reply.getId());
                 replybean.setUpdatedAt(DateTools.fmtDate(reply.getUpdatedAt()));
                 replybean.setLike_num(reply.getLikeNum());
                 replybean.setReplyToId(reply.getReplayToId());
+
+
+               /*
                 Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
+
                 if (m != null) {
                     replybean.setReplyToName(m.getUserName());
                 }
+                */
+
+                List<String> idsList = new ArrayList<String>();
+                idsList.add(reply.getReplayToId());
+
+                ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+
+                MemberDto memberDto = null;
+                if (null != listMembersByids) {
+                    List<MemberDto> memberDtoList = listMembersByids.getData();
+                    if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                        memberDto = memberDtoList.get(0);
+                    }
+                }
+
+                if (memberDto != null) {
+                    replybean.setReplyToName(memberDto.getUserName());
+                }
+
+
                 ctem.getReplys().add(replybean);
             }
 
@@ -907,7 +1193,24 @@ public class EvaluateServiceImpl implements IEvaluateService {
             if ("".equals(memberId) || memberId == null) {
                 ctem.setIs_liked(false);
             } else {
-                int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", cmmComment.getId()).eq("member_id", memberId));
+
+                //!fixme
+                //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", cmmComment.getId()).eq("member_id", memberId));
+
+                BasActionDto basActionDto = new BasActionDto();
+
+                basActionDto.setMemberId(memberId);
+                basActionDto.setType(0);
+                basActionDto.setState(0);
+                basActionDto.setTargetId(cmmComment.getId());
+
+                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                int liked = 0;
+                if (null != resultDto) {
+                    liked = resultDto.getData();
+                }
+
                 ctem.setIs_liked(liked > 0 ? true : false);
             }
             relist.add(ctem);
@@ -939,10 +1242,34 @@ public class EvaluateServiceImpl implements IEvaluateService {
         reply.setTargetId(replyInput.getTarget_id());
         reply.setUpdatedAt(new Date());
         reply.setReplyToContentId(replyInput.getReply_to_content_id());
-        Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
-        if (m != null) {
-            reply.setReplyName(m.getUserName());
+
+
+        //!fixme
+         /*
+         Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
+            if (m != null) {
+                reply.setReplyName(m.getUserName());
+            }*/
+
+        List<String> idsList = new ArrayList<String>();
+        idsList.add(reply.getReplayToId());
+
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+
+        MemberDto memberDto = null;
+        if (null != listMembersByids) {
+            List<MemberDto> memberDtoList = listMembersByids.getData();
+            if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                memberDto = memberDtoList.get(0);
+            }
         }
+
+
+        if (memberDto != null) {
+            reply.setReplyName(memberDto.getUserName());
+        }
+
+
         replyService.insert(reply);
 
         if (replyInput.getTarget_type() == 5) {//回复文章评论
@@ -957,7 +1284,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 }
             }
             try {//发送通知
-                if(CommonUtil.isNull(replyInput.getReply_to_content_id())){ //只有没有三级评论时才会发送消息
+                if (CommonUtil.isNull(replyInput.getReply_to_content_id())) { //只有没有三级评论时才会发送消息
                     this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_GAME, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_COMMENT, replyInput.getContent(), "", "");
                 }
                 if (!CommonUtil.isNull(replyInput.getReply_to_content_id())) {
@@ -969,7 +1296,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         } else if (replyInput.getTarget_type() == 6) {//回复游戏评论
             counterService.addCounter("t_game_evaluation", "reply_num", replyInput.getTarget_id());//增加评论数
             try {
-                if(CommonUtil.isNull(replyInput.getReply_to_content_id())) { //只有没有三级评论时才会发送消息
+                if (CommonUtil.isNull(replyInput.getReply_to_content_id())) { //只有没有三级评论时才会发送消息
                     this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_GAME, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_EVALUATION, replyInput.getContent(), "", "");
                 }
                 if (!CommonUtil.isNull(replyInput.getReply_to_content_id())) {
@@ -981,7 +1308,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         } else if (replyInput.getTarget_type() == 8) {//回复心情评论
             counterService.addCounter("t_moo_message", "reply_num", replyInput.getTarget_id());//增加评论数
-            if(CommonUtil.isNull(replyInput.getReply_to_content_id())) { //只有没有三级评论时才会发送消息
+            if (CommonUtil.isNull(replyInput.getReply_to_content_id())) { //只有没有三级评论时才会发送消息
                 this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_GAME, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_MESSAGE, replyInput.getContent(), appVersion, "");
             }
             if (!CommonUtil.isNull(replyInput.getReply_to_content_id())) {
@@ -1018,15 +1345,33 @@ public class EvaluateServiceImpl implements IEvaluateService {
         }
         //end
 
+        //!fixme
+        //t.setAuthor(this.userService.getAuthor(memberId));
 
-        t.setAuthor(this.userService.getAuthor(memberId));
+        AuthorBean authorBean = null;
+        ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(memberId);
+        if (null != beanResultDto) {
+            authorBean = beanResultDto.getData();
+        }
+        t.setAuthor(authorBean);
+
         t.setContent(CommonUtils.filterWord(replyInput.getContent()));
         t.setCreatedAt(DateTools.fmtDate(new Date()));
         t.setObjectId(reply.getId());
         t.setTarget_id(replyInput.getTarget_id());
         t.setTarget_type(replyInput.getTarget_type());
+
         if (replyInput.getReply_to() != null) {
-            t.setReply_to(this.userService.getAuthor(replyInput.getReply_to()));
+
+            //t.setReply_to(this.userService.getAuthor(replyInput.getReply_to()));
+
+            AuthorBean replyAuthorBean = null;
+            ResultDto<AuthorBean> replybeanResultDto = systemFeignClient.getAuthor(replyInput.getReply_to());
+            if (null != replybeanResultDto) {
+                replyAuthorBean = replybeanResultDto.getData();
+            }
+            t.setReply_to(replyAuthorBean);
+
         }
         t.setUpdatedAt(DateTools.fmtDate(new Date()));
         re.setData(t);
@@ -1069,7 +1414,16 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
             ReplyOutPageDto bean = new ReplyOutPageDto();
 
-            bean.setAuthor(this.userService.getAuthor(reply.getMemberId()));
+            //!fixme
+            //bean.setAuthor(this.userService.getAuthor(reply.getMemberId()));
+
+            AuthorBean replyAuthorBean = null;
+            ResultDto<AuthorBean> replybeanResultDto = systemFeignClient.getAuthor(reply.getMemberId());
+            if (null != replybeanResultDto) {
+                replyAuthorBean = replybeanResultDto.getData();
+            }
+            bean.setAuthor(replyAuthorBean);
+
 
             //表情解码
             String content = reply.getContent();
@@ -1081,8 +1435,18 @@ public class EvaluateServiceImpl implements IEvaluateService {
             bean.setCreatedAt(DateTools.fmtDate(reply.getCreatedAt()));
             bean.setLike_num(reply.getLikeNum());
             bean.setObjectId(reply.getId());
+
             if (reply.getReplayToId() != null) {
-                bean.setReply_to(this.userService.getAuthor(reply.getReplayToId()));
+
+                //bean.setReply_to(this.userService.getAuthor(reply.getReplayToId()));
+
+                AuthorBean replyToAuthorBean = null;
+                ResultDto<AuthorBean> replyToBeanResultDto = systemFeignClient.getAuthor(reply.getReplayToId());
+                if (null != replyToBeanResultDto) {
+                    replyToAuthorBean = replyToBeanResultDto.getData();
+                }
+                bean.setReply_to(replyToAuthorBean);
+
             } else {
 //				AuthorBean bean1 =new AuthorBean();
 //				bean.setReply_to(bean1);				
@@ -1090,7 +1454,24 @@ public class EvaluateServiceImpl implements IEvaluateService {
             if ("".equals(memberId) || memberId == null) {
                 bean.setIs_liked(false);
             } else {
-                int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", reply.getId()).eq("member_id", memberId));
+
+                //!fixme
+                //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", reply.getId()).eq("member_id", memberId));
+
+                BasActionDto basActionDto = new BasActionDto();
+
+                basActionDto.setMemberId(memberId);
+                basActionDto.setType(0);
+                basActionDto.setState(0);
+                basActionDto.setTargetId(reply.getId());
+
+                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                int liked = 0;
+                if (null != resultDto) {
+                    liked = resultDto.getData();
+                }
+
                 bean.setIs_liked(liked > 0 ? true : false);
             }
             bean.setUpdatedAt(DateTools.fmtDate(reply.getUpdatedAt()));
@@ -1162,17 +1543,51 @@ public class EvaluateServiceImpl implements IEvaluateService {
     //获取回复信息
     private ReplyBean getReplyBean(Reply reply) {
         ReplyBean replybean = new ReplyBean();
-        replybean.setAuthor(this.userService.getAuthor(reply.getMemberId()));
+
+        //!fixme
+        //replybean.setAuthor(this.userService.getAuthor(reply.getMemberId()));
+
+        AuthorBean replyToAuthorBean = null;
+        ResultDto<AuthorBean> replyToBeanResultDto = systemFeignClient.getAuthor(reply.getMemberId());
+        if (null != replyToBeanResultDto) {
+            replyToAuthorBean = replyToBeanResultDto.getData();
+        }
+        replybean.setAuthor(replyToAuthorBean);
+
         replybean.setContent(CommonUtils.filterWord(reply.getContent()));
         replybean.setCreatedAt(DateTools.fmtDate(reply.getCreatedAt()));
         replybean.setObjectId(reply.getId());
         replybean.setUpdatedAt(DateTools.fmtDate(reply.getUpdatedAt()));
         replybean.setLike_num(reply.getLikeNum());
         replybean.setReplyToId(reply.getReplayToId());
-        Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
+
+
+        //!fixme
+    /*
+         Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
+
         if (m != null) {
             replybean.setReplyToName(m.getUserName());
+        }*/
+
+        List<String> idsList = new ArrayList<String>();
+        idsList.add(reply.getReplayToId());
+
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+
+        MemberDto memberDto = null;
+        if (null != listMembersByids) {
+            List<MemberDto> memberDtoList = listMembersByids.getData();
+            if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                memberDto = memberDtoList.get(0);
+            }
         }
+
+        if (null != memberDto){
+            replybean.setReplyToName(memberDto.getUserName());
+        }
+
+
         return replybean;
     }
 

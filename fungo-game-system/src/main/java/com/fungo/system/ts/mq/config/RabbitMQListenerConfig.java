@@ -56,9 +56,11 @@ public class RabbitMQListenerConfig {
                 LOGGER.info("mqDirectMessageListener-onMessage-msgBody:{}", msgBody);
 
                 //同步 业务处理
-                mQDataReceiveService.onMessageWithMQDirect(msgBody);
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-                //channel.basicNack(message.getMessageProperties().getDeliveryTag(),false,true);
+               boolean isExcute = mQDataReceiveService.onMessageWithMQDirect(msgBody);
+               if (isExcute) {
+                   channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                   //channel.basicNack(message.getMessageProperties().getDeliveryTag(),false,true);
+               }
             }
         };
     }
@@ -66,29 +68,60 @@ public class RabbitMQListenerConfig {
 
     //--------topic------
 
-    @Bean("MQTopicQueueContainer")
-    public MessageListenerContainer mqTopicMessageListenerContainer(ConnectionFactory connectionFactory) {
+//    @Bean("MQTopicQueueContainer")
+//    public MessageListenerContainer mqTopicMessageListenerContainer(ConnectionFactory connectionFactory) {
+//        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+//        container.setConnectionFactory(connectionFactory);
+//        container.setQueueNames(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_DEFAULT.getName());
+//        container.setMessageListener(mqTopicMessageListener());
+//        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+//        return container;
+//    }
+//
+//
+//    @Bean("MQTopicQueueListener")
+//    public ChannelAwareMessageListener mqTopicMessageListener() {
+//        return new ChannelAwareMessageListener() {
+//            @Override
+//            public void onMessage(Message message, Channel channel) throws Exception {
+//
+//                String msgBody = StringUtils.toEncodedString(message.getBody(), Charset.forName("UTF-8"));
+//                LOGGER.info("MQTopicQueueListener-onMessage-msgBody:{}", msgBody);
+//
+//                //同步业务处理
+////                mQDataReceiveService.onMessageWithMQTopic(msgBody);
+//                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+//            }
+//        };
+//    }
+        /*************  **************/
+
+
+    @Bean("MqTopicMessageCountListenerContainer")
+    public MessageListenerContainer mqTopicMessageCountListenerContainer(ConnectionFactory connectionFactory) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_DEFAULT.getName());
-        container.setMessageListener(mqTopicMessageListener());
+//        container.setQueueNames(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_UPDATECOUNTER.getName());
+        container.setMessageListener(mqTopicMessageCountListener());
+        //手动确认消息
         container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         return container;
     }
 
 
-    @Bean("MQTopicQueueListener")
-    public ChannelAwareMessageListener mqTopicMessageListener() {
+    @Bean("MQTopicQueueCountListener")
+    public ChannelAwareMessageListener mqTopicMessageCountListener() {
         return new ChannelAwareMessageListener() {
             @Override
             public void onMessage(Message message, Channel channel) throws Exception {
 
                 String msgBody = StringUtils.toEncodedString(message.getBody(), Charset.forName("UTF-8"));
                 LOGGER.info("MQTopicQueueListener-onMessage-msgBody:{}", msgBody);
-
                 //同步业务处理
-                mQDataReceiveService.onMessageWithMQTopic(msgBody);
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                boolean isExcute = mQDataReceiveService.onMessageWithMQTopic(msgBody);
+                if (isExcute) {
+                    channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                }
             }
         };
     }

@@ -71,7 +71,7 @@ public class RabbitMQListenerConfig {
     public MessageListenerContainer mqTopicMessageListenerContainer(ConnectionFactory connectionFactory) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(MQConfig.TOPIC_QUEUE_BASACTION_INSERTALLCOLUMN);
+        container.setQueueNames(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_GAMES.getName());
         container.setMessageListener(mqTopicMessageListener());
         container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         return container;

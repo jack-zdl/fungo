@@ -16,6 +16,7 @@ spring:
   application:
     name: fungo-game-system
   datasource:
+
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.jdbc.Driver
     url:  jdbc:mysql://39.105.18.214:3306/fungo_system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
@@ -50,7 +51,7 @@ spring:
     sentinel:
       master: mymaster
       nodes: 39.105.18.214:26379,39.105.18.214:26380,39.105.18.214:26381
-    database: 0
+    database: 1
     lettuce:
       pool:
         max-active: 8
@@ -92,7 +93,10 @@ spring:
 
 #---------------------------------------mq----------------------------------------------
   rabbitmq:
+      #外网
       host: 1811420479436984.mq-amqp.cn-hangzhou-a.aliyuncs.com
+      #内网
+      #host: 1811420479436984.mq-amqp.cn-hangzhou-a.aliyuncs.com
       port: 5672
       username: LTAIsW4qLBG6M3Vf
       password: EBQbTTZGhPptMw3tGJ1grmG4r6uD7l

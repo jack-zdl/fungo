@@ -30,14 +30,39 @@ public class RabbitMQEnum {
     }
 }
 
-
+    /**
+     * 消息业务领域类型:
+     * 1 系统
+     * 2 用户
+     * 3 社区-文章
+     * 4 社区-心情
+     * 5 游戏
+     * 6 首页
+     */
     public enum MQQueueName {
+        //默认
+        MQ_QUEUE_TOPIC_NAME_DEFAULT(99, "msgFungoTopicQueue"),
 
-        MQ_QUEUE_TOPIC_NAME_DEFAULT(1, "msgFungoTopicQueue"),
+        //默认
+        MQ_QUEUE_DIRECT_NAME_DEFAULT(88, "msgFungoDirectQueue"),
 
-        MQ_QUEUE_DIRECT_NAME_DEFAULT(2, "msgFungoDirectQueue"),
+        //1 系统-系统队列
+        MQ_QUEUE_TOPIC_NAME_SYSTEM(1,"msgFungoTopicQueue_system"),
 
-        MQ_QUEUE_TOPIC_GAME_DEFAULT(11, "msgFungoTopicQueueGame");
+        //2 系统-用户队列
+        MQ_QUEUE_TOPIC_NAME_SYSTEM_USER(2,"msgFungoTopicQueue_system_user"),
+
+        //3 社区-文章队列
+        MQ_QUEUE_TOPIC_NAME_COMMUNITY_POST(3, "msgFungoTopicQueue_community_POST"),
+
+        //4 社区-心情队列
+        MQ_QUEUE_TOPIC_NAME_COMMUNITY_MOOD(4, "msgFungoTopicQueue_community_MOOD"),
+
+        //5 游戏
+        MQ_QUEUE_TOPIC_NAME_GAMES(4, "msgFungoTopicQueue_Games"),
+
+        //6 首页
+        MQ_QUEUE_TOPIC_NAME_PORTAL(4, "msgFungoTopicQueue_portal");
 
 
         private int code;
@@ -59,9 +84,27 @@ public class RabbitMQEnum {
 
 
     public enum QueueRouteKey {
-        QUEUE_ROUTE_KEY_DEFAULT(1, "msgFungo.#"),
 
-        QUEUE_ROUTE_KEY_GAME_DEFAULT(11, "msgFungo.game");
+        //默认
+        QUEUE_ROUTE_KEY_DEFAULT(99, "msgFungo.#"),
+
+        //1 系统-系统队列
+        QUEUE_ROUTE_KEY_TOPIC_SYSTEM(1, "msgFungoTopicSystem.#"),
+
+        //2 系统-用户队列
+        QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER(2, "msgFungoTopicSystemUser.#"),
+
+        //3 社区-文章队列
+        QUEUE_ROUTE_KEY_TOPIC_COMMUNITY_POST(3, "msgFungoTopicCommunityPost.#"),
+
+        //4 社区-心情队列
+        QUEUE_ROUTE_KEY_TOPIC_COMMUNITY_MOOD(4, "msgFungoTopicCommunityMood.#"),
+
+        //5 游戏
+        QUEUE_ROUTE_KEY_TOPIC_GAMES(5, "msgFungoTopicGames.#"),
+
+        //6 首页
+        QUEUE_ROUTE_KEY_TOPIC_PORTAL(6, "msgFungoTopicPortal.#");
 
         private int code;
         private String name;

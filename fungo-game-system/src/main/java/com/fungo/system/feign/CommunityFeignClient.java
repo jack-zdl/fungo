@@ -1,8 +1,8 @@
 package com.fungo.system.feign;
 
 import com.game.common.dto.FungoPageResultDto;
-import com.game.common.dto.community.CmmPostDto;
-import com.game.common.dto.community.MooMoodDto;
+import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,4 +52,39 @@ public interface CommunityFeignClient {
      */
     @PostMapping("/ms/service/cmm/mood/lists")
     FungoPageResultDto<MooMoodDto> queryCmmMoodList(@RequestBody MooMoodDto mooMoodDto);
+
+    /**
+     * 心情评论的 分页查询
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/mood/cmt/lists")
+    FungoPageResultDto<MooMessageDto> queryCmmMoodCommentList(@RequestBody MooMessageDto mooMessageDto);
+
+    /**
+     * 查询 社区心情总数
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/mood/count")
+    ResultDto<Integer> queryCmmMoodCount(@RequestBody MooMoodDto mooMoodDto);
+
+    /**
+     * 二级评论总数
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/cmt/s/count")
+    ResultDto<Integer> querySecondLevelCmtCount(@RequestBody CmmCmtReplyDto replyDto);
+
+    /**
+     * 分页查询 二级评论 数据
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/cmt/s/lists")
+    FungoPageResultDto<CmmCmtReplyDto> querySecondLevelCmtList(@RequestBody CmmCmtReplyDto replyDto);
+
+    /**
+     * 分页查询 社区 数据
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/cty/lists")
+    FungoPageResultDto<CmmCommunityDto> queryCmmPostList(@RequestBody CmmCommunityDto cmmCommunityDto);
 }

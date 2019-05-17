@@ -9,13 +9,17 @@ import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
+import com.fungo.community.feign.GameFeignClient;
+import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.function.SerUtils;
 import com.fungo.community.function.TemplateUtil;
 import com.fungo.community.service.IPostService;
 import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.PostInput;
 import com.game.common.dto.community.PostInputPageDto;
 import com.game.common.dto.community.PostOut;
@@ -29,6 +33,7 @@ import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.EmojiDealUtil;
 import com.game.common.util.emoji.FilterEmojiUtil;
+import com.game.common.vo.MemberFollowerVo;
 import com.sun.corba.se.spi.ior.ObjectId;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -77,8 +82,18 @@ public class PostController {
     private FungoCacheIndex fungoCacheIndex;
 
 
+    //依赖系统和用户微服务
     @Autowired
+    private SystemFeignClient systemFeignClient;
+
+    //依赖游戏微服务
+    @Autowired
+    private GameFeignClient gameFeignClient;
+
+
+   /* @Autowired
     private IGameService iGameService;
+    */
 
 
     @ApiOperation(value = "发帖", notes = "")
@@ -212,8 +227,16 @@ public class PostController {
                 ObjectMapper mapper = new ObjectMapper();
                 gameMapList = mapper.readValue(gameList, ArrayList.class);
                 for (Map<String, Object> m : gameMapList) {
-                    m.put("rating", iGameService.getGameRating((String) m.get("objectId")) + "");
+
+                    //m.put("rating", iGameService.getGameRating((String) m.get("objectId")) + "");
+
+                    //获取游戏平均分
+                    String gameId = (String) m.get("objectId");
+                    double gameAverage = gameFeignClient.selectGameAverage(gameId, 0);
+
+                    m.put("rating", String.valueOf(gameAverage));
                 }
+
                 gameList = mapper.writeValueAsString(gameMapList);
             }
             htmlContent = SerUtils.getWatermarkImageContent(CommonUtils.filterWord(origin), asList, gameList);
@@ -314,8 +337,17 @@ public class PostController {
         } else if ("1".equals(filter)) {
 
             if (memberUserPrefile != null) {
+
                 //!fixme 获取关注社区id集合
-                List<String> olist = actionDao.getFollowerCommunityId(memberUserPrefile.getLoginId());
+                //List<String> olist = actionDao.getFollowerCommunityId(memberUserPrefile.getLoginId());
+
+                // 获取关注社区ID集合
+                List<String> olist = new ArrayList<String>();
+                ResultDto<List<String>> listFollowerCommunityIdResult = systemFeignClient.listFollowerCommunityId(memberUserPrefile.getLoginId());
+                if (null != listFollowerCommunityIdResult) {
+                    olist.addAll(listFollowerCommunityIdResult.getData());
+                }
+
 
                 if (olist.size() > 0) {
 
@@ -354,7 +386,19 @@ public class PostController {
             if (memberUserPrefile != null) {
 
                 //!fixme 获取关注用户id集合
-                List<String> olist = actionDao.getFollowerUserId(memberUserPrefile.getLoginId());
+                //List<String> olist = actionDao.getFollowerUserId(memberUserPrefile.getLoginId());
+
+                //获取关注用户id集合
+                List<String> olist = new ArrayList<String>();
+
+                MemberFollowerVo memberFollowerVo = new MemberFollowerVo();
+                memberFollowerVo.setMemberId(memberUserPrefile.getLoginId());
+
+                FungoPageResultDto<String> followerUserIdResult = systemFeignClient.getFollowerUserId(memberFollowerVo);
+
+                if (null != followerUserIdResult) {
+                    olist.addAll(followerUserIdResult.getData());
+                }
 
                 if (olist.size() > 0) {
 
@@ -424,9 +468,27 @@ public class PostController {
 
             if (memberUserPrefile != null) {
                 //!fixme 获取关注用户id集合 和 社区ID集合
-                List<String> memberIdList = actionDao.getFollowerUserId(memberUserPrefile.getLoginId());
-                List<String> communityIdList = actionDao.getFollowerCommunityId(memberUserPrefile.getLoginId());
+                //List<String> memberIdList = actionDao.getFollowerUserId(memberUserPrefile.getLoginId());
+                //List<String> communityIdList = actionDao.getFollowerCommunityId(memberUserPrefile.getLoginId());
 
+                //获取关注用户id集合
+                List<String> memberIdList = new ArrayList<String>();
+
+                MemberFollowerVo memberFollowerVo = new MemberFollowerVo();
+                memberFollowerVo.setMemberId(memberUserPrefile.getLoginId());
+
+                FungoPageResultDto<String> followerUserIdResult = systemFeignClient.getFollowerUserId(memberFollowerVo);
+
+                if (null != followerUserIdResult) {
+                    memberIdList.addAll(followerUserIdResult.getData());
+                }
+
+                // 获取关注社区ID集合
+                List<String> communityIdList = new ArrayList<String>();
+                ResultDto<List<String>> listFollowerCommunityIdResult = systemFeignClient.listFollowerCommunityId(memberUserPrefile.getLoginId());
+                if (null != listFollowerCommunityIdResult) {
+                    communityIdList.addAll(listFollowerCommunityIdResult.getData());
+                }
 
                 Map<String, Object> map = new HashMap<String, Object>();
                 if (memberIdList.size() > 0) {
@@ -531,7 +593,16 @@ public class PostController {
             }
 
             //!fixme 根据用户id查询用户详情
-            bean.setAuthor(userService.getAuthor(cmmPost.getMemberId()));
+            //bean.setAuthor(userService.getAuthor(cmmPost.getMemberId()));
+
+            AuthorBean authorBean = new AuthorBean();
+            ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(cmmPost.getMemberId());
+            if (null != beanResultDto) {
+                authorBean = beanResultDto.getData();
+            }
+            bean.setAuthor(authorBean);
+
+            //systemFeignClient.list
 
             if (bean.getAuthor() == null) {
                 continue;
@@ -578,10 +649,28 @@ public class PostController {
 
             //是否点赞
             if (memberUserPrefile == null) {
+
                 bean.setLiked(false);
+
             } else {
+
                 //!fixme 获取点赞数
-                int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", cmmPost.getId()).eq("member_id", memberUserPrefile.getLoginId()));
+                //行为类型
+                //点赞 | 0
+                //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", cmmPost.getId()).eq("member_id", memberUserPrefile.getLoginId()));
+
+                BasActionDto basActionDto = new BasActionDto();
+
+                basActionDto.setMemberId(memberUserPrefile.getLoginId());
+                basActionDto.setType(0);
+                basActionDto.setState(0);
+                basActionDto.setTargetId(cmmPost.getId());
+
+                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+                int liked = 0;
+                if (null != resultDto) {
+                    liked = resultDto.getData();
+                }
                 bean.setLiked(liked > 0 ? true : false);
             }
 

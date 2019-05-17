@@ -17,7 +17,7 @@ public interface ITransactionMessageService {
     /**
      * 预存储消息
      */
-    public void saveMessageWaitingConfirm(TransactionMessageDto transactionMessageDto) throws BusinessException;
+    public Long saveMessageWaitingConfirm(TransactionMessageDto transactionMessageDto) throws BusinessException;
 
 
     /**
@@ -31,7 +31,7 @@ public interface ITransactionMessageService {
      * 1 执行完成
      * -1 执行失败
      */
-    public int saveAndSendMessage(TransactionMessageDto transactionMessageDto) throws BusinessException;
+    public Long saveAndSendMessage(TransactionMessageDto transactionMessageDto) throws BusinessException;
 
 
     /**

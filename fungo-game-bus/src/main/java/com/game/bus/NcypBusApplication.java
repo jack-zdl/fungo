@@ -6,6 +6,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import zipkin2.server.internal.EnableZipkinServer;
 
 @SpringBootApplication
+@EnableZipkinServer
 public class  NcypBusApplication {
 
 	public static void main(String[] args) {
