@@ -1,11 +1,11 @@
 package com.fungo.system.service;
 
-import com.fungo.system.dto.TaskDto;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.game.BasTagDto;
+import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
@@ -52,6 +52,8 @@ public interface SystemService {
 
     ResultDto<AuthorBean> getAuthor(String memberId);
 
+    ResultDto<AuthorBean> getUserCard(String cardId, String memberId);
+
     ResultDto<String> updateActionUpdatedAtByCondition(Map<String,Object> map);
 
     ResultDto<MemberDto> getMembersByid(String id);
@@ -63,5 +65,13 @@ public interface SystemService {
     ResultDto<List<MemberDto>> listWatchMebmber(Integer limit, String currentMbId) throws IOException, ClassNotFoundException;
 
     ResultDto<List<MemberDto>> listRecommendedMebmber(Integer limit,String currentMbId,List<String> wathMbsSet);
+
+    /**
+     * 处理用户经验变更服务
+     * @param userId 用户id
+     * @param changeScore 要变更的经验/积分
+     * @return 操作结果
+     */
+    public ResultDto<String>  processUserScoreChange(String userId,Integer changeScore);
 
 }

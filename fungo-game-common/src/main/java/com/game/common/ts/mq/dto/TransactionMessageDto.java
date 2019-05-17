@@ -29,6 +29,10 @@ public class TransactionMessageDto extends InputPageDto {
      */
     public static final int MESSAGE_DATA_TYPE_USER = 2;
 
+    /**
+     * 7 社区
+     */
+    public static final int MESSAGE_DATA_TYPE_COMMUNITY = 7;
 
     /**
      * 3 社区-文章
@@ -66,6 +70,7 @@ public class TransactionMessageDto extends InputPageDto {
      * 消息业务领域类型:
      * 1 系统
      * 2 用户
+     * 7 社区
      * 3 社区-文章
      * 4 社区-心情
      * 5 游戏

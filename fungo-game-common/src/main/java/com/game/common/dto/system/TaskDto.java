@@ -1,12 +1,24 @@
-package com.fungo.system.dto;
+package com.game.common.dto.system;
 
 public class TaskDto {
+    /**
+     * 本次任务的唯一请求标识
+     */
+    private String requestId;
     private String mbId;
-    Integer taskGroupFlag;
-    Integer taskType;
-    Integer typeCodeIdt;
+    private Integer taskGroupFlag;
+    private Integer taskType;
+    private Integer typeCodeIdt;
 
-    String targetId;
+    private String targetId;
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
 
     public String getTargetId() {
         return targetId;

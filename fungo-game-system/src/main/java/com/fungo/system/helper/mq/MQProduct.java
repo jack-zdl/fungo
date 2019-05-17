@@ -65,5 +65,12 @@ public class MQProduct {
         rabbitMQProduct.mqGames(mqResultDto);
     }
 
+    public void updateCounter(Map<String, String> map  ){
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_COUNTER.getCode());
+        mqResultDto.setBody(map);
+        rabbitMQProduct.mqGames(mqResultDto);
+    }
+
 
 }
