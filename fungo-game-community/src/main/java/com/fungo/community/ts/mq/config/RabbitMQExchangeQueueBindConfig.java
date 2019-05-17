@@ -102,7 +102,7 @@ public class RabbitMQExchangeQueueBindConfig {
     //3 社区-文章队列 绑定 msgFungo_Topic交换机
     @Bean("bindingTopicExchageQueueCommunityPOST")
     Binding bindingTopicExchageQueueCommunityPOST() {
-        Binding binding = BindingBuilder.bind(topicQueueCommunityPOST()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
+        Binding binding = BindingBuilder.bind(topicQueueCommunityPOST()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_COMMUNITY_POST.getName());
         LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingTopicExchageQueueCommunityPOST-create-success");
         return binding;
     }
@@ -110,7 +110,7 @@ public class RabbitMQExchangeQueueBindConfig {
     //4 社区-心情队列 绑定 msgFungo_Topic交换机
     @Bean("bindingTopicExchageQueueCommunityMood")
     Binding bindingTopicExchageQueueCommunityMood() {
-        Binding binding = BindingBuilder.bind(topicQueueCommunityMood()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
+        Binding binding = BindingBuilder.bind(topicQueueCommunityMood()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_COMMUNITY_MOOD.getName());
         LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingTopicExchageQueueCommunityMood-create-success");
         return binding;
     }
