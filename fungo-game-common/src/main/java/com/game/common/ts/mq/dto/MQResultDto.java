@@ -65,8 +65,6 @@ public class MQResultDto {
         CMT_ACTION_MQ_TYPE_ACTION_ADD(2, "添加用户动作行为数据");
 
 
-
-
         private int code;
         private String name;
 
@@ -84,5 +82,28 @@ public class MQResultDto {
         }
     }
 
-    //---------
+
+
+    public enum SystemMQDataType {
+        //默认
+        SYSTEM_DATA_TYPE_GAMEINSERT(1, "com.game.common.dto.GameDto"),
+        SYSTEM_DATA_TYPE_GAMEUPDATE(2, "com.game.common.dto.GameDto"),
+        SYSTEM_DATA_TYPE_GAMERELEASELOG(3, "com.game.common.dto.game.GameReleaseLogDto"),
+        SYSTEM_DATA_TYPE_counter(4, "   java.util.HashMap"),
+        SYSTEM_DATA_TYPE_COMMUNITYINSERT(5, "com.game.common.dto.community.CmmCommunityDto");
+
+
+
+
+        SystemMQDataType(int code, String name) {
+
+
+        }
+
+        //---------
+    }
+
+
 }
+}
+

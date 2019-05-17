@@ -22,18 +22,28 @@ public class RabbitMQProduct {
     private ITransactionMessageService iTransactionMessageService;
 
     /**
-     * 功能描述: 根据map的值发送更新操作
+     * 功能描述: 游戏服务操作
      * @param: [map]
      * @return: void
      * @auther: dl.zhang
      * @date: 2019/5/16 15:47
      */
-    public void updateCounter( Object o){
+    public void mqGames( Object o){
         TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
         transactionMessageDto.setMessageBody(JSON.toJSONString(o));
-        transactionMessageDto.setMessageDataType(2);
-//        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_UPDATECOUNTER.getName());
-//        transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT_UPDATECOUNTER.getName());
+        /**
+         * 功能描述:
+         * 消息业务领域类型:
+         * 1 系统
+         * 2 用户
+         * 3 社区-文章
+         * 4 社区-心情
+         * 5 游戏
+         * 6 首页
+         */
+        transactionMessageDto.setMessageDataType(5); //
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_GAMES.getName());
+        transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_GAMES.getName());
         iTransactionMessageService.saveAndSendMessage(transactionMessageDto);
     }
 }
