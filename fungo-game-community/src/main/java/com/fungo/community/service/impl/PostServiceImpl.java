@@ -446,6 +446,7 @@ public class PostServiceImpl implements IPostService {
         int score = 3;
 
         //!fixme 扣减用户经验值 MQ
+        // --------------------------------------------------start-----------------------------------------------
      /*
         IncentAccountScore scoreCount = accountScoreService.selectOne(new EntityWrapper<IncentAccountScore>().eq("mb_id", userId).eq("account_group_id", 1));
         if (scoreCount == null) {
@@ -509,6 +510,8 @@ public class PostServiceImpl implements IPostService {
 
         }
         */
+        //--------------------------------------------------end-----------------------------------------------
+
 
         //走MQ 业务数据发送给系统用户业务处理
 
