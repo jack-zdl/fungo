@@ -42,10 +42,9 @@ public class RabbitMQEnum {
         MQ_QUEUE_TOPIC_NAME_COMMUNITY_POST(3, "msgFungoTopicQueue_community_POST"),
 
         //4 社区-心情队列
-        MQ_QUEUE_TOPIC_NAME_COMMUNITY_MOOD(4, "msgFungoTopicQueue_community_MOOD");
+        MQ_QUEUE_TOPIC_NAME_COMMUNITY_MOOD(4, "msgFungoTopicQueue_community_MOOD"),
 
-        MQ_QUEUE_DIRECT_NAME_DEFAULT(2, "msgFungoDirectQueue"),
-        MQ_QUEUE_TOPIC_NAME_UPDATECOUNTER(3,"msgFungoTopicQueueUpdateCounter");
+        MQ_QUEUE_TOPIC_NAME_UPDATECOUNTER(5,"msgFungoTopicQueueUpdateCounter");
 
 
         private int code;
