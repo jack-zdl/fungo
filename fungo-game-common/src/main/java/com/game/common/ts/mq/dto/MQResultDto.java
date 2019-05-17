@@ -45,7 +45,26 @@ public class MQResultDto {
          *     "sort": 0
          * }
          */
-        CMT_POST_MQ_TYPE_DELETE_POST_SUBTRACT_EXP_LEVEL(1, "扣减用户经验值和等级");
+        CMT_POST_MQ_TYPE_DELETE_POST_SUBTRACT_EXP_LEVEL(1, "扣减用户经验值和等级"),
+
+        /**
+         * 添加用户动作行为数据
+         * {
+         *     "consumerQueue": "msgFungoTopicQueue_system_user",
+         *     "filter": "",
+         *     "limit": 10,
+         *     "messageBody": "{"body":{"createdAt":1558073385076,"filter":"","limit":10,"memberId":"01d1c44a2eda4fd3a1fe82e81abab9cf","page":1,"pageNum":1,"pageSize":10,"sort":0,"state":0,"targetId":"01d1c44a2eda4fd3a1fe82e81abab9cf","targetType":1,"type":11,"updatedAt":1558073385076},"type":2}",
+         *     "messageDataType": 3,
+         *     "page": 1,
+         *     "pageNum": 1,
+         *     "pageSize": 10,
+         *     "routingKey": "msgFungoTopicSystemUser.ACTION_ADD",
+         *     "sort": 0
+         * }
+         */
+        CMT_ACTION_MQ_TYPE_ACTION_ADD(2, "添加用户动作行为数据");
+
+
 
 
         private int code;
