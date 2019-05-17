@@ -18,8 +18,7 @@ import java.util.Date;
 public class TransactionMessageDto extends InputPageDto {
 
 
-    //消息业务领域
-
+    //消息业务领域类型常量定义
     /**
      * 1 系统
      */
