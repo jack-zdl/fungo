@@ -93,11 +93,20 @@ public class MQResultDto {
         SYSTEM_DATA_TYPE_GAMERELEASELOG(3, "com.game.common.dto.game.GameReleaseLogDto"),
         SYSTEM_DATA_TYPE_counter(4, "   java.util.HashMap"),
         SYSTEM_DATA_TYPE_COMMUNITYINSERT(5, "com.game.common.dto.community.CmmCommunityDto");
-
+        private int code;
+        private String name;
 
         SystemMQDataType(int code, String name) {
+            this.code = code;
+            this.name = name;
+        }
 
+        public int getCode() {
+            return code;
+        }
 
+        public String getName() {
+            return name;
         }
 
         //---------
