@@ -62,7 +62,25 @@ public class MQResultDto {
          *     "sort": 0
          * }
          */
-        CMT_ACTION_MQ_TYPE_ACTION_ADD(2, "添加用户动作行为数据");
+        CMT_ACTION_MQ_TYPE_ACTION_ADD(2, "添加用户动作行为数据"),
+
+        /**
+         * 社区文章用户执行任务:
+         *
+         * {
+         *     "consumerQueue": "msgFungoTopicQueue_system_user",
+         *     "filter": "",
+         *     "limit": 10,
+         *     "messageBody": "{"body":{"mbId":"01d1c44a2eda4fd3a1fe82e81abab9cf","requestId":"06f2f38999204b48a6b24429b8014455","taskGroupFlag":8485,"taskType":11,"typeCodeIdt":84870},"type":2}",
+         *     "messageDataType": 3,
+         *     "page": 1,
+         *     "pageNum": 1,
+         *     "pageSize": 10,
+         *     "routingKey": "msgFungoTopicSystemUser.cmtPostMQDoTask",
+         *     "sort": 0
+         * }
+         */
+        CMT_POST_MQ_TYPE_DO_TASK(3, "社区文章用户执行任务");
 
 
         private int code;
