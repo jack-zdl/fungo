@@ -28,17 +28,14 @@ import com.game.common.dto.*;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.*;
 import com.game.common.dto.community.StreamInfo;
+import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
-
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
 import com.game.common.ts.mq.enums.RabbitMQEnum;
-import com.game.common.util.CommonUtil;
-import com.game.common.util.CommonUtils;
-import com.game.common.util.PKUtil;
-import com.game.common.util.PageTools;
+import com.game.common.util.*;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.EmojiDealUtil;
 import com.game.common.util.emoji.FilterEmojiUtil;
@@ -99,8 +96,7 @@ public class PostServiceImpl implements IPostService {
     @Autowired
     private TSFeignClient tsFeignClient;
 
-    @Autowired
-    private  ICounterService iCounterService;
+
 
   /*
    @Autowired
@@ -363,7 +359,7 @@ public class PostServiceImpl implements IPostService {
 
         //路由key
         StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
-        routinKey.deleteCharAt(routinKey.length() - 1 );
+        routinKey.deleteCharAt(routinKey.length() - 1);
         routinKey.append("ACTION_ADD");
 
         transactionMessageDto.setRoutingKey(routinKey.toString());
@@ -380,8 +376,6 @@ public class PostServiceImpl implements IPostService {
         //-----start
 
 
-
-
 //		ResultDto<String> finishTask = logService.finishTask(user_id, "POST_ADD", "");
 
         //V2.4.6版本之前任务
@@ -391,12 +385,69 @@ public class PostServiceImpl implements IPostService {
         //V2.4.6版本任务
         String tips = "";
         //1 fungo币
-        Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(user_id, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+        /*Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(user_id, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                 MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_ARTICLE_COIN.code());
+        */
 
         //2 经验值
+        /*
         Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(user_id, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                 MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_ARTICLE_EXP.code());
+        */
+
+        //任务：
+        // 1.调用微服务接口
+        // 2.执行失败，发送MQ消息
+
+        Map<String, Object> resMapCoin = null;
+        Map<String, Object> resMapExp = null;
+
+        String uuidCoin = UUIDUtils.getUUID();
+        String uuidExp = UUIDUtils.getUUID();
+
+        //coin task
+        TaskDto taskDtoCoin = new TaskDto();
+        taskDtoCoin.setRequestId(uuidCoin);
+        taskDtoCoin.setMbId(user_id);
+        taskDtoCoin.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
+        taskDtoCoin.setTaskType(MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT);
+        taskDtoCoin.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_ARTICLE_COIN.code());
+
+
+        //exp task
+        TaskDto taskDtoExp = new TaskDto();
+        taskDtoExp.setRequestId(uuidExp);
+        taskDtoExp.setMbId(user_id);
+        taskDtoExp.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
+        taskDtoExp.setTaskType(MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT);
+        taskDtoExp.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_ARTICLE_EXP.code());
+
+        try {
+
+            //coin task
+            ResultDto<Map<String, Object>> coinTaskResultDto = systemFeignClient.exTask(taskDtoCoin);
+            if (null != coinTaskResultDto) {
+                resMapCoin = coinTaskResultDto.getData();
+            }
+
+            //exp task
+            ResultDto<Map<String, Object>> expTaskResultDto = systemFeignClient.exTask(taskDtoExp);
+            if (null != expTaskResultDto) {
+                resMapExp = expTaskResultDto.getData();
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            //出现异常mq发送
+            //coin task
+            doExcTaskSendMQ(taskDtoCoin);
+
+            //exp task
+            doExcTaskSendMQ(taskDtoExp);
+
+        }
+
 
         if (null != resMapCoin && !resMapCoin.isEmpty()) {
             if (null != resMapExp && !resMapExp.isEmpty()) {
@@ -415,7 +466,7 @@ public class PostServiceImpl implements IPostService {
         ActionInput actioninput = new ActionInput();
         actioninput.setTarget_type(4);
         actioninput.setTarget_id(postInput.getCommunity_id());
-        boolean addCounter = iActionService.addCounter(user_id, 7, actioninput);
+        boolean addCounter = iCountService.addCounter(user_id, 7, actioninput);
 
         if (flag == true && addCounter) {
 
@@ -445,6 +496,38 @@ public class PostServiceImpl implements IPostService {
 
         throw new BusinessException("-1", "操作失败");
     }
+
+    //社区文章用户执行任务
+    private void doExcTaskSendMQ(TaskDto taskDto) {
+        //-----start
+        //MQ 业务数据发送给系统用户业务处理
+        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+
+        //消息类型
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
+
+        //发送的队列
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+
+        //路由key
+        StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+        routinKey.deleteCharAt(routinKey.length() - 1);
+        routinKey.append("cmtPostMQDoTask");
+
+        transactionMessageDto.setRoutingKey(routinKey.toString());
+
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MQ_TYPE_DO_TASK.getCode());
+
+        mqResultDto.setBody(taskDto);
+
+        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+        //执行MQ发送
+        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        logger.info("--社区文章用户发布文章执行任务--MQ执行结果：messageResult", JSON.toJSONString(messageResult));
+        //-----start
+    }
+
 
     @Override
     @Transactional
@@ -571,7 +654,7 @@ public class PostServiceImpl implements IPostService {
 
         //路由key
         StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
-        routinKey.deleteCharAt(routinKey.length() - 1 );
+        routinKey.deleteCharAt(routinKey.length() - 1);
         routinKey.append("deletePostSubtractExpLevel");
 
         transactionMessageDto.setRoutingKey(routinKey.toString());

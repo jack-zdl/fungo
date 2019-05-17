@@ -25,6 +25,19 @@ public class CounterServiceImpl implements ICounterService {
 		return actionDao.updateCountor(map);
 	}
 
+
+	//表字段 增数
+	@Override
+	public boolean addCounter(String memberId, int type, ActionInput inputDto) {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("tableName", getTableName(inputDto.getTarget_type()));
+		map.put("fieldName", getFieldName(type));
+		map.put("id", inputDto.getTarget_id());
+		map.put("type", "add");
+		return actionDao.updateCountor(map);
+	}
+
+
 	@Override
 	public boolean subCounter(String tableType, String fieldType, String id) {
 		Map<String,String> map =new HashMap<String,String>();
