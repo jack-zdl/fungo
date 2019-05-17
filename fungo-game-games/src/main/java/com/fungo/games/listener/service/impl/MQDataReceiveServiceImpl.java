@@ -44,7 +44,10 @@ public class MQDataReceiveServiceImpl implements MQDataReceiveService {
             TransactionMessageDto transactionMessageDto = JSON.parseObject(msgData, TransactionMessageDto.class);
             String messageBody = transactionMessageDto.getMessageBody();
             MQResultDto mqResultDto = JSON.parseObject(messageBody, MQResultDto.class);
-//            if (mqResultDto.getType()==)
+            if (mqResultDto.getType() == MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAMEUPDATE.getCode()){
+//                游戏更新
+
+            }
             Object body = mqResultDto.getBody();
             GameDto gameDto1 = JSON.parseObject(body.toString(), GameDto.class);
             System.out.println(gameDto1.toString());
