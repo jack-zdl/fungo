@@ -512,15 +512,22 @@ public class PostServiceImpl implements IPostService {
         */
         //--------------------------------------------------end-----------------------------------------------
 
-
-        //走MQ 业务数据发送给系统用户业务处理
-
+        //-----start
+        //MQ 业务数据发送给系统用户业务处理
         TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+
         //消息类型
         transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
+
         //发送的队列
         transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_COMMUNITY_POST.getName());
 
+        //路由key
+        StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_COMMUNITY_POST.getName());
+        routinKey.deleteCharAt(routinKey.length()-1);
+        routinKey.append("deletePostSubtractExpLevel");
+
+        transactionMessageDto.setRoutingKey(routinKey.toString());
 
         MQResultDto mqResultDto = new MQResultDto();
         mqResultDto.setType(CommunityEnum.CMT_POST_MQ_TYPE_DELETE_POST_SUBTRACT_EXP_LEVEL.getCode());
@@ -535,7 +542,7 @@ public class PostServiceImpl implements IPostService {
         //执行MQ发送
         ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
         logger.info("--删除帖子执行扣减用户经验值和等级--MQ执行结果：messageResult", JSON.toJSONString(messageResult));
-
+        //-----start
 
         ActionInput actioninput = new ActionInput();
         actioninput.setTarget_type(4);
