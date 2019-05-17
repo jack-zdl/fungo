@@ -35,7 +35,10 @@ public class RabbitMQEnum {
 
         MQ_QUEUE_TOPIC_NAME_DEFAULT(1, "msgFungoTopicQueue"),
 
-        MQ_QUEUE_DIRECT_NAME_DEFAULT(2, "msgFungoDirectQueue");
+        MQ_QUEUE_DIRECT_NAME_DEFAULT(2, "msgFungoDirectQueue"),
+
+        MQ_QUEUE_TOPIC_GAME_DEFAULT(11, "msgFungoTopicQueueGame");
+
 
         private int code;
         private String name;
@@ -56,7 +59,9 @@ public class RabbitMQEnum {
 
 
     public enum QueueRouteKey {
-        QUEUE_ROUTE_KEY_DEFAULT(1, "msgFungo.#");
+        QUEUE_ROUTE_KEY_DEFAULT(1, "msgFungo.#"),
+
+        QUEUE_ROUTE_KEY_GAME_DEFAULT(11, "msgFungo.game");
 
         private int code;
         private String name;

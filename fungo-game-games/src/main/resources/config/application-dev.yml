@@ -43,20 +43,31 @@ spring:
     view:
       prefix: /
       suffix: .html
+#  rabbitmq:
+#    host: 47.104.87.10
+#    port: 5672
+#    username: admin
+#    password: admin
+#    virtual-host: /
+#    publisher-confirms: true
+#    publisher-returns: true   # 开启发送失败退回
+#    listener:
+#      direct:
+#        acknowledge-mode: manual
+#      simple:
+#        acknowledge-mode: manual
+  #---------------------------------------mq----------------------------------------------
   rabbitmq:
-    host: 47.104.87.10
+    host: 1811420479436984.mq-amqp.cn-hangzhou-a.aliyuncs.com
     port: 5672
-    username: admin
-    password: admin
-    virtual-host: /
+    username: LTAIsW4qLBG6M3Vf
+    password: EBQbTTZGhPptMw3tGJ1grmG4r6uD7l
+    virtual-host: dev
+    template:
+      mandatory: true
     publisher-confirms: true
-    publisher-returns: true   # 开启发送失败退回
-    listener:
-      direct:
-        acknowledge-mode: manual
-      simple:
-        acknowledge-mode: manual
-
+    publisher-returns: true
+  #---------------------------------------mq----------------------------------------------
   redis:
     sentinel:
       master: mymaster
