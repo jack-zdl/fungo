@@ -1,10 +1,13 @@
 package com.fungo.system.controller;
 
 import com.fungo.system.helper.RabbitMQProduct;
+import com.fungo.system.helper.mq.MQProduct;
 import com.fungo.system.service.IActionService;
 import com.game.common.dto.ActionInput;
+import com.game.common.dto.GameDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -36,6 +39,9 @@ public class ActionController {
     @Autowired
     private RabbitMQProduct rabbitMQProduct;
 
+    @Autowired
+    private MQProduct mqProduct;
+
     /*@Autowired
     private GamesFeignClient gamesFeignClient;
 
@@ -50,7 +56,10 @@ public class ActionController {
             @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
     })
     public ResultDto<String> like(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody ActionInput inputDto) throws Exception {
-
+        GameDto gameDto = new GameDto();
+        gameDto.setId("1111111");
+        gameDto.setState(1);
+        mqProduct.gameInsert(gameDto, MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAMEINSERT.getCode());
         String appVersion = "";
         appVersion = request.getHeader("appversion");
         return actionService.like(memberUserPrefile.getLoginId(), inputDto,appVersion);

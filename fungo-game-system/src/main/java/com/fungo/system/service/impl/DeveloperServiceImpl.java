@@ -21,6 +21,7 @@ import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.game.*;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.community.CmmCommunityDto;
+import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
@@ -201,7 +202,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
             game.setDeveloperId(developer.getId());
             game.setState(3);
             game.setGameSize((long)input.getSize());
-            mqProduct.gameInsert(game);
+            mqProduct.gameInsert(game, MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAMEINSERT.getCode());
             try {
                 game.setCompatibility(mapper.writeValueAsString(new ArrayList<String>()));
             } catch (JsonProcessingException e) {

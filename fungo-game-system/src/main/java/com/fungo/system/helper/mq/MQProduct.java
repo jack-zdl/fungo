@@ -42,11 +42,11 @@ public class MQProduct {
         sendTopic(MQConfig.TOPIC_EXCHANGE_COMMUNITY_INSERT,MQConfig.TOPIC_KEY_COMMUNITY_INSERT,c);
     }
 
-    public void gameInsert(GameDto game){
+    public void gameInsert(GameDto game,int type){
         MQResultDto mqResultDto = new MQResultDto();
-        mqResultDto.setType(1);
+        mqResultDto.setType(type);
         mqResultDto.setBody(game);
-        rabbitMQProduct.updateCounter(mqResultDto);
+        rabbitMQProduct.mqGames(mqResultDto);
     }
 
     public void gameUpdate(GameDto game){
