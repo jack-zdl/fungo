@@ -1,8 +1,13 @@
 package com.fungo.system.helper.mq;
 
+import com.fungo.system.helper.RabbitMQProduct;
+import com.fungo.system.ts.mq.service.ITransactionMessageService;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.game.GameReleaseLogDto;
+import com.game.common.ts.mq.dto.MQResultDto;
+import com.game.common.ts.mq.dto.TransactionMessageDto;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -18,38 +23,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class MQProduct {
 
-//    @Autowired
-//    private RabbitTemplate rabbitTemplate;
+    @Autowired
+    private ITransactionMessageService iTransactionMessageService;
 
-//    @Autowired
-//    private  AmqpTemplate template;
-
-
-//    /** DIRECT模式
-//     * @param routingKey 路由关键字
-//     * @param msg 消息体
-//     */
-//    public void sendDirectMsg(String routingKey, String msg) {
-//        template.convertAndSend(MQConfig.DIRECT_QUEUE, msg);
-//    }
-//
-//    /**
-//     * sendFanout
-//     * @param message
-//     */
-//    public void sendFanout(Object message){
-//        String msg = (String) message;
-//        template.convertAndSend(MQConfig.FANOUT_EXCHANGE,"",msg);
-//    }
-//
-//    /**
-//     * @param routingKey 路由关键字
-//     * @param msg 消息体
-//     * @param exchange 交换机   TOPIC模式
-//     */
-//    public void sendExchangeMsg(String exchange, String routingKey, String msg) {
-//        template.convertAndSend(exchange, routingKey, msg);
-//    }
+    @Autowired
+    private RabbitMQProduct rabbitMQProduct;
 
     /**
      * use Topic Pattern
@@ -57,29 +35,18 @@ public class MQProduct {
      * @param message
      */
     public void sendTopic(String topicExchange,String topicKey,Object message){
-//        rabbitTemplate.setConfirmCallback((message,))
-//        template.convertAndSend(topicExchange,topicKey,message);  // 可以匹配到 topic.# and topic.key1
-//        template.convertAndSend(MQConfig.TOPIC_EXCHANGE,"topic.key2",msg+"2");  // 可以匹配到 topic.#
     }
 
-//    /**
-//     * @param map 消息headers属性
-//     * @param exchange 交换机    header模式
-//     * @param msg 消息体
-//     */
-//    public void sendHeadersMsg(String exchange, String msg, Map<String, Object> map) {
-//        template.convertAndSend(exchange, null, msg, message -> {
-//            message.getMessageProperties().getHeaders().putAll(map);
-//            return message;
-//        });
-//    }
 
     public void communityInsert(CmmCommunityDto c){
         sendTopic(MQConfig.TOPIC_EXCHANGE_COMMUNITY_INSERT,MQConfig.TOPIC_KEY_COMMUNITY_INSERT,c);
     }
 
     public void gameInsert(GameDto game){
-        sendTopic(MQConfig.TOPIC_EXCHANGE_GAME_INSERT,MQConfig.TOPIC_KEY_GAME_INSERT,game);
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(1);
+        mqResultDto.setBody(game);
+        rabbitMQProduct.updateCounter(mqResultDto);
     }
 
     public void gameUpdate(GameDto game){

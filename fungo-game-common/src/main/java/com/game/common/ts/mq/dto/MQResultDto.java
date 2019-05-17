@@ -8,15 +8,15 @@ package com.game.common.ts.mq.dto;
  */
 public class MQResultDto {
 
-    private String type;
+    private int type;
 
     private Object body;
 
-    public String getType() {
+    public int getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(int type) {
         this.type = type;
     }
 
