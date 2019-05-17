@@ -25,12 +25,13 @@ import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
 import com.game.common.dto.*;
+import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.*;
 import com.game.common.dto.community.StreamInfo;
 import com.game.common.dto.user.MemberDto;
-import com.game.common.enums.CommunityEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
+
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
 import com.game.common.ts.mq.enums.RabbitMQEnum;
@@ -98,6 +99,8 @@ public class PostServiceImpl implements IPostService {
     @Autowired
     private TSFeignClient tsFeignClient;
 
+    @Autowired
+    private  ICounterService iCounterService;
 
   /*
    @Autowired
@@ -325,6 +328,8 @@ public class PostServiceImpl implements IPostService {
 //		}
 
 
+      /*
+       //历史代码
         BasAction action = new BasAction();
         action.setCreatedAt(new Date());
         action.setUpdatedAt(new Date());
@@ -334,6 +339,48 @@ public class PostServiceImpl implements IPostService {
         action.setTargetId(post.getId());
         action.setState(0);
         action.insert();
+        */
+
+        //-----start
+        //MQ 业务数据发送给系统用户业务处理
+        BasActionDto basActionDtoAdd = new BasActionDto();
+        basActionDtoAdd.setCreatedAt(new Date());
+        basActionDtoAdd.setUpdatedAt(new Date());
+        basActionDtoAdd.setMemberId(user_id);
+        basActionDtoAdd.setType(11);
+        basActionDtoAdd.setTargetType(1);
+        basActionDtoAdd.setTargetId(post.getId());
+        basActionDtoAdd.setState(0);
+
+
+        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+
+        //消息类型
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
+
+        //发送的队列
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+
+        //路由key
+        StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+        routinKey.deleteCharAt(routinKey.length() - 1 );
+        routinKey.append("ACTION_ADD");
+
+        transactionMessageDto.setRoutingKey(routinKey.toString());
+
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.CommunityEnum.CMT_ACTION_MQ_TYPE_ACTION_ADD.getCode());
+
+        mqResultDto.setBody(basActionDtoAdd);
+
+        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+        //执行MQ发送
+        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        logger.info("--添加帖子-执行添加用户动作行为数据--MQ执行结果：messageResult", JSON.toJSONString(messageResult));
+        //-----start
+
+
+
 
 //		ResultDto<String> finishTask = logService.finishTask(user_id, "POST_ADD", "");
 
@@ -446,6 +493,7 @@ public class PostServiceImpl implements IPostService {
         int score = 3;
 
         //!fixme 扣减用户经验值 MQ
+        // --------------------------------------------------start-----------------------------------------------
      /*
         IncentAccountScore scoreCount = accountScoreService.selectOne(new EntityWrapper<IncentAccountScore>().eq("mb_id", userId).eq("account_group_id", 1));
         if (scoreCount == null) {
@@ -509,18 +557,27 @@ public class PostServiceImpl implements IPostService {
 
         }
         */
+        //--------------------------------------------------end-----------------------------------------------
 
-        //走MQ 业务数据发送给系统用户业务处理
-
+        //-----start
+        //MQ 业务数据发送给系统用户业务处理
         TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+
         //消息类型
         transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
-        //发送的队列
-        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_COMMUNITY_POST.getName());
 
+        //发送的队列
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+
+        //路由key
+        StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+        routinKey.deleteCharAt(routinKey.length() - 1 );
+        routinKey.append("deletePostSubtractExpLevel");
+
+        transactionMessageDto.setRoutingKey(routinKey.toString());
 
         MQResultDto mqResultDto = new MQResultDto();
-        mqResultDto.setType(CommunityEnum.CMT_POST_MQ_TYPE_DELETE_POST_SUBTRACT_EXP_LEVEL.getCode());
+        mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MQ_TYPE_DELETE_POST_SUBTRACT_EXP_LEVEL.getCode());
 
         HashMap<String, Object> hashMap = new HashMap<String, Object>();
         hashMap.put("mb_id", userId);
@@ -532,12 +589,12 @@ public class PostServiceImpl implements IPostService {
         //执行MQ发送
         ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
         logger.info("--删除帖子执行扣减用户经验值和等级--MQ执行结果：messageResult", JSON.toJSONString(messageResult));
-
+        //-----start
 
         ActionInput actioninput = new ActionInput();
         actioninput.setTarget_type(4);
         actioninput.setTarget_id(cmmPost.getCommunityId());
-        boolean b = iActionService.subCounter(userId, 7, actioninput);
+        boolean b = iCounterService.subCounter(userId, 7, actioninput);
 
         //clear redis cache
         //文章内容html-内容
