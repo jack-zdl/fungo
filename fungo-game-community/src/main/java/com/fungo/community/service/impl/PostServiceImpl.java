@@ -28,9 +28,12 @@ import com.game.common.dto.*;
 import com.game.common.dto.community.*;
 import com.game.common.dto.community.StreamInfo;
 import com.game.common.dto.user.MemberDto;
+import com.game.common.enums.CommunityEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
+import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
+import com.game.common.ts.mq.enums.RabbitMQEnum;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PKUtil;
@@ -510,9 +513,25 @@ public class PostServiceImpl implements IPostService {
         //走MQ 业务数据发送给系统用户业务处理
 
         TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+        //消息类型
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
+        //发送的队列
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_COMMUNITY_POST.getName());
 
-        transactionMessageDto.setMessageDataType();
-        tsFeignClient.saveAndSendMessage(transactionMessageDto);
+
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(CommunityEnum.CMT_POST_MQ_TYPE_DELETE_POST_SUBTRACT_EXP_LEVEL.getCode());
+
+        HashMap<String, Object> hashMap = new HashMap<String, Object>();
+        hashMap.put("mb_id", userId);
+        hashMap.put("score", score);
+
+        mqResultDto.setBody(hashMap);
+
+        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+        //执行MQ发送
+        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        logger.info("--删除帖子执行扣减用户经验值和等级--MQ执行结果：messageResult", JSON.toJSONString(messageResult));
 
 
         ActionInput actioninput = new ActionInput();
