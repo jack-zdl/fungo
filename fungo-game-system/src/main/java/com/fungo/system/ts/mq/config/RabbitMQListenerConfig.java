@@ -101,7 +101,7 @@ public class RabbitMQListenerConfig {
     public MessageListenerContainer mqTopicMessageCountListenerContainer(ConnectionFactory connectionFactory) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_UPDATECOUNTER.getName());
+//        container.setQueueNames(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_UPDATECOUNTER.getName());
         container.setMessageListener(mqTopicMessageCountListener());
         //手动确认消息
         container.setAcknowledgeMode(AcknowledgeMode.MANUAL);

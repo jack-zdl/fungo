@@ -28,12 +28,12 @@ public class RabbitMQProduct {
      * @auther: dl.zhang
      * @date: 2019/5/16 15:47
      */
-    public void updateCounter( Map<String, String> map){
+    public void updateCounter( Object o){
         TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
-        transactionMessageDto.setMessageBody(JSON.toJSONString(map));
+        transactionMessageDto.setMessageBody(JSON.toJSONString(o));
         transactionMessageDto.setMessageDataType(2);
-        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_UPDATECOUNTER.getName());
-        transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT_UPDATECOUNTER.getName());
+//        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_UPDATECOUNTER.getName());
+//        transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT_UPDATECOUNTER.getName());
         iTransactionMessageService.saveAndSendMessage(transactionMessageDto);
     }
 }
