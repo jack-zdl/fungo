@@ -14,6 +14,8 @@ import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.entity.BasVideoJob;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
+import com.fungo.community.feign.GameFeignClient;
+import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.function.FungoLivelyCalculateUtils;
 import com.fungo.community.function.SerUtils;
 import com.fungo.community.service.ICounterService;
@@ -22,11 +24,9 @@ import com.fungo.community.service.IVideoService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
-import com.game.common.dto.ActionInput;
-import com.game.common.dto.FungoPageResultDto;
-import com.game.common.dto.ObjectId;
-import com.game.common.dto.ResultDto;
+import com.game.common.dto.*;
 import com.game.common.dto.community.*;
+import com.game.common.dto.community.StreamInfo;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.util.CommonUtil;
@@ -46,7 +46,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
@@ -82,6 +81,16 @@ public class PostServiceImpl implements IPostService {
 
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
+
+
+
+    //依赖系统和用户微服务
+    @Autowired
+    private SystemFeignClient systemFeignClient;
+
+    //依赖游戏微服务
+    @Autowired
+    private GameFeignClient gameFeignClient;
 
 
   /*
@@ -858,6 +867,9 @@ public class PostServiceImpl implements IPostService {
             //游戏社区的评分 标签
             if (community.getType() == 0) {
                 communityMap.put("gameId", community.getGameId());
+
+                //!fixme 游戏平均分
+              /*
                 HashMap<String, BigDecimal> rateData = gameDao.getRateData(community.getGameId());
                 if (rateData != null) {
                     if (rateData.get("avgRating") != null) {
@@ -868,6 +880,13 @@ public class PostServiceImpl implements IPostService {
                 } else {
                     communityMap.put("gameRating", 0.0);
                 }
+                */
+
+                //获取游戏平均分
+                double gameAverage = gameFeignClient.selectGameAverage(gameDto.getId(), 0);
+                communityMap.put("gameRating", gameAverage);
+
+
             }
             if (!CommonUtil.isNull(community.getGameId())) {
                 Game game = gameService.selectOne(Condition.create().setSqlSelect("id,tags").eq("id", community.getGameId()).eq("state", 0));
@@ -903,7 +922,11 @@ public class PostServiceImpl implements IPostService {
 
         out.setLink_community(communityMap);
 
+        //!fixme 获取用户数据
         out.setAuthor(IUserService.getUserCard(cmmPost.getMemberId(), userId));
+
+
+
 
         out.setType(cmmPost.getType());
 
