@@ -33,6 +33,7 @@ public class TransactionMessageDomain extends Model<TransactionMessageDomain> {
      * 消息业务领域类型:
      * 1 系统
      * 2 用户
+     * 7-社区
      * 3 社区-文章
      * 4 社区-心情
      * 5 游戏
