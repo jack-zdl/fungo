@@ -4,6 +4,7 @@ package com.fungo.community.feign;
 import com.game.common.bean.MemberPulishFromCommunity;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.game.GameEvaluationDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -68,6 +69,18 @@ public interface GameFeignClient {
     @RequestMapping(value = "/api/game/getMemberOrder", method = RequestMethod.POST)
     public ResultDto<List<MemberPulishFromCommunity>> getMemberOrder(String gameId, Integer state);
 
+
+
+    @ApiOperation(value = "gameEvaluationService.selectOne", notes = "")
+    @RequestMapping(value = "/api/game/getGameEvaluationSelectOne", method = RequestMethod.POST)
+    ResultDto<GameEvaluationDto> getGameEvaluationSelectOne(@RequestParam("memberId") String memberId, @RequestParam("targetId") String targetId);
+
+
+
+
+    @ApiOperation(value = "gameEvaluationService.selectById", notes = "")
+    @RequestMapping(value = "/api/game/getGameEvaluationSelectById", method = RequestMethod.POST)
+    ResultDto<GameEvaluationDto> getGameEvaluationSelectById(@RequestParam("commentId") String commentId);
 
     //----------
 }
