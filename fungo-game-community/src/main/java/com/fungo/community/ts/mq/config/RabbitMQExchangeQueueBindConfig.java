@@ -31,6 +31,7 @@ public class RabbitMQExchangeQueueBindConfig {
     @Bean
     TopicExchange createTopicExchange() {
         //配置持久化
+
         Map<String, Object> arguments = new HashMap<>(4);
         TopicExchange contractTopicExchange = new TopicExchange(RabbitMQEnum.Exchange.EXCHANGE_TOPIC.getName(), true, false, arguments);
         LOGGER.info("RabbitMqExchangeQueueBindConfig-createTopicExchange-create-success");

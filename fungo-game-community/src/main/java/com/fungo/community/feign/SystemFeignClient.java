@@ -29,7 +29,7 @@ import java.util.Map;
  * @author mxf
  * @since 2018-11-08
  */
-@FeignClient(name = "fungo-game-system")
+@FeignClient(name = "FUNGO-GAME-SYSTEM")
 @RequestMapping("/ms/service/system")
 public interface SystemFeignClient {
 

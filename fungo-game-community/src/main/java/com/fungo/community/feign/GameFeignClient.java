@@ -24,7 +24,7 @@ import java.util.List;
  * @author mxf
  * @since 2018-11-08
  */
-@FeignClient(name = "FUNGO-GAME-COMMUNITY")
+@FeignClient(name = "FUNGO-GAME-GAMES")
 @RequestMapping("/ms/service/game")
 public interface GameFeignClient {
 
