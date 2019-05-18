@@ -1,5 +1,6 @@
 package com.fungo.system.service;
 
+import com.game.common.bean.TagBean;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
@@ -91,4 +92,6 @@ public interface SystemService {
     ResultDto<List<BasTagGroupDto>> listBasTagGroupByCondition(BasTagGroupDto basTagGroupDto);
 
     ResultDto<Integer> countSerchUserName(String keyword);
+
+    ResultDto<List<TagBean>> listSortTags(List<String> gameId);
 }

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.entity.*;
 import com.fungo.system.service.*;
+import com.game.common.bean.TagBean;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
@@ -30,16 +31,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -105,6 +102,7 @@ public class SystemServiceImpl implements SystemService {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
+
     /**
      * 功能描述: 根据用户id查询被关注人的id集合
      *
@@ -552,11 +550,13 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public ResultDto<Map<String, Object>> exTask(TaskDto taskDto) {
-        if(StringUtil.isNull(taskDto.getRequestId())){
+        if (StringUtil.isNull(taskDto.getRequestId())) {
             return ResultDto.error("-1", "任务唯一请求码缺失");
         }
         //校验任务是否已经执行
-
+     /*   if(UniqueIdCkeckUtil.checkUniqueIdAndSave(UniqueIdCkeckUtil.REDIS_SET_TASK_REQUEST_ID,taskDto.getRequestId())){
+            return ResultDto.success();
+        }*/
         ResultDto<Map<String, Object>> re = null;
         Map<String, Object> map = null;
         try {
@@ -651,19 +651,19 @@ public class SystemServiceImpl implements SystemService {
         return ResultDto.success(tagDtoList);
     }
 
- @Override
+    @Override
     public ResultDto<List<BasTagGroupDto>> listBasTagGroupByCondition(BasTagGroupDto basTagGroupDto) {
-     BasTag basTag = new BasTag();
-     List<BasTagGroupDto> basTagDtoList ;
-     try {
-         BeanUtils.copyProperties(basTag,basTagGroupDto);
-         //获得全部分类以及标签，在选中的打勾
-         List<BasTagGroup> basTagGroupList = basTagGroupService.selectList(new EntityWrapper<BasTagGroup>());
-         basTagDtoList = CommonUtils.deepCopy(basTagGroupList, BasTagGroupDto.class);
-     } catch (Exception e) {
-         LOGGER.error("SystemService.listBasTagGroupByCondition error", e);
-         return ResultDto.error("-1", "SystemService.listBasTagGroupByCondition error");
-     }
+        BasTag basTag = new BasTag();
+        List<BasTagGroupDto> basTagDtoList;
+        try {
+            BeanUtils.copyProperties(basTag, basTagGroupDto);
+            //获得全部分类以及标签，在选中的打勾
+            List<BasTagGroup> basTagGroupList = basTagGroupService.selectList(new EntityWrapper<BasTagGroup>());
+            basTagDtoList = CommonUtils.deepCopy(basTagGroupList, BasTagGroupDto.class);
+        } catch (Exception e) {
+            LOGGER.error("SystemService.listBasTagGroupByCondition error", e);
+            return ResultDto.error("-1", "SystemService.listBasTagGroupByCondition error");
+        }
         return ResultDto.success(basTagDtoList);
     }
 
@@ -674,18 +674,29 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
+    public ResultDto<List<TagBean>> listSortTags(List<String> tags) {
+        List<BasTag> tagList = bagTagService.selectList(new EntityWrapper<BasTag>().in("id", tags));
+        ArrayList<TagBean> list = new ArrayList<>();
+        for (BasTag basTag : tagList) {
+            TagBean tagBean = new TagBean();
+            tagBean.setName(basTag.getName());
+            list.add(tagBean);
+        }
+        return ResultDto.success(list);
+    }
+
+    @Override
     public ResultDto<BasTagDto> getBasTagById(String id) {
         BasTag tag = bagTagService.selectById(id);
         BasTagDto tagDto = new BasTagDto();
         try {
-            BeanUtils.copyProperties(tagDto,tag);
+            BeanUtils.copyProperties(tagDto, tag);
         } catch (Exception e) {
             LOGGER.error("SystemService.getBasTagById error", e);
             return ResultDto.error("-1", "SystemService.getBasTagById error");
         }
         return ResultDto.success(tagDto);
     }
-
 
 
     @Override
