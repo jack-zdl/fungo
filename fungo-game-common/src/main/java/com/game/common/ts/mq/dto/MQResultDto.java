@@ -101,9 +101,19 @@ public class MQResultDto {
          *     "sort": 0
          * }
          */
-        CMT_POST_MOOD_MQ_TYPE_ADD_NOTICE(4,"社区文章|心情用户消息通知")
+        CMT_POST_MOOD_MQ_TYPE_ADD_NOTICE(4,"社区文章|心情用户消息通知"),
 
 
+        /**
+         * 社区 添加 游戏评论消息通知
+         */
+        CMT_POST_MOOD_MQ_TYPE_GAME_EVALUATION_ADD(5,"社区 添加游戏评论消息通知"),
+
+
+        /**
+         * 社区  修改 游戏评论消息通知
+         */
+        CMT_POST_MOOD_MQ_TYPE_GAME_EVALUATION_UPDATE(6,"社区 修改游戏评论消息通知")
 
 
         ;
