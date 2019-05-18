@@ -5,7 +5,7 @@ import com.game.common.bean.MemberPulishFromCommunity;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
-import com.game.common.dto.evaluation.EvaluationInputPageDto;
+import com.game.common.dto.community.EvaluationInputPageDto;
 import com.game.common.dto.game.GameEvaluationDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -112,6 +112,8 @@ public interface GameFeignClient {
     @RequestMapping(value = "/api/game/getEvaluationEntityWrapperByPageDtoAndMemberId", method = RequestMethod.POST)
     FungoPageResultDto<GameEvaluationDto> getEvaluationEntityWrapperByPageDtoAndMemberId(@RequestBody EvaluationInputPageDto pageDto, @RequestParam("memberId") String memberId);
 
-com.game.common.dto.community.EvaluationInputPageDto
+
+
+
     //----------
 }
