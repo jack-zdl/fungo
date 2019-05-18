@@ -1467,6 +1467,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
             return FungoPageResultDto.error("-1", "游戏不存在");
         }
 
+        /*
         Wrapper<GameEvaluation> commentWrapper = new EntityWrapper<GameEvaluation>();
         commentWrapper.eq("game_id", pageDto.getGame_id());
         commentWrapper.and("state !={0}", -1);
@@ -1487,9 +1488,17 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         Page<GameEvaluation> page = this.gameEvaluationService.selectPage(new Page<>(pageDto.getPage(), pageDto.getLimit()), commentWrapper);
         List<GameEvaluation> list = page.getRecords();
+        */
+        //总记录数
+        int total = 0;
+        List<GameEvaluationDto> list = new ArrayList<>();
+        FungoPageResultDto<GameEvaluationDto> evaluationListRs = gameFeignClient.getEvaluationEntityWrapperByPageDtoAndMemberId(pageDto, memberId);
+        if (null != evaluationListRs) {
+            list = evaluationListRs.getData();
+            total = evaluationListRs.getCount();
+        }
 
-
-        for (GameEvaluation cmmComment : list) {
+        for (GameEvaluationDto cmmComment : list) {
             EvaluationOutPageDto ctem = new EvaluationOutPageDto();
             ctem.setContent(CommonUtils.filterWord(cmmComment.getContent()));
             ctem.setCreatedAt(DateTools.fmtDate(cmmComment.getCreatedAt()));
@@ -1561,7 +1570,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 List<String> idsList = new ArrayList<String>();
                 idsList.add(reply.getReplayToId());
 
-                ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+                ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList,null);
 
                 MemberDto memberDto = null;
                 if (null != listMembersByids) {
@@ -1605,7 +1614,10 @@ public class EvaluateServiceImpl implements IEvaluateService {
             }
             relist.add(ctem);
         }
-        PageTools.pageToResultDto(re, page);
+
+        //设置分页参数
+        PageTools.pageToResultDto(re, total, pageDto.getLimit(), pageDto.getPage());
+
         re.setData(relist);
 
         //redis cache
