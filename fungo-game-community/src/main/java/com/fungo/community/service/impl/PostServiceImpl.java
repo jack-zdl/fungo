@@ -791,13 +791,15 @@ public class PostServiceImpl implements IPostService {
         } else {
             post.setVideo("");
         }
-        if (title != null)
+        if (title != null) {
             post.setTitle(postInput.getTitle());
-        if (content != null)
+        }
+        if (content != null) {
             post.setContent(txtcontent);
-        if (html != null)
+        }
+        if (html != null) {
             post.setHtmlOrigin(SerUtils.saveOrigin(postInput.getHtml()));
-
+        }
         if (!CommonUtil.isNull(video)) {
             post.setVideo(video);
         } else {
