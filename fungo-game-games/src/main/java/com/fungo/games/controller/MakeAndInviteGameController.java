@@ -22,6 +22,7 @@ import com.game.common.dto.mark.MakeCheckOut;
 import com.game.common.dto.mark.MakeInput;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.util.CommonUtil;
+import com.game.common.util.UUIDUtils;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.date.DateTools;
 import io.swagger.annotations.Api;
@@ -218,20 +219,11 @@ public class MakeAndInviteGameController {
                 basNoticeDto.setMemberId(inputPageDto.getMemberId());
                 basNoticeDto.setType(6);
                 basNoticeDto.setUpdatedAt(new Date());
-                GameInviteDto gameInviteDto = new GameInviteDto();
-                gameInviteDto.setCreatedAt(new Date());
-                gameInviteDto.setGameId(inputPageDto.getGameId());
-                gameInviteDto.setInviteMemberId(inputPageDto.getMemberId());
-                gameInviteDto.setMemberId(memberUserPrefile.getLoginId());
-                gameInviteDto.setState(0);
-                gameInviteDto.setUpdatedAt(new Date());
-                mqProduct.basNoticeInsertAndGameInviteReturnId(basNoticeDto,gameInviteDto,appVersion);
+                noticeId = UUIDUtils.getUUID();
+                basNoticeDto.setId(noticeId);
+                mqProduct.basNoticeInsertAndGameInviteReturnId(basNoticeDto);
             }
-
-//            迁移 微服务 MQ执行
-//            2019-05-13
-//            lyc
-            /*gameInvite.setCreatedAt(new Date());
+            gameInvite.setCreatedAt(new Date());
             gameInvite.setGameId(inputPageDto.getGameId());
             gameInvite.setInviteMemberId(inputPageDto.getMemberId());
             gameInvite.setMemberId(memberUserPrefile.getLoginId());
@@ -240,10 +232,10 @@ public class MakeAndInviteGameController {
             gameInvite.setNoticeId(noticeId);
             gameInvite.insert();
             try {
-                pushService.push(inputPageDto.getMemberId(), 3, appVersion);
+                mqProduct.push(inputPageDto.getMemberId(), 3, appVersion);
             } catch (Exception e) {
                 e.printStackTrace();
-            }*/
+            }
 
         }
 
