@@ -51,7 +51,14 @@ public interface GamesFeignClient {
     @RequestMapping(value = "/ms/service/game/api/selectCount", method = RequestMethod.POST)
     int gameSurveySelectCount(  GameSurveyRelDto gameSurveyRel);
 
-    @RequestMapping(value = "/ms/service/game/api/gameEvaluation", method = RequestMethod.POST)
+    /**
+     * 功能描述:
+     * @param: [gameEvaluation]
+     * @return: int
+     * @auther: dl.zhang
+     * @date: 2019/5/17 15:16
+     */
+    @RequestMapping(value = "/ms/service/game/api/gameEvaluation/selectCount", method = RequestMethod.POST)
     int gameEvaluationSelectCount(  GameEvaluationDto gameEvaluation);
 
     /**

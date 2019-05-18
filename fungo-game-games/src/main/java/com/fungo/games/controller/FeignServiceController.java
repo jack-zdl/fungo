@@ -3,6 +3,7 @@ package com.fungo.games.controller;
 
 
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
+import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.dao.GameEvaluationDao;
@@ -31,10 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * feignService 调用中心
@@ -728,6 +726,64 @@ public class FeignServiceController {
         return ResultDto.success(list);
     }
 
+/*******************************************2019-05-18**************************************************************/
+    @ApiOperation(value = "gameEvaluationService.selectOne", notes = "")
+    @RequestMapping(value = "/api/game/getGameEvaluationSelectOne", method = RequestMethod.POST)
+    ResultDto<GameEvaluationDto> getGameEvaluationSelectOne(@RequestParam("memberId") String memberId,@RequestParam("targetId") String targetId){
+        GameEvaluation gameEvaluation = gameEvaluationServiceImap.selectOne(new EntityWrapper<GameEvaluation>().eq("member_id", memberId).eq("game_id", targetId).eq("state", 0));
+        GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
+        BeanUtils.copyProperties(gameEvaluation,gameEvaluationDto);
+        return ResultDto.success(gameEvaluationDto);
+    }
+
+    @ApiOperation(value = "gameEvaluationService.selectById", notes = "")
+    @RequestMapping(value = "/api/game/getGameEvaluationSelectById", method = RequestMethod.POST)
+    ResultDto<GameEvaluationDto> getGameEvaluationSelectById(@RequestParam("commentId") String commentId){
+        GameEvaluation gameEvaluation = gameEvaluationServiceImap.selectById(commentId);
+        GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
+        BeanUtils.copyProperties(gameEvaluation,gameEvaluationDto);
+        return ResultDto.success(gameEvaluationDto);
+    }
+
+    @ApiOperation(value = "getPreGameEvaluation上一评论", notes = "")
+    @RequestMapping(value = "/api/game/getPreGameEvaluation", method = RequestMethod.POST)
+    ResultDto<GameEvaluationDto> getPreGameEvaluation(@RequestParam("createdAt") Date createdAt,@RequestParam("id") String id){
+        GameEvaluation pre = gameEvaluationServiceImap.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).gt("created_at", createdAt).ne("id", id).orderBy("concat(sort,created_at)").last("limit 1"));
+        GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
+        BeanUtils.copyProperties(pre,gameEvaluationDto);
+        return ResultDto.success(gameEvaluationDto);
+    }
+
+    @ApiOperation(value = "getNextGameEvaluation下一评论", notes = "")
+    @RequestMapping(value = "/api/game/getNextGameEvaluation", method = RequestMethod.POST)
+    ResultDto<GameEvaluationDto> getNextGameEvaluation(@RequestParam("createdAt") Date createdAt,@RequestParam("id") String id){
+        GameEvaluation next = gameEvaluationServiceImap.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).le("created_at", createdAt).ne("id", id).orderBy("concat(sort,created_at)", false).last("limit 1"));
+        GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
+        BeanUtils.copyProperties(next,gameEvaluationDto);
+        return ResultDto.success(gameEvaluationDto);
+    }
+
+
+    @ApiOperation(value = "getEvaluationEntityWrapper", notes = "")
+    @RequestMapping(value = "/api/game/getEvaluationEntityWrapper", method = RequestMethod.POST)
+    ResultDto<List<GameEvaluationDto>> getEvaluationEntityWrapper(@RequestParam("memberId") String memberId,@RequestParam("startDate") Date startDate,@RequestParam("endDate") Date endDate){
+        EntityWrapper<GameEvaluation> evaluationEntityWrapper = new EntityWrapper<>();
+        evaluationEntityWrapper.eq("member_id", memberId);
+        evaluationEntityWrapper.between("updated_at", startDate, endDate);
+        evaluationEntityWrapper.eq("state", 0);
+        //type  0:普通 1:热门 2:精华
+        evaluationEntityWrapper.in("type", new Integer[]{1, 2});
+        List<GameEvaluation> gameEvaluationsList = gameEvaluationServiceImap.selectList(evaluationEntityWrapper);
+        List<GameEvaluationDto> gameEvaluationDtos = new ArrayList<>();
+        if (gameEvaluationsList != null && gameEvaluationsList.size()>0){
+            for (GameEvaluation gameEvaluation : gameEvaluationsList) {
+                GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
+                BeanUtils.copyProperties(gameEvaluation,gameEvaluationDto);
+                gameEvaluationDtos.add(gameEvaluationDto);
+            }
+        }
+        return ResultDto.success(gameEvaluationDtos);
+    }
 
 
 

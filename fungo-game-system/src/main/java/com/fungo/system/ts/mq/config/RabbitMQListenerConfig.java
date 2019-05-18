@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 import java.nio.charset.Charset;
 
@@ -27,6 +28,7 @@ import java.nio.charset.Charset;
  */
 @Configuration
 @AutoConfigureAfter(RabbitMQConfig.class)
+@Order(2)
 public class RabbitMQListenerConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQListenerConfig.class);
@@ -101,7 +103,7 @@ public class RabbitMQListenerConfig {
     public MessageListenerContainer mqTopicMessageCountListenerContainer(ConnectionFactory connectionFactory) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.setQueueNames(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM.getName(),RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+        container.setQueueNames(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM.getName(),RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
         container.setMessageListener(mqTopicMessageCountListener());
         //手动确认消息
         container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
