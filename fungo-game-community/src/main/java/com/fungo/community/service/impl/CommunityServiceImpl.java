@@ -30,7 +30,6 @@ import com.game.common.repo.cache.facade.FungoCacheCommunity;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
-import com.game.common.vo.MemberFollowerVo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +52,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
     @Autowired
     private CmmCommunityDao communityDao;
+
 
     @Autowired
     private FungoCacheCommunity fungoCacheCommunity;
@@ -139,7 +139,7 @@ public class CommunityServiceImpl implements ICommunityService {
         //!fixme 查询是否关注 根据用户id查询用户详情
         List<String> idsList = new ArrayList<String>();
         idsList.add(userId);
-        ResultDto<List<MemberDto>> mbsListResultDto = systemFeignClient.listMembersByids(idsList);
+        ResultDto<List<MemberDto>> mbsListResultDto = systemFeignClient.listMembersByids(idsList ,null);
 
         MemberDto memberDto = null;
         if (null != mbsListResultDto) {
@@ -297,7 +297,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
                 List<String> mbIdsList = new ArrayList<String>();
                 idsList.add(m.getMemberId());
-                ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(mbIdsList);
+                ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(mbIdsList ,null);
 
                 MemberDto memberDtoPulish = null;
                 if (null != listMembersByids) {
@@ -419,7 +419,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
         List<String> idsList = new ArrayList<String>();
         idsList.add(userId);
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList,null);
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -580,7 +580,7 @@ public class CommunityServiceImpl implements ICommunityService {
                 CommunityMember c = new CommunityMember();
 
                 //!fixme 获取用户数据
-               // c.setAuthorBean(userService.getAuthor(m.getMemberId()));
+                // c.setAuthorBean(userService.getAuthor(m.getMemberId()));
 
                 ResultDto<AuthorBean> authorBeanResultDto = systemFeignClient.getAuthor(m.getMemberId());
                 if (null != authorBeanResultDto) {
@@ -593,9 +593,8 @@ public class CommunityServiceImpl implements ICommunityService {
                 if (userId.equals(m.getMemberId())) {
                     c.setYourself(true);
                 } else {
-                   //!fixme 获取用户的粉丝
+                    //!fixme 获取用户的粉丝
                     MemberFollower follower = followService.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", userId).eq("follower_id", m.getMemberId()).andNew("state = {0}", 1).or("state = {0}", 2));
-
 
 
                     if (follower != null) {
@@ -613,22 +612,29 @@ public class CommunityServiceImpl implements ICommunityService {
     }
 
 
-
     @Override
-    public List<Member> getRecomMembers(int limit, String currentMb_id) {
+    public List<MemberDto> getRecomMembers(int limit, String currentMb_id) {
 
-        List<Member> recommendedMbsList = new ArrayList<>();
+        List<MemberDto> recommendedMbsList = new ArrayList<MemberDto();
 
         //查询当前登录用户关注的所有用户
-        List<Member> watchMebmberList = null;
+        List<MemberDto> watchMebmberList = null;
         StringBuffer mbWatchedMbsWithSql = new StringBuffer();
 
         List<String> wathMbsSet = new ArrayList<String>();
 
         if (StringUtils.isNotBlank(currentMb_id)) {
-            watchMebmberList = this.getWatchMebmber(0, currentMb_id);
+
+            //!fixme 关注用户List
+            //watchMebmberList = this.getWatchMebmber(0, currentMb_id);
+
+            ResultDto<List<MemberDto>> listWatchMebmberRs = systemFeignClient.listWatchMebmber(0, currentMb_id);
+            if (null != listWatchMebmberRs) {
+                watchMebmberList = listWatchMebmberRs.getData();
+            }
+
             if (null != watchMebmberList && !watchMebmberList.isEmpty()) {
-                for (Member member : watchMebmberList) {
+                for (MemberDto member : watchMebmberList) {
                     member.setFollowed(true);
                     wathMbsSet.add(member.getId());
                 }
@@ -637,12 +643,12 @@ public class CommunityServiceImpl implements ICommunityService {
         LOGGER.info("查询当前登录用户关注的所有用户:{}", wathMbsSet.toString());
 
         //先获取官方推荐和符合条件推荐用户
-        List<Member> ml1 = getRecommeMembers(limit, currentMb_id, wathMbsSet);
+        List<MemberDto> ml1 = getRecommeMembers(limit, currentMb_id, wathMbsSet);
 
         int recommeMbs = 0;
         if (null != ml1 && !ml1.isEmpty()) {
             recommeMbs = ml1.size();
-            for (Member member : ml1) {
+            for (MemberDto member : ml1) {
                 member.setFollowed(false);
             }
         }
@@ -670,12 +676,14 @@ public class CommunityServiceImpl implements ICommunityService {
 
 
     /**
+     * 废弃--依赖系统用户微服务
      * 查询当前登录用户所关注的其他用户
      * @param limit
      * @param currentMb_id
      * @return
      */
-    private List<Member> getWatchMebmber(int limit, String currentMb_id) {
+    /*
+    private List<MemberDto> getWatchMebmber(int limit, String currentMb_id) {
 
         EntityWrapper actionEntityWrapper = new EntityWrapper<BasAction>();
         actionEntityWrapper.setSqlSelect("target_id");
@@ -706,6 +714,7 @@ public class CommunityServiceImpl implements ICommunityService {
         }
         return null;
     }
+    */
 
 
     /**
@@ -718,10 +727,10 @@ public class CommunityServiceImpl implements ICommunityService {
      *           2.若有新的推荐用户，且未关注，替换到玩家已关注列表的前面。且 该类别数量恒定10人
      * @param limit
      * @param currentMb_id 当前登录用户ID
-     * @param mbWatchedMbs 当前登录用户，已经关注的用户IDS
+     * @param wathMbsSet 当前登录用户，已经关注的用户IDS
      * @return
      */
-    private List<Member> getRecommeMembers(int limit, String currentMb_id, List<String> wathMbsSet) {
+    private List<MemberDto> getRecommeMembers(int limit, String currentMb_id, List<String> wathMbsSet) {
         //查官方推荐和符合条件推荐用户
         //推荐用户最大数
         long limitSize = 10L;
@@ -734,45 +743,53 @@ public class CommunityServiceImpl implements ICommunityService {
         long sendComments = 14L;
 
 
+
         /*
          * 1.找出官方推荐玩家 (数据库状态)
          * 2.发布文章数>10或游戏评论>14 （精选文章/评论 *5）
          * 3.合并去重
          */
+        //--------依赖系统用户微服务----
         //fix: 从用户中查询出所有被推荐的用户，且状态是0(正常)  [by mxf 2019-01-09]
-        EntityWrapper memberSqlWrapper = new EntityWrapper<Member>();
-        memberSqlWrapper.eq("type", 2).eq("state", 0);
+       /*
+           EntityWrapper memberSqlWrapper = new EntityWrapper<Member>();
+            memberSqlWrapper.eq("type", 2).eq("state", 0);
 
-        //去除当前登录用户和已经关注用户
-        if (StringUtils.isNotBlank(currentMb_id) || !wathMbsSet.isEmpty()) {
-            wathMbsSet.add(currentMb_id);
-            memberSqlWrapper.notIn("id", wathMbsSet);
+            //去除当前登录用户和已经关注用户
+            if (StringUtils.isNotBlank(currentMb_id) || !wathMbsSet.isEmpty()) {
+                wathMbsSet.add(currentMb_id);
+                memberSqlWrapper.notIn("id", wathMbsSet);
+            }
+
+            memberSqlWrapper.orderBy("sort", false);
+            memberSqlWrapper.last("limit " + limitSize);
+
+            List<Member> ml1 = menberService.selectList(memberSqlWrapper);
+       */
+
+        List<MemberDto> ml1 = null;
+        ResultDto<List<MemberDto>> mbListResultDto = systemFeignClient.listRecommendedMebmber(Integer.valueOf(limitSize + ""), currentMb_id, wathMbsSet);
+        if (null != mbListResultDto) {
+            ml1 = mbListResultDto.getData();
         }
-        //
-
-        memberSqlWrapper.orderBy("sort", false);
-        memberSqlWrapper.last("limit " + limitSize);
-
-        List<Member> ml1 = menberService.selectList(memberSqlWrapper);
 
         if (null == ml1 || ml1.isEmpty() || ml1.size() < limitSize) {
 
             //官方推荐用户id
             List<String> reIds = new ArrayList<>();
 
-            for (Member member : ml1) {
+            for (MemberDto member : ml1) {
                 reIds.add(member.getId());
             }
 
             //fix:查询 符合 发布文章数>10或游戏评论>14 （精选文章/评论 *5)的用户 的业务逻辑修改 [by mxf 2019-01-09]
             //条件用户
             //List<HashMap<String, Object>> members = memberDao.getRecommendMembers();
-            Set<String> members = new HashSet<>();
+            Set<String> members = new HashSet<String>();
 
 
             //1.先查询发布文章数大于10条的用户
-            List<String> sendArticleMembers = memberDao.getRecommendMembersFromCmmPost(sendArticles,
-                    limitSize, wathMbsSet);
+            List<String> sendArticleMembers = postService.getRecommendMembersFromCmmPost(sendArticles, limitSize, wathMbsSet);
             LOGGER.info("查询发布文章数大于10条的用户:{}", sendArticleMembers.toString());
 
             if (null != sendArticleMembers && !sendArticleMembers.isEmpty()) {
@@ -781,8 +798,14 @@ public class CommunityServiceImpl implements ICommunityService {
             }
 
             //2.再查询发布游戏评论>大于14条的，前10名用户
-            List<String> sendCommentMembers = memberDao.getRecommendMembersFromEvaluation(sendComments,
-                    limitSize, wathMbsSet);
+            //memberDao.getRecommendMembersFromEvaluation(sendComments,   limitSize, wathMbsSet);
+
+            List<String> sendCommentMembers = null;
+
+            ResultDto<List<String>> gameEvaRs = gameFeignClient.getRecommendMembersFromEvaluation(Integer.valueOf(sendComments + ""), Integer.valueOf(limitSize + ""), wathMbsSet);
+            if (null != gameEvaRs) {
+                sendCommentMembers = gameEvaRs.getData();
+            }
 
             LOGGER.info("查询发布游戏评论>大于14条的，前10名用户:{}", sendCommentMembers.toString());
             if (null != sendCommentMembers && !sendCommentMembers.isEmpty()) {
@@ -792,7 +815,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
             int ormCount = 0;
             if (null == ml1) {
-                ml1 = new ArrayList<Member>();
+                ml1 = new ArrayList<MemberDto>();
             } else {
                 ormCount = ml1.size();
             }
@@ -813,8 +836,17 @@ public class CommunityServiceImpl implements ICommunityService {
 
             //查询出符合推荐条件用户的详情数据
             if (memberIds.size() > 0) {
-                List<Member> recommendList = menberService.selectList(new EntityWrapper<Member>().in("id", memberIds).eq("state", 0));
-                ml1.addAll(recommendList);
+                //!fixme 查询用户id集合获取用户数据
+                //List<Member> recommendList = menberService.selectList(new EntityWrapper<Member>().in("id", memberIds).eq("state", 0));
+                //ml1.addAll(recommendList);
+
+                ResultDto<List<MemberDto>> mbsListResultDto = systemFeignClient.listMembersByids(memberIds, 0);
+
+                if (null != mbsListResultDto) {
+                    List<MemberDto> memberDtoList = mbsListResultDto.getData();
+                    ml1.addAll(memberDtoList);
+                }
+
             }
         }
 

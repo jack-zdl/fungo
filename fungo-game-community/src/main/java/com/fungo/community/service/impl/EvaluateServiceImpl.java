@@ -552,7 +552,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
                     List<String> idsList = new ArrayList<String>();
                     idsList.add(reply.getReplayToId());
-                    ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+                    ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList ,null);
 
                     MemberDto memberDto = null;
                     if (null != listMembersByids) {

@@ -163,7 +163,7 @@ public class PostServiceImpl implements IPostService {
 
         List<String> idsList = new ArrayList<String>();
         idsList.add(user_id);
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList,null);
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -549,7 +549,7 @@ public class PostServiceImpl implements IPostService {
 
         List<String> idsList = new ArrayList<String>();
         idsList.add(userId);
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList ,null);
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -731,7 +731,7 @@ public class PostServiceImpl implements IPostService {
 
         List<String> idsList = new ArrayList<String>();
         idsList.add(userId);
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList ,null);
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -1158,7 +1158,7 @@ public class PostServiceImpl implements IPostService {
 
             List<String> idsList = new ArrayList<String>();
             idsList.add(userId);
-            ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+            ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList ,null);
 
             MemberDto memberDto = null;
             if (null != listMembersByids) {

@@ -124,7 +124,7 @@ public class MoodServiceImpl implements IMoodService {
 
         List<String> idsList = new ArrayList<String>();
         idsList.add(memberId);
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList,null);
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
