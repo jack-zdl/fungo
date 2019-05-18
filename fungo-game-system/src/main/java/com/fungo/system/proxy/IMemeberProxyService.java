@@ -34,4 +34,6 @@ public interface IMemeberProxyService {
 
     CmmCommunityDto selectCmmCommunityById(CmmCommunityDto cmmCommunityDto);
 
+    int CmmPostCount(CmmPostDto cmmPostDto);
+
 }

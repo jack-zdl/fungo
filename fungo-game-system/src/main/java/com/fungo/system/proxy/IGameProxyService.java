@@ -29,4 +29,6 @@ public interface IGameProxyService {
     MooMoodDto selectMooMoodById(String id);
 
     MooMessageDto selectMooMessageById(String id);
+
+    int getGameSelectCountByLikeNameAndState(GameDto gameDto);
 }

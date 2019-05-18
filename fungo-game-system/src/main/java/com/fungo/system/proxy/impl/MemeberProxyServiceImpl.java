@@ -207,6 +207,12 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
         return communityDto;
     }
 
+    @Override
+    public int CmmPostCount(CmmPostDto cmmPostDto) {
+        ResultDto<Integer> re = communityFeignClient.queryCmmPostCount(cmmPostDto);
+        return re.getData();
+    }
+
 
     public CmmPostDto hystrixSelectCmmPost(CmmPostDto cmmPostDto) {
         logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");

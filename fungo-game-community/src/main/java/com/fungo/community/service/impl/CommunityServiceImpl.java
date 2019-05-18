@@ -60,11 +60,11 @@ public class CommunityServiceImpl implements ICommunityService {
     private FungoCacheCommunity fungoCacheCommunity;
 
     //依赖系统和用户微服务
-    @Autowired
+    @Autowired(required = false)
     private SystemFeignClient systemFeignClient;
 
     //依赖游戏微服务
-    @Autowired
+    @Autowired(required = false)
     private GameFeignClient gameFeignClient;
 
 
@@ -648,7 +648,7 @@ public class CommunityServiceImpl implements ICommunityService {
     @Override
     public List<MemberDto> getRecomMembers(int limit, String currentMb_id) {
 
-        List<MemberDto> recommendedMbsList = new ArrayList<MemberDto();
+        List<MemberDto> recommendedMbsList = new ArrayList<MemberDto>();
 
         //查询当前登录用户关注的所有用户
         List<MemberDto> watchMebmberList = null;

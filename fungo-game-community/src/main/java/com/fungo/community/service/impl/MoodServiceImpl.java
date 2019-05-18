@@ -72,13 +72,13 @@ public class MoodServiceImpl implements IMoodService {
     private String clusterIndex;
 
 
-    @Autowired
+    @Autowired(required = false)
     private GameFeignClient gameFeignClient;
 
-    @Autowired
+    @Autowired(required = false)
     private SystemFeignClient systemFeignClient;
 
-    @Autowired
+    @Autowired(required = false)
     private TSFeignClient tsFeignClient;
 
 

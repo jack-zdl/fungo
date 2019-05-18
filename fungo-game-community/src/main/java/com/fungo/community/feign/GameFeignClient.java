@@ -2,11 +2,14 @@ package com.fungo.community.feign;
 
 
 import com.game.common.bean.MemberPulishFromCommunity;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.EvaluationInputPageDto;
 import com.game.common.dto.game.GameEvaluationDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,7 +24,7 @@ import java.util.List;
  * @author mxf
  * @since 2018-11-08
  */
-@FeignClient(name = "FUNGO-GAME-COMMUNITY")
+@FeignClient(name = "FUNGO-GAME-GAMES")
 @RequestMapping("/ms/service/game")
 public interface GameFeignClient {
 
@@ -81,6 +84,36 @@ public interface GameFeignClient {
     @ApiOperation(value = "gameEvaluationService.selectById", notes = "")
     @RequestMapping(value = "/api/game/getGameEvaluationSelectById", method = RequestMethod.POST)
     ResultDto<GameEvaluationDto> getGameEvaluationSelectById(@RequestParam("commentId") String commentId);
+
+
+
+    @ApiOperation(value = "getEvaluationEntityWrapper", notes = "")
+    @RequestMapping(value = "/api/game/getEvaluationEntityWrapper", method = RequestMethod.POST)
+    ResultDto<List<GameEvaluationDto>> getEvaluationEntityWrapper(@RequestParam("memberId") String memberId, @RequestParam("startDate") String startDate,
+                                                                  @RequestParam("endDate") String endDate);
+
+
+
+
+    @ApiOperation(value = "getPreGameEvaluation上一评论", notes = "")
+    @RequestMapping(value = "/api/game/getPreGameEvaluation", method = RequestMethod.POST)
+    ResultDto<GameEvaluationDto> getPreGameEvaluation(@RequestParam("createdAt") String createdAt, @RequestParam("id") String id);
+
+
+
+
+    @ApiOperation(value = "getNextGameEvaluation下一评论", notes = "")
+    @RequestMapping(value = "/api/game/getNextGameEvaluation", method = RequestMethod.POST)
+    ResultDto<GameEvaluationDto> getNextGameEvaluation(@RequestParam("createdAt") String createdAt, @RequestParam("id") String id);
+
+
+
+    @ApiOperation(value = "getEvaluationEntityWrapperByPageDtoAndMemberId", notes = "")
+    @RequestMapping(value = "/api/game/getEvaluationEntityWrapperByPageDtoAndMemberId", method = RequestMethod.POST)
+    FungoPageResultDto<GameEvaluationDto> getEvaluationEntityWrapperByPageDtoAndMemberId(@RequestBody EvaluationInputPageDto pageDto, @RequestParam("memberId") String memberId);
+
+
+
 
     //----------
 }

@@ -172,6 +172,11 @@ public class GameProxyServiceImpl implements IGameProxyService {
         return mooMessageDto;
     }
 
+    @Override
+    public int getGameSelectCountByLikeNameAndState(GameDto gameDto) {
+        return gamesFeignClient.getGameSelectCountByLikeNameAndState(gameDto);
+    }
+
     public CmmPostDto hystrixSelectCmmPostById(CmmPostDto param){
         logger.warn("GameProxyServiceImpl.selectCmmPostById根据主键获取社区帖子异常");
         return null;
