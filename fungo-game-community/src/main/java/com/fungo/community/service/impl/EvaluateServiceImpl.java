@@ -19,9 +19,11 @@ import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.*;
+import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
@@ -950,53 +952,14 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         //用户未对该游戏发表过评论，新增
         if (evaluation == null) {
-            evaluation = new GameEvaluation();
-            //2.4
-            //分数限制
-            evaluation.setRating(commentInput.getRating());
-
-            evaluation.setTrait1(commentInput.getTrait1() == 0 ? null : commentInput.getTrait1());
-            evaluation.setTrait2(commentInput.getTrait2() == 0 ? null : commentInput.getTrait2());
-            evaluation.setTrait3(commentInput.getTrait3() == 0 ? null : commentInput.getTrait3());
-            evaluation.setTrait4(commentInput.getTrait4() == 0 ? null : commentInput.getTrait4());
-            evaluation.setTrait5(commentInput.getTrait5() == 0 ? null : commentInput.getTrait5());
-
-            evaluation.setContent(commentInput.getContent());
-            evaluation.setCreatedAt(new Date());
-            evaluation.setGameId(commentInput.getTarget_id());
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                if (commentInput.getImages() != null) {
-                    evaluation.setImages(objectMapper.writeValueAsString(commentInput.getImages()));
-                }
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-            evaluation.setIsRecommend("1");
-            evaluation.setLikeNum(0);
-            evaluation.setMemberId(memberId);
-            evaluation.setPhoneModel(commentInput.getPhone_model());
-            evaluation.setState(0);
-            evaluation.setUpdatedAt(new Date());
-
-            //游戏名
-            Game game = gameService.selectOne(Condition.create().setSqlSelect("id,name").eq("id", commentInput.getTarget_id()));
-
-
-            if (game != null) {
-                evaluation.setGameName(game.getName());
-            }
-
-            gameEvaluationService.insert(evaluation);
-
-            //-------------若用户未对该游戏发表过评论，则增加，走MQ推送
-
-
-
+            //调用MQ发送
+            this.addGameEvaluationSenderMQ(memberId, commentInput);
 
 
 //			if(commentInput.isIs_recommend()) {
             counterService.addCounter("t_game", "comment_num", commentInput.getTarget_id());//增加评论数
+
+
 //			}else {
 //				counterService.addCounter("t_game", "unrecommend_num", commentInput.getTarget_id());//增加评论数
 //			}
@@ -1111,35 +1074,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
             basActionDtoAdd.setState(0);
             basActionDtoAdd.setUpdatedAt(new Date());
 
-
-
-            TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
-
-            //消息类型
-            transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
-
-            //发送的队列
-            transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
-
-            //路由key
-            StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
-            routinKey.deleteCharAt(routinKey.length() - 1);
-            routinKey.append("ACTION_ADD");
-
-            transactionMessageDto.setRoutingKey(routinKey.toString());
-
-            MQResultDto mqResultDto = new MQResultDto();
-            mqResultDto.setType(MQResultDto.CommunityEnum.CMT_ACTION_MQ_TYPE_ACTION_ADD.getCode());
-
-            mqResultDto.setBody(basActionDtoAdd);
-
-            transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
-            //执行MQ发送
-            ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
-            logger.info("--添加帖子-执行添加用户动作行为数据--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
+            this.sendActionWithMQ(basActionDtoAdd);
             //-----start
-
-
 
 
         } else {//用户对该游戏发表过评论，修改
@@ -1183,6 +1119,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
             evaluation.setState(0);
             evaluation.setUpdatedAt(date);
             evaluation.updateById();
+
+
+
+
+
+
+
             BasAction action = actionService.selectOne(new EntityWrapper<BasAction>()
                     .eq("member_id", memberId)
                     .eq("target_id", evaluation.getId())
@@ -1193,6 +1136,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 action.setUpdatedAt(date);
                 actionService.updateAllColumnById(action);
             }
+
+
 
 
         }
@@ -1240,6 +1185,117 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //游戏评价列表
         fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS, "", null);
         return re;
+    }
+
+
+    //添加用户行为-MQ发送
+    private void sendActionWithMQ(BasActionDto basActionDtoAdd) {
+
+        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+
+        //消息类型
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
+
+        //发送的队列
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+
+        //路由key
+        StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+        routinKey.deleteCharAt(routinKey.length() - 1);
+        routinKey.append("ACTION_ADD");
+
+        transactionMessageDto.setRoutingKey(routinKey.toString());
+
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.CommunityEnum.CMT_ACTION_MQ_TYPE_ACTION_ADD.getCode());
+
+        mqResultDto.setBody(basActionDtoAdd);
+
+        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+        //执行MQ发送
+        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        logger.info("--添加评论-执行添加用户动作行为数据--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
+
+    }
+
+
+    //添加游戏游戏评论-通过MQ发送
+    private void addGameEvaluationSenderMQ(String memberId, EvaluationInput commentInput) {
+
+        GameEvaluationDto evaluationDtoAdd = new GameEvaluationDto();
+        //2.4
+        //分数限制
+        evaluationDtoAdd.setRating(commentInput.getRating());
+
+        evaluationDtoAdd.setTrait1(commentInput.getTrait1() == 0 ? null : commentInput.getTrait1());
+        evaluationDtoAdd.setTrait2(commentInput.getTrait2() == 0 ? null : commentInput.getTrait2());
+        evaluationDtoAdd.setTrait3(commentInput.getTrait3() == 0 ? null : commentInput.getTrait3());
+        evaluationDtoAdd.setTrait4(commentInput.getTrait4() == 0 ? null : commentInput.getTrait4());
+        evaluationDtoAdd.setTrait5(commentInput.getTrait5() == 0 ? null : commentInput.getTrait5());
+
+        evaluationDtoAdd.setContent(commentInput.getContent());
+        evaluationDtoAdd.setCreatedAt(new Date());
+        evaluationDtoAdd.setGameId(commentInput.getTarget_id());
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            if (commentInput.getImages() != null) {
+                evaluationDtoAdd.setImages(objectMapper.writeValueAsString(commentInput.getImages()));
+            }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        evaluationDtoAdd.setIsRecommend("1");
+        evaluationDtoAdd.setLikeNum(0);
+        evaluationDtoAdd.setMemberId(memberId);
+        evaluationDtoAdd.setPhoneModel(commentInput.getPhone_model());
+        evaluationDtoAdd.setState(0);
+        evaluationDtoAdd.setUpdatedAt(new Date());
+
+        //游戏名
+        // Game game = gameService.selectOne(Condition.create().setSqlSelect("id,name").eq("id", commentInput.getTarget_id()));
+
+        GameDto gameDto = null;
+        ResultDto<GameDto> gameDtoResultDto = gameFeignClient.selectGameDetails(commentInput.getTarget_id(), null);
+        if (null != gameDtoResultDto){
+            gameDto = gameDtoResultDto.getData();
+        }
+
+        if (gameDto != null) {
+            evaluationDtoAdd.setGameName(gameDto.getName());
+        }
+        //通过MQ异步发送给游戏微服务
+        //gameEvaluationService.insert(evaluation);
+
+        //-------------若用户未对该游戏发表过评论，则 增加，走MQ推送
+        //MQ 业务数据发送给系统用户业务处理
+        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+
+        //消息类型
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_COMMUNITY);
+
+        //发送的队列
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_GAMES.getName());
+
+        //路由key
+        StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_GAMES.getName());
+        routinKey.deleteCharAt(routinKey.length() - 1);
+        routinKey.append("cmtPostMQDoTask");
+
+        transactionMessageDto.setRoutingKey(routinKey.toString());
+
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_GAME_EVALUATION_ADD.getCode());
+
+        mqResultDto.setBody(evaluationDtoAdd);
+
+        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+        //执行MQ发送
+        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        logger.info("--社区用户发布游戏评论执行任务--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
+
+        //---------------end----------------
+
+
     }
 
     @Override

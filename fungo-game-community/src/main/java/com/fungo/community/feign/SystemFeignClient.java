@@ -7,6 +7,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
+import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.vo.MemberFollowerVo;
