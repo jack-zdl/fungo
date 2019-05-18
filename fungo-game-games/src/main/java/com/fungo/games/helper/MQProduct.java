@@ -10,7 +10,9 @@ import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.game.GameInviteDto;
 import com.game.common.dto.game.GameReleaseLogDto;
+import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
+import com.game.common.ts.mq.enums.RabbitMQEnum;
 import com.rabbitmq.client.Return;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -29,12 +31,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Date: 2019/4/26
  */
 @Component
+@SuppressWarnings("all")
 public class MQProduct {
     @Autowired
     private AmqpTemplate template;
-
-    @Autowired
-    private SystemFeignClient systemFeignClient;
 
     @Autowired
     private MQFeignClient mqFeignClient;
@@ -93,13 +93,13 @@ public class MQProduct {
         sendTopic(MQConfig.TOPIC_EXCHANGE_COMMUNITY_INSERT,MQConfig.TOPIC_KEY_COMMUNITY_INSERT,c);
     }*/
 
-    public void gameInsert(GameDto game){
+   /* public void gameInsert(GameDto game){
         sendTopic(MQConfig.TOPIC_EXCHANGE_GAME_INSERT,MQConfig.TOPIC_KEY_GAME_INSERT,game);
     }
 
     public void gameUpdate(GameDto game){
         sendTopic(MQConfig.TOPIC_EXCHANGE_GAME_UPDATE,MQConfig.TOPIC_KEY_GAME_UPDATE,game);
-    }
+    }*/
 
     /*public void addGameTag(List<String> tegList , String categoryId, String id){
         Map<String,Object> map = new ConcurrentHashMap<>();
@@ -121,10 +121,13 @@ public class MQProduct {
     public void basActionInsertAllColumn(BasActionDto basActionDto) {
 //        sendTopic(MQConfig.TOPIC_EXCHANGE_BASACTION_INSERTALLCOLUMN,MQConfig.TOPIC_KEY_BASACTION_INSERTALLCOLUMN,basActionDto);
         TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
-        transactionMessageDto.setMessageBody(JSON.toJSONString(basActionDto));
-        transactionMessageDto.setConsumerQueue(MQConfig.TOPIC_QUEUE_BASACTION_INSERTALLCOLUMN);
-        transactionMessageDto.setRoutingKey(MQConfig.TOPIC_KEY_BASACTION_INSERTALLCOLUMN);
-        transactionMessageDto.setMessageDataType(1);
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.GameMQDataType.GAME_DATA_TYPE_BASACTIONINSERT.getCode());
+        mqResultDto.setBody(basActionDto);
+        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM.getName());
+        transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM.getName());
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_SYSTEM);
         sendFeignMq(transactionMessageDto);
     }
 
@@ -135,7 +138,16 @@ public class MQProduct {
         map.put("targetType",targetType);
         map.put("type",type);
         map.put("state",state);
-        sendTopic(MQConfig.TOPIC_EXCHANGE_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID,MQConfig.TOPIC_KEY_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID,map);
+        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.GameMQDataType.GAME_DATA_TYPE_SELECTONEANDUPDATEALLCOLUMNBYID.getCode());
+        mqResultDto.setBody(map);
+        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM.getName());
+        transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM.getName());
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_SYSTEM);
+        sendFeignMq(transactionMessageDto);
+//        sendTopic(MQConfig.TOPIC_EXCHANGE_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID,MQConfig.TOPIC_KEY_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID,map);
     }
 
     /**
