@@ -1,5 +1,6 @@
 package com.fungo.community.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +10,7 @@ import com.fungo.community.entity.BasVideoJob;
 import com.fungo.community.entity.MooMood;
 import com.fungo.community.feign.GameFeignClient;
 import com.fungo.community.feign.SystemFeignClient;
+import com.fungo.community.feign.TSFeignClient;
 import com.fungo.community.service.IMoodService;
 import com.fungo.community.service.IVideoService;
 import com.game.common.consts.FungoCoreApiConstant;
@@ -21,13 +23,18 @@ import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.MoodBean;
 import com.game.common.dto.community.MoodInput;
 import com.game.common.dto.community.StreamInfo;
+import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheMood;
+import com.game.common.ts.mq.dto.MQResultDto;
+import com.game.common.ts.mq.dto.TransactionMessageDto;
+import com.game.common.ts.mq.enums.RabbitMQEnum;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PKUtil;
+import com.game.common.util.UUIDUtils;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -71,7 +78,8 @@ public class MoodServiceImpl implements IMoodService {
     @Autowired
     private SystemFeignClient systemFeignClient;
 
-
+    @Autowired
+    private TSFeignClient tsFeignClient;
 
 
     /*
@@ -104,6 +112,7 @@ public class MoodServiceImpl implements IMoodService {
     @Override
     @Transactional
     public ResultDto<ObjectId> addMood(String memberId, MoodInput input) throws Exception {
+
         MooMood mood = new MooMood();
         ObjectMapper objectMapper = new ObjectMapper();
 //        if(CommonUtil.isNull(content)) {
@@ -220,10 +229,46 @@ public class MoodServiceImpl implements IMoodService {
 //		}
 
         //!fixme  行为记录
-        iactionService.addAction(memberId, 2, 14, mood.getId(), "");
+        //iactionService.addAction(memberId, 2, 14, mood.getId(), "");
 
+        //通过MQ发送到系统微服务处理
+        BasActionDto basActionDtoAdd = new BasActionDto();
+        basActionDtoAdd.setCreatedAt(new Date());
+        basActionDtoAdd.setInformation("");
+        basActionDtoAdd.setMemberId(memberId);
+        basActionDtoAdd.setState(0);
+        basActionDtoAdd.setTargetId(mood.getId());
+        basActionDtoAdd.setTargetType(2);
+        basActionDtoAdd.setType(14);
+        basActionDtoAdd.setUpdatedAt(new Date());
 
+        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
 
+        //消息类型
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_MOOD);
+
+        //发送的队列
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+
+        //路由key
+        StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+        routinKey.deleteCharAt(routinKey.length() - 1);
+        routinKey.append("ACTION_ADD");
+
+        transactionMessageDto.setRoutingKey(routinKey.toString());
+
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.CommunityEnum.CMT_ACTION_MQ_TYPE_ACTION_ADD.getCode());
+
+        mqResultDto.setBody(basActionDtoAdd);
+
+        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+
+        //执行MQ发送
+        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+
+        LOGGER.info("--添加心情-执行添加用户动作行为数据--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
+        //-----end-------------
 
 
 //		proxy.addScore(Setting.ACTION_TYPE_MOOD, memberId, mood.getId(), Setting.RES_TYPE_MOOD);
@@ -233,16 +278,70 @@ public class MoodServiceImpl implements IMoodService {
         //int addTaskCore = proxy.addTaskCore(Setting.ACTION_TYPE_MOOD, memberId, mood.getId(), Setting.RES_TYPE_MOOD);
         //V2.4.6版本任务
         String tips = "";
+
         //1 fungo币
+        /*
         Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                 MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_MOOD_COIN.code());
 
         //2 经验值
         Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                 MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_MOOD_EXP.code());
+        */
+
+        //任务：
+        // 1.调用微服务接口
+        // 2.执行失败，发送MQ消息
+        Map<String, Object> resMapCoin = null;
+        Map<String, Object> resMapExp = null;
+
+        String uuidCoin = UUIDUtils.getUUID();
+        String uuidExp = UUIDUtils.getUUID();
 
 
+        //coin task
+        TaskDto taskDtoCoin = new TaskDto();
+        taskDtoCoin.setRequestId(uuidCoin);
+        taskDtoCoin.setMbId(memberId);
+        taskDtoCoin.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
+        taskDtoCoin.setTaskType(MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT);
+        taskDtoCoin.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_MOOD_COIN.code());
 
+
+        //exp task
+        TaskDto taskDtoExp = new TaskDto();
+        taskDtoExp.setRequestId(uuidExp);
+        taskDtoExp.setMbId(memberId);
+        taskDtoExp.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
+        taskDtoExp.setTaskType(MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT);
+        taskDtoExp.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_MOOD_EXP.code());
+
+        try {
+
+            //coin task
+            ResultDto<Map<String, Object>> coinTaskResultDto = systemFeignClient.exTask(taskDtoCoin);
+            if (null != coinTaskResultDto) {
+                resMapCoin = coinTaskResultDto.getData();
+            }
+
+            //exp task
+            ResultDto<Map<String, Object>> expTaskResultDto = systemFeignClient.exTask(taskDtoExp);
+            if (null != expTaskResultDto) {
+                resMapExp = expTaskResultDto.getData();
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            //出现异常mq发送
+            //coin task
+            doExcTaskSendMQ(taskDtoCoin);
+
+            //exp task
+            doExcTaskSendMQ(taskDtoExp);
+
+        }
+        //--------------end----------------
 
         if (null != resMapCoin && !resMapCoin.isEmpty()) {
             if (null != resMapExp && !resMapExp.isEmpty()) {
@@ -281,6 +380,39 @@ public class MoodServiceImpl implements IMoodService {
 
         return re;
     }
+
+
+    //社区心情--用户执行任务
+    private void doExcTaskSendMQ(TaskDto taskDto) {
+        //-----start
+        //MQ 业务数据发送给系统用户业务处理
+        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+
+        //消息类型
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_MOOD);
+
+        //发送的队列
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+
+        //路由key
+        StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+        routinKey.deleteCharAt(routinKey.length() - 1);
+        routinKey.append("cmtPostMQDoTask");
+
+        transactionMessageDto.setRoutingKey(routinKey.toString());
+
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_DO_TASK.getCode());
+
+        mqResultDto.setBody(taskDto);
+
+        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+        //执行MQ发送
+        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        LOGGER.info("--社区文章用户发布文章执行任务--MQ执行结果：messageResult", JSON.toJSONString(messageResult));
+        //-----start
+    }
+
 
     @Override
     public ResultDto<String> delMood(String memberId, String moodId) {

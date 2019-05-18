@@ -517,7 +517,7 @@ public class PostServiceImpl implements IPostService {
         transactionMessageDto.setRoutingKey(routinKey.toString());
 
         MQResultDto mqResultDto = new MQResultDto();
-        mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MQ_TYPE_DO_TASK.getCode());
+        mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_DO_TASK.getCode());
 
         mqResultDto.setBody(taskDto);
 
@@ -671,7 +671,7 @@ public class PostServiceImpl implements IPostService {
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         //执行MQ发送
         ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
-        logger.info("--删除帖子执行扣减用户经验值和等级--MQ执行结果：messageResult", JSON.toJSONString(messageResult));
+        logger.info("--删除帖子执行扣减用户经验值和等级--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
         //-----start
 
         ActionInput actioninput = new ActionInput();
