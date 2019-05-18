@@ -22,7 +22,7 @@ spring:
   session:
     store-type: redis
   zipkin:
-    base-url: http://47.104.87.10:9411
+    base-url: http://127.0.0.1:9411
     sender:
       type: web
   sleuth:
@@ -77,7 +77,7 @@ spring:
     #DB配置
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://39.105.18.214:3306/fungo_dev?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://39.105.18.214:3306/fungo_community?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
     password: affdB440821920A9
     # 连接池配置
@@ -125,6 +125,23 @@ spring:
   jackson:
     time-zone: GMT+8
 
+#---------------------------------------mq----------------------------------------------
+  rabbitmq:
+    #外网
+    host: 1811420479436984.mq-amqp.cn-hangzhou-a.aliyuncs.com
+    #内网
+    #host: 1811420479436984.mq-amqp.cn-hangzhou-a.aliyuncs.com
+    port: 5672
+    username: LTAIsW4qLBG6M3Vf
+    password: EBQbTTZGhPptMw3tGJ1grmG4r6uD7l
+    virtual-host: dev
+    template:
+      mandatory: true
+    publisher-confirms: true
+    publisher-returns: true
+#---------------------------------------mq----------------------------------------------
+
+
 #------------------------------------------------------------------mybatis-------------------------------------------------
 #db mybatis
 mybatis-plus:
@@ -143,21 +160,6 @@ pagehelper:
 
 
 #----------------------------------------------------------------------------------------------------------------------
-#---------------------------------------mq----------------------------------------------
-  rabbitmq:
-    #外网
-    host: 1811420479436984.mq-amqp.cn-hangzhou-a.aliyuncs.com
-    #内网
-    #host: 1811420479436984.mq-amqp.cn-hangzhou-a.aliyuncs.com
-    port: 5672
-    username: LTAIsW4qLBG6M3Vf
-    password: EBQbTTZGhPptMw3tGJ1grmG4r6uD7l
-    virtual-host: dev
-    template:
-      mandatory: true
-    publisher-confirms: true
-    publisher-returns: true
-#---------------------------------------mq----------------------------------------------
 
 
 
@@ -223,27 +225,6 @@ spring.aop.auto: true
 
 #fungo数据迁移接口授权秘钥
 fgoTransfAuth: adfe35cf834349b0b98b549292c1d65b
-
-
-#--------------------------------------------------------rabbitmq--------------------------------------------------------------
-rabbitmq:
-    host: 47.104.87.10
-    port: 5672
-    username: admin
-    password: admin
-    virtual-host: /
-    publisher-confirms: true  # 开启发送确认
-    publisher-returns: true   # 开启发送失败退回
-    listener:
-      direct:
-        acknowledge-mode: manual
-      simple:
-        acknowledge-mode: manual
-
-    template:
-      retry:
-        enabled: true
-        initial-interval: 2s
 
 
 

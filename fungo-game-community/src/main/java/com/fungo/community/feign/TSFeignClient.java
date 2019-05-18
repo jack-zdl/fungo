@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
  * @author mxf
  * @since 2018-11-08
  */
-@FeignClient(name = "fungo-game-system")
+@FeignClient(name = "FUNGO-GAME-SYSTEM")
 @RestController("/ms/service/dtp/mq")
 public interface TSFeignClient {
 
