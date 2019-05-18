@@ -11,6 +11,7 @@ import com.fungo.community.dao.service.*;
 import com.fungo.community.entity.*;
 import com.fungo.community.feign.GameFeignClient;
 import com.fungo.community.feign.SystemFeignClient;
+import com.fungo.community.feign.TSFeignClient;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IEvaluateService;
 import com.game.common.consts.FungoCoreApiConstant;
@@ -27,6 +28,9 @@ import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheComment;
 import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.repo.cache.facade.FungoCacheMood;
+import com.game.common.ts.mq.dto.MQResultDto;
+import com.game.common.ts.mq.dto.TransactionMessageDto;
+import com.game.common.ts.mq.enums.RabbitMQEnum;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
@@ -86,6 +90,10 @@ public class EvaluateServiceImpl implements IEvaluateService {
     //依赖游戏微服务
     @Autowired
     private GameFeignClient gameFeignClient;
+
+    @Autowired
+    private TSFeignClient tsFeignClient;
+
 
     /*
     @Autowired
@@ -160,7 +168,49 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
 
             //!fixme 推送通知
-            gameProxy.addNotice(Setting.ACTION_TYPE_COMMENT, memberId, commentInput.getTarget_id(), Setting.RES_TYPE_COMMENT, commentInput.getContent(), appVersion, "");
+            //        addNotice(int eventType, String memberId, String target_id, int target_type, String information, String appVersion, String replyToId)
+            //gameProxy.addNotice(Setting.ACTION_TYPE_COMMENT, memberId, commentInput.getTarget_id(), Setting.RES_TYPE_COMMENT, commentInput.getContent(), appVersion, "");
+
+
+            Map<String,Object> noticeMap = new HashMap<>();
+            noticeMap.put("eventType", Setting.ACTION_TYPE_COMMENT);
+            noticeMap.put("memberId", memberId);
+            noticeMap.put("target_id", commentInput.getTarget_id());
+            noticeMap.put("target_type", Setting.RES_TYPE_COMMENT);
+            noticeMap.put("information", commentInput.getContent()) ;
+            noticeMap.put("appVersion", appVersion);
+            noticeMap.put("replyToId", "");
+
+
+            //MQ发布到系统微服务
+            TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+
+            //消息类型
+            transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_COMMUNITY);
+
+            //发送的队列
+            transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+
+            //路由key
+            StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+            routinKey.deleteCharAt(routinKey.length() - 1);
+            routinKey.append("add_notice");
+
+            transactionMessageDto.setRoutingKey(routinKey.toString());
+
+            MQResultDto mqResultDto = new MQResultDto();
+            mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_ADD_NOTICE.getCode());
+
+            mqResultDto.setBody(noticeMap);
+
+            transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+            //执行MQ发送
+            ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+            logger.info("--添加评论-执行发送消息--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
+            //-----start
+
+
+
 
         } else if (2 == commentInput.getTarget_type()) {//心情评论
 

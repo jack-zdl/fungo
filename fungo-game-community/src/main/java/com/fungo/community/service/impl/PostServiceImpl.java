@@ -371,7 +371,7 @@ public class PostServiceImpl implements IPostService {
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         //执行MQ发送
         ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
-        logger.info("--添加帖子-执行添加用户动作行为数据--MQ执行结果：messageResult", JSON.toJSONString(messageResult));
+        logger.info("--添加帖子-执行添加用户动作行为数据--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
         //-----start
 
 
@@ -524,7 +524,7 @@ public class PostServiceImpl implements IPostService {
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         //执行MQ发送
         ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
-        logger.info("--社区文章用户发布文章执行任务--MQ执行结果：messageResult", JSON.toJSONString(messageResult));
+        logger.info("--社区文章用户发布文章执行任务--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
         //-----start
     }
 

@@ -409,7 +409,7 @@ public class MoodServiceImpl implements IMoodService {
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         //执行MQ发送
         ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
-        LOGGER.info("--社区文章用户发布文章执行任务--MQ执行结果：messageResult", JSON.toJSONString(messageResult));
+        LOGGER.info("--社区文章用户发布文章执行任务--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
         //-----start
     }
 
