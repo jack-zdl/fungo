@@ -35,5 +35,13 @@ public class CmmPostDaoServiceImap extends ServiceImpl<CmmPostDao, CmmPost> impl
     public List<Map> getHonorQualificationOfEssencePost() {
         return cmmPostDao.getHonorQualificationOfEssencePost();
     }
+
+
+
+
+    @Override
+    public List<String> getRecommendMembersFromCmmPost(long ccnt, long limitSize, List<String> wathMbsSet) {
+        return cmmPostDao.getRecommendMembersFromCmmPost(ccnt, limitSize, wathMbsSet);
+    }
     //------
 }
