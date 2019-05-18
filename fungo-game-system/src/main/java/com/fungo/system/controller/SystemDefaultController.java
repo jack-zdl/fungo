@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class SystemDefaultController {
 
-    @RequestMapping(value = "/", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value = "/api/sys/index", method = {RequestMethod.POST, RequestMethod.GET})
     public String index() throws Exception {
 
         return "index";

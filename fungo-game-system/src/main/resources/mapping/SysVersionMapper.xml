@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.system.dao.SysVersionDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.fungo.system.entity.SysVersion">
+        <id column="id" property="id"/>
+        <result column="version" property="version"/>
+        <result column="is_force" property="isForce"/>
+        <result column="mobile_type" property="mobileType"/>
+        <result column="intro" property="intro"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="state" property="state"/>
+        <result column="apk_url" property="apkUrl"/>
+        <result column="game_download_switch" property="gameDownloadSwitch"/>
+        <result column="index_banner_switch" property="indexBannerSwitch"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, version, is_force AS isForce, mobile_type AS mobileType, intro, created_at AS createdAt, updated_at AS updatedAt, created_by AS createdBy, state, apk_url AS apkUrl, game_download_switch AS gameDownloadSwitch, index_banner_switch AS indexBannerSwitch
+    </sql>
+
+    <!--
+       获取app版本设置信息：
+       如：是否强制跟新，是否关闭游戏下载开关，是否关闭广告banner开关，是否强制更新等等信息
+     -->
+    <select id="queryAppVersionInfo" resultType="java.util.HashMap">
+    	SELECT
+			vsn.version AS version,
+			vsn.is_force AS is_force,
+	        vsn.is_auth  AS is_auth,
+	        vsn.index_banner_switch AS index_banner_switch,
+			vchlist.channel_code AS channel_code,
+			vchn.game_download_switch AS game_download_switch
+
+		FROM
+			t_sys_version vsn
+			INNER JOIN t_sys_version_channel vchn
+			INNER JOIN t_sys_version_channellist vchlist
+			ON vsn.id = vchn.version_id
+			AND vchn.channel_code = vchlist.channel_code
+			AND vsn.version = #{version}
+			AND vsn.mobile_type =  #{mobile_type}
+			AND vchn.channel_code = #{channel_code}
+		    order by vchn.updated_at desc LIMIT 1
+    </select>
+
+
+</mapper>
