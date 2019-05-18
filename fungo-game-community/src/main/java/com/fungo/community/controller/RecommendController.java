@@ -19,6 +19,7 @@ import com.game.common.dto.community.CommunityOutBean;
 import com.game.common.dto.community.FollowUserOutBean;
 import com.game.common.dto.community.MoodInputPageDto;
 import com.game.common.dto.community.MoodOutBean;
+import com.game.common.dto.user.MemberDto;
 import com.game.common.repo.cache.facade.FungoCacheMood;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
@@ -411,14 +412,14 @@ public class RecommendController {
 
         //!fixme 关联用户 和 游戏评论
         //按规则一 查询出官方推荐的玩家数据
-        List<Member> members = iCommunityService.getRecomMembers(inputPageDto.getLimit(), memberId);
+        List<MemberDto> members = iCommunityService.getRecomMembers(inputPageDto.getLimit(), memberId);
 
 
-        Page<Member> pageFormat = pageFormat(members, inputPageDto.getPage(), inputPageDto.getLimit());
+        Page<MemberDto> pageFormat = pageFormat(members, inputPageDto.getPage(), inputPageDto.getLimit());
         members = pageFormat.getRecords();
 
 
-        for (Member member : members) {
+        for (MemberDto member : members) {
 
             FollowUserOutBean bean = new FollowUserOutBean();
             bean.setAvatar(member.getAvatar());
@@ -431,12 +432,25 @@ public class RecommendController {
             bean.setUsername(member.getUserName());
             bean.setFollowed(member.isFollowed());
 
+
             try {
-                bean.setStatusImg(userService.getStatusImage(member.getId()));
+
+                //!fixme  获取用户状态icon
+                //bean.setStatusImg(userService.getStatusImage(member.getId()));
+
+                ResultDto<List<HashMap<String, Object>>> statusImageRs = systemFeignClient.getStatusImage(member.getId());
+                if (null != statusImageRs) {
+                    List<HashMap<String, Object>> statusImageList = statusImageRs.getData();
+                    if (null != statusImageList && !statusImageList.isEmpty()) {
+                        bean.setStatusImg(statusImageList);
+                    }
+                }
+
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+
+
             if (!CommonUtil.isNull(member.getSign())) {
                 bean.setSign(member.getSign());
             } else {
@@ -501,10 +515,8 @@ public class RecommendController {
     }
 
 
-
-
     //手动分页
-    public Page<Member> pageFormat(List<Member> members, int page, int limit) {
+    public Page<MemberDto> pageFormat(List<MemberDto> members, int page, int limit) {
         int totalCount = members.size();//总条数
 
         int totalPage = (int) Math.ceil((double) totalCount / limit);//总页数
@@ -517,7 +529,7 @@ public class RecommendController {
             members = members.subList(limit * (page - 1), limit * page);
         }
 
-        Page<Member> memberPage = new Page<Member>(page, limit);
+        Page<MemberDto> memberPage = new Page<MemberDto>(page, limit);
         memberPage.setRecords(members);
         memberPage.setCurrent(page);
         memberPage.setTotal(totalCount);

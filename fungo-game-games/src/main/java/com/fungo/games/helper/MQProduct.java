@@ -40,83 +40,19 @@ public class MQProduct {
     private MQFeignClient mqFeignClient;
 
 
-//    /** DIRECT模式
-//     * @param routingKey 路由关键字
-//     * @param msg 消息体
-//     */
-//    public void sendDirectMsg(String routingKey, String msg) {
-//        template.convertAndSend(MQConfig.DIRECT_QUEUE, msg);
-//    }
-//
-//    /**
-//     * sendFanout
-//     * @param message
-//     */
-//    public void sendFanout(Object message){
-//        String msg = (String) message;
-//        template.convertAndSend(MQConfig.FANOUT_EXCHANGE,"",msg);
-//    }
-//
-//    /**
-//     * @param routingKey 路由关键字
-//     * @param msg 消息体
-//     * @param exchange 交换机   TOPIC模式
-//     */
-//    public void sendExchangeMsg(String exchange, String routingKey, String msg) {
-//        template.convertAndSend(exchange, routingKey, msg);
-//    }
 
     /**
      * use Topic Pattern
      * "topic.key1"  路由键
      * @param message
      */
-    public void sendTopic(String topicExchange,String topicKey,Object message){
+   /* public void sendTopic(String topicExchange,String topicKey,Object message){
 //        rabbitTemplate.setConfirmCallback((message,))
         template.convertAndSend(topicExchange,topicKey,message);  // 可以匹配到 topic.# and topic.key1
 //        template.convertAndSend(MQConfig.TOPIC_EXCHANGE,"topic.key2",msg+"2");  // 可以匹配到 topic.#
-    }
-
-//    /**
-//     * @param map 消息headers属性
-//     * @param exchange 交换机    header模式
-//     * @param msg 消息体
-//     */
-//    public void sendHeadersMsg(String exchange, String msg, Map<String, Object> map) {
-//        template.convertAndSend(exchange, null, msg, message -> {
-//            message.getMessageProperties().getHeaders().putAll(map);
-//            return message;
-//        });
-//    }
-
-    /*public void communityInsert(CmmCommunityDto c){
-        sendTopic(MQConfig.TOPIC_EXCHANGE_COMMUNITY_INSERT,MQConfig.TOPIC_KEY_COMMUNITY_INSERT,c);
     }*/
 
-   /* public void gameInsert(GameDto game){
-        sendTopic(MQConfig.TOPIC_EXCHANGE_GAME_INSERT,MQConfig.TOPIC_KEY_GAME_INSERT,game);
-    }
 
-    public void gameUpdate(GameDto game){
-        sendTopic(MQConfig.TOPIC_EXCHANGE_GAME_UPDATE,MQConfig.TOPIC_KEY_GAME_UPDATE,game);
-    }*/
-
-    /*public void addGameTag(List<String> tegList , String categoryId, String id){
-        Map<String,Object> map = new ConcurrentHashMap<>();
-        map.put("tegList",tegList);
-        map.put("categoryId",categoryId);
-        map.put("id",id);
-        sendTopic(MQConfig.TOPIC_EXCHANGE_GAME_TAG,MQConfig.TOPIC_KEY_GAME_TAG,map);
-    }
-
-    public void gamereleaselogInsert(GameReleaseLogDto gameReleaseLogDto){
-        sendTopic(MQConfig.TOPIC_EXCHANGE_GAMERELEASELOG_INSERT,MQConfig.TOPIC_KEY_GAMERELEASELOG_INSERT,gameReleaseLogDto);
-    }
-
-
-    public void basActionInsert(BasActionDto basActionDto){
-        sendTopic(MQConfig.TOPIC_EXCHANGE_BASACTION_INSERT,MQConfig.TOPIC_KEY_BASACTION_INSERT,basActionDto);
-    }*/
 
     public void basActionInsertAllColumn(BasActionDto basActionDto) {
 //        sendTopic(MQConfig.TOPIC_EXCHANGE_BASACTION_INSERTALLCOLUMN,MQConfig.TOPIC_KEY_BASACTION_INSERTALLCOLUMN,basActionDto);
@@ -132,6 +68,7 @@ public class MQProduct {
     }
 
     public void selectOneAndUpdateAllColumnById(String memberId, String targetId, int targetType, int type, int state) {
+        //        sendTopic(MQConfig.TOPIC_EXCHANGE_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID,MQConfig.TOPIC_KEY_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID,map);
         Map<String,Object> map = new ConcurrentHashMap<>();
         map.put("memberId",memberId);
         map.put("targetId",targetId);
@@ -147,7 +84,7 @@ public class MQProduct {
         transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM.getName());
         transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_SYSTEM);
         sendFeignMq(transactionMessageDto);
-//        sendTopic(MQConfig.TOPIC_EXCHANGE_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID,MQConfig.TOPIC_KEY_BASACTION_SELECTONEANDUPDATEALLCOLUMNBYID,map);
+
     }
 
     /**
@@ -155,7 +92,16 @@ public class MQProduct {
      * @param basNoticeDto
      */
     public void basNoticeUpdateById(BasNoticeDto basNoticeDto) {
-        sendTopic(MQConfig.TOPIC_EXCHANGE_BASNOTICE_BASNOTICEUPDATEBYID,MQConfig.TOPIC_KEY_BASNOTICE_BASNOTICEUPDATEBYID,basNoticeDto);
+//        sendTopic(MQConfig.TOPIC_EXCHANGE_BASNOTICE_BASNOTICEUPDATEBYID,MQConfig.TOPIC_KEY_BASNOTICE_BASNOTICEUPDATEBYID,basNoticeDto);
+        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.GameMQDataType.GAME_DATA_TYPE_BASNOTICEUPDATEBYID.getCode());
+        mqResultDto.setBody(basNoticeDto);
+        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM.getName());
+        transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM.getName());
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_SYSTEM);
+        sendFeignMq(transactionMessageDto);
     }
 
     /**
@@ -163,12 +109,21 @@ public class MQProduct {
      * @param basNoticeDto
      * @param gameInviteDto
      */
-    public void basNoticeInsertAndGameInviteReturnId(BasNoticeDto basNoticeDto, GameInviteDto gameInviteDto,String appVersion) {
-        Map<String, String> map = new HashMap<>();
+    public void basNoticeInsertAndGameInviteReturnId(BasNoticeDto basNoticeDto) {
+        /*Map<String, String> map = new HashMap<>();
         map.put("basNotice", JSON.toJSONString(basNoticeDto));
         map.put("gameInvite", JSON.toJSONString(gameInviteDto));
-        map.put("appVersion", JSON.toJSONString(appVersion));
-        sendTopic(MQConfig.TOPIC_EXCHANGE_BASNOTICE_INSERTANDGAMEINVITERETURNID,MQConfig.TOPIC_KEY_BASNOTICE_INSERTANDGAMEINVITERETURNID,map);
+        map.put("appVersion", JSON.toJSONString(appVersion));*/
+//        sendTopic(MQConfig.TOPIC_EXCHANGE_BASNOTICE_INSERTANDGAMEINVITERETURNID,MQConfig.TOPIC_KEY_BASNOTICE_INSERTANDGAMEINVITERETURNID,map);
+        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.GameMQDataType.GAME_DATA_TYPE_BASNOTICEINSERT.getCode());
+        mqResultDto.setBody(basNoticeDto);
+        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM.getName());
+        transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM.getName());
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_SYSTEM);
+        sendFeignMq(transactionMessageDto);
     }
 
     /**
@@ -182,7 +137,16 @@ public class MQProduct {
         map.put("inviteMemberId", inviteMemberId);
         map.put("code", i+"");
         map.put("appVersion", appVersion);
-        sendTopic(MQConfig.TOPIC_EXCHANGE_MEMBER_PUSH,MQConfig.TOPIC_KEY_MEMBER_PUSH,map);
+//        sendTopic(MQConfig.TOPIC_EXCHANGE_MEMBER_PUSH,MQConfig.TOPIC_KEY_MEMBER_PUSH,map);
+        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.GameMQDataType.GAME_DATA_TYPE_PUSH.getCode());
+        mqResultDto.setBody(map);
+        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM.getName());
+        transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM.getName());
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_SYSTEM);
+        sendFeignMq(transactionMessageDto);
     }
 
 

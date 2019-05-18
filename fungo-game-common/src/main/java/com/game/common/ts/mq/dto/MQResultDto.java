@@ -65,7 +65,58 @@ public class MQResultDto {
          *     "sort": 0
          * }
          */
-        CMT_ACTION_MQ_TYPE_ACTION_ADD(2, "添加用户动作行为数据");
+        CMT_ACTION_MQ_TYPE_ACTION_ADD(2, "添加用户动作行为数据"),
+
+        /**
+         * 社区文章|心情用户执行任务:
+         *
+         * {
+         *     "consumerQueue": "msgFungoTopicQueue_system_user",
+         *     "filter": "",
+         *     "limit": 10,
+         *     "messageBody": "{"body":{"mbId":"01d1c44a2eda4fd3a1fe82e81abab9cf","requestId":"06f2f38999204b48a6b24429b8014455","taskGroupFlag":8485,"taskType":11,"typeCodeIdt":84870},"type":2}",
+         *     "messageDataType": 3,
+         *     "page": 1,
+         *     "pageNum": 1,
+         *     "pageSize": 10,
+         *     "routingKey": "msgFungoTopicSystemUser.cmtPostMQDoTask",
+         *     "sort": 0
+         * }
+         */
+        CMT_POST_MOOD_MQ_TYPE_DO_TASK(3, "社区文章|心情用户执行任务"),
+
+
+        /**
+         * 社区文章|心情用户 消息通知:
+         * {
+         *     "consumerQueue": "msgFungoTopicQueue_system_user",
+         *     "filter": "",
+         *     "limit": 10,
+         *     "messageBody": "{"body":{"appVersion":"2.4.8","replyToId":"","target_type":5,"target_id":"964a243b631045f984bc7561560e9179","information":"{\"user_avatar\":null,\"post_title\":\"这是带图的咯iOS9我是下午玉米\",\"post_content\":\"一样用肉在人做最空后哥哥\",\"post_id\":\"cc671601f1604bb99e59774e0804e916\",\"user_id\":\"f0a694da934c4c0e90aa821fa417342e\",\"user_name\":\"2019041851\",\"user_level\":2,\"comment_content\":\"不急\",\"type\":3}","eventType":2,"memberId":"004d12e674574cf4913ab27ca6ea697b"},"type":4}",
+         *     "messageDataType": 3,
+         *     "page": 1,
+         *     "pageNum": 1,
+         *     "pageSize": 10,
+         *     "routingKey": "msgFungoTopicSystemUser.cmtPostMQDoTask",
+         *     "sort": 0
+         * }
+         */
+        CMT_POST_MOOD_MQ_TYPE_ADD_NOTICE(4,"社区文章|心情用户消息通知"),
+
+
+        /**
+         * 社区 添加 游戏评论消息通知
+         */
+        CMT_POST_MOOD_MQ_TYPE_GAME_EVALUATION_ADD(5,"社区 添加游戏评论消息通知"),
+
+
+        /**
+         * 社区  修改 游戏评论消息通知
+         */
+        CMT_POST_MOOD_MQ_TYPE_GAME_EVALUATION_UPDATE(6,"社区 修改游戏评论消息通知")
+
+
+        ;
 
 
         private int code;
@@ -120,10 +171,9 @@ public class MQResultDto {
         //默认
         GAME_DATA_TYPE_BASACTIONINSERT(11, "com.game.common.dto.action.BasActionDto"),
         GAME_DATA_TYPE_SELECTONEANDUPDATEALLCOLUMNBYID(12, "java.util.HashMap"),
-        GAME_DATA_TYPE_GAMERELEASELOG(3, "com.game.common.dto.game.GameReleaseLogDto"),
-        GAME_DATA_TYPE_COUNTER(4, "java.util.HashMap"),
-        GAME_DATA_TYPE_COMMUNITYINSERT(5, "com.game.common.dto.community.CmmCommunityDto"),
-        GAME_MQ_DATA_TYPE_ADDGAMETAG(6,"java.util.HashMap"); // addGameTag方法
+        GAME_DATA_TYPE_BASNOTICEUPDATEBYID(13, "com.game.common.bean.advice.BasNoticeDto"),
+        GAME_DATA_TYPE_BASNOTICEINSERT(14, "com.game.common.bean.advice.BasNoticeDto"),
+        GAME_DATA_TYPE_PUSH(15, "java.util.HashMap");
 
 
         private int code;

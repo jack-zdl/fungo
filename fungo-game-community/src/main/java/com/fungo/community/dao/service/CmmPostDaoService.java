@@ -21,4 +21,13 @@ public interface CmmPostDaoService extends IService<CmmPost> {
      * @return
      */
     public List<Map> getHonorQualificationOfEssencePost();
+
+
+    /**
+     *  查询文章表中发表文章大于10条
+     * 前10名的用户
+     * @param ccnt
+     * @return
+     */
+    public List<String> getRecommendMembersFromCmmPost( long ccnt,  long limitSize,  List<String> wathMbsSet);
 }

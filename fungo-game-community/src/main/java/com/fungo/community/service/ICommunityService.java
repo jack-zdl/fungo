@@ -5,8 +5,10 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CommunityInputPageDto;
 import com.game.common.dto.community.CommunityMember;
 import com.game.common.dto.community.CommunityOutPageDto;
+import com.game.common.dto.user.MemberDto;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 public interface ICommunityService {
 
@@ -23,7 +25,7 @@ public interface ICommunityService {
 	/**
 	 * 社区列表
 	 * 请求地址：http://{{host}}/api/content/communitys
-	 * @param keyword
+	 * @param userId
 	 * @throws NoSuchMethodException
 	 * @throws InvocationTargetException
 	 * @throws IllegalAccessException
@@ -44,7 +46,7 @@ public interface ICommunityService {
 	 * @param currentMb_id 当前登录用户id
 	 * @return
 	 */
-//	List<Member> getRecomMembers(int limit, String currentMb_id);
+	List<MemberDto> getRecomMembers(int limit, String currentMb_id);
 	
 	
 }

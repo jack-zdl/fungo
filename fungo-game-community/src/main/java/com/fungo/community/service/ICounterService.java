@@ -12,6 +12,8 @@ public interface ICounterService {
 	//计数器
 	public boolean addCounter(String tableType, String fieldType, String id);
 
+	public boolean addCounter(String memberId,int type, ActionInput inputDto);//计数 - 增
+
 	//计数器 减数
 	public boolean subCounter(String tableType, String fieldType, String id);
 

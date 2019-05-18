@@ -5,7 +5,9 @@ import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
+import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.vo.MemberFollowerVo;
@@ -15,7 +17,9 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -43,11 +47,10 @@ public interface SystemFeignClient {
 
 
     /**
-     * 功能描述: 根据用户id集合查询用户详情
-     * mxf
+     * 功能描述: 根据用户id集合查询用户详情 state为null就不根据状态查询
      */
     @GetMapping(value = "/listMembersByids")
-    public ResultDto<List<MemberDto>> listMembersByids(@RequestBody List<String> ids);
+    public ResultDto<List<MemberDto>> listMembersByids(@RequestBody List<String> ids,@RequestParam(value = "state",required = false) Integer state);
 
 
     /**
@@ -132,9 +135,66 @@ public interface SystemFeignClient {
 
 
 
+    @PostMapping(value = "/exTask")
+    @ApiOperation(value="执行任务")
+    public ResultDto<Map<String, Object>> exTask(@RequestBody TaskDto taskDto);
 
 
 
+
+    @GetMapping("/getUserCard")
+    @ApiOperation(value="获取会员信息")
+    public ResultDto<AuthorBean> getUserCard(@RequestParam("cardId") String cardId, @RequestParam("memberId") String memberId);
+
+
+
+    @GetMapping("/getStatusImage")
+    @ApiOperation(value="根据用户id获取用户身份图标")
+    public ResultDto<List<HashMap<String, Object>>> getStatusImage(@RequestParam("memberId") String memberId);
+
+
+
+    /**
+     * 查询指定用户所关注的其他用户列表
+     */
+    @GetMapping("/listWatchMebmber")
+    @ApiOperation(value="查询指定用户所关注的其他用户列表")
+    public ResultDto<List<MemberDto>> listWatchMebmber(@RequestParam("limit") Integer limit, @RequestParam("currentMbId") String currentMbId);
+
+
+
+
+    /**
+     * 功能描述: .找出官方推荐玩家
+     */
+    @GetMapping(value = "/listRecommendedMebmber")
+    public ResultDto<List<MemberDto>> listRecommendedMebmber(@RequestParam("limit") Integer limit,@RequestParam("currentMbId") String currentMbId,
+                                                             @RequestBody List<String> wathMbsSet);
+
+
+
+
+    @GetMapping("/getIncentRuleRankById")
+    @ApiOperation(value="获取用户级别、身份、荣誉规则")
+    public ResultDto<IncentRuleRankDto> getIncentRuleRankById(@RequestParam("id") String id);
+
+
+
+
+    @GetMapping(value = "/listActionByCondition")
+    @ApiOperation(value="根据条件获取动作")
+    public ResultDto<List<BasActionDto>> listActionByCondition(@RequestBody BasActionDto basActionDto);
+
+
+    /**
+     * 社区使用
+     */
+    @GetMapping(value = "/getMemberFollower1")
+    public ResultDto<MemberFollowerDto> getMemberFollower1( @RequestBody MemberFollowerDto memberFollowerDto);
+
+
+
+  
 
     //-------------
 }

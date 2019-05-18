@@ -3,6 +3,7 @@ package com.fungo.community.dao.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.community.entity.CmmPost;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,5 +53,14 @@ public interface CmmPostDao extends BaseMapper<CmmPost> {
      */
     public List<Map> getHonorQualificationOfEssencePost();
 
+
+    /**
+     *  查询文章表中发表文章大于10条
+     * 前10名的用户
+     * @param ccnt
+     * @return
+     */
+    public List<String> getRecommendMembersFromCmmPost(@Param("ccnt") long ccnt, @Param("limitSize") long limitSize,
+                                                       @Param("wathMbsSet") List<String> wathMbsSet);
 
 }

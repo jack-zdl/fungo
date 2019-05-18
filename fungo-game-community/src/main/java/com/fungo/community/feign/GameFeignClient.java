@@ -4,10 +4,12 @@ package com.fungo.community.feign;
 import com.game.common.bean.MemberPulishFromCommunity;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.game.GameEvaluationDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -46,6 +48,7 @@ public interface GameFeignClient {
     public ResultDto<GameDto> selectGameDetails(String gameId, Integer state);
 
 
+
     /**
      * 查询游戏评论表中发表评论大于X条，前Y名的用户
      * @param x
@@ -54,8 +57,7 @@ public interface GameFeignClient {
      */
     @ApiOperation(value = "查询游戏评论表中发表评论大于X条，前Y名的用户", notes = "")
     @RequestMapping(value = "/api/game/getRecommendMembersFromEvaluation", method = RequestMethod.POST)
-    public ResultDto<List<String>> getRecommendMembersFromEvaluation(Integer x, Integer y);
-
+    ResultDto<List<String>> getRecommendMembersFromEvaluation(@RequestParam("x") Integer x, @RequestParam("y") Integer y, @RequestParam("wathMbsSet") List<String> wathMbsSet);
 
     /**
      * 根据游戏id查询参与评论的用户
@@ -67,6 +69,18 @@ public interface GameFeignClient {
     @RequestMapping(value = "/api/game/getMemberOrder", method = RequestMethod.POST)
     public ResultDto<List<MemberPulishFromCommunity>> getMemberOrder(String gameId, Integer state);
 
+
+
+    @ApiOperation(value = "gameEvaluationService.selectOne", notes = "")
+    @RequestMapping(value = "/api/game/getGameEvaluationSelectOne", method = RequestMethod.POST)
+    ResultDto<GameEvaluationDto> getGameEvaluationSelectOne(@RequestParam("memberId") String memberId, @RequestParam("targetId") String targetId);
+
+
+
+
+    @ApiOperation(value = "gameEvaluationService.selectById", notes = "")
+    @RequestMapping(value = "/api/game/getGameEvaluationSelectById", method = RequestMethod.POST)
+    ResultDto<GameEvaluationDto> getGameEvaluationSelectById(@RequestParam("commentId") String commentId);
 
     //----------
 }

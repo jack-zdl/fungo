@@ -1,13 +1,14 @@
 package Test;
 
 import com.alibaba.fastjson.JSON;
-import com.game.common.dto.action.BasActionDto;
+import com.game.common.consts.Setting;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
 import com.game.common.ts.mq.enums.RabbitMQEnum;
 import org.junit.Test;
 
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class JSONTest {
 
@@ -15,14 +16,14 @@ public class JSONTest {
 
     @Test
     public void testJson(){
-        BasActionDto basActionDtoAdd = new BasActionDto();
-        basActionDtoAdd.setCreatedAt(new Date());
-        basActionDtoAdd.setUpdatedAt(new Date());
-        basActionDtoAdd.setMemberId("01d1c44a2eda4fd3a1fe82e81abab9cf");
-        basActionDtoAdd.setType(11);
-        basActionDtoAdd.setTargetType(1);
-        basActionDtoAdd.setTargetId("01d1c44a2eda4fd3a1fe82e81abab9cf");
-        basActionDtoAdd.setState(0);
+        Map<String,Object> noticeMap = new HashMap<>();
+        noticeMap.put("eventType", Setting.ACTION_TYPE_COMMENT);
+        noticeMap.put("memberId", "004d12e674574cf4913ab27ca6ea697b");
+        noticeMap.put("target_id", "964a243b631045f984bc7561560e9179");
+        noticeMap.put("target_type", Setting.RES_TYPE_COMMENT);
+        noticeMap.put("information", "{\"user_avatar\":null,\"post_title\":\"这是带图的咯iOS9我是下午玉米\",\"post_content\":\"一样用肉在人做最空后哥哥\",\"post_id\":\"cc671601f1604bb99e59774e0804e916\",\"user_id\":\"f0a694da934c4c0e90aa821fa417342e\",\"user_name\":\"2019041851\",\"user_level\":2,\"comment_content\":\"不急\",\"type\":3}") ;
+        noticeMap.put("appVersion", "2.4.8");
+        noticeMap.put("replyToId", "");
 
         TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
 
@@ -35,14 +36,14 @@ public class JSONTest {
         //路由key
         StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
         routinKey.deleteCharAt(routinKey.length() - 1 );
-        routinKey.append("ACTION_ADD");
+        routinKey.append("cmtPostMQDoTask");
 
         transactionMessageDto.setRoutingKey(routinKey.toString());
 
         MQResultDto mqResultDto = new MQResultDto();
         mqResultDto.setType(MQResultDto.CommunityEnum.CMT_ACTION_MQ_TYPE_ACTION_ADD.getCode());
 
-        mqResultDto.setBody(basActionDtoAdd);
+        mqResultDto.setBody(noticeMap);
 
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         System.out.println("----------------: "+ JSON.toJSONString(transactionMessageDto));

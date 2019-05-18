@@ -70,7 +70,7 @@ public class MQClient {
      * @param deliveryTag
      * @param channel
      */
-    @RabbitListener(queues = MQConfig.TOPIC_QUEUE_GAME_UPDATE)
+    /*@RabbitListener(queues = MQConfig.TOPIC_QUEUE_GAME_UPDATE)
     public void topicReceiveGameUpdate(@Payload GameDto gameDto, Message message, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag, Channel channel){
         logger.info("mq消费开始"+MQConfig.TOPIC_QUEUE_GAME_UPDATE);
         System.out.println("mq消费信息" + gameDto.toString());
@@ -105,7 +105,7 @@ public class MQClient {
             e.printStackTrace();
         }
 
-    }
+    }*/
 
     /**
      * 插入游戏版本日志审批
@@ -114,7 +114,7 @@ public class MQClient {
      * @param deliveryTag
      * @param channel
      */
-    @RabbitListener(queues = MQConfig.TOPIC_QUEUE_GAME_INSERT)
+    /*@RabbitListener(queues = MQConfig.TOPIC_QUEUE_GAME_INSERT)
     public void topicReceiveGameInsert(@Payload GameReleaseLogDto gameReleaseLogDto, Message message, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag, Channel channel){
         logger.info("mq消费开始"+MQConfig.TOPIC_QUEUE_GAME_INSERT);
         System.out.println("mq消费信息" + gameReleaseLogDto.toString());
@@ -146,7 +146,7 @@ public class MQClient {
             logger.error("mq消费异常",e);
             e.printStackTrace();
         }
-    }
+    }*/
 
 
     /**
@@ -156,7 +156,7 @@ public class MQClient {
      * @param deliveryTag
      * @param channel
      */
-    @RabbitListener(queues = MQConfig.TOPIC_QUEUE_GAME_INSERT)
+    /*@RabbitListener(queues = MQConfig.TOPIC_QUEUE_GAME_INSERT)
     public void topicReceiveGameReleaseLogInsert( @Payload GameDto gameDto, Message message, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag, Channel channel){
         logger.info("mq消费开始"+MQConfig.TOPIC_QUEUE_GAME_INSERT);
         System.out.println("mq消费信息" + gameDto.toString());
@@ -188,7 +188,7 @@ public class MQClient {
             logger.error("mq消费异常",e);
             e.printStackTrace();
         }
-    }
+    }*/
 
 
     /**
@@ -200,7 +200,7 @@ public class MQClient {
      * @param deliveryTag
      * @param channel
      */
-    @RabbitListener(queues = MQConfig.TOPIC_QUEUE_GAME_INSERT)
+    /*@RabbitListener(queues = MQConfig.TOPIC_QUEUE_GAME_INSERT)
     public void topicReceiveAddGameTagInsert(@Payload List<String> tags,@Payload String categoryId,@Payload String gameId, Message message, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag, Channel channel){
         logger.info("mq消费开始"+MQConfig.TOPIC_QUEUE_GAME_INSERT);
 //        System.out.println("mq消费信息" + gameDto.toString());
@@ -237,7 +237,7 @@ public class MQClient {
             logger.error("mq消费异常",e);
             e.printStackTrace();
         }
-    }
+    }*/
 
 
     /**
@@ -246,7 +246,7 @@ public class MQClient {
      * @param deliveryTag
      * @param channel
      */
-    @RabbitListener(queues = MQConfig.TOPIC_QUEUE_GAME_INSERT)
+    /*@RabbitListener(queues = MQConfig.TOPIC_QUEUE_GAME_INSERT)
     public void topicGameInviteInsert(@Payload Map<String,String> map, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag, Channel channel){
         logger.info("mq消费开始"+MQConfig.TOPIC_QUEUE_GAME_INSERT);
 //        System.out.println("mq消费信息" + gameDto.toString());
@@ -285,7 +285,7 @@ public class MQClient {
             logger.error("mq消费异常",e);
             e.printStackTrace();
         }
-    }
+    }*/
 
     /**
      * 计数器
@@ -293,7 +293,7 @@ public class MQClient {
      * @param deliveryTag
      * @param channel
      */
-    @RabbitListener(queues = MQConfig.TOPIC_QUEUE_GAME_INSERT)
+    /*@RabbitListener(queues = MQConfig.TOPIC_QUEUE_GAME_INSERT)
     public void updateCounter(@Payload Map<String,String> map, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag, Channel channel){
         logger.info("mq消费开始"+MQConfig.TOPIC_QUEUE_GAME_INSERT);
 //        System.out.println("mq消费信息" + gameDto.toString());
@@ -324,7 +324,7 @@ public class MQClient {
             logger.error("mq消费异常",e);
             e.printStackTrace();
         }
-    }
+    }*/
 
 
 

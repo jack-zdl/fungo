@@ -28,21 +28,17 @@ import com.game.common.dto.*;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.*;
 import com.game.common.dto.community.StreamInfo;
+import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
-
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
 import com.game.common.ts.mq.enums.RabbitMQEnum;
-import com.game.common.util.CommonUtil;
-import com.game.common.util.CommonUtils;
-import com.game.common.util.PKUtil;
-import com.game.common.util.PageTools;
+import com.game.common.util.*;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.EmojiDealUtil;
 import com.game.common.util.emoji.FilterEmojiUtil;
-import com.game.common.util.exception.BusinessException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,8 +95,7 @@ public class PostServiceImpl implements IPostService {
     @Autowired
     private TSFeignClient tsFeignClient;
 
-    @Autowired
-    private  ICounterService iCounterService;
+
 
   /*
    @Autowired
@@ -168,7 +163,7 @@ public class PostServiceImpl implements IPostService {
 
         List<String> idsList = new ArrayList<String>();
         idsList.add(user_id);
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList,null);
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -363,7 +358,7 @@ public class PostServiceImpl implements IPostService {
 
         //路由key
         StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
-        routinKey.deleteCharAt(routinKey.length() - 1 );
+        routinKey.deleteCharAt(routinKey.length() - 1);
         routinKey.append("ACTION_ADD");
 
         transactionMessageDto.setRoutingKey(routinKey.toString());
@@ -376,10 +371,8 @@ public class PostServiceImpl implements IPostService {
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         //执行MQ发送
         ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
-        logger.info("--添加帖子-执行添加用户动作行为数据--MQ执行结果：messageResult", JSON.toJSONString(messageResult));
+        logger.info("--添加帖子-执行添加用户动作行为数据--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
         //-----start
-
-
 
 
 //		ResultDto<String> finishTask = logService.finishTask(user_id, "POST_ADD", "");
@@ -391,12 +384,69 @@ public class PostServiceImpl implements IPostService {
         //V2.4.6版本任务
         String tips = "";
         //1 fungo币
-        Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(user_id, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+        /*Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(user_id, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                 MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_ARTICLE_COIN.code());
+        */
 
         //2 经验值
+        /*
         Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(user_id, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                 MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_ARTICLE_EXP.code());
+        */
+
+        //任务：
+        // 1.调用微服务接口
+        // 2.执行失败，发送MQ消息
+
+        Map<String, Object> resMapCoin = null;
+        Map<String, Object> resMapExp = null;
+
+        String uuidCoin = UUIDUtils.getUUID();
+        String uuidExp = UUIDUtils.getUUID();
+
+        //coin task
+        TaskDto taskDtoCoin = new TaskDto();
+        taskDtoCoin.setRequestId(uuidCoin);
+        taskDtoCoin.setMbId(user_id);
+        taskDtoCoin.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
+        taskDtoCoin.setTaskType(MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT);
+        taskDtoCoin.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_ARTICLE_COIN.code());
+
+
+        //exp task
+        TaskDto taskDtoExp = new TaskDto();
+        taskDtoExp.setRequestId(uuidExp);
+        taskDtoExp.setMbId(user_id);
+        taskDtoExp.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
+        taskDtoExp.setTaskType(MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT);
+        taskDtoExp.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_ARTICLE_EXP.code());
+
+        try {
+
+            //coin task
+            ResultDto<Map<String, Object>> coinTaskResultDto = systemFeignClient.exTask(taskDtoCoin);
+            if (null != coinTaskResultDto) {
+                resMapCoin = coinTaskResultDto.getData();
+            }
+
+            //exp task
+            ResultDto<Map<String, Object>> expTaskResultDto = systemFeignClient.exTask(taskDtoExp);
+            if (null != expTaskResultDto) {
+                resMapExp = expTaskResultDto.getData();
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            //出现异常mq发送
+            //coin task
+            doExcTaskSendMQ(taskDtoCoin);
+
+            //exp task
+            doExcTaskSendMQ(taskDtoExp);
+
+        }
+
 
         if (null != resMapCoin && !resMapCoin.isEmpty()) {
             if (null != resMapExp && !resMapExp.isEmpty()) {
@@ -415,36 +465,69 @@ public class PostServiceImpl implements IPostService {
         ActionInput actioninput = new ActionInput();
         actioninput.setTarget_type(4);
         actioninput.setTarget_id(postInput.getCommunity_id());
-        boolean addCounter = iActionService.addCounter(user_id, 7, actioninput);
+        boolean addCounter = iCountService.addCounter(user_id, 7, actioninput);
+
+        ResultDto<ObjectId> resultDto = new ResultDto<ObjectId>();
 
         if (flag == true && addCounter) {
 
-            ResultDto<ObjectId> re = new ResultDto<ObjectId>();
             ObjectId o = new ObjectId();
             o.setId(post.getId());
-            re.setData(o);
+            resultDto.setData(o);
 
             if (StringUtils.isNotBlank(tips)) {
-                re.show(tips);
+                resultDto.show(tips);
             } else {
-                re.show("发布成功!");
+                resultDto.show("发布成功!");
             }
-
-            //clear redis cache
-            //首页文章帖子列表(v2.4)
-            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
-            //帖子列表
-            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
-            //社区置顶文章(2.4.3)
-            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, postInput.getCommunity_id(), null);
-            //我的文章(2.4.3)
-            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
-            return re;
         }
 
+        //clear redis cache
+        //首页文章帖子列表(v2.4)
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
+        //帖子列表
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
+        //社区置顶文章(2.4.3)
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, postInput.getCommunity_id(), null);
+        //我的文章(2.4.3)
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
 
-        throw new BusinessException("-1", "操作失败");
+        return resultDto;
     }
+
+
+
+    //社区文章用户执行任务
+    private void doExcTaskSendMQ(TaskDto taskDto) {
+        //-----start
+        //MQ 业务数据发送给系统用户业务处理
+        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+
+        //消息类型
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
+
+        //发送的队列
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+
+        //路由key
+        StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+        routinKey.deleteCharAt(routinKey.length() - 1);
+        routinKey.append("cmtPostMQDoTask");
+
+        transactionMessageDto.setRoutingKey(routinKey.toString());
+
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_DO_TASK.getCode());
+
+        mqResultDto.setBody(taskDto);
+
+        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+        //执行MQ发送
+        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        logger.info("--社区文章用户发布文章执行任务--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
+        //-----start
+    }
+
 
     @Override
     @Transactional
@@ -466,7 +549,7 @@ public class PostServiceImpl implements IPostService {
 
         List<String> idsList = new ArrayList<String>();
         idsList.add(userId);
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList ,null);
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -571,7 +654,7 @@ public class PostServiceImpl implements IPostService {
 
         //路由key
         StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
-        routinKey.deleteCharAt(routinKey.length() - 1 );
+        routinKey.deleteCharAt(routinKey.length() - 1);
         routinKey.append("deletePostSubtractExpLevel");
 
         transactionMessageDto.setRoutingKey(routinKey.toString());
@@ -588,13 +671,13 @@ public class PostServiceImpl implements IPostService {
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         //执行MQ发送
         ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
-        logger.info("--删除帖子执行扣减用户经验值和等级--MQ执行结果：messageResult", JSON.toJSONString(messageResult));
+        logger.info("--删除帖子执行扣减用户经验值和等级--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
         //-----start
 
         ActionInput actioninput = new ActionInput();
         actioninput.setTarget_type(4);
         actioninput.setTarget_id(cmmPost.getCommunityId());
-        boolean b = iCounterService.subCounter(userId, 7, actioninput);
+        boolean b = iCountService.subCounter(userId, 7, actioninput);
 
         //clear redis cache
         //文章内容html-内容
@@ -637,9 +720,32 @@ public class PostServiceImpl implements IPostService {
         if (post == null) {
             return ResultDto.error("223", "帖子不存在");
         }
-        if (memberService.selectById(userId) == null) {
+
+
+        //!fixme 查询用户数据
+        /*
+            if (memberService.selectById(userId) == null) {
             return ResultDto.error("126", "用户不存在");
         }
+        */
+
+        List<String> idsList = new ArrayList<String>();
+        idsList.add(userId);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList ,null);
+
+        MemberDto memberDto = null;
+        if (null != listMembersByids) {
+            List<MemberDto> memberDtoList = listMembersByids.getData();
+            if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                memberDto = memberDtoList.get(0);
+            }
+        }
+
+        if (memberDto == null) {
+            return ResultDto.error("126", "用户不存在");
+        }
+
+
         if (!post.getMemberId().equals(userId)) {
             return ResultDto.error("224", "用户和帖子不匹配");
         }
@@ -685,13 +791,15 @@ public class PostServiceImpl implements IPostService {
         } else {
             post.setVideo("");
         }
-        if (title != null)
+        if (title != null) {
             post.setTitle(postInput.getTitle());
-        if (content != null)
+        }
+        if (content != null) {
             post.setContent(txtcontent);
-        if (html != null)
+        }
+        if (html != null) {
             post.setHtmlOrigin(SerUtils.saveOrigin(postInput.getHtml()));
-
+        }
         if (!CommonUtil.isNull(video)) {
             post.setVideo(video);
         } else {
@@ -899,7 +1007,15 @@ public class PostServiceImpl implements IPostService {
         if (cmmPost.getGameList() != null) {
             gameMapList = mapper.readValue(cmmPost.getGameList(), ArrayList.class);
             for (Map<String, Object> m : gameMapList) {
-                m.put("rating", iGameService.getGameRating((String) m.get("objectId")) + "");
+
+                //!fixme 获取游戏平均分
+                //m.put("rating", iGameService.getGameRating((String) m.get("objectId")) + "");
+
+                //获取游戏平均分
+                String gameId = (String) m.get("objectId");
+                double gameAverage = gameFeignClient.selectGameAverage(gameId, 0);
+                m.put("gameRating", gameAverage);
+
             }
         }
 
@@ -1037,16 +1153,62 @@ public class PostServiceImpl implements IPostService {
         //查询是否关注、收藏、点赞
         if (userId != null) {
 
-            Member user = memberService.selectById(userId);
+            //!fixme 查询用户数据
+            //Member user = memberService.selectById(userId);
 
-            if (user != null) {
+            List<String> idsList = new ArrayList<String>();
+            idsList.add(userId);
+            ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList ,null);
 
+            MemberDto memberDto = null;
+            if (null != listMembersByids) {
+                List<MemberDto> memberDtoList = listMembersByids.getData();
+                if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                    memberDto = memberDtoList.get(0);
+                }
+            }
+
+            if (memberDto != null) {
+
+                //!fixme 查询点赞数和收藏数
                 // 	int followed = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).eq("target_id", author.getId()).eq("state", 0).eq("member_id", userId));
+               /*
                 int like =
                         actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).eq("target_id", cmmPost.getId()).eq("state", 0).eq("member_id", userId));
                 int collected =
                         actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 4).eq("target_id", cmmPost.getId()).eq("state", 0).eq("member_id", userId));
+                 */
 
+                //---like 点赞 | 0
+                BasActionDto basActionDtoLike = new BasActionDto();
+
+                basActionDtoLike.setMemberId(userId);
+                basActionDtoLike.setType(0);
+                basActionDtoLike.setState(0);
+                basActionDtoLike.setTargetId(cmmPost.getId());
+
+                ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
+
+                int like = 0;
+                if (null != resultDtoLike) {
+                    like = resultDtoLike.getData();
+                }
+
+
+                //--收藏 | 4
+                BasActionDto basActionDtoCollected = new BasActionDto();
+
+                basActionDtoCollected.setMemberId(userId);
+                basActionDtoCollected.setType(4);
+                basActionDtoCollected.setState(0);
+                basActionDtoCollected.setTargetId(cmmPost.getId());
+
+                ResultDto<Integer> resultDtoCollected = systemFeignClient.countActionNum(basActionDtoCollected);
+
+                int collected = 0;
+                if (null != resultDtoCollected) {
+                    collected = resultDtoCollected.getData();
+                }
 
                 //boolean is_followed = followed >0 ? true:false;
                 boolean is_liked = like > 0 ? true : false;
@@ -1061,7 +1223,13 @@ public class PostServiceImpl implements IPostService {
         out.setLink_community(communityMap);
 
         //!fixme 获取用户数据
-        out.setAuthor(IUserService.getUserCard(cmmPost.getMemberId(), userId));
+        //out.setAuthor(IUserService.getUserCard(cmmPost.getMemberId(), userId));
+
+        ResultDto<AuthorBean> userCardResult = systemFeignClient.getUserCard(cmmPost.getMemberId(), userId);
+        if (null != userCardResult) {
+            AuthorBean authorBean = userCardResult.getData();
+            out.setAuthor(authorBean);
+        }
 
 
         out.setType(cmmPost.getType());
@@ -1162,7 +1330,15 @@ public class PostServiceImpl implements IPostService {
 
             PostOutBean bean = new PostOutBean();
 
-            bean.setAuthor(iUserService.getAuthor(post.getMemberId()));
+            //!fixme 查询用户数据
+            //bean.setAuthor(iUserService.getAuthor(post.getMemberId()));
+
+            ResultDto<AuthorBean> authorBeanResultDto = systemFeignClient.getAuthor(post.getMemberId());
+            if (null != authorBeanResultDto) {
+                AuthorBean authorBean = authorBeanResultDto.getData();
+                bean.setAuthor(authorBean);
+            }
+
             if (bean.getAuthor() == null) {
                 continue;
             }
@@ -1215,7 +1391,25 @@ public class PostServiceImpl implements IPostService {
             if (CommonUtil.isNull(userId)) {
                 bean.setLiked(false);
             } else {
-                int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", post.getId()).eq("member_id", userId));
+
+                //!fixme 查询用户点赞数
+                //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", post.getId()).eq("member_id", userId));
+
+
+                BasActionDto basActionDto = new BasActionDto();
+                basActionDto.setMemberId(userId);
+                basActionDto.setType(0);
+                basActionDto.setState(0);
+                basActionDto.setTargetId(post.getId());
+
+                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                int liked = 0;
+                if (null != resultDto) {
+                    liked = resultDto.getData();
+                }
+
+
                 bean.setLiked(liked > 0 ? true : false);
             }
 

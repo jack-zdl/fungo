@@ -16,6 +16,7 @@ import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.service.ICommunityService;
 import com.game.common.bean.MemberPulishFromCommunity;
 import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
@@ -23,7 +24,10 @@ import com.game.common.dto.community.CommunityInputPageDto;
 import com.game.common.dto.community.CommunityMember;
 import com.game.common.dto.community.CommunityOut;
 import com.game.common.dto.community.CommunityOutPageDto;
+import com.game.common.dto.user.IncentRankedDto;
+import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
+import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.repo.cache.facade.FungoCacheCommunity;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
@@ -50,6 +54,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
     @Autowired
     private CmmCommunityDao communityDao;
+
 
     @Autowired
     private FungoCacheCommunity fungoCacheCommunity;
@@ -136,7 +141,7 @@ public class CommunityServiceImpl implements ICommunityService {
         //!fixme 查询是否关注 根据用户id查询用户详情
         List<String> idsList = new ArrayList<String>();
         idsList.add(userId);
-        ResultDto<List<MemberDto>> mbsListResultDto = systemFeignClient.listMembersByids(idsList);
+        ResultDto<List<MemberDto>> mbsListResultDto = systemFeignClient.listMembersByids(idsList, null);
 
         MemberDto memberDto = null;
         if (null != mbsListResultDto) {
@@ -199,39 +204,181 @@ public class CommunityServiceImpl implements ICommunityService {
                 map.put("gameId", community.getGameId());
             }
 
-            //!fixme 从文章表、社区一级评论表和游戏评论表获取用户数量
+            //!fixme 从文章表、社区一级评论表 和 游戏评论表获取用户数量
+            boolean isOrder = false;
+            List<MemberPulishFromCommunity> memberPulishCountOrderList = new ArrayList<MemberPulishFromCommunity>();
+
             List<MemberPulishFromCommunity> mlist = communityDao.getMemberOrder(page, map);
 
-            ObjectMapper mapper = new ObjectMapper();
-            for (MemberPulishFromCommunity m : mlist) {
-                Map<String, Object> mp = new HashMap<>();
-                mp.put("objectId", m.getMemberId());
-                Member member = menberService.selectById(m.getMemberId());
-                if (member != null) {
-                    mp.put("avatar", member.getAvatar());
+            //从游戏评论表获取用户数量
+            ResultDto<List<MemberPulishFromCommunity>> gameMemberCtmRs = gameFeignClient.getMemberOrder(community.getGameId(), null);
+            if (null != gameMemberCtmRs) {
+
+                List<MemberPulishFromCommunity> pulishFromCmtList = gameMemberCtmRs.getData();
+
+                if (null != pulishFromCmtList && !pulishFromCmtList.isEmpty()) {
+
+                    if (null != mlist && !mlist.isEmpty()) {
+
+                        isOrder = true;
+
+                        //遍历 游戏评论用户
+                        for (MemberPulishFromCommunity gamePulisher : pulishFromCmtList) {
+
+                            String gameMemberId = gamePulisher.getMemberId();
+
+                            //遍历文章和社区评论用户
+                            for (MemberPulishFromCommunity postCmtPulisher : mlist) {
+
+                                String postCmtMemberId = postCmtPulisher.getMemberId();
+                                if (StringUtils.equalsIgnoreCase(gameMemberId, postCmtMemberId)) {
+
+                                    //社区评论数
+                                    postCmtPulisher.setCommentNum(postCmtPulisher.getCommentNum() + gamePulisher.getCommentNum());
+
+                                    //文章评论数
+                                    postCmtPulisher.setPostNum(postCmtPulisher.getPostNum() + gamePulisher.getPostNum());
+
+                                    //平均评论数
+                                    postCmtPulisher.setEvaNum(postCmtPulisher.getEvaNum() + gamePulisher.getEvaNum());
+                                } else {
+                                    mlist.add(gamePulisher);
+                                }
+                            }
+                        }
+
+                        pulishFromCmtList.clear();
+
+                    } else {
+                        memberPulishCountOrderList.addAll(pulishFromCmtList);
+                    }
+
+                } else {
+                    memberPulishCountOrderList.addAll(mlist);
+                }
+            } else {
+                memberPulishCountOrderList.addAll(mlist);
+            }
+
+
+            //对所有用户按 CommentNum + PostNum + EvaNum ，从大到小排序 (冒泡排序)
+            if (isOrder) {
+                int pulisherSize = memberPulishCountOrderList.size();
+                for (int i = 0; i < pulisherSize - 1; i++) {
+
+                    for (int j = 0; j < pulisherSize - 1 - i; j++) {
+
+                        MemberPulishFromCommunity pulishPre = memberPulishCountOrderList.get(j);
+                        int pulishCountPre = pulishPre.getCommentNum() + pulishPre.getEvaNum() + pulishPre.getPostNum();
+
+                        MemberPulishFromCommunity pulishNext = memberPulishCountOrderList.get(j + 1);
+                        int pulishCountNext = pulishNext.getCommentNum() + pulishNext.getEvaNum() + pulishNext.getPostNum();
+
+                        if (pulishCountPre < pulishCountNext) {
+
+                            MemberPulishFromCommunity temp = pulishPre;
+
+                            memberPulishCountOrderList.set(j, pulishNext);
+                            memberPulishCountOrderList.set(j + 1, temp);
+
+                        }
+                    }
                 }
 
-                //!fixme 根据用户id和用户权益(等级、身份、荣誉)类型，获取用户权益数据
-                IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", member.getId()).eq("rank_type", 2));
-                if (ranked != null) {
-                    IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
-                    if (rank != null) {
-                        String rankinf = rank.getRankImgs();
-                        ArrayList<HashMap<String, Object>> infolist = mapper.readValue(rankinf, ArrayList.class);
-                        mp.put("statusImg", infolist);
+                //清除
+                mlist.clear();
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            for (MemberPulishFromCommunity m : memberPulishCountOrderList) {
+                Map<String, Object> mp = new HashMap<>();
+                mp.put("objectId", m.getMemberId());
+
+                //!fixme 获取用户数据
+                //Member member = menberService.selectById(m.getMemberId());
+
+                List<String> mbIdsList = new ArrayList<String>();
+                idsList.add(m.getMemberId());
+                ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(mbIdsList, null);
+
+                MemberDto memberDtoPulish = null;
+                if (null != listMembersByids) {
+                    List<MemberDto> memberDtoList = listMembersByids.getData();
+                    if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                        memberDtoPulish = memberDtoList.get(0);
+                    }
+                }
+
+                if (memberDtoPulish != null) {
+
+                    mp.put("avatar", memberDtoPulish.getAvatar());
+
+                    //!fixme 根据用户id和用户权益(等级、身份、荣誉)类型，获取用户权益数据
+                    //IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", member.getId()).eq("rank_type", 2));
+
+                    IncentRankedDto incentRankedDto = new IncentRankedDto();
+                    incentRankedDto.setMbId(memberDtoPulish.getId());
+                    incentRankedDto.setRankType(2);
+
+                    IncentRankedDto mBIncentRankedDto = null;
+                    FungoPageResultDto<IncentRankedDto> incentRankedPageRs = systemFeignClient.getIncentRankedList(incentRankedDto);
+                    if (null != incentRankedPageRs) {
+                        List<IncentRankedDto> rankedDtoList = incentRankedPageRs.getData();
+                        if (null != rankedDtoList && !rankedDtoList.isEmpty()) {
+                            mBIncentRankedDto = rankedDtoList.get(0);
+                        }
+                    }
+
+                    if (mBIncentRankedDto != null) {
+
+                        //!fixme 获取权益规则
+                        //IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
+
+                        ResultDto<IncentRuleRankDto> IncentRuleRankResultDto = systemFeignClient.getIncentRuleRankById(String.valueOf(mBIncentRankedDto.getCurrentRankId().longValue()));
+                        IncentRuleRankDto incentRuleRankDto = null;
+                        if (null != IncentRuleRankResultDto) {
+                            incentRuleRankDto = IncentRuleRankResultDto.getData();
+                        }
+
+                        if (incentRuleRankDto != null) {
+                            String rankinf = incentRuleRankDto.getRankImgs();
+                            ArrayList<HashMap<String, Object>> infolist = mapper.readValue(rankinf, ArrayList.class);
+                            mp.put("statusImg", infolist);
+                        } else {
+                            mp.put("statusImg", new ArrayList<>());
+                        }
                     } else {
                         mp.put("statusImg", new ArrayList<>());
                     }
-                } else {
-                    mp.put("statusImg", new ArrayList<>());
                 }
                 userList.add(mp);
             }
         }
         out.setEliteMembers(userList);
+
         //!fixme 社区关注数
-        int c = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).eq("target_id", communityId).eq("target_type", 4).and("state = 0"));
-        out.setMemberNum(c);
+        //type 关注 | 5
+        //target_type 帖子评论 | 5
+        //state  状态 0 正常 | -1 删除
+        //int c = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).eq("target_id", communityId).eq("target_type", 4).and("state = 0"));
+
+
+        BasActionDto basActionDtoLike = new BasActionDto();
+
+        basActionDtoLike.setMemberId(userId);
+        basActionDtoLike.setType(5);
+        basActionDtoLike.setState(0);
+        basActionDtoLike.setTargetId(communityId);
+        basActionDtoLike.setTargetType(4);
+
+        ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
+
+        int focusCount = 0;
+        if (null != resultDtoLike) {
+            focusCount = resultDtoLike.getData();
+        }
+
+        out.setMemberNum(focusCount);
 
         //redis cache
         fungoCacheCommunity.excIndexCache(true, keyPrefix, keySuffix, out);
@@ -275,8 +422,21 @@ public class CommunityServiceImpl implements ICommunityService {
         List<CommunityOutPageDto> dataList = new ArrayList<>();
         re.setData(dataList);
 
-        //!fixme 获取用户详情 过滤
-        Member user = menberService.selectById(userId);
+        //!fixme 获取用户详情
+        // Member user = menberService.selectById(userId);
+
+        List<String> idsList = new ArrayList<String>();
+        idsList.add(userId);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+
+        MemberDto memberDto = null;
+        if (null != listMembersByids) {
+            List<MemberDto> memberDtoList = listMembersByids.getData();
+            if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                memberDto = memberDtoList.get(0);
+            }
+        }
+
         if (filter.equals("official")) {
             //官方社区
             entityWrapper = entityWrapper.eq("type", 1);
@@ -284,22 +444,38 @@ public class CommunityServiceImpl implements ICommunityService {
             //普通社区
             entityWrapper = entityWrapper.eq("type", 0);
         } else if (filter.equals("mine")) {//我关注的社区
-            if (user == null) {
+            if (memberDto == null) {
                 return FungoPageResultDto.error("1", "找不到用户");
             }
 
             //!fixme 根据用户id，动作类型，目前类型，状态获取目前id集合
+            /*
             List<BasAction> actionList = actionService.selectList(Condition.create().setSqlSelect("target_id")
                     .eq("member_id", userId).eq("type", 5).eq("target_type", 4).and("state = 0"));
+            */
 //			if(actionList == null || actionList.size() == 0) {
 //				return FungoPageResultDto.error("241","没有找到用户关注的社区");
 //			}
+
+            List<BasActionDto> actionList = null;
+
+            BasActionDto basActionDto = new BasActionDto();
+
+            basActionDto.setMemberId(userId);
+            basActionDto.setType(5);
+            basActionDto.setTargetType(4);
+            basActionDto.setState(0);
+
+            ResultDto<List<BasActionDto>> actionByConditionRs = systemFeignClient.listActionByCondition(basActionDto);
+            if (null != actionByConditionRs) {
+                actionList = actionByConditionRs.getData();
+            }
 
             List<String> communityIdList = new ArrayList<>();
             Page<CmmCommunity> cmmPage = new Page<CmmCommunity>();
 
             if (actionList != null && actionList.size() > 0) {
-                for (BasAction action : actionList) {
+                for (BasActionDto action : actionList) {
                     if (!CommonUtil.isNull(action.getTargetId())) {
                         communityIdList.add(action.getTargetId());
                     }
@@ -362,10 +538,31 @@ public class CommunityServiceImpl implements ICommunityService {
             out.setHot_value(community.getFolloweeNum() + community.getPostNum() + commentNum);
             out.setType(community.getType());
 
-            if (user != null) {
+            if (memberDto != null) {
+
                 //!fixme  是否关注
+                /*
                 int selectCount = actionService.selectCount(new EntityWrapper<BasAction>().eq("target_id", community.getId())
                         .eq("target_type", 4).eq("type", 5).eq("member_id", userId).and("state = 0"));
+                */
+
+
+                BasActionDto basActionDtoLike = new BasActionDto();
+
+                basActionDtoLike.setMemberId(userId);
+                basActionDtoLike.setType(5);
+                basActionDtoLike.setState(0);
+                basActionDtoLike.setTargetId(community.getId());
+                basActionDtoLike.setTargetType(4);
+
+                ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
+
+                int selectCount = 0;
+                if (null != resultDtoLike) {
+                    selectCount = resultDtoLike.getData();
+                }
+
+
                 if (selectCount != 0) {
                     out.setIs_followed(true);
                 } else {
@@ -404,13 +601,36 @@ public class CommunityServiceImpl implements ICommunityService {
 
             for (MemberPulishFromCommunity m : mlist) {
                 CommunityMember c = new CommunityMember();
-                c.setAuthorBean(userService.getAuthor(m.getMemberId()));
+
+                //!fixme 获取用户数据
+                // c.setAuthorBean(userService.getAuthor(m.getMemberId()));
+
+                ResultDto<AuthorBean> authorBeanResultDto = systemFeignClient.getAuthor(m.getMemberId());
+                if (null != authorBeanResultDto) {
+                    AuthorBean authorBean = authorBeanResultDto.getData();
+                    c.setAuthorBean(authorBean);
+                }
+
+
                 c.setMerits(m.getEvaNum() + m.getCommentNum() + m.getPostNum());
                 if (userId.equals(m.getMemberId())) {
                     c.setYourself(true);
                 } else {
-                    MemberFollower follower = followService.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", userId).eq("follower_id", m.getMemberId()).andNew("state = {0}", 1).or("state = {0}", 2));
-                    if (follower != null) {
+                    
+                    //!fixme 获取用户的粉丝
+                    //MemberFollower follower = followService.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", userId).eq("follower_id", m.getMemberId()).andNew("state = {0}", 1).or("state = {0}", 2));
+
+                    MemberFollowerDto memberFollowerDtoParam = new MemberFollowerDto();
+                    memberFollowerDtoParam.setMemberId(userId);
+                    memberFollowerDtoParam.setFollowerId(m.getMemberId());
+
+                    MemberFollowerDto memberFollowerDtoData = null;
+                    ResultDto<MemberFollowerDto> followerDtoResultDto = systemFeignClient.getMemberFollower1(memberFollowerDtoParam);
+                    if (null != followerDtoResultDto) {
+                        memberFollowerDtoData = followerDtoResultDto.getData();
+                    }
+
+                    if (memberFollowerDtoData != null) {
                         c.setFollowed(true);
                     }
                 }
@@ -426,20 +646,28 @@ public class CommunityServiceImpl implements ICommunityService {
 
 
     @Override
-    public List<Member> getRecomMembers(int limit, String currentMb_id) {
+    public List<MemberDto> getRecomMembers(int limit, String currentMb_id) {
 
-        List<Member> recommendedMbsList = new ArrayList<>();
+        List<MemberDto> recommendedMbsList = new ArrayList<MemberDto();
 
         //查询当前登录用户关注的所有用户
-        List<Member> watchMebmberList = null;
+        List<MemberDto> watchMebmberList = null;
         StringBuffer mbWatchedMbsWithSql = new StringBuffer();
 
         List<String> wathMbsSet = new ArrayList<String>();
 
         if (StringUtils.isNotBlank(currentMb_id)) {
-            watchMebmberList = this.getWatchMebmber(0, currentMb_id);
+
+            //!fixme 关注用户List
+            //watchMebmberList = this.getWatchMebmber(0, currentMb_id);
+
+            ResultDto<List<MemberDto>> listWatchMebmberRs = systemFeignClient.listWatchMebmber(0, currentMb_id);
+            if (null != listWatchMebmberRs) {
+                watchMebmberList = listWatchMebmberRs.getData();
+            }
+
             if (null != watchMebmberList && !watchMebmberList.isEmpty()) {
-                for (Member member : watchMebmberList) {
+                for (MemberDto member : watchMebmberList) {
                     member.setFollowed(true);
                     wathMbsSet.add(member.getId());
                 }
@@ -448,12 +676,12 @@ public class CommunityServiceImpl implements ICommunityService {
         LOGGER.info("查询当前登录用户关注的所有用户:{}", wathMbsSet.toString());
 
         //先获取官方推荐和符合条件推荐用户
-        List<Member> ml1 = getRecommeMembers(limit, currentMb_id, wathMbsSet);
+        List<MemberDto> ml1 = getRecommeMembers(limit, currentMb_id, wathMbsSet);
 
         int recommeMbs = 0;
         if (null != ml1 && !ml1.isEmpty()) {
             recommeMbs = ml1.size();
-            for (Member member : ml1) {
+            for (MemberDto member : ml1) {
                 member.setFollowed(false);
             }
         }
@@ -481,12 +709,14 @@ public class CommunityServiceImpl implements ICommunityService {
 
 
     /**
+     * 废弃--依赖系统用户微服务
      * 查询当前登录用户所关注的其他用户
      * @param limit
      * @param currentMb_id
      * @return
      */
-    private List<Member> getWatchMebmber(int limit, String currentMb_id) {
+    /*
+    private List<MemberDto> getWatchMebmber(int limit, String currentMb_id) {
 
         EntityWrapper actionEntityWrapper = new EntityWrapper<BasAction>();
         actionEntityWrapper.setSqlSelect("target_id");
@@ -517,6 +747,7 @@ public class CommunityServiceImpl implements ICommunityService {
         }
         return null;
     }
+    */
 
 
     /**
@@ -529,10 +760,10 @@ public class CommunityServiceImpl implements ICommunityService {
      *           2.若有新的推荐用户，且未关注，替换到玩家已关注列表的前面。且 该类别数量恒定10人
      * @param limit
      * @param currentMb_id 当前登录用户ID
-     * @param mbWatchedMbs 当前登录用户，已经关注的用户IDS
+     * @param wathMbsSet 当前登录用户，已经关注的用户IDS
      * @return
      */
-    private List<Member> getRecommeMembers(int limit, String currentMb_id, List<String> wathMbsSet) {
+    private List<MemberDto> getRecommeMembers(int limit, String currentMb_id, List<String> wathMbsSet) {
         //查官方推荐和符合条件推荐用户
         //推荐用户最大数
         long limitSize = 10L;
@@ -545,45 +776,53 @@ public class CommunityServiceImpl implements ICommunityService {
         long sendComments = 14L;
 
 
+
         /*
          * 1.找出官方推荐玩家 (数据库状态)
          * 2.发布文章数>10或游戏评论>14 （精选文章/评论 *5）
          * 3.合并去重
          */
+        //--------依赖系统用户微服务----
         //fix: 从用户中查询出所有被推荐的用户，且状态是0(正常)  [by mxf 2019-01-09]
-        EntityWrapper memberSqlWrapper = new EntityWrapper<Member>();
-        memberSqlWrapper.eq("type", 2).eq("state", 0);
+       /*
+           EntityWrapper memberSqlWrapper = new EntityWrapper<Member>();
+            memberSqlWrapper.eq("type", 2).eq("state", 0);
 
-        //去除当前登录用户和已经关注用户
-        if (StringUtils.isNotBlank(currentMb_id) || !wathMbsSet.isEmpty()) {
-            wathMbsSet.add(currentMb_id);
-            memberSqlWrapper.notIn("id", wathMbsSet);
+            //去除当前登录用户和已经关注用户
+            if (StringUtils.isNotBlank(currentMb_id) || !wathMbsSet.isEmpty()) {
+                wathMbsSet.add(currentMb_id);
+                memberSqlWrapper.notIn("id", wathMbsSet);
+            }
+
+            memberSqlWrapper.orderBy("sort", false);
+            memberSqlWrapper.last("limit " + limitSize);
+
+            List<Member> ml1 = menberService.selectList(memberSqlWrapper);
+       */
+
+        List<MemberDto> ml1 = null;
+        ResultDto<List<MemberDto>> mbListResultDto = systemFeignClient.listRecommendedMebmber(Integer.valueOf(limitSize + ""), currentMb_id, wathMbsSet);
+        if (null != mbListResultDto) {
+            ml1 = mbListResultDto.getData();
         }
-        //
-
-        memberSqlWrapper.orderBy("sort", false);
-        memberSqlWrapper.last("limit " + limitSize);
-
-        List<Member> ml1 = menberService.selectList(memberSqlWrapper);
 
         if (null == ml1 || ml1.isEmpty() || ml1.size() < limitSize) {
 
             //官方推荐用户id
             List<String> reIds = new ArrayList<>();
 
-            for (Member member : ml1) {
+            for (MemberDto member : ml1) {
                 reIds.add(member.getId());
             }
 
             //fix:查询 符合 发布文章数>10或游戏评论>14 （精选文章/评论 *5)的用户 的业务逻辑修改 [by mxf 2019-01-09]
             //条件用户
             //List<HashMap<String, Object>> members = memberDao.getRecommendMembers();
-            Set<String> members = new HashSet<>();
+            Set<String> members = new HashSet<String>();
 
 
             //1.先查询发布文章数大于10条的用户
-            List<String> sendArticleMembers = memberDao.getRecommendMembersFromCmmPost(sendArticles,
-                    limitSize, wathMbsSet);
+            List<String> sendArticleMembers = postService.getRecommendMembersFromCmmPost(sendArticles, limitSize, wathMbsSet);
             LOGGER.info("查询发布文章数大于10条的用户:{}", sendArticleMembers.toString());
 
             if (null != sendArticleMembers && !sendArticleMembers.isEmpty()) {
@@ -592,8 +831,14 @@ public class CommunityServiceImpl implements ICommunityService {
             }
 
             //2.再查询发布游戏评论>大于14条的，前10名用户
-            List<String> sendCommentMembers = memberDao.getRecommendMembersFromEvaluation(sendComments,
-                    limitSize, wathMbsSet);
+            //memberDao.getRecommendMembersFromEvaluation(sendComments,   limitSize, wathMbsSet);
+
+            List<String> sendCommentMembers = null;
+
+            ResultDto<List<String>> gameEvaRs = gameFeignClient.getRecommendMembersFromEvaluation(Integer.valueOf(sendComments + ""), Integer.valueOf(limitSize + ""), wathMbsSet);
+            if (null != gameEvaRs) {
+                sendCommentMembers = gameEvaRs.getData();
+            }
 
             LOGGER.info("查询发布游戏评论>大于14条的，前10名用户:{}", sendCommentMembers.toString());
             if (null != sendCommentMembers && !sendCommentMembers.isEmpty()) {
@@ -603,7 +848,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
             int ormCount = 0;
             if (null == ml1) {
-                ml1 = new ArrayList<Member>();
+                ml1 = new ArrayList<MemberDto>();
             } else {
                 ormCount = ml1.size();
             }
@@ -624,8 +869,17 @@ public class CommunityServiceImpl implements ICommunityService {
 
             //查询出符合推荐条件用户的详情数据
             if (memberIds.size() > 0) {
-                List<Member> recommendList = menberService.selectList(new EntityWrapper<Member>().in("id", memberIds).eq("state", 0));
-                ml1.addAll(recommendList);
+                //!fixme 查询用户id集合获取用户数据
+                //List<Member> recommendList = menberService.selectList(new EntityWrapper<Member>().in("id", memberIds).eq("state", 0));
+                //ml1.addAll(recommendList);
+
+                ResultDto<List<MemberDto>> mbsListResultDto = systemFeignClient.listMembersByids(memberIds, 0);
+
+                if (null != mbsListResultDto) {
+                    List<MemberDto> memberDtoList = mbsListResultDto.getData();
+                    ml1.addAll(memberDtoList);
+                }
+
             }
         }
 
