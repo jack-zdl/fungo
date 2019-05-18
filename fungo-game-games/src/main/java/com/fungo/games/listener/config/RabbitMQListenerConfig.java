@@ -40,9 +40,6 @@ public class RabbitMQListenerConfig {
     private MQDataReceiveService mQDataReceiveService;
 
     @Autowired
-    private SystemFeignClient systemFeignClient;
-
-    @Autowired
     private MQFeignClient mqFeignClient;
 
 
@@ -99,6 +96,7 @@ public class RabbitMQListenerConfig {
                     LOGGER.info("MQTopicQueueListener-onMessage-msgBody:{}", msgBody);
                     TransactionMessageDto transactionMessageDto = JSON.parseObject(msgBody, TransactionMessageDto.class);
                     Long messageId = transactionMessageDto.getMessageId();
+                    Integer messageDataType = transactionMessageDto.getMessageDataType();
                     //同步业务处理
                     boolean b = mQDataReceiveService.onMessageWithMQTopic(msgBody);
                     if (b){

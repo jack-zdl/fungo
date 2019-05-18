@@ -790,7 +790,7 @@ public class FeignServiceController {
 
     @ApiOperation(value = "getEvaluationEntityWrapperByPageDtoAndMemberId", notes = "")
     @RequestMapping(value = "/api/game/getEvaluationEntityWrapperByPageDtoAndMemberId", method = RequestMethod.POST)
-    ResultDto<List<GameEvaluationDto>> getEvaluationEntityWrapperByPageDtoAndMemberId(@RequestBody EvaluationInputPageDto pageDto,@RequestParam("memberId") String memberId){
+    FungoPageResultDto<GameEvaluationDto> getEvaluationEntityWrapperByPageDtoAndMemberId(@RequestBody EvaluationInputPageDto pageDto,@RequestParam("memberId") String memberId){
         Wrapper<GameEvaluation> commentWrapper = new EntityWrapper<GameEvaluation>();
         commentWrapper.eq("game_id", pageDto.getGame_id());
         commentWrapper.and("state !={0}", -1);
@@ -810,7 +810,12 @@ public class FeignServiceController {
         }
 
         Page<GameEvaluation> page = gameEvaluationServiceImap.selectPage(new Page<>(pageDto.getPage(), pageDto.getLimit()), commentWrapper);
+
+        FungoPageResultDto<GameEvaluationDto> re = new FungoPageResultDto<GameEvaluationDto>();
+        PageTools.pageToResultDto(re, page);
+
         List<GameEvaluation> list = page.getRecords();
+
         List<GameEvaluationDto> gameEvaluationDtos = new ArrayList<>();
         if (list != null && list.size()>0){
             for (GameEvaluation gameEvaluation : list) {
@@ -819,7 +824,8 @@ public class FeignServiceController {
                 gameEvaluationDtos.add(gameEvaluationDto);
             }
         }
-        return ResultDto.success(gameEvaluationDtos);
+        re.setData(gameEvaluationDtos);
+        return re;
     }
 
 
