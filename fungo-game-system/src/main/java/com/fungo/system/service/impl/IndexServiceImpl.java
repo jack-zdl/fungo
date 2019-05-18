@@ -261,7 +261,6 @@ public class IndexServiceImpl implements IIndexService {
     public CardIndexBean selectedGames() {
         // @todo 调用Fegin接口
         return  new CardIndexBean();
-
     }
 
     //社区置顶文章

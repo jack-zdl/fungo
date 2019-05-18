@@ -2,10 +2,13 @@ package com.fungo.system.proxy.impl;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.feign.CommunityFeignClient;
+import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.proxy.IndexProxyService;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.CmmPostDto;
+import com.game.common.dto.index.CardIndexBean;
 import com.game.common.enums.CommonEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,9 @@ public class IndexProxyServiceImpl implements IndexProxyService {
     @Autowired
     private CommunityFeignClient communityFeignClient;
 
+    @Autowired
+    private GamesFeignClient gamesFeignClient;
+
     @Override
     public CmmPostDto selctCmmPostOne(CmmPostDto cmmPostDto) {
         CmmPostDto re = new CmmPostDto();
@@ -38,6 +44,10 @@ public class IndexProxyServiceImpl implements IndexProxyService {
     @Override
     public HashMap<String, BigDecimal> getRateData(String id) {
         // @todo
+        ResultDto<HashMap<String, BigDecimal>> resultDto = gamesFeignClient.getRateData(id);
+        if(resultDto.isSuccess()){
+            return resultDto.getData();
+        }
         return null;
     }
 
@@ -60,5 +70,11 @@ public class IndexProxyServiceImpl implements IndexProxyService {
             re = cmmCommunityDtoFungoPageResultDto.getData().get(0);
         }
         return re;
+    }
+
+    @Override
+    public CardIndexBean selectedGames() {
+        ResultDto<CardIndexBean>  cardIndexBeanResultDto = gamesFeignClient.getSelectedGames();
+        return cardIndexBeanResultDto.getData();
     }
 }
