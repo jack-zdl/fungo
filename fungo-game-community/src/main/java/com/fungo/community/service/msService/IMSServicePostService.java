@@ -37,5 +37,14 @@ public interface IMSServicePostService {
      * 查询 社区帖子总数
      * @return
      */
-    public Integer queryCmmPostCount(@RequestBody CmmPostDto postDto);
+    public Integer queryCmmPostCount(CmmPostDto postDto);
+
+
+
+    /**
+     *  查询 社区置顶文章集合
+     * @param cmmPostDto
+     * @return
+     */
+    List<CmmPostDto> listCmmPostTopicPost(CmmPostDto cmmPostDto);
 }

@@ -234,32 +234,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         }
 
         if (null != noticeMap) {
-            //MQ发布到系统微服务
-            TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
-
-            //消息类型
-            transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_COMMUNITY);
-
-            //发送的队列
-            transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
-
-            //路由key
-            StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
-            routinKey.deleteCharAt(routinKey.length() - 1);
-            routinKey.append("add_notice");
-
-            transactionMessageDto.setRoutingKey(routinKey.toString());
-
-            MQResultDto mqResultDto = new MQResultDto();
-            mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_ADD_NOTICE.getCode());
-
-            mqResultDto.setBody(noticeMap);
-
-            transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
-            //执行MQ发送
-            ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
-            logger.info("--添加评论-执行发送消息--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
-            //-----start
+            this.sendNoticeToSystemServcie(noticeMap);
         }
 
 
@@ -384,6 +359,39 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //获取心情内容
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOOD_CONTENT_GET, "", null);
         return re;
+    }
+
+
+    //发送消息通知给系统微服务
+    private void sendNoticeToSystemServcie(Map<String, Object> noticeMap) {
+
+        //MQ发布到系统微服务
+        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+
+        //消息类型
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_COMMUNITY);
+
+        //发送的队列
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+
+        //路由key
+        StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+        routinKey.deleteCharAt(routinKey.length() - 1);
+        routinKey.append("add_notice");
+
+        transactionMessageDto.setRoutingKey(routinKey.toString());
+
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_ADD_NOTICE.getCode());
+
+        mqResultDto.setBody(noticeMap);
+
+        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+        //执行MQ发送
+        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        logger.info("--添加评论-执行发送消息--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
+        //-----start
+
     }
 
 
@@ -857,7 +865,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     List<String> idsList = new ArrayList<String>();
                     idsList.add(reply.getReplayToId());
 
-                    ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+                    ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList ,null);
 
                     MemberDto memberDto = null;
                     if (null != listMembersByids) {
@@ -1348,8 +1356,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         GameEvaluationDto gameEvaluationDto = null;
         ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getGameEvaluationSelectById(commentId);
-        if (null != evaluationDtoResultDto){
-             gameEvaluationDto = evaluationDtoResultDto.getData();
+        if (null != evaluationDtoResultDto) {
+            gameEvaluationDto = evaluationDtoResultDto.getData();
         }
 
         if (gameEvaluationDto == null) {
@@ -1451,7 +1459,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         GameEvaluationDto gameEvaluationDto = null;
         ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getGameEvaluationSelectById(pageDto.getGame_id());
-        if (null != evaluationDtoResultDto){
+        if (null != evaluationDtoResultDto) {
             gameEvaluationDto = evaluationDtoResultDto.getData();
         }
 
@@ -1459,6 +1467,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
             return FungoPageResultDto.error("-1", "游戏不存在");
         }
 
+        /*
         Wrapper<GameEvaluation> commentWrapper = new EntityWrapper<GameEvaluation>();
         commentWrapper.eq("game_id", pageDto.getGame_id());
         commentWrapper.and("state !={0}", -1);
@@ -1479,11 +1488,17 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         Page<GameEvaluation> page = this.gameEvaluationService.selectPage(new Page<>(pageDto.getPage(), pageDto.getLimit()), commentWrapper);
         List<GameEvaluation> list = page.getRecords();
+        */
+        //总记录数
+        int total = 0;
+        List<GameEvaluationDto> list = new ArrayList<>();
+        FungoPageResultDto<GameEvaluationDto> evaluationListRs = gameFeignClient.getEvaluationEntityWrapperByPageDtoAndMemberId(pageDto, memberId);
+        if (null != evaluationListRs) {
+            list = evaluationListRs.getData();
+            total = evaluationListRs.getCount();
+        }
 
-
-
-
-        for (GameEvaluation cmmComment : list) {
+        for (GameEvaluationDto cmmComment : list) {
             EvaluationOutPageDto ctem = new EvaluationOutPageDto();
             ctem.setContent(CommonUtils.filterWord(cmmComment.getContent()));
             ctem.setCreatedAt(DateTools.fmtDate(cmmComment.getCreatedAt()));
@@ -1555,7 +1570,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 List<String> idsList = new ArrayList<String>();
                 idsList.add(reply.getReplayToId());
 
-                ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+                ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList, null);
 
                 MemberDto memberDto = null;
                 if (null != listMembersByids) {
@@ -1599,7 +1614,10 @@ public class EvaluateServiceImpl implements IEvaluateService {
             }
             relist.add(ctem);
         }
-        PageTools.pageToResultDto(re, page);
+
+        //设置分页参数
+        PageTools.pageToResultDto(re, total, pageDto.getLimit(), pageDto.getPage());
+
         re.setData(relist);
 
         //redis cache
@@ -1627,8 +1645,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         reply.setUpdatedAt(new Date());
         reply.setReplyToContentId(replyInput.getReply_to_content_id());
 
-
-        //!fixme
+        //!fixme 获取用户数据
          /*
          Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
             if (m != null) {
@@ -1638,7 +1655,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         List<String> idsList = new ArrayList<String>();
         idsList.add(reply.getReplayToId());
 
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList , null);
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -1656,6 +1673,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         replyService.insert(reply);
 
+        HashMap<String, Object> noticeMap = null;
+
         if (replyInput.getTarget_type() == 5) {//回复文章评论
             counterService.addCounter("t_cmm_comment", "reply_num", replyInput.getTarget_id());//增加评论数
             //最后回复时间
@@ -1668,24 +1687,86 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 }
             }
             try {//发送通知
+
                 if (CommonUtil.isNull(replyInput.getReply_to_content_id())) { //只有没有三级评论时才会发送消息
-                    this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_GAME, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_COMMENT, replyInput.getContent(), "", "");
+
+                    //this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_GAME, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_COMMENT, replyInput.getContent(), "", "");
+
+                    noticeMap = new HashMap<>();
+                    noticeMap.put("eventType", Setting.MSG_TYPE_REPLAY_GAME);
+                    noticeMap.put("memberId", memberId);
+                    noticeMap.put("target_id", replyInput.getTarget_id());
+                    noticeMap.put("target_type", Setting.RES_TYPE_COMMENT);
+                    noticeMap.put("information", replyInput.getContent());
+                    noticeMap.put("appVersion", "");
+                    noticeMap.put("replyToId", "");
+
+                    this.sendNoticeToSystemServcie(noticeMap);
+
                 }
+
                 if (!CommonUtil.isNull(replyInput.getReply_to_content_id())) {
-                    this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_RE, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_COMMENT, replyInput.getContent(), appVersion, replyInput.getReply_to());
+
+                    //this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_RE, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_COMMENT, replyInput.getContent(), appVersion, replyInput.getReply_to());
+
+                    noticeMap = new HashMap<>();
+                    noticeMap.put("eventType", Setting.MSG_TYPE_REPLAY_RE);
+                    noticeMap.put("memberId", memberId);
+                    noticeMap.put("target_id", replyInput.getTarget_id());
+                    noticeMap.put("target_type", Setting.RES_TYPE_COMMENT);
+                    noticeMap.put("information", replyInput.getContent());
+                    noticeMap.put("appVersion", appVersion);
+                    noticeMap.put("replyToId", replyInput.getReply_to());
+
+                    this.sendNoticeToSystemServcie(noticeMap);
+
                 }
+
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else if (replyInput.getTarget_type() == 6) {//回复游戏评论
+
             counterService.addCounter("t_game_evaluation", "reply_num", replyInput.getTarget_id());//增加评论数
+
+
             try {
+
+
                 if (CommonUtil.isNull(replyInput.getReply_to_content_id())) { //只有没有三级评论时才会发送消息
-                    this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_GAME, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_EVALUATION, replyInput.getContent(), "", "");
+
+                    //this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_GAME, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_EVALUATION, replyInput.getContent(), "", "");
+
+                    noticeMap = new HashMap<>();
+                    noticeMap.put("eventType", Setting.MSG_TYPE_REPLAY_GAME);
+                    noticeMap.put("memberId", memberId);
+                    noticeMap.put("target_id", replyInput.getTarget_id());
+                    noticeMap.put("target_type", Setting.RES_TYPE_EVALUATION);
+                    noticeMap.put("information", replyInput.getContent());
+                    noticeMap.put("appVersion", "");
+                    noticeMap.put("replyToId", "");
+
+                    this.sendNoticeToSystemServcie(noticeMap);
+
                 }
                 if (!CommonUtil.isNull(replyInput.getReply_to_content_id())) {
-                    this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_RE, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_EVALUATION, replyInput.getContent(), appVersion, replyInput.getReply_to());
+
+                    // this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_RE, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_EVALUATION, replyInput.getContent(), appVersion, replyInput.getReply_to());
+
+                    noticeMap = new HashMap<>();
+                    noticeMap.put("eventType", Setting.MSG_TYPE_REPLAY_RE);
+                    noticeMap.put("memberId", memberId);
+                    noticeMap.put("target_id", replyInput.getTarget_id());
+                    noticeMap.put("target_type", Setting.RES_TYPE_EVALUATION);
+                    noticeMap.put("information", replyInput.getContent());
+                    noticeMap.put("appVersion", appVersion);
+                    noticeMap.put("replyToId", replyInput.getReply_to());
+
+                    this.sendNoticeToSystemServcie(noticeMap);
                 }
+
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -1693,12 +1774,38 @@ public class EvaluateServiceImpl implements IEvaluateService {
         } else if (replyInput.getTarget_type() == 8) {//回复心情评论
             counterService.addCounter("t_moo_message", "reply_num", replyInput.getTarget_id());//增加评论数
             if (CommonUtil.isNull(replyInput.getReply_to_content_id())) { //只有没有三级评论时才会发送消息
-                this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_GAME, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_MESSAGE, replyInput.getContent(), appVersion, "");
+
+                //this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_GAME, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_MESSAGE, replyInput.getContent(), appVersion, "");
+
+                noticeMap = new HashMap<>();
+                noticeMap.put("eventType", Setting.MSG_TYPE_REPLAY_GAME);
+                noticeMap.put("memberId", memberId);
+                noticeMap.put("target_id", replyInput.getTarget_id());
+                noticeMap.put("target_type", Setting.RES_TYPE_MESSAGE);
+                noticeMap.put("information", replyInput.getContent());
+                noticeMap.put("appVersion", appVersion);
+                noticeMap.put("replyToId", "");
+
+                this.sendNoticeToSystemServcie(noticeMap);
+
             }
             if (!CommonUtil.isNull(replyInput.getReply_to_content_id())) {
-                this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_RE, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_MESSAGE, replyInput.getContent(), appVersion, replyInput.getReply_to());
+
+                //this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_RE, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_MESSAGE, replyInput.getContent(), appVersion, replyInput.getReply_to());
+
+                noticeMap = new HashMap<>();
+                noticeMap.put("eventType", Setting.MSG_TYPE_REPLAY_RE);
+                noticeMap.put("memberId", memberId);
+                noticeMap.put("target_id", replyInput.getTarget_id());
+                noticeMap.put("target_type", Setting.RES_TYPE_MESSAGE);
+                noticeMap.put("information", replyInput.getContent());
+                noticeMap.put("appVersion", appVersion);
+                noticeMap.put("replyToId", replyInput.getReply_to());
+
+                this.sendNoticeToSystemServcie(noticeMap);
             }
         }
+
 
 //		gameProxy.addScore(Setting.ACTION_TYPE_REPLY, memberId, replyInput.getTarget_id(), replyInput.getTarget_type());
         //完成任务 获取积分 V2.4.6版本任务之前任务废弃
@@ -1708,12 +1815,65 @@ public class EvaluateServiceImpl implements IEvaluateService {
         String tips = "";
 
         //1 fungo币
+        /*
         Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                 MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code());
 
         //2 经验值
         Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                 MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
+        */
+
+        //任务：
+        // 1.调用微服务接口
+        // 2.执行失败，发送MQ消息
+        Map<String, Object> resMapCoin = null;
+        Map<String, Object> resMapExp = null;
+
+        String uuidCoin = UUIDUtils.getUUID();
+        String uuidExp = UUIDUtils.getUUID();
+
+        //coin task
+        TaskDto taskDtoCoin = new TaskDto();
+        taskDtoCoin.setRequestId(uuidCoin);
+        taskDtoCoin.setMbId(memberId);
+        taskDtoCoin.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
+        taskDtoCoin.setTaskType(MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT);
+        taskDtoCoin.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code());
+
+
+        //exp task
+        TaskDto taskDtoExp = new TaskDto();
+        taskDtoExp.setRequestId(uuidExp);
+        taskDtoExp.setMbId(memberId);
+        taskDtoExp.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
+        taskDtoExp.setTaskType(MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT);
+        taskDtoExp.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
+
+        try {
+
+            //coin task
+            ResultDto<Map<String, Object>> coinTaskResultDto = systemFeignClient.exTask(taskDtoCoin);
+            if (null != coinTaskResultDto) {
+                resMapCoin = coinTaskResultDto.getData();
+            }
+
+            //exp task
+            ResultDto<Map<String, Object>> expTaskResultDto = systemFeignClient.exTask(taskDtoExp);
+            if (null != expTaskResultDto) {
+                resMapExp = expTaskResultDto.getData();
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            //出现异常mq发送
+            //coin task
+            doExcTaskSendMQ(taskDtoCoin);
+            //exp task
+            doExcTaskSendMQ(taskDtoExp);
+
+        }
 
         if (null != resMapCoin && !resMapCoin.isEmpty()) {
             if (null != resMapExp && !resMapExp.isEmpty()) {
@@ -1870,19 +2030,44 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //根据sort和时间来排行
         ResultDto<EvaluationOutBean> result = this.getEvaluationDetail(memberId, evaId);
         EvaluationOutBean eva = result.getData();
-        Game game = gameService.selectById(eva.getGameId());
-        if (game != null) {
-            eva.setGameIcon(game.getIcon());
-            eva.setGameIntro(game.getIntro());
-            eva.setGameName(game.getName());
+
+        //!fixme 获取游戏数据
+        //Game game = gameService.selectById(eva.getGameId());
+
+
+        GameDto gameDto = null;
+        ResultDto<GameDto> gameDtoResultDto = gameFeignClient.selectGameDetails(eva.getGameId(), null);
+        if (null != gameDtoResultDto) {
+            gameDto = gameDtoResultDto.getData();
+        }
+
+
+        if (gameDto != null) {
+            eva.setGameIcon(gameDto.getIcon());
+            eva.setGameIntro(gameDto.getIntro());
+            eva.setGameName(gameDto.getName());
         }
         int sort = eva.getSort();
         String id = eva.getObjectId();
-        //上一评论
-        GameEvaluation pre = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).gt("created_at", eva.getCreatedAt()).ne("id", id).orderBy("concat(sort,created_at)").last("limit 1"));
-//		GameEvaluation pree = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}",-1).le("sort",sort).ne("id", id).orderBy("concat(sort,created_at)",false).last("limit 1"));
-        //下一评论
-        GameEvaluation next = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).le("created_at", eva.getCreatedAt()).ne("id", id).orderBy("concat(sort,created_at)", false).last("limit 1"));
+
+        //!fixme 上一评论
+        //GameEvaluation pre = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).gt("created_at", eva.getCreatedAt()).ne("id", id).orderBy("concat(sort,created_at)").last("limit 1"));
+        GameEvaluationDto pre = null;
+        ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getPreGameEvaluation(eva.getCreatedAt(), id);
+        if (null != evaluationDtoResultDto) {
+            pre = evaluationDtoResultDto.getData();
+        }
+
+        //		GameEvaluation pree = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}",-1).le("sort",sort).ne("id", id).orderBy("concat(sort,created_at)",false).last("limit 1"));
+        //!fixme 下一评论
+        //GameEvaluation next = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).le("created_at", eva.getCreatedAt()).ne("id", id).orderBy("concat(sort,created_at)", false).last("limit 1"));
+
+        GameEvaluationDto next = null;
+        ResultDto<GameEvaluationDto> nextGameEvaluationRs = gameFeignClient.getNextGameEvaluation(eva.getCreatedAt(), id);
+        if (null != nextGameEvaluationRs) {
+            next = nextGameEvaluationRs.getData();
+        }
+
         if (pre != null) {
             eva.setPreEvaId(pre.getId());
         }//
@@ -1898,6 +2083,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
     public Set<String> getGameEvaluationHotAndAnliCount(String mb_id, String startDate, String endDate) {
         Set<String> gameEvaSet = null;
         try {
+
+            //!fixme 获取游戏评论集合
+            /*
             EntityWrapper<GameEvaluation> evaluationEntityWrapper = new EntityWrapper<>();
             evaluationEntityWrapper.eq("member_id", mb_id);
             evaluationEntityWrapper.between("updated_at", startDate, endDate);
@@ -1905,12 +2093,21 @@ public class EvaluateServiceImpl implements IEvaluateService {
             //type  0:普通 1:热门 2:精华
             evaluationEntityWrapper.in("type", new Integer[]{1, 2});
 
-            List<GameEvaluation> gameEvaluationsList = gameEvaluationService.selectList(evaluationEntityWrapper);
+              List<GameEvaluation> gameEvaluationsList = gameEvaluationService.selectList(evaluationEntityWrapper);
+            */
+
+            List<GameEvaluationDto> gameEvaluationsList = null;
+            ResultDto<List<GameEvaluationDto>> gameEvaRS = gameFeignClient.getEvaluationEntityWrapper(mb_id, startDate, endDate);
+            if (null != gameEvaRS) {
+                gameEvaluationsList = gameEvaRS.getData();
+            }
+
+
             if (null != gameEvaluationsList && !gameEvaluationsList.isEmpty()) {
 
                 gameEvaSet = new HashSet<String>();
 
-                for (GameEvaluation gameEvaluation : gameEvaluationsList) {
+                for (GameEvaluationDto gameEvaluation : gameEvaluationsList) {
                     gameEvaSet.add(gameEvaluation.getId());
                 }
             }
@@ -1922,6 +2119,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
         logger.info("查看用户在指定时间段内游戏评论上热门和安利墙的文章数量-gameEvaSet:{}", gameEvaSet);
         return gameEvaSet;
     }
+
+
 
 
     //获取回复信息
@@ -1957,7 +2156,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         List<String> idsList = new ArrayList<String>();
         idsList.add(reply.getReplayToId());
 
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList , null);
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -1970,7 +2169,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
         if (null != memberDto) {
             replybean.setReplyToName(memberDto.getUserName());
         }
-
 
         return replybean;
     }

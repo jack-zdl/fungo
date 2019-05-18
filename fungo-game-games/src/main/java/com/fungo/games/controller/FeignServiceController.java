@@ -668,6 +668,13 @@ public class FeignServiceController {
         return iGameService.getGameList1(input);
     }
 
+    /**************************************************2019-05-18系統*****************************************************************************/
+    @ApiOperation(value = "getGameSelectCountByLikeNameAndState", notes = "")
+    @RequestMapping(value = "/api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.POST)
+    int getGameSelectCountByLikeNameAndState(@RequestBody GameDto gameDto){
+        return gameService.selectCount(new EntityWrapper<Game>().where("state = {0}", 0).like("name", gameDto.getName()));
+    }
+
 
 /****************************************************comunity**********************************************************************/
     /**
