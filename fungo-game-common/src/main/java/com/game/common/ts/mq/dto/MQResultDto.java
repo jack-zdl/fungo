@@ -115,6 +115,36 @@ public class MQResultDto {
         //---------
     }
 
+
+    public enum GameMQDataType {
+        //默认
+        GAME_DATA_TYPE_BASACTIONINSERT(11, "com.game.common.dto.action.BasActionDto"),
+        GAME_DATA_TYPE_SELECTONEANDUPDATEALLCOLUMNBYID(12, "java.util.HashMap"),
+        GAME_DATA_TYPE_GAMERELEASELOG(3, "com.game.common.dto.game.GameReleaseLogDto"),
+        GAME_DATA_TYPE_COUNTER(4, "java.util.HashMap"),
+        GAME_DATA_TYPE_COMMUNITYINSERT(5, "com.game.common.dto.community.CmmCommunityDto"),
+        GAME_MQ_DATA_TYPE_ADDGAMETAG(6,"java.util.HashMap"); // addGameTag方法
+
+
+        private int code;
+        private String name;
+
+        GameMQDataType(int code, String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        //---------
+    }
+
     //--------
 }
 
