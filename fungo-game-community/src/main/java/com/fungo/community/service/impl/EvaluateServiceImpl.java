@@ -1007,6 +1007,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
             //times = gameProxy.addTaskCore(Setting.ACTION_TYPE_COMMENT, memberId, commentInput.getTarget_id(), Setting.RES_TYPE_GAME);
 
             //V2.4.6版本任务
+            /*
             //1 fungo币
             Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                     MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code());
@@ -1014,6 +1015,62 @@ public class EvaluateServiceImpl implements IEvaluateService {
             //2 经验值
             Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                     MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
+            */
+
+
+            //任务：
+            // 1.调用微服务接口
+            // 2.执行失败，发送MQ消息
+            Map<String, Object> resMapCoin = null;
+            Map<String, Object> resMapExp = null;
+
+            String uuidCoin = UUIDUtils.getUUID();
+            String uuidExp = UUIDUtils.getUUID();
+
+
+            //coin task
+            TaskDto taskDtoCoin = new TaskDto();
+            taskDtoCoin.setRequestId(uuidCoin);
+            taskDtoCoin.setMbId(memberId);
+            taskDtoCoin.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
+            taskDtoCoin.setTaskType(MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT);
+            taskDtoCoin.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code());
+
+
+            //exp task
+            TaskDto taskDtoExp = new TaskDto();
+            taskDtoExp.setRequestId(uuidExp);
+            taskDtoExp.setMbId(memberId);
+            taskDtoExp.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
+            taskDtoExp.setTaskType(MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT);
+            taskDtoExp.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
+
+            try {
+
+                //coin task
+                ResultDto<Map<String, Object>> coinTaskResultDto = systemFeignClient.exTask(taskDtoCoin);
+                if (null != coinTaskResultDto) {
+                    resMapCoin = coinTaskResultDto.getData();
+                }
+
+                //exp task
+                ResultDto<Map<String, Object>> expTaskResultDto = systemFeignClient.exTask(taskDtoExp);
+                if (null != expTaskResultDto) {
+                    resMapExp = expTaskResultDto.getData();
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+
+                //出现异常mq发送
+                //coin task
+                doExcTaskSendMQ(taskDtoCoin);
+
+                //exp task
+                doExcTaskSendMQ(taskDtoExp);
+
+            }
+
 
             if (null != resMapCoin && !resMapCoin.isEmpty()) {
                 if (null != resMapExp && !resMapExp.isEmpty()) {
@@ -1031,6 +1088,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
 
             //产生一个action
+            /*
             BasAction action = new BasAction();
             action.setCreatedAt(new Date());
             action.setTargetId(evaluation.getId());
@@ -1040,6 +1098,49 @@ public class EvaluateServiceImpl implements IEvaluateService {
             action.setState(0);
             action.setUpdatedAt(new Date());
             this.actionService.insertAllColumn(action);
+            */
+
+
+            //MQ 业务数据发送给系统用户业务处理
+            BasActionDto basActionDtoAdd = new BasActionDto();
+            basActionDtoAdd.setCreatedAt(new Date());
+            basActionDtoAdd.setTargetId(evaluation.getId());
+            basActionDtoAdd.setTargetType(6);
+            basActionDtoAdd.setType(8);
+            basActionDtoAdd.setMemberId(memberId);
+            basActionDtoAdd.setState(0);
+            basActionDtoAdd.setUpdatedAt(new Date());
+
+
+
+            TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+
+            //消息类型
+            transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
+
+            //发送的队列
+            transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+
+            //路由key
+            StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+            routinKey.deleteCharAt(routinKey.length() - 1);
+            routinKey.append("ACTION_ADD");
+
+            transactionMessageDto.setRoutingKey(routinKey.toString());
+
+            MQResultDto mqResultDto = new MQResultDto();
+            mqResultDto.setType(MQResultDto.CommunityEnum.CMT_ACTION_MQ_TYPE_ACTION_ADD.getCode());
+
+            mqResultDto.setBody(basActionDtoAdd);
+
+            transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+            //执行MQ发送
+            ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+            logger.info("--添加帖子-执行添加用户动作行为数据--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
+            //-----start
+
+
+
 
         } else {//用户对该游戏发表过评论，修改
 
