@@ -22,6 +22,7 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.*;
+import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
@@ -34,6 +35,7 @@ import com.game.common.ts.mq.enums.RabbitMQEnum;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
+import com.game.common.util.UUIDUtils;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.EmojiDealUtil;
 import com.game.common.util.emoji.FilterEmojiUtil;
@@ -132,6 +134,10 @@ public class EvaluateServiceImpl implements IEvaluateService {
         if (CommonUtil.isNull(commentInput.getContent())) {
             return ResultDto.error("-1", "内容不能为空!");
         }
+
+
+        Map<String, Object> noticeMap = null;
+
         if (1 == commentInput.getTarget_type()) {//文章评论
             CmmComment comment = new CmmComment();
             floor = commentService.selectCount(new EntityWrapper<CmmComment>().eq("post_id", commentInput.getTarget_id()));
@@ -172,44 +178,14 @@ public class EvaluateServiceImpl implements IEvaluateService {
             //gameProxy.addNotice(Setting.ACTION_TYPE_COMMENT, memberId, commentInput.getTarget_id(), Setting.RES_TYPE_COMMENT, commentInput.getContent(), appVersion, "");
 
 
-            Map<String,Object> noticeMap = new HashMap<>();
+            noticeMap = new HashMap<>();
             noticeMap.put("eventType", Setting.ACTION_TYPE_COMMENT);
             noticeMap.put("memberId", memberId);
             noticeMap.put("target_id", commentInput.getTarget_id());
             noticeMap.put("target_type", Setting.RES_TYPE_COMMENT);
-            noticeMap.put("information", commentInput.getContent()) ;
+            noticeMap.put("information", commentInput.getContent());
             noticeMap.put("appVersion", appVersion);
             noticeMap.put("replyToId", "");
-
-
-            //MQ发布到系统微服务
-            TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
-
-            //消息类型
-            transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_COMMUNITY);
-
-            //发送的队列
-            transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
-
-            //路由key
-            StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
-            routinKey.deleteCharAt(routinKey.length() - 1);
-            routinKey.append("add_notice");
-
-            transactionMessageDto.setRoutingKey(routinKey.toString());
-
-            MQResultDto mqResultDto = new MQResultDto();
-            mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_ADD_NOTICE.getCode());
-
-            mqResultDto.setBody(noticeMap);
-
-            transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
-            //执行MQ发送
-            ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
-            logger.info("--添加评论-执行发送消息--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
-            //-----start
-
-
 
 
         } else if (2 == commentInput.getTarget_type()) {//心情评论
@@ -243,9 +219,47 @@ public class EvaluateServiceImpl implements IEvaluateService {
             counterService.addCounter("t_moo_mood", "comment_num", commentInput.getTarget_id());//增加评论数
 
             //!fixme 通知
-            gameProxy.addNotice(Setting.MSG_TYPE_MOOD, memberId, commentInput.getTarget_id(), Setting.RES_TYPE_COMMENT, commentInput.getContent(), appVersion, "");
+            //gameProxy.addNotice(Setting.MSG_TYPE_MOOD, memberId, commentInput.getTarget_id(), Setting.RES_TYPE_COMMENT, commentInput.getContent(), appVersion, "");
 
+            noticeMap = new HashMap<>();
+            noticeMap.put("eventType", Setting.MSG_TYPE_MOOD);
+            noticeMap.put("memberId", memberId);
+            noticeMap.put("target_id", commentInput.getTarget_id());
+            noticeMap.put("target_type", Setting.RES_TYPE_COMMENT);
+            noticeMap.put("information", commentInput.getContent());
+            noticeMap.put("appVersion", appVersion);
+            noticeMap.put("replyToId", "");
         }
+
+        if (null != noticeMap) {
+            //MQ发布到系统微服务
+            TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+
+            //消息类型
+            transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_COMMUNITY);
+
+            //发送的队列
+            transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+
+            //路由key
+            StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+            routinKey.deleteCharAt(routinKey.length() - 1);
+            routinKey.append("add_notice");
+
+            transactionMessageDto.setRoutingKey(routinKey.toString());
+
+            MQResultDto mqResultDto = new MQResultDto();
+            mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_ADD_NOTICE.getCode());
+
+            mqResultDto.setBody(noticeMap);
+
+            transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+            //执行MQ发送
+            ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+            logger.info("--添加评论-执行发送消息--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
+            //-----start
+        }
+
 
         //!fixme 查询用户数据
         //t.setAuthor(userService.getAuthor(memberId));
@@ -275,13 +289,69 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //V2.4.6版本任务
         String tips = "";
         //每日任务
+        /*
         //1 fungo币
         Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                 MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code());
-
         //2 经验值
         Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                 MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
+        */
+
+
+        //任务：
+        // 1.调用微服务接口
+        // 2.执行失败，发送MQ消息
+        Map<String, Object> resMapCoin = null;
+        Map<String, Object> resMapExp = null;
+
+        String uuidCoin = UUIDUtils.getUUID();
+        String uuidExp = UUIDUtils.getUUID();
+
+
+        //coin task
+        TaskDto taskDtoCoin = new TaskDto();
+        taskDtoCoin.setRequestId(uuidCoin);
+        taskDtoCoin.setMbId(memberId);
+        taskDtoCoin.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
+        taskDtoCoin.setTaskType(MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT);
+        taskDtoCoin.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code());
+
+
+        //exp task
+        TaskDto taskDtoExp = new TaskDto();
+        taskDtoExp.setRequestId(uuidExp);
+        taskDtoExp.setMbId(memberId);
+        taskDtoExp.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
+        taskDtoExp.setTaskType(MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT);
+        taskDtoExp.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
+
+        try {
+
+            //coin task
+            ResultDto<Map<String, Object>> coinTaskResultDto = systemFeignClient.exTask(taskDtoCoin);
+            if (null != coinTaskResultDto) {
+                resMapCoin = coinTaskResultDto.getData();
+            }
+
+            //exp task
+            ResultDto<Map<String, Object>> expTaskResultDto = systemFeignClient.exTask(taskDtoExp);
+            if (null != expTaskResultDto) {
+                resMapExp = expTaskResultDto.getData();
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+
+            //出现异常mq发送
+            //coin task
+            doExcTaskSendMQ(taskDtoCoin);
+
+            //exp task
+            doExcTaskSendMQ(taskDtoExp);
+
+        }
+
 
         if (null != resMapCoin && !resMapCoin.isEmpty()) {
             if (null != resMapExp && !resMapExp.isEmpty()) {
@@ -313,6 +383,39 @@ public class EvaluateServiceImpl implements IEvaluateService {
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOOD_CONTENT_GET, "", null);
         return re;
     }
+
+
+    //社区心情--用户执行任务
+    private void doExcTaskSendMQ(TaskDto taskDto) {
+        //-----start
+        //MQ 业务数据发送给系统用户业务处理
+        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+
+        //消息类型
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_MOOD);
+
+        //发送的队列
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+
+        //路由key
+        StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+        routinKey.deleteCharAt(routinKey.length() - 1);
+        routinKey.append("cmtPostMQDoTask");
+
+        transactionMessageDto.setRoutingKey(routinKey.toString());
+
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_DO_TASK.getCode());
+
+        mqResultDto.setBody(taskDto);
+
+        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+        //执行MQ发送
+        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        logger.info("--社区文章用户发布评论执行任务--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
+        //-----start
+    }
+
 
     @Override
     public ResultDto<CommentBeanOut> getCommentDetail(String memberId, String commentId) {
@@ -602,7 +705,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
                     List<String> idsList = new ArrayList<String>();
                     idsList.add(reply.getReplayToId());
-                    ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList ,null);
+                    ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList, null);
 
                     MemberDto memberDto = null;
                     if (null != listMembersByids) {
@@ -814,7 +917,10 @@ public class EvaluateServiceImpl implements IEvaluateService {
 //		}
         ResultDto<EvaluationBean> re = new ResultDto<EvaluationBean>();
         EvaluationBean t = new EvaluationBean();
+        //!fixme 获取游戏评论
         GameEvaluation evaluation = gameEvaluationService.selectOne(new EntityWrapper<GameEvaluation>().eq("member_id", memberId).eq("game_id", commentInput.getTarget_id()).eq("state", 0));
+
+
 
         //int times = -1;
         String tips = "";
@@ -842,8 +948,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
             return null;
         }
 
-
-        if (evaluation == null) {//用户未对该游戏发表过评论，新增
+        //用户未对该游戏发表过评论，新增
+        if (evaluation == null) {
             evaluation = new GameEvaluation();
             //2.4
             //分数限制
@@ -872,13 +978,23 @@ public class EvaluateServiceImpl implements IEvaluateService {
             evaluation.setPhoneModel(commentInput.getPhone_model());
             evaluation.setState(0);
             evaluation.setUpdatedAt(new Date());
+
             //游戏名
             Game game = gameService.selectOne(Condition.create().setSqlSelect("id,name").eq("id", commentInput.getTarget_id()));
+
+
             if (game != null) {
                 evaluation.setGameName(game.getName());
             }
 
             gameEvaluationService.insert(evaluation);
+
+            //-------------若用户未对该游戏发表过评论，则增加，走MQ推送
+
+
+
+
+
 //			if(commentInput.isIs_recommend()) {
             counterService.addCounter("t_game", "comment_num", commentInput.getTarget_id());//增加评论数
 //			}else {
@@ -1130,9 +1246,11 @@ public class EvaluateServiceImpl implements IEvaluateService {
         if (game == null) {
             return FungoPageResultDto.error("-1", "游戏不存在");
         }
+
         Wrapper<GameEvaluation> commentWrapper = new EntityWrapper<GameEvaluation>();
         commentWrapper.eq("game_id", pageDto.getGame_id());
         commentWrapper.and("state !={0}", -1);
+
         if ("mine".equals(pageDto.getFilter())) {//社区主
             commentWrapper.eq("member_id", memberId);
         }
@@ -1166,6 +1284,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
             ctem.setPhone_model(cmmComment.getPhoneModel());
             ctem.setReply_count(cmmComment.getReplyNum());
             ctem.setUpdatedAt(DateTools.fmtDate(cmmComment.getUpdatedAt()));
+
+
 
             //!fixme
             //ctem.setAuthor(this.userService.getAuthor(cmmComment.getMemberId()));
@@ -1633,7 +1753,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
             }
         }
 
-        if (null != memberDto){
+        if (null != memberDto) {
             replybean.setReplyToName(memberDto.getUserName());
         }
 
