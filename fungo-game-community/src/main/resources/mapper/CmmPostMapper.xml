@@ -121,4 +121,32 @@
 		a WHERE a.post_count >= 2
 	</select>
 
+
+    <!-- 查询文章表中发表文章大于10条，前10名的用户 -->
+    <select id="getRecommendMembersFromCmmPost" resultType="String">
+
+        SELECT
+        member_id
+        FROM
+        ( SELECT member_id, count( member_id ) AS ccnt FROM t_cmm_post
+        <where>
+            state = 1
+            <if test="wathMbsSet != null and wathMbsSet.size > 0">
+                AND  member_id NOT IN
+                <foreach item="item" index="index" collection="wathMbsSet" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        GROUP BY member_id
+        ORDER BY ccnt DESC
+        ) AS cpstcnt
+        WHERE
+        <![CDATA[  cpstcnt.ccnt >= #{ccnt} ]]>
+        <if test="limitSize > 0">
+            LIMIT  #{limitSize}
+        </if>
+
+    </select>
+
 </mapper>
