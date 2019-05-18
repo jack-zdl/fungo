@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -46,6 +47,7 @@ public interface GameFeignClient {
     public ResultDto<GameDto> selectGameDetails(String gameId, Integer state);
 
 
+
     /**
      * 查询游戏评论表中发表评论大于X条，前Y名的用户
      * @param x
@@ -54,8 +56,7 @@ public interface GameFeignClient {
      */
     @ApiOperation(value = "查询游戏评论表中发表评论大于X条，前Y名的用户", notes = "")
     @RequestMapping(value = "/api/game/getRecommendMembersFromEvaluation", method = RequestMethod.POST)
-    public ResultDto<List<String>> getRecommendMembersFromEvaluation(Integer x, Integer y);
-
+    ResultDto<List<String>> getRecommendMembersFromEvaluation(@RequestParam("x") Integer x, @RequestParam("y") Integer y, @RequestParam("wathMbsSet") List<String> wathMbsSet);
 
     /**
      * 根据游戏id查询参与评论的用户

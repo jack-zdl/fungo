@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,11 +46,10 @@ public interface SystemFeignClient {
 
 
     /**
-     * 功能描述: 根据用户id集合查询用户详情
-     * mxf
+     * 功能描述: 根据用户id集合查询用户详情 state为null就不根据状态查询
      */
     @GetMapping(value = "/listMembersByids")
-    public ResultDto<List<MemberDto>> listMembersByids(@RequestBody List<String> ids);
+    public ResultDto<List<MemberDto>> listMembersByids(@RequestBody List<String> ids,@RequestParam(value = "state",required = false) Integer state);
 
 
     /**
@@ -144,6 +144,31 @@ public interface SystemFeignClient {
     @GetMapping("/getUserCard")
     @ApiOperation(value="获取会员信息")
     public ResultDto<AuthorBean> getUserCard(@RequestParam("cardId") String cardId, @RequestParam("memberId") String memberId);
+
+
+
+    @GetMapping("/getStatusImage")
+    @ApiOperation(value="根据用户id获取用户身份图标")
+    public ResultDto<List<HashMap<String, Object>>> getStatusImage(@RequestParam("memberId") String memberId);
+
+
+
+    /**
+     * 查询指定用户所关注的其他用户列表
+     */
+    @GetMapping("/listWatchMebmber")
+    @ApiOperation(value="查询指定用户所关注的其他用户列表")
+    public ResultDto<List<MemberDto>> listWatchMebmber(@RequestParam("limit") Integer limit, @RequestParam("currentMbId") String currentMbId);
+
+
+
+
+    /**
+     * 功能描述: .找出官方推荐玩家
+     */
+    @GetMapping(value = "/listRecommendedMebmber")
+    public ResultDto<List<MemberDto>> listRecommendedMebmber(@RequestParam("limit") Integer limit,@RequestParam("currentMbId") String currentMbId,
+                                                             @RequestBody List<String> wathMbsSet);
 
 
     //-------------
