@@ -59,10 +59,10 @@ public class RabbitMQEnum {
         MQ_QUEUE_TOPIC_NAME_COMMUNITY_MOOD(4, "msgFungoTopicQueue_community_MOOD"),
 
         //5 游戏
-        MQ_QUEUE_TOPIC_NAME_GAMES(4, "msgFungoTopicQueue_Games"),
+        MQ_QUEUE_TOPIC_NAME_GAMES(5, "msgFungoTopicQueue_Games"),
 
         //6 首页
-        MQ_QUEUE_TOPIC_NAME_PORTAL(4, "msgFungoTopicQueue_portal");
+        MQ_QUEUE_TOPIC_NAME_PORTAL(6, "msgFungoTopicQueue_portal");
 
 
         private int code;
