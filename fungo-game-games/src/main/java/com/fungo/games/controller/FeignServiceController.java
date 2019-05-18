@@ -5,6 +5,7 @@ package com.fungo.games.controller;
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.dao.GameEvaluationDao;
 import com.fungo.games.entity.Game;
@@ -21,6 +22,7 @@ import com.game.common.bean.MemberPulishFromCommunity;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.evaluation.EvaluationInputPageDto;
 import com.game.common.dto.game.*;
 import com.game.common.util.PageTools;
 import io.swagger.annotations.Api;
@@ -747,7 +749,7 @@ public class FeignServiceController {
 
     @ApiOperation(value = "getPreGameEvaluation上一评论", notes = "")
     @RequestMapping(value = "/api/game/getPreGameEvaluation", method = RequestMethod.POST)
-    ResultDto<GameEvaluationDto> getPreGameEvaluation(@RequestParam("createdAt") Date createdAt,@RequestParam("id") String id){
+    ResultDto<GameEvaluationDto> getPreGameEvaluation(@RequestParam("createdAt") String createdAt,@RequestParam("id") String id){
         GameEvaluation pre = gameEvaluationServiceImap.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).gt("created_at", createdAt).ne("id", id).orderBy("concat(sort,created_at)").last("limit 1"));
         GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
         BeanUtils.copyProperties(pre,gameEvaluationDto);
@@ -756,7 +758,7 @@ public class FeignServiceController {
 
     @ApiOperation(value = "getNextGameEvaluation下一评论", notes = "")
     @RequestMapping(value = "/api/game/getNextGameEvaluation", method = RequestMethod.POST)
-    ResultDto<GameEvaluationDto> getNextGameEvaluation(@RequestParam("createdAt") Date createdAt,@RequestParam("id") String id){
+    ResultDto<GameEvaluationDto> getNextGameEvaluation(@RequestParam("createdAt") String createdAt,@RequestParam("id") String id){
         GameEvaluation next = gameEvaluationServiceImap.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).le("created_at", createdAt).ne("id", id).orderBy("concat(sort,created_at)", false).last("limit 1"));
         GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
         BeanUtils.copyProperties(next,gameEvaluationDto);
@@ -766,7 +768,7 @@ public class FeignServiceController {
 
     @ApiOperation(value = "getEvaluationEntityWrapper", notes = "")
     @RequestMapping(value = "/api/game/getEvaluationEntityWrapper", method = RequestMethod.POST)
-    ResultDto<List<GameEvaluationDto>> getEvaluationEntityWrapper(@RequestParam("memberId") String memberId,@RequestParam("startDate") Date startDate,@RequestParam("endDate") Date endDate){
+    ResultDto<List<GameEvaluationDto>> getEvaluationEntityWrapper(@RequestParam("memberId") String memberId,@RequestParam("startDate") String startDate,@RequestParam("endDate") String endDate){
         EntityWrapper<GameEvaluation> evaluationEntityWrapper = new EntityWrapper<>();
         evaluationEntityWrapper.eq("member_id", memberId);
         evaluationEntityWrapper.between("updated_at", startDate, endDate);
@@ -777,6 +779,41 @@ public class FeignServiceController {
         List<GameEvaluationDto> gameEvaluationDtos = new ArrayList<>();
         if (gameEvaluationsList != null && gameEvaluationsList.size()>0){
             for (GameEvaluation gameEvaluation : gameEvaluationsList) {
+                GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
+                BeanUtils.copyProperties(gameEvaluation,gameEvaluationDto);
+                gameEvaluationDtos.add(gameEvaluationDto);
+            }
+        }
+        return ResultDto.success(gameEvaluationDtos);
+    }
+
+
+    @ApiOperation(value = "getEvaluationEntityWrapperByPageDtoAndMemberId", notes = "")
+    @RequestMapping(value = "/api/game/getEvaluationEntityWrapperByPageDtoAndMemberId", method = RequestMethod.POST)
+    ResultDto<List<GameEvaluationDto>> getEvaluationEntityWrapperByPageDtoAndMemberId(@RequestBody EvaluationInputPageDto pageDto,@RequestParam("memberId") String memberId){
+        Wrapper<GameEvaluation> commentWrapper = new EntityWrapper<GameEvaluation>();
+        commentWrapper.eq("game_id", pageDto.getGame_id());
+        commentWrapper.and("state !={0}", -1);
+
+        if ("mine".equals(pageDto.getFilter())) {//社区主
+            commentWrapper.eq("member_id", memberId);
+        }
+        //pageDto.getSort()==0||
+        if (pageDto.getSort() == 1) {//排序
+            commentWrapper.orderBy("created_at", true);
+        } else if (pageDto.getSort() == 0 || pageDto.getSort() == 2) {
+            commentWrapper.orderBy("created_at", false);
+        } else if (pageDto.getSort() == 3) {
+            commentWrapper.groupBy("id").orderBy("sum(like_num+reply_num)", true);//按照点赞数和回复数排序
+        } else if (pageDto.getSort() == 4) {
+            commentWrapper.groupBy("id").orderBy("sum(like_num+reply_num)", false);
+        }
+
+        Page<GameEvaluation> page = gameEvaluationServiceImap.selectPage(new Page<>(pageDto.getPage(), pageDto.getLimit()), commentWrapper);
+        List<GameEvaluation> list = page.getRecords();
+        List<GameEvaluationDto> gameEvaluationDtos = new ArrayList<>();
+        if (list != null && list.size()>0){
+            for (GameEvaluation gameEvaluation : list) {
                 GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
                 BeanUtils.copyProperties(gameEvaluation,gameEvaluationDto);
                 gameEvaluationDtos.add(gameEvaluationDto);
