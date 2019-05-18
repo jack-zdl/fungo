@@ -1,13 +1,14 @@
 package Test;
 
 import com.alibaba.fastjson.JSON;
-import com.game.common.consts.MemberIncentTaskConsts;
-import com.game.common.dto.system.TaskDto;
-import com.game.common.enums.FunGoIncentTaskV246Enum;
+import com.game.common.consts.Setting;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
 import com.game.common.ts.mq.enums.RabbitMQEnum;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class JSONTest {
 
@@ -15,12 +16,14 @@ public class JSONTest {
 
     @Test
     public void testJson(){
-        TaskDto taskDtoExp = new TaskDto();
-        taskDtoExp.setRequestId("06f2f38999204b48a6b24429b8014455");
-        taskDtoExp.setMbId("01d1c44a2eda4fd3a1fe82e81abab9cf");
-        taskDtoExp.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
-        taskDtoExp.setTaskType(MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT);
-        taskDtoExp.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_ARTICLE_EXP.code());
+        Map<String,Object> noticeMap = new HashMap<>();
+        noticeMap.put("eventType", Setting.ACTION_TYPE_COMMENT);
+        noticeMap.put("memberId", "004d12e674574cf4913ab27ca6ea697b");
+        noticeMap.put("target_id", "964a243b631045f984bc7561560e9179");
+        noticeMap.put("target_type", Setting.RES_TYPE_COMMENT);
+        noticeMap.put("information", "{\"user_avatar\":null,\"post_title\":\"这是带图的咯iOS9我是下午玉米\",\"post_content\":\"一样用肉在人做最空后哥哥\",\"post_id\":\"cc671601f1604bb99e59774e0804e916\",\"user_id\":\"f0a694da934c4c0e90aa821fa417342e\",\"user_name\":\"2019041851\",\"user_level\":2,\"comment_content\":\"不急\",\"type\":3}") ;
+        noticeMap.put("appVersion", "2.4.8");
+        noticeMap.put("replyToId", "");
 
         TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
 
@@ -40,7 +43,7 @@ public class JSONTest {
         MQResultDto mqResultDto = new MQResultDto();
         mqResultDto.setType(MQResultDto.CommunityEnum.CMT_ACTION_MQ_TYPE_ACTION_ADD.getCode());
 
-        mqResultDto.setBody(taskDtoExp);
+        mqResultDto.setBody(noticeMap);
 
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         System.out.println("----------------: "+ JSON.toJSONString(transactionMessageDto));
