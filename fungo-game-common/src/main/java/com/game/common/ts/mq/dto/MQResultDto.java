@@ -1,11 +1,14 @@
 package com.game.common.ts.mq.dto;
 
+import lombok.Data;
+
 /**
  * <p>提供给mq封装类</p>
  *
  * @Author: dl.zhang
  * @Date: 2019/5/17
  */
+@Data
 public class MQResultDto {
 
     private int type;

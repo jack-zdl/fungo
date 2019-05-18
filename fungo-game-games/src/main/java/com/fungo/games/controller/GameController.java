@@ -5,12 +5,14 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameEvaluation;
 import com.fungo.games.entity.GameSurveyRel;
+import com.fungo.games.feign.MQFeignClient;
 import com.fungo.games.feign.SystemFeignClient;
 import com.fungo.games.helper.MQProduct;
 import com.fungo.games.service.GameService;
 import com.fungo.games.service.GameSurveyRelService;
 import com.fungo.games.service.IGameService;
 import com.game.common.api.InputPageDto;
+import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
@@ -161,6 +163,9 @@ public class GameController {
     @Autowired
     private SystemFeignClient systemFeignClient;
 
+    @Autowired
+    private MQFeignClient mqFeignClient;
+
     /**
      * @todo
      * @param memberUserPrefile
@@ -241,13 +246,17 @@ public class GameController {
      */
     @RequestMapping(value = "/api/feignMQDemo", method = RequestMethod.GET)
     public int feignMQDemo(){
-        BasActionDto basActionDto = new BasActionDto();
-        basActionDto.setMemberId("111111");
-        basActionDto.setTargetId("测试");
-        basActionDto.setState(0);
-        basActionDto.setType(1);
-        basActionDto.setId("ceshi");
-        mqProduct.basActionInsertAllColumn(basActionDto);
+//        测试
+        mqFeignClient.deleteMessageByMessageId(2019051616580096421l);
+        ResultDto<AuthorBean> author = systemFeignClient.getAuthor("012689d5d62e46f3b7fd40e536842455");
+//        System.out.println(author.getData().toString());
+//        BasActionDto basActionDto = new BasActionDto();
+//        basActionDto.setMemberId("111111");
+//        basActionDto.setTargetId("测试");
+//        basActionDto.setState(0);
+//        basActionDto.setType(1);
+//        basActionDto.setId("ceshi");
+//        mqProduct.basActionInsertAllColumn(basActionDto);
         return 1;
     }
 

@@ -7,6 +7,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.game.BasTagDto;
 import com.game.common.dto.game.BasTagGroupDto;
+import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberOutBean;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
@@ -28,25 +29,25 @@ import java.util.Map;
  * @version: 2.0
  */
 @FeignClient(name = "FUNGO-GAME-SYSTEM")
-//@RestController("")
+@RequestMapping(value = "/ms/service/system")
 public interface SystemFeignClient {
 
     @ApiOperation(value = "个人资料", notes = "用户身份校验(配合修改密码操作)")
-    @RequestMapping(value = "/ms/service/system/api/mine/info", method = RequestMethod.GET)
-    public ResultDto<MemberOutBean> getUserInfo() throws Exception;
+    @RequestMapping(value = "/api/mine/info", method = RequestMethod.GET)
+    ResultDto<MemberOutBean> getUserInfo() throws Exception;
 
-    @RequestMapping(value="/ms/service/system/api/developer/test", method= RequestMethod.POST)
-    public ResultDto<String> test();
+    @RequestMapping(value="/api/developer/test", method= RequestMethod.POST)
+    ResultDto<String> test();
+
+
+    /*****************************************分割线***************************************************************/
     /**
      * 迁移微服务后 SystemFeignClient调用 用户成长
-     * @param memberId
-     * @param code
-     * @param inectTaskVirtualCoinTaskCodeIdt
-     * @param code1
+     * @param taskDto
      * @return
      */
-    @RequestMapping(value="/ms/service/system/api/member/exTask", method= RequestMethod.POST)
-    Map<String, Object> exTask(@RequestParam("memberId")String memberId,@RequestParam("code") int code,@RequestParam("inectTaskVirtualCoinTaskCodeIdt") int inectTaskVirtualCoinTaskCodeIdt,@RequestParam("code1") int code1);
+    @RequestMapping(value="/exTask", method= RequestMethod.POST)
+    ResultDto<Map<String, Object>> exTask(@RequestBody TaskDto taskDto);
 
 
     /**
@@ -54,15 +55,15 @@ public interface SystemFeignClient {
      * @param memberId
      * @return
      */
-    @RequestMapping(value="/ms/service/system/api/member/getAuthor", method= RequestMethod.GET)
-    AuthorBean getAuthor(String memberId);
+    @RequestMapping(value="/getAuthor", method= RequestMethod.GET)
+    ResultDto<AuthorBean> getAuthor(@RequestParam("memberId") String memberId);
 
     /**
      * 根据条件判断查询总数
      * @param basActionDto
      * @return
      */
-    @RequestMapping(value="/ms/service/system/api/basAction/getBasActionSelectCount", method= RequestMethod.POST)
+    @RequestMapping(value="/api/basAction/getBasActionSelectCount", method= RequestMethod.POST)
     int getBasActionSelectCount(@RequestBody BasActionDto basActionDto);
 
     /**
@@ -70,7 +71,7 @@ public interface SystemFeignClient {
      * @param md
      * @return
      */
-    @RequestMapping(value="/ms/service/system/api/member/getMemberDtoBySelectOne", method= RequestMethod.POST)
+    @RequestMapping(value="/api/member/getMemberDtoBySelectOne", method= RequestMethod.POST)
     MemberDto getMemberDtoBySelectOne(@RequestBody MemberDto md);
 
     /**
@@ -78,7 +79,7 @@ public interface SystemFeignClient {
      * @param memberId
      * @return
      */
-    @RequestMapping(value="/ms/service/system/api/member/getStatusImageByMemberId", method= RequestMethod.GET)
+    @RequestMapping(value="/api/member/getStatusImageByMemberId", method= RequestMethod.GET)
     List<HashMap<String, Object>> getStatusImageByMemberId(@RequestParam("memberId") String memberId);
 
     /**
@@ -86,7 +87,7 @@ public interface SystemFeignClient {
      * @param collect
      * @return
      */
-    @RequestMapping(value="/ms/service/system/api/system/getBasTagBySelectListInId", method= RequestMethod.POST)
+    @RequestMapping(value="/api/system/getBasTagBySelectListInId", method= RequestMethod.POST)
     List<BasTagDto> getBasTagBySelectListInId(@RequestBody List<String> collect);
 
     /**
@@ -94,7 +95,7 @@ public interface SystemFeignClient {
      * @param basTagDto
      * @return
      */
-    @RequestMapping(value="/ms/service/system/api/system/getBasTagBySelectListGroupId", method= RequestMethod.POST)
+    @RequestMapping(value="/api/system/getBasTagBySelectListGroupId", method= RequestMethod.POST)
     List<BasTagDto> getBasTagBySelectListGroupId(@RequestBody BasTagDto basTagDto);
 
     /**
@@ -103,7 +104,7 @@ public interface SystemFeignClient {
      * @param i
      * @param appVersion
      */
-    @RequestMapping(value="/ms/service/system/api/system/push", method= RequestMethod.POST)
+    @RequestMapping(value="/api/system/push", method= RequestMethod.POST)
     void push(@RequestParam("inviteMemberId") String inviteMemberId,@RequestParam("code") int i,@RequestParam("appVersion") String appVersion);
 
     /**
@@ -111,7 +112,7 @@ public interface SystemFeignClient {
      * @param basTagDto
      * @return
      */
-    @RequestMapping(value="/ms/service/system/api/system/getBasTagBySelectById", method= RequestMethod.POST)
+    @RequestMapping(value="/api/system/getBasTagBySelectById", method= RequestMethod.POST)
     BasTagDto getBasTagBySelectById(@RequestBody BasTagDto basTagDto);
 
     /**
@@ -119,7 +120,7 @@ public interface SystemFeignClient {
      * @param basTagGroupDto
      * @return
      */
-    @RequestMapping(value="/ms/service/system/api/system/getBasTagGroupBySelectList", method= RequestMethod.POST)
+    @RequestMapping(value="/api/system/getBasTagGroupBySelectList", method= RequestMethod.POST)
     List<BasTagGroupDto> getBasTagGroupBySelectList(@RequestBody BasTagGroupDto basTagGroupDto);
 
     /**
@@ -128,14 +129,14 @@ public interface SystemFeignClient {
      * @param transactionMessageDto
      * @return 返回 -1 失败，1 成功
      */
-    @PostMapping(value = "/ms/service/dtp/mq/saveSendMsg", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
-    ResultDto saveAndSendMessage(@RequestBody TransactionMessageDto transactionMessageDto);
+//    @PostMapping(value = "/saveSendMsg", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
+//    ResultDto saveAndSendMessage(@RequestBody TransactionMessageDto transactionMessageDto);
 
     /**
      * 从数据库删除消息
      * @param messageId 消息ID
      * @return 返回 -1 失败，1 成功
      */
-    @GetMapping(value = "/ms/service/dtp/mq/deleteMsg", produces = "application/json;charset=UTF-8")
-    ResultDto deleteMessageByMessageId(@RequestParam("messageId") Long messageId);
+//    @GetMapping(value = "/deleteMsg", produces = "application/json;charset=UTF-8")
+//    ResultDto deleteMessageByMessageId(@RequestParam("messageId") Long messageId);
 }

@@ -2,6 +2,7 @@ package com.game.common.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.List;
 
 
 @ApiModel(value="会员信息",description="会员信息")
+@ToString
 public class AuthorBean {
 
     public AuthorBean() {
@@ -252,5 +254,7 @@ public class AuthorBean {
     public void setGender(int gender) {
         this.gender = gender;
     }
+
+
 }
 
