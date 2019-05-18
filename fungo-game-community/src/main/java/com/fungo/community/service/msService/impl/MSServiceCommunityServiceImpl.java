@@ -1,5 +1,6 @@
 package com.fungo.community.service.msService.impl;
 
+import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
@@ -121,6 +122,28 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
             LOGGER.error("/ms/service/cmm/cty/lists--queryCmmCommunityList-出现异常:", ex);
         }
         return cmmCommunityDtoList;
+    }
+
+    @Override
+    public CmmCommunityDto queryCmmCtyDetail(CmmCommunityDto cmmCommunityDto) {
+
+        CmmCommunityDto cmmCommunityDtoRs = null;
+        try {
+            if (null == cmmCommunityDtoRs) {
+                return cmmCommunityDtoRs;
+            }
+
+            CmmCommunity cmmCommunity = cmmCommunityDaoService.selectOne(Condition.create().setSqlSelect("id,name,icon,cover_image").eq("id", cmmCommunityDto.getId()).ne("state", -1));
+            if (null != cmmCommunity) {
+                cmmCommunityDtoRs = new CmmCommunityDto();
+
+                BeanUtils.copyProperties(cmmCommunity, cmmCommunityDtoRs);
+            }
+
+        } catch (Exception ex) {
+            LOGGER.error("/ms/service/cmm/cty--queryCmmCtyDetail-出现异常:", ex);
+        }
+        return cmmCommunityDtoRs;
     }
 
     //----------

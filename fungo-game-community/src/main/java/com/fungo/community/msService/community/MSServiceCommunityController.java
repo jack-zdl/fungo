@@ -3,6 +3,7 @@ package com.fungo.community.msService.community;
 
 import com.fungo.community.service.msService.IMSServiceCommunityService;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,20 @@ public class MSServiceCommunityController {
 
         resultDto.setData(cmmPostDtoList);
 
+        return resultDto;
+    }
+
+
+    /**
+     * 查询单个社区详情数据
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/cty")
+    public ResultDto<CmmCommunityDto> queryCmmCtyDetail(@RequestBody CmmCommunityDto cmmCommunityDto) {
+
+        ResultDto<CmmCommunityDto> resultDto = new ResultDto<CmmCommunityDto>();
+        CmmCommunityDto cmmCommunityDtoRs = imsServiceCommunityService.queryCmmCtyDetail(cmmCommunityDto);
+        resultDto.setData(cmmCommunityDtoRs);
         return resultDto;
     }
 

@@ -23,4 +23,10 @@ public interface IMSServiceCommunityService {
      */
     public List<CmmCommunityDto> queryCmmCommunityList(@RequestBody CmmCommunityDto communityDto);
 
+    /**
+     * 查询单个社区详情数据
+     * @param cmmCommunityDto
+     * @return
+     */
+    CmmCommunityDto queryCmmCtyDetail(CmmCommunityDto cmmCommunityDto);
 }
