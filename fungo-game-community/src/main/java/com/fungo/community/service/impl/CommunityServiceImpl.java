@@ -25,7 +25,9 @@ import com.game.common.dto.community.CommunityMember;
 import com.game.common.dto.community.CommunityOut;
 import com.game.common.dto.community.CommunityOutPageDto;
 import com.game.common.dto.user.IncentRankedDto;
+import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
+import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.repo.cache.facade.FungoCacheCommunity;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
@@ -139,7 +141,7 @@ public class CommunityServiceImpl implements ICommunityService {
         //!fixme 查询是否关注 根据用户id查询用户详情
         List<String> idsList = new ArrayList<String>();
         idsList.add(userId);
-        ResultDto<List<MemberDto>> mbsListResultDto = systemFeignClient.listMembersByids(idsList ,null);
+        ResultDto<List<MemberDto>> mbsListResultDto = systemFeignClient.listMembersByids(idsList, null);
 
         MemberDto memberDto = null;
         if (null != mbsListResultDto) {
@@ -297,7 +299,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
                 List<String> mbIdsList = new ArrayList<String>();
                 idsList.add(m.getMemberId());
-                ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(mbIdsList ,null);
+                ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(mbIdsList, null);
 
                 MemberDto memberDtoPulish = null;
                 if (null != listMembersByids) {
@@ -329,11 +331,17 @@ public class CommunityServiceImpl implements ICommunityService {
 
                     if (mBIncentRankedDto != null) {
 
-                        IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
+                        //!fixme 获取权益规则
+                        //IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
 
+                        ResultDto<IncentRuleRankDto> IncentRuleRankResultDto = systemFeignClient.getIncentRuleRankById(String.valueOf(mBIncentRankedDto.getCurrentRankId().longValue()));
+                        IncentRuleRankDto incentRuleRankDto = null;
+                        if (null != IncentRuleRankResultDto) {
+                            incentRuleRankDto = IncentRuleRankResultDto.getData();
+                        }
 
-                        if (rank != null) {
-                            String rankinf = rank.getRankImgs();
+                        if (incentRuleRankDto != null) {
+                            String rankinf = incentRuleRankDto.getRankImgs();
                             ArrayList<HashMap<String, Object>> infolist = mapper.readValue(rankinf, ArrayList.class);
                             mp.put("statusImg", infolist);
                         } else {
@@ -419,7 +427,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
         List<String> idsList = new ArrayList<String>();
         idsList.add(userId);
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList,null);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList, null);
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -441,18 +449,33 @@ public class CommunityServiceImpl implements ICommunityService {
             }
 
             //!fixme 根据用户id，动作类型，目前类型，状态获取目前id集合
+            /*
             List<BasAction> actionList = actionService.selectList(Condition.create().setSqlSelect("target_id")
                     .eq("member_id", userId).eq("type", 5).eq("target_type", 4).and("state = 0"));
+            */
 //			if(actionList == null || actionList.size() == 0) {
 //				return FungoPageResultDto.error("241","没有找到用户关注的社区");
 //			}
 
+            List<BasActionDto> actionList = null;
+
+            BasActionDto basActionDto = new BasActionDto();
+
+            basActionDto.setMemberId(userId);
+            basActionDto.setType(5);
+            basActionDto.setTargetType(4);
+            basActionDto.setState(0);
+
+            ResultDto<List<BasActionDto>> actionByConditionRs = systemFeignClient.listActionByCondition(basActionDto);
+            if (null != actionByConditionRs) {
+                actionList = actionByConditionRs.getData();
+            }
 
             List<String> communityIdList = new ArrayList<>();
             Page<CmmCommunity> cmmPage = new Page<CmmCommunity>();
 
             if (actionList != null && actionList.size() > 0) {
-                for (BasAction action : actionList) {
+                for (BasActionDto action : actionList) {
                     if (!CommonUtil.isNull(action.getTargetId())) {
                         communityIdList.add(action.getTargetId());
                     }
@@ -593,11 +616,21 @@ public class CommunityServiceImpl implements ICommunityService {
                 if (userId.equals(m.getMemberId())) {
                     c.setYourself(true);
                 } else {
+                    
                     //!fixme 获取用户的粉丝
-                    MemberFollower follower = followService.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", userId).eq("follower_id", m.getMemberId()).andNew("state = {0}", 1).or("state = {0}", 2));
+                    //MemberFollower follower = followService.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", userId).eq("follower_id", m.getMemberId()).andNew("state = {0}", 1).or("state = {0}", 2));
 
+                    MemberFollowerDto memberFollowerDtoParam = new MemberFollowerDto();
+                    memberFollowerDtoParam.setMemberId(userId);
+                    memberFollowerDtoParam.setFollowerId(m.getMemberId());
 
-                    if (follower != null) {
+                    MemberFollowerDto memberFollowerDtoData = null;
+                    ResultDto<MemberFollowerDto> followerDtoResultDto = systemFeignClient.getMemberFollower1(memberFollowerDtoParam);
+                    if (null != followerDtoResultDto) {
+                        memberFollowerDtoData = followerDtoResultDto.getData();
+                    }
+
+                    if (memberFollowerDtoData != null) {
                         c.setFollowed(true);
                     }
                 }
