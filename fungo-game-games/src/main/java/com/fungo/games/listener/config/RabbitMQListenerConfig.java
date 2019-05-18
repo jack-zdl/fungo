@@ -1,7 +1,11 @@
 package com.fungo.games.listener.config;
 
+import com.alibaba.fastjson.JSON;
+import com.fungo.games.feign.MQFeignClient;
+import com.fungo.games.feign.SystemFeignClient;
 import com.fungo.games.helper.MQConfig;
 import com.game.common.ts.mq.config.RabbitMQConfig;
+import com.game.common.ts.mq.dto.TransactionMessageDto;
 import com.game.common.ts.mq.enums.RabbitMQEnum;
 import com.game.common.ts.mq.service.MQDataReceiveService;
 import com.rabbitmq.client.Channel;
@@ -34,6 +38,13 @@ public class RabbitMQListenerConfig {
 
     @Autowired
     private MQDataReceiveService mQDataReceiveService;
+
+    @Autowired
+    private SystemFeignClient systemFeignClient;
+
+    @Autowired
+    private MQFeignClient mqFeignClient;
+
 
 
     //------direct---
@@ -83,14 +94,25 @@ public class RabbitMQListenerConfig {
         return new ChannelAwareMessageListener() {
             @Override
             public void onMessage(Message message, Channel channel) throws Exception {
-
-                String msgBody = StringUtils.toEncodedString(message.getBody(), Charset.forName("UTF-8"));
-                LOGGER.info("MQTopicQueueListener-onMessage-msgBody:{}", msgBody);
-
-                //同步业务处理
-                mQDataReceiveService.onMessageWithMQTopic(msgBody);
-
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                try {
+                    String msgBody = StringUtils.toEncodedString(message.getBody(), Charset.forName("UTF-8"));
+                    LOGGER.info("MQTopicQueueListener-onMessage-msgBody:{}", msgBody);
+                    TransactionMessageDto transactionMessageDto = JSON.parseObject(msgBody, TransactionMessageDto.class);
+                    Long messageId = transactionMessageDto.getMessageId();
+                    //同步业务处理
+                    boolean b = mQDataReceiveService.onMessageWithMQTopic(msgBody);
+                    if (b){
+                        mqFeignClient.deleteMessageByMessageId(messageId);
+                        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                    }else{
+                        channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
+                        LOGGER.error("MQTopicQueueListener-onMessage-msgBody-业务error:{}", msgBody);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
+                    LOGGER.error("MQTopicQueueListener-onMessage-msgBody-Exceptionerror:{}", e);
+                }
             }
         };
     }
