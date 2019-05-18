@@ -24,33 +24,27 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MQProduct {
 
     @Autowired
-    private ITransactionMessageService iTransactionMessageService;
-
-    @Autowired
     private RabbitMQProduct rabbitMQProduct;
 
-    /**
-     * use Topic Pattern
-     * "topic.key1"  路由键
-     * @param message
-     */
-    public void sendTopic(String topicExchange,String topicKey,Object message){
-    }
-
-
     public void communityInsert(CmmCommunityDto c){
-        sendTopic(MQConfig.TOPIC_EXCHANGE_COMMUNITY_INSERT,MQConfig.TOPIC_KEY_COMMUNITY_INSERT,c);
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_COMMUNITYINSERT.getCode());
+        mqResultDto.setBody(c);
+        rabbitMQProduct.mqCommunity(mqResultDto);
     }
 
-    public void gameInsert(GameDto game,int type){
+    public void gameInsert(GameDto game){
         MQResultDto mqResultDto = new MQResultDto();
-        mqResultDto.setType(type);
+        mqResultDto.setType(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAMEINSERT.getCode());
         mqResultDto.setBody(game);
         rabbitMQProduct.mqGames(mqResultDto);
     }
 
     public void gameUpdate(GameDto game){
-        sendTopic(MQConfig.TOPIC_EXCHANGE_GAME_UPDATE,MQConfig.TOPIC_KEY_GAME_UPDATE,game);
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAMEUPDATE.getCode());
+        mqResultDto.setBody(game);
+        rabbitMQProduct.mqGames(mqResultDto);
     }
 
     public void addGameTag(List<String> tegList , String categoryId,String id){
@@ -58,11 +52,24 @@ public class MQProduct {
         map.put("tegList",tegList);
         map.put("categoryId",categoryId);
         map.put("id",id);
-        sendTopic(MQConfig.TOPIC_EXCHANGE_GAME_TAG,MQConfig.TOPIC_KEY_GAME_TAG,map);
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.SystemMQDataType.SYSTEM_MQ_DATA_TYPE_ADDGAMETAG.getCode());
+        mqResultDto.setBody(map);
+        rabbitMQProduct.mqGames(mqResultDto);
     }
 
     public void gamereleaselogInsert(GameReleaseLogDto gameReleaseLogDto){
-        sendTopic(MQConfig.TOPIC_EXCHANGE_GAMERELEASELOG_INSERT,MQConfig.TOPIC_KEY_GAMERELEASELOG_INSERT,gameReleaseLogDto);
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAMERELEASELOG.getCode());
+        mqResultDto.setBody(gameReleaseLogDto);
+        rabbitMQProduct.mqGames(mqResultDto);
+    }
+
+    public void updateCounter(Map<String, String> map  ){
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_COUNTER.getCode());
+        mqResultDto.setBody(map);
+        rabbitMQProduct.mqGames(mqResultDto);
     }
 
 

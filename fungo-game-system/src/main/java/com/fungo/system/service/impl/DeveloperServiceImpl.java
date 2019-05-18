@@ -202,7 +202,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
             game.setDeveloperId(developer.getId());
             game.setState(3);
             game.setGameSize((long)input.getSize());
-            mqProduct.gameInsert(game, MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAMEINSERT.getCode());
+            mqProduct.gameInsert(game);
             try {
                 game.setCompatibility(mapper.writeValueAsString(new ArrayList<String>()));
             } catch (JsonProcessingException e) {
