@@ -13,6 +13,7 @@ import com.game.common.dto.community.ReplyInputPageDto;
 import com.game.common.dto.game.BasTagDto;
 import com.game.common.dto.game.BasTagGroupDto;
 import com.game.common.dto.game.ReplyDto;
+import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
@@ -46,8 +47,13 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
     @HystrixCommand(fallbackMethod = "hystrixExTask",ignoreExceptions = {Exception.class},
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
-    public Map<String, Object> exTask(String memberId, int code, int inectTaskVirtualCoinTaskCodeIdt, int code1) {
-        return systemFeignClient.exTask(memberId,code,inectTaskVirtualCoinTaskCodeIdt,code1);
+    public Map<String, Object> exTask(String memberId, int task_group_flag, int task_type, int type_code_idt) {
+        TaskDto taskDto = new TaskDto();
+        taskDto.setMbId(memberId);
+        taskDto.setTaskGroupFlag(task_group_flag);
+        taskDto.setTaskType(task_type);
+        taskDto.setTypeCodeIdt(type_code_idt);
+        return systemFeignClient.exTask(taskDto).getData();
     }
     /**
      * 根据用户id获取authorBean
@@ -58,7 +64,7 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public AuthorBean getAuthor(String memberId) {
-        return systemFeignClient.getAuthor(memberId);
+        return systemFeignClient.getAuthor(memberId).getData();
     }
     /**
      * 根据条件判断查询总数

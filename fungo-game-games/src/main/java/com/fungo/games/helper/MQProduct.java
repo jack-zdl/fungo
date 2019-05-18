@@ -1,6 +1,7 @@
 package com.fungo.games.helper;
 
 import com.alibaba.fastjson.JSON;
+import com.fungo.games.feign.MQFeignClient;
 import com.fungo.games.feign.SystemFeignClient;
 import com.game.common.bean.advice.BasNoticeDto;
 import com.game.common.dto.GameDto;
@@ -34,6 +35,9 @@ public class MQProduct {
 
     @Autowired
     private SystemFeignClient systemFeignClient;
+
+    @Autowired
+    private MQFeignClient mqFeignClient;
 
 
 //    /** DIRECT模式
@@ -173,7 +177,7 @@ public class MQProduct {
 
 
     private ResultDto sendFeignMq(TransactionMessageDto transactionMessageDto){
-        ResultDto resultDto = systemFeignClient.saveAndSendMessage(transactionMessageDto);
+        ResultDto resultDto = mqFeignClient.saveAndSendMessage(transactionMessageDto);
         return resultDto;
     }
 
