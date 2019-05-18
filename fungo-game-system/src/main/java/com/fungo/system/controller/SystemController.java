@@ -82,7 +82,7 @@ public class SystemController {
     }
 
     /**
-     * 社区使用
+     * 社区使用--获取用户的粉丝
      */
     @GetMapping(value = "/getMemberFollower1")
     public ResultDto<MemberFollowerDto> getMemberFollower1( @RequestBody MemberFollowerDto memberFollowerDto){
