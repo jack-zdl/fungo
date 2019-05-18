@@ -6,8 +6,10 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.game.BasTagDto;
+import com.game.common.dto.game.BasTagGroupDto;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
+import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.vo.MemberFollowerVo;
@@ -74,6 +76,22 @@ public class SystemController {
         }catch (Exception e){
             LOGGER.error("SystemController.getFollowerUserId",e);
             re = FungoPageResultDto.error("-1", "SystemController.getMemberFollowerList执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
+    /**
+     * 社区使用
+     */
+    @GetMapping(value = "/getMemberFollower1")
+    public ResultDto<MemberFollowerDto> getMemberFollower1( @RequestBody MemberFollowerDto memberFollowerDto){
+        ResultDto<MemberFollowerDto> re = null;
+        try {
+            re =  systemService.getMemberFollower1(memberFollowerDto);
+        }catch (Exception e){
+            LOGGER.error("SystemController.getMemberFollower1",e);
+            re = ResultDto.error("-1", "SystemController.getMemberFollower1执行service出现异常");
         }finally {
             return re;
         }
@@ -270,6 +288,46 @@ public class SystemController {
         }
     }
 
+    @GetMapping(value = "/countActionNumGameUse")
+    @ApiOperation(value="获取动作数量(比如点赞)--游戏服务使用")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "targetid",value = "业务id",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "memberId",value = "会员id",paramType = "form",dataType = "string")
+    })
+    public ResultDto<Integer> countActionNumGameUse(@RequestBody BasActionDto basActionDto){
+        ResultDto<Integer> re = null;
+        try {
+            re =  systemService.countActionNumGameUse(basActionDto);
+        }catch (Exception e){
+            LOGGER.error("SystemController.countActionNumGameUse",e);
+            re = ResultDto.error("-1", "SystemController.countActionNumGameUse执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
+    @GetMapping(value = "/listActionByCondition")
+    @ApiOperation(value="根据条件获取动作")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "type",value = "行为类型",paramType = "form",dataType = "integer"),
+            @ApiImplicitParam(name = "targetid",value = "业务id",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "targetType",value = "业务类型",paramType = "form",dataType = "integer"),
+            @ApiImplicitParam(name = "memberId",value = "会员id",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "state",value = "状态",paramType = "form",dataType = "integer")
+    })
+    public ResultDto<List<BasActionDto>> listActionByCondition(@RequestBody BasActionDto basActionDto){
+        ResultDto<List<BasActionDto>> re = null;
+        try {
+            re =  systemService.listActionByCondition(basActionDto);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("SystemController.listActionByCondition",e);
+            re = ResultDto.error("-1", "SystemController.listActionByCondition执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
     @GetMapping(value = "/listtargetId")
     @ApiOperation(value=" 根据用户id，动作类型，目前类型，状态获取目前id集合")
     @ApiImplicitParams({
@@ -354,6 +412,21 @@ public class SystemController {
         }
     }
 
+    @GetMapping("/getIncentRuleRankById")
+    @ApiOperation(value="获取用户级别、身份、荣誉规则")
+    public ResultDto<IncentRuleRankDto> getIncentRuleRankById(@RequestParam("id") String id){
+        ResultDto<IncentRuleRankDto> re = null;
+        try {
+
+            re = systemService.getIncentRuleRankById(id);
+        }catch (Exception e){
+            LOGGER.error("SystemController.getIncentRuleRankById",e);
+            re = ResultDto.error("-1", "SystemController.getIncentRuleRankById执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
     @PostMapping("/updateActionUpdatedAtByCondition")
     @ApiOperation(value="根据指定的行为条件更新行为操作日期")
     public ResultDto<String> updateActionUpdatedAtByCondition(@RequestBody Map<String,Object> map){
@@ -398,6 +471,48 @@ public class SystemController {
       }
     }
 
+    @GetMapping("/listBasTagByGroup")
+   @ApiOperation(value="根据group id集合获取标签集合")
+  public ResultDto<List<BasTagDto>> listBasTagByGroup (@RequestParam("groupId") String groupId){
+      ResultDto<List<BasTagDto>> re = null;
+      try {
+          re =  systemService.listBasTagByGroup(groupId);
+      }catch (Exception e){
+          LOGGER.error("SystemController.listBasTagByGroup",e);
+          re = ResultDto.error("-1", "SystemController.listBasTagByGroup执行service出现异常");
+      }finally {
+          return re;
+      }
+    }
+
+    @GetMapping("/getBasTagById")
+   @ApiOperation(value="根据id获取标签")
+  public ResultDto<BasTagDto> getBasTagById (@RequestParam("id") String id){
+      ResultDto<BasTagDto> re = null;
+      try {
+          re =  systemService.getBasTagById(id);
+      }catch (Exception e){
+          LOGGER.error("SystemController.getBasTagById",e);
+          re = ResultDto.error("-1", "SystemController.getBasTagById执行service出现异常");
+      }finally {
+          return re;
+      }
+    }
+
+    @GetMapping("/listBasTagGroupByCondition")
+    @ApiOperation(value="根据指定条件获取标签集合")
+   public ResultDto<List<BasTagGroupDto>> listBasTagGroupByCondition(@RequestBody BasTagGroupDto basTagGroupDto) {
+       ResultDto<List<BasTagGroupDto>> re = null;
+       try {
+           re =  systemService.listBasTagGroupByCondition(basTagGroupDto);
+       }catch (Exception e){
+           LOGGER.error("SystemController.listBasTagGroupByCondition",e);
+           re = ResultDto.error("-1", "SystemController.listBasTagGroupByCondition执行service出现异常");
+       }finally {
+           return re;
+       }
+   }
+
     /**
      * 查询指定用户所关注的其他用户列表
      */
@@ -414,6 +529,8 @@ public class SystemController {
             return re;
         }
     }
+
+
 
 
 

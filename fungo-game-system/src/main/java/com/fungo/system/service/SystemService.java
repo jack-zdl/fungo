@@ -5,8 +5,10 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.game.BasTagDto;
+import com.game.common.dto.game.BasTagGroupDto;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
+import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.vo.MemberFollowerVo;
@@ -74,4 +76,17 @@ public interface SystemService {
      */
     public ResultDto<String>  processUserScoreChange(String userId,Integer changeScore);
 
+    ResultDto<IncentRuleRankDto> getIncentRuleRankById(String id);
+
+    ResultDto<List<BasActionDto>> listActionByCondition(BasActionDto basActionDto);
+
+    ResultDto<MemberFollowerDto> getMemberFollower1(MemberFollowerDto memberFollowerDto);
+
+    ResultDto<Integer> countActionNumGameUse(BasActionDto basActionDto);
+
+    ResultDto<List<BasTagDto>> listBasTagByGroup(String groupId);
+
+    ResultDto<BasTagDto> getBasTagById(String id);
+
+    ResultDto<List<BasTagGroupDto>> listBasTagGroupByCondition(BasTagGroupDto basTagGroupDto);
 }

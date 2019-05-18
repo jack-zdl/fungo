@@ -14,8 +14,10 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.game.BasTagDto;
+import com.game.common.dto.game.BasTagGroupDto;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
+import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.util.CommonUtils;
@@ -33,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -88,6 +91,12 @@ public class SystemServiceImpl implements SystemService {
 
     @Autowired
     private ScoreLogService scoreLogService;
+
+    @Autowired
+    private IncentRuleRankService rankRuleService;
+
+    @Autowired
+    private BasTagGroupService basTagGroupService;
 
     /**
      * 功能描述: 根据用户id查询被关注人的id集合
@@ -199,11 +208,12 @@ public class SystemServiceImpl implements SystemService {
 
     /**
      * 处理用户经验变更服务
-     * @param userId 用户id
+     *
+     * @param userId      用户id
      * @param changeScore 要变更的经验/积分
      * @return 操作结果
      */
-    public ResultDto<String>  processUserScoreChange(String userId,Integer changeScore){
+    public ResultDto<String> processUserScoreChange(String userId, Integer changeScore) {
         Member user = memberServiceImap.selectById(userId);
         if (user == null) {
             return ResultDto.error("126", "用户不存在");
@@ -263,6 +273,68 @@ public class SystemServiceImpl implements SystemService {
         return ResultDto.success();
     }
 
+    @Override
+    public ResultDto<IncentRuleRankDto> getIncentRuleRankById(String id) {
+        IncentRuleRank rank = rankRuleService.selectById(id);
+        IncentRuleRankDto ruleRankDto = new IncentRuleRankDto();
+        try {
+            BeanUtils.copyProperties(ruleRankDto, rank);
+        } catch (Exception e) {
+            LOGGER.error("SystemServiceImpl.getIncentRuleRankById", e);
+            return ResultDto.error("-1", "数据转化异常");
+        }
+        return ResultDto.success(ruleRankDto);
+    }
+
+    @Override
+    public ResultDto<List<BasActionDto>> listActionByCondition(BasActionDto basActionDto) {
+        //条件拼接
+        EntityWrapper<BasAction> actionEntityWrapper = new EntityWrapper<>();
+        if (basActionDto.getMemberId() != null) {
+            actionEntityWrapper.eq("member_id", basActionDto.getMemberId());
+        }
+        if (basActionDto.getType() != null) {
+            actionEntityWrapper.eq("type", basActionDto.getType());
+        }
+        if (basActionDto.getTargetType() != null) {
+            actionEntityWrapper.eq("target_type", basActionDto.getTargetType());
+        }
+        if (basActionDto.getTargetId() != null) {
+            actionEntityWrapper.eq("target_id", basActionDto.getTargetId());
+        }
+        if (basActionDto.getState() != null) {
+            actionEntityWrapper.eq("state", basActionDto.getState());
+        }
+        //根据条件查询
+        List<BasAction> basActions = actionServiceImap.selectList(actionEntityWrapper);
+        List<BasActionDto> basActionsDtos = null;
+        try {
+            basActionsDtos = CommonUtils.deepCopy(basActions, BasActionDto.class);
+        } catch (Exception e) {
+            LOGGER.error("SystemServiceImpl.listActionByCondition", e);
+            return ResultDto.error("-1", "数据转化异常");
+        }
+        return ResultDto.success(basActionsDtos);
+    }
+
+    @Override
+    public ResultDto<MemberFollowerDto> getMemberFollower1(MemberFollowerDto memberFollowerDto) {
+        MemberFollower one = memberFollowerServiceImap.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", memberFollowerDto.getMemberId()).eq("follower_id", memberFollowerDto.getFollowerId()).andNew("state = {0}", 1).or("state = {0}", 2));
+        MemberFollowerDto followerDto = new MemberFollowerDto();
+        try {
+            BeanUtils.copyProperties(followerDto, one);
+        } catch (Exception e) {
+            LOGGER.error("SystemServiceImpl.getMemberFollower1", e);
+            return ResultDto.error("-1", "数据转化异常");
+        }
+        return ResultDto.success(followerDto);
+    }
+
+    @Override
+    public ResultDto<Integer> countActionNumGameUse(BasActionDto basActionDto) {
+        int liked = actionServiceImap.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", basActionDto.getTargetId()).eq("member_id", basActionDto.getMemberId()));
+        return ResultDto.success(liked);
+    }
 
 
     /**
@@ -441,8 +513,8 @@ public class SystemServiceImpl implements SystemService {
     public ResultDto<List<MemberDto>> listMembersByids(List<String> ids, Integer state) {
         EntityWrapper<Member> wrapper = new EntityWrapper<>();
         wrapper.in("id", ids);
-        if(state!=null){
-            wrapper.eq("state",state);
+        if (state != null) {
+            wrapper.eq("state", state);
         }
         List<Member> members = memberServiceImap.selectList(wrapper);
         List<MemberDto> memberFollowerDtos = null;
@@ -494,6 +566,7 @@ public class SystemServiceImpl implements SystemService {
         AuthorBean author = userService.getAuthor(memberId);
         return ResultDto.success(author);
     }
+
     @Override
     public ResultDto<AuthorBean> getUserCard(String cardId, String memberId) {
         AuthorBean authorBean = userService.getUserCard(cardId, memberId);
@@ -554,6 +627,50 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
+    public ResultDto<List<BasTagDto>> listBasTagByGroup(String groupId) {
+        List<BasTag> tagList = bagTagService.selectList(new EntityWrapper<BasTag>().in("group_id", groupId));
+        List<BasTagDto> tagDtoList = null;
+        try {
+            tagDtoList = CommonUtils.deepCopy(tagList, BasTagDto.class);
+        } catch (Exception e) {
+            LOGGER.error("SystemService.listBasTagByGroup error", e);
+            return ResultDto.error("-1", "SystemService.listBasTagByGroup error");
+        }
+        return ResultDto.success(tagDtoList);
+    }
+
+ @Override
+    public ResultDto<List<BasTagGroupDto>> listBasTagGroupByCondition(BasTagGroupDto basTagGroupDto) {
+     BasTag basTag = new BasTag();
+     List<BasTagGroupDto> basTagDtoList ;
+     try {
+         BeanUtils.copyProperties(basTag,basTagGroupDto);
+         //获得全部分类以及标签，在选中的打勾
+         List<BasTagGroup> basTagGroupList = basTagGroupService.selectList(new EntityWrapper<BasTagGroup>());
+         basTagDtoList = CommonUtils.deepCopy(basTagGroupList, BasTagGroupDto.class);
+     } catch (Exception e) {
+         LOGGER.error("SystemService.listBasTagGroupByCondition error", e);
+         return ResultDto.error("-1", "SystemService.listBasTagGroupByCondition error");
+     }
+        return ResultDto.success(basTagDtoList);
+    }
+
+    @Override
+    public ResultDto<BasTagDto> getBasTagById(String id) {
+        BasTag tag = bagTagService.selectById(id);
+        BasTagDto tagDto = new BasTagDto();
+        try {
+            BeanUtils.copyProperties(tagDto,tag);
+        } catch (Exception e) {
+            LOGGER.error("SystemService.getBasTagById error", e);
+            return ResultDto.error("-1", "SystemService.getBasTagById error");
+        }
+        return ResultDto.success(tagDto);
+    }
+
+
+
+    @Override
     public ResultDto<List<MemberDto>> listWatchMebmber(Integer limit, String currentMbId) {
         List<MemberDto> memberDtoList = new ArrayList<>();
         EntityWrapper actionEntityWrapper = new EntityWrapper<BasAction>();
@@ -592,8 +709,8 @@ public class SystemServiceImpl implements SystemService {
     }
 
 
-    public ResultDto<List<MemberDto>> listRecommendedMebmber(Integer limit,String currentMbId,List<String> wathMbsSet){
-        List<MemberDto> memberDtoList ;
+    public ResultDto<List<MemberDto>> listRecommendedMebmber(Integer limit, String currentMbId, List<String> wathMbsSet) {
+        List<MemberDto> memberDtoList;
         EntityWrapper memberSqlWrapper = new EntityWrapper<Member>();
         memberSqlWrapper.eq("type", 2).eq("state", 0);
         //去除当前登录用户和已经关注用户
