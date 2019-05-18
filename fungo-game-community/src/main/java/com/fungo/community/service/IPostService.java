@@ -2,11 +2,11 @@ package com.fungo.community.service;
 
 
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ObjectId;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.PostInput;
 import com.game.common.dto.community.PostInputPageDto;
 import com.game.common.dto.community.PostOutBean;
-import com.sun.corba.se.spi.ior.ObjectId;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -18,8 +18,8 @@ public interface IPostService {
 	/**
 	 * 发帖
 	 * 请求地址：http://{{host}}/api/content/post
-	 * @param userId 
-	 * @throws Exception 
+	 * @param userId
+	 * @throws Exception
 	 */
 	public ResultDto<ObjectId> addPost(PostInput postInput, String userId) throws Exception;
 	
@@ -36,7 +36,7 @@ public interface IPostService {
 	 * @param postInput
 	 * 请求地址：http://{{host}}/api/content/post/:post_id
 	 * @param os 
-	 * @param postId 
+	 * @param userId
 	 * @throws Exception 
 	 */
 	public ResultDto<String> editPost(PostInput postInput, String userId, String os) throws Exception;

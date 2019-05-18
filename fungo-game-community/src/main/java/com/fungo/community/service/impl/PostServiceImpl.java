@@ -39,7 +39,6 @@ import com.game.common.util.*;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.EmojiDealUtil;
 import com.game.common.util.emoji.FilterEmojiUtil;
-import com.game.common.util.exception.BusinessException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -468,34 +467,35 @@ public class PostServiceImpl implements IPostService {
         actioninput.setTarget_id(postInput.getCommunity_id());
         boolean addCounter = iCountService.addCounter(user_id, 7, actioninput);
 
+        ResultDto<ObjectId> resultDto = new ResultDto<ObjectId>();
+
         if (flag == true && addCounter) {
 
-            ResultDto<ObjectId> re = new ResultDto<ObjectId>();
             ObjectId o = new ObjectId();
             o.setId(post.getId());
-            re.setData(o);
+            resultDto.setData(o);
 
             if (StringUtils.isNotBlank(tips)) {
-                re.show(tips);
+                resultDto.show(tips);
             } else {
-                re.show("发布成功!");
+                resultDto.show("发布成功!");
             }
-
-            //clear redis cache
-            //首页文章帖子列表(v2.4)
-            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
-            //帖子列表
-            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
-            //社区置顶文章(2.4.3)
-            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, postInput.getCommunity_id(), null);
-            //我的文章(2.4.3)
-            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
-            return re;
         }
 
+        //clear redis cache
+        //首页文章帖子列表(v2.4)
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
+        //帖子列表
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
+        //社区置顶文章(2.4.3)
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, postInput.getCommunity_id(), null);
+        //我的文章(2.4.3)
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
 
-        throw new BusinessException("-1", "操作失败");
+        return resultDto;
     }
+
+
 
     //社区文章用户执行任务
     private void doExcTaskSendMQ(TaskDto taskDto) {

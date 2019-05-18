@@ -1,10 +1,10 @@
 package com.fungo.community.service;
 
 
+import com.game.common.dto.ObjectId;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.MoodBean;
 import com.game.common.dto.community.MoodInput;
-import com.sun.corba.se.spi.ior.ObjectId;
 
 public interface IMoodService {
 
