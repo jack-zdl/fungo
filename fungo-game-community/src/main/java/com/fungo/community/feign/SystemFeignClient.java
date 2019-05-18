@@ -171,5 +171,26 @@ public interface SystemFeignClient {
                                                              @RequestBody List<String> wathMbsSet);
 
 
+
+
+    @GetMapping("/getIncentRuleRankById")
+    @ApiOperation(value="获取用户级别、身份、荣誉规则")
+    public ResultDto<IncentRuleRankDto> getIncentRuleRankById(@RequestParam("id") String id);
+
+
+
+
+    @GetMapping(value = "/listActionByCondition")
+    @ApiOperation(value="根据条件获取动作")
+    public ResultDto<List<BasActionDto>> listActionByCondition(@RequestBody BasActionDto basActionDto);
+
+
+    /**
+     * 社区使用
+     */
+    @GetMapping(value = "/getMemberFollower1")
+    public ResultDto<MemberFollowerDto> getMemberFollower1( @RequestBody MemberFollowerDto memberFollowerDto);
+
+
     //-------------
 }
