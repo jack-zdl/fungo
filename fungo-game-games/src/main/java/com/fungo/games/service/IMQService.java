@@ -26,4 +26,6 @@ public interface IMQService {
 	boolean mqGameReleaseLogInsert(GameReleaseLogDto gameReleaseLogDto);
 
 	boolean mqCounterUpdate(Map map);
+
+    boolean mqAddGametag(Map map);
 }

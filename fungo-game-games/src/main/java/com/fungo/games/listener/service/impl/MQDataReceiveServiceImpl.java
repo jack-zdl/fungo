@@ -71,19 +71,19 @@ public class MQDataReceiveServiceImpl implements MQDataReceiveService {
 //                mq插入游戏版本日志审批
             return imqService.mqGameReleaseLogInsert(gameReleaseLogDto);
         }
-        if (mqResultDto.getType() == MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_counter.getCode()){
+        if (mqResultDto.getType() == MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_COUNTER.getCode()){
 //                计数器(动态表)
             Object body = mqResultDto.getBody();
             Map map = JSON.parseObject(body.toString(), Map.class);
 //                mq计数器(动态表)
             return imqService.mqCounterUpdate(map);
         }
-        if (mqResultDto.getType() == MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_counter.getCode()){
-//                计数器(动态表)
+        if (mqResultDto.getType() == MQResultDto.SystemMQDataType.SYSTEM_MQ_DATA_TYPE_ADDGAMETAG.getCode()){
+//                根据后台标签id集合，分类标签，游戏id
             Object body = mqResultDto.getBody();
             Map map = JSON.parseObject(body.toString(), Map.class);
-//                mq计数器(动态表)
-            return imqService.mqCounterUpdate(map);
+//                mq根据后台标签id集合，分类标签，游戏id
+            return imqService.mqAddGametag(map);
         }
         return false;
     }

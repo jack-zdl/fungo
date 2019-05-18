@@ -56,10 +56,6 @@ public class ActionController {
             @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
     })
     public ResultDto<String> like(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody ActionInput inputDto) throws Exception {
-        GameDto gameDto = new GameDto();
-        gameDto.setId("1111111");
-        gameDto.setState(1);
-        mqProduct.gameInsert(gameDto, MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAMEINSERT.getCode());
         String appVersion = "";
         appVersion = request.getHeader("appversion");
         return actionService.like(memberUserPrefile.getLoginId(), inputDto,appVersion);

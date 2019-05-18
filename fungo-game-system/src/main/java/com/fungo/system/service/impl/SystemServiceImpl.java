@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.dao.BasActionDao;
-import com.fungo.system.dto.TaskDto;
 import com.fungo.system.entity.*;
 import com.fungo.system.service.*;
 import com.game.common.dto.AuthorBean;
@@ -15,6 +14,7 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.game.BasTagDto;
+import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
  * @Date: 2019/5/10
  */
 @Service
+@Transactional
 public class SystemServiceImpl implements SystemService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SystemServiceImpl.class);
@@ -83,6 +85,9 @@ public class SystemServiceImpl implements SystemService {
 
     @Autowired
     private BasTagService bagTagService;
+
+    @Autowired
+    private ScoreLogService scoreLogService;
 
     /**
      * 功能描述: 根据用户id查询被关注人的id集合
@@ -191,6 +196,74 @@ public class SystemServiceImpl implements SystemService {
         }
         return re;
     }
+
+    /**
+     * 处理用户经验变更服务
+     * @param userId 用户id
+     * @param changeScore 要变更的经验/积分
+     * @return 操作结果
+     */
+    public ResultDto<String>  processUserScoreChange(String userId,Integer changeScore){
+        Member user = memberServiceImap.selectById(userId);
+        if (user == null) {
+            return ResultDto.error("126", "用户不存在");
+        }
+        IncentAccountScore scoreCount = accountScoreServiceImap.selectOne(new EntityWrapper<IncentAccountScore>().eq("mb_id", userId).eq("account_group_id", 1));
+        if (scoreCount == null) {
+            scoreCount = accountScoreDaoServiceImap.createAccountScore(user, 1);
+        }
+        scoreCount.setScoreUsable(scoreCount.getScoreUsable().subtract((new BigDecimal(changeScore))));
+        scoreCount.setUpdatedAt(new Date());
+        scoreCount.updateById();
+
+        user.setExp(scoreCount.getScoreUsable().intValue());
+        user = scoreLogService.updateLevel(user);
+        //scoreLogService
+
+        IncentRanked ranked = incentRankedServiceImap.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", userId).eq("rank_type", 1));
+        Long prelevel = ranked.getCurrentRankId();//记录中的等级 可能需要修改
+        int curLevel = scoreLogService.getLevel(scoreCount.getScoreUsable().intValue());//现在应有的等级
+        //用户需不需要变更等级
+        ObjectMapper mapper = new ObjectMapper();
+        if (curLevel != prelevel) {
+            ranked.setCurrentRankId((long) curLevel);
+            ranked.setCurrentRankName("Lv" + curLevel);
+            String rankIdtIds = ranked.getRankIdtIds();
+            List<HashMap<String, String>> rankList = new ArrayList<>();
+            try {
+                rankList = mapper.readValue(rankIdtIds, ArrayList.class);
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            boolean add = true;
+            for (HashMap m : rankList) {
+                if (m.get("rankId").equals(curLevel + "")) {
+                    add = false;
+                }
+            }
+            if (add) {
+                HashMap<String, String> newMap = new HashMap<String, String>();
+                newMap.put("rankId", curLevel + "");
+                newMap.put("rankName", "Lv" + curLevel);
+                rankList.add(newMap);
+                try {
+                    ranked.setRankIdtIds(mapper.writeValueAsString(rankList));
+                } catch (JsonProcessingException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                //等级变更记录 t_incent_ranked_log 更新
+            }
+            ranked.setUpdatedAt(new Date());
+            ranked.updateById();
+            IncentRuleRank rankRule = ruleRankServiceImap.selectOne(new EntityWrapper<IncentRuleRank>().eq("id", curLevel));
+            scoreLogService.addRankLog(userId, rankRule);
+        }
+        return ResultDto.success();
+    }
+
+
 
     /**
      * 功能描述: 根据指定用户id变更用户到指定等级
@@ -420,6 +493,11 @@ public class SystemServiceImpl implements SystemService {
     public ResultDto<AuthorBean> getAuthor(String memberId) {
         AuthorBean author = userService.getAuthor(memberId);
         return ResultDto.success(author);
+    }
+    @Override
+    public ResultDto<AuthorBean> getUserCard(String cardId, String memberId) {
+        AuthorBean authorBean = userService.getUserCard(cardId, memberId);
+        return ResultDto.success(authorBean);
     }
 
     public ResultDto<String> updateActionUpdatedAtByCondition(Map<String, Object> map) {

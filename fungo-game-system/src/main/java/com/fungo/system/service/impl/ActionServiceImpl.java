@@ -11,6 +11,7 @@ import com.fungo.system.entity.BasNotice;
 import com.fungo.system.entity.MemberFollower;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
+import com.fungo.system.helper.mq.MQProduct;
 import com.fungo.system.proxy.IDeveloperProxyService;
 import com.fungo.system.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
@@ -69,6 +70,9 @@ public class ActionServiceImpl implements IActionService {
 
     @Autowired
     private IDeveloperProxyService iDeveloperProxyService;
+
+    @Autowired
+    private MQProduct mqProduct;
 
 
     //用户成长业务
@@ -656,7 +660,7 @@ public class ActionServiceImpl implements IActionService {
         map.put("fieldName", "download_num");
         map.put("id", inputDto.getTarget_id());
         map.put("type", "add");
-        iDeveloperProxyService.updateCounter(map);
+        mqProduct.updateCounter(map);
     }
 
     //忽略

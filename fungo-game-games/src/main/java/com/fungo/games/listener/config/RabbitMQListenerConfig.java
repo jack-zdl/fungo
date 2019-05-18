@@ -1,6 +1,7 @@
 package com.fungo.games.listener.config;
 
 import com.alibaba.fastjson.JSON;
+import com.fungo.games.feign.MQFeignClient;
 import com.fungo.games.feign.SystemFeignClient;
 import com.fungo.games.helper.MQConfig;
 import com.game.common.ts.mq.config.RabbitMQConfig;
@@ -40,6 +41,9 @@ public class RabbitMQListenerConfig {
 
     @Autowired
     private SystemFeignClient systemFeignClient;
+
+    @Autowired
+    private MQFeignClient mqFeignClient;
 
 
 
@@ -98,7 +102,7 @@ public class RabbitMQListenerConfig {
                     //同步业务处理
                     boolean b = mQDataReceiveService.onMessageWithMQTopic(msgBody);
                     if (b){
-                        systemFeignClient.deleteMessageByMessageId(messageId);
+                        mqFeignClient.deleteMessageByMessageId(messageId);
                         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
                     }else{
                         channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);

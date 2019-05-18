@@ -28,10 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -704,12 +701,12 @@ public class FeignServiceController {
      * 查询游戏评论表中发表评论大于X条，前Y名的用户
      * @param x
      * @param y
+     * @param wathMbsSet
      * @return
      */
     @ApiOperation(value = "查询游戏评论表中发表评论大于X条，前Y名的用户", notes = "")
     @RequestMapping(value = "/api/game/getRecommendMembersFromEvaluation", method = RequestMethod.POST)
-    ResultDto<List<String>> getRecommendMembersFromEvaluation(Integer x,Integer y){
-        List<String> wathMbsSet = new ArrayList<>();
+    ResultDto<List<String>> getRecommendMembersFromEvaluation(@RequestParam("x") Integer x,@RequestParam("y") Integer y,@RequestParam("wathMbsSet") List<String> wathMbsSet){
         List<String> sendCommentMembers = gameEvaluationDao.getRecommendMembersFromEvaluation(x,
                 y, wathMbsSet);
         return ResultDto.success(sendCommentMembers);

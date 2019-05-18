@@ -3,6 +3,7 @@ package com.fungo.games.service.impl;
 import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameReleaseLog;
+import com.fungo.games.service.IEvaluateService;
 import com.fungo.games.service.IGameService;
 import com.fungo.games.service.IMQService;
 import com.game.common.dto.GameDto;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,6 +31,8 @@ public class MQServiceImpl implements IMQService {
 
     @Autowired
     private GameDao gameDao;
+    @Autowired
+    private IEvaluateService iEvaluateService;
     /**
      * 游戏更新
      * @param gameDto1
@@ -72,5 +76,18 @@ public class MQServiceImpl implements IMQService {
     @Override
     public boolean mqCounterUpdate(Map map) {
         return gameDao.updateCountor(map);
+    }
+
+    /**
+     * mq根据后台标签id集合，分类标签，游戏id
+     * @param map
+     * @return
+     */
+    @Override
+    public boolean mqAddGametag(Map map) {
+        List<String> tags = (List<String>) map.get("tags");
+        String categoryId = (String) map.get("categoryId");
+        String gameId = (String) map.get("gameId");
+        return iEvaluateService.feignAddGameTagInsert(tags,categoryId,gameId);
     }
 }
