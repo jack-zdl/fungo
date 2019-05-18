@@ -106,7 +106,7 @@ public class RabbitMQExchangeQueueBindConfig {
 
     @Bean("bindingTopicExchageQueueSystemUser")
     Binding bindingTopicExchageQueueSystemUser() {
-        Binding binding = BindingBuilder.bind(topicQueueSystemUser()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM.getName());
+        Binding binding = BindingBuilder.bind(topicQueueSystemUser()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
         LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingTopicExchageQueue-create-success");
         return binding;
     }
