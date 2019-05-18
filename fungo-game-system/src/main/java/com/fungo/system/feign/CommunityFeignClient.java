@@ -87,4 +87,26 @@ public interface CommunityFeignClient {
      */
     @PostMapping("/ms/service/cmm/cty/lists")
     FungoPageResultDto<CmmCommunityDto> queryCmmPostList(@RequestBody CmmCommunityDto cmmCommunityDto);
+
+
+    /**
+     * 查询 社区置顶文章集合
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/post/topicPosts")
+    FungoPageResultDto<CmmPostDto> listCmmPostTopicPost(@RequestBody CmmPostDto cmmPostDto);
+
+    /**
+     * 查询单个社区详情数据
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/cty")
+    FungoPageResultDto<CmmCommunityDto> queryCmmCtyDetail(@RequestBody CmmCommunityDto cmmCommunityDto);
+
+    /**
+     * 查询 社区帖子总数
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/post/count")
+    ResultDto<Integer> queryCmmPostCount(@RequestBody CmmPostDto cmmPostDto);
 }

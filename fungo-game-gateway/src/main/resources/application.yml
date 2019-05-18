@@ -35,11 +35,104 @@ management:
 # 路由配置
 zuul:
   routes:
-    fungo-game-system:
+    fungo-game-system-1:
       path: /api/action/**
       serviceId: FUNGO-GAME-SYSTEM
       sensitiveHeaders:
       strip-prefix: false
+    fungo-game-system-2:
+      path: /api/report/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-3:
+      path: /api/user/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-4:
+      path: /api/config/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-5:
+      path: /api/mine/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-6:
+      path: /api/checkupdate/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-7:
+      path: /api/checkappupdate/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-8:
+      path: /api/checkiosupdate/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-9:
+      path: /api/about/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-10:
+      path: /api/starInfo/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-11:
+      path: /api/trait/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-12:
+      path: /api/common/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-13:
+      path: /api/mine/initrank/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-14:
+      path: /api/developer/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-15:
+      path: /api/inittaskhonor/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-16:
+      path: /api/push//**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-17:
+      path: /api/sys/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-18:
+      path: /api/rank/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-19:
+      path: /api/vd/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+
+
+
 #common.ribbon.listOfServers=http://10.0.0.1:8081/common,http://10.0.0.2:8081/common  #请求需要使用功能区进行负载平衡。
  # 配置超时时间断路器才有效果（加入Zuul）
 

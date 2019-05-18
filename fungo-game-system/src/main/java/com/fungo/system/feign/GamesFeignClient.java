@@ -92,4 +92,8 @@ public interface GamesFeignClient {
     @ApiOperation(value = "游戏测试会员关联表的分页查询", notes = "")
     @RequestMapping(value = "/ms/service/game/api/evaluation/getGameSurveyRelPage", method = RequestMethod.POST)
     Page<GameSurveyRelDto> getGameSurveyRelPage(@RequestBody GameSurveyRelDto gameSurveyDto);
+
+    @ApiOperation(value = "getGameSelectCountByLikeNameAndState", notes = "")
+    @RequestMapping(value = "/api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.POST)
+    int getGameSelectCountByLikeNameAndState(@RequestBody GameDto gameDto);
 }
