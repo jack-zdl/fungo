@@ -8,6 +8,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.EvaluationInputPageDto;
 import com.game.common.dto.game.GameEvaluationDto;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,7 +24,7 @@ import java.util.List;
  * @author mxf
  * @since 2018-11-08
  */
-//@FeignClient(name = "FUNGO-GAME-GAMES")
+@FeignClient(name = "FUNGO-GAME-GAMES")
 @RequestMapping("/ms/service/game")
 public interface GameFeignClient {
 
