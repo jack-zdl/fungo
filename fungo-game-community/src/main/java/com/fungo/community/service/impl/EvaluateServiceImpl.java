@@ -234,32 +234,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         }
 
         if (null != noticeMap) {
-            //MQ发布到系统微服务
-            TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
-
-            //消息类型
-            transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_COMMUNITY);
-
-            //发送的队列
-            transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
-
-            //路由key
-            StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
-            routinKey.deleteCharAt(routinKey.length() - 1);
-            routinKey.append("add_notice");
-
-            transactionMessageDto.setRoutingKey(routinKey.toString());
-
-            MQResultDto mqResultDto = new MQResultDto();
-            mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_ADD_NOTICE.getCode());
-
-            mqResultDto.setBody(noticeMap);
-
-            transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
-            //执行MQ发送
-            ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
-            logger.info("--添加评论-执行发送消息--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
-            //-----start
+            this.sendNoticeToSystemServcie(noticeMap);
         }
 
 
@@ -384,6 +359,39 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //获取心情内容
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOOD_CONTENT_GET, "", null);
         return re;
+    }
+
+
+    //发送消息通知给系统微服务
+    private void sendNoticeToSystemServcie(Map<String, Object> noticeMap) {
+
+        //MQ发布到系统微服务
+        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+
+        //消息类型
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_COMMUNITY);
+
+        //发送的队列
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+
+        //路由key
+        StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+        routinKey.deleteCharAt(routinKey.length() - 1);
+        routinKey.append("add_notice");
+
+        transactionMessageDto.setRoutingKey(routinKey.toString());
+
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_ADD_NOTICE.getCode());
+
+        mqResultDto.setBody(noticeMap);
+
+        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+        //执行MQ发送
+        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        logger.info("--添加评论-执行发送消息--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
+        //-----start
+
     }
 
 
@@ -1348,8 +1356,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         GameEvaluationDto gameEvaluationDto = null;
         ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getGameEvaluationSelectById(commentId);
-        if (null != evaluationDtoResultDto){
-             gameEvaluationDto = evaluationDtoResultDto.getData();
+        if (null != evaluationDtoResultDto) {
+            gameEvaluationDto = evaluationDtoResultDto.getData();
         }
 
         if (gameEvaluationDto == null) {
@@ -1451,7 +1459,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         GameEvaluationDto gameEvaluationDto = null;
         ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getGameEvaluationSelectById(pageDto.getGame_id());
-        if (null != evaluationDtoResultDto){
+        if (null != evaluationDtoResultDto) {
             gameEvaluationDto = evaluationDtoResultDto.getData();
         }
 
@@ -1479,8 +1487,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         Page<GameEvaluation> page = this.gameEvaluationService.selectPage(new Page<>(pageDto.getPage(), pageDto.getLimit()), commentWrapper);
         List<GameEvaluation> list = page.getRecords();
-
-
 
 
         for (GameEvaluation cmmComment : list) {
@@ -1878,11 +1884,25 @@ public class EvaluateServiceImpl implements IEvaluateService {
         }
         int sort = eva.getSort();
         String id = eva.getObjectId();
-        //上一评论
-        GameEvaluation pre = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).gt("created_at", eva.getCreatedAt()).ne("id", id).orderBy("concat(sort,created_at)").last("limit 1"));
-//		GameEvaluation pree = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}",-1).le("sort",sort).ne("id", id).orderBy("concat(sort,created_at)",false).last("limit 1"));
-        //下一评论
-        GameEvaluation next = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).le("created_at", eva.getCreatedAt()).ne("id", id).orderBy("concat(sort,created_at)", false).last("limit 1"));
+
+        //!fixme 上一评论
+        //GameEvaluation pre = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).gt("created_at", eva.getCreatedAt()).ne("id", id).orderBy("concat(sort,created_at)").last("limit 1"));
+        GameEvaluationDto pre = null;
+        ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getPreGameEvaluation(eva.getCreatedAt(), id);
+        if (null != evaluationDtoResultDto) {
+            pre = evaluationDtoResultDto.getData();
+        }
+
+        //		GameEvaluation pree = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}",-1).le("sort",sort).ne("id", id).orderBy("concat(sort,created_at)",false).last("limit 1"));
+        //!fixme 下一评论
+        //GameEvaluation next = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).le("created_at", eva.getCreatedAt()).ne("id", id).orderBy("concat(sort,created_at)", false).last("limit 1"));
+
+        GameEvaluationDto next = null;
+        ResultDto<GameEvaluationDto> nextGameEvaluationRs = gameFeignClient.getNextGameEvaluation(eva.getCreatedAt(), id);
+        if (null != nextGameEvaluationRs) {
+            next = nextGameEvaluationRs.getData();
+        }
+
         if (pre != null) {
             eva.setPreEvaId(pre.getId());
         }//
@@ -1898,6 +1918,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
     public Set<String> getGameEvaluationHotAndAnliCount(String mb_id, String startDate, String endDate) {
         Set<String> gameEvaSet = null;
         try {
+
+            //!fixme 获取游戏评论集合
+            /*
             EntityWrapper<GameEvaluation> evaluationEntityWrapper = new EntityWrapper<>();
             evaluationEntityWrapper.eq("member_id", mb_id);
             evaluationEntityWrapper.between("updated_at", startDate, endDate);
@@ -1905,12 +1928,21 @@ public class EvaluateServiceImpl implements IEvaluateService {
             //type  0:普通 1:热门 2:精华
             evaluationEntityWrapper.in("type", new Integer[]{1, 2});
 
-            List<GameEvaluation> gameEvaluationsList = gameEvaluationService.selectList(evaluationEntityWrapper);
+              List<GameEvaluation> gameEvaluationsList = gameEvaluationService.selectList(evaluationEntityWrapper);
+            */
+
+            List<GameEvaluationDto> gameEvaluationsList = null;
+            ResultDto<List<GameEvaluationDto>> gameEvaRS = gameFeignClient.getEvaluationEntityWrapper(mb_id, startDate, endDate);
+            if (null != gameEvaRS) {
+                gameEvaluationsList = gameEvaRS.getData();
+            }
+
+
             if (null != gameEvaluationsList && !gameEvaluationsList.isEmpty()) {
 
                 gameEvaSet = new HashSet<String>();
 
-                for (GameEvaluation gameEvaluation : gameEvaluationsList) {
+                for (GameEvaluationDto gameEvaluation : gameEvaluationsList) {
                     gameEvaSet.add(gameEvaluation.getId());
                 }
             }

@@ -82,5 +82,26 @@ public interface GameFeignClient {
     @RequestMapping(value = "/api/game/getGameEvaluationSelectById", method = RequestMethod.POST)
     ResultDto<GameEvaluationDto> getGameEvaluationSelectById(@RequestParam("commentId") String commentId);
 
+
+
+    @ApiOperation(value = "getEvaluationEntityWrapper", notes = "")
+    @RequestMapping(value = "/api/game/getEvaluationEntityWrapper", method = RequestMethod.POST)
+    ResultDto<List<GameEvaluationDto>> getEvaluationEntityWrapper(@RequestParam("memberId") String memberId, @RequestParam("startDate") String startDate,
+                                                                  @RequestParam("endDate") String endDate);
+
+
+
+
+    @ApiOperation(value = "getPreGameEvaluation上一评论", notes = "")
+    @RequestMapping(value = "/api/game/getPreGameEvaluation", method = RequestMethod.POST)
+    ResultDto<GameEvaluationDto> getPreGameEvaluation(@RequestParam("createdAt") String createdAt, @RequestParam("id") String id);
+
+
+
+
+    @ApiOperation(value = "getNextGameEvaluation下一评论", notes = "")
+    @RequestMapping(value = "/api/game/getNextGameEvaluation", method = RequestMethod.POST)
+    ResultDto<GameEvaluationDto> getNextGameEvaluation(@RequestParam("createdAt") String createdAt, @RequestParam("id") String id);
+
     //----------
 }
