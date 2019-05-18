@@ -288,6 +288,24 @@ public class SystemController {
         }
     }
 
+    @GetMapping(value = "/countSerchUserName")
+    @ApiOperation(value="获取搜索的用户名数量")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "keyword",value = "要搜索的用户名",paramType = "form",dataType = "string")
+    })
+    public ResultDto<Integer> countSerchUserName(@RequestParam("keyword") String keyword){
+        ResultDto<Integer> re = null;
+        try {
+            re =  systemService.countSerchUserName(keyword);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("SystemController.countSerchUserName",e);
+            re = ResultDto.error("-1", "SystemController.countSerchUserName执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
     @GetMapping(value = "/countActionNumGameUse")
     @ApiOperation(value="获取动作数量(比如点赞)--游戏服务使用")
     @ApiImplicitParams({
