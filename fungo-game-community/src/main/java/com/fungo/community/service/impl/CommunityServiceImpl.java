@@ -16,6 +16,7 @@ import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.service.ICommunityService;
 import com.game.common.bean.MemberPulishFromCommunity;
 import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
@@ -29,6 +30,7 @@ import com.game.common.repo.cache.facade.FungoCacheCommunity;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
+import com.game.common.vo.MemberFollowerVo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -201,11 +203,92 @@ public class CommunityServiceImpl implements ICommunityService {
             }
 
             //!fixme 从文章表、社区一级评论表 和 游戏评论表获取用户数量
+            boolean isOrder = false;
+            List<MemberPulishFromCommunity> memberPulishCountOrderList = new ArrayList<MemberPulishFromCommunity>();
+
             List<MemberPulishFromCommunity> mlist = communityDao.getMemberOrder(page, map);
+
             //从游戏评论表获取用户数量
+            ResultDto<List<MemberPulishFromCommunity>> gameMemberCtmRs = gameFeignClient.getMemberOrder(community.getGameId(), null);
+            if (null != gameMemberCtmRs) {
+
+                List<MemberPulishFromCommunity> pulishFromCmtList = gameMemberCtmRs.getData();
+
+                if (null != pulishFromCmtList && !pulishFromCmtList.isEmpty()) {
+
+                    if (null != mlist && !mlist.isEmpty()) {
+
+                        isOrder = true;
+
+                        //遍历 游戏评论用户
+                        for (MemberPulishFromCommunity gamePulisher : pulishFromCmtList) {
+
+                            String gameMemberId = gamePulisher.getMemberId();
+
+                            //遍历文章和社区评论用户
+                            for (MemberPulishFromCommunity postCmtPulisher : mlist) {
+
+                                String postCmtMemberId = postCmtPulisher.getMemberId();
+                                if (StringUtils.equalsIgnoreCase(gameMemberId, postCmtMemberId)) {
+
+                                    //社区评论数
+                                    postCmtPulisher.setCommentNum(postCmtPulisher.getCommentNum() + gamePulisher.getCommentNum());
+
+                                    //文章评论数
+                                    postCmtPulisher.setPostNum(postCmtPulisher.getPostNum() + gamePulisher.getPostNum());
+
+                                    //平均评论数
+                                    postCmtPulisher.setEvaNum(postCmtPulisher.getEvaNum() + gamePulisher.getEvaNum());
+                                } else {
+                                    mlist.add(gamePulisher);
+                                }
+                            }
+                        }
+
+                        pulishFromCmtList.clear();
+
+                    } else {
+                        memberPulishCountOrderList.addAll(pulishFromCmtList);
+                    }
+
+                } else {
+                    memberPulishCountOrderList.addAll(mlist);
+                }
+            } else {
+                memberPulishCountOrderList.addAll(mlist);
+            }
+
+
+            //对所有用户按 CommentNum + PostNum + EvaNum ，从大到小排序 (冒泡排序)
+            if (isOrder) {
+                int pulisherSize = memberPulishCountOrderList.size();
+                for (int i = 0; i < pulisherSize - 1; i++) {
+
+                    for (int j = 0; j < pulisherSize - 1 - i; j++) {
+
+                        MemberPulishFromCommunity pulishPre = memberPulishCountOrderList.get(j);
+                        int pulishCountPre = pulishPre.getCommentNum() + pulishPre.getEvaNum() + pulishPre.getPostNum();
+
+                        MemberPulishFromCommunity pulishNext = memberPulishCountOrderList.get(j + 1);
+                        int pulishCountNext = pulishNext.getCommentNum() + pulishNext.getEvaNum() + pulishNext.getPostNum();
+
+                        if (pulishCountPre < pulishCountNext) {
+
+                            MemberPulishFromCommunity temp = pulishPre;
+
+                            memberPulishCountOrderList.set(j, pulishNext);
+                            memberPulishCountOrderList.set(j + 1, temp);
+
+                        }
+                    }
+                }
+
+                //清除
+                mlist.clear();
+            }
 
             ObjectMapper mapper = new ObjectMapper();
-            for (MemberPulishFromCommunity m : mlist) {
+            for (MemberPulishFromCommunity m : memberPulishCountOrderList) {
                 Map<String, Object> mp = new HashMap<>();
                 mp.put("objectId", m.getMemberId());
 
@@ -237,9 +320,9 @@ public class CommunityServiceImpl implements ICommunityService {
 
                     IncentRankedDto mBIncentRankedDto = null;
                     FungoPageResultDto<IncentRankedDto> incentRankedPageRs = systemFeignClient.getIncentRankedList(incentRankedDto);
-                    if (null != incentRankedPageRs){
+                    if (null != incentRankedPageRs) {
                         List<IncentRankedDto> rankedDtoList = incentRankedPageRs.getData();
-                        if (null != rankedDtoList && !rankedDtoList.isEmpty()){
+                        if (null != rankedDtoList && !rankedDtoList.isEmpty()) {
                             mBIncentRankedDto = rankedDtoList.get(0);
                         }
                     }
@@ -264,9 +347,30 @@ public class CommunityServiceImpl implements ICommunityService {
             }
         }
         out.setEliteMembers(userList);
+
         //!fixme 社区关注数
-        int c = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).eq("target_id", communityId).eq("target_type", 4).and("state = 0"));
-        out.setMemberNum(c);
+        //type 关注 | 5
+        //target_type 帖子评论 | 5
+        //state  状态 0 正常 | -1 删除
+        //int c = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).eq("target_id", communityId).eq("target_type", 4).and("state = 0"));
+
+
+        BasActionDto basActionDtoLike = new BasActionDto();
+
+        basActionDtoLike.setMemberId(userId);
+        basActionDtoLike.setType(5);
+        basActionDtoLike.setState(0);
+        basActionDtoLike.setTargetId(communityId);
+        basActionDtoLike.setTargetType(4);
+
+        ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
+
+        int focusCount = 0;
+        if (null != resultDtoLike) {
+            focusCount = resultDtoLike.getData();
+        }
+
+        out.setMemberNum(focusCount);
 
         //redis cache
         fungoCacheCommunity.excIndexCache(true, keyPrefix, keySuffix, out);
@@ -310,8 +414,21 @@ public class CommunityServiceImpl implements ICommunityService {
         List<CommunityOutPageDto> dataList = new ArrayList<>();
         re.setData(dataList);
 
-        //!fixme 获取用户详情 过滤
-        Member user = menberService.selectById(userId);
+        //!fixme 获取用户详情
+        // Member user = menberService.selectById(userId);
+
+        List<String> idsList = new ArrayList<String>();
+        idsList.add(userId);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList);
+
+        MemberDto memberDto = null;
+        if (null != listMembersByids) {
+            List<MemberDto> memberDtoList = listMembersByids.getData();
+            if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                memberDto = memberDtoList.get(0);
+            }
+        }
+
         if (filter.equals("official")) {
             //官方社区
             entityWrapper = entityWrapper.eq("type", 1);
@@ -319,7 +436,7 @@ public class CommunityServiceImpl implements ICommunityService {
             //普通社区
             entityWrapper = entityWrapper.eq("type", 0);
         } else if (filter.equals("mine")) {//我关注的社区
-            if (user == null) {
+            if (memberDto == null) {
                 return FungoPageResultDto.error("1", "找不到用户");
             }
 
@@ -329,6 +446,7 @@ public class CommunityServiceImpl implements ICommunityService {
 //			if(actionList == null || actionList.size() == 0) {
 //				return FungoPageResultDto.error("241","没有找到用户关注的社区");
 //			}
+
 
             List<String> communityIdList = new ArrayList<>();
             Page<CmmCommunity> cmmPage = new Page<CmmCommunity>();
@@ -397,10 +515,31 @@ public class CommunityServiceImpl implements ICommunityService {
             out.setHot_value(community.getFolloweeNum() + community.getPostNum() + commentNum);
             out.setType(community.getType());
 
-            if (user != null) {
+            if (memberDto != null) {
+
                 //!fixme  是否关注
+                /*
                 int selectCount = actionService.selectCount(new EntityWrapper<BasAction>().eq("target_id", community.getId())
                         .eq("target_type", 4).eq("type", 5).eq("member_id", userId).and("state = 0"));
+                */
+
+
+                BasActionDto basActionDtoLike = new BasActionDto();
+
+                basActionDtoLike.setMemberId(userId);
+                basActionDtoLike.setType(5);
+                basActionDtoLike.setState(0);
+                basActionDtoLike.setTargetId(community.getId());
+                basActionDtoLike.setTargetType(4);
+
+                ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
+
+                int selectCount = 0;
+                if (null != resultDtoLike) {
+                    selectCount = resultDtoLike.getData();
+                }
+
+
                 if (selectCount != 0) {
                     out.setIs_followed(true);
                 } else {
@@ -439,12 +578,26 @@ public class CommunityServiceImpl implements ICommunityService {
 
             for (MemberPulishFromCommunity m : mlist) {
                 CommunityMember c = new CommunityMember();
-                c.setAuthorBean(userService.getAuthor(m.getMemberId()));
+
+                //!fixme 获取用户数据
+               // c.setAuthorBean(userService.getAuthor(m.getMemberId()));
+
+                ResultDto<AuthorBean> authorBeanResultDto = systemFeignClient.getAuthor(m.getMemberId());
+                if (null != authorBeanResultDto) {
+                    AuthorBean authorBean = authorBeanResultDto.getData();
+                    c.setAuthorBean(authorBean);
+                }
+
+
                 c.setMerits(m.getEvaNum() + m.getCommentNum() + m.getPostNum());
                 if (userId.equals(m.getMemberId())) {
                     c.setYourself(true);
                 } else {
+                   //!fixme 获取用户的粉丝
                     MemberFollower follower = followService.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", userId).eq("follower_id", m.getMemberId()).andNew("state = {0}", 1).or("state = {0}", 2));
+
+
+
                     if (follower != null) {
                         c.setFollowed(true);
                     }
@@ -458,6 +611,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
         return re;
     }
+
 
 
     @Override
