@@ -82,7 +82,7 @@ public class SystemController {
     }
 
     /**
-     * 社区使用
+     * 社区使用--获取用户的粉丝
      */
     @GetMapping(value = "/getMemberFollower1")
     public ResultDto<MemberFollowerDto> getMemberFollower1( @RequestBody MemberFollowerDto memberFollowerDto){
@@ -283,6 +283,24 @@ public class SystemController {
             e.printStackTrace();
             LOGGER.error("SystemController.countActionNum",e);
             re = ResultDto.error("-1", "SystemController.countActionNum执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
+    @GetMapping(value = "/countSerchUserName")
+    @ApiOperation(value="获取搜索的用户名数量")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "keyword",value = "要搜索的用户名",paramType = "form",dataType = "string")
+    })
+    public ResultDto<Integer> countSerchUserName(@RequestParam("keyword") String keyword){
+        ResultDto<Integer> re = null;
+        try {
+            re =  systemService.countSerchUserName(keyword);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("SystemController.countSerchUserName",e);
+            re = ResultDto.error("-1", "SystemController.countSerchUserName执行service出现异常");
         }finally {
             return re;
         }
