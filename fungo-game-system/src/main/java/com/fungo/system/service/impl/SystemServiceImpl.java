@@ -30,6 +30,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,6 +102,9 @@ public class SystemServiceImpl implements SystemService {
     @Autowired
     private BasTagGroupService basTagGroupService;
 
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
     /**
      * 功能描述: 根据用户id查询被关注人的id集合
      *
@@ -545,6 +552,11 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public ResultDto<Map<String, Object>> exTask(TaskDto taskDto) {
+        if(StringUtil.isNull(taskDto.getRequestId())){
+            return ResultDto.error("-1", "任务唯一请求码缺失");
+        }
+        //校验任务是否已经执行
+
         ResultDto<Map<String, Object>> re = null;
         Map<String, Object> map = null;
         try {
@@ -653,6 +665,12 @@ public class SystemServiceImpl implements SystemService {
          return ResultDto.error("-1", "SystemService.listBasTagGroupByCondition error");
      }
         return ResultDto.success(basTagDtoList);
+    }
+
+    @Override
+    public ResultDto<Integer> countSerchUserName(String keyword) {
+        int count = memberServiceImap.selectCount(new EntityWrapper<Member>().where("state = {0}", 0).like("user_name", keyword));
+        return ResultDto.success(count);
     }
 
     @Override

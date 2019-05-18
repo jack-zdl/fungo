@@ -89,4 +89,6 @@ public interface SystemService {
     ResultDto<BasTagDto> getBasTagById(String id);
 
     ResultDto<List<BasTagGroupDto>> listBasTagGroupByCondition(BasTagGroupDto basTagGroupDto);
+
+    ResultDto<Integer> countSerchUserName(String keyword);
 }
