@@ -23,6 +23,7 @@ import com.game.common.dto.community.CommunityInputPageDto;
 import com.game.common.dto.community.CommunityMember;
 import com.game.common.dto.community.CommunityOut;
 import com.game.common.dto.community.CommunityOutPageDto;
+import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.repo.cache.facade.FungoCacheCommunity;
 import com.game.common.util.CommonUtil;
@@ -199,31 +200,65 @@ public class CommunityServiceImpl implements ICommunityService {
                 map.put("gameId", community.getGameId());
             }
 
-            //!fixme 从文章表、社区一级评论表和游戏评论表获取用户数量
+            //!fixme 从文章表、社区一级评论表 和 游戏评论表获取用户数量
             List<MemberPulishFromCommunity> mlist = communityDao.getMemberOrder(page, map);
+            //从游戏评论表获取用户数量
 
             ObjectMapper mapper = new ObjectMapper();
             for (MemberPulishFromCommunity m : mlist) {
                 Map<String, Object> mp = new HashMap<>();
                 mp.put("objectId", m.getMemberId());
-                Member member = menberService.selectById(m.getMemberId());
-                if (member != null) {
-                    mp.put("avatar", member.getAvatar());
+
+                //!fixme 获取用户数据
+                //Member member = menberService.selectById(m.getMemberId());
+
+                List<String> mbIdsList = new ArrayList<String>();
+                idsList.add(m.getMemberId());
+                ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(mbIdsList);
+
+                MemberDto memberDtoPulish = null;
+                if (null != listMembersByids) {
+                    List<MemberDto> memberDtoList = listMembersByids.getData();
+                    if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                        memberDtoPulish = memberDtoList.get(0);
+                    }
                 }
 
-                //!fixme 根据用户id和用户权益(等级、身份、荣誉)类型，获取用户权益数据
-                IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", member.getId()).eq("rank_type", 2));
-                if (ranked != null) {
-                    IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
-                    if (rank != null) {
-                        String rankinf = rank.getRankImgs();
-                        ArrayList<HashMap<String, Object>> infolist = mapper.readValue(rankinf, ArrayList.class);
-                        mp.put("statusImg", infolist);
+                if (memberDtoPulish != null) {
+
+                    mp.put("avatar", memberDtoPulish.getAvatar());
+
+                    //!fixme 根据用户id和用户权益(等级、身份、荣誉)类型，获取用户权益数据
+                    //IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", member.getId()).eq("rank_type", 2));
+
+                    IncentRankedDto incentRankedDto = new IncentRankedDto();
+                    incentRankedDto.setMbId(memberDtoPulish.getId());
+                    incentRankedDto.setRankType(2);
+
+                    IncentRankedDto mBIncentRankedDto = null;
+                    FungoPageResultDto<IncentRankedDto> incentRankedPageRs = systemFeignClient.getIncentRankedList(incentRankedDto);
+                    if (null != incentRankedPageRs){
+                        List<IncentRankedDto> rankedDtoList = incentRankedPageRs.getData();
+                        if (null != rankedDtoList && !rankedDtoList.isEmpty()){
+                            mBIncentRankedDto = rankedDtoList.get(0);
+                        }
+                    }
+
+                    if (mBIncentRankedDto != null) {
+
+                        IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
+
+
+                        if (rank != null) {
+                            String rankinf = rank.getRankImgs();
+                            ArrayList<HashMap<String, Object>> infolist = mapper.readValue(rankinf, ArrayList.class);
+                            mp.put("statusImg", infolist);
+                        } else {
+                            mp.put("statusImg", new ArrayList<>());
+                        }
                     } else {
                         mp.put("statusImg", new ArrayList<>());
                     }
-                } else {
-                    mp.put("statusImg", new ArrayList<>());
                 }
                 userList.add(mp);
             }
