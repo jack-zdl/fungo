@@ -73,5 +73,19 @@ public class MSServicePostController {
     }
 
 
+
+    /**
+     * 查询 社区置顶文章集合
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/post/topicPosts")
+    public FungoPageResultDto<CmmPostDto> listCmmPostTopicPost(@RequestBody CmmPostDto cmmPostDto) {
+        FungoPageResultDto<CmmPostDto> resultDto = new  FungoPageResultDto<CmmPostDto>();
+        List<CmmPostDto> cmmPostDtoList = imsServicePostService.listCmmPostTopicPost(cmmPostDto);
+        resultDto.setData(cmmPostDtoList);
+        return resultDto;
+    }
+
+
     //--------
 }
