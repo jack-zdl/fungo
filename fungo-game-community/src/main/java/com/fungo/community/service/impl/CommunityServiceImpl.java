@@ -60,11 +60,11 @@ public class CommunityServiceImpl implements ICommunityService {
     private FungoCacheCommunity fungoCacheCommunity;
 
     //依赖系统和用户微服务
-    @Autowired
+    @Autowired(required = false)
     private SystemFeignClient systemFeignClient;
 
     //依赖游戏微服务
-    @Autowired
+    @Autowired(required = false)
     private GameFeignClient gameFeignClient;
 
 

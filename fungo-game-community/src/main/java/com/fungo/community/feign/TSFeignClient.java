@@ -3,7 +3,6 @@ package com.fungo.community.feign;
 
 import com.game.common.dto.ResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
  * @author mxf
  * @since 2018-11-08
  */
-@FeignClient(name = "fungo-game-system")
+//@FeignClient(name = "FUNGO-GAME-SYSTEM")
 @RestController("/ms/service/dtp/mq")
 public interface TSFeignClient {
 
