@@ -65,7 +65,7 @@ public class MQResultDto {
         CMT_ACTION_MQ_TYPE_ACTION_ADD(2, "添加用户动作行为数据"),
 
         /**
-         * 社区文章用户执行任务:
+         * 社区文章|心情用户执行任务:
          *
          * {
          *     "consumerQueue": "msgFungoTopicQueue_system_user",
@@ -80,7 +80,7 @@ public class MQResultDto {
          *     "sort": 0
          * }
          */
-        CMT_POST_MQ_TYPE_DO_TASK(3, "社区文章用户执行任务");
+        CMT_POST_MOOD_MQ_TYPE_DO_TASK(3, "社区文章|心情用户执行任务");
 
 
         private int code;
