@@ -648,7 +648,7 @@ public class CommunityServiceImpl implements ICommunityService {
     @Override
     public List<MemberDto> getRecomMembers(int limit, String currentMb_id) {
 
-        List<MemberDto> recommendedMbsList = new ArrayList<MemberDto();
+        List<MemberDto> recommendedMbsList = new ArrayList<MemberDto>();
 
         //查询当前登录用户关注的所有用户
         List<MemberDto> watchMebmberList = null;
