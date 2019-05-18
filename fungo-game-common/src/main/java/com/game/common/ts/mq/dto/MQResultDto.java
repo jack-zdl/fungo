@@ -80,7 +80,16 @@ public class MQResultDto {
          *     "sort": 0
          * }
          */
-        CMT_POST_MOOD_MQ_TYPE_DO_TASK(3, "社区文章|心情用户执行任务");
+        CMT_POST_MOOD_MQ_TYPE_DO_TASK(3, "社区文章|心情用户执行任务"),
+
+
+
+        CMT_POST_MOOD_MQ_TYPE_ADD_NOTICE(4,"社区文章|心情用户消息通知")
+
+
+
+
+        ;
 
 
         private int code;
