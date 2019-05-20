@@ -6,6 +6,7 @@ import com.fungo.system.service.SystemService;
 import com.fungo.system.ts.mq.service.UserMqConsumeService;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.system.TaskDto;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
         }
 
         //添加用户动作行为数据
-        if(MQResultDto.CommunityEnum.CMT_ACTION_MQ_TYPE_ACTION_ADD.getCode() == type){
+        if(MQResultDto.CommunityEnum.CMT_ACTION_MQ_TYPE_ACTION_ADD.getCode() == type||MQResultDto.GameMQDataType.GAME_DATA_TYPE_BASACTIONINSERT.getCode()==type){
             return processAddAction(body);
         }
 
@@ -55,21 +56,28 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
             return processNotice(body);
         }
 
+        // game逻辑块变动 BasAction 查询后判断是否修改时间
+        if(MQResultDto.GameMQDataType.GAME_DATA_TYPE_SELECTONEANDUPDATEALLCOLUMNBYID.getCode() == type){
+            return processGameBasActionChange(body);
+        }
 
         return false;
     }
 
     // 消息通知逻辑
     private boolean processNotice(String body) {
+
         //TODO
         return false;
     }
 
-    //处理用户任务
+    /**
+     * 处理用户任务
+     */
     private boolean processTask(String body) {
-        //TODO 处理用户任务
-
-        return false;
+        TaskDto taskDto = JSON.parseObject(body, TaskDto.class);
+        ResultDto<Map<String, Object>> resultDto = systemService.exTask(taskDto);
+        return resultDto.isSuccess();
     }
 
     /**
@@ -94,4 +102,15 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
         ResultDto<String> resultDto = systemService.processUserScoreChange(userId, Integer.parseInt(score));
         return resultDto.isSuccess();
     }
+
+    /**
+     * game逻辑块变动 BasAction 查询后判断是否修改时间
+     */
+    private boolean processGameBasActionChange(String body) {
+        Map map = JSON.parseObject(body, Map.class);
+        ResultDto resultDto = systemService.updateActionUpdatedAtByCondition(map);
+        return resultDto.isSuccess();
+    }
+
+
 }

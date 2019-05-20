@@ -24,6 +24,7 @@ import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
 import com.game.common.util.StringUtil;
+import com.game.common.util.UniqueIdCkeckUtil;
 import com.game.common.vo.MemberFollowerVo;
 import com.sun.istack.NotNull;
 import org.apache.commons.beanutils.BeanUtils;
@@ -40,6 +41,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -554,12 +556,11 @@ public class SystemServiceImpl implements SystemService {
         if (StringUtil.isNull(taskDto.getRequestId())) {
             return ResultDto.error("-1", "任务唯一请求码缺失");
         }
-        //校验任务是否已经执行
-        ValueOperations<String, String> forValue = redisTemplate.opsForValue();
-        //forValue.setIfAbsent()
-     /*   if(UniqueIdCkeckUtil.checkUniqueIdAndSave(UniqueIdCkeckUtil.REDIS_SET_TASK_REQUEST_ID,taskDto.getRequestId())){
-            return ResultDto.success();
-        }*/
+
+        if(!UniqueIdCkeckUtil.checkUniqueIdAndSave(taskDto.getRequestId())){
+            return ResultDto.error("-1", "业务已执行");
+        }
+
         ResultDto<Map<String, Object>> re = null;
         Map<String, Object> map = null;
         try {
@@ -740,6 +741,19 @@ public class SystemServiceImpl implements SystemService {
         return ResultDto.success(memberDtoList);
     }
 
+    /**
+     * 修改通知数据
+     * @param id 通知id
+     * @param data 通知数据
+     * @return 结果
+     */
+    public ResultDto<String> updateNoticeDate(String id,String data){
+        BasNotice notice = new BasNotice();
+        notice = notice.selectById(id);
+        notice.setData(data);
+        notice.updateById();
+        return ResultDto.success();
+    }
 
     public ResultDto<List<MemberDto>> listRecommendedMebmber(Integer limit, String currentMbId, List<String> wathMbsSet) {
         List<MemberDto> memberDtoList;
