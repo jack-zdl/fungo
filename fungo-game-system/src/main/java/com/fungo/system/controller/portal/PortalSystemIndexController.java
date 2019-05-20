@@ -4,7 +4,6 @@ package com.fungo.system.controller.portal;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.entity.Banner;
 import com.fungo.system.service.BannerService;
-import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.advert.AdvertOutBean;
 import com.game.common.repo.cache.facade.FungoCacheAdvert;
@@ -42,10 +41,10 @@ public class PortalSystemIndexController {
 
         ResultDto<List<AdvertOutBean>> re = new ResultDto<List<AdvertOutBean>>();
         //from redis
-        List<AdvertOutBean> list = (List<AdvertOutBean>) fungoCacheAdvert.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_BNR, "");
+        List<AdvertOutBean> list = (List<AdvertOutBean>) fungoCacheAdvert.getIndexCache("/api/portal/index/adt/bnr", "");
         if (null != list && !list.isEmpty()) {
             re.setData(list);
-            return re;
+            //return re;
         }
 
         //获取广告位
@@ -65,7 +64,7 @@ public class PortalSystemIndexController {
             }
             re.setData(list);
             //redis cache
-            fungoCacheAdvert.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_BNR, "", list);
+            fungoCacheAdvert.excIndexCache(true, "/api/portal/index/adt/bnr", "", list);
         }
         return re;
     }
