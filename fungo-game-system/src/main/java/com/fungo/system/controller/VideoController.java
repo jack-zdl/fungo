@@ -27,8 +27,6 @@ public class VideoController {
     @Autowired
     private IFGoGameApiAliVodService ifGoGameApiAliVodService;
 
-    @Autowired
-    private IVdService iVdService;
 
     @ApiOperation(value = "视频压缩回调", notes = "")
     @RequestMapping(value = "/vd/callback", method = RequestMethod.POST)

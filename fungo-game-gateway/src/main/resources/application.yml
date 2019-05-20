@@ -132,7 +132,16 @@ zuul:
       serviceId:  FUNGO-GAME-SYSTEM
       sensitiveHeaders:
       strip-prefix: false
-
+    fungo-game-system-20:
+      path: /api/search/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-21:
+      path: /api/recommend/index
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
 
 
 #common.ribbon.listOfServers=http://10.0.0.1:8081/common,http://10.0.0.2:8081/common  #请求需要使用功能区进行负载平衡。
@@ -141,15 +150,18 @@ zuul:
 
 
 ribbon:
-  ReadTimeout: 30000
-  ConnectTimeout: 30000
+  #MaxAutoRetries: 3
+  #MaxAutoRetriesNextServer: 1 #切换实例的重试次数
+  #OkToRetryOnAllOperations: true # 对所有的操作请求都进行重试，如果是get则可以，如果是post,put等操作没有实现幂等的情况下是很危险的，所以设置为false
+  ReadTimeout: 300000  #请求处理的超时时间
+  ConnectTimeout: 300000
 hystrix:
   command:
     default:
       execution:
         isolation:
           thread:
-            timeoutInMilliseconds: 10000
+            timeoutInMilliseconds: 1000000  # ReadTimeout+（MaxAutoRetries * ReadTimeout）
 
 logging:
   level:
