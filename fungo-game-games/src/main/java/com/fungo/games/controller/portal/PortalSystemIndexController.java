@@ -56,7 +56,7 @@ public class PortalSystemIndexController {
     @ApiImplicitParams({})
     public FungoPageResultDto<AmwayWallBean> getAmwayWallList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto) {
         //从redis获取
-        String keyPrefix = "/api/portal/index/games/amwaywall/list\"";
+        String keyPrefix = "/api/portal/index/games/amwaywall/list";
         String keySuffix = JSON.toJSONString(inputPageDto);
         FungoPageResultDto<AmwayWallBean> re = (FungoPageResultDto<AmwayWallBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
