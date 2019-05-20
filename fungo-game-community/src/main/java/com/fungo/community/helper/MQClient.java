@@ -9,7 +9,6 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
@@ -19,7 +18,7 @@ import java.io.IOException;
  * @Author: dl.zhang
  * @Date: 2019/4/26
  */
-@Component
+//@Component
 public class MQClient {
 
     private static final Logger logger = LoggerFactory.getLogger(MQClient.class);
