@@ -7,6 +7,7 @@ import com.game.common.dto.DeveloperGame.DeveloperQueryIn;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.game.GameHistoryOut;
 import com.game.common.dto.game.GameReleaseLogDto;
 
@@ -28,4 +29,8 @@ public interface IMQService {
 	boolean mqCounterUpdate(Map map);
 
     boolean mqAddGametag(Map map);
+
+    boolean mqGameEvaluationInsert(GameEvaluationDto gameEvaluationDto);
+
+	boolean mqGameEvaluationUpdate(GameEvaluationDto gameEvaluationDto);
 }

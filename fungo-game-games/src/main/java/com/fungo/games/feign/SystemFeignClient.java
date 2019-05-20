@@ -12,6 +12,7 @@ import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberOutBean;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -64,40 +65,47 @@ public interface SystemFeignClient {
      * @param basActionDto
      * @return
      */
-    @RequestMapping(value="/api/basAction/getBasActionSelectCount", method= RequestMethod.POST)
-    int getBasActionSelectCount(@RequestBody BasActionDto basActionDto);
+    @RequestMapping(value="/countActionNumGameUse")
+    @ApiOperation(value="获取动作数量(比如点赞)--游戏服务使用")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "targetid",value = "业务id",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "memberId",value = "会员id",paramType = "form",dataType = "string")
+    })
+    ResultDto<Integer> getBasActionSelectCount(@RequestBody BasActionDto basActionDto);
 
     /**
      * 根据条件判断获取memberDto对象
-     * @param md
+     * @param id
      * @return
      */
-    @RequestMapping(value="/api/member/getMemberDtoBySelectOne", method= RequestMethod.POST)
-    MemberDto getMemberDtoBySelectOne(@RequestBody MemberDto md);
+    @GetMapping(value = "/getMembersByid")
+    ResultDto<MemberDto> getMemberDtoBySelectOne(@RequestParam("id") String id);
 
     /**
      * 根据用户id获取用户身份图标
      * @param memberId
      * @return
      */
-    @RequestMapping(value="/api/member/getStatusImageByMemberId", method= RequestMethod.GET)
-    List<HashMap<String, Object>> getStatusImageByMemberId(@RequestParam("memberId") String memberId);
+    @GetMapping("/getStatusImage")
+    @ApiOperation(value="根据用户id获取用户身份图标")
+    ResultDto<List<HashMap<String, Object>>> getStatusImageByMemberId(@RequestParam("memberId") String memberId);
 
     /**
      * 根据判断集合id获取BasTagList集合
      * @param collect
      * @return
      */
-    @RequestMapping(value="/api/system/getBasTagBySelectListInId", method= RequestMethod.POST)
-    List<BasTagDto> getBasTagBySelectListInId(@RequestBody List<String> collect);
+    @RequestMapping("/listBasTags")
+    ResultDto<List<BasTagDto>> getBasTagBySelectListInId(@RequestBody List<String> collect);
 
     /**
      * 根据group_id获取BasTag集合
-     * @param basTagDto
+     * @param groupId
      * @return
      */
-    @RequestMapping(value="/api/system/getBasTagBySelectListGroupId", method= RequestMethod.POST)
-    List<BasTagDto> getBasTagBySelectListGroupId(@RequestBody BasTagDto basTagDto);
+    @GetMapping("/listBasTagByGroup")
+    @ApiOperation(value="根据group id集合获取标签集合")
+    ResultDto<List<BasTagDto>> getBasTagBySelectListGroupId(@RequestParam("groupId") String groupId);
 
     /**
      * Mqfeign调用
@@ -110,19 +118,21 @@ public interface SystemFeignClient {
 
     /**
      * 根据bastagid获取basTag对象
-     * @param basTagDto
+     * @param id
      * @return
      */
-    @RequestMapping(value="/api/system/getBasTagBySelectById", method= RequestMethod.POST)
-    BasTagDto getBasTagBySelectById(@RequestBody BasTagDto basTagDto);
+    @GetMapping("/getBasTagById")
+    @ApiOperation(value="根据id获取标签")
+    ResultDto<BasTagDto> getBasTagBySelectById(@RequestParam("id") String id);
 
     /**
      * 判断BasTagGroup属性值获取BasTagGroup集合
      * @param basTagGroupDto
      * @return
      */
-    @RequestMapping(value="/api/system/getBasTagGroupBySelectList", method= RequestMethod.POST)
-    List<BasTagGroupDto> getBasTagGroupBySelectList(@RequestBody BasTagGroupDto basTagGroupDto);
+    @RequestMapping("/listBasTagGroupByCondition")
+    @ApiOperation(value="根据指定条件获取标签集合")
+    ResultDto<List<BasTagGroupDto>> getBasTagGroupBySelectList(@RequestBody BasTagGroupDto basTagGroupDto);
 
     /**
      * 批量获取标签获取
