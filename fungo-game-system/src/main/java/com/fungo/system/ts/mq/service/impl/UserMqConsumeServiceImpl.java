@@ -2,6 +2,7 @@ package com.fungo.system.ts.mq.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fungo.system.service.IGameProxy;
 import com.fungo.system.service.SystemService;
 import com.fungo.system.ts.mq.service.UserMqConsumeService;
 import com.game.common.dto.ResultDto;
@@ -19,12 +20,12 @@ import java.util.Map;
 @Transactional
 public class UserMqConsumeServiceImpl implements UserMqConsumeService {
 
-    private final SystemService systemService;
+    @Autowired
+    private IGameProxy gameProxyService;
 
     @Autowired
-    public UserMqConsumeServiceImpl(SystemService systemService){
-        this.systemService = systemService;
-    }
+    private SystemService systemService;
+
 
     /**
      * 处理mq的消息
@@ -32,7 +33,7 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
      * @param msgDate mq的消息体
      */
     @Override
-    public boolean processMsg(String msgDate) {
+    public boolean processMsg(String msgDate) throws Exception {
         JSONObject json = JSONObject.parseObject(msgDate);
         Integer type = json.getInteger("type");
         String body = json.getString("body");
@@ -65,10 +66,17 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
     }
 
     // 消息通知逻辑
-    private boolean processNotice(String body) {
-
-        //TODO
-        return false;
+    private boolean processNotice(String body) throws Exception {
+        Map noticeMap = JSON.parseObject(body, Map.class);
+        Integer eventType = Integer.parseInt( noticeMap.get("eventType").toString());
+        String memberId = noticeMap.get("memberId").toString();
+        String targetId = noticeMap.get("target_id").toString();
+        Integer targetType = Integer.parseInt(noticeMap.get("target_type").toString());
+        String information = noticeMap.get("information").toString();
+        String appVersion = noticeMap.get("appVersion").toString();
+        String replyToId = noticeMap.get("replyToId").toString();
+        gameProxyService.addNotice(eventType,memberId,targetId,targetType,information,appVersion,replyToId);
+        return true;
     }
 
     /**
