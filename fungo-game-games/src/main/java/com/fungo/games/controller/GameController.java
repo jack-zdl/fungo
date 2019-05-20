@@ -249,7 +249,7 @@ public class GameController {
 //        测试
         mqFeignClient.deleteMessageByMessageId(2019051616580096421l);
         ResultDto<AuthorBean> author = systemFeignClient.getAuthor("012689d5d62e46f3b7fd40e536842455");
-//        System.out.println(author.getData().toString());
+        System.out.println(author.getData().toString());
 //        BasActionDto basActionDto = new BasActionDto();
 //        basActionDto.setMemberId("111111");
 //        basActionDto.setTargetId("测试");

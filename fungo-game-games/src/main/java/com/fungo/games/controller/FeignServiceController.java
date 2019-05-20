@@ -7,23 +7,21 @@ import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.games.dao.GameDao;
 import com.fungo.games.dao.GameEvaluationDao;
-import com.fungo.games.entity.Game;
-import com.fungo.games.entity.GameEvaluation;
-import com.fungo.games.entity.GameReleaseLog;
-import com.fungo.games.entity.GameSurveyRel;
-import com.fungo.games.helper.MQClient;
-import com.fungo.games.service.GameReleaseLogService;
-import com.fungo.games.service.GameService;
-import com.fungo.games.service.GameSurveyRelService;
-import com.fungo.games.service.IGameService;
+import com.fungo.games.entity.*;
+import com.fungo.games.proxy.IEvaluateProxyService;
+import com.fungo.games.service.*;
 import com.fungo.games.service.impl.GameEvaluationServiceImap;
 import com.game.common.bean.MemberPulishFromCommunity;
+import com.game.common.bean.TagBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.evaluation.EvaluationInputPageDto;
 import com.game.common.dto.game.*;
+import com.game.common.dto.index.CardDataBean;
+import com.game.common.dto.index.CardIndexBean;
 import com.game.common.util.PageTools;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,7 +31,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -65,6 +63,18 @@ public class FeignServiceController {
 
     @Autowired
     private GameReleaseLogService gameReleaseLogService;
+
+    @Autowired
+    private GameCollectionGroupService gameCollectionGroupService;
+
+    @Autowired
+    private GameCollectionItemService gameCollectionItemService;
+
+    @Autowired
+    private IEvaluateProxyService iEvaluateProxyService;
+
+    @Autowired
+    private GameDao gameDao;
 
 /****************************************************ActionController**********************************************************************/
 
@@ -674,6 +684,80 @@ public class FeignServiceController {
     int getGameSelectCountByLikeNameAndState(@RequestBody GameDto gameDto){
         return gameService.selectCount(new EntityWrapper<Game>().where("state = {0}", 0).like("name", gameDto.getName()));
     }
+
+    @ApiOperation(value = "getGameEvaluationSelectPageByTypeAndStateOrderByRAND", notes = "")
+    @RequestMapping(value = "/api/game/getGameEvaluationSelectPageByTypeAndStateOrderByRAND", method = RequestMethod.GET)
+    FungoPageResultDto<GameEvaluationDto> getGameEvaluationSelectPageByTypeAndStateOrderByRAND(){
+        Page<GameEvaluation> type = gameEvaluationServiceImap.selectPage(new Page<GameEvaluation>(1, 6), new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy("RAND()"));
+        FungoPageResultDto<GameEvaluationDto> re = new FungoPageResultDto<GameEvaluationDto>();
+        PageTools.pageToResultDto(re, type);
+        List<GameEvaluation> data = type.getRecords();
+        List<GameEvaluationDto> gameEvaluationDtos = new ArrayList<>();
+        for (GameEvaluation gameEvaluation : data) {
+            GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
+            BeanUtils.copyProperties(gameEvaluation,gameEvaluationDto);
+            gameEvaluationDtos.add(gameEvaluationDto);
+        }
+        re.setData(gameEvaluationDtos);
+        return re;
+    }
+
+    @ApiOperation(value = "getSelectedGames", notes = "")
+    @RequestMapping(value = "/api/game/getSelectedGames", method = RequestMethod.GET)
+    ResultDto<CardIndexBean> getSelectedGames(){
+        CardIndexBean indexBean = new CardIndexBean();
+        GameCollectionGroup co = gameCollectionGroupService.selectOne(new EntityWrapper<GameCollectionGroup>().eq("state", "0").orderBy("RAND()").last("limit 1"));
+        List<GameCollectionItem> ilist = new ArrayList<>();
+        if (co != null) {
+            ilist = this.gameCollectionItemService.selectList(new EntityWrapper<GameCollectionItem>().eq("group_id", co.getId()).eq("show_state", "1").last("limit 3").orderBy("sort", false));
+        }
+        if (ilist.size() == 0) {
+            return null;
+        }
+
+        ArrayList<CardDataBean> gameDateList = new ArrayList<>();
+        for (GameCollectionItem gameCollectionItem : ilist) {
+            CardDataBean bean = new CardDataBean();
+            Game game = this.gameService.selectById(gameCollectionItem.getGameId());
+            bean.setMainTitle(game.getName());
+            String intro = game.getIntro();
+            bean.setSubtitle(intro.length() > 25 ? intro.substring(0, 25) : intro);
+            bean.setImageUrl(game.getIcon());
+//            迁移微服务
+//            2019-05-18
+//            lyc
+//            List<TagBean> tags = tagDao.getSortTags(game.getId());
+            List<TagBean> tags = iEvaluateProxyService.getSortTags(game.getId());
+            String tag = "";
+            if (tags.size() > 0) {
+                for (TagBean tagBean : tags) {
+                    tag += tagBean.getName() + " ";
+                }
+            }
+            bean.setLowerLeftCorner(tag);
+            bean.setActionType("1");
+            bean.setTargetId(game.getId());
+            bean.setTargetType(3);
+            gameDateList.add(bean);
+        }
+        indexBean.setCardName("大家都在玩");
+        indexBean.setCardType(7);
+        indexBean.setOrder(8);
+        indexBean.setDataList(gameDateList);
+        indexBean.setSize(gameDateList.size());
+        indexBean.setUprightFlag(true);
+
+        return ResultDto.success(indexBean);
+    }
+
+    @ApiOperation(value = "getRateData", notes = "")
+    @RequestMapping(value = "/api/game/getRateData", method = RequestMethod.GET)
+    ResultDto<HashMap<String, BigDecimal>> getRateData(@RequestParam("gameId") String gameId){
+        HashMap<String, BigDecimal> rateData = gameDao.getRateData(gameId);
+        return ResultDto.success(rateData);
+    }
+
+
 
 
 /****************************************************comunity**********************************************************************/

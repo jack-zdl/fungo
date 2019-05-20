@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.feign.CommunityFeignClient;
 import com.fungo.games.feign.SystemFeignClient;
 import com.fungo.games.proxy.IEvaluateProxyService;
+import com.game.common.bean.TagBean;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.action.BasActionDto;
@@ -39,9 +40,9 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
     /**
      * 迁移微服务后 SystemFeignClient调用 用户成长
      * @param memberId
-     * @param code
-     * @param inectTaskVirtualCoinTaskCodeIdt
-     * @param code1
+     * @param task_group_flag
+     * @param task_type
+     * @param type_code_idt
      * @return
      */
     @HystrixCommand(fallbackMethod = "hystrixExTask",ignoreExceptions = {Exception.class},
@@ -201,6 +202,18 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
     @Override
     public List<BasTagGroupDto> getBasTagGroupBySelectList(BasTagGroupDto basTagGroupDto) {
         return systemFeignClient.getBasTagGroupBySelectList(basTagGroupDto);
+    }
+
+    /**
+     * 特殊 根据gameId获取TagBean集合
+     * @param id
+     * @return
+     */
+    @HystrixCommand(fallbackMethod = "hystrixGetSortTags",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    @Override
+    public List<TagBean> getSortTags(String id) {
+        return systemFeignClient.getSortTags(id);
     }
 
 
