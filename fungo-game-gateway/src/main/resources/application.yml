@@ -16,6 +16,8 @@ spring:
       percentage: 1.0
   zipkin:
     base-url: http://127.0.0.1:9411/
+    sender:
+      type: web
 
 ## 关闭安全限制
 #management:
