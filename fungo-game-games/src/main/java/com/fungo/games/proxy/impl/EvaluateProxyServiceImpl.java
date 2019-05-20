@@ -81,7 +81,7 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public int getBasActionSelectCount(BasActionDto basActionDto) {
-        return systemFeignClient.getBasActionSelectCount(basActionDto);
+        return systemFeignClient.getBasActionSelectCount(basActionDto).getData();
     }
 
     /**
@@ -115,7 +115,7 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public MemberDto getMemberDtoBySelectOne(MemberDto md) {
-        return systemFeignClient.getMemberDtoBySelectOne(md);
+        return systemFeignClient.getMemberDtoBySelectOne(md.getId()).getData();
     }
 
     /**
@@ -127,7 +127,7 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public List<HashMap<String, Object>> getStatusImageByMemberId(String memberId) {
-        return systemFeignClient.getStatusImageByMemberId(memberId);
+        return systemFeignClient.getStatusImageByMemberId(memberId).getData();
     }
 
     /**
@@ -139,7 +139,7 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public List<BasTagDto> getBasTagBySelectListInId(List<String> collect) {
-        return systemFeignClient.getBasTagBySelectListInId(collect);
+        return systemFeignClient.getBasTagBySelectListInId(collect).getData();
     }
 
     /**
@@ -151,7 +151,7 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public List<BasTagDto> getBasTagBySelectListGroupId(BasTagDto basTagDto) {
-        return systemFeignClient.getBasTagBySelectListGroupId(basTagDto);
+        return systemFeignClient.getBasTagBySelectListGroupId(basTagDto.getGroupId()).getData();
     }
 
     /**
@@ -194,7 +194,7 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public BasTagDto getBasTagBySelectById(BasTagDto basTagDto) {
-        return systemFeignClient.getBasTagBySelectById(basTagDto);
+        return systemFeignClient.getBasTagBySelectById(basTagDto.getId()).getData();
     }
 
     /**
@@ -206,7 +206,7 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public List<BasTagGroupDto> getBasTagGroupBySelectList(BasTagGroupDto basTagGroupDto) {
-        return systemFeignClient.getBasTagGroupBySelectList(basTagGroupDto);
+        return systemFeignClient.getBasTagGroupBySelectList(basTagGroupDto).getData();
     }
 
     /**

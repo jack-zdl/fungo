@@ -161,12 +161,6 @@ public class GameController {
         return gameService.getGameItems(memberId, input, os);
     }
 
-    @Autowired
-    private SystemFeignClient systemFeignClient;
-
-    @Autowired
-    private MQFeignClient mqFeignClient;
-
     /**
      * @todo
      * @param memberUserPrefile
@@ -241,20 +235,20 @@ public class GameController {
     @Autowired
     private MQProduct mqProduct;
 
-    @Autowired
-    private GameTagService gameTagService;
-
-    @Autowired
-    private IEvaluateProxyService iEvaluateProxyService;
+//    @Autowired
+//    private GameTagService gameTagService;
+//
+//    @Autowired
+//    private IEvaluateProxyService iEvaluateProxyService;
 
     /**
      * ceshi
      * @return
      */
-    @RequestMapping(value = "/api/feignMQDemo", method = RequestMethod.GET)
+//    @RequestMapping(value = "/api/feignMQDemo", method = RequestMethod.GET)
     public int feignMQDemo(){
 //        测试
-        List<GameTag> gameTags = gameTagService.selectList(new EntityWrapper<GameTag>().setSqlSelect("tag_id as tagId").eq("game_id", "b3aba058982940159c8f938d143e1b34"));
+        /*List<GameTag> gameTags = gameTagService.selectList(new EntityWrapper<GameTag>().setSqlSelect("tag_id as tagId").eq("game_id", "b3aba058982940159c8f938d143e1b34"));
         List<String> strings = new ArrayList<>();
         if (gameTags != null && gameTags.size() > 0){
             for (GameTag gameTag : gameTags) {
@@ -264,7 +258,7 @@ public class GameController {
         List<TagBean> tags = iEvaluateProxyService.getSortTags(strings);
         for (TagBean ta : tags) {
             System.out.println(ta.toString());
-        }
+        }*/
 //        mqFeignClient.deleteMessageByMessageId(2019051616580096421l);
 //        ResultDto<AuthorBean> author = systemFeignClient.getAuthor("012689d5d62e46f3b7fd40e536842455");
 //        System.out.println(author.getData().toString());
