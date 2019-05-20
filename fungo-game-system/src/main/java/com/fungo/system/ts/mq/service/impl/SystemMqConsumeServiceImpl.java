@@ -3,11 +3,13 @@ package com.fungo.system.ts.mq.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fungo.system.entity.BasNotice;
+import com.fungo.system.service.IPushService;
 import com.fungo.system.service.SystemService;
 import com.fungo.system.ts.mq.service.SystemMqConsumeService;
 import com.game.common.bean.advice.BasNoticeDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.ts.mq.dto.MQResultDto;
+import com.game.common.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +25,17 @@ public class SystemMqConsumeServiceImpl implements SystemMqConsumeService {
 
     @Autowired
     private SystemService systemService;
+
+    @Autowired
+    private IPushService pushService;
+
     /**
      * 处理mq的消息
      *
      * @param msgDate mq的消息体
      */
     @Override
-    public boolean processMsg(String msgDate) {
+    public boolean processMsg(String msgDate) throws Exception {
         JSONObject json = JSONObject.parseObject(msgDate);
         Integer type = json.getInteger("type");
         String body = json.getString("body");
@@ -44,8 +50,24 @@ public class SystemMqConsumeServiceImpl implements SystemMqConsumeService {
             return processInsertNotice(body);
         }
 
-
+        //推送逻辑
+        if(MQResultDto.GameMQDataType.GAME_DATA_TYPE_PUSH.getCode() == type){
+            return processPush(body);
+        }
         return false;
+    }
+
+    private boolean processPush(String body) throws Exception {
+        Map map = JSON.parseObject(body, Map.class);
+        String inviteMemberId = String.valueOf(map.get("inviteMemberId"));
+        String targetType = String.valueOf(map.get("code"));
+        String appVersion =  String.valueOf(map.get("appVersion"));
+        if(StringUtil.isNull(inviteMemberId)||StringUtil.isNull(targetType)||StringUtil.isNull(appVersion)){
+            LOGGER.warn("SystemMqConsumeServiceImpl.processPush参数缺失:"+body);
+            return false;
+        }
+        pushService.push(inviteMemberId,Integer.parseInt(targetType),appVersion);
+        return true;
     }
 
     /**
