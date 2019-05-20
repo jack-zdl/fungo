@@ -1,0 +1,181 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone:  http://39.105.18.214:8761/eureka/
+  instance:
+    instance-id: ${spring.application.name}:${spring.cloud.client.ipAddress}:${spring.application.instance_id:${server.port}}
+    prefer-ip-address: true
+    appname: scyp-gateway
+server:
+  port: 8182
+spring:
+  application:
+    name: fungo-game-gateway
+  sleuth:
+    sampler:
+      percentage: 1.0
+  zipkin:
+    base-url: http://39.105.18.214:9411/
+    sender:
+      type: web
+
+## 关闭安全限制
+#management:
+#  security:
+#    enabled: false
+#显示路由zuul的端口配置，不配置无法访问 /routes
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+#
+# 路由配置
+zuul:
+  routes:
+    fungo-game-system-1:
+      path: /api/action/**
+      serviceId: FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-2:
+      path: /api/report/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-3:
+      path: /api/user/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-4:
+      path: /api/config/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-5:
+      path: /api/mine/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-6:
+      path: /api/checkupdate/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-7:
+      path: /api/checkappupdate/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-8:
+      path: /api/checkiosupdate/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-9:
+      path: /api/about/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-10:
+      path: /api/starInfo/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-11:
+      path: /api/trait/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-12:
+      path: /api/common/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-13:
+      path: /api/mine/initrank/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-14:
+      path: /api/developer/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-15:
+      path: /api/inittaskhonor/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-16:
+      path: /api/push//**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-17:
+      path: /api/sys/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-18:
+      path: /api/rank/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-19:
+      path: /api/vd/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-20:
+      path: /api/search/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-21:
+      path: /api/recommend/index
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+ #社区接口
+    fungo-game-commmunity-1:
+      path: /api/content/**
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-2:
+      path: /api/recommend/**
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+
+
+
+#common.ribbon.listOfServers=http://10.0.0.1:8081/common,http://10.0.0.2:8081/common  #请求需要使用功能区进行负载平衡。
+ # 配置超时时间断路器才有效果（加入Zuul）
+
+
+
+ribbon:
+  #MaxAutoRetries: 3
+  #MaxAutoRetriesNextServer: 1 #切换实例的重试次数
+  #OkToRetryOnAllOperations: true # 对所有的操作请求都进行重试，如果是get则可以，如果是post,put等操作没有实现幂等的情况下是很危险的，所以设置为false
+  ReadTimeout: 300000  #请求处理的超时时间
+  ConnectTimeout: 300000
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 1000000  # ReadTimeout+（MaxAutoRetries * ReadTimeout）
+
+logging:
+  level:
+    ROOT: INFO
+    org.springframework.web: DEBUG
