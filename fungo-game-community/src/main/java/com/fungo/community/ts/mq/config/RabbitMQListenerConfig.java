@@ -1,6 +1,5 @@
 package com.fungo.community.ts.mq.config;
 
-import com.game.common.ts.mq.config.RabbitMQConfig;
 import com.game.common.ts.mq.enums.RabbitMQEnum;
 import com.game.common.ts.mq.service.MQDataReceiveService;
 import com.rabbitmq.client.Channel;
@@ -14,9 +13,7 @@ import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.nio.charset.Charset;
 
@@ -25,8 +22,8 @@ import java.nio.charset.Charset;
  * @Description:rabbitMQ 监听器配置
  * @Date: Create in 2019-05-14
  */
-@Configuration
-@AutoConfigureAfter(RabbitMQConfig.class)
+//@Configuration
+//@AutoConfigureAfter(RabbitMQConfig.class)
 public class RabbitMQListenerConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQListenerConfig.class);
