@@ -1,4 +1,4 @@
-package com.game.common.aliyun;
+package com.fungo.system.helper;
 
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.exceptions.ClientException;
