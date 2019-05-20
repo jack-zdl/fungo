@@ -125,12 +125,17 @@ public interface SystemFeignClient {
     List<BasTagGroupDto> getBasTagGroupBySelectList(@RequestBody BasTagGroupDto basTagGroupDto);
 
     /**
-     * 特殊 根据gameId获取TagBean集合
-     * @param id
+     * 批量获取标签获取
+     * @param tags
      * @return
      */
-    @RequestMapping(value="/api/system/getSortTags", method= RequestMethod.POST)
-    List<TagBean> getSortTags(String id);
+//    @GetMapping("/listSortTags")
+    @ApiOperation(value="批量获取标签获取")
+    @RequestMapping(value="/listSortTags", method= RequestMethod.GET)
+    ResultDto<List<TagBean>> listSortTags (@RequestParam List<String> tags);
+
+
+
 
     /**
      * 存储并发送消息

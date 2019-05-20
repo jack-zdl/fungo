@@ -76,6 +76,9 @@ public class FeignServiceController {
     @Autowired
     private GameDao gameDao;
 
+    @Autowired
+    private GameTagService gameTagService;
+
 /****************************************************ActionController**********************************************************************/
 
     @ApiOperation(value = "更新计数器", notes = "")
@@ -727,7 +730,14 @@ public class FeignServiceController {
 //            2019-05-18
 //            lyc
 //            List<TagBean> tags = tagDao.getSortTags(game.getId());
-            List<TagBean> tags = iEvaluateProxyService.getSortTags(game.getId());
+            List<GameTag> gameTags = gameTagService.selectList(new EntityWrapper<GameTag>().setSqlSelect("tag_id as tagId").eq("game_id", game.getId()));
+            List<String> strings = new ArrayList<>();
+            if (gameTags != null && gameTags.size() > 0){
+                for (GameTag gameTag : gameTags) {
+                    strings.add(gameTag.getTagId());
+                }
+            }
+            List<TagBean> tags = iEvaluateProxyService.getSortTags(strings);
             String tag = "";
             if (tags.size() > 0) {
                 for (TagBean tagBean : tags) {

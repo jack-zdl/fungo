@@ -113,8 +113,8 @@ public interface IEvaluateProxyService {
 
     /**
      * 特殊 根据gameId获取TagBean集合
-     * @param id
+     * @param tags
      * @return
      */
-    List<TagBean> getSortTags(String id);
+    List<TagBean> getSortTags(List<String> tags);
 }
