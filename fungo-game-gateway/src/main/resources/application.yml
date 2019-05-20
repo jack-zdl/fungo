@@ -132,6 +132,16 @@ zuul:
       serviceId:  FUNGO-GAME-SYSTEM
       sensitiveHeaders:
       strip-prefix: false
+    fungo-game-system-20:
+      path: /api/search/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-21:
+      path: /api/recommend/index
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
 #      *****************游戏开始************************************
     fungo-game-games-0:
         path: /api/developer/gemeAnalyze
