@@ -37,7 +37,7 @@ public interface GameFeignClient {
      */
     @ApiOperation(value = "获取游戏平均分", notes = "")
     @RequestMapping(value = "/api/game/average", method = RequestMethod.POST)
-    public double selectGameAverage(String gameId, Integer state);
+    public double selectGameAverage(@RequestParam("gameId") String gameId, @RequestParam("state") Integer state);
 
 
     /**
@@ -48,7 +48,7 @@ public interface GameFeignClient {
      */
     @ApiOperation(value = "根据游戏id和状态查询游戏详情", notes = "")
     @RequestMapping(value = "/api/game/details", method = RequestMethod.POST)
-    public ResultDto<GameDto> selectGameDetails(String gameId, Integer state);
+    public ResultDto<GameDto> selectGameDetails(@RequestParam("gameId") String gameId, @RequestParam("state") Integer state);
 
 
 
@@ -70,7 +70,7 @@ public interface GameFeignClient {
      */
     @ApiOperation(value = "根据游戏id查询参与评论的用户", notes = "")
     @RequestMapping(value = "/api/game/getMemberOrder", method = RequestMethod.POST)
-    public ResultDto<List<MemberPulishFromCommunity>> getMemberOrder(String gameId, Integer state);
+    public ResultDto<List<MemberPulishFromCommunity>> getMemberOrder(@RequestParam("gameId") String gameId,@RequestParam("state") Integer state);
 
 
 
