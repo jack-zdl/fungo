@@ -132,6 +132,16 @@ zuul:
       serviceId:  FUNGO-GAME-SYSTEM
       sensitiveHeaders:
       strip-prefix: false
+    fungo-game-system-20:
+      path: /api/search/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-21:
+      path: /api/recommend/index
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
  #社区接口
     fungo-game-commmunity-1:
       path: /api/content/**
@@ -144,16 +154,7 @@ zuul:
       sensitiveHeaders:
       strip-prefix: false
 
-    fungo-game-system-20:
-      path: /api/search/**
-      serviceId:  FUNGO-GAME-SYSTEM
-      sensitiveHeaders:
-      strip-prefix: false
-    fungo-game-system-21:
-      path: /api/recommend/index
-      serviceId:  FUNGO-GAME-SYSTEM
-      sensitiveHeaders:
-      strip-prefix: false
+
 #      *****************游戏开始************************************
     fungo-game-games-0:
         path: /api/developer/gemeAnalyze
@@ -166,12 +167,12 @@ zuul:
       sensitiveHeaders:
       strip-prefix: false
     fungo-game-games-2:
-      path: /api/content/**
+      path: /api/content/game/**
       serviceId:  FUNGO-GAME-GAMES
       sensitiveHeaders:
       strip-prefix: false
     fungo-game-games-3:
-      path: /api/recommend/**
+      path: /api/recommend/pc/**
       serviceId:  FUNGO-GAME-GAMES
       sensitiveHeaders:
       strip-prefix: false
@@ -242,6 +243,46 @@ zuul:
       strip-prefix: false
     fungo-game-games-17:
       path: /api/tag/**
+      serviceId:  FUNGO-GAME-GAMES
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-games-18:
+      path: /api/content/games
+      serviceId:  FUNGO-GAME-GAMES
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-games-19:
+      path: /api/content/gameList
+      serviceId:  FUNGO-GAME-GAMES
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-games-20:
+      path: /api/content/evaluation
+      serviceId:  FUNGO-GAME-GAMES
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-games-21:
+      path: /api/content/evaluation/**
+      serviceId:  FUNGO-GAME-GAMES
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-games-22:
+      path: /api/content/evaluations
+      serviceId:  FUNGO-GAME-GAMES
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-games-23:
+      path: /api/content/anliEvaluation/**
+      serviceId:  FUNGO-GAME-GAMES
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-games-24:
+      path: /api/recommend/tag/game
+      serviceId:  FUNGO-GAME-GAMES
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-games-25:
+      path: /api/recommend/topic
       serviceId:  FUNGO-GAME-GAMES
       sensitiveHeaders:
       strip-prefix: false
