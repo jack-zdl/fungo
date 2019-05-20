@@ -17,8 +17,13 @@ import java.util.Map;
 @Service
 @Transactional
 public class UserMqConsumeServiceImpl implements UserMqConsumeService {
+
+    private final SystemService systemService;
+
     @Autowired
-    private SystemService systemService;
+    public UserMqConsumeServiceImpl(SystemService systemService){
+        this.systemService = systemService;
+    }
 
     /**
      * 处理mq的消息
@@ -39,6 +44,31 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
         if(MQResultDto.CommunityEnum.CMT_ACTION_MQ_TYPE_ACTION_ADD.getCode() == type){
             return processAddAction(body);
         }
+
+        //处理用户任务
+        if(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_DO_TASK.getCode() == type){
+            return processTask(body);
+        }
+
+        //消息通知:
+        if(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_ADD_NOTICE.getCode() == type){
+            return processNotice(body);
+        }
+
+
+        return false;
+    }
+
+    // 消息通知逻辑
+    private boolean processNotice(String body) {
+        //TODO
+        return false;
+    }
+
+    //处理用户任务
+    private boolean processTask(String body) {
+        //TODO 处理用户任务
+
         return false;
     }
 
