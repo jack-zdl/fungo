@@ -90,7 +90,13 @@ public class GameProxyServiceImpl implements IGameProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public CmmCommentDto selectCmmCommentById(String id) {
-        return null;
+        CmmCommentDto param = new CmmCommentDto();
+        param.setId(id);
+        FungoPageResultDto<CmmCommentDto>  cmmCommentDtoFungoPageResultDto = communityFeignClient.queryFirstLevelCmtList(param);
+        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmCommentDtoFungoPageResultDto.getStatus()) && cmmCommentDtoFungoPageResultDto.getData().size() > 0){
+            param = cmmCommentDtoFungoPageResultDto.getData().get(0);
+        }
+        return param;
     }
 
     /**

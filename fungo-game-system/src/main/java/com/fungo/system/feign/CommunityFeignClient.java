@@ -109,4 +109,11 @@ public interface CommunityFeignClient {
      */
     @PostMapping("/ms/service/cmm/post/count")
     ResultDto<Integer> queryCmmPostCount(@RequestBody CmmPostDto cmmPostDto);
+
+    /**
+     * 分页查询 一级评论 数据
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/cmt/f/lists")
+    FungoPageResultDto<CmmCommentDto> queryFirstLevelCmtList(@RequestBody CmmCommentDto cmmCommentDto);
 }
