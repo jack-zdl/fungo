@@ -1,13 +1,10 @@
 package com.fungo.community.ts.mq.config;
 
-import com.game.common.ts.mq.config.RabbitMQConfig;
 import com.game.common.ts.mq.enums.RabbitMQEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +18,8 @@ import java.util.Map;
  * queue定义： orderTopicQueue
  * @Date: Create in 2019-05-14
  */
-@Configuration
-@AutoConfigureAfter(RabbitMQConfig.class)
+//@Configuration
+//@AutoConfigureAfter(RabbitMQConfig.class)
 public class RabbitMQExchangeQueueBindConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQExchangeQueueBindConfig.class);
