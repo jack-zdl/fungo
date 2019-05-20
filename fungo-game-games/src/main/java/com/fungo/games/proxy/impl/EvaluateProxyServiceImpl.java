@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.feign.CommunityFeignClient;
 import com.fungo.games.feign.SystemFeignClient;
 import com.fungo.games.proxy.IEvaluateProxyService;
+import com.game.common.bean.TagBean;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.CmmCommunityDto;
+import com.game.common.dto.community.MooMessageDto;
 import com.game.common.dto.community.ReplyInputPageDto;
 import com.game.common.dto.game.BasTagDto;
 import com.game.common.dto.game.BasTagGroupDto;
@@ -17,6 +19,8 @@ import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +35,8 @@ import java.util.Map;
  */
 @Service
 public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
+
+    private static final Logger logger = LoggerFactory.getLogger(EvaluateProxyServiceImpl.class);
     @Autowired
     private SystemFeignClient systemFeignClient;
     @Autowired
@@ -39,9 +45,9 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
     /**
      * 迁移微服务后 SystemFeignClient调用 用户成长
      * @param memberId
-     * @param code
-     * @param inectTaskVirtualCoinTaskCodeIdt
-     * @param code1
+     * @param task_group_flag
+     * @param task_type
+     * @param type_code_idt
      * @return
      */
     @HystrixCommand(fallbackMethod = "hystrixExTask",ignoreExceptions = {Exception.class},
@@ -203,9 +209,25 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
         return systemFeignClient.getBasTagGroupBySelectList(basTagGroupDto);
     }
 
+    /**
+     * 特殊 根据gameId获取TagBean集合
+     * @param tags
+     * @return
+     */
+    @HystrixCommand(fallbackMethod = "hystrixGetSortTags",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    @Override
+    public List<TagBean> getSortTags(List<String> tags) {
+        return systemFeignClient.listSortTags(tags).getData();
+    }
+
 
     /****************************************降级区*************************************************************/
 
 
+    public List<TagBean> hystrixGetSortTags(List<String> tags) {
+        logger.warn("getSortTags 特殊 根据gameId获取TagBean集合");
+        return null;
+    }
 
 }

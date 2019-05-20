@@ -1,5 +1,8 @@
 package com.game.common.bean;
 
+import lombok.ToString;
+
+@ToString
 public class TagBean {
 
 	private String id;

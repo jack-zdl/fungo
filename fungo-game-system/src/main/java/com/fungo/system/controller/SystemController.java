@@ -49,7 +49,7 @@ public class SystemController {
      * @auther: dl.zhang
      * @date: 2019/5/10 11:34
      */
-    @GetMapping(value = "/followerids")
+    @RequestMapping(value = "/followerids")
     public FungoPageResultDto<String> getFollowerUserId(@RequestBody MemberFollowerVo memberFollowerVo){
         FungoPageResultDto<String> re = null;
         try {
@@ -69,7 +69,7 @@ public class SystemController {
      * @auther: dl.zhang
      * @date: 2019/5/10 17:15
      */
-    @GetMapping(value = "/memberFollowers")
+    @RequestMapping(value = "/memberFollowers")
     public FungoPageResultDto<MemberFollowerDto> getMemberFollowerList( @RequestBody MemberFollowerVo memberFollowerVo){
         FungoPageResultDto<MemberFollowerDto> re = null;
         try {
@@ -85,7 +85,7 @@ public class SystemController {
     /**
      * 社区使用--获取用户的粉丝
      */
-    @GetMapping(value = "/getMemberFollower1")
+    @RequestMapping(value = "/getMemberFollower1")
     public ResultDto<MemberFollowerDto> getMemberFollower1( @RequestBody MemberFollowerDto memberFollowerDto){
         ResultDto<MemberFollowerDto> re = null;
         try {
@@ -105,7 +105,7 @@ public class SystemController {
      * @auther: dl.zhang
      * @date: 2019/5/10 17:41
      */
-    @GetMapping(value = "/members")
+    @RequestMapping(value = "/members")
     public FungoPageResultDto<MemberDto> getMemberDtoList(@RequestBody MemberDto memberDto){
         FungoPageResultDto<MemberDto> re = null;
         try {
@@ -121,7 +121,7 @@ public class SystemController {
     /**
      * 功能描述: 根据用户id集合查询用户详情 state为null就不根据状态查询
      */
-    @GetMapping(value = "/listMembersByids")
+    @RequestMapping(value = "/listMembersByids")
     public ResultDto<List<MemberDto>> listMembersByids(@RequestBody List<String> ids,@RequestParam(value = "state",required = false) Integer state){
         ResultDto<List<MemberDto>> re = null;
         try {
@@ -137,7 +137,7 @@ public class SystemController {
     /**
      * 功能描述: .找出官方推荐玩家
      */
-    @GetMapping(value = "/listRecommendedMebmber")
+    @RequestMapping(value = "/listRecommendedMebmber")
     public ResultDto<List<MemberDto>> listRecommendedMebmber(@RequestParam("limit") Integer limit,@RequestParam("currentMbId") String currentMbId,@RequestBody List<String> wathMbsSet){
         ResultDto<List<MemberDto>> re = null;
         try {
@@ -170,7 +170,7 @@ public class SystemController {
     /**
      *  根据用户id和用户权益(等级、身份、荣誉)类型，获取用户权益数据
      */
-    @GetMapping(value = "/listIncentrankeByids")
+    @RequestMapping(value = "/listIncentrankeByids")
     public ResultDto<List<IncentRankedDto>> listIncentrankeByids(@RequestBody List<String> ids,@RequestParam("rankType") Integer rankType){
         ResultDto<List<IncentRankedDto>> re = null;
         try {
@@ -185,7 +185,7 @@ public class SystemController {
     }
 
 
-    @GetMapping(value = "/incentrankes")
+    @RequestMapping(value = "/incentrankes")
     public FungoPageResultDto<IncentRankedDto> getIncentRankedList(@RequestBody IncentRankedDto incentRankedDto){
         FungoPageResultDto<IncentRankedDto> re = null;
         try {
@@ -267,7 +267,7 @@ public class SystemController {
             return re;
         }
     }
-    @GetMapping(value = "/countActionNum")
+    @RequestMapping(value = "/countActionNum")
     @ApiOperation(value="获取动作数量(比如点赞)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "type",value = "行为类型",paramType = "form",dataType = "integer"),
@@ -307,7 +307,7 @@ public class SystemController {
         }
     }
 
-    @GetMapping(value = "/countActionNumGameUse")
+    @RequestMapping(value = "/countActionNumGameUse")
     @ApiOperation(value="获取动作数量(比如点赞)--游戏服务使用")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "targetid",value = "业务id",paramType = "form",dataType = "string"),
@@ -325,7 +325,7 @@ public class SystemController {
         }
     }
 
-    @GetMapping(value = "/listActionByCondition")
+    @RequestMapping(value = "/listActionByCondition")
     @ApiOperation(value="根据条件获取动作")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "type",value = "行为类型",paramType = "form",dataType = "integer"),
@@ -349,7 +349,7 @@ public class SystemController {
 
 
 
-    @GetMapping(value = "/listtargetId")
+    @RequestMapping(value = "/listtargetId")
     @ApiOperation(value=" 根据用户id，动作类型，目前类型，状态获取目前id集合")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "type",value = "行为类型",paramType = "form",dataType = "integer"),
@@ -478,7 +478,7 @@ public class SystemController {
         }
    }
 
-   @GetMapping("/listBasTags")
+   @RequestMapping("/listBasTags")
    @ApiOperation(value="根据标签id集合获取标签集合")
   public ResultDto<List<BasTagDto>> listBasTags (@RequestBody List<String> collect){
       ResultDto<List<BasTagDto>> re = null;
@@ -494,7 +494,7 @@ public class SystemController {
 
     @GetMapping("/listSortTags")
    @ApiOperation(value="批量获取标签获取")
-  public ResultDto<List<TagBean>> listSortTags (@RequestBody List<String> tags){
+  public ResultDto<List<TagBean>> listSortTags (@RequestParam List<String> tags){
       ResultDto<List<TagBean>> re = null;
       try {
           re =  systemService.listSortTags(tags);
@@ -536,7 +536,7 @@ public class SystemController {
       }
     }
 
-    @GetMapping("/listBasTagGroupByCondition")
+    @RequestMapping("/listBasTagGroupByCondition")
     @ApiOperation(value="根据指定条件获取标签集合")
    public ResultDto<List<BasTagGroupDto>> listBasTagGroupByCondition(@RequestBody BasTagGroupDto basTagGroupDto) {
        ResultDto<List<BasTagGroupDto>> re = null;

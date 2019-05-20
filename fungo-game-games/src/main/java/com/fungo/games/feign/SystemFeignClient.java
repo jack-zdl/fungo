@@ -1,6 +1,7 @@
 package com.fungo.games.feign;
 
 
+import com.game.common.bean.TagBean;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
@@ -122,6 +123,19 @@ public interface SystemFeignClient {
      */
     @RequestMapping(value="/api/system/getBasTagGroupBySelectList", method= RequestMethod.POST)
     List<BasTagGroupDto> getBasTagGroupBySelectList(@RequestBody BasTagGroupDto basTagGroupDto);
+
+    /**
+     * 批量获取标签获取
+     * @param tags
+     * @return
+     */
+//    @GetMapping("/listSortTags")
+    @ApiOperation(value="批量获取标签获取")
+    @RequestMapping(value="/listSortTags", method= RequestMethod.GET)
+    ResultDto<List<TagBean>> listSortTags (@RequestParam List<String> tags);
+
+
+
 
     /**
      * 存储并发送消息
