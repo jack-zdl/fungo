@@ -94,4 +94,12 @@ public interface SystemService {
     ResultDto<Integer> countSerchUserName(String keyword);
 
     ResultDto<List<TagBean>> listSortTags(List<String> gameId);
+
+    /**
+     * 修改通知数据
+     * @param id 通知id
+     * @param data 通知数据
+     * @return 结果
+     */
+    public ResultDto<String> updateNoticeDate(String id,String data);
 }
