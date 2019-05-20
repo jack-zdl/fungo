@@ -28,8 +28,8 @@ spring:
   sleuth:
     sampler:
       probability: 1.0
-
-
+  main:
+    allow-bean-definition-overriding: true #当遇到同样名字的时候，是否允许覆盖注册
   #  type-aliases-package: com.fungo.system.entity
   ## 当post /refresh方式刷新配置 时 ，会有个安全限制，关掉就可以了
   #security:
