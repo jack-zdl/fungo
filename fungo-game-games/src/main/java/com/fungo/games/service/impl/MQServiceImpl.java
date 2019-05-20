@@ -2,11 +2,14 @@ package com.fungo.games.service.impl;
 
 import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.Game;
+import com.fungo.games.entity.GameEvaluation;
 import com.fungo.games.entity.GameReleaseLog;
+import com.fungo.games.service.GameEvaluationService;
 import com.fungo.games.service.IEvaluateService;
 import com.fungo.games.service.IGameService;
 import com.fungo.games.service.IMQService;
 import com.game.common.dto.GameDto;
+import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.game.GameReleaseLogDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,9 @@ public class MQServiceImpl implements IMQService {
     private GameDao gameDao;
     @Autowired
     private IEvaluateService iEvaluateService;
+    @Autowired
+    private GameEvaluationService gameEvaluationService;
+
     /**
      * 游戏更新
      * @param gameDto1
@@ -89,5 +95,29 @@ public class MQServiceImpl implements IMQService {
         String categoryId = (String) map.get("categoryId");
         String gameId = (String) map.get("gameId");
         return iEvaluateService.feignAddGameTagInsert(tags,categoryId,gameId);
+    }
+
+    /**
+     * mq添加游戏评论
+     * @param gameEvaluationDto
+     * @return
+     */
+    @Override
+    public boolean mqGameEvaluationInsert(GameEvaluationDto gameEvaluationDto) {
+        GameEvaluation gameEvaluation = new GameEvaluation();
+        BeanUtils.copyProperties(gameEvaluationDto,gameEvaluation);
+        return gameEvaluationService.insert(gameEvaluation);
+    }
+
+    /**
+     * mq修改游戏评论
+     * @param gameEvaluationDto
+     * @return
+     */
+    @Override
+    public boolean mqGameEvaluationUpdate(GameEvaluationDto gameEvaluationDto) {
+        GameEvaluation gameEvaluation = new GameEvaluation();
+        BeanUtils.copyProperties(gameEvaluationDto,gameEvaluation);
+        return gameEvaluationService.updateById(gameEvaluation);
     }
 }
