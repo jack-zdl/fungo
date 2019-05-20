@@ -10,11 +10,10 @@ import com.aliyuncs.sts.model.v20150401.AssumeRoleRequest;
 import com.aliyuncs.sts.model.v20150401.AssumeRoleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 
-@Service
+//@Service
 public class FunGoAliSTSService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FunGoAliSTSService.class);

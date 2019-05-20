@@ -39,7 +39,7 @@ public class RabbitMQProduct {
          * 5 游戏
          * 6 首页
          */
-        transactionMessageDto.setMessageDataType(5); //
+        transactionMessageDto.setMessageDataType(1); //
         transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_GAMES.getName());
         transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_GAMES.getName());
         iTransactionMessageService.saveAndSendMessage(transactionMessageDto);
@@ -67,9 +67,9 @@ public class RabbitMQProduct {
          * 6 首页
          * 7 社区
          */
-        transactionMessageDto.setMessageDataType(7); //
-        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_GAMES.getName());
-        transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_GAMES.getName());
+        transactionMessageDto.setMessageDataType(1); //
+        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_COMMUNITY_POST.getName());
+        transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_COMMUNITY_POST.getName());
         iTransactionMessageService.saveAndSendMessage(transactionMessageDto);
     }
 }

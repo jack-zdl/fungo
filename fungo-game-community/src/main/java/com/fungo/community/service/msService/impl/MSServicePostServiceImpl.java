@@ -218,6 +218,48 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
         return 0;
     }
 
+    @Override
+    public List<CmmPostDto> listCmmPostTopicPost(CmmPostDto cmmPostDto) {
+
+        List<CmmPostDto> cmmPostDtoList = null;
+        try {
+
+            if (null == cmmPostDto) {
+                return cmmPostDtoList;
+            }
+            int page = cmmPostDto.getPage();
+            int limit = cmmPostDto.getPage();
+
+            EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<>();
+            postEntityWrapper.eq("type", 3);
+            postEntityWrapper.eq("state", 1);
+            postEntityWrapper.last("ORDER BY sort DESC,updated_at DESC");
+
+            Page<CmmPost> postPage = new Page<>(page, limit);
+
+            Page<CmmPost> pageList = postDaoService.selectPage(postPage, postEntityWrapper);
+
+            if (null != pageList) {
+
+                cmmPostDtoList = new ArrayList<CmmPostDto>();
+
+                List<CmmPost> listRecords = pageList.getRecords();
+
+                for (CmmPost cmmPost : listRecords) {
+
+                    CmmPostDto cmmPostDtoRs = new CmmPostDto();
+
+                    BeanUtils.copyProperties(cmmPost, cmmPostDtoRs);
+
+                    cmmPostDtoList.add(cmmPostDtoRs);
+                }
+            }
+        } catch (Exception ex) {
+            LOGGER.error("ms/service/cmm/post/topicPosts--listCmmPostTopicPost-出现异常:", ex);
+        }
+        return cmmPostDtoList;
+    }
+
 
     //------
 }

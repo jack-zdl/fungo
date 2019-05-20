@@ -3,15 +3,16 @@ package com.fungo.system.feign;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.*;
+import com.game.common.dto.index.CardIndexBean;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -92,4 +93,20 @@ public interface GamesFeignClient {
     @ApiOperation(value = "游戏测试会员关联表的分页查询", notes = "")
     @RequestMapping(value = "/ms/service/game/api/evaluation/getGameSurveyRelPage", method = RequestMethod.POST)
     Page<GameSurveyRelDto> getGameSurveyRelPage(@RequestBody GameSurveyRelDto gameSurveyDto);
+
+    @ApiOperation(value = "getGameSelectCountByLikeNameAndState", notes = "")
+    @RequestMapping(value = "/api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.POST)
+    int getGameSelectCountByLikeNameAndState(@RequestBody GameDto gameDto);
+
+    @ApiOperation(value = "getGameSelectCountByLikeNameAndState", notes = "")
+    @RequestMapping(value = "/api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.GET)
+    ResultDto<CardIndexBean> getSelectedGames();
+
+    @ApiOperation(value = "getGameSelectCountByLikeNameAndState", notes = "")
+    @RequestMapping(value = "/api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.POST)
+    ResultDto<CardIndexBean> getSelectedGames(@RequestBody GameDto gameDto);
+
+    @ApiOperation(value = "getRateData", notes = "")
+    @RequestMapping(value = "/api/game/getRateData", method = RequestMethod.GET)
+    ResultDto<HashMap<String, BigDecimal>> getRateData(@RequestParam("gameId") String gameId);
 }

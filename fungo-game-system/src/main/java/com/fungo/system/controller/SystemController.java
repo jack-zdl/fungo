@@ -1,6 +1,7 @@
 package com.fungo.system.controller;
 
 import com.fungo.system.service.SystemService;
+import com.game.common.bean.TagBean;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
@@ -346,6 +347,8 @@ public class SystemController {
         }
     }
 
+
+
     @GetMapping(value = "/listtargetId")
     @ApiOperation(value=" 根据用户id，动作类型，目前类型，状态获取目前id集合")
     @ApiImplicitParams({
@@ -488,6 +491,22 @@ public class SystemController {
           return re;
       }
     }
+
+    @GetMapping("/listSortTags")
+   @ApiOperation(value="批量获取标签获取")
+  public ResultDto<List<TagBean>> listSortTags (@RequestBody List<String> tags){
+      ResultDto<List<TagBean>> re = null;
+      try {
+          re =  systemService.listSortTags(tags);
+      }catch (Exception e){
+          LOGGER.error("SystemController.listSortTags",e);
+          re = ResultDto.error("-1", "SystemController.listSortTags执行service出现异常");
+      }finally {
+          return re;
+      }
+    }
+
+
 
     @GetMapping("/listBasTagByGroup")
    @ApiOperation(value="根据group id集合获取标签集合")
