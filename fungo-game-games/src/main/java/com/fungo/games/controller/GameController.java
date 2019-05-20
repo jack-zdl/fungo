@@ -5,13 +5,17 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameEvaluation;
 import com.fungo.games.entity.GameSurveyRel;
+import com.fungo.games.entity.GameTag;
 import com.fungo.games.feign.MQFeignClient;
 import com.fungo.games.feign.SystemFeignClient;
 import com.fungo.games.helper.MQProduct;
+import com.fungo.games.proxy.IEvaluateProxyService;
 import com.fungo.games.service.GameService;
 import com.fungo.games.service.GameSurveyRelService;
+import com.fungo.games.service.GameTagService;
 import com.fungo.games.service.IGameService;
 import com.game.common.api.InputPageDto;
+import com.game.common.bean.TagBean;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
@@ -30,10 +34,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 游戏
@@ -240,6 +241,12 @@ public class GameController {
     @Autowired
     private MQProduct mqProduct;
 
+    @Autowired
+    private GameTagService gameTagService;
+
+    @Autowired
+    private IEvaluateProxyService iEvaluateProxyService;
+
     /**
      * ceshi
      * @return
@@ -247,8 +254,19 @@ public class GameController {
     @RequestMapping(value = "/api/feignMQDemo", method = RequestMethod.GET)
     public int feignMQDemo(){
 //        测试
-        mqFeignClient.deleteMessageByMessageId(2019051616580096421l);
-        ResultDto<AuthorBean> author = systemFeignClient.getAuthor("012689d5d62e46f3b7fd40e536842455");
+        List<GameTag> gameTags = gameTagService.selectList(new EntityWrapper<GameTag>().setSqlSelect("tag_id as tagId").eq("game_id", "b3aba058982940159c8f938d143e1b34"));
+        List<String> strings = new ArrayList<>();
+        if (gameTags != null && gameTags.size() > 0){
+            for (GameTag gameTag : gameTags) {
+                strings.add(gameTag.getTagId());
+            }
+        }
+        List<TagBean> tags = iEvaluateProxyService.getSortTags(strings);
+        for (TagBean ta : tags) {
+            System.out.println(ta.toString());
+        }
+//        mqFeignClient.deleteMessageByMessageId(2019051616580096421l);
+//        ResultDto<AuthorBean> author = systemFeignClient.getAuthor("012689d5d62e46f3b7fd40e536842455");
 //        System.out.println(author.getData().toString());
 //        BasActionDto basActionDto = new BasActionDto();
 //        basActionDto.setMemberId("111111");

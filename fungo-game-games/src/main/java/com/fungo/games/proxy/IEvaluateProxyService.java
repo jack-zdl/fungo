@@ -1,6 +1,7 @@
 package com.fungo.games.proxy;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.game.common.bean.TagBean;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.CmmCmtReplyDto;
@@ -109,4 +110,11 @@ public interface IEvaluateProxyService {
      * @return
      */
     List<BasTagGroupDto> getBasTagGroupBySelectList(BasTagGroupDto basTagGroupDto);
+
+    /**
+     * 特殊 根据gameId获取TagBean集合
+     * @param tags
+     * @return
+     */
+    List<TagBean> getSortTags(List<String> tags);
 }

@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -554,6 +555,8 @@ public class SystemServiceImpl implements SystemService {
             return ResultDto.error("-1", "任务唯一请求码缺失");
         }
         //校验任务是否已经执行
+        ValueOperations<String, String> forValue = redisTemplate.opsForValue();
+        //forValue.setIfAbsent()
      /*   if(UniqueIdCkeckUtil.checkUniqueIdAndSave(UniqueIdCkeckUtil.REDIS_SET_TASK_REQUEST_ID,taskDto.getRequestId())){
             return ResultDto.success();
         }*/
