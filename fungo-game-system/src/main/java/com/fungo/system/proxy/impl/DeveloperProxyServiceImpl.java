@@ -101,7 +101,7 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
 	@Override
 	public int selectPostCount(CmmPostDto cmmPostDto) {
-		return communityFeignClient.selectPostCount(cmmPostDto);
+		return communityFeignClient.queryCmmPostCount(cmmPostDto).getData();
 	}
 
 

@@ -72,4 +72,5 @@ public class RabbitMQProduct {
         transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_COMMUNITY_POST.getName());
         iTransactionMessageService.saveAndSendMessage(transactionMessageDto);
     }
+
 }

@@ -19,10 +19,6 @@ import java.util.Map;
 @FeignClient(name = "FUNGO-GAME-COMMUNITY")
 public interface CommunityFeignClient {
 
-    @RequestMapping(value = "/api/content/community/post", method = RequestMethod.POST)
-    int selectPostCount(CmmPostDto cmmPost);
-
-
     /**
      * 动态表 辅助计数器
      * @param map
