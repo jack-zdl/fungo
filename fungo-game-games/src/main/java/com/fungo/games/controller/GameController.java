@@ -234,6 +234,8 @@ public class GameController {
     }
     @Autowired
     private MQProduct mqProduct;
+    @Autowired
+    private SystemFeignClient systemFeignClient;
 
 //    @Autowired
 //    private GameTagService gameTagService;
@@ -245,7 +247,7 @@ public class GameController {
      * ceshi
      * @return
      */
-//    @RequestMapping(value = "/api/feignMQDemo", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/feignMQDemo", method = RequestMethod.GET)
     public int feignMQDemo(){
 //        测试
         /*List<GameTag> gameTags = gameTagService.selectList(new EntityWrapper<GameTag>().setSqlSelect("tag_id as tagId").eq("game_id", "b3aba058982940159c8f938d143e1b34"));
@@ -260,15 +262,15 @@ public class GameController {
             System.out.println(ta.toString());
         }*/
 //        mqFeignClient.deleteMessageByMessageId(2019051616580096421l);
-//        ResultDto<AuthorBean> author = systemFeignClient.getAuthor("012689d5d62e46f3b7fd40e536842455");
-//        System.out.println(author.getData().toString());
-//        BasActionDto basActionDto = new BasActionDto();
-//        basActionDto.setMemberId("111111");
-//        basActionDto.setTargetId("测试");
-//        basActionDto.setState(0);
-//        basActionDto.setType(1);
-//        basActionDto.setId("ceshi");
-//        mqProduct.basActionInsertAllColumn(basActionDto);
+        ResultDto<AuthorBean> author = systemFeignClient.getAuthor("012689d5d62e46f3b7fd40e536842455");
+        System.out.println(author.getData().toString());
+        BasActionDto basActionDto = new BasActionDto();
+        basActionDto.setMemberId("111111");
+        basActionDto.setTargetId("测试");
+        basActionDto.setState(0);
+        basActionDto.setType(1);
+        basActionDto.setId("ceshi");
+        mqProduct.basActionInsertAllColumn(basActionDto);
         return 1;
     }
 
