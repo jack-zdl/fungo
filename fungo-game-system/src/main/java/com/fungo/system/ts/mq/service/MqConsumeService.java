@@ -7,5 +7,5 @@ public interface MqConsumeService {
      * @param msgDate mq的消息体
      * @return 处理结果
      */
-    boolean processMsg(String msgDate);
+    boolean processMsg(String msgDate) throws Exception;
 }

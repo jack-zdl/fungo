@@ -12,8 +12,8 @@
     <jmxConfigurator/>
 
     <!-- 定义日志文件 输出位置 -->
-<!--    <property name="log.home_dir" value="./logs/"/>-->
-    <property name="log.home_dir" value="/opt/app/fungoCloud/uat/community/logs/"/>
+    <property name="log.home_dir" value="./logs/"/>
+<!--    <property name="log.home_dir" value="/opt/app/fungoCloud/uat/community/logs/"/>-->
     <!-- 日志最大的历史 30天 -->
     <property name="log.maxHistory" value="30"/>
 
