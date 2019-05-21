@@ -130,7 +130,7 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public MemberDto getMemberDtoBySelectOne(MemberDto md) {
-        return systemFeignClient.getMemberDtoBySelectOne(md.getId()).getData();
+        return systemFeignClient.getMembersByid(md.getId()).getData();
     }
     public MemberDto hystrixGetMemberDtoBySelectOne(MemberDto md) {
         return null;

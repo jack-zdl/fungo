@@ -79,7 +79,7 @@ public interface SystemFeignClient {
      * @return
      */
     @GetMapping(value = "/getMembersByid")
-    ResultDto<MemberDto> getMemberDtoBySelectOne(String id);
+    ResultDto<MemberDto> getMembersByid(@RequestParam("memberId") String id);
 
     /**
      * 根据用户id获取用户身份图标

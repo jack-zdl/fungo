@@ -523,12 +523,15 @@ public class EvaluateServiceImpl implements IEvaluateService {
 //                2019-05-11
 //                lyc
 //                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
-                MemberDto md = new MemberDto();
-                md.setId(reply.getReplayToId());
-                MemberDto m = iEvaluateProxyService.getMemberDtoBySelectOne(md);
-                if (m != null) {
-                    replybean.setReplyToName(m.getUserName());
+                if (reply.getReplayToId()!= null){
+                    MemberDto md = new MemberDto();
+                    md.setId(reply.getReplayToId());
+                    MemberDto m = iEvaluateProxyService.getMemberDtoBySelectOne(md);
+                    if (m != null) {
+                        replybean.setReplyToName(m.getUserName());
+                    }
                 }
+
                 ctem.getReplys().add(replybean);
             }
 
