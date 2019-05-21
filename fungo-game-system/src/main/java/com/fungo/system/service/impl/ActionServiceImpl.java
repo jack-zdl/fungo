@@ -744,7 +744,7 @@ public class ActionServiceImpl implements IActionService {
         if (CommonlyConst.getGameList().contains(inputDto.getTarget_type())){
 //            feign客户端调用游戏服务
             //@todo mq 消息
-            mqProduct.gamesUpdate(map);//iDeveloperProxyService.updateCounter(map);
+            mqProduct.updateCounter(map);//iDeveloperProxyService.updateCounter(map);
             return true;
         }
         if (CommonlyConst.getSystemList().contains(inputDto.getTarget_type())){
