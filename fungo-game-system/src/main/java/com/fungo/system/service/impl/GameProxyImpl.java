@@ -35,35 +35,12 @@ public class GameProxyImpl implements IGameProxy {
 	private BasNoticeService noticeService;
 	@Autowired
 	private ScoreLogService scoreLogService;
-//	@Autowired
-//	private CmmCommentService commentService ;
-//	@Autowired
-//	private CmmCommunityService communityService ;
-//	@Autowired
-//	private CmmPostService postService;
 	@Autowired
 	private MemberService memberService;
 	@Autowired
 	private BasActionDao actionDao;
-//	@Autowired
-//	private MooMoodService moodService;
-//	@Autowired
-//	private MooMessageService messageServive;
-//
-//	@Autowired
-//	private GameEvaluationService gameEvaluationService;
-//	@Autowired
-//	private GameService gameService;
 	@Autowired
 	private IPushService pushService;
-//
-//	@Autowired
-//	private ReplyService replyService;
-//
-//	@Autowired
-//	//private ScoreRuleServiceImap scoreRuleService;
-//	private ScoreRuleService scoreRuleService;
-
 	@Autowired
 	private IGameProxyService gameProxyServiceImpl;
 

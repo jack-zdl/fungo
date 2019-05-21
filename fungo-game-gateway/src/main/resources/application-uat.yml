@@ -3,8 +3,8 @@ eureka:
     serviceUrl:
       defaultZone:  http://39.105.18.214:8761/eureka/
   instance:
-    instance-id: ${spring.application.name}:${spring.cloud.client.ipAddress}:${spring.application.instance_id:${server.port}}
-    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+#    prefer-ip-address: true
     appname: scyp-gateway
 server:
   port: 8182
