@@ -95,7 +95,7 @@ public interface SystemFeignClient {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "memberId",value = "用户id",paramType = "form",dataType = "string")
     })
-    public ResultDto<List<String>> listFollowerCommunityId(@RequestParam String memberId);
+    public ResultDto<List<String>> listFollowerCommunityId(@RequestParam("memberId") String memberId);
 
 
 
