@@ -8,6 +8,7 @@ import com.game.common.ts.mq.config.RabbitMQConfig;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
 import com.game.common.ts.mq.enums.RabbitMQEnum;
 import com.game.common.ts.mq.service.MQDataReceiveService;
+import com.game.common.util.UniqueIdCkeckUtil;
 import com.rabbitmq.client.Channel;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -91,24 +92,32 @@ public class RabbitMQListenerConfig {
         return new ChannelAwareMessageListener() {
             @Override
             public void onMessage(Message message, Channel channel) throws Exception {
+                Long messageId = null;
                 try {
                     String msgBody = StringUtils.toEncodedString(message.getBody(), Charset.forName("UTF-8"));
                     LOGGER.info("MQTopicQueueListener-onMessage-msgBody:{}", msgBody);
                     TransactionMessageDto transactionMessageDto = JSON.parseObject(msgBody, TransactionMessageDto.class);
-                    Long messageId = transactionMessageDto.getMessageId();
-                    Integer messageDataType = transactionMessageDto.getMessageDataType();
-                    //同步业务处理
-                    boolean b = mQDataReceiveService.onMessageWithMQTopic(msgBody);
-                    if (b){
-                        mqFeignClient.deleteMessageByMessageId(messageId);
-                        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                    messageId = transactionMessageDto.getMessageId();
+                    //校验是否重复消费
+                    if (!UniqueIdCkeckUtil.checkUniqueIdAndSave(messageId.toString())) {
+                        LOGGER.warn("系统服务-重复消费驳回,消息内容:"+messageId);
                     }else{
-                        channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
-                        LOGGER.error("MQTopicQueueListener-onMessage-msgBody-业务error:{}", msgBody);
+                        Integer messageDataType = transactionMessageDto.getMessageDataType();
+                        //同步业务处理
+                        boolean b = mQDataReceiveService.onMessageWithMQTopic(msgBody);
+                        if (b){
+                            mqFeignClient.deleteMessageByMessageId(messageId);
+                            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                        }else{
+                            channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
+                            UniqueIdCkeckUtil.deleteUniqueId(messageId.toString());
+                            LOGGER.error("MQTopicQueueListener-onMessage-msgBody-业务error:{}", msgBody);
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
+                    UniqueIdCkeckUtil.deleteUniqueId(messageId.toString());
                     LOGGER.error("MQTopicQueueListener-onMessage-msgBody-Exceptionerror:{}", e);
                 }
             }
