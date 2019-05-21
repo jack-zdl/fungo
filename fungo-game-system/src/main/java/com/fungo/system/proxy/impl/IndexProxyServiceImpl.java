@@ -10,6 +10,10 @@ import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.index.CardIndexBean;
 import com.game.common.enums.CommonEnum;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,12 +29,16 @@ import java.util.HashMap;
 @Service
 public class IndexProxyServiceImpl implements IndexProxyService {
 
+    private static final Logger logger = LoggerFactory.getLogger(GameProxyServiceImpl.class);
+
     @Autowired
     private CommunityFeignClient communityFeignClient;
 
     @Autowired
     private GamesFeignClient gamesFeignClient;
 
+    @HystrixCommand(fallbackMethod = "hystrixSelctCmmPostOne",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public CmmPostDto selctCmmPostOne(CmmPostDto cmmPostDto) {
         CmmPostDto re = new CmmPostDto();
@@ -41,6 +49,8 @@ public class IndexProxyServiceImpl implements IndexProxyService {
         return re;
     }
 
+    @HystrixCommand(fallbackMethod = "hystrixGetRateData",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public HashMap<String, BigDecimal> getRateData(String id) {
         // @todo
@@ -51,6 +61,8 @@ public class IndexProxyServiceImpl implements IndexProxyService {
         return null;
     }
 
+    @HystrixCommand(fallbackMethod = "hystrixSelectCmmPostPage",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public Page<CmmPostDto> selectCmmPostPage(CmmPostDto cmmPostDto) {
         Page<CmmPostDto> page = new Page<>();
@@ -62,6 +74,8 @@ public class IndexProxyServiceImpl implements IndexProxyService {
         return page;
     }
 
+    @HystrixCommand(fallbackMethod = "hystrixSelectCmmCommuntityDetail",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public CmmCommunityDto selectCmmCommuntityDetail(CmmCommunityDto cmmCommunityDto) {
         CmmCommunityDto re = new CmmCommunityDto();
@@ -72,9 +86,36 @@ public class IndexProxyServiceImpl implements IndexProxyService {
         return re;
     }
 
+    @HystrixCommand(fallbackMethod = "hystrixSelectedGames",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public CardIndexBean selectedGames() {
         ResultDto<CardIndexBean>  cardIndexBeanResultDto = gamesFeignClient.getSelectedGames();
         return cardIndexBeanResultDto.getData();
+    }
+
+    public CmmPostDto hystrixSelctCmmPostOne(CmmPostDto cmmPostDto) {
+        logger.warn("IndexProxyServiceImpl.hystrixSelctCmmPostOne ");
+        return null;
+    }
+
+    public HashMap<String, BigDecimal> hystrixGetRateData(String id) {
+        logger.warn("IndexProxyServiceImpl.hystrixGetRateData ");
+        return null;
+    }
+
+    public Page<CmmPostDto> hystrixSelectCmmPostPage(CmmPostDto cmmPostDto) {
+        logger.warn("IndexProxyServiceImpl.hystrixSelectCmmPostPage ");
+        return null;
+    }
+
+    public CmmCommunityDto hystrixSelectCmmCommuntityDetail(CmmCommunityDto cmmCommunityDto) {
+        logger.warn("IndexProxyServiceImpl.hystrixSelectCmmCommuntityDetail ");
+        return null;
+    }
+
+    public CardIndexBean hystrixSelectedGames() {
+        logger.warn("IndexProxyServiceImpl.hystrixSelectedGames ");
+        return null;
     }
 }
