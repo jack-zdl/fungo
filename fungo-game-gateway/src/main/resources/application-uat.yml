@@ -3,8 +3,8 @@ eureka:
     serviceUrl:
       defaultZone:  http://39.105.18.214:8761/eureka/
   instance:
-    instance-id: ${spring.application.name}:${spring.cloud.client.ipAddress}:${spring.application.instance_id:${server.port}}
-    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+#    prefer-ip-address: true
     appname: scyp-gateway
 server:
   port: 8182
@@ -132,11 +132,6 @@ zuul:
       serviceId:  FUNGO-GAME-SYSTEM
       sensitiveHeaders:
       strip-prefix: false
-    fungo-game-system-20:
-      path: /api/search/**
-      serviceId:  FUNGO-GAME-SYSTEM
-      sensitiveHeaders:
-      strip-prefix: false
     fungo-game-system-21:
       path: /api/recommend/index
       serviceId:  FUNGO-GAME-SYSTEM
@@ -162,17 +157,79 @@ zuul:
       serviceId:  FUNGO-GAME-SYSTEM
       sensitiveHeaders:
       strip-prefix: false
- #社区接口
+
+    #社区接口
     fungo-game-commmunity-1:
-      path: /api/content/**
+      path: /api/content/communitys
       serviceId:  FUNGO-GAME-COMMUNITY
       sensitiveHeaders:
       strip-prefix: false
     fungo-game-commmunity-2:
-      path: /api/recommend/**
+      path: /api/content/community/**
       serviceId:  FUNGO-GAME-COMMUNITY
       sensitiveHeaders:
       strip-prefix: false
+    fungo-game-commmunity-3:
+      path: /api/content/comment
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-4:
+      path: /api/content/comment/**
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-5:
+      path: /api/content/message/**
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-6:
+      path: /api/content/comments
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-7:
+      path: /api/content/mood
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-8:
+      path: /api/content/mood/**
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-9:
+      path: /api/content/post
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-10:
+      path: /api/content/post/**
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-11:
+      path: /api/content/posts
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-12:
+      path: /api/amwaywall/postlist
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-13:
+      path: /api/recommend/moods
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+
+
+
+
+
+
     #      *****************游戏开始************************************
     fungo-game-games-0:
       path: /api/developer/gemeAnalyze
@@ -294,8 +351,9 @@ zuul:
       serviceId:  FUNGO-GAME-GAMES
       sensitiveHeaders:
       strip-prefix: false
+
     fungo-game-games-24:
-      path: /api/recommend/tag/game
+      path: /api/recommend/tag/**
       serviceId:  FUNGO-GAME-GAMES
       sensitiveHeaders:
       strip-prefix: false
@@ -304,7 +362,18 @@ zuul:
       serviceId:  FUNGO-GAME-GAMES
       sensitiveHeaders:
       strip-prefix: false
-  #      *****************游戏2019-05-20结束************************************
+
+    #      *****************游戏2019-05-20结束************************************
+    fungo-game-commmunity-14:
+      path: /api/recommend/**
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-20:
+      path: /api/search/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
 
 
 #common.ribbon.listOfServers=http://10.0.0.1:8081/common,http://10.0.0.2:8081/common  #请求需要使用功能区进行负载平衡。
@@ -315,13 +384,16 @@ hystrix:
   command:
     default:
       execution:
-        isolation:
-          strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
-          thread:
-            timeoutInMilliseconds: 40000  #命令执行超时时间，默认1000ms
+        timeout:
+          enabled: false
+#        isolation:
+#          strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
+#          thread:
+#            timeoutInMilliseconds: 40000  #命令执行超时时间，默认1000ms
 ribbon:
   ConnectTimeout: 5000
   ReadTimeout: 15000
+
 
 logging:
   level:

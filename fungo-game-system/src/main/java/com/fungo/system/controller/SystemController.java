@@ -154,7 +154,7 @@ public class SystemController {
      * 功能描述: 根据用户id查询用户详情
      */
     @GetMapping(value = "/getMembersByid")
-    public ResultDto<MemberDto> getMembersByid(@RequestParam("id") String id){
+    public ResultDto<MemberDto> getMembersByid(@RequestParam("memberId") String id){
         ResultDto<MemberDto> re = null;
         try {
             re =  systemService.getMembersByid(id);
@@ -251,7 +251,7 @@ public class SystemController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "memberId",value = "用户id",paramType = "form",dataType = "string")
     })
-    public ResultDto<List<String>> listFollowerCommunityId(@RequestParam String memberId){
+    public ResultDto<List<String>> listFollowerCommunityId(@RequestParam("memberId") String memberId){
         ResultDto<List<String>> re = null;
         if(memberId==null){
             re = ResultDto.error("-1", "SystemController.listFollowerCommunityId参数缺失");

@@ -3,8 +3,8 @@ eureka:
     serviceUrl:
       defaultZone:  http://127.0.0.1:8761/eureka/
   instance:
-    instance-id: ${spring.application.name}:${spring.cloud.client.ipAddress}:${spring.application.instance_id:${server.port}}
-    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+#    prefer-ip-address: true
     appname: scyp-gateway
 server:
   port: 8182
@@ -132,11 +132,6 @@ zuul:
       serviceId:  FUNGO-GAME-SYSTEM
       sensitiveHeaders:
       strip-prefix: false
-    fungo-game-system-20:
-      path: /api/search/**
-      serviceId:  FUNGO-GAME-SYSTEM
-      sensitiveHeaders:
-      strip-prefix: false
     fungo-game-system-21:
       path: /api/recommend/index
       serviceId:  FUNGO-GAME-SYSTEM
@@ -229,11 +224,7 @@ zuul:
       serviceId:  FUNGO-GAME-COMMUNITY
       sensitiveHeaders:
       strip-prefix: false
-    fungo-game-commmunity-14:
-      path: /api/recommend/**
-      serviceId:  FUNGO-GAME-COMMUNITY
-      sensitiveHeaders:
-      strip-prefix: false
+
 
 
 
@@ -360,8 +351,9 @@ zuul:
       serviceId:  FUNGO-GAME-GAMES
       sensitiveHeaders:
       strip-prefix: false
+
     fungo-game-games-24:
-      path: /api/recommend/tag/game
+      path: /api/recommend/tag/**
       serviceId:  FUNGO-GAME-GAMES
       sensitiveHeaders:
       strip-prefix: false
@@ -370,7 +362,19 @@ zuul:
       serviceId:  FUNGO-GAME-GAMES
       sensitiveHeaders:
       strip-prefix: false
+
   #      *****************游戏2019-05-20结束************************************
+    fungo-game-commmunity-14:
+      path: /api/recommend/**
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-20:
+      path: /api/search/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+
 
 #common.ribbon.listOfServers=http://10.0.0.1:8081/common,http://10.0.0.2:8081/common  #请求需要使用功能区进行负载平衡。
  # 配置超时时间断路器才有效果（加入Zuul）
@@ -381,10 +385,12 @@ hystrix:
   command:
     default:
       execution:
-        isolation:
-          strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
-          thread:
-            timeoutInMilliseconds: 40000  #命令执行超时时间，默认1000ms
+        timeout:
+          enabled: false
+#        isolation:
+##          strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
+#          thread:
+#            timeoutInMilliseconds: 40000  #命令执行超时时间，默认1000ms
 ribbon:
   ConnectTimeout: 5000
   ReadTimeout: 15000

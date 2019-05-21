@@ -26,4 +26,6 @@ public interface GameDao extends BaseMapper<Game> {
     Boolean updateCountor(Map<String, String> map);
     //被点赞用户的id
     String getMemberIdByTargetId(Map<String, String> map);
+//  平均分20190521复制
+    HashMap<String, BigDecimal> getRateData1(String gameId);
 }
