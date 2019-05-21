@@ -149,15 +149,79 @@ zuul:
       strip-prefix: false
  #社区接口
     fungo-game-commmunity-1:
-      path: /api/content/**
+      path: /api/content/communitys
       serviceId:  FUNGO-GAME-COMMUNITY
       sensitiveHeaders:
       strip-prefix: false
     fungo-game-commmunity-2:
+      path: /api/content/community/**
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-3:
+      path: /api/content/comment
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-4:
+      path: /api/content/comment/**
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-5:
+      path: /api/content/message/**
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-6:
+      path: /api/content/comments
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-7:
+      path: /api/content/mood
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-8:
+      path: /api/content/mood/**
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-9:
+      path: /api/content/post
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-10:
+      path: /api/content/post/**
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-11:
+      path: /api/content/posts
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-12:
+      path: /api/amwaywall/postlist
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-13:
+      path: /api/recommend/moods
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-14:
       path: /api/recommend/**
       serviceId:  FUNGO-GAME-COMMUNITY
       sensitiveHeaders:
       strip-prefix: false
+
+
+
+
 
     #      *****************游戏开始************************************
     fungo-game-games-0:
