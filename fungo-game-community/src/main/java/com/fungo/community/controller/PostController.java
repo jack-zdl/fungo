@@ -150,7 +150,7 @@ public class PostController {
     public ResultDto<PostOut> getPostDetail(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @PathVariable("postId") String postId) {
         String userId = "";
         String os = "";
-        os = (String) request.getAttribute("os");
+        os = (String) request.getHeader("os");
         if (memberUserPrefile != null) {
             userId = memberUserPrefile.getLoginId();
         }
