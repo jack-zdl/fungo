@@ -154,7 +154,7 @@ public class SystemController {
      * 功能描述: 根据用户id查询用户详情
      */
     @GetMapping(value = "/getMembersByid")
-    public ResultDto<MemberDto> getMembersByid(@RequestParam("id") String id){
+    public ResultDto<MemberDto> getMembersByid(@RequestParam(value = "id",required = false) String id){
         ResultDto<MemberDto> re = null;
         try {
             re =  systemService.getMembersByid(id);

@@ -36,6 +36,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -560,19 +561,25 @@ public class SystemServiceImpl implements SystemService {
         if(!UniqueIdCkeckUtil.checkUniqueIdAndSave(taskDto.getRequestId())){
             return ResultDto.error("-1", "业务已执行");
         }
-
         ResultDto<Map<String, Object>> re = null;
-        Map<String, Object> map = null;
-        try {
-            if (StringUtil.isNull(taskDto.getTargetId())) {
-                map = iMemberIncentDoTaskFacadeService.exTask(taskDto.getMbId(), taskDto.getTaskGroupFlag(), taskDto.getTaskType(), taskDto.getTypeCodeIdt());
-            } else {
-                map = iMemberIncentDoTaskFacadeService.exTask(taskDto.getMbId(), taskDto.getTaskGroupFlag(), taskDto.getTaskType(), taskDto.getTypeCodeIdt(), taskDto.getTargetId());
+        try{
+            Map<String, Object> map = null;
+            try {
+                if (StringUtil.isNull(taskDto.getTargetId())) {
+                    map = iMemberIncentDoTaskFacadeService.exTask(taskDto.getMbId(), taskDto.getTaskGroupFlag(), taskDto.getTaskType(), taskDto.getTypeCodeIdt());
+                } else {
+                    map = iMemberIncentDoTaskFacadeService.exTask(taskDto.getMbId(), taskDto.getTaskGroupFlag(), taskDto.getTaskType(), taskDto.getTypeCodeIdt(), taskDto.getTargetId());
+                }
+                re = ResultDto.success(map);
+            } catch (Exception e) {
+                LOGGER.error("SystemServiceImpl.exTask", e);
+                re = ResultDto.error("-1", "任务执行异常");
             }
-            re = ResultDto.success(map);
-        } catch (Exception e) {
-            LOGGER.error("SystemServiceImpl.exTask", e);
-            re = ResultDto.error("-1", "任务执行异常");
+        }catch (Exception e){
+            //手动开启事务回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            //删除唯一请求标志,使逻辑可以重试
+            UniqueIdCkeckUtil.deleteUniqueId(taskDto.getRequestId());
         }
         return re;
     }
