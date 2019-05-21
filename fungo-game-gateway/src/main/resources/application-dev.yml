@@ -147,6 +147,22 @@ zuul:
       serviceId:  FUNGO-GAME-SYSTEM
       sensitiveHeaders:
       strip-prefix: false
+    fungo-game-system-23:
+      path: /api/advert
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-24:
+      path: /api/adt/bnr
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-25:
+      path: /api/recommend/discover
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+
  #社区接口
     fungo-game-commmunity-1:
       path: /api/content/communitys
@@ -361,19 +377,18 @@ zuul:
 
 
 
-ribbon:
-  #MaxAutoRetries: 3
-  #MaxAutoRetriesNextServer: 1 #切换实例的重试次数
-  #OkToRetryOnAllOperations: true # 对所有的操作请求都进行重试，如果是get则可以，如果是post,put等操作没有实现幂等的情况下是很危险的，所以设置为false
-  ReadTimeout: 300000  #请求处理的超时时间
-  ConnectTimeout: 300000
 hystrix:
   command:
     default:
       execution:
         isolation:
+          strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
           thread:
-            timeoutInMilliseconds: 1000000  # ReadTimeout+（MaxAutoRetries * ReadTimeout）
+            timeoutInMilliseconds: 40000  #命令执行超时时间，默认1000ms
+ribbon:
+  ConnectTimeout: 5000
+  ReadTimeout: 15000
+
 
 logging:
   level:
