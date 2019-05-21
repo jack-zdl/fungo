@@ -251,7 +251,7 @@ public class SystemController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "memberId",value = "用户id",paramType = "form",dataType = "string")
     })
-    public ResultDto<List<String>> listFollowerCommunityId(@RequestParam String memberId){
+    public ResultDto<List<String>> listFollowerCommunityId(@RequestParam("memberId") String memberId){
         ResultDto<List<String>> re = null;
         if(memberId==null){
             re = ResultDto.error("-1", "SystemController.listFollowerCommunityId参数缺失");

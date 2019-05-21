@@ -10,6 +10,8 @@ import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,8 @@ import java.util.Map;
 @Service
 @Transactional
 public class UserMqConsumeServiceImpl implements UserMqConsumeService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserMqConsumeServiceImpl.class);
 
     @Autowired
     private IGameProxy gameProxyService;
@@ -108,6 +112,9 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
             return false;
         }
         ResultDto<String> resultDto = systemService.processUserScoreChange(userId, Integer.parseInt(score));
+        if(!resultDto.isSuccess()){
+            LOGGER.warn("mq失败 - 扣减用户经验值和等级:"+resultDto.getMessage());
+        }
         return resultDto.isSuccess();
     }
 
