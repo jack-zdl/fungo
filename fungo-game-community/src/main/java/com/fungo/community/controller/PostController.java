@@ -11,8 +11,6 @@ import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.feign.GameFeignClient;
 import com.fungo.community.feign.SystemFeignClient;
-import com.fungo.community.function.SerUtils;
-import com.fungo.community.function.TemplateUtil;
 import com.fungo.community.service.IPostService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.*;
@@ -28,7 +26,6 @@ import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.date.DateTools;
-import com.game.common.util.emoji.EmojiDealUtil;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import com.game.common.vo.MemberFollowerVo;
 import io.swagger.annotations.Api;
@@ -41,11 +38,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *  文章模块
@@ -150,7 +149,7 @@ public class PostController {
     public ResultDto<PostOut> getPostDetail(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @PathVariable("postId") String postId) {
         String userId = "";
         String os = "";
-        os = (String) request.getAttribute("os");
+        os = (String) request.getHeader("os");
         if (memberUserPrefile != null) {
             userId = memberUserPrefile.getLoginId();
         }
@@ -186,80 +185,6 @@ public class PostController {
     }
 
 
-    @ApiOperation(value = "帖子内容html", notes = "")
-    @RequestMapping(value = "/api/content/post/html/{postId}", method = RequestMethod.GET)
-    public ModelAndView getHtml(@PathVariable("postId") String postId) throws Exception {
-
-        //内容
-        String keyPrefixContent = FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_CONTENT + postId;
-        String htmlContent = fungoCacheArticle.getIndexCacheWithStr(keyPrefixContent, "");
-
-        //标题
-        String keyPrefixTitle = FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_TITLE + postId;
-        String htmlContentTitle = fungoCacheArticle.getIndexCacheWithStr(keyPrefixTitle, "");
-
-        if (StringUtils.isNotBlank(htmlContent) && StringUtils.isNotBlank(htmlContentTitle)) {
-            htmlContent = FilterEmojiUtil.decodeEmoji(htmlContent);
-            htmlContentTitle = FilterEmojiUtil.decodeEmoji(htmlContentTitle);
-            return TemplateUtil.returnPostHtmlTemplate(htmlContent, htmlContentTitle);
-        }
-
-        CmmPost post = daoPostService.selectById(postId);
-        if (post == null) {
-            throw new RuntimeException("帖子不存在");
-        } else {
-            List<String> asList = new ArrayList<>();
-
-            if (post.getImages() != null) {
-                asList = Arrays.asList(post.getImages().replace("]", "").replace("[", "").replace("\"", "").split(","));
-            }
-            String origin = post.getHtmlOrigin();
-            origin = FilterEmojiUtil.decodeEmoji(origin);
-
-            List<Map<String, Object>> gameMapList = new ArrayList<>();
-            String gameList = post.getGameList();
-            //更新游戏标签中的游戏评分
-            if (post.getGameList() != null) {
-                ObjectMapper mapper = new ObjectMapper();
-                gameMapList = mapper.readValue(gameList, ArrayList.class);
-                for (Map<String, Object> m : gameMapList) {
-
-                    //m.put("rating", iGameService.getGameRating((String) m.get("objectId")) + "");
-
-                    //获取游戏平均分
-                    String gameId = (String) m.get("objectId");
-                    double gameAverage = gameFeignClient.selectGameAverage(gameId, 0);
-
-                    m.put("rating", String.valueOf(gameAverage));
-                }
-
-                gameList = mapper.writeValueAsString(gameMapList);
-            }
-            htmlContent = SerUtils.getWatermarkImageContent(CommonUtils.filterWord(origin), asList, gameList);
-            htmlContentTitle = FilterEmojiUtil.decodeEmoji(post.getTitle());
-
-            String hexadecimalHtml = htmlContent;
-            if (StringUtils.isNotBlank(EmojiDealUtil.getEmojiUnicodeString(htmlContent))) {
-                hexadecimalHtml = FilterEmojiUtil.encodeEmoji(htmlContent);
-            }
-            String titleHtml = htmlContentTitle;
-            if (StringUtils.isNotBlank(EmojiDealUtil.getEmojiUnicodeString(htmlContentTitle))) {
-                titleHtml = FilterEmojiUtil.encodeEmoji(htmlContentTitle);
-            }
-
-            //redis cache
-            //文章内容html-内容
-//           fungoCacheArticle.excIndexCache(true, keyPrefixContent, "", hexadecimalHtml);
-//            //文章内容html-标题
-//            fungoCacheArticle.excIndexCache(true, keyPrefixTitle, "", titleHtml);
-
-            fungoCacheArticle.setStringCache(keyPrefixContent, "", hexadecimalHtml);
-            //文章内容html-标题
-            fungoCacheArticle.setStringCache(keyPrefixTitle, "", titleHtml);
-            return TemplateUtil.returnPostHtmlTemplate(htmlContent, htmlContentTitle);
-        }
-
-    }
 
 
     @ApiOperation(value = "社区置顶文章(2.4.3)", notes = "")
