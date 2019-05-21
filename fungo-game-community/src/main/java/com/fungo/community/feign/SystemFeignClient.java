@@ -131,7 +131,7 @@ public interface SystemFeignClient {
 
     @GetMapping("/getAuthor")
     @ApiOperation(value="获取会员信息")
-    public ResultDto<AuthorBean> getAuthor(String memberId);
+    public ResultDto<AuthorBean> getAuthor(@RequestParam("memberId") String memberId);
 
 
 
