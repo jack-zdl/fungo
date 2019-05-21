@@ -1,8 +1,11 @@
 package com.fungo.system.service.impl;
 
+import com.fungo.system.proxy.IGameProxyService;
 import com.fungo.system.service.IEvaluateService;
+import com.game.common.dto.game.GameEvaluationDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
@@ -11,6 +14,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
 
     private static final Logger logger = LoggerFactory.getLogger(EvaluateServiceImpl.class);
+
+    @Autowired
+    private IGameProxyService iGameProxyService;
 //
 //    @Autowired
 //    private CmmCommentService commentService;
@@ -1088,32 +1094,36 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
     @Override
     public Set<String> getGameEvaluationHotAndAnliCount(String mb_id, String startDate, String endDate) {
-//        Set<String> gameEvaSet = null;
-////        try {
-////            EntityWrapper<GameEvaluation> evaluationEntityWrapper = new EntityWrapper<>();
-////            evaluationEntityWrapper.eq("member_id", mb_id);
-////            evaluationEntityWrapper.between("updated_at", startDate, endDate);
-////            evaluationEntityWrapper.eq("state", 0);
-////            //type  0:普通 1:热门 2:精华
-////            evaluationEntityWrapper.in("type", new Integer[]{1, 2});
-////
-////            List<GameEvaluation> gameEvaluationsList = gameEvaluationService.selectList(evaluationEntityWrapper);
-////            if (null != gameEvaluationsList && !gameEvaluationsList.isEmpty()) {
-////
-////                gameEvaSet = new HashSet<String>();
-////
-////                for (GameEvaluation gameEvaluation : gameEvaluationsList) {
-////                    gameEvaSet.add(gameEvaluation.getId());
-////                }
-////            }
-////
-////        } catch (Exception ex) {
-////            ex.printStackTrace();
-////            logger.error("查看用户在指定时间段内游戏评论上热门和安利墙的文章数量出现异常", ex);
-////        }
-////        logger.info("查看用户在指定时间段内游戏评论上热门和安利墙的文章数量-gameEvaSet:{}", gameEvaSet);
-////        return gameEvaSet;
-        return null;
+        Set<String> gameEvaSet = null;
+        try {
+//            微服务迁移
+//            2019-05-21
+//            lyc
+            /*EntityWrapper<GameEvaluation> evaluationEntityWrapper = new EntityWrapper<>();
+            evaluationEntityWrapper.eq("member_id", mb_id);
+            evaluationEntityWrapper.between("updated_at", startDate, endDate);
+            evaluationEntityWrapper.eq("state", 0);
+            //type  0:普通 1:热门 2:精华
+            evaluationEntityWrapper.in("type", new Integer[]{1, 2});
+
+            List<GameEvaluation> gameEvaluationsList = gameEvaluationService.selectList(evaluationEntityWrapper);*/
+            List<GameEvaluationDto> gameEvaluationsList = iGameProxyService.getEvaluationEntityWrapper(mb_id,startDate,endDate);
+            if (null != gameEvaluationsList && !gameEvaluationsList.isEmpty()) {
+
+                gameEvaSet = new HashSet<String>();
+
+                for (GameEvaluationDto gameEvaluation : gameEvaluationsList) {
+                    gameEvaSet.add(gameEvaluation.getId());
+                }
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            logger.error("查看用户在指定时间段内游戏评论上热门和安利墙的文章数量出现异常", ex);
+        }
+        logger.info("查看用户在指定时间段内游戏评论上热门和安利墙的文章数量-gameEvaSet:{}", gameEvaSet);
+        return gameEvaSet;
+//        return null;
     }
 
 

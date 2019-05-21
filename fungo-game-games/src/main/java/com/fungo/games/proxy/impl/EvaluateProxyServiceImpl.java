@@ -1,12 +1,15 @@
 package com.fungo.games.proxy.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.feign.CommunityFeignClient;
+import com.fungo.games.feign.MQFeignClient;
 import com.fungo.games.feign.SystemFeignClient;
 import com.fungo.games.proxy.IEvaluateProxyService;
 import com.game.common.bean.TagBean;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.CmmCommunityDto;
@@ -17,6 +20,9 @@ import com.game.common.dto.game.BasTagGroupDto;
 import com.game.common.dto.game.ReplyDto;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
+import com.game.common.ts.mq.dto.MQResultDto;
+import com.game.common.ts.mq.dto.TransactionMessageDto;
+import com.game.common.ts.mq.enums.RabbitMQEnum;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import org.slf4j.Logger;
@@ -42,6 +48,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
     private SystemFeignClient systemFeignClient;
     @Autowired
     private CommunityFeignClient communityFeignClient;
+    @Autowired
+    private MQFeignClient mqFeignClient;
 
     /**
      * 迁移微服务后 SystemFeignClient调用 用户成长
@@ -51,19 +59,36 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param type_code_idt
      * @return
      */
-    /*@HystrixCommand(fallbackMethod = "hystrixExTask",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
+    @HystrixCommand(fallbackMethod = "hystrixExTask",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
-    public Map<String, Object> exTask(String memberId, int task_group_flag, int task_type, int type_code_idt) {
+    public Map<String, Object> exTask(String memberId, int task_group_flag, int task_type, int type_code_idt,Long requestId) {
         TaskDto taskDto = new TaskDto();
         taskDto.setMbId(memberId);
         taskDto.setTaskGroupFlag(task_group_flag);
         taskDto.setTaskType(task_type);
         taskDto.setTypeCodeIdt(type_code_idt);
-        return systemFeignClient.exTask(taskDto).getData();
+        taskDto.setRequestId(requestId+"");
+        Map<String, Object> data = new HashMap<>();
+        try {
+            data = systemFeignClient.exTask(taskDto).getData();
+        } catch (Exception e) {
+            e.printStackTrace();
+            TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+            MQResultDto mqResultDto = new MQResultDto();
+            mqResultDto.setType(MQResultDto.GameMQDataType.GAME_DATA_TYPE_EXTASK.getCode());
+            mqResultDto.setBody(taskDto);
+            transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+            transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+            transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+            transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_GAME);
+            ResultDto resultDto = mqFeignClient.saveAndSendMessage(transactionMessageDto);
+        }finally {
+            return data;
+        }
     }
-    public Map<String, Object> hystrixExTask(String memberId, int task_group_flag, int task_type, int type_code_idt) {
-        return null;
+    public Map<String, Object> hystrixExTask(String memberId, int task_group_flag, int task_type, int type_code_idt,Long requestId) {
+        return new HashMap<String, Object>();
     }
     /**
      * 根据用户id获取authorBean
