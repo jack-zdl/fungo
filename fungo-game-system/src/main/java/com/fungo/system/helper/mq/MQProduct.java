@@ -73,4 +73,19 @@ public class MQProduct {
     }
 
 
+    public void communityUpdate(Map c){
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.SystemMQDataType.SYSTEM_MQ_DATA_TYPE_COMMUNITY_UPDATE.getCode());
+        mqResultDto.setBody(c);
+        rabbitMQProduct.mqCommunity(mqResultDto);
+    }
+
+    public void gamesUpdate(Map c){
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.SystemMQDataType.SYSTEM_MQ_DATA_TYPE_GAMES_UPDATE.getCode());
+        mqResultDto.setBody(c);
+        rabbitMQProduct.mqCommunity(mqResultDto);
+    }
+
+
 }

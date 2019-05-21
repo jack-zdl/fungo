@@ -737,13 +737,15 @@ public class ActionServiceImpl implements IActionService {
 //            社区服务空缺 19-05-07
             if (false){
                 //@todo mq 消息
-                return communityFeignClient.updateCounter(map);
+                mqProduct.communityUpdate(map); //communityFeignClient.updateCounter(map);
+                return true;
             }
         }
         if (CommonlyConst.getGameList().contains(inputDto.getTarget_type())){
 //            feign客户端调用游戏服务
             //@todo mq 消息
-            return iDeveloperProxyService.updateCounter(map);
+            mqProduct.gamesUpdate(map);//iDeveloperProxyService.updateCounter(map);
+            return true;
         }
         if (CommonlyConst.getSystemList().contains(inputDto.getTarget_type())){
             return actionDao.updateCountor(map);
