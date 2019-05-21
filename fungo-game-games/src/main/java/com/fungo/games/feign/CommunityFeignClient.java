@@ -8,6 +8,7 @@ import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.community.ReplyInputPageDto;
 import com.game.common.dto.game.ReplyDto;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,7 +21,7 @@ import java.util.Map;
  * @create 2019/5/7 10:26
  */
 @FeignClient(name = "FUNGO-GAME-COMMUNITY")
-@RequestMapping("/ms/service/cmm")
+//@RequestMapping("/ms/service/cmm")
 public interface CommunityFeignClient {
 
     /**
@@ -28,7 +29,8 @@ public interface CommunityFeignClient {
      * @param replyDto
      * @return
      */
-    @RequestMapping(value="/cmt/s/lists", method= RequestMethod.POST)
+//    @RequestMapping(value="/cmt/s/lists", method= RequestMethod.POST)
+    @PostMapping("/ms/service/cmm/cmt/s/lists")
     FungoPageResultDto<CmmCmtReplyDto>  getReplyDtoBysSelectPageOrderByCreatedAt(@RequestBody CmmCmtReplyDto replyDto);
 
     /**
@@ -36,6 +38,7 @@ public interface CommunityFeignClient {
      * @param cmmCommunityDto
      * @return
      */
-    @RequestMapping(value="/cty/lists", method= RequestMethod.POST)
+//    @RequestMapping(value="/cty/lists", method= RequestMethod.POST)
+    @PostMapping("/ms/service/cmm/cty/lists")
     FungoPageResultDto<CmmCommunityDto> getCmmCommunitySelectOneById(@RequestBody CmmCommunityDto cmmCommunityDto);
 }
