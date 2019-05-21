@@ -63,7 +63,7 @@ public class MQProduct {
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
         transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
-        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_USER);
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_GAME);
         sendFeignMq(transactionMessageDto);
     }
 
@@ -82,7 +82,7 @@ public class MQProduct {
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
         transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
-        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_USER);
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_GAME);
         sendFeignMq(transactionMessageDto);
 
     }
@@ -100,7 +100,7 @@ public class MQProduct {
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM.getName());
         transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM.getName());
-        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_SYSTEM);
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_GAME);
         sendFeignMq(transactionMessageDto);
     }
 
@@ -122,7 +122,7 @@ public class MQProduct {
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM.getName());
         transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM.getName());
-        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_SYSTEM);
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_GAME);
         sendFeignMq(transactionMessageDto);
     }
 
@@ -145,7 +145,7 @@ public class MQProduct {
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM.getName());
         transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM.getName());
-        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_SYSTEM);
+        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_GAME);
         sendFeignMq(transactionMessageDto);
     }
 

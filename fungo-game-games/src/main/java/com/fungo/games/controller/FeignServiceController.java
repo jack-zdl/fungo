@@ -763,7 +763,7 @@ public class FeignServiceController {
     @ApiOperation(value = "getRateData", notes = "")
     @RequestMapping(value = "/api/game/getRateData", method = RequestMethod.GET)
     ResultDto<HashMap<String, BigDecimal>> getRateData(@RequestParam("gameId") String gameId){
-        HashMap<String, BigDecimal> rateData = gameDao.getRateData(gameId);
+        HashMap<String, BigDecimal> rateData = gameDao.getRateData1(gameId);
         return ResultDto.success(rateData);
     }
 
