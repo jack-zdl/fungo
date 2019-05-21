@@ -5,6 +5,7 @@ import com.fungo.system.ts.mq.service.ITransactionMessageService;
 import com.fungo.system.ts.mq.service.SystemMqConsumeService;
 import com.fungo.system.ts.mq.service.UserMqConsumeService;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
+import com.game.common.ts.mq.enums.RabbitMQEnum;
 import com.game.common.ts.mq.service.MQDataReceiveService;
 import com.game.common.util.StringUtil;
 import com.game.common.util.UniqueIdCkeckUtil;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.util.Objects;
 
 
 @Service("mQDataReceiveService")
@@ -47,7 +50,7 @@ public class MQDataReceiveServiceImpl implements MQDataReceiveService {
 
     @Override
     public boolean onMessageWithMQTopic(String msgData) {
-        LOGGER.info("MQDataReceiveServiceImpl-onMessageWithMQTopic-msg:{}", msgData);
+        LOGGER.info("系统服务接收到消息 - {}", msgData);
         if (StringUtils.isBlank(msgData)) {
             return true;
         }
@@ -55,13 +58,13 @@ public class MQDataReceiveServiceImpl implements MQDataReceiveService {
         try {
             //解析消息体，确认是哪个队列的消息
             TransactionMessageDto messageDto = JSON.parseObject(msgData, TransactionMessageDto.class);
-
             //消息id不可为空
-            if(messageDto == null || messageDto.getMessageId() == null){
+            if(messageDto == null || messageDto.getMessageId() == null || messageDto.getConsumerQueue()==null){
                 return true;
             }
+            String consumerQueue = messageDto.getConsumerQueue();
             //接收到的消息，系统服务是否应该处理 -- 在校验重复消费前做是否处理校验，避免redis存入数据
-            if(!whetherProcess(messageDto.getMessageDataType())){
+            if(!whetherProcess(consumerQueue)){
                 return false;
             }
 
@@ -73,9 +76,9 @@ public class MQDataReceiveServiceImpl implements MQDataReceiveService {
             }
 
             boolean result;
-            if (TransactionMessageDto.MESSAGE_DATA_TYPE_SYSTEM == messageDto.getMessageDataType()) {
+            if (Objects.equals(consumerQueue,RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM.getName())) {
                 result = systemMqConsumeService.processMsg(messageDto.getMessageBody());
-            } else if (TransactionMessageDto.MESSAGE_DATA_TYPE_USER == messageDto.getMessageDataType()) {
+            } else if (Objects.equals(consumerQueue,RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName())) {
                 result = userMqConsumeService.processMsg(messageDto.getMessageBody());
             } else {
                 //不是系统和用户应该处理的消息  走不到这里，因为上面逻辑校验了是否应该处理
@@ -105,13 +108,13 @@ public class MQDataReceiveServiceImpl implements MQDataReceiveService {
 
     /**
      *  判断接收到的消息，系统服务是否应该处理
-     * @param type 消息大类型
+     * @param consumerQueue 消息大类型
      * @return 是否应该处理
      */
-    private boolean whetherProcess(Integer type){
-        if(type==null){
+    private boolean whetherProcess(String consumerQueue){
+        if(consumerQueue==null){
             return false;
         }
-        return TransactionMessageDto.MESSAGE_DATA_TYPE_SYSTEM == type||TransactionMessageDto.MESSAGE_DATA_TYPE_USER == type;
+        return Objects.equals(consumerQueue,RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM.getName())||Objects.equals(consumerQueue,RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
     }
 }

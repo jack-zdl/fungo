@@ -24,6 +24,7 @@ import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
+import com.game.common.util.UUIDUtils;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
 import org.slf4j.Logger;
@@ -125,7 +126,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
             }
 
             GameDto game = new GameDto();
-
+            game.setId(UUIDUtils.getUUID());
             game.setName(input.getName());
             if (input.getApk() != null) {
                 game.setApk(input.getApk());
@@ -210,6 +211,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
             }
 
             CmmCommunityDto c = new CmmCommunityDto();
+            c.setId(UUIDUtils.getUUID());
             c.setGameId(game.getId());
             c.setCoverImage(input.getCoverImage());
             Date d = new Date();

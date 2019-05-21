@@ -2,6 +2,7 @@ package com.fungo.system.mq;
 
 import com.alibaba.fastjson.JSON;
 import com.fungo.system.ts.mq.service.ITransactionMessageService;
+import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
 import com.game.common.ts.mq.enums.RabbitMQEnum;
 import org.junit.Test;
@@ -36,8 +37,12 @@ public class TransactionMessageServiceTest {
 
         iTransactionMessageService.saveAndSendMessage(transactionMessageDto);
 
-
     }
+
+
+
+
+
 
 
 
