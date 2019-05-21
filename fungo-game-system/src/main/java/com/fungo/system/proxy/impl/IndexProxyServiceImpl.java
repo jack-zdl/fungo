@@ -52,9 +52,9 @@ public class IndexProxyServiceImpl implements IndexProxyService {
     @HystrixCommand(fallbackMethod = "hystrixGetRateData",ignoreExceptions = {Exception.class},
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
-    public HashMap<String, BigDecimal> getRateData(String id) {
+    public HashMap<String, BigDecimal> getRateData(String gameId) {
         // @todo
-        ResultDto<HashMap<String, BigDecimal>> resultDto = gamesFeignClient.getRateData(id);
+        ResultDto<HashMap<String, BigDecimal>> resultDto = gamesFeignClient.getRateData(gameId);
         if(resultDto.isSuccess()){
             return resultDto.getData();
         }
