@@ -40,7 +40,7 @@ public class RabbitMQExchangeQueueBindConfig {
     }
 
 
-    @Bean
+ /*   @Bean
     DirectExchange createDirectExchange() {
         //配置持久化
         Map<String, Object> arguments = new HashMap<>(4);
@@ -57,7 +57,7 @@ public class RabbitMQExchangeQueueBindConfig {
         Queue queue = new Queue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_DEFAULT.getName(), true, false, false);
         LOGGER.info("RabbitMqExchangeQueueBindConfig-topicQueue-create-success");
         return queue;
-    }
+    }*/
 
     @Bean("topicQueueSystem")
     Queue topicQueueSystem() {
@@ -75,29 +75,29 @@ public class RabbitMQExchangeQueueBindConfig {
         return queue;
     }
 
-    @Bean("directQueue")
-    Queue directQueue() {
-        //队列持久化
-        Queue queue = new Queue(RabbitMQEnum.MQQueueName.MQ_QUEUE_DIRECT_NAME_DEFAULT.getName(), true, false, false);
-        LOGGER.info("RabbitMqExchangeQueueBindConfig-directQueue-create-success");
-        return queue;
-    }
+    /*  @Bean("directQueue")
+     Queue directQueue() {
+         //队列持久化
+         Queue queue = new Queue(RabbitMQEnum.MQQueueName.MQ_QUEUE_DIRECT_NAME_DEFAULT.getName(), true, false, false);
+         LOGGER.info("RabbitMqExchangeQueueBindConfig-directQueue-create-success");
+         return queue;
+     }
 
 
 
     @Bean("bindingDirectExchageQueue")
-    Binding bindingDirectExchageQueue() {
-        Binding binding = BindingBuilder.bind(directQueue()).to(createDirectExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
-        LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingDirectExchageQueue-create-success");
-        return binding;
-    }
+     Binding bindingDirectExchageQueue() {
+         Binding binding = BindingBuilder.bind(directQueue()).to(createDirectExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
+         LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingDirectExchageQueue-create-success");
+         return binding;
+     }
 
-    @Bean("bindingTopicExchageQueue")
-    Binding bindingTopicExchageQueue() {
-        Binding binding = BindingBuilder.bind(topicQueue()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
-        LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingTopicExchageQueue-create-success");
-        return binding;
-    }
+     @Bean("bindingTopicExchageQueue")
+     Binding bindingTopicExchageQueue() {
+         Binding binding = BindingBuilder.bind(topicQueue()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_DEFAULT.getName());
+         LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingTopicExchageQueue-create-success");
+         return binding;
+     }*/
     @Bean("bindingTopicExchageQueueSystem")
     Binding bindingTopicExchageQueueSystem() {
         Binding binding = BindingBuilder.bind(topicQueueSystem()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM.getName());
