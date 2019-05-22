@@ -13,6 +13,7 @@ import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
+import com.game.common.util.StringUtil;
 import com.game.common.vo.MemberFollowerVo;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -83,7 +84,7 @@ public class SystemController {
     }
 
     /**
-     * 社区使用--获取用户的粉丝
+     * 社区使用--获取用户与指定用户之间的关注关系
      */
     @RequestMapping(value = "/getMemberFollower1")
     public ResultDto<MemberFollowerDto> getMemberFollower1( @RequestBody MemberFollowerDto memberFollowerDto){
@@ -154,7 +155,10 @@ public class SystemController {
      * 功能描述: 根据用户id查询用户详情
      */
     @GetMapping(value = "/getMembersByid")
-    public ResultDto<MemberDto> getMembersByid(@RequestParam("memberId") String id){
+    public ResultDto<MemberDto> getMembersByid(@RequestParam(value = "memberId" ,required = false) String id){
+        if(StringUtil.isNull(id)){
+            return ResultDto.error("-1","用户id不可为空");
+        }
         ResultDto<MemberDto> re = null;
         try {
             re =  systemService.getMembersByid(id);
