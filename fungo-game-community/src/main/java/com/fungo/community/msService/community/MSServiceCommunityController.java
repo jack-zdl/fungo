@@ -113,7 +113,7 @@ public class MSServiceCommunityController {
      */
     @PostMapping("/ms/service/cmm/user/flw/cmtlists")
     public FungoPageResultDto<Map<String, Object>> getFollowerCommunity(@RequestParam("pageNum") int pageNum,
-                                                                        @RequestParam("limit") int limit, @RequestParam("communityId") List<String> communityIds) {
+                                                                        @RequestParam("limit") int limit, @RequestParam("communityIds") List<String> communityIds) {
 
         FungoPageResultDto<Map<String, Object>> resultDto = new FungoPageResultDto<Map<String, Object>>();
 
