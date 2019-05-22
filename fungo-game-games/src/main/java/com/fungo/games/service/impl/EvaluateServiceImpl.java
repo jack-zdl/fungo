@@ -34,11 +34,13 @@ import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
+import com.game.common.util.PKUtil;
 import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -125,6 +127,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
     @Autowired
     private GameEvaluationService evaluationService;
+
+    @Value("${sys.config.fungo.cluster.index}")
+    private String clusterIndex;
 
     @Override
     @Transactional
@@ -217,8 +222,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
 //            迁移微服务后 SystemFeignClient调用 用户成长fungo币
 //            2019-05-10
 //            lyc
+            Integer clusterIndex_i = Integer.parseInt(clusterIndex);
             Map<String, Object> resMapCoin = iEvaluateProxyService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
-                    MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code());
+                    MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code(), PKUtil.getInstance(clusterIndex_i).longPK());
 
             //2 经验值
 //            Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
@@ -227,7 +233,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 //            2019-05-10
 //            lyc
             Map<String, Object> resMapExp = iEvaluateProxyService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
-                    MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
+                    MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code(),PKUtil.getInstance(clusterIndex_i).longPK());
 
             if (null != resMapCoin && !resMapCoin.isEmpty()) {
                 if (null != resMapExp && !resMapExp.isEmpty()) {
