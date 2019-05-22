@@ -3,6 +3,7 @@ package com.fungo.games.proxy;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.game.common.bean.TagBean;
 import com.game.common.dto.AuthorBean;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.CmmCommunityDto;
@@ -117,4 +118,10 @@ public interface IEvaluateProxyService {
      * @return
      */
     List<TagBean> getSortTags(List<String> tags);
+
+    /**
+     * 根据用户会员DTO对象分页查询用户会员
+     * @param memberDto
+     */
+    FungoPageResultDto<MemberDto> listMemberDtoPag(MemberDto memberDto);
 }

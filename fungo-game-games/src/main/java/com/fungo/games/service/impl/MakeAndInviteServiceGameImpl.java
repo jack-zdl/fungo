@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.games.entity.GameInvite;
 import com.fungo.games.entity.GameSurveyRel;
+import com.fungo.games.feign.SystemFeignClient;
 import com.fungo.games.proxy.IEvaluateProxyService;
+import com.fungo.games.service.GameInviteService;
 import com.fungo.games.service.GameSurveyRelService;
 import com.fungo.games.service.IMakeAndInviteGameService;
 import com.game.common.consts.FungoCoreApiConstant;
@@ -17,10 +19,12 @@ import com.game.common.dto.community.FollowUserOutBean;
 import com.game.common.dto.mark.BindingAppleInputBean;
 import com.game.common.dto.mark.MakeCheckOut;
 import com.game.common.dto.mark.MakeInputPageDto;
+import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PKUtil;
+import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,6 +72,8 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
     @Autowired
     private IEvaluateProxyService iEvaluateProxyService;
 
+    @Autowired
+    private GameInviteService gameInviteService;
 
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
@@ -228,11 +234,19 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
         FungoPageResultDto<FollowUserOutBean> re = new FungoPageResultDto<FollowUserOutBean>();
         List<FollowUserOutBean> list = new ArrayList<FollowUserOutBean>();
         re.setData(list);
-        /*Page<Member> page = this.memberService.selectPage(new Page<Member>(inputPageDto.getPage(), inputPageDto.getLimit()), new EntityWrapper<Member>().ne("id", memberId).orderBy("sort", false));
-        List<Member> plist = page.getRecords();
-        List<IncentRuleRank> levelRankList = IRuleRankService.getLevelRankList();
+//        迁移微服务 根据用户会员DTO对象分页查询用户会员
+//        2019-05-22
+//        lyc
+//        Page<Member> page = this.memberService.selectPage(new Page<Member>(inputPageDto.getPage(), inputPageDto.getLimit()), new EntityWrapper<Member>().ne("id", memberId).orderBy("sort", false));
+        /*MemberDto memberDto = new MemberDto();
+        memberDto.setPage(inputPageDto.getPage());
+        memberDto.setLimit(inputPageDto.getLimit());
+        memberDto.setId(memberId);
+        FungoPageResultDto<MemberDto> memberDtoFungoPageResultDto = iEvaluateProxyService.listMemberDtoPag(memberDto);
+        List<MemberDto> plist = memberDtoFungoPageResultDto.getData();
+        List<IncentRuleRank> levelRankList = iEvaluateProxyService.getLevelRankList();
         ObjectMapper mapper = new ObjectMapper();
-        for (Member member : plist) {
+        for (MemberDto member : plist) {
             FollowUserOutBean bean = new FollowUserOutBean();
             bean.setAvatar(member.getAvatar());
             bean.setCreatedAt(DateTools.fmtDate(member.getCreatedAt()));
