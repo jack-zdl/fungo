@@ -1,7 +1,9 @@
 package com.fungo.community.dao.service;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.fungo.community.entity.CmmPost;
+import com.game.common.bean.CollectionBean;
 
 import java.util.List;
 import java.util.Map;
@@ -30,4 +32,13 @@ public interface CmmPostDaoService extends IService<CmmPost> {
      * @return
      */
     public List<String> getRecommendMembersFromCmmPost( long ccnt,  long limitSize,  List<String> wathMbsSet);
+
+
+    /**
+     * 获取我的收藏（文章）
+     * @param page
+     * @param postIds
+     * @return
+     */
+    public List<CollectionBean> getCollection(Page<CollectionBean> page,  List<String> postIds);
 }

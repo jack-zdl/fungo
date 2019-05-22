@@ -1,6 +1,7 @@
 package com.fungo.community.service.msService;
 
 
+import com.game.common.bean.CollectionBean;
 import com.game.common.dto.community.CmmPostDto;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -47,4 +48,14 @@ public interface IMSServicePostService {
      * @return
      */
     List<CmmPostDto> listCmmPostTopicPost(CmmPostDto cmmPostDto);
+
+
+    /**
+     * 获取我的收藏（文章）
+     * @param pageNum
+     * @param limit
+     * @param  postIds
+     * @return
+     */
+    public List<CollectionBean> getCollection(int pageNum,int limit, List<String> postIds);
 }

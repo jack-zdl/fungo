@@ -2,16 +2,14 @@ package com.fungo.community.msService.post;
 
 
 import com.fungo.community.service.msService.IMSServicePostService;
+import com.game.common.bean.CollectionBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmPostDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -86,6 +84,20 @@ public class MSServicePostController {
         return resultDto;
     }
 
+
+
+    /**
+     * 获取我的收藏（文章）
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/post/user/collect")
+    public FungoPageResultDto<CollectionBean> listCmmPostUsercollect(@RequestParam("pageNum") int pageNum,
+                                                                     @RequestParam("limit") int limit, @RequestParam("postIds") List<String> postIds) {
+        FungoPageResultDto<CollectionBean> resultDto = new  FungoPageResultDto<CollectionBean>();
+        List<CollectionBean> cmmPostDtoList = imsServicePostService.getCollection(pageNum,limit,postIds);
+        resultDto.setData(cmmPostDtoList);
+        return resultDto;
+    }
 
     //--------
 }
