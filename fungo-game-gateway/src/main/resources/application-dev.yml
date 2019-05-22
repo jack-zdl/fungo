@@ -157,6 +157,11 @@ zuul:
       serviceId:  FUNGO-GAME-SYSTEM
       sensitiveHeaders:
       strip-prefix: false
+    fungo-game-system-26:
+      path: /api/upload/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
 
  #社区接口
     fungo-game-commmunity-1:

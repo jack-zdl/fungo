@@ -214,7 +214,7 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
     }
 
 
-    public CmmPostDto hystrixSelectCmmPost(CmmPostDto cmmPostDto) {
+    public CmmPostDto hystrixSelectCmmPost(String id) {
         logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");
         return null;
     }
