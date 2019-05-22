@@ -20,6 +20,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,7 +44,7 @@ import java.util.UUID;
 @Api(value = "", description = "用户登录")
 public class UserController {
 
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     @Autowired
     private MessageCodeService messageCodeService;
 
@@ -117,6 +119,7 @@ public class UserController {
             @ApiImplicitParam(name = "captcha", value = "验证码", paramType = "form", dataType = "string")
     })
     public ResultDto<LoginMemberBean> loginpc(HttpSession session, @RequestBody MsgInput msg) throws JsonProcessingException, Exception {
+
         ValidateUtils.is(msg.getMobile()).notNull().maxLength(11).minLength(11);
         String imageCode = (String) session.getAttribute("imageCode");
         System.out.println("HttpSession session" + imageCode);
