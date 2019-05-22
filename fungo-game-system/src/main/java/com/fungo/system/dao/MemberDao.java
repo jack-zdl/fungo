@@ -21,16 +21,10 @@ import java.util.Map;
 public interface MemberDao extends  BaseMapper<Member> {
 
 
-    List<Member> getRandomMember(Map<String, Object> map);
-
-    //管控台获取用户动态
-    public List<CommentBean> getComment(Page<CommentBean> page, String userId);
-
     //我的动态 - 我的评论
     public List<CommentBean> getAllComments(Page<CommentBean> page, String userId);
 
-    //已弃用
-    public List<HashMap<String, Object>> getRecommendMembers();
+
 
 
     /**
@@ -50,17 +44,6 @@ public interface MemberDao extends  BaseMapper<Member> {
      */
     public List<String> getRecommendMembersFromCmmPost(@Param("ccnt") long ccnt, @Param("limitSize") long limitSize, @Param("wathMbsSet") List<String> wathMbsSet);
 
-    /**
-     * 精品帖子数大于2的用户
-     * @return
-     */
-    public List<Map> getHonorQualificationOfEssencePost();
-
-    /**
-     * 游戏评测精品数大于2的用户
-     * @return
-     */
-    public List<Map> getHonorQualificationOfEssenceEva();
 
     /**
      * 被点赞数>50的用户

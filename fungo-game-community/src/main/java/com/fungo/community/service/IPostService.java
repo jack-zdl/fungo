@@ -81,4 +81,14 @@ public interface IPostService {
 	public Set<String> getArticleRecomAndTopCount(String mb_id, String startDate, String endDate);
 
 
+	/**
+	 * 搜索帖子
+	 * @param keyword
+	 * @param page
+	 * @param limit
+	 * @return
+	 * @throws Exception
+	 */
+	public FungoPageResultDto<Map<String, Object>> searchPosts(String keyword,int page,int limit) throws Exception;
+
 }

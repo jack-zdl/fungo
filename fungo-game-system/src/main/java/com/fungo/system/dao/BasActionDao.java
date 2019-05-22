@@ -29,7 +29,7 @@ public interface BasActionDao extends BaseMapper<BasAction> {
 	public String getMemberIdByTargetId(Map map);
 
 	//获取关注社区
-	public List<Map<String,Object>> getFollowerCommunity(Page page, String memberId);
+	public List<String> getFollowerCommunity( String memberId);
 
 	//获取关注用户
 	public List<Map<String,Object>> getFollowerUser(Page page, String memberId);
@@ -52,5 +52,7 @@ public interface BasActionDao extends BaseMapper<BasAction> {
 
 	//计数器
 	public boolean batchSubCountor(Map<String, Object> map);
+
+	List<String> listArticleIds(String memberId);
 
 }
