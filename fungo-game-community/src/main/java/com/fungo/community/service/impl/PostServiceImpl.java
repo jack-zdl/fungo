@@ -2,6 +2,7 @@ package com.fungo.community.service.impl;
 
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -163,7 +164,7 @@ public class PostServiceImpl implements IPostService {
 
         List<String> idsList = new ArrayList<String>();
         idsList.add(user_id);
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList,null);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList, null);
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -496,7 +497,6 @@ public class PostServiceImpl implements IPostService {
     }
 
 
-
     //社区文章用户执行任务
     private void doExcTaskSendMQ(TaskDto taskDto) {
         //-----start
@@ -549,7 +549,7 @@ public class PostServiceImpl implements IPostService {
 
         List<String> idsList = new ArrayList<String>();
         idsList.add(userId);
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList ,null);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList, null);
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -731,7 +731,7 @@ public class PostServiceImpl implements IPostService {
 
         List<String> idsList = new ArrayList<String>();
         idsList.add(userId);
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList ,null);
+        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList, null);
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -1158,7 +1158,7 @@ public class PostServiceImpl implements IPostService {
 
             List<String> idsList = new ArrayList<String>();
             idsList.add(userId);
-            ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList ,null);
+            ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList, null);
 
             MemberDto memberDto = null;
             if (null != listMembersByids) {
@@ -1571,6 +1571,73 @@ public class PostServiceImpl implements IPostService {
         return artcleRecomSet;
     }
 
+
+    @Override
+    public FungoPageResultDto<Map<String, Object>> searchPosts(String keyword, int page, int limit) throws Exception {
+        FungoPageResultDto<Map<String, Object>> re = new FungoPageResultDto<Map<String, Object>>();
+        List<Map<String, Object>> resultData = new ArrayList<>();
+        re.setData(resultData);
+
+//		if (keyword == null || "".equals(keyword.replace(" ", ""))) {
+//			return FungoPageResultDto.error("13", "请输入正确的查找格式");
+//		}
+        @SuppressWarnings("unchecked")
+        Page<CmmPost> postPage = postService.selectPage(new Page<>(page, limit),
+                Condition.create().setSqlSelect("id,title,content,cover_image,member_id,video,created_at,updated_at,video_cover_image")
+                        .where("state = {0}", 1).andNew("title like '%" + keyword + "%'").or("content like " + "'%" + keyword + "%'"));
+//						.or("content like "+ "'%" + keyword+ "%'"));
+        List<CmmPost> postList = postPage.getRecords();
+//		if (postList == null || postList.isEmpty()) {
+//			return FungoPageResultDto.error("221", "找不到符合条件的帖子");
+//		}
+        //List<IncentRuleRank> rankList = IRuleRankService.getLevelRankList();
+        ObjectMapper mapper = new ObjectMapper();
+        for (CmmPost post : postList) {
+            Map<String, Object> postData = new HashMap<String, Object>();
+
+
+            if (StringUtils.isNotBlank(post.getTitle())) {
+                String interactTitle = FilterEmojiUtil.decodeEmoji(post.getTitle());
+                //String interactTitle = EmojiParser.parseToUnicode(cmmPost.getTitle() );
+                post.setTitle(interactTitle);
+            }
+            if (StringUtils.isNotBlank(post.getContent())) {
+                String interactContent = FilterEmojiUtil.decodeEmoji(post.getContent());
+                //String interactContent = EmojiParser.parseToUnicode(cmmPost.getContent());
+                post.setContent(interactContent);
+            }
+
+            postData.put("video", post.getVideo());
+            postData.put("objectId", post.getId());
+            if (!CommonUtil.isNull(post.getContent())) {
+                postData.put("content", CommonUtils.filterWord(post.getContent()));
+            } else {
+                postData.put("content", "");
+            }
+            postData.put("images", post.getCoverImage());
+            postData.put("title", CommonUtils.filterWord(post.getTitle()));
+            postData.put("createdAt", DateTools.fmtDate(post.getCreatedAt()));
+            postData.put("updatedAt", DateTools.fmtDate(post.getUpdatedAt()));
+
+
+            //!fixme 获取用户信息
+            //AuthorBean author = iuserService.getAuthor(post.getMemberId());
+
+            AuthorBean author = null;
+            ResultDto<AuthorBean> authorBeanResultDto = systemFeignClient.getAuthor(post.getMemberId());
+            if (null != authorBeanResultDto) {
+                author = authorBeanResultDto.getData();
+            }
+
+            postData.put("author", author);
+            postData.put("videoCoverImage", post.getVideoCoverImage());
+
+            resultData.add(postData);
+        }
+        PageTools.pageToResultDto(re, postPage);
+
+        return re;
+    }
 
     //-----------
 }

@@ -224,7 +224,16 @@ zuul:
       serviceId:  FUNGO-GAME-COMMUNITY
       sensitiveHeaders:
       strip-prefix: false
-
+    fungo-game-commmunity-17:
+      path: /api/content/reply
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-18:
+      path: /api/content/replys
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
 
 
 

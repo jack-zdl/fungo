@@ -5,6 +5,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CommunityInputPageDto;
 import com.game.common.dto.community.CommunityMember;
 import com.game.common.dto.community.CommunityOutPageDto;
+import com.game.common.dto.community.CommunitySearchOut;
 import com.game.common.dto.user.MemberDto;
 
 import java.lang.reflect.InvocationTargetException;
@@ -47,6 +48,20 @@ public interface ICommunityService {
 	 * @return
 	 */
 	List<MemberDto> getRecomMembers(int limit, String currentMb_id);
-	
-	
+
+
+
+
+	/**
+	 * 搜索社区
+	 * @param page
+	 * @param limit
+	 * @param keyword
+	 * @param userId
+	 * @return
+	 */
+	public FungoPageResultDto<CommunitySearchOut> searchCommunitys(int page, int limit, String keyword, String userId);
+
+
+
 }
