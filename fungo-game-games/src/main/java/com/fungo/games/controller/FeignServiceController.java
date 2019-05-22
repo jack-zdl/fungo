@@ -53,6 +53,9 @@ public class FeignServiceController {
     private GameSurveyRelService gameSurveyRelService;
 
     @Autowired
+    private GameInviteService gameInviteService;
+
+    @Autowired
     private GameService gameService;
 
     @Autowired
@@ -328,6 +331,96 @@ public class FeignServiceController {
         gameEvaluationDtoPage.setRecords(gameSurveyList);
         fungoPageResultDto.setData(gameSurveyList);
         return fungoPageResultDto;
+    }
+
+    @ApiOperation(value = "游戏评价邀请的分页查询", notes = "")
+    @RequestMapping(value = "/api/evaluation/getGameInvitePage", method = RequestMethod.POST)
+    FungoPageResultDto<GameInviteDto> getGameInvitePage(@RequestBody GameInviteDto gameInviteDto){
+        List<GameInviteDto> gameInviteList = null;
+        FungoPageResultDto<GameInviteDto> fungoPageResultDto = new FungoPageResultDto<>();
+        try {
+            int page = gameInviteDto.getPage();
+            int limit = gameInviteDto.getLimit();
+            EntityWrapper<GameInvite> gameInviteWrapper = new EntityWrapper<GameInvite>();
+            HashMap<String, Object> param = new HashMap<String, Object>();
+            Page<GameInvite> gameInvitePage = null;
+            if (page > 0 && limit > 0) {
+                gameInvitePage = new Page<>(page, limit);
+            }
+            gameInviteFun(gameInviteDto, param);
+            gameInviteWrapper.allEq(param);
+
+
+            //根据修改时间倒叙
+//            surveyWrapper.orderBy("updated_at", false);
+
+            List<GameInvite> selectRecords = null;
+
+            if (null != gameInvitePage) {
+
+                Page<GameInvite> gameInvitePage1 = this.gameInviteService.selectPage(gameInvitePage, gameInviteWrapper);
+
+                if (null != gameInvitePage1) {
+                    PageTools.pageToResultDto(fungoPageResultDto, gameInvitePage1);
+                    selectRecords = gameInvitePage1.getRecords();
+                }
+            } else {
+                selectRecords = this.gameInviteService.selectList(gameInviteWrapper);
+            }
+            if (null != selectRecords) {
+
+                gameInviteList = new ArrayList<GameInviteDto>();
+
+                for (GameInvite gameInvite : selectRecords) {
+
+                    GameInviteDto gameInviteDto1 = new GameInviteDto();
+
+                    BeanUtils.copyProperties(gameInvite, gameInviteDto1);
+
+                    gameInviteList.add(gameInviteDto1);
+                }
+            }
+
+        } catch (Exception ex) {
+            LOGGER.error("/ms/service/game/api/evaluation/getGameInvitePage--getGameInvitePage-出现异常:", ex);
+        }
+        Page<GameInviteDto> gameEvaluationDtoPage = new Page<>();
+        gameEvaluationDtoPage.setRecords(gameInviteList);
+        fungoPageResultDto.setData(gameInviteList);
+        return fungoPageResultDto;
+    }
+
+    private void gameInviteFun(GameInviteDto gameInviteDto, HashMap<String, Object> param) {
+        //            主键ID
+        String gameSurveyId = gameInviteDto.getId();
+        if (StringUtils.isNotBlank(gameSurveyId)) {
+            param.put("id", gameSurveyId);
+        }
+        //游戏ID
+        String gameId = gameInviteDto.getGameId();
+        if (StringUtils.isNotBlank(gameId)) {
+            param.put("game_id", gameId);
+        }
+        //会员ID
+        String memberId = gameInviteDto.getMemberId();
+        if (StringUtils.isNotBlank(memberId)) {
+            param.put("member_id", memberId);
+        }
+        //被邀请人
+        String inviteMemberId = gameInviteDto.getInviteMemberId();
+        if (StringUtils.isNotBlank(inviteMemberId)) {
+            param.put("invite_member_id", inviteMemberId);
+        }
+        //状态
+        Integer state = gameInviteDto.getState();
+        if (null != state) {
+            param.put("state", state);
+        }
+        //notice_id
+        String noticeId = gameInviteDto.getNoticeId();
+        if (StringUtils.isNotBlank(noticeId)) {
+            param.put("notice_id", noticeId);
+        }
     }
 
 
