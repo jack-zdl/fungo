@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -109,4 +110,8 @@ public interface GamesFeignClient {
     @ApiOperation(value = "getRateData", notes = "")
     @RequestMapping(value = "/ms/service/game//api/game/getRateData", method = RequestMethod.GET)
     ResultDto<HashMap<String, BigDecimal>> getRateData(@RequestParam("gameId") String gameId);
+
+    @ApiOperation(value = "getEvaluationEntityWrapper", notes = "")
+    @RequestMapping(value = "/ms/service/game//api/game/getEvaluationEntityWrapper", method = RequestMethod.POST)
+    ResultDto<List<GameEvaluationDto>> getEvaluationEntityWrapper(@RequestParam("memberId") String memberId, @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate);
 }

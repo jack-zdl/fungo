@@ -19,7 +19,9 @@ import com.game.common.dto.mark.MakeInputPageDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.CommonUtil;
+import com.game.common.util.PKUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,6 +67,10 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
     private IEvaluateProxyService iEvaluateProxyService;
 
 
+    @Value("${sys.config.fungo.cluster.index}")
+    private String clusterIndex;
+
+
     @Override
     @Transactional
     public ResultDto<String> makGame(String memberId, String gameId, String phoneModel) throws Exception {
@@ -95,8 +101,9 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
 //            lyc
 //            Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
 //                    MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBE_GAME_COIN.code());
+            Integer clusterIndex_i = Integer.parseInt(clusterIndex);
             Map<String, Object> resMapCoin = iEvaluateProxyService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
-                    MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBE_GAME_COIN.code());
+                    MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBE_GAME_COIN.code(), PKUtil.getInstance(clusterIndex_i).longPK());
 
             //2 经验值 微服务迁移 feign调用执行
 //            2019-05-13
@@ -104,7 +111,7 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
 //            Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
 //                    MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBEGAME_EXP.code());
             Map<String, Object> resMapExp = iEvaluateProxyService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
-                    MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBEGAME_EXP.code());
+                    MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBEGAME_EXP.code(), PKUtil.getInstance(clusterIndex_i).longPK());
 
 
             if (null != resMapCoin && !resMapCoin.isEmpty()) {
@@ -149,6 +156,9 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
 
         GameSurveyRel rel = surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("phone_model", phoneModel).eq("game_id", gameId));
 
+        if (rel != null){
+            return ResultDto.error("-1", "您还未预约成功!!!");
+        }
         rel.setState(-1);
 
         rel.updateById();
