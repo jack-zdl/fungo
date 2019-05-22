@@ -20,6 +20,7 @@ public class FungoGameGatewayApplication {
 		SpringApplication.run(FungoGameGatewayApplication.class, args);
 	}
 
+
 	@Bean
 	public AccessFilter loginFilter() {
 		return new AccessFilter();
@@ -38,5 +39,11 @@ public class FungoGameGatewayApplication {
 		factory.setMaxRequestSize("102400KB");
 		return factory.createMultipartConfig();
 	}
+
+
+//	@Bean
+//	public AccessFilter loginFilter() {
+//		return new AccessFilter();
+//	}
 
 }
