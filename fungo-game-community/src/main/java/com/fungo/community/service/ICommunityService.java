@@ -51,7 +51,17 @@ public interface ICommunityService {
 
 
 
-	//搜索社区
+
+	/**
+	 * 搜索社区
+	 * @param page
+	 * @param limit
+	 * @param keyword
+	 * @param userId
+	 * @return
+	 */
 	public FungoPageResultDto<CommunitySearchOut> searchCommunitys(int page, int limit, String keyword, String userId);
+
+
 
 }

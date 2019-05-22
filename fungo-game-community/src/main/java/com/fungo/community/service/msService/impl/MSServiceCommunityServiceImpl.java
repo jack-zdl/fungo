@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
+import com.fungo.community.dao.service.impl.CmmPostDaoServiceImap;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.service.msService.IMSServiceCommunityService;
+import com.game.common.bean.CommentBean;
 import com.game.common.dto.community.CmmCommunityDto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService {
@@ -25,6 +28,10 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
 
     @Autowired
     private CmmCommunityDaoService cmmCommunityDaoService;
+
+    @Autowired
+    private CmmPostDaoServiceImap cmmPostDaoServiceImap;
+
 
     @Override
     public List<CmmCommunityDto> queryCmmCommunityList(CmmCommunityDto communityDto) {
@@ -145,6 +152,50 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
         }
         return cmmCommunityDtoRs;
     }
+
+
+    @Override
+    public List<CommentBean> getAllComments(int pageNum, int limit, String userId) {
+
+        List<CommentBean> commentBeanList = null;
+        try {
+            if (StringUtils.isBlank(userId)) {
+                return commentBeanList;
+            }
+            Page<CommentBean> page = new Page<CommentBean>(pageNum, limit);
+
+            commentBeanList = cmmCommunityDaoService.getAllComments(page, userId);
+        } catch (Exception ex) {
+            LOGGER.error("/ms/service/cmm/user/comments--getAllComments-出现异常:", ex);
+        }
+        return commentBeanList;
+    }
+
+
+    @Override
+    public List<String> getRecommendMembersFromCmmPost(long ccnt, long limitSize, List<String> wathMbsSet) {
+        try {
+
+            return cmmPostDaoServiceImap.getRecommendMembersFromCmmPost(ccnt, limitSize, wathMbsSet);
+
+        } catch (Exception ex) {
+            LOGGER.error("/ms/service/cmm/user/post/ids--getRecommendMembersFromCmmPost-出现异常:", ex);
+        }
+        return null;
+    }
+
+
+    @Override
+    public List<Map<String, Object>> getFollowerCommunity(int pageNum, int limit, String communityId) {
+        try {
+            Page page = new Page(pageNum, limit);
+            return cmmCommunityDaoService.getFollowerCommunity(page, communityId);
+        } catch (Exception ex) {
+            LOGGER.error("//ms/service/cmm/user/flw/cmtlists--getFollowerCommunity-出现异常:", ex);
+        }
+        return null;
+    }
+
 
     //----------
 }

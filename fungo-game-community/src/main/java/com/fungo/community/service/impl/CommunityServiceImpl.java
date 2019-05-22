@@ -968,5 +968,6 @@ public class CommunityServiceImpl implements ICommunityService {
         re.setData(dataList);
         return re;
     }
+
     //-------
 }
