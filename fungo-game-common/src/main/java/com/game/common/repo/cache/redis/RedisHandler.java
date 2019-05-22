@@ -364,7 +364,7 @@ public class RedisHandler {
     }
 
     /**
-     * pubsub functionality on the template
+     * pubsub functionality on the templates
      * @param channel
      * @param message
      */
