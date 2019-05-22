@@ -32,7 +32,7 @@ public class MessageCodeServiceImap extends ServiceImpl<MessageCodeDao, MessageC
     /**
      * 注入阿里云短信模块编号
      */
-    @Value("${aliyun.sms.templates.code}")
+    @Value("${aliyun.sms.template.code}")
     private String smsCodeLoginRegsTemp;
 
     /**
