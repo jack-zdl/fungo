@@ -2,8 +2,6 @@ package com.fungo.gateway.filter;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
-import org.springframework.cloud.netflix.zuul.filters.support.FilterConstants;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,12 +13,12 @@ import javax.servlet.http.HttpServletRequest;
  * 开发时间: 2018/3/1 17:22<br>
  */
 @Component
-public class AccessFilter extends ZuulFilter {
+public class ErrorFilter extends ZuulFilter {
 
 
     @Override
     public String filterType() {
-        return "pre";
+        return "error";
     }
     @Override
     public int filterOrder() {
@@ -32,7 +30,7 @@ public class AccessFilter extends ZuulFilter {
     }
     @Override
     public Object run() {
-        System.out.println("这个请求经过-pre");
+        System.out.println("这个请求经过-error");
         RequestContext requestContext = RequestContext.getCurrentContext();
         HttpServletRequest request = requestContext.getRequest(); //获取request
 

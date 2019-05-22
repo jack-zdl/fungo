@@ -17,8 +17,8 @@ public class FungoGameGatewayApplication {
 		SpringApplication.run(FungoGameGatewayApplication.class, args);
 	}
 
-	@Bean
-	public AccessFilter loginFilter() {
-		return new AccessFilter();
-	}
+//	@Bean
+//	public AccessFilter loginFilter() {
+//		return new AccessFilter();
+//	}
 }
