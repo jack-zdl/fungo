@@ -84,7 +84,7 @@ public class SystemController {
     }
 
     /**
-     * 社区使用--获取用户的粉丝
+     * 社区使用--获取用户与指定用户之间的关注关系
      */
     @RequestMapping(value = "/getMemberFollower1")
     public ResultDto<MemberFollowerDto> getMemberFollower1( @RequestBody MemberFollowerDto memberFollowerDto){
