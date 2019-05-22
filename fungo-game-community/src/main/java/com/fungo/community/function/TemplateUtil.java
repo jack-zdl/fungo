@@ -11,7 +11,7 @@ public class TemplateUtil {
 		ModelAndView model = new ModelAndView();
 		model.addObject("origin", origin);
 		model.addObject("title", title);
-		model.setViewName("tmp");
+		model.setViewName("post_template");
 		
 		return model;
 	}

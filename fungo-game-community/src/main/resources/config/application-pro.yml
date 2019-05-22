@@ -77,10 +77,10 @@ spring:
     ehcache:
       config: classpath:ehcache.xml
   #配置系统默认页面
-  mvc:
-    view:
-      prefix: /
-      suffix: .html
+#  mvc:
+#    view:
+#      prefix: /
+#      suffix: .html
 
 
   #Redis基于哨兵机制的主从

@@ -208,8 +208,12 @@ public class CommunityServiceImpl implements ICommunityService {
             boolean isOrder = false;
             List<MemberPulishFromCommunity> memberPulishCountOrderList = new ArrayList<MemberPulishFromCommunity>();
 
-            List<MemberPulishFromCommunity> mlist = communityDao.getMemberOrder(page, map);
+            List<MemberPulishFromCommunity> pulishFromCommunityList = new ArrayList<MemberPulishFromCommunity>();
 
+            List<MemberPulishFromCommunity> mlist = communityDao.getMemberOrder(page, map);
+            if (null != mlist && !mlist.isEmpty()) {
+                pulishFromCommunityList.addAll(mlist);
+            }
             //从游戏评论表获取用户数量
             ResultDto<List<MemberPulishFromCommunity>> gameMemberCtmRs = gameFeignClient.getMemberOrder(community.getGameId(), null);
             if (null != gameMemberCtmRs) {
@@ -242,7 +246,7 @@ public class CommunityServiceImpl implements ICommunityService {
                                     //平均评论数
                                     postCmtPulisher.setEvaNum(postCmtPulisher.getEvaNum() + gamePulisher.getEvaNum());
                                 } else {
-                                    mlist.add(gamePulisher);
+                                    pulishFromCommunityList.add(gamePulisher);
                                 }
                             }
                         }
@@ -254,10 +258,10 @@ public class CommunityServiceImpl implements ICommunityService {
                     }
 
                 } else {
-                    memberPulishCountOrderList.addAll(mlist);
+                    memberPulishCountOrderList.addAll(pulishFromCommunityList);
                 }
             } else {
-                memberPulishCountOrderList.addAll(mlist);
+                memberPulishCountOrderList.addAll(pulishFromCommunityList);
             }
 
 
