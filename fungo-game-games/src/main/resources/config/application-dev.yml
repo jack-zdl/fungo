@@ -13,6 +13,8 @@ spring:
       ipAddress:  127.0.0.1
   application:
     name: fungo-game-games
+
+  #-----------------------------------------------
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.jdbc.Driver

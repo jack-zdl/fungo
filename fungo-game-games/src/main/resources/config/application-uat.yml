@@ -10,9 +10,11 @@ server:
 spring:
   cloud:
     client:
-      ipAddress:  39.105.18.214
+      ipAddress: 39.105.18.214
   application:
     name: fungo-game-games
+
+#-----------------------------------------------
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.jdbc.Driver
