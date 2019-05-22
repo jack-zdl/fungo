@@ -19,6 +19,7 @@ import com.game.common.dto.community.PostInput;
 import com.game.common.dto.community.PostInputPageDto;
 import com.game.common.dto.community.PostOut;
 import com.game.common.dto.community.PostOutBean;
+import com.game.common.dto.search.SearchInputPageDto;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.CommonUtil;
@@ -89,6 +90,26 @@ public class PostController {
    /* @Autowired
     private IGameService iGameService;
     */
+
+
+    @ApiOperation(value = "搜索帖子", notes = "")
+    @RequestMapping(value = "/api/search/posts", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "key_word", value = "关键字", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "page", value = "页数号", paramType = "form", dataType = "int"),
+            @ApiImplicitParam(name = "limit", value = "每页显示数", paramType = "form", dataType = "int")
+    })
+    public FungoPageResultDto<Map<String, Object>> searchPosts(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto) throws Exception {
+        String keyword = searchInputDto.getKey_word();
+        int page = searchInputDto.getPage();
+        //fix: 页码 小于1 返回空 [by mxf 2019-01-30]
+        if (page < 1) {
+            return new FungoPageResultDto<Map<String, Object>>();
+        }
+
+        int limit = searchInputDto.getLimit();
+        return searchService.searchPosts(keyword, page, limit);
+    }
 
 
     @ApiOperation(value = "发帖", notes = "")
