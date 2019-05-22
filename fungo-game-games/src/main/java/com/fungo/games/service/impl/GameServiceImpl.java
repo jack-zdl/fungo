@@ -376,8 +376,10 @@ public class GameServiceImpl implements IGameService {
 //                        2019-05-11
 //                        lyc
 //                        map.put("statusImg", iuserService.getStatusImage(memberId));
-                        List<HashMap<String, Object>> list =  iEvaluateProxyService.getStatusImageByMemberId(memberId);
-                        map.put("statusImg", list);
+                        if (!StringUtils.isNullOrEmpty(memberId)){
+                            List<HashMap<String, Object>> list =  iEvaluateProxyService.getStatusImageByMemberId(memberId);
+                            map.put("statusImg", list);
+                        }
                         recommendList.add(map);
                     }
                 }
@@ -963,7 +965,7 @@ public class GameServiceImpl implements IGameService {
         List<GameTag> gameTagList = new ArrayList<>();
         // 目标游戏的所有标签
         @SuppressWarnings("unchecked")
-        Wrapper<GameTag> wrapper = Condition.create().setSqlSelect("id,like_num,dislike_num,tag_id,type").eq("game_id",
+        Wrapper<GameTag> wrapper = Condition.create().setSqlSelect("id,like_num as likeNum,dislike_num as dislikeNum,tag_id as tagId,type").eq("game_id",
                 gameId);
 //		if(gameTagService.selectList(wrapper) == null || (gameTagService.selectList(wrapper).size() == 0)) {
 //			return ResultDto.error("251", "找不到目标游戏标签");
@@ -1007,7 +1009,8 @@ public class GameServiceImpl implements IGameService {
 //            if (memberService.selectById(userId) == null) {
             MemberDto memberDto = new MemberDto();
             memberDto.setId(userId);
-            if (iEvaluateProxyService.getMemberDtoBySelectOne(memberDto) == null) {
+            MemberDto memberDtoBySelectOne = iEvaluateProxyService.getMemberDtoBySelectOne(memberDto);
+            if (memberDtoBySelectOne == null) {
                 return ResultDto.error("126", "用户不存在");
             }
             gameTagList = gameTagService.selectList(wrapper);
@@ -1086,6 +1089,9 @@ public class GameServiceImpl implements IGameService {
         MemberDto memberDto = new MemberDto();
         memberDto.setId(userId);
         MemberDto member = iEvaluateProxyService.getMemberDtoBySelectOne(memberDto);
+        if (member == null){
+            return ResultDto.error("-1", "未查到该用户信息~");
+        }
         if (member.getLevel() < 6) {
             return ResultDto.error("-1", "6级才能打标签哦~");
         }

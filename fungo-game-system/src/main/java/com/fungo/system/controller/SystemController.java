@@ -13,6 +13,7 @@ import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
+import com.game.common.util.StringUtil;
 import com.game.common.vo.MemberFollowerVo;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -154,7 +155,10 @@ public class SystemController {
      * 功能描述: 根据用户id查询用户详情
      */
     @GetMapping(value = "/getMembersByid")
-    public ResultDto<MemberDto> getMembersByid(@RequestParam(value = "id",required = false) String id){
+    public ResultDto<MemberDto> getMembersByid(@RequestParam(value = "memberId" ,required = false) String id){
+        if(StringUtil.isNull(id)){
+            return ResultDto.error("-1","用户id不可为空");
+        }
         ResultDto<MemberDto> re = null;
         try {
             re =  systemService.getMembersByid(id);
