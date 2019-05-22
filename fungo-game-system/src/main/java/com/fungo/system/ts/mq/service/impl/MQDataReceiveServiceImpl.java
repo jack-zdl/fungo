@@ -7,7 +7,6 @@ import com.fungo.system.ts.mq.service.UserMqConsumeService;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
 import com.game.common.ts.mq.enums.RabbitMQEnum;
 import com.game.common.ts.mq.service.MQDataReceiveService;
-import com.game.common.util.StringUtil;
 import com.game.common.util.UniqueIdCkeckUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

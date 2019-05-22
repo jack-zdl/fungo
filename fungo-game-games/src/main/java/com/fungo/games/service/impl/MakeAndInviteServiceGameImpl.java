@@ -4,6 +4,7 @@ import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.games.entity.GameInvite;
 import com.fungo.games.entity.GameSurveyRel;
 import com.fungo.games.proxy.IEvaluateProxyService;
 import com.fungo.games.service.GameSurveyRelService;
@@ -19,7 +20,10 @@ import com.game.common.dto.mark.MakeInputPageDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.CommonUtil;
+import com.game.common.util.PKUtil;
+import com.game.common.util.date.DateTools;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,6 +69,10 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
     private IEvaluateProxyService iEvaluateProxyService;
 
 
+    @Value("${sys.config.fungo.cluster.index}")
+    private String clusterIndex;
+
+
     @Override
     @Transactional
     public ResultDto<String> makGame(String memberId, String gameId, String phoneModel) throws Exception {
@@ -95,8 +103,9 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
 //            lyc
 //            Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
 //                    MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBE_GAME_COIN.code());
+            Integer clusterIndex_i = Integer.parseInt(clusterIndex);
             Map<String, Object> resMapCoin = iEvaluateProxyService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
-                    MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBE_GAME_COIN.code());
+                    MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBE_GAME_COIN.code(), PKUtil.getInstance(clusterIndex_i).longPK());
 
             //2 经验值 微服务迁移 feign调用执行
 //            2019-05-13
@@ -104,7 +113,7 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
 //            Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
 //                    MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBEGAME_EXP.code());
             Map<String, Object> resMapExp = iEvaluateProxyService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
-                    MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBEGAME_EXP.code());
+                    MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBEGAME_EXP.code(), PKUtil.getInstance(clusterIndex_i).longPK());
 
 
             if (null != resMapCoin && !resMapCoin.isEmpty()) {
@@ -149,6 +158,9 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
 
         GameSurveyRel rel = surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("phone_model", phoneModel).eq("game_id", gameId));
 
+        if (rel == null){
+            return ResultDto.error("-1", "您还未预约成功!!!");
+        }
         rel.setState(-1);
 
         rel.updateById();
@@ -211,7 +223,46 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
 
 //    @Autowired
 //    private BasActionService actionService;
-
+    @Override
+    public FungoPageResultDto<FollowUserOutBean> getInviteUserList(String memberId, MakeInputPageDto inputPageDto) throws Exception {
+        FungoPageResultDto<FollowUserOutBean> re = new FungoPageResultDto<FollowUserOutBean>();
+        List<FollowUserOutBean> list = new ArrayList<FollowUserOutBean>();
+        re.setData(list);
+        /*Page<Member> page = this.memberService.selectPage(new Page<Member>(inputPageDto.getPage(), inputPageDto.getLimit()), new EntityWrapper<Member>().ne("id", memberId).orderBy("sort", false));
+        List<Member> plist = page.getRecords();
+        List<IncentRuleRank> levelRankList = IRuleRankService.getLevelRankList();
+        ObjectMapper mapper = new ObjectMapper();
+        for (Member member : plist) {
+            FollowUserOutBean bean = new FollowUserOutBean();
+            bean.setAvatar(member.getAvatar());
+            bean.setCreatedAt(DateTools.fmtDate(member.getCreatedAt()));
+            bean.setFollowed(false);
+            GameInvite one = gameInviteService.selectOne(new EntityWrapper<GameInvite>().eq("member_id", memberId).eq("game_id", inputPageDto.getGameId()).eq("invite_member_id", member.getId()).eq("state", 0));
+            if (one == null) {
+                bean.setFollowed(false);
+            } else {
+                bean.setFollowed(true);
+            }
+    //			int actionCount = actionService.selectCount(new EntityWrapper<BasAction>().eq("target_id", memberId).eq("type", 5).eq("member_id", memberId).and("state != 1"));
+    //			if (actionCount > 0) {
+    //				bean.setFollowed(true);
+    //			} else {
+    //				bean.setFollowed(false);
+    //			}
+            bean.setLevel(member.getLevel());
+            bean.setMemberNo(member.getMemberNo());
+            bean.setObjectId(member.getId());
+            bean.setUpdatedAt(DateTools.fmtDate(member.getUpdatedAt()));
+            bean.setUsername(member.getUserName());
+            bean.setSign(member.getSign());
+            String rankImgs = iMemberService.getLevelRankUrl(member.getLevel(), levelRankList);
+            ArrayList<HashMap<String, Object>> urlList = mapper.readValue(rankImgs, ArrayList.class);
+            bean.setDignityImg((String) urlList.get(0).get("url"));
+            list.add(bean);
+        }
+        PageTools.pageToResultDto(re, page);*/
+        return re;
+    }
 
 
 

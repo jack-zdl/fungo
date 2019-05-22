@@ -20,10 +20,7 @@ import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
-import com.game.common.dto.community.CommunityInputPageDto;
-import com.game.common.dto.community.CommunityMember;
-import com.game.common.dto.community.CommunityOut;
-import com.game.common.dto.community.CommunityOutPageDto;
+import com.game.common.dto.community.*;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
@@ -620,7 +617,7 @@ public class CommunityServiceImpl implements ICommunityService {
                 if (userId.equals(m.getMemberId())) {
                     c.setYourself(true);
                 } else {
-                    
+
                     //!fixme 获取用户的粉丝
                     //MemberFollower follower = followService.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", userId).eq("follower_id", m.getMemberId()).andNew("state = {0}", 1).or("state = {0}", 2));
 
@@ -889,6 +886,87 @@ public class CommunityServiceImpl implements ICommunityService {
 
         //---end
         return ml1;
+    }
+
+
+    @Override
+    public FungoPageResultDto<CommunitySearchOut> searchCommunitys(int page, int limit, String keyword, String userId) {
+//		keyword = keyword.replace(" ", "");
+        @SuppressWarnings("unchecked")
+        Page<CmmCommunity> cmmPage = communityService.selectPage(new Page<>(page, limit), Condition.create()
+                .setSqlSelect("id,icon,name,intro,created_at,updated_at,followee_num,post_num,type")
+                .like("name", keyword).and("state = {0}", 1));
+        List<CmmCommunity> communityList = cmmPage.getRecords();
+//		if (communityList == null || communityList.isEmpty()) {
+//			return FungoPageResultDto.error("241", "找不到符合条件的查询结果");
+//		}
+        if (communityList == null) {
+            communityList = new ArrayList<>();
+        }
+        FungoPageResultDto<CommunitySearchOut> re = new FungoPageResultDto<CommunitySearchOut>();
+
+
+        List<CommunitySearchOut> dataList = new ArrayList<>();
+        for (CmmCommunity community : communityList) {
+            CommunitySearchOut out = new CommunitySearchOut();
+            out.setObjectId(community.getId());
+            out.setName(community.getName());
+            out.setIcon(community.getIcon());
+            out.setCreatedAt(DateTools.fmtDate(community.getCreatedAt()));
+            out.setUpdatedAt(DateTools.fmtDate(community.getUpdatedAt()));
+
+            int commentNum = communityDao.getCommentNumOfCommunity(community.getId());
+            out.setHot_value(community.getFolloweeNum() + community.getPostNum() + commentNum);
+            out.setIntro(community.getIntro());
+            //
+            out.setType(community.getType());
+
+            List<String> idsList = new ArrayList<String>();
+            idsList.add(userId);
+            ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+
+            MemberDto memberDto = null;
+            if (null != listMembersByids) {
+                List<MemberDto> memberDtoList = listMembersByids.getData();
+                if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                    memberDto = memberDtoList.get(0);
+                }
+            }
+
+
+            if (memberDto != null) {//用户存在，查询是否关注
+
+
+                /*List<BasAction> actionList = actionService
+                        .selectList(new EntityWrapper<BasAction>().eq("target_id", community.getId())
+                                .eq("target_type", 4).eq("type", 5).eq("member_id", userId).and("state = 0"));*/
+
+                BasActionDto basActionDtoLike = new BasActionDto();
+
+                basActionDtoLike.setMemberId(userId);
+                basActionDtoLike.setType(5);
+                basActionDtoLike.setState(0);
+                basActionDtoLike.setTargetType(4);
+                basActionDtoLike.setTargetId(community.getId());
+
+                ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
+
+                int like = 0;
+                if (null != resultDtoLike) {
+                    like = resultDtoLike.getData();
+                }
+
+                if (like > 0) {
+                    out.setIs_followed(true);
+                } else {
+                    out.setIs_followed(false);
+                }
+            }
+            dataList.add(out);
+        }
+        PageTools.pageToResultDto(re, cmmPage);
+        re.setData(dataList);
+        return re;
     }
 
     //-------

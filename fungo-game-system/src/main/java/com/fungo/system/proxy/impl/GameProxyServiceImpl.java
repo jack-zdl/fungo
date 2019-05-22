@@ -7,6 +7,7 @@ import com.fungo.system.proxy.IGameProxyService;
 import com.fungo.system.service.impl.MemberIncentRiskServiceImpl;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmCommentDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.community.MooMessageDto;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -178,9 +180,24 @@ public class GameProxyServiceImpl implements IGameProxyService {
         return mooMessageDto;
     }
 
+
     @Override
     public int getGameSelectCountByLikeNameAndState(GameDto gameDto) {
         return gamesFeignClient.getGameSelectCountByLikeNameAndState(gameDto);
+    }
+
+    //    getEvaluationEntityWrapper
+    @HystrixCommand(fallbackMethod = "hystrixGetEvaluationEntityWrapper",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    @Override
+    public List<GameEvaluationDto> getEvaluationEntityWrapper(String memberId, String startDate, String endDate) {
+        ResultDto<List<GameEvaluationDto>> evaluationEntityWrapper = gamesFeignClient.getEvaluationEntityWrapper(memberId, startDate, endDate);
+        return evaluationEntityWrapper.getData();
+    }
+
+    public List<GameEvaluationDto> hystrixGetEvaluationEntityWrapper(String memberId, String startDate,String endDate) {
+        logger.warn("IndexProxyServiceImpl.hystrixGetEvaluationEntityWrapper ");
+        return null;
     }
 
     public CmmPostDto hystrixSelectCmmPostById(CmmPostDto param){

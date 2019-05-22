@@ -8,6 +8,7 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.CmmPostDto;
+import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.index.CardIndexBean;
 import com.game.common.enums.CommonEnum;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * <p></p>
