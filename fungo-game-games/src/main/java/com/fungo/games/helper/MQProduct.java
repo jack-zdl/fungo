@@ -2,25 +2,17 @@ package com.fungo.games.helper;
 
 import com.alibaba.fastjson.JSON;
 import com.fungo.games.feign.MQFeignClient;
-import com.fungo.games.feign.SystemFeignClient;
 import com.game.common.bean.advice.BasNoticeDto;
-import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
-import com.game.common.dto.community.CmmCommunityDto;
-import com.game.common.dto.game.GameInviteDto;
-import com.game.common.dto.game.GameReleaseLogDto;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
 import com.game.common.ts.mq.enums.RabbitMQEnum;
-import com.rabbitmq.client.Return;
 import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
