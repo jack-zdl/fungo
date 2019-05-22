@@ -71,7 +71,7 @@
 
 
     <!-- 获取关注社区 -->
-    <select id="getFollowerCommunity" resultType="java.util.HashMap" parameterType="String">
+    <select id="getFollowerCommunity" resultType="java.util.HashMap">
         <![CDATA[
 
            select
@@ -82,9 +82,17 @@
                    SUM(c.followee_num + c.post_num) as hotNun
             from
                t_cmm_community
-            where
-                id = #{communityId}
+            <where>
+                <if test="communityIds != null and communityIds.size > 0">
+                     id IN
+                    <foreach item="item" index="index" collection="communityIds" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
+           </where>
              GROUP BY objectId order by created_at desc
+
+
 
         ]]>
     </select>
