@@ -26,9 +26,9 @@ import java.nio.charset.Charset;
  * @Description:rabbitMQ 监听器配置
  * @Date: Create in 2019-05-14
  */
-/*@Configuration
+@Configuration
 @AutoConfigureAfter(RabbitMQConfig.class)
-@Order(2)*/
+@Order(2)
 public class RabbitMQListenerConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMQListenerConfig.class);

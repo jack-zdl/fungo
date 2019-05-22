@@ -162,7 +162,7 @@ zuul:
       serviceId:  FUNGO-GAME-SYSTEM
       sensitiveHeaders:
       strip-prefix: false
-    fungo-game-system-25:
+    fungo-game-system-27:
       path: /api/invite/users
       serviceId:  FUNGO-GAME-SYSTEM
       sensitiveHeaders:
