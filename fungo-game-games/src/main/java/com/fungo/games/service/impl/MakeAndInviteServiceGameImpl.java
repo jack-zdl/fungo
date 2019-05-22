@@ -156,6 +156,9 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
 
         GameSurveyRel rel = surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("phone_model", phoneModel).eq("game_id", gameId));
 
+        if (rel != null){
+            return ResultDto.error("-1", "您还未预约成功!!!");
+        }
         rel.setState(-1);
 
         rel.updateById();
