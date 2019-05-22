@@ -108,7 +108,7 @@ public class PostController {
         }
 
         int limit = searchInputDto.getLimit();
-        return searchService.searchPosts(keyword, page, limit);
+        return bsPostService.searchPosts(keyword, page, limit);
     }
 
 
