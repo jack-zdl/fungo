@@ -1,10 +1,11 @@
 package com.fungo.community.dao.service.impl;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.fungo.community.dao.mapper.CmmPostDao;
 import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.entity.CmmPost;
-import net.bytebuddy.asm.Advice;
+import com.game.common.bean.CollectionBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,11 @@ public class CmmPostDaoServiceImap extends ServiceImpl<CmmPostDao, CmmPost> impl
     @Override
     public List<String> getRecommendMembersFromCmmPost(long ccnt, long limitSize, List<String> wathMbsSet) {
         return cmmPostDao.getRecommendMembersFromCmmPost(ccnt, limitSize, wathMbsSet);
+    }
+
+    @Override
+    public List<CollectionBean> getCollection(Page<CollectionBean> page, List<String> postIds) {
+        return cmmPostDao.getCollection(page, postIds);
     }
     //------
 }

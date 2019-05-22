@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,8 +36,19 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
     private GamesFeignClient gamesFeignClient;
 
 
+
     @Override
-    public List<CollectionBean> getCollection(Page<CollectionBean> page, String memberId) {
+    public List<CollectionBean> getCollection(Page<CollectionBean> page, List<String> list) {
+        int pageNum = page.getPages();
+        int limit  = page.getLimit();
+        FungoPageResultDto<CollectionBean>  re = communityFeignClient.listCmmPostUsercollect(pageNum,limit,list);
+        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
+            try {
+                return CommonUtils.deepCopy(re.getData(),CollectionBean.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return null;
     }
 

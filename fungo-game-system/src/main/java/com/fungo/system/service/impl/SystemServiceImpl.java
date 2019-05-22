@@ -199,6 +199,34 @@ public class SystemServiceImpl implements SystemService {
         return re;
     }
 
+    /**
+     * 功能描述: 根据用户会员DTO对象分页查询用户会员
+     *
+     * @param: [memberDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.user.MemberDto>
+     * @auther: dl.zhang
+     * @date: 2019/5/10 17:40
+     */
+    @Override
+    public FungoPageResultDto<MemberDto> listMemberDtoPag(MemberDto memberDto) {
+        if(memberDto == null){
+            return FungoPageResultDto.error("-1","请求参数为空");
+        }
+        FungoPageResultDto<MemberDto> re = null;
+        try {
+            Page<Member> page = memberServiceImap.selectPage(new Page<Member>(memberDto.getPage(), memberDto.getLimit()), new EntityWrapper<Member>().ne("id", memberDto.getId()).orderBy("sort", false));
+            re = new FungoPageResultDto<MemberDto>();
+            PageTools.pageToResultDto(re, page);
+            List<Member> memberFollowers = page.getRecords();
+            List<MemberDto> memberFollowerDtos = CommonUtils.deepCopy(memberFollowers, MemberDto.class);
+            re.setData(memberFollowerDtos);
+        } catch (Exception e) {
+            LOGGER.error("SystemServiceImpl.listMemberDtoPag", e);
+            re = FungoPageResultDto.error("-1", "找不到目标");
+        }
+        return re;
+    }
+
     @Override
     public FungoPageResultDto<IncentRankedDto> getIncentRankedList(IncentRankedDto incentRankedDto) {
         if(incentRankedDto == null){

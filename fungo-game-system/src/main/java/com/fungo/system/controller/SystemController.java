@@ -120,6 +120,24 @@ public class SystemController {
     }
 
     /**
+     * 功能描述: 游戏服务 - 根据用户会员DTO对象分页查询用户会员
+     * @param: [memberUserPrefile, memberDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.user.MemberDto>
+     */
+    @RequestMapping(value = "/listMemberDtoPag")
+    public FungoPageResultDto<MemberDto> listMemberDtoPag(@RequestBody MemberDto memberDto){
+        FungoPageResultDto<MemberDto> re = null;
+        try {
+            re =  systemService.listMemberDtoPag(memberDto);
+        }catch (Exception e){
+            LOGGER.error("SystemController.listMemberDtoPag",e);
+            re = FungoPageResultDto.error("-1", "SystemController.listMemberDtoPag执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
+    /**
      * 功能描述: 根据用户id集合查询用户详情 state为null就不根据状态查询
      */
     @RequestMapping(value = "/listMembersByids")
