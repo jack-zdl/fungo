@@ -1,7 +1,7 @@
 eureka:
   instance:
-    prefer-ip-address: true
-    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+#    prefer-ip-address: true
+    instance-id:  ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}} #  ${spring.cloud.client.ipAddress}:${server.port}
     lease-expiration-duration-in-seconds: 15
     lease-renewal-interval-in-seconds: 5
   client:
@@ -86,7 +86,7 @@ spring:
 #      simple:
 #        acknowledge-mode: manual
 #
-#    template:
+#    templates:
 #      retry:
 #        enabled: true
 #        initial-interval: 2s
@@ -194,10 +194,10 @@ hystrix:
         isolation:
           strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
           thread:
-            timeoutInMilliseconds: 60000  #命令执行超时时间，默认1000ms
+            timeoutInMilliseconds: 40000  #命令执行超时时间，默认1000ms
 ribbon:
-  ConnectTimeout: 50000
-  ReadTimeout: 50000
+  ConnectTimeout: 5000
+  ReadTimeout: 15000
 
 
 

@@ -79,7 +79,7 @@ public interface SystemFeignClient {
      * @return
      */
     @GetMapping(value = "/getMembersByid")
-    ResultDto<MemberDto> getMemberDtoBySelectOne(@RequestParam("id") String id);
+    ResultDto<MemberDto> getMembersByid(@RequestParam("memberId") String id);
 
     /**
      * 根据用户id获取用户身份图标
@@ -142,7 +142,7 @@ public interface SystemFeignClient {
 //    @GetMapping("/listSortTags")
     @ApiOperation(value="批量获取标签获取")
     @RequestMapping(value="/listSortTags", method= RequestMethod.GET)
-    ResultDto<List<TagBean>> listSortTags (@RequestParam List<String> tags);
+    ResultDto<List<TagBean>> listSortTags (@RequestParam("tags") List<String> tags);
 
 
 

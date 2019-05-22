@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,8 +51,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param type_code_idt
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixExTask",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixExTask",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public Map<String, Object> exTask(String memberId, int task_group_flag, int task_type, int type_code_idt) {
         TaskDto taskDto = new TaskDto();
@@ -61,27 +62,38 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
         taskDto.setTypeCodeIdt(type_code_idt);
         return systemFeignClient.exTask(taskDto).getData();
     }
+    public Map<String, Object> hystrixExTask(String memberId, int task_group_flag, int task_type, int type_code_idt) {
+        return null;
+    }
     /**
      * 根据用户id获取authorBean
      * @param memberId
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetAuthor",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixGetAuthor",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public AuthorBean getAuthor(String memberId) {
         return systemFeignClient.getAuthor(memberId).getData();
     }
+    public AuthorBean hystrixGetAuthor(String memberId) {
+        return new AuthorBean();
+    }
+
+
     /**
      * 根据条件判断查询总数
      * @param basActionDto
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetBasActionSelectCount",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixGetBasActionSelectCount",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public int getBasActionSelectCount(BasActionDto basActionDto) {
         return systemFeignClient.getBasActionSelectCount(basActionDto).getData();
+    }
+    public int hystrixGetBasActionSelectCount(BasActionDto basActionDto) {
+        return 0;
     }
 
     /**
@@ -89,8 +101,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param replyInputPageDto
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetReplyDtoBysSelectPageOrderByCreatedAt",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixGetReplyDtoBysSelectPageOrderByCreatedAt",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public Page<CmmCmtReplyDto> getReplyDtoBysSelectPageOrderByCreatedAt(ReplyInputPageDto replyInputPageDto) {
         CmmCmtReplyDto ssrd = new CmmCmtReplyDto();
@@ -105,17 +117,23 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
         replyDtoPage.setRecords(data);
         return replyDtoPage;
     }
+    public Page<CmmCmtReplyDto> hystrixGetReplyDtoBysSelectPageOrderByCreatedAt(ReplyInputPageDto replyInputPageDto) {
+        return null;
+    }
 
     /**
      * 根据条件判断获取memberDto对象
      * @param md
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetMemberDtoBySelectOne",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixGetMemberDtoBySelectOne",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public MemberDto getMemberDtoBySelectOne(MemberDto md) {
-        return systemFeignClient.getMemberDtoBySelectOne(md.getId()).getData();
+        return systemFeignClient.getMembersByid(md.getId()).getData();
+    }
+    public MemberDto hystrixGetMemberDtoBySelectOne(MemberDto md) {
+        return null;
     }
 
     /**
@@ -123,11 +141,14 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param memberId
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetStatusImageByMemberId",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixGetStatusImageByMemberId",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public List<HashMap<String, Object>> getStatusImageByMemberId(String memberId) {
         return systemFeignClient.getStatusImageByMemberId(memberId).getData();
+    }
+    public List<HashMap<String, Object>> hystrixGetStatusImageByMemberId(String memberId) {
+        return null;
     }
 
     /**
@@ -135,11 +156,14 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param collect
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetBasTagBySelectListInId",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixGetBasTagBySelectListInId",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public List<BasTagDto> getBasTagBySelectListInId(List<String> collect) {
         return systemFeignClient.getBasTagBySelectListInId(collect).getData();
+    }
+    public List<BasTagDto> hystrixGetBasTagBySelectListInId(List<String> collect) {
+        return null;
     }
 
     /**
@@ -147,11 +171,14 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param basTagDto
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetBasTagBySelectListGroupId",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixGetBasTagBySelectListGroupId",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public List<BasTagDto> getBasTagBySelectListGroupId(BasTagDto basTagDto) {
         return systemFeignClient.getBasTagBySelectListGroupId(basTagDto.getGroupId()).getData();
+    }
+    public List<BasTagDto> hystrixGetBasTagBySelectListGroupId(BasTagDto basTagDto) {
+        return null;
     }
 
     /**
@@ -159,8 +186,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param ccd
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetCmmCommunitySelectOneById",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixGetCmmCommunitySelectOneById",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public CmmCommunityDto getCmmCommunitySelectOneById(CmmCommunityDto ccd) {
         FungoPageResultDto<CmmCommunityDto> cmmCommunitySelectOneById = communityFeignClient.getCmmCommunitySelectOneById(ccd);
@@ -171,6 +198,9 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
         }
         return cmmCommunityDto;
     }
+    public CmmCommunityDto hystrixGetCmmCommunitySelectOneById(CmmCommunityDto ccd) {
+        return new CmmCommunityDto();
+    }
 
     /**
      * Mqfeign调用
@@ -178,23 +208,30 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param i
      * @param appVersion
      */
-    @HystrixCommand(fallbackMethod = "hystrixPush",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixPush",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public void push(String inviteMemberId, int i, String appVersion) {
         systemFeignClient.push(inviteMemberId,i,appVersion);
     }
+    public void hystrixPush(String inviteMemberId, int i, String appVersion) {
+//        systemFeignClient.push(inviteMemberId,i,appVersion);
+    }
+
 
     /**
      * 根据bastagid获取basTag对象
      * @param basTagDto
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetBasTagBySelectById",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixGetBasTagBySelectById",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public BasTagDto getBasTagBySelectById(BasTagDto basTagDto) {
         return systemFeignClient.getBasTagBySelectById(basTagDto.getId()).getData();
+    }
+    public BasTagDto hystrixGetBasTagBySelectById(BasTagDto basTagDto) {
+        return new BasTagDto();
     }
 
     /**
@@ -202,11 +239,14 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param basTagGroupDto
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetBasTagGroupBySelectList",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+   /* @HystrixCommand(fallbackMethod = "hystrixGetBasTagGroupBySelectList",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public List<BasTagGroupDto> getBasTagGroupBySelectList(BasTagGroupDto basTagGroupDto) {
         return systemFeignClient.getBasTagGroupBySelectList(basTagGroupDto).getData();
+    }
+    public List<BasTagGroupDto> hystrixGetBasTagGroupBySelectList(BasTagGroupDto basTagGroupDto) {
+        return new ArrayList<BasTagGroupDto>();
     }
 
     /**
@@ -214,8 +254,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param tags
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetSortTags",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixGetSortTags",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public List<TagBean> getSortTags(List<String> tags) {
         return systemFeignClient.listSortTags(tags).getData();
@@ -227,7 +267,7 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
 
     public List<TagBean> hystrixGetSortTags(List<String> tags) {
         logger.warn("getSortTags 特殊 根据gameId获取TagBean集合");
-        return null;
+        return new ArrayList<TagBean>();
     }
 
 }

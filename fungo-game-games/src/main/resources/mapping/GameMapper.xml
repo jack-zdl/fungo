@@ -120,8 +120,8 @@
   <!-- 获取游戏评分 -->
   <select id="getRateData" resultType="java.util.HashMap" parameterType="String">
 	<![CDATA[ 
-		select 
-			e.game_id as gameId,
+		select
+		    e.game_id as gameId,
 			ROUND(AVG(rating),1) as avgRating,
 			ROUND(AVG(trait1),1) as avgTrait1,
 			ROUND(AVG(trait2),1) as avgTrait2,
@@ -129,6 +129,22 @@
 			ROUND(AVG(trait4),1) as avgTrait4,
 			ROUND(AVG(trait5),1) as avgTrait5
 		from t_game_evaluation e where  
+		e.game_id = #{gameId} and e.state != -1
+
+
+        ]]>
+	</select>
+    <!--getRateData1  平均分20190521复制-->
+    <select id="getRateData1" resultType="java.util.HashMap" parameterType="String">
+	<![CDATA[
+		select
+			ROUND(AVG(rating),1) as avgRating,
+			ROUND(AVG(trait1),1) as avgTrait1,
+			ROUND(AVG(trait2),1) as avgTrait2,
+			ROUND(AVG(trait3),1) as avgTrait3,
+			ROUND(AVG(trait4),1) as avgTrait4,
+			ROUND(AVG(trait5),1) as avgTrait5
+		from t_game_evaluation e where
 		e.game_id = #{gameId} and e.state != -1
 
 

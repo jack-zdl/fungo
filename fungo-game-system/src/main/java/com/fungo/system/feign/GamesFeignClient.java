@@ -95,18 +95,18 @@ public interface GamesFeignClient {
     Page<GameSurveyRelDto> getGameSurveyRelPage(@RequestBody GameSurveyRelDto gameSurveyDto);
 
     @ApiOperation(value = "getGameSelectCountByLikeNameAndState", notes = "")
-    @RequestMapping(value = "/api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/game/api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.POST)
     int getGameSelectCountByLikeNameAndState(@RequestBody GameDto gameDto);
 
     @ApiOperation(value = "getGameSelectCountByLikeNameAndState", notes = "")
-    @RequestMapping(value = "/api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.GET)
+    @RequestMapping(value = "/ms/service/game//api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.GET)
     ResultDto<CardIndexBean> getSelectedGames();
 
     @ApiOperation(value = "getGameSelectCountByLikeNameAndState", notes = "")
-    @RequestMapping(value = "/api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/game//api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.POST)
     ResultDto<CardIndexBean> getSelectedGames(@RequestBody GameDto gameDto);
 
     @ApiOperation(value = "getRateData", notes = "")
-    @RequestMapping(value = "/api/game/getRateData", method = RequestMethod.GET)
+    @RequestMapping(value = "/ms/service/game//api/game/getRateData", method = RequestMethod.GET)
     ResultDto<HashMap<String, BigDecimal>> getRateData(@RequestParam("gameId") String gameId);
 }

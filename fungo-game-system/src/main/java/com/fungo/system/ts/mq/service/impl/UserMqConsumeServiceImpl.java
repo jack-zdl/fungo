@@ -2,12 +2,16 @@ package com.fungo.system.ts.mq.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fungo.system.service.IGameProxy;
 import com.fungo.system.service.SystemService;
 import com.fungo.system.ts.mq.service.UserMqConsumeService;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.system.TaskDto;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,12 +22,14 @@ import java.util.Map;
 @Transactional
 public class UserMqConsumeServiceImpl implements UserMqConsumeService {
 
-    private final SystemService systemService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserMqConsumeServiceImpl.class);
 
     @Autowired
-    public UserMqConsumeServiceImpl(SystemService systemService){
-        this.systemService = systemService;
-    }
+    private IGameProxy gameProxyService;
+
+    @Autowired
+    private SystemService systemService;
+
 
     /**
      * 处理mq的消息
@@ -31,7 +37,7 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
      * @param msgDate mq的消息体
      */
     @Override
-    public boolean processMsg(String msgDate) {
+    public boolean processMsg(String msgDate) throws Exception {
         JSONObject json = JSONObject.parseObject(msgDate);
         Integer type = json.getInteger("type");
         String body = json.getString("body");
@@ -41,7 +47,7 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
         }
 
         //添加用户动作行为数据
-        if(MQResultDto.CommunityEnum.CMT_ACTION_MQ_TYPE_ACTION_ADD.getCode() == type){
+        if(MQResultDto.CommunityEnum.CMT_ACTION_MQ_TYPE_ACTION_ADD.getCode() == type||MQResultDto.GameMQDataType.GAME_DATA_TYPE_BASACTIONINSERT.getCode()==type){
             return processAddAction(body);
         }
 
@@ -55,21 +61,35 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
             return processNotice(body);
         }
 
+        // game逻辑块变动 BasAction 查询后判断是否修改时间
+        if(MQResultDto.GameMQDataType.GAME_DATA_TYPE_SELECTONEANDUPDATEALLCOLUMNBYID.getCode() == type){
+            return processGameBasActionChange(body);
+        }
 
         return false;
     }
 
     // 消息通知逻辑
-    private boolean processNotice(String body) {
-        //TODO
-        return false;
+    private boolean processNotice(String body) throws Exception {
+        Map noticeMap = JSON.parseObject(body, Map.class);
+        Integer eventType = Integer.parseInt( noticeMap.get("eventType").toString());
+        String memberId = noticeMap.get("memberId").toString();
+        String targetId = noticeMap.get("target_id").toString();
+        Integer targetType = Integer.parseInt(noticeMap.get("target_type").toString());
+        String information = noticeMap.get("information").toString();
+        String appVersion = noticeMap.get("appVersion").toString();
+        String replyToId = noticeMap.get("replyToId").toString();
+        gameProxyService.addNotice(eventType,memberId,targetId,targetType,information,appVersion,replyToId);
+        return true;
     }
 
-    //处理用户任务
+    /**
+     * 处理用户任务
+     */
     private boolean processTask(String body) {
-        //TODO 处理用户任务
-
-        return false;
+        TaskDto taskDto = JSON.parseObject(body, TaskDto.class);
+        ResultDto<Map<String, Object>> resultDto = systemService.exTask(taskDto);
+        return resultDto.isSuccess();
     }
 
     /**
@@ -92,6 +112,20 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
             return false;
         }
         ResultDto<String> resultDto = systemService.processUserScoreChange(userId, Integer.parseInt(score));
+        if(!resultDto.isSuccess()){
+            LOGGER.warn("mq失败 - 扣减用户经验值和等级:"+resultDto.getMessage());
+        }
         return resultDto.isSuccess();
     }
+
+    /**
+     * game逻辑块变动 BasAction 查询后判断是否修改时间
+     */
+    private boolean processGameBasActionChange(String body) {
+        Map map = JSON.parseObject(body, Map.class);
+        ResultDto resultDto = systemService.updateActionUpdatedAtByCondition(map);
+        return resultDto.isSuccess();
+    }
+
+
 }
