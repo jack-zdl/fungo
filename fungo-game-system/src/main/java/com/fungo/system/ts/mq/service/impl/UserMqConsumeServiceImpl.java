@@ -52,7 +52,7 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
         }
 
         //处理用户任务
-        if(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_DO_TASK.getCode() == type){
+        if(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_DO_TASK.getCode() == type||MQResultDto.GameMQDataType.GAME_DATA_TYPE_EXTASK.getCode()==type){
             return processTask(body);
         }
 
