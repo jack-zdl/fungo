@@ -72,29 +72,26 @@
 
     <!-- 获取关注社区 -->
     <select id="getFollowerCommunity" resultType="java.util.HashMap">
-        <![CDATA[
 
-           select
-                   c.name,
-                   c.intro,
-                   c.icon ,
-                   c.id as objectId,
-                   SUM(c.followee_num + c.post_num) as hotNun
-            from
-               t_cmm_community
-            <where>
-                <if test="communityIds != null and communityIds.size > 0">
-                     id IN
-                    <foreach item="item" index="index" collection="communityIds" open="(" separator="," close=")">
-                        #{item}
-                    </foreach>
-                </if>
-           </where>
-             GROUP BY objectId order by created_at desc
-
+        select
+             name,
+             intro,
+             icon ,
+             id as objectId,
+             SUM(followee_num + post_num) as hotNun
+        from
+        t_cmm_community
+        <where>
+            <if test="communityIds != null and communityIds.size > 0">
+                id IN
+                <foreach item="item" index="index" collection="communityIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        GROUP BY objectId order by created_at desc
 
 
-        ]]>
     </select>
 
 
