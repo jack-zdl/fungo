@@ -1,8 +1,32 @@
 spring:
   profiles:
     active: dev
+
+  freemarker:
+    allow-request-override: false
+    allow-session-override: false
+    cache: true
+    check-template-location: true
+    content-type: text/html
+    enabled: true
+    expose-request-attributes: false
+    expose-session-attributes: false
+    expose-spring-macro-helpers: true
+    prefer-file-system-access: true
+    request-context-attribute: request
+    suffix: .ftl
+    template-loader-path: classpath:/templates/
+    settings.template_update_delay: 0
+    settings.default_encoding: UTF-8
+    settings.classic_compatible: true
+    order: 1
+    mvc:
+      favicon:
+        enabled: false
+
 management:
   security:
     enabled:  false
 application.version : V3.0.0-SNAPSHOT
 #debug: true
+

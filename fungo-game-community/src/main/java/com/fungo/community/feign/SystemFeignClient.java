@@ -95,7 +95,7 @@ public interface SystemFeignClient {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "memberId",value = "用户id",paramType = "form",dataType = "string")
     })
-    public ResultDto<List<String>> listFollowerCommunityId(@RequestParam String memberId);
+    public ResultDto<List<String>> listFollowerCommunityId(@RequestParam("memberId") String memberId);
 
 
 
@@ -131,7 +131,7 @@ public interface SystemFeignClient {
 
     @GetMapping("/getAuthor")
     @ApiOperation(value="获取会员信息")
-    public ResultDto<AuthorBean> getAuthor(String memberId);
+    public ResultDto<AuthorBean> getAuthor(@RequestParam("memberId") String memberId);
 
 
 
