@@ -12,14 +12,13 @@ import com.fungo.games.service.GameInviteService;
 import com.fungo.games.service.GameService;
 import com.fungo.games.service.IMakeAndInviteGameService;
 import com.game.common.bean.advice.BasNoticeDto;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.MsgTplBean;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.FollowUserOutBean;
 import com.game.common.dto.game.GameInviteDto;
-import com.game.common.dto.mark.BindingAppleInputBean;
-import com.game.common.dto.mark.InviteInput;
-import com.game.common.dto.mark.MakeCheckOut;
-import com.game.common.dto.mark.MakeInput;
+import com.game.common.dto.mark.*;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.UUIDUtils;
@@ -116,6 +115,13 @@ public class MakeAndInviteGameController {
     @ApiImplicitParams({})
     public ResultDto<String> getgameAgree(MemberUserProfile memberUserPrefile, @RequestBody MakeInput makeInput) {
         return makeAndInviteGameService.getgameAgree(memberUserPrefile.getLoginId(), makeInput.getGameId(), makeInput.getPhoneModel());
+    }
+
+    @ApiOperation(value = "邀请用户列表(v2.3)", notes = "")
+    @RequestMapping(value = "/api/invite/users", method = RequestMethod.POST)
+    @ApiImplicitParams({})
+    public FungoPageResultDto<FollowUserOutBean> getInviteUserList(MemberUserProfile memberUserPrefile, @RequestBody MakeInputPageDto inputPageDto) throws Exception {
+        return makeAndInviteGameService.getInviteUserList(memberUserPrefile.getLoginId(), inputPageDto);
     }
 
 

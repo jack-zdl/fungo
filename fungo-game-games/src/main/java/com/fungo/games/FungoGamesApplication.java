@@ -52,8 +52,8 @@ public class FungoGamesApplication {
 	@Bean
 	public MultipartConfigElement multipartConfigElement() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
-		//文件最大  KB,MB-10MB
-		factory.setMaxFileSize("10240KB");
+		//文件最大  KB,MB-1000MB
+		factory.setMaxFileSize("1024000KB");
 		/// 设置总上传数据总大小 100MB
 		factory.setMaxRequestSize("102400KB");
 		return factory.createMultipartConfig();

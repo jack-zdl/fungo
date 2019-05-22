@@ -11,6 +11,7 @@ import com.fungo.system.dao.MemberDao;
 import com.fungo.system.dto.FollowInptPageDao;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
+import com.fungo.system.proxy.ICommunityProxyService;
 import com.fungo.system.proxy.IDeveloperProxyService;
 import com.fungo.system.proxy.IGameProxyService;
 import com.fungo.system.proxy.IMemeberProxyService;
@@ -126,6 +127,11 @@ public class MemberServiceImpl implements IMemberService {
 
     @Autowired
     private FungoCacheMood fungoCacheMood;
+
+    @Autowired
+    private ICommunityProxyService communityProxyService;
+
+
 //
     @Override
     public FungoPageResultDto<CollectionOutBean> getCollection(String memberId, InputPageDto inputPage) {
@@ -145,7 +151,8 @@ public class MemberServiceImpl implements IMemberService {
         List<CollectionOutBean> list = new ArrayList<CollectionOutBean>();
         re.setData(list);
         Page<CollectionBean> p = new Page<CollectionBean>(inputPage.getPage(), inputPage.getLimit());
-        List<CollectionBean> plist = actionDao.getCollection(p, memberId);
+        //@todo 5.22
+        List<CollectionBean> plist =   communityProxyService.getCollection(p,memberId); //actionDao.getCollection(p, memberId);
         for (CollectionBean collectionBean : plist) {
             CollectionOutBean bean = new CollectionOutBean();
             bean.setAuthor(userService.getAuthor(collectionBean.getMemberId()));
@@ -214,7 +221,9 @@ public class MemberServiceImpl implements IMemberService {
             }
 
         } else if (4 == inputPage.getType()) {//关注的社区
-            list = actionDao.getFollowerCommunity(p, memberId);
+            // @todo 5.22
+            List<String> idlist = actionDao.getFollowerCommunity( memberId);
+            list = communityProxyService.getFollowerCommunity(p, idlist);    //actionDao.getFollowerCommunity(p, memberId);
             for (Map<String, Object> map : list) {
                 map.put("is_followed", false);
                 BasAction action = actionService.selectOne(new EntityWrapper<BasAction>().eq("type", "5").eq("member_id", myId).eq("target_id", (String) map.get("objectId")).ne("state", "-1"));
@@ -1162,7 +1171,8 @@ public class MemberServiceImpl implements IMemberService {
 
         re = new FungoPageResultDto<MyCommentBean>();
         Page<CommentBean> page = new Page<>(input.getPage(), input.getLimit());
-        List<CommentBean> all = memberDao.getAllComments(page, loginId);
+        // @todo 5.22
+        List<CommentBean> all =  communityProxyService.getAllComments(page,loginId); //memberDao.getAllComments(page, loginId);
         List<MyCommentBean> blist = new ArrayList<>();
         for (CommentBean c : all) {
             //文章评论 心情评论 二级评论

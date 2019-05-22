@@ -54,7 +54,7 @@
 	
 	
 	<!-- 获取关注社区 -->
-	<select id="getFollowerCommunity" resultType="java.util.HashMap" parameterType="String">
+	<select id="getFollowerCommunity" resultType="String" parameterType="String">
 		<!-- select c.name,c.intro,c.icon ,c.id as objectId,c.hot_value as hotNun,
 		date_format(a.created_at, '%Y-%c-%d %H:%i:%s' ) as created_at , 
 		date_format(a.updated_at, '%Y-%c-%d %H:%i:%s' ) as updated_at
@@ -62,14 +62,23 @@
 			a.member_id=#{memberId} and a.type=5 and a.state<>-1 
 			and c.id=a.target_id -->
 	
-	<![CDATA[ 
-			select c.name,c.intro,c.icon ,c.id as objectId,SUM(c.followee_num + c.post_num) as hotNun,
-		date_format(a.created_at, '%Y-%c-%d %H:%i:%s' ) as created_at , 
-		date_format(a.updated_at, '%Y-%c-%d %H:%i:%s' ) as updated_at
-		from t_cmm_community c ,t_bas_action a where 
-			a.member_id=#{memberId} and a.type=5 and a.state<>-1 
-			and c.id=a.target_id GROUP BY objectId order by created_at desc
-	]]></select>
+<!--	<![CDATA[ -->
+<!--			select c.name,c.intro,c.icon ,c.id as objectId,SUM(c.followee_num + c.post_num) as hotNun,-->
+<!--		date_format(a.created_at, '%Y-%c-%d %H:%i:%s' ) as created_at ,-->
+<!--		date_format(a.updated_at, '%Y-%c-%d %H:%i:%s' ) as updated_at-->
+<!--		from t_cmm_community c ,t_bas_action a where-->
+<!--			a.member_id=#{memberId} and a.type=5 and a.state<>-1 -->
+<!--			and c.id=a.target_id GROUP BY objectId order by created_at desc-->
+<!--	]]>-->
+
+		<![CDATA[
+			select distinct(target_id)
+		from t_bas_action a where
+			a.member_id=#{memberId} and a.type=5 and a.state<>-1
+
+	]]>
+
+	</select>
 	
 	<!-- 获取关注用户 -->
 	<select id="getFollowerUser" resultType="java.util.HashMap" parameterType="String">

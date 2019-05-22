@@ -4,11 +4,9 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.*;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -112,4 +110,37 @@ public interface CommunityFeignClient {
      */
     @PostMapping("/ms/service/cmm/cmt/f/lists")
     FungoPageResultDto<CmmCommentDto> queryFirstLevelCmtList(@RequestBody CmmCommentDto cmmCommentDto);
+
+
+    /**
+     * 分页查询 我的动态 - 我的评论 数据
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/user/comments")
+    FungoPageResultDto<CommentBean> getAllComments(@RequestParam("pageNum") int pageNum,
+                                                          @RequestParam("limit") int limit, @RequestParam("userId") String userId);
+
+    /**
+     * 查询文章表中发表文章大于10条的前10名用户
+     * @param ccnt 达到文章条数
+     * @param limitSize 达到的用户数
+     * @param wathMbsSet 需要排除的用户id集合
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/user/post/ids")
+    ResultDto<List<String>> getRecommendMembersFromCmmPost(@RequestParam("ccnt") long ccnt, @RequestParam("limitSize") long limitSize,
+                                                                  @RequestParam("wathMbsSet") List<String> wathMbsSet);
+
+    /**
+     * 分页查询 关注社区  数据
+     * @param pageNum 当前页码
+     * @param limit 每页条数
+     * @param communityIds 社区id
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/user/flw/cmtlists")
+    public FungoPageResultDto<Map<String, Object>> getFollowerCommunity(@RequestParam("pageNum") int pageNum,
+                                                                        @RequestParam("limit") int limit, @RequestParam("communityIds") List<String> communityIds);
+
+
 }
