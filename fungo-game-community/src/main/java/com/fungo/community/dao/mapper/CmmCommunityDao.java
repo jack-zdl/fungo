@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.community.entity.CmmCommunity;
 import com.game.common.bean.CommentBean;
 import com.game.common.bean.MemberPulishFromCommunity;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -52,5 +53,5 @@ public interface CmmCommunityDao extends BaseMapper<CmmCommunity> {
      * @param communityIds 社区id
      * @return
      */
-    public List<Map<String,Object>> getFollowerCommunity(Page page,List<String> communityIds);
+    public List<Map<String,Object>> getFollowerCommunity(Page page,@Param("communityIds") List<String> communityIds);
 }
