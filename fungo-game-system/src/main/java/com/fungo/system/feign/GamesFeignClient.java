@@ -114,4 +114,13 @@ public interface GamesFeignClient {
     @ApiOperation(value = "getEvaluationEntityWrapper", notes = "")
     @RequestMapping(value = "/ms/service/game//api/game/getEvaluationEntityWrapper", method = RequestMethod.POST)
     ResultDto<List<GameEvaluationDto>> getEvaluationEntityWrapper(@RequestParam("memberId") String memberId, @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate);
+
+
+    @ApiOperation(value = "游戏评价邀请的分页查询", notes = "")
+    @RequestMapping(value = "/api/evaluation/getGameInvitePage", method = RequestMethod.POST)
+    FungoPageResultDto<GameInviteDto> getGameInvitePage(@RequestBody GameInviteDto gameInviteDto);
+
+    @ApiOperation(value = "查询游戏评论表中发表评论大于X条，前Y名的用户", notes = "")
+    @RequestMapping(value = "/api/game/getRecommendMembersFromEvaluation", method = RequestMethod.POST)
+    ResultDto<List<String>> getRecommendMembersFromEvaluation(@RequestParam("x") Integer x,@RequestParam("y") Integer y,@RequestParam("wathMbsSet") List<String> wathMbsSet);
 }

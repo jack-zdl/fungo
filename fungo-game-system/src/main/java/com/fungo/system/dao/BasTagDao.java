@@ -16,9 +16,5 @@ import java.util.List;
  */
 public interface BasTagDao extends BaseMapper<BasTag> {
 
-	//根据游戏id获取标签(后台设置)
-	public List<TagBean> getGameTags(String gameId);
-	
-	//获取游戏后台分类标签 
-	public List<TagBean> getSortTags(String gameId);
+
 }
