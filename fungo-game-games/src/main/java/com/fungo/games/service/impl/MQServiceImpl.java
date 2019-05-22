@@ -29,7 +29,6 @@ import java.util.Map;
  * @create 2019/5/17 14:27
  */
 @Service
-@Transactional
 public class MQServiceImpl implements IMQService {
 
     @Autowired

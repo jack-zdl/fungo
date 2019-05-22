@@ -44,7 +44,6 @@ public class RabbitMQListenerConfig {
     private MQFeignClient mqFeignClient;
 
 
-
     //------direct---
     /*@Bean("MQDirectQueueContainer")
     public MessageListenerContainer mqDirectMessageListenerContainer(ConnectionFactory connectionFactory) {
@@ -92,34 +91,14 @@ public class RabbitMQListenerConfig {
         return new ChannelAwareMessageListener() {
             @Override
             public void onMessage(Message message, Channel channel) throws Exception {
-                Long messageId = null;
-                try {
-                    String msgBody = StringUtils.toEncodedString(message.getBody(), Charset.forName("UTF-8"));
-                    LOGGER.info("MQTopicQueueListener-onMessage-msgBody:{}", msgBody);
-                    TransactionMessageDto transactionMessageDto = JSON.parseObject(msgBody, TransactionMessageDto.class);
-                    messageId = transactionMessageDto.getMessageId();
-                    //校验是否重复消费
-                    if (!UniqueIdCkeckUtil.checkUniqueIdAndSave(messageId.toString())) {
-                        LOGGER.warn("系统服务-重复消费驳回,消息内容:"+messageId);
-                    }else{
-                        Integer messageDataType = transactionMessageDto.getMessageDataType();
-                        //同步业务处理
-                        boolean b = mQDataReceiveService.onMessageWithMQTopic(msgBody);
-                        if (b){
-                            mqFeignClient.deleteMessageByMessageId(messageId);
-                            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-                        }else{
-                            channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
-                            UniqueIdCkeckUtil.deleteUniqueId(messageId.toString());
-                            LOGGER.error("MQTopicQueueListener-onMessage-msgBody-业务error:{}", msgBody);
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
-                    UniqueIdCkeckUtil.deleteUniqueId(messageId.toString());
-                    LOGGER.error("MQTopicQueueListener-onMessage-msgBody-Exceptionerror:{}", e);
+                String msgBody = StringUtils.toEncodedString(message.getBody(), Charset.forName("UTF-8"));
+                LOGGER.info("MQTopicQueueListener-onMessage-msgBody:{}", msgBody);
+                //同步业务处理
+                boolean b = mQDataReceiveService.onMessageWithMQTopic(msgBody);
+                if (b) {
+                    channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
                 }
+
             }
         };
     }

@@ -7,6 +7,7 @@ import com.game.common.dto.community.MooMessageDto;
 import com.game.common.dto.community.MooMoodDto;
 import com.game.common.dto.game.GameEvaluationDto;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,4 +32,6 @@ public interface IGameProxyService {
     MooMessageDto selectMooMessageById(String id);
 
     int getGameSelectCountByLikeNameAndState(GameDto gameDto);
+
+    List<GameEvaluationDto> getEvaluationEntityWrapper(String memberId, String startDate, String endDate);
 }

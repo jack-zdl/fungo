@@ -31,7 +31,7 @@ public interface IEvaluateProxyService {
      * @param code1
      * @return
      */
-    Map<String, Object> exTask(String memberId,  int code,  int inectTaskVirtualCoinTaskCodeIdt, int code1);
+    Map<String, Object> exTask(String memberId,  int code,  int inectTaskVirtualCoinTaskCodeIdt, int code1,Long requestId);
 
     /**
      * 根据用户id获取authorBean

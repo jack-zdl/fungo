@@ -174,7 +174,8 @@ public class MQResultDto {
         GAME_DATA_TYPE_SELECTONEANDUPDATEALLCOLUMNBYID(12, "java.util.HashMap"),
         GAME_DATA_TYPE_BASNOTICEUPDATEBYID(13, "com.game.common.bean.advice.BasNoticeDto"),
         GAME_DATA_TYPE_BASNOTICEINSERT(14, "com.game.common.bean.advice.BasNoticeDto"),
-        GAME_DATA_TYPE_PUSH(15, "java.util.HashMap");
+        GAME_DATA_TYPE_PUSH(15, "java.util.HashMap"),
+        GAME_DATA_TYPE_EXTASK(16, "com.game.common.dto.system.TaskDto");
 
 
         private int code;

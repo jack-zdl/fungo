@@ -36,6 +36,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -142,6 +143,9 @@ public class SystemServiceImpl implements SystemService {
      */
     @Override
     public FungoPageResultDto<MemberFollowerDto> getMemberFollowerList(MemberFollowerVo vo) {
+        if(vo == null){
+            return FungoPageResultDto.error("-1","请求参数为空");
+        }
         FungoPageResultDto<MemberFollowerDto> re = null;
         try {
             Page<MemberFollower> basNoticePage = new Page<>(vo.getPage(), vo.getLimit());
@@ -172,6 +176,9 @@ public class SystemServiceImpl implements SystemService {
      */
     @Override
     public FungoPageResultDto<MemberDto> getMemberDtoList(MemberDto memberDto) {
+        if(memberDto == null){
+            return FungoPageResultDto.error("-1","请求参数为空");
+        }
         FungoPageResultDto<MemberDto> re = null;
         try {
             Page<Member> basNoticePage = new Page<>(memberDto.getPage(), memberDto.getLimit());
@@ -194,6 +201,9 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public FungoPageResultDto<IncentRankedDto> getIncentRankedList(IncentRankedDto incentRankedDto) {
+        if(incentRankedDto == null){
+            return FungoPageResultDto.error("-1","请求参数为空");
+        }
         FungoPageResultDto<IncentRankedDto> re = null;
         try {
             Page<IncentRanked> basNoticePage = new Page<>(incentRankedDto.getPage(), incentRankedDto.getLimit());
@@ -285,6 +295,9 @@ public class SystemServiceImpl implements SystemService {
     public ResultDto<IncentRuleRankDto> getIncentRuleRankById(String id) {
         IncentRuleRank rank = rankRuleService.selectById(id);
         IncentRuleRankDto ruleRankDto = new IncentRuleRankDto();
+        if(rank == null){
+            return ResultDto.error("-1","未查询到数据");
+        }
         try {
             BeanUtils.copyProperties(ruleRankDto, rank);
         } catch (Exception e) {
@@ -328,6 +341,9 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public ResultDto<MemberFollowerDto> getMemberFollower1(MemberFollowerDto memberFollowerDto) {
         MemberFollower one = memberFollowerServiceImap.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", memberFollowerDto.getMemberId()).eq("follower_id", memberFollowerDto.getFollowerId()).andNew("state = {0}", 1).or("state = {0}", 2));
+        if(one == null){
+            return ResultDto.success();
+        }
         MemberFollowerDto followerDto = new MemberFollowerDto();
         try {
             BeanUtils.copyProperties(followerDto, one);
@@ -560,19 +576,25 @@ public class SystemServiceImpl implements SystemService {
         if(!UniqueIdCkeckUtil.checkUniqueIdAndSave(taskDto.getRequestId())){
             return ResultDto.error("-1", "业务已执行");
         }
-
         ResultDto<Map<String, Object>> re = null;
-        Map<String, Object> map = null;
-        try {
-            if (StringUtil.isNull(taskDto.getTargetId())) {
-                map = iMemberIncentDoTaskFacadeService.exTask(taskDto.getMbId(), taskDto.getTaskGroupFlag(), taskDto.getTaskType(), taskDto.getTypeCodeIdt());
-            } else {
-                map = iMemberIncentDoTaskFacadeService.exTask(taskDto.getMbId(), taskDto.getTaskGroupFlag(), taskDto.getTaskType(), taskDto.getTypeCodeIdt(), taskDto.getTargetId());
+        try{
+            Map<String, Object> map = null;
+            try {
+                if (StringUtil.isNull(taskDto.getTargetId())) {
+                    map = iMemberIncentDoTaskFacadeService.exTask(taskDto.getMbId(), taskDto.getTaskGroupFlag(), taskDto.getTaskType(), taskDto.getTypeCodeIdt());
+                } else {
+                    map = iMemberIncentDoTaskFacadeService.exTask(taskDto.getMbId(), taskDto.getTaskGroupFlag(), taskDto.getTaskType(), taskDto.getTypeCodeIdt(), taskDto.getTargetId());
+                }
+                re = ResultDto.success(map);
+            } catch (Exception e) {
+                LOGGER.error("SystemServiceImpl.exTask", e);
+                re = ResultDto.error("-1", "任务执行异常");
             }
-            re = ResultDto.success(map);
-        } catch (Exception e) {
-            LOGGER.error("SystemServiceImpl.exTask", e);
-            re = ResultDto.error("-1", "任务执行异常");
+        }catch (Exception e){
+            //手动开启事务回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            //删除唯一请求标志,使逻辑可以重试
+            UniqueIdCkeckUtil.deleteUniqueId(taskDto.getRequestId());
         }
         return re;
     }
@@ -607,6 +629,9 @@ public class SystemServiceImpl implements SystemService {
     public ResultDto<MemberDto> getMembersByid(String id) {
         Member member = memberServiceImap.selectById(id);
         MemberDto memberDto = new MemberDto();
+        if(member == null){
+            return ResultDto.error("-1","未查询到数据");
+        }
         try {
             BeanUtils.copyProperties(memberDto, member);
         } catch (Exception e) {
@@ -658,6 +683,9 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public ResultDto<List<BasTagGroupDto>> listBasTagGroupByCondition(BasTagGroupDto basTagGroupDto) {
         BasTag basTag = new BasTag();
+        if(basTagGroupDto == null){
+            return ResultDto.error("-1","参数为null");
+        }
         List<BasTagGroupDto> basTagDtoList;
         try {
             BeanUtils.copyProperties(basTag, basTagGroupDto);
@@ -692,6 +720,9 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public ResultDto<BasTagDto> getBasTagById(String id) {
         BasTag tag = bagTagService.selectById(id);
+        if(tag == null){
+            return ResultDto.error("-1","未查询到数据");
+        }
         BasTagDto tagDto = new BasTagDto();
         try {
             BeanUtils.copyProperties(tagDto, tag);
@@ -707,7 +738,7 @@ public class SystemServiceImpl implements SystemService {
     public ResultDto<List<MemberDto>> listWatchMebmber(Integer limit, String currentMbId) {
         List<MemberDto> memberDtoList = new ArrayList<>();
         EntityWrapper actionEntityWrapper = new EntityWrapper<BasAction>();
-        actionEntityWrapper.setSqlSelect("target_id");
+        actionEntityWrapper.setSqlSelect("target_id as targetId");
 
         //target_type 0 关注用户
         actionEntityWrapper.eq("state", "0").eq("type", 5).eq("member_id", currentMbId).eq("target_type", 0);
