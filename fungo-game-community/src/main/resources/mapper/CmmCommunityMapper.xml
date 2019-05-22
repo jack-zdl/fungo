@@ -2,37 +2,38 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fungo.community.dao.mapper.CmmCommunityDao">
 
-	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.fungo.community.entity.CmmCommunity">
-		<id column="id" property="id" />
-		<result column="game_id" property="gameId" />
-		<result column="name" property="name" />
-		<result column="icon" property="icon" />
-		<result column="intro" property="intro" />
-		<result column="cover_image" property="coverImage" />
-		<result column="type" property="type" />
-		<result column="state" property="state" />
-		<result column="followee_num" property="followeeNum" />
-		<result column="created_at" property="createdAt" />
-		<result column="updated_at" property="updatedAt" />
-		<result column="created_by" property="createdBy" />
-		<result column="updated_by" property="updatedBy" />
-		<result column="hot_value" property="hotValue" />
-		<result column="recommend_state" property="recommendState" />
-		<result column="sort" property="sort" />
-	</resultMap>
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.fungo.community.entity.CmmCommunity">
+        <id column="id" property="id"/>
+        <result column="game_id" property="gameId"/>
+        <result column="name" property="name"/>
+        <result column="icon" property="icon"/>
+        <result column="intro" property="intro"/>
+        <result column="cover_image" property="coverImage"/>
+        <result column="type" property="type"/>
+        <result column="state" property="state"/>
+        <result column="followee_num" property="followeeNum"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="hot_value" property="hotValue"/>
+        <result column="recommend_state" property="recommendState"/>
+        <result column="sort" property="sort"/>
+    </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, game_id AS gameId, name, icon, intro, cover_image AS coverImage, type, state, followee_num AS followeeNum, created_at AS createdAt, updated_at AS updatedAt, created_by AS createdBy, updated_by AS updatedBy, hot_value AS hotValue, recommend_state AS recommendState, sort
     </sql>
-    
+
     <!-- 社区玩家榜
     去除游戏评论
       UNION ALL
 	  (SELECT 0 as c,0 as d,COUNT(*) as f,member_id FROM t_game_evaluation t WHERE game_id = #{gameId} and state = 0 GROUP BY t.member_id)
      -->
-    <select id="getMemberOrder" resultType="com.game.common.bean.MemberPulishFromCommunity" parameterType="java.util.Map">
+    <select id="getMemberOrder" resultType="com.game.common.bean.MemberPulishFromCommunity"
+            parameterType="java.util.Map">
 	  SELECT sum(f.c) as postNum,sum(f.d) as commentNum,sum(f.f) as evaNum,f.member_id as memberId FROM (
 	  (SELECT COUNT(*) as c, 0 as d ,0 as f,member_id FROM t_cmm_post t WHERE community_id = #{communityId} and state = 1 GROUP BY t.member_id)
 	  UNION ALL
@@ -45,5 +46,48 @@
     <select id="getCommentNumOfCommunity" resultType="int" parameterType="String">
     	SELECT COALESCE(SUM(comment_num),0) FROM t_cmm_post WHERE community_id = #{communityId} and state = 1
     </select>
+
+
+    <!-- 我的动态 - 我的评论 -->
+    <select id="getAllComments" resultType="com.game.common.bean.CommentBean" parameterType="String">
+        <!--    <![CDATA[
+                  (select id,content,5 as type,1 as targetType,post_id as targetId,date_format(updated_at, '%Y-%c-%d %H:%i:%s' ) as updatedAt, '' as replyToId, '' as replyContentId from t_cmm_comment where member_id = #{userId} and state = 0)
+                  UNION ALL
+                  (select id,content,8 as type,2 as targetType,mood_id as targetId,date_format(updated_at, '%Y-%c-%d %H:%i:%s' ) as updatedAt, '' as replyToId, '' as replyContentId from t_moo_message where member_id = #{userId} and state = 0)
+                  UNION ALL
+                  (select id,content,7 as type,target_type as targetType,target_id as targetId,date_format(updated_at, '%Y-%c-%d %H:%i:%s' ) as updatedAt, replay_to_id as replyToId, reply_to_content_id as replyContentId from t_reply where member_id = #{userId} and state = 0)
+                  ORDER BY updatedAt DESC
+                  ]]> -->
+
+        <![CDATA[
+    (select id,content,5 as type,1 as targetType,post_id as targetId,updated_at as updatedAt, '' as replyToId, '' as replyContentId from t_cmm_comment where member_id = #{userId} and state = 0)
+    UNION ALL
+    (select id,content,8 as type,2 as targetType,mood_id as targetId,updated_at as updatedAt, '' as replyToId, '' as replyContentId from t_moo_message where member_id = #{userId} and state = 0)
+    UNION ALL
+    (select id,content,7 as type,target_type as targetType,target_id as targetId,updated_at as updatedAt, replay_to_id as replyToId, reply_to_content_id as replyContentId from t_reply where member_id = #{userId} and state = 0)
+    ORDER BY updatedAt DESC
+   ]]>
+    </select>
+
+
+    <!-- 获取关注社区 -->
+    <select id="getFollowerCommunity" resultType="java.util.HashMap" parameterType="String">
+        <![CDATA[
+
+           select
+                   c.name,
+                   c.intro,
+                   c.icon ,
+                   c.id as objectId,
+                   SUM(c.followee_num + c.post_num) as hotNun
+            from
+               t_cmm_community
+            where
+                id = #{communityId}
+             GROUP BY objectId order by created_at desc
+
+        ]]>
+    </select>
+
 
 </mapper>
