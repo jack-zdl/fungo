@@ -1,6 +1,7 @@
 package com.game.common.dto.game;
 
 import com.baomidou.mybatisplus.annotations.TableField;
+import com.game.common.api.InputPageDto;
 import lombok.Data;
 
 import java.util.Date;
@@ -15,7 +16,7 @@ import java.util.Date;
  * @create 2019/5/13 18:55
  */
 @Data
-public class GameInviteDto {
+public class GameInviteDto extends InputPageDto {
     private String id;
     /**
      * 会员id

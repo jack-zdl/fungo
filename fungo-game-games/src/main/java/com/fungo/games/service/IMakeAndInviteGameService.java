@@ -57,6 +57,15 @@ public interface IMakeAndInviteGameService {
 	 */
 	public ResultDto<String> getgameAgree(String memberId, String gameId, String phoneModel);
 
+	/**
+	 *
+	 * @param memberId
+	 * @param inputPageDto
+	 * @return
+	 * @throws Exception
+	 */
+	public FungoPageResultDto<FollowUserOutBean> getInviteUserList (String memberId, MakeInputPageDto inputPageDto) throws Exception;
+
 
 
 }
