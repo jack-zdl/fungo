@@ -186,10 +186,15 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
 
 
     @Override
-    public List<Map<String, Object>> getFollowerCommunity(int pageNum, int limit, String communityId) {
+    public List<Map<String, Object>> getFollowerCommunity(int pageNum, int limit, List<String> communityIds) {
         try {
+
+            if (null == communityIds || communityIds.isEmpty()) {
+                return null;
+            }
+
             Page page = new Page(pageNum, limit);
-            return cmmCommunityDaoService.getFollowerCommunity(page, communityId);
+            return cmmCommunityDaoService.getFollowerCommunity(page, communityIds);
         } catch (Exception ex) {
             LOGGER.error("//ms/service/cmm/user/flw/cmtlists--getFollowerCommunity-出现异常:", ex);
         }

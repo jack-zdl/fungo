@@ -65,8 +65,8 @@ public interface IMSServiceCommunityService {
      * 分页获取关注社区
      * @param pageNum 每页条数
      * @param limit
-     * @param communityId
+     * @param communityIds
      * @return
      */
-    public List<Map<String,Object>> getFollowerCommunity(int pageNum,int limit, String communityId);
+    public List<Map<String,Object>> getFollowerCommunity(int pageNum,int limit, List<String> communityIds);
 }

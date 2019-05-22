@@ -30,9 +30,9 @@ public interface CmmCommunityDaoService extends IService<CmmCommunity> {
     /**
      * 获取关注社区
      * @param page 分页
-     * @param communityId 社区id
+     * @param communityIds 社区id
      * @return
      */
-    public List<Map<String,Object>> getFollowerCommunity(Page page,String communityId);
+    public List<Map<String,Object>> getFollowerCommunity(Page page,List<String> communityIds);
 
 }

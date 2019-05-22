@@ -108,16 +108,16 @@ public class MSServiceCommunityController {
      * 分页查询 关注社区  数据
      * @param pageNum 当前页码
      * @param limit 每页条数
-     * @param communityId 社区id
+     * @param communityIds 社区id
      * @return
      */
     @PostMapping("/ms/service/cmm/user/flw/cmtlists")
     public FungoPageResultDto<Map<String, Object>> getFollowerCommunity(@RequestParam("pageNum") int pageNum,
-                                                                        @RequestParam("limit") int limit, @RequestParam("communityId") String communityId) {
+                                                                        @RequestParam("limit") int limit, @RequestParam("communityId") List<String> communityIds) {
 
         FungoPageResultDto<Map<String, Object>> resultDto = new FungoPageResultDto<Map<String, Object>>();
 
-        List<Map<String, Object>> commentBeanList = imsServiceCommunityService.getFollowerCommunity(pageNum, limit, communityId);
+        List<Map<String, Object>> commentBeanList = imsServiceCommunityService.getFollowerCommunity(pageNum, limit, communityIds);
 
         resultDto.setData(commentBeanList);
 

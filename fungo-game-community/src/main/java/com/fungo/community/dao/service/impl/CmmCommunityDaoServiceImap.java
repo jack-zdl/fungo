@@ -33,7 +33,7 @@ public class CmmCommunityDaoServiceImap extends ServiceImpl<CmmCommunityDao, Cmm
     }
 
     @Override
-    public List<Map<String, Object>> getFollowerCommunity(Page page, String communityId) {
-        return communityDao.getFollowerCommunity(page, communityId);
+    public List<Map<String, Object>> getFollowerCommunity(Page page, List<String> communityIds) {
+        return communityDao.getFollowerCommunity(page, communityIds);
     }
 }
