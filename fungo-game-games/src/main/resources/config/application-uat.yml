@@ -1,3 +1,7 @@
+server:
+  port: 8781
+
+
 eureka:
   instance:
     prefer-ip-address: true
@@ -8,8 +12,7 @@ eureka:
   client:
     serviceUrl:
       defaultZone:  http://peer1:8761/eureka/,http://peer2:8762/eureka/,http://peer2:8763/eureka/
-server:
-  port: 8781
+
 spring:
   cloud:
     client:

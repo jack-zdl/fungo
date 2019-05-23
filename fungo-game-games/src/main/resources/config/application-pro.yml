@@ -1,7 +1,7 @@
 server:
   port: 8781
 
-
+  
 eureka:
   instance:
     prefer-ip-address: true
@@ -11,16 +11,16 @@ eureka:
     lease-renewal-interval-in-seconds: 5
   client:
     serviceUrl:
-      defaultZone:  http://127.0.0.1:8761/eureka/
+      defaultZone:  http://peer1:8761/eureka/,http://peer2:8762/eureka/,http://peer2:8763/eureka/
 
 spring:
   cloud:
     client:
-      ipAddress:  127.0.0.1
+      ipAddress: 39.105.18.214
   application:
     name: fungo-game-games
 
-  #-----------------------------------------------
+#-----------------------------------------------
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.jdbc.Driver
@@ -94,7 +94,7 @@ spring:
   session:
     store-type: redis
   zipkin:
-    base-url:  http://127.0.0.1:9411
+    base-url:  http://peer1:9411
     sender:
       type: web
   sleuth:
