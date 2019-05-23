@@ -195,6 +195,9 @@ public class MakeAndInviteGameController {
                 mqProduct.basNoticeUpdateById(basNoticeDto);
             } else {
                 Game g = gameService.selectById(inputPageDto.getGameId());
+                if(g==null){
+                    return ResultDto.error("-1", "未找到相关游戏");
+                }
                 MsgTplBean msg = this.getMsg(inputPageDto.getGameId(), "<span sytle='color:#242529'>" + name + "</span> 邀请你测评 <a href='#' style='color: red;' >" + g.getName() + "游戏</a> 快去发表你的看法吧");
 //                迁移微服务 添加插入BasNotice数据返回主键
 //                2019-05-13

@@ -85,7 +85,7 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
                 e.printStackTrace();
             }
         }
-        return null;
+        return new ArrayList<CommentBean>();
     }
 
     @Override
