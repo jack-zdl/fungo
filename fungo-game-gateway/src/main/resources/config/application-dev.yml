@@ -18,7 +18,6 @@ fungoServer:
   game.uri: lb://FUNGO-GAME-GAMES
 
 
-
 spring:
   cloud:
       client:
@@ -33,24 +32,8 @@ spring:
     sender:
       type: web
 
-## 关闭安全限制
-#management:
-#  security:
-#    enabled: false
-#显示路由zuul的端口配置，不配置无法访问 /routes
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: ALWAYS
-
-
   #
   # 路由配置
-  cloud:
     gateway:
       default-filters:
       discovery:
@@ -411,6 +394,19 @@ management:
 
 
 
+## 关闭安全限制
+#management:
+#  security:
+#    enabled: false
+#显示路由zuul的端口配置，不配置无法访问 /routes
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
 
 
 hystrix:
