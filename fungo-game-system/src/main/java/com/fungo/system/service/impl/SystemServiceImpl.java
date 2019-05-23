@@ -600,29 +600,26 @@ public class SystemServiceImpl implements SystemService {
         if (StringUtil.isNull(taskDto.getRequestId())) {
             return ResultDto.error("-1", "任务唯一请求码缺失");
         }
-
+        ResultDto<Map<String, Object>> re = null;
+        try{
         if(!UniqueIdCkeckUtil.checkUniqueIdAndSave(taskDto.getRequestId())){
             return ResultDto.error("-1", "业务已执行");
         }
-        ResultDto<Map<String, Object>> re = null;
-        try{
             Map<String, Object> map = null;
-            try {
-                if (StringUtil.isNull(taskDto.getTargetId())) {
+
+            if (StringUtil.isNull(taskDto.getTargetId())) {
                     map = iMemberIncentDoTaskFacadeService.exTask(taskDto.getMbId(), taskDto.getTaskGroupFlag(), taskDto.getTaskType(), taskDto.getTypeCodeIdt());
                 } else {
                     map = iMemberIncentDoTaskFacadeService.exTask(taskDto.getMbId(), taskDto.getTaskGroupFlag(), taskDto.getTaskType(), taskDto.getTypeCodeIdt(), taskDto.getTargetId());
                 }
                 re = ResultDto.success(map);
-            } catch (Exception e) {
-                LOGGER.error("SystemServiceImpl.exTask", e);
-                re = ResultDto.error("-1", "任务执行异常");
-            }
         }catch (Exception e){
             //手动开启事务回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             //删除唯一请求标志,使逻辑可以重试
             UniqueIdCkeckUtil.deleteUniqueId(taskDto.getRequestId());
+            LOGGER.error("SystemServiceImpl.exTask", e);
+            re = ResultDto.error("-1", "任务执行异常");
         }
         return re;
     }
