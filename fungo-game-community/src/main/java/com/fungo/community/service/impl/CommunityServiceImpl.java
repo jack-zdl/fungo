@@ -894,7 +894,7 @@ public class CommunityServiceImpl implements ICommunityService {
 //		keyword = keyword.replace(" ", "");
         @SuppressWarnings("unchecked")
         Page<CmmCommunity> cmmPage = communityService.selectPage(new Page<>(page, limit), Condition.create()
-                .setSqlSelect("id,icon,name,intro,created_at,updated_at,followee_num,post_num,type")
+                .setSqlSelect("id,icon,name,intro,created_at as createdAt ,updated_at as  updatedAt  ,followee_num as followeeNum,post_num as postNum,type")
                 .like("name", keyword).and("state = {0}", 1));
         List<CmmCommunity> communityList = cmmPage.getRecords();
 //		if (communityList == null || communityList.isEmpty()) {

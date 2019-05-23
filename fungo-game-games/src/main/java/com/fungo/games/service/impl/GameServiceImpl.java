@@ -821,7 +821,7 @@ public class GameServiceImpl implements IGameService {
     @Override
     public FungoPageResultDto<GameSearchOut> searchGames(int page, int limit, String keyword, String tag, String sort,String os,String memberId)
             throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        if (keyword == null || "".equals(keyword.replace(" ", ""))) {
+        if (keyword == null || "".equals(keyword.replace(" ", "")) || keyword.contains("%")) {
             return FungoPageResultDto.error("13", "请输入正确的关键字格式");
         }
         @SuppressWarnings("rawtypes")
