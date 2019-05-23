@@ -1,4 +1,4 @@
-package com.fungo.regs.controller;
+package com.fungo.mange.regs.controller;
 
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
