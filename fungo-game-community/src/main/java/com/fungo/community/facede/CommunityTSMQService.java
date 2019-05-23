@@ -2,14 +2,18 @@ package com.fungo.community.facede;
 
 
 import com.alibaba.fastjson.JSON;
+import com.fungo.community.feign.TSFeignClient;
 import com.fungo.community.service.ICounterService;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
+import com.game.common.util.UniqueIdCkeckUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.Map;
 
@@ -19,13 +23,17 @@ import java.util.Map;
  *
  * @Date: Create in 2018/5/8
  */
-@Component
+@Service
+@Transactional
 public class CommunityTSMQService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunityTSMQService.class);
 
     @Autowired
     private ICounterService iCounterService;
+
+    @Autowired
+    private TSFeignClient feignClient;
 
 
     /**
@@ -34,17 +42,29 @@ public class CommunityTSMQService {
      * @return
      */
     public boolean excuteMQ(String msgData) {
-
         boolean isOk = true;
-
+        String msgId = null;
         try {
-
             TransactionMessageDto transactionMessageDto = JSON.parseObject(msgData, TransactionMessageDto.class);
-            if (null != transactionMessageDto) {
+            //消息id不可为空
+            if (null != transactionMessageDto&&transactionMessageDto.getMessageId() != null) {
+                msgId = transactionMessageDto.getMessageId() .toString();
                 switch (transactionMessageDto.getMessageDataType()) {
-                    //系统业务
+                    //接收到的消息，本服务是否应该处理 -- 在校验重复消费前做是否处理校验，避免redis存入数据
                     case TransactionMessageDto.MESSAGE_DATA_TYPE_SYSTEM:
+                        //校验是否重复消费
+                        if (!UniqueIdCkeckUtil.checkUniqueIdAndSave(msgId)) {
+                            LOGGER.warn("社区服务-重复消费驳回,消息内容:"+msgData);
+                            return true;
+                        }
                         isOk = excSystem(transactionMessageDto.getMessageBody());
+                        if (isOk) {
+                            //删除消息
+                            feignClient.deleteMessageByMessageId(transactionMessageDto.getMessageId());
+                        }else{
+                            //执行不成功，不确认消费，让定时任务重试（删除唯一请求标志）
+                            UniqueIdCkeckUtil.deleteUniqueId(msgId);
+                        }
                         break;
                     default:
                         break;
@@ -53,7 +73,13 @@ public class CommunityTSMQService {
             }
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOGGER.error("社区服务消费消息异常:" + msgData, ex);
+            //手动开启事务回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            //删除唯一请求标志,使逻辑可以重试
+            if (msgId != null) {
+                UniqueIdCkeckUtil.deleteUniqueId(msgId);
+            }
             isOk = false;
         }
         return isOk;

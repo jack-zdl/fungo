@@ -14,13 +14,27 @@ import reactor.core.publisher.Mono;
 public class FungoGatewayFilter implements GatewayFilter, Ordered {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FungoGatewayFilter.class);
+<<<<<<< HEAD
+=======
+    private static final String REQUEST_TIME_BEGIN = "requestTimeBegin";
+>>>>>>> remotes/origin/Branch_communityV2
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
+<<<<<<< HEAD
         return chain.filter(exchange).then(
                 Mono.fromRunnable(() -> {
                     LOGGER.info("------------------过滤器:{}", exchange.getRequest().getURI().getRawPath());
+=======
+        exchange.getAttributes().put(REQUEST_TIME_BEGIN, System.currentTimeMillis());
+        return chain.filter(exchange).then(
+                Mono.fromRunnable(() -> {
+                    Long startTime = exchange.getAttribute(REQUEST_TIME_BEGIN);
+                    if (startTime != null) {
+                        LOGGER.info("------------------过滤器:{}", exchange.getRequest().getURI().getRawPath() + " : " + (System.currentTimeMillis() - startTime) + "ms");
+                    }
+>>>>>>> remotes/origin/Branch_communityV2
                 })
         );
 

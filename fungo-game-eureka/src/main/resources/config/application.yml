@@ -1,10 +1,9 @@
 spring:
-
   profiles:
     active: dev
+
 management:
   security:
     enabled:  false
 application.version : V3.0.0-SNAPSHOT
 #debug: true
-
