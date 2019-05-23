@@ -23,10 +23,17 @@
 	</properties>
 
 	<dependencies>
-		<dependency>
+	 <dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-zuul</artifactId>
 		</dependency>
+
+		  <!--网关使用springCloud gateway
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-gateway</artifactId>
+		</dependency>
+		-->
 		<!--勿删-->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
