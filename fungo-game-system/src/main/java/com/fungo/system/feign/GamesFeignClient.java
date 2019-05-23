@@ -10,7 +10,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -25,15 +24,17 @@ import java.util.Map;
 public interface GamesFeignClient {
 
     @RequestMapping(value = "/ms/service/game/api/content/gameList", method = RequestMethod.POST)
-    FungoPageResultDto<GameOutBean> getGameList( @RequestBody GameItemInput input);
+    FungoPageResultDto<GameOutBean> getGameList(@RequestBody GameItemInput input);
 
     @RequestMapping(value = "/ms/service/game/api/content/games", method = RequestMethod.POST)
     FungoPageResultDto<GameOutPage> getGameList(@RequestBody GameInputPageDto gameInputDto);
 
 
-    //    @RequestMapping(value = "/ms/service/game/api/gamereleaselog", method = RequestMethod.POST)
-    //    FungoPageResultDto<GameReleaseLogDto> selectOne(GameReleaseLogDto GameReleaseLog);
-    //    根据游戏版本日志审批对象查询集合
+    @RequestMapping(value = "/ms/service/game/api/gamereleaselog", method = RequestMethod.POST)
+    FungoPageResultDto<GameReleaseLogDto> selectOne(GameReleaseLogDto GameReleaseLog);
+
+
+    // 根据游戏版本日志审批对象查询集合
     @SuppressWarnings("all")
     @ApiOperation(value = "根据游戏版本日志审批对象查询集合", notes = "")
     @RequestMapping(value = "/ms/service/game/api/evaluation/getGameReleaseLogPage", method = RequestMethod.POST)
@@ -51,7 +52,7 @@ public interface GamesFeignClient {
     boolean updateCounter(@RequestBody Map<String, String> map);
 
     @RequestMapping(value = "/ms/service/game/api/selectCount", method = RequestMethod.POST)
-    int gameSurveySelectCount(  GameSurveyRelDto gameSurveyRel);
+    int gameSurveySelectCount(GameSurveyRelDto gameSurveyRel);
 
     /**
      * 功能描述:
@@ -61,7 +62,7 @@ public interface GamesFeignClient {
      * @date: 2019/5/17 15:16
      */
     @RequestMapping(value = "/ms/service/game/api/gameEvaluation/selectCount", method = RequestMethod.POST)
-    int gameEvaluationSelectCount(  GameEvaluationDto gameEvaluation);
+    int gameEvaluationSelectCount(GameEvaluationDto gameEvaluation);
 
     /**
      * 被点赞用户的id
@@ -100,18 +101,27 @@ public interface GamesFeignClient {
     int getGameSelectCountByLikeNameAndState(@RequestBody GameDto gameDto);
 
     @ApiOperation(value = "getGameSelectCountByLikeNameAndState", notes = "")
-    @RequestMapping(value = "/ms/service/game//api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.GET)
+    @RequestMapping(value = "/ms/service/game/api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.GET)
     ResultDto<CardIndexBean> getSelectedGames();
 
     @ApiOperation(value = "getGameSelectCountByLikeNameAndState", notes = "")
-    @RequestMapping(value = "/ms/service/game//api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/game/api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.POST)
     ResultDto<CardIndexBean> getSelectedGames(@RequestBody GameDto gameDto);
 
     @ApiOperation(value = "getRateData", notes = "")
-    @RequestMapping(value = "/ms/service/game//api/game/getRateData", method = RequestMethod.GET)
+    @RequestMapping(value = "/ms/service/game/api/game/getRateData", method = RequestMethod.GET)
     ResultDto<HashMap<String, BigDecimal>> getRateData(@RequestParam("gameId") String gameId);
 
     @ApiOperation(value = "getEvaluationEntityWrapper", notes = "")
-    @RequestMapping(value = "/ms/service/game//api/game/getEvaluationEntityWrapper", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/game/api/game/getEvaluationEntityWrapper", method = RequestMethod.POST)
     ResultDto<List<GameEvaluationDto>> getEvaluationEntityWrapper(@RequestParam("memberId") String memberId, @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate);
+
+
+    @ApiOperation(value = "游戏评价邀请的分页查询", notes = "")
+    @RequestMapping(value = "/ms/service/game/api/evaluation/getGameInvitePage", method = RequestMethod.POST)
+    FungoPageResultDto<GameInviteDto> getGameInvitePage(@RequestBody GameInviteDto gameInviteDto);
+
+    @ApiOperation(value = "查询游戏评论表中发表评论大于X条，前Y名的用户", notes = "")
+    @RequestMapping(value = "/ms/service/game/api/game/getRecommendMembersFromEvaluation", method = RequestMethod.POST)
+    ResultDto<List<String>> getRecommendMembersFromEvaluation(@RequestParam("x") Integer x, @RequestParam("y") Integer y, @RequestParam("wathMbsSet") List<String> wathMbsSet);
 }

@@ -132,7 +132,7 @@
         <where>
             state = 1
             <if test="wathMbsSet != null and wathMbsSet.size > 0">
-                AND  member_id NOT IN
+                AND member_id NOT IN
                 <foreach item="item" index="index" collection="wathMbsSet" open="(" separator="," close=")">
                     #{item}
                 </foreach>
@@ -144,9 +144,38 @@
         WHERE
         <![CDATA[  cpstcnt.ccnt >= #{ccnt} ]]>
         <if test="limitSize > 0">
-            LIMIT  #{limitSize}
+            LIMIT #{limitSize}
         </if>
 
     </select>
+
+
+    <!-- 获取我的收藏（文章） -->
+    <select id="getCollection" resultType="com.game.common.bean.CollectionBean">
+
+        select
+        p.id,
+        p.title,
+        p.content,
+        p.cover_image as coverImage,
+        p.video as video,
+        p.member_id as memberId,
+        p.updated_at as updatedAt
+
+        from t_cmm_post p
+
+        <where>
+            <if test="postIds != null and postIds.size > 0">
+                p.id IN
+                <foreach item="item" index="index" collection="postIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+
+        order by updatedAt desc
+
+    </select>
+
 
 </mapper>

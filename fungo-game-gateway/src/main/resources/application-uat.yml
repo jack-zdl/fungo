@@ -1,7 +1,7 @@
 eureka:
   client:
     serviceUrl:
-      defaultZone:  http://39.105.18.214:8761/eureka/
+      defaultZone:  http://peer1:8761/eureka/,http://peer2:8762/eureka/,http://peer2:8763/eureka/
   instance:
     instance-id: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
 #    prefer-ip-address: true
@@ -15,7 +15,7 @@ spring:
     sampler:
       percentage: 1.0
   zipkin:
-    base-url: http://39.105.18.214:9411/
+    base-url: http://peer1:9411/
     sender:
       type: web
 
@@ -36,6 +36,9 @@ management:
 #
 # 路由配置
 zuul:
+  host:
+    connect-timeout-millis: 15000
+    socket-timeout-millis: 60000
   routes:
     fungo-game-system-1:
       path: /api/action/**
@@ -157,6 +160,16 @@ zuul:
       serviceId:  FUNGO-GAME-SYSTEM
       sensitiveHeaders:
       strip-prefix: false
+    fungo-game-system-26:
+      path: /api/upload/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-27:
+      path: /api/invite/users
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
 
     #社区接口
     fungo-game-commmunity-1:
@@ -234,7 +247,16 @@ zuul:
       serviceId:  FUNGO-GAME-COMMUNITY
       sensitiveHeaders:
       strip-prefix: false
-
+    fungo-game-commmunity-19:
+      path: /api/search/communitys
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-20:
+      path: /api/search/posts
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
 
 
 
@@ -400,7 +422,7 @@ hystrix:
 #          thread:
 #            timeoutInMilliseconds: 40000  #命令执行超时时间，默认1000ms
 ribbon:
-  ConnectTimeout: 5000
+  ConnectTimeout: 10000
   ReadTimeout: 15000
 
 

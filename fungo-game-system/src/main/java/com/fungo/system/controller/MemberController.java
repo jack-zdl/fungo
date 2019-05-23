@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.BasAction;
+import com.fungo.system.proxy.ICommunityProxyService;
+import com.fungo.system.proxy.IGameProxyService;
 import com.fungo.system.service.BasActionService;
 import com.fungo.system.service.IMemberService;
 import com.fungo.system.service.IUserService;
@@ -57,6 +59,12 @@ public class MemberController {
 
     @Autowired
     private FungoCacheMember fungoCacheMember;
+
+    @Autowired
+    private IGameProxyService gameProxyService;
+
+    @Autowired
+    private ICommunityProxyService communityProxyService;
 
 
     @ApiOperation(value = "获取我的收藏", notes = "获取我的收藏")
@@ -230,20 +238,23 @@ public class MemberController {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("memberId", inputpage.getCardId());
             map.put("postIdList", postIdList);
-            listDate = actionDao.getPostFeeds(map);
+            //  @todo 5.22  废弃
+            listDate =   communityProxyService.getPostFeeds(map); // actionDao.getPostFeeds(map);
         }
         if (evaluationIdList.size() != 0) {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("memberId", inputpage.getCardId());
             map.put("evaluationIdList", evaluationIdList);
-            List<Map<String, Object>> list1 = actionDao.getEvaluationFeeds(map);
+            // @todo 5.22 废弃
+            List<Map<String, Object>> list1 =  gameProxyService.getEvaluationFeeds(map); // actionDao.getEvaluationFeeds(map);
             listDate.addAll(list1);
         }
         if (moodIdList.size() != 0) {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("memberId", inputpage.getCardId());
             map.put("moodIdList", moodIdList);
-            List<Map<String, Object>> list2 = actionDao.getMoodFeeds(map);
+            // @todo 5.22 废弃
+            List<Map<String, Object>> list2 = communityProxyService.getMoodFeeds(map);  //actionDao.getMoodFeeds(map);
             listDate.addAll(list2);
         }
 

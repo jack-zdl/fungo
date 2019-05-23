@@ -13,6 +13,7 @@ import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.community.MooMessageDto;
 import com.game.common.dto.community.MooMoodDto;
 import com.game.common.dto.game.GameEvaluationDto;
+import com.game.common.dto.game.GameInviteDto;
 import com.game.common.enums.CommonEnum;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
@@ -195,6 +196,29 @@ public class GameProxyServiceImpl implements IGameProxyService {
         return evaluationEntityWrapper.getData();
     }
 
+    @HystrixCommand(fallbackMethod = "hystrixSelectGameInvite",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    @Override
+    public GameInviteDto selectGameInvite(GameInviteDto gameInviteDto) {
+        GameInviteDto result = null;
+        FungoPageResultDto<GameInviteDto> re =  gamesFeignClient.getGameInvitePage(gameInviteDto);
+        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
+            result = re.getData().get(0);
+        }
+        return result;
+    }
+
+    @Override
+    public List<Map<String, Object>> getEvaluationFeeds(Map<String, Object> map) {
+        return null;
+    }
+
+    @Override
+    public List<String> getRecommendMembersFromEvaluation(Integer x, Integer y, List<String> wathMbsSet) {
+        ResultDto<List<String>> re = gamesFeignClient.getRecommendMembersFromEvaluation(x,y,wathMbsSet);
+        return re.getData();
+    }
+
     public List<GameEvaluationDto> hystrixGetEvaluationEntityWrapper(String memberId, String startDate,String endDate) {
         logger.warn("IndexProxyServiceImpl.hystrixGetEvaluationEntityWrapper ");
         return null;
@@ -227,6 +251,11 @@ public class GameProxyServiceImpl implements IGameProxyService {
 
     public MooMessageDto hystrixSelectMooMessageById(String id) {
         logger.warn("GameProxyServiceImpl.selectMooMessageById根据主键查询游戏评价异常");
+        return null;
+    }
+
+    public GameInviteDto hystrixSelectGameInvite(GameInviteDto gameInviteDto) {
+        logger.warn("GameProxyServiceImpl.hystrixSelectGameInvite根据主键查询游戏评价异常");
         return null;
     }
 }

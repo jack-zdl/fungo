@@ -3,6 +3,7 @@ package com.fungo.community.dao.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.community.entity.CmmPost;
+import com.game.common.bean.CollectionBean;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
@@ -63,4 +64,12 @@ public interface CmmPostDao extends BaseMapper<CmmPost> {
     public List<String> getRecommendMembersFromCmmPost(@Param("ccnt") long ccnt, @Param("limitSize") long limitSize,
                                                        @Param("wathMbsSet") List<String> wathMbsSet);
 
+
+    /**
+     * 获取我的收藏（文章）
+     * @param page
+     * @param postIds
+     * @return
+     */
+    public List<CollectionBean> getCollection(Page<CollectionBean> page, @Param("postIds") List<String>  postIds);
 }
