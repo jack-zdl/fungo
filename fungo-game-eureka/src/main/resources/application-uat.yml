@@ -1,4 +1,21 @@
-----
+#server:
+#  port: 8761
+#security:
+#  basic:
+#    enabled: true
+#eureka:
+#  server:
+#    enable-self-preservation: false
+#  instance:
+#    hostname: localhost
+#  client:
+#    healthcheck:    # eureka添加健康检查
+#      enabled: true
+#    registerWithEureka: false
+#    fetchRegistry: false
+#    serviceUrl:
+#      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+#---
 spring:
   application:
     name: eureka-server
@@ -9,8 +26,8 @@ eureka:
   instance:
     hostname: peer1
   client:
-    registerWithEureka: false
-    fetchRegistry: false
+    registerWithEureka: true
+    fetchRegistry: true
     serviceUrl:
       defaultZone: http://peer2:8762/eureka/,http://peer3:8763/eureka/
 
@@ -25,8 +42,8 @@ eureka:
   instance:
     hostname: peer2
   client:
-    registerWithEureka: false
-    fetchRegistry: false
+    registerWithEureka: true
+    fetchRegistry: true
     serviceUrl:
       defaultZone: http://peer1:8761/eureka/,http://peer3:8763/eureka/
 
@@ -41,8 +58,8 @@ eureka:
   instance:
     hostname: peer3
   client:
-    registerWithEureka: false
-    fetchRegistry: false
+    registerWithEureka: true
+    fetchRegistry: true
     serviceUrl:
       defaultZone: http://peer1:8761/eureka/,http://peer2:8762/eureka/
 

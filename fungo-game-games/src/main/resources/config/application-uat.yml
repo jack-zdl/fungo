@@ -1,7 +1,9 @@
 eureka:
   instance:
-    prefer-ip-address: true
-    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+#    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+    lease-expiration-duration-in-seconds: 15
+    lease-renewal-interval-in-seconds: 5
   client:
     serviceUrl:
       defaultZone:  http://peer1:8761/eureka/,http://peer2:8762/eureka/,http://peer2:8763/eureka/
@@ -9,8 +11,10 @@ server:
   port: 8781
 spring:
   cloud:
+    inetutils:
+      ignored-interfaces[0]: docker0
     client:
-      ipAddress: 39.105.18.214
+      ipAddress: localhost
   application:
     name: fungo-game-games
 
