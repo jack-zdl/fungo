@@ -4,8 +4,8 @@ eureka:
       defaultZone:  http://peer1:8761/eureka/,http://peer2:8762/eureka/,http://peer2:8763/eureka/
   instance:
     instance-id: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
-#    prefer-ip-address: true
-    appname: scyp-gateway
+    prefer-ip-address: true
+    appname:fungo-game-gateway
 server:
   port: 8182
 spring:
