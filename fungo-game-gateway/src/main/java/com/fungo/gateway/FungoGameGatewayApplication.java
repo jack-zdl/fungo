@@ -7,8 +7,9 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
 
 
-@EnableEurekaClient
+
 @SpringBootApplication
+@EnableEurekaClient
 public class FungoGameGatewayApplication {
 
     public static void main(String[] args) {
