@@ -1,6 +1,6 @@
 package com.fungo.community.service.impl;
 
-import com.fungo.games.entity.BasLog;
+import com.fungo.community.entity.BasLog;
 import com.game.common.dto.WebLog;
 import com.game.common.log.IRequestLogger;
 import org.springframework.stereotype.Service;
