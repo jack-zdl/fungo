@@ -13,17 +13,18 @@ eureka:
     #EurekaServer在收到最后一次心跳后等待的时间上限，（单位：秒），超过则剔除。客户端告诉注册服务端自己会按照该规则发送心跳
     lease-expiration-duration-in-seconds: 15
 
+#-----------------------------------------------------------------------------------------------------------
   client:
     serviceUrl:
       defaultZone:  http://127.0.0.1:8761/eureka/
-
+#-----------------------------------------------------------------------------------------------------------
 spring:
   cloud:
     client:
       ipAddress:  127.0.0.1
   application:
     name: fungo-game-community
-
+  #-----------------------------------------------------------------------------------------------------------
   session:
     store-type: redis
   zipkin:
@@ -35,6 +36,10 @@ spring:
       probability: 1.0
   main:
     allow-bean-definition-overriding: true #当遇到同样名字的时候，是否允许覆盖注册
+
+
+  #-----------------------------------------------------------------------------------------------------------
+
   #  type-aliases-package: com.fungo.system.entity
   ## 当post /refresh方式刷新配置 时 ，会有个安全限制，关掉就可以了
   #security:
@@ -54,7 +59,7 @@ spring:
       web:
         exposure:
           include: "*"  # 暴露所有服务监控端口，也可以只暴露 hystrix.stream端口
-
+  #-----------------------------------------------------------------------------------------------------------
   turbine:
     #  1.被监控的服务应用没有配置 context-path 的情况下
     # 配置 Eureka 中的 serviceId 列表，指定要监控的服务
@@ -63,11 +68,13 @@ spring:
       cluster-config: default
     cluster-name-expression: new String("default")
   #  combine-host-port: true
-
+  #-----------------------------------------------------------------------------------------------------------
   hystrix:
     command:
       default:
         execution:
+          timeout:
+            enabled: false
           isolation:
             strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
             thread:
@@ -106,7 +113,7 @@ spring:
   cache:
     ehcache:
       config: classpath:ehcache.xml
-
+  #-----------------------------------------------------------------------------------------------------------
 
 
   #Redis基于哨兵机制的主从
@@ -172,7 +179,7 @@ aliyun.oss:
   imgDomain: https://output-mingbo.oss-cn-beijing.aliyuncs.com/
   regionId: cn-hangzhou
 
-
+#-----------------------------------------------------------------------------------------------------------
 #阿里云云视频点播服务鉴权秘钥
 aliyun.vod:
   vodAccessKeyId: LTAILu78tcMMnOwk
@@ -180,12 +187,12 @@ aliyun.vod:
   vodRegionId: cn-shanghai
   #阿里云视频点播分类id
   vodCateId: 1000013332
-
+#-----------------------------------------------------------------------------------------------------------
 #阿里云短信模板
 aliyun.sms:
   template.code: SMS_158942300
 
-
+#-----------------------------------------------------------------------------------------------------------
 #系统推送鉴权秘钥配置
 #1.华为平台
 push.config:
@@ -206,23 +213,23 @@ fungo:
   api:
     sKey: 021a0af9720f1c005f35c9618839cc3b
 
-
+#-----------------------------------------------------------------------------------------------------------
 #系统配置-集群编号
 sys.config.fungo:
   cluster.index: 1
-
+#-----------------------------------------------------------------------------------------------------------
 
 #fungo安全机制接口身份key
 fungo.security:
   core.api:
     secret.key: 5a058f3f3f4de23234f536479156acde
 
-
+#-----------------------------------------------------------------------------------------------------------
 
 
 spring.aop.auto: true
 #spring.aop.proxy-target-class: true
-
+#-----------------------------------------------------------------------------------------------------------
 
 #fungo数据迁移接口授权秘钥
 fgoTransfAuth: adfe35cf834349b0b98b549292c1d65b
