@@ -19,9 +19,7 @@ eureka:
 
 
 spring:
-  cloud:
-    client:
-      ipAddress:  127.0.0.1
+
   application:
     name: fungo-game-gateway
   sleuth:
@@ -34,6 +32,9 @@ spring:
 
     #
     # 路由配置
+  cloud:
+    client:
+      ipAddress:  127.0.0.1
     gateway:
       default-filters:
       discovery:
