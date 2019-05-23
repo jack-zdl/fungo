@@ -1,4 +1,26 @@
 spring:
+<<<<<<< HEAD
+=======
+
+  application:
+    name: eureka-server
+server:
+  port: 8761
+eureka:
+  instance:
+    hostname: eureka-server
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+#    serviceUrl:
+#      defaultZone: http://127.0.0.1:8761/eureka/
+  server:
+    #测试时关闭自我保护机制，保证不可用服务及时剔除，生产环境要开启自我保护机制
+    enable-self-preservation: false
+    #间隔6秒踢出
+    eviction-interval-timer-in-ms: 60000
+
+>>>>>>> remotes/origin/Branch_communityV2
   profiles:
     active: dev
 management:
