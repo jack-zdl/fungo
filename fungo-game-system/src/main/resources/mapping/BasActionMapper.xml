@@ -51,7 +51,15 @@
 			a.member_id=#{memberId} and a.type=4 and a.state<>-1  
 			and a.target_id=p.id order by a.created_at desc
 	]]></select>
-	
+
+	<!-- 获取我的收藏（文章）id列表 -->
+	<select id="listArticleIds" resultType="java.lang.String" parameterType="String"><![CDATA[
+		select target_id
+		from t_bas_action a where
+			a.member_id=#{memberId} and a.type=4 and a.state<>-1
+			order by a.created_at desc
+	]]></select>
+
 	
 	<!-- 获取关注社区 -->
 	<select id="getFollowerCommunity" resultType="String" parameterType="String">

@@ -1,6 +1,7 @@
 package com.fungo.system.mq;
 
 import com.alibaba.fastjson.JSON;
+import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.ts.mq.service.ITransactionMessageService;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.ts.mq.dto.MQResultDto;
@@ -14,6 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  *  用户mq相关测试
@@ -24,6 +26,15 @@ public class UserMqTest {
 
     @Autowired
     private ITransactionMessageService iTransactionMessageService;
+
+    @Autowired
+    BasActionDao basActionDao;
+
+    @Test
+    public void testAction(){
+        List<String> ids = basActionDao.listArticleIds("00167ecb60374a439431563401285e58");
+        System.out.println(ids);
+    }
 
     /**
      *  扣减用户经验值和等级

@@ -53,4 +53,6 @@ public interface BasActionDao extends BaseMapper<BasAction> {
 	//计数器
 	public boolean batchSubCountor(Map<String, Object> map);
 
+	List<String> listArticleIds(String memberId);
+
 }

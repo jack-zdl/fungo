@@ -1,5 +1,6 @@
 package com.fungo.system.feign;
 
+import com.game.common.bean.CollectionBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.*;
@@ -120,6 +121,13 @@ public interface CommunityFeignClient {
     FungoPageResultDto<CommentBean> getAllComments(@RequestParam("pageNum") int pageNum,
                                                           @RequestParam("limit") int limit, @RequestParam("userId") String userId);
 
+    /**
+     * 获取我的收藏（文章）
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/post/user/collect")
+    FungoPageResultDto<CollectionBean> listCmmPostUsercollect(@RequestParam("pageNum") int pageNum,
+                                                              @RequestParam("limit") int limit, @RequestParam("postIds") List<String> postIds);
     /**
      * 查询文章表中发表文章大于10条的前10名用户
      * @param ccnt 达到文章条数

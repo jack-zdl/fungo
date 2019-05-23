@@ -4,7 +4,7 @@ eureka:
     instance-id: ${spring.cloud.client.ipAddress}:${server.port}
   client:
     serviceUrl:
-      defaultZone:  http://39.105.18.214:8761/eureka/
+      defaultZone:  http://peer1:8761/eureka/,http://peer2:8762/eureka/,http://peer2:8763/eureka/
 server:
   port: 8781
 spring:
@@ -88,7 +88,7 @@ spring:
   session:
     store-type: redis
   zipkin:
-    base-url:  http://39.105.18.214:9411
+    base-url:  http://peer1:9411
     sender:
       type: web
   sleuth:

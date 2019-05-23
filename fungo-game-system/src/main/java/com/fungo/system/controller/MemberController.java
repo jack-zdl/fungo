@@ -238,14 +238,14 @@ public class MemberController {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("memberId", inputpage.getCardId());
             map.put("postIdList", postIdList);
-            //  @todo 5.22
+            //  @todo 5.22  废弃
             listDate =   communityProxyService.getPostFeeds(map); // actionDao.getPostFeeds(map);
         }
         if (evaluationIdList.size() != 0) {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("memberId", inputpage.getCardId());
             map.put("evaluationIdList", evaluationIdList);
-            // @todo 5.22
+            // @todo 5.22 废弃
             List<Map<String, Object>> list1 =  gameProxyService.getEvaluationFeeds(map); // actionDao.getEvaluationFeeds(map);
             listDate.addAll(list1);
         }
@@ -253,7 +253,7 @@ public class MemberController {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("memberId", inputpage.getCardId());
             map.put("moodIdList", moodIdList);
-            // @todo 5.22
+            // @todo 5.22 废弃
             List<Map<String, Object>> list2 = communityProxyService.getMoodFeeds(map);  //actionDao.getMoodFeeds(map);
             listDate.addAll(list2);
         }
