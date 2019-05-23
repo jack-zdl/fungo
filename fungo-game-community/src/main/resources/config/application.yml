@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: test
+    active: dev
 
   freemarker:
     allow-request-override: false
