@@ -1,34 +1,81 @@
+server:
+  port: 8182
+  #port: 8183
+  #port: 8184
+
+#-----------------------------------------------------------------------------------------------------
+## 关闭安全限制
+#management:
+#  security:
+#    enabled: false
+#显示路由zuul的端口配置，不配置无法访问 /routes
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+
+#-----------------------------------------------------------------------------------------------------
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: false
+#        isolation:
+#          strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
+#          thread:
+#            timeoutInMilliseconds: 40000  #命令执行超时时间，默认1000ms
+ribbon:
+  ConnectTimeout: 50000
+  ReadTimeout: 50000
+
+#-----------------------------------------------------------------------------------------------------
+logging:
+  level:
+    ROOT: INFO
+    org.springframework.web: DEBUG
+
+#-----------------------------------------------------------------------------------------------------
+
 eureka:
   client:
     serviceUrl:
-      defaultZone:  http://127.0.0.1:8761/eureka/
+      defaultZone:  http://peer1:8761/eureka/,http://peer2:8762/eureka/,http://peer2:8763/eureka/
   instance:
     instance-id: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
-#    prefer-ip-address: true
-    appname: scyp-gateway
-server:
-  port: 8182
+    prefer-ip-address: true
+    appname: fungo-game-gateway
 
-#-----------------------------------------
-fungoServer:
-  commmunity.uri: lb://FUNGO-GAME-COMMUNITY
-  system.uri: lb://FUNGO-GAME-SYSTEM
-  game.uri: lb://FUNGO-GAME-GAMES
+
+  #-------------------声明接口依赖的服务名----------------------
+  fungoServer:
+    commmunity.uri: lb://FUNGO-GAME-COMMUNITY
+    system.uri: lb://FUNGO-GAME-SYSTEM
+    game.uri: lb://FUNGO-GAME-GAMES
+
 
 spring:
+
   application:
     name: fungo-game-gateway
   sleuth:
     sampler:
       percentage: 1.0
   zipkin:
-    base-url: http://127.0.0.1:9411/
+    base-url: http://peer1:9411/
     sender:
       type: web
 
-  #
-  # 路由配置
+    #
+    # 路由配置
   cloud:
+    client:
+      ipAddress:  127.0.0.1
     gateway:
       default-filters:
       discovery:
@@ -375,7 +422,7 @@ spring:
         - Path=/api/recommend/topic
 
 
-    #      *****************游戏2019-05-20结束************************************
+      #      *****************游戏2019-05-20结束************************************
       - id:fungo-game-commmunity-14:
         uri: ${fungoServer.commmunity.uri}
         predicates:
@@ -388,30 +435,3 @@ spring:
 
 
 
-
-
-
-
-
-
-
-
-hystrix:
-  command:
-    default:
-      execution:
-        timeout:
-          enabled: false
-#        isolation:
-##          strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
-#          thread:
-#            timeoutInMilliseconds: 40000  #命令执行超时时间，默认1000ms
-ribbon:
-  ConnectTimeout: 10000
-  ReadTimeout: 15000
-
-
-logging:
-  level:
-    ROOT: INFO
-    org.springframework.web: DEBUG

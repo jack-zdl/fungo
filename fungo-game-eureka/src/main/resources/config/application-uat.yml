@@ -1,0 +1,33 @@
+server:
+  #port: 8761
+  port: 8762
+
+spring:
+  application:
+    name: eureka-server
+
+
+eureka:
+  instance:
+    hostname: ${spring.cloud.client.ip-address}
+    # #指定通过IP注册,一般服务集群时配置,需要ip-address参数一起设置(保证hostName和ip-address一样)，以免eureka管理页面出现不可用分片提示信息(unavailable-replicas),服务的注册默认是通过hostName注册的，当判断注册的hostName和服务
+    prefer-ip-address: true
+    instance-id: ${eureka.instance.hostname}:${server.port}
+    #强制指定eureka的ip地址
+    ip-address: ${EUREKA_IP:${eureka.instance.hostname}}
+
+  client:
+
+    # 集群时需要强制手动指定，fetch-registry、register-with-eureka都需要设置为true
+    fetch-registry: true
+    #集群时需要强制手动指定，fetch-registry、register-with-eureka都需要设置为true
+    register-with-eureka: true
+    serviceUrl:
+      #defaultZone: http://172.17.18.228:8762/eureka/
+      defaultZone: http://172.17.18.227:8761/eureka/
+
+  server:
+    #测试时关闭自我保护机制，保证不可用服务及时剔除，生产环境要开启自我保护机制
+    enable-self-preservation: true
+    #间隔6秒踢出
+    eviction-interval-timer-in-ms: 60000

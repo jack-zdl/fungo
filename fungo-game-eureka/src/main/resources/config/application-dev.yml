@@ -1,17 +1,22 @@
-spring:
-
-  application:
-    name: eureka-server
 server:
   port: 8761
+
+
+spring:
+  application:
+    name: eureka-server
+
 eureka:
   instance:
     hostname: eureka-server
   client:
+    #表示是否注册自身到eureka服务器
     registerWithEureka: false
+    #是否从eureka上获取注册信息
     fetchRegistry: false
-  #    serviceUrl:
-  #      defaultZone: http://127.0.0.1:8761/eureka/
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8761/eureka/
+
   server:
     #测试时关闭自我保护机制，保证不可用服务及时剔除，生产环境要开启自我保护机制
     enable-self-preservation: false

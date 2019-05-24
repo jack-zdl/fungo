@@ -3,6 +3,7 @@ package com.fungo.games.feign;
 
 import com.game.common.bean.TagBean;
 import com.game.common.dto.AuthorBean;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
@@ -144,7 +145,12 @@ public interface SystemFeignClient {
     @RequestMapping(value="/listSortTags", method= RequestMethod.GET)
     ResultDto<List<TagBean>> listSortTags (@RequestParam("tags") List<String> tags);
 
-
+    /**
+     * 根据用户会员DTO对象分页查询用户会员
+     * @param memberDto
+     */
+    @RequestMapping(value = "/listMemberDtoPag")
+    FungoPageResultDto<MemberDto> listMemberDtoPag(@RequestBody MemberDto memberDto);
 
 
     /**

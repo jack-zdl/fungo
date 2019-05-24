@@ -29,7 +29,11 @@ public class WebRequestLogAspect {
 //	@Autowired
 //	private ILogStorage  logStorage;
 
+<<<<<<< HEAD
     @Pointcut("execution(public * com.fungo.*.controller..*.*(..))")
+=======
+    @Pointcut("execution(public * com..*.controller..*.*(..))")
+>>>>>>> origin/HEAD
     public void webLog() {
     }
 

@@ -106,6 +106,13 @@
     </sql>
 
 
+    <select id="listGame" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select * from t_game where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
     <update id="updateBatchState">
         update t_game set state=#{state} where id in
         <foreach item="item" index="index" collection="idList" open="(" separator="," close=")">

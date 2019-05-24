@@ -10,6 +10,7 @@ import com.game.common.dto.user.MemberDto;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 public interface ICommunityService {
 
@@ -63,5 +64,5 @@ public interface ICommunityService {
 	public FungoPageResultDto<CommunitySearchOut> searchCommunitys(int page, int limit, String keyword, String userId);
 
 
-
+    ResultDto<Map<String,Integer>> listCommunityFolloweeNum(List<String> communityIds);
 }

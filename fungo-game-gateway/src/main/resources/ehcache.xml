@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+         updateCheck="false">
+    <diskStore path="./fungoEhcache"/>
+    <!-- 默认缓存 -->
+    <defaultCache
+            eternal="false"
+            maxElementsInMemory="1000"
+            overflowToDisk="false"
+            diskPersistent="false"
+            timeToIdleSeconds="120"
+            timeToLiveSeconds="180"
+            memoryStoreEvictionPolicy="LRU" />
+
+    <!-- 自定义缓存 fungoEhcache -->
+    <cache
+            name="fungoEhcache"
+            eternal="false"
+            maxElementsInMemory="1000"
+            overflowToDisk="false"
+            diskPersistent="false"
+            timeToIdleSeconds="120"
+            timeToLiveSeconds="180"
+            memoryStoreEvictionPolicy="LRU" />
+
+</ehcache>

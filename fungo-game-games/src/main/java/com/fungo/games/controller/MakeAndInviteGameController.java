@@ -117,12 +117,12 @@ public class MakeAndInviteGameController {
         return makeAndInviteGameService.getgameAgree(memberUserPrefile.getLoginId(), makeInput.getGameId(), makeInput.getPhoneModel());
     }
 
-    @ApiOperation(value = "邀请用户列表(v2.3)", notes = "")
+    /*@ApiOperation(value = "邀请用户列表(v2.3)", notes = "")
     @RequestMapping(value = "/api/invite/users", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public FungoPageResultDto<FollowUserOutBean> getInviteUserList(MemberUserProfile memberUserPrefile, @RequestBody MakeInputPageDto inputPageDto) throws Exception {
         return makeAndInviteGameService.getInviteUserList(memberUserPrefile.getLoginId(), inputPageDto);
-    }
+    }*/
 
 
     @ApiOperation(value = "邀请(v2.3)", notes = "")

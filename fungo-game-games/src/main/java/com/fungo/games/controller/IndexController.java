@@ -137,9 +137,17 @@ public class IndexController {
             if (ilist == null || ilist.size() == 0) {//如果合集为空，跳过
                 continue;
             }
+            //获取游戏id集合
+            List<String> gameIds = getgameIds(ilist);
+            Map<String, Game> gameMap = gameService.listGame(gameIds);
+            //获取社区id集合
+            List<String> communityIds = getCommunity(gameMap);
+            //获取社区推荐度
+            Map<String, Integer> followeeNum = iEvaluateProxyService.listCommunityFolloweeNum(communityIds);
             List<Map<String, Object>> lists = new ArrayList<Map<String, Object>>();
+
             for (GameCollectionItem gameCollectionItem : ilist) {
-                Game game = this.gameService.selectById(gameCollectionItem.getGameId());
+                Game game = gameMap.get(gameCollectionItem.getGameId());
                 Map<String, Object> map1 = new HashMap<String, Object>();
 //				HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
 //				if(rateData != null) {
@@ -156,10 +164,7 @@ public class IndexController {
 //                lyc
 //                Wrapper wrapper = Condition.create().setSqlSelect("id,followee_num,post_num").eq("id", game.getCommunityId());
 //                CmmCommunity community = communityService.selectOne(wrapper);
-                CmmCommunityDto ccd = new CmmCommunityDto();
-                ccd.setId(game.getCommunityId());
-                CmmCommunityDto community = iEvaluateProxyService.getCmmCommunitySelectOneById(ccd);
-
+                Integer followeeNumValue = followeeNum.get(game.getCommunityId());
 
                 map1.put("name", game.getName());
                 map1.put("androidState", game.getAndroidState());
@@ -172,8 +177,8 @@ public class IndexController {
                 map1.put("updatedAt", DateTools.fmtDate(game.getUpdatedAt()));
 
                 int hot_value = 0;
-                if (null != community) {
-                    hot_value = community.getFolloweeNum() + community.getFolloweeNum();
+                if (null != followeeNumValue) {
+                    hot_value = followeeNumValue*2;
                 }
                 map1.put("hot_value", hot_value);
 
@@ -195,6 +200,30 @@ public class IndexController {
         fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
 
         return re;
+    }
+
+    private List<String> getCommunity(Map<String, Game> gameMap) {
+        ArrayList<String> list = new ArrayList<>();
+        if(gameMap==null||gameMap.isEmpty()){
+            return list;
+        }
+        Set<Map.Entry<String, Game>> entries = gameMap.entrySet();
+        for (Map.Entry<String, Game> entry : entries) {
+            Game game = entry.getValue();
+            list.add(game.getCommunityId());
+        }
+        return list;
+    }
+
+    private List<String> getgameIds(List<GameCollectionItem> ilist) {
+        ArrayList<String> list = new ArrayList<>();
+        if(ilist==null||ilist.isEmpty()){
+            return  list;
+        }
+        for (GameCollectionItem gameCollectionItem : ilist) {
+            list.add(gameCollectionItem.getGameId());
+        }
+        return list;
     }
 
     /**
