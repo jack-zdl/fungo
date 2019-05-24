@@ -18,6 +18,9 @@ public class DateTools {
     }
 
     public static String fmtDate(Date date) {
+        if(date==null){
+            return "";
+        }
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String time = formatter.format(date);
         return time;
