@@ -74,7 +74,7 @@ public class IndexServiceImpl implements IIndexService {
             keySuffix += app_channel;
         }
 
-        re = (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+        re = null;// (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
 
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
@@ -259,8 +259,7 @@ public class IndexServiceImpl implements IIndexService {
 
     //大家都在玩
     public CardIndexBean selectedGames() {
-        // @todo 调用Fegin接口
-        return  new CardIndexBean();
+        return iGameProxyService.selectedGames();
     }
 
     //社区置顶文章

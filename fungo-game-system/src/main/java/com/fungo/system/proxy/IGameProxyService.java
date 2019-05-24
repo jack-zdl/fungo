@@ -7,6 +7,7 @@ import com.game.common.dto.community.MooMessageDto;
 import com.game.common.dto.community.MooMoodDto;
 import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.game.GameInviteDto;
+import com.game.common.dto.index.CardIndexBean;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -43,4 +44,6 @@ public interface IGameProxyService {
     List<Map<String,Object>> getEvaluationFeeds(Map<String, Object> map);
 
     List<String> getRecommendMembersFromEvaluation(Integer x, Integer y, List<String> wathMbsSet);
+
+    CardIndexBean selectedGames();
 }

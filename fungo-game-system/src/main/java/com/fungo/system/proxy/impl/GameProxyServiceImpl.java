@@ -14,6 +14,7 @@ import com.game.common.dto.community.MooMessageDto;
 import com.game.common.dto.community.MooMoodDto;
 import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.game.GameInviteDto;
+import com.game.common.dto.index.CardIndexBean;
 import com.game.common.enums.CommonEnum;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
@@ -217,6 +218,10 @@ public class GameProxyServiceImpl implements IGameProxyService {
     public List<String> getRecommendMembersFromEvaluation(Integer x, Integer y, List<String> wathMbsSet) {
         ResultDto<List<String>> re = gamesFeignClient.getRecommendMembersFromEvaluation(x,y,wathMbsSet);
         return re.getData();
+    }
+
+    public CardIndexBean selectedGames(){
+        return gamesFeignClient.selectedGames();
     }
 
     public List<GameEvaluationDto> hystrixGetEvaluationEntityWrapper(String memberId, String startDate,String endDate) {

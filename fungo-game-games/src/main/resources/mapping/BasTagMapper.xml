@@ -17,7 +17,27 @@
     <sql id="Base_Column_List">
         id, name, game_num AS gameNum, group_id AS groupId, created_at AS createdAt, updated_at AS updatedAt, sort
     </sql>
-    
+
+
+	<!-- 根据游戏id获取标签(后台设置) -->
+	<select id="getGameTags" resultType="com.game.common.bean.TagBean" parameterType="String">
+		<!-- <![CDATA[ -->
+		select t.id,t.name,t.group_id as groupId
+		from t_game_tag gt,t_game g,t_bas_tag t
+		where g.id = #{gameId} and gt.game_id = g.id and gt.tag_id = t.id and gt.type != 0
+
+		<!-- ]]> -->
+	</select>
+
+	<!-- 获取游戏后台分类标签 -->
+	<select id="getSortTags" resultType="com.game.common.bean.TagBean" parameterType="String">
+		<!-- <![CDATA[ -->
+		select t.name
+		from t_game_tag gt,t_bas_tag t
+		where gt.game_id = #{gameId} and gt.tag_id = t.id and gt.type = 1
+
+		<!-- ]]> -->
+	</select>
 
 
 </mapper>

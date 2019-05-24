@@ -1,7 +1,6 @@
 package com.fungo.games.controller;
 
 
-
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -36,6 +35,7 @@ import java.util.*;
 
 /**
  * feignService 调用中心
+ *
  * @Author lyc
  * @create 2019/5/7 11:48
  */
@@ -85,30 +85,31 @@ public class FeignServiceController {
     @Autowired
     private BasTagService basTagService;
 
-/****************************************************ActionController**********************************************************************/
+    /****************************************************ActionController**********************************************************************/
 
     @ApiOperation(value = "更新计数器", notes = "")
     @RequestMapping(value = "/api/update/counter", method = RequestMethod.POST)
-    public Boolean updateCounter(@RequestBody Map<String,String> map) {
+    public Boolean updateCounter(@RequestBody Map<String, String> map) {
 //        根据表名(动态)修改
         return iGameService.updateCountor(map);
     }
 
     @ApiOperation(value = "被点赞用户的id", notes = "")
     @RequestMapping(value = "/api/getMemberIdByTargetId", method = RequestMethod.POST)
-    String getMemberIdByTargetId(@RequestBody Map<String, String> map){
+    String getMemberIdByTargetId(@RequestBody Map<String, String> map) {
         return iGameService.getMemberIdByTargetId(map);
     }
 /****************************************************System**********************************************************************/
 
     /**
      * 查询游戏测试会员关联表总数
+     *
      * @param gameSurveyRelDto
      * @return
      */
     @ApiOperation(value = "查询游戏测试会员关联表总数", notes = "")
     @RequestMapping(value = "/api/selectCount", method = RequestMethod.POST)
-    int gameSurveySelectCount(@RequestBody GameSurveyRelDto gameSurveyRelDto){
+    int gameSurveySelectCount(@RequestBody GameSurveyRelDto gameSurveyRelDto) {
 //        GameSurveyRel gameSurveyRel = new GameSurveyRel();
 //        BeanUtils.copyProperties(gameSurveyRelDto, gameSurveyRel);
         HashMap<String, Object> param = new HashMap<String, Object>();
@@ -118,12 +119,13 @@ public class FeignServiceController {
 
     /**
      * 查询游戏版本日志审批总数
+     *
      * @param gameReleaseLogDto
      * @return
      */
     @ApiOperation(value = "查询游戏版本日志审批总数", notes = "")
     @RequestMapping(value = "/api/gameReleaseLog/selectCount", method = RequestMethod.POST)
-    int gameReleaseLogSelectCount(@RequestBody GameReleaseLogDto gameReleaseLogDto){
+    int gameReleaseLogSelectCount(@RequestBody GameReleaseLogDto gameReleaseLogDto) {
         HashMap<String, Object> param = new HashMap<String, Object>();
         gameReleaseLogFun(gameReleaseLogDto, param);
         return gameReleaseLogService.selectCount(new EntityWrapper<GameReleaseLog>().allEq(param));
@@ -131,12 +133,13 @@ public class FeignServiceController {
 
     /**
      * 查询游戏评价总数
+     *
      * @param gameEvaluationDto
      * @return
      */
     @ApiOperation(value = "查询游戏评价总数", notes = "")
     @RequestMapping(value = "/api/gameEvaluation/selectCount", method = RequestMethod.POST)
-    int gameEvaluationSelectCount(@RequestBody GameEvaluationDto gameEvaluationDto){
+    int gameEvaluationSelectCount(@RequestBody GameEvaluationDto gameEvaluationDto) {
         HashMap<String, Object> param = new HashMap<String, Object>();
         gameEvaluationFun(gameEvaluationDto, param);
         return gameEvaluationServiceImap.selectCount(new EntityWrapper<GameEvaluation>().allEq(param));
@@ -145,23 +148,25 @@ public class FeignServiceController {
 
     /**
      * 用户游戏评测精品数
+     *
      * @return
      */
     @ApiOperation(value = "用户游戏评测精品数", notes = "")
     @RequestMapping(value = "/api/game/getUserGameReviewBoutiqueNumber", method = RequestMethod.POST)
-    ResultDto<Map<String,Object>> getUserGameReviewBoutiqueNumber(){
+    ResultDto<Map<String, Object>> getUserGameReviewBoutiqueNumber() {
         Map<String, Object> userGameReviewBoutiqueNumber = gameEvaluationDao.getUserGameReviewBoutiqueNumber();
         return ResultDto.success(userGameReviewBoutiqueNumber);
     }
 
     /**
      * 游戏评价的分页查询
+     *
      * @param gameEvaluationDto
      * @return
      */
     @ApiOperation(value = "游戏评价的分页查询", notes = "")
     @RequestMapping(value = "/api/evaluation/getGameEvaluationPage", method = RequestMethod.POST)
-    FungoPageResultDto<GameEvaluationDto> getGameEvaluationPage(@RequestBody GameEvaluationDto gameEvaluationDto){
+    FungoPageResultDto<GameEvaluationDto> getGameEvaluationPage(@RequestBody GameEvaluationDto gameEvaluationDto) {
         List<GameEvaluationDto> gameEvaluationList = null;
         FungoPageResultDto<GameEvaluationDto> fungoPageResultDto = new FungoPageResultDto<>();
         try {
@@ -275,13 +280,14 @@ public class FeignServiceController {
 
     /**
      * 游戏测试会员关联表的分页查询
+     *
      * @param gameSurveyDto
      * @return
      */
     @SuppressWarnings("all")
     @ApiOperation(value = "游戏测试会员关联表的分页查询", notes = "")
     @RequestMapping(value = "/api/evaluation/getGameSurveyRelPage", method = RequestMethod.POST)
-    FungoPageResultDto<GameSurveyRelDto> getGameSurveyRelPage(@RequestBody GameSurveyRelDto gameSurveyDto){
+    FungoPageResultDto<GameSurveyRelDto> getGameSurveyRelPage(@RequestBody GameSurveyRelDto gameSurveyDto) {
         List<GameSurveyRelDto> gameSurveyList = null;
         FungoPageResultDto<GameSurveyRelDto> fungoPageResultDto = new FungoPageResultDto<>();
         try {
@@ -338,7 +344,7 @@ public class FeignServiceController {
 
     @ApiOperation(value = "游戏评价邀请的分页查询", notes = "")
     @RequestMapping(value = "/api/evaluation/getGameInvitePage", method = RequestMethod.POST)
-    FungoPageResultDto<GameInviteDto> getGameInvitePage(@RequestBody GameInviteDto gameInviteDto){
+    FungoPageResultDto<GameInviteDto> getGameInvitePage(@RequestBody GameInviteDto gameInviteDto) {
         List<GameInviteDto> gameInviteList = null;
         FungoPageResultDto<GameInviteDto> fungoPageResultDto = new FungoPageResultDto<>();
         try {
@@ -484,7 +490,7 @@ public class FeignServiceController {
     @SuppressWarnings("all")
     @ApiOperation(value = "根据游戏版本日志审批对象查询集合", notes = "")
     @RequestMapping(value = "/api/evaluation/getGameReleaseLogPage", method = RequestMethod.POST)
-    FungoPageResultDto<GameReleaseLogDto> getGameReleaseLogPage(@RequestBody GameReleaseLogDto gameReleaseLogDto){
+    FungoPageResultDto<GameReleaseLogDto> getGameReleaseLogPage(@RequestBody GameReleaseLogDto gameReleaseLogDto) {
         List<GameReleaseLogDto> gameReleaseLogList = null;
         FungoPageResultDto<GameReleaseLogDto> fungoPageResultDto = new FungoPageResultDto<>();
         try {
@@ -538,7 +544,7 @@ public class FeignServiceController {
 
     @ApiOperation(value = "根据游戏对象查询集合", notes = "")
     @RequestMapping(value = "/api/geme/getGamePage", method = RequestMethod.POST)
-    FungoPageResultDto<GameDto> getGamePage(@RequestBody GameDto gameDto){
+    FungoPageResultDto<GameDto> getGamePage(@RequestBody GameDto gameDto) {
         List<GameDto> gameList = null;
         FungoPageResultDto<GameDto> fungoPageResultDto = new FungoPageResultDto<>();
         try {
@@ -771,22 +777,23 @@ public class FeignServiceController {
             param.put("ios_state", iosState);
         }
     }
+
     @ApiOperation(value = "根据游戏id集合获取FungoPageResultDto<GameOutBean>", notes = "")
     @RequestMapping(value = "/api/content/gameList", method = RequestMethod.POST)
-    FungoPageResultDto<GameOutBean> getGameList(@RequestBody GameItemInput input){
+    FungoPageResultDto<GameOutBean> getGameList(@RequestBody GameItemInput input) {
         return iGameService.getGameList1(input);
     }
 
     /**************************************************2019-05-18系統*****************************************************************************/
     @ApiOperation(value = "getGameSelectCountByLikeNameAndState", notes = "")
     @RequestMapping(value = "/api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.POST)
-    int getGameSelectCountByLikeNameAndState(@RequestBody GameDto gameDto){
+    int getGameSelectCountByLikeNameAndState(@RequestBody GameDto gameDto) {
         return gameService.selectCount(new EntityWrapper<Game>().where("state = {0}", 0).like("name", gameDto.getName()));
     }
 
     @ApiOperation(value = "getGameEvaluationSelectPageByTypeAndStateOrderByRAND", notes = "")
     @RequestMapping(value = "/api/game/getGameEvaluationSelectPageByTypeAndStateOrderByRAND", method = RequestMethod.GET)
-    FungoPageResultDto<GameEvaluationDto> getGameEvaluationSelectPageByTypeAndStateOrderByRAND(){
+    FungoPageResultDto<GameEvaluationDto> getGameEvaluationSelectPageByTypeAndStateOrderByRAND() {
         Page<GameEvaluation> type = gameEvaluationServiceImap.selectPage(new Page<GameEvaluation>(1, 6), new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy("RAND()"));
         FungoPageResultDto<GameEvaluationDto> re = new FungoPageResultDto<GameEvaluationDto>();
         PageTools.pageToResultDto(re, type);
@@ -794,7 +801,7 @@ public class FeignServiceController {
         List<GameEvaluationDto> gameEvaluationDtos = new ArrayList<>();
         for (GameEvaluation gameEvaluation : data) {
             GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
-            BeanUtils.copyProperties(gameEvaluation,gameEvaluationDto);
+            BeanUtils.copyProperties(gameEvaluation, gameEvaluationDto);
             gameEvaluationDtos.add(gameEvaluationDto);
         }
         re.setData(gameEvaluationDtos);
@@ -803,7 +810,7 @@ public class FeignServiceController {
 
     @ApiOperation(value = "getSelectedGames", notes = "")
     @RequestMapping(value = "/api/game/getSelectedGames", method = RequestMethod.GET)
-    ResultDto<CardIndexBean> getSelectedGames(){
+    ResultDto<CardIndexBean> getSelectedGames() {
         CardIndexBean indexBean = new CardIndexBean();
         GameCollectionGroup co = gameCollectionGroupService.selectOne(new EntityWrapper<GameCollectionGroup>().eq("state", "0").orderBy("RAND()").last("limit 1"));
         List<GameCollectionItem> ilist = new ArrayList<>();
@@ -828,7 +835,7 @@ public class FeignServiceController {
 //            List<TagBean> tags = tagDao.getSortTags(game.getId());
             List<GameTag> gameTags = gameTagService.selectList(new EntityWrapper<GameTag>().setSqlSelect("tag_id as tagId").eq("game_id", game.getId()));
             List<String> strings = new ArrayList<>();
-            if (gameTags != null && gameTags.size() > 0){
+            if (gameTags != null && gameTags.size() > 0) {
                 for (GameTag gameTag : gameTags) {
                     strings.add(gameTag.getTagId());
                 }
@@ -859,44 +866,45 @@ public class FeignServiceController {
 
     @ApiOperation(value = "getRateData", notes = "")
     @RequestMapping(value = "/api/game/getRateData", method = RequestMethod.GET)
-    ResultDto<HashMap<String, BigDecimal>> getRateData(@RequestParam("gameId") String gameId){
+    ResultDto<HashMap<String, BigDecimal>> getRateData(@RequestParam("gameId") String gameId) {
         HashMap<String, BigDecimal> rateData = gameDao.getRateData1(gameId);
         return ResultDto.success(rateData);
     }
 
 
-
-
 /****************************************************comunity**********************************************************************/
     /**
      * 获取游戏平均分
+     *
      * @param gameId
      * @param state
      * @return
      */
     @ApiOperation(value = "获取游戏平均分", notes = "")
     @RequestMapping(value = "/api/game/average", method = RequestMethod.POST)
-    double selectGameAverage(String gameId,Integer state){
+    double selectGameAverage(String gameId, Integer state) {
         return iGameService.getGameRating(gameId);
     }
 
     /**
      * 根据游戏id和状态查询游戏详情
+     *
      * @param gameId
      * @param state
      * @return
      */
     @ApiOperation(value = "根据游戏id和状态查询游戏详情", notes = "")
     @RequestMapping(value = "/api/game/details", method = RequestMethod.POST)
-    ResultDto<GameDto> selectGameDetails(String gameId,Integer state){
+    ResultDto<GameDto> selectGameDetails(String gameId, Integer state) {
         Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", state));
         GameDto gameDto = new GameDto();
-        BeanUtils.copyProperties(game,gameDto);
+        BeanUtils.copyProperties(game, gameDto);
         return ResultDto.success(gameDto);
     }
 
     /**
      * 查询游戏评论表中发表评论大于X条，前Y名的用户
+     *
      * @param x
      * @param y
      * @param wathMbsSet
@@ -904,7 +912,7 @@ public class FeignServiceController {
      */
     @ApiOperation(value = "查询游戏评论表中发表评论大于X条，前Y名的用户", notes = "")
     @RequestMapping(value = "/api/game/getRecommendMembersFromEvaluation", method = RequestMethod.POST)
-    ResultDto<List<String>> getRecommendMembersFromEvaluation(@RequestParam("x") Integer x,@RequestParam("y") Integer y,@RequestParam("wathMbsSet") List<String> wathMbsSet){
+    ResultDto<List<String>> getRecommendMembersFromEvaluation(@RequestParam("x") Integer x, @RequestParam("y") Integer y, @RequestParam("wathMbsSet") List<String> wathMbsSet) {
         List<String> sendCommentMembers = gameEvaluationDao.getRecommendMembersFromEvaluation(x,
                 y, wathMbsSet);
         return ResultDto.success(sendCommentMembers);
@@ -912,13 +920,14 @@ public class FeignServiceController {
 
     /**
      * 根据游戏id查询参与评论的用户
+     *
      * @param gameId
      * @param state
      * @return
      */
     @ApiOperation(value = "根据游戏id查询参与评论的用户", notes = "")
     @RequestMapping(value = "/api/game/getMemberOrder", method = RequestMethod.POST)
-    ResultDto<List<MemberPulishFromCommunity>> getMemberOrder(String gameId,Integer state){
+    ResultDto<List<MemberPulishFromCommunity>> getMemberOrder(String gameId, Integer state) {
         Map<String, Object> map = new HashMap<>();
         Page page = new Page<>(1, 6);
         map.put("gameId", gameId);
@@ -926,47 +935,47 @@ public class FeignServiceController {
         return ResultDto.success(list);
     }
 
-/*******************************************2019-05-18**************************************************************/
+    /*******************************************2019-05-18**************************************************************/
     @ApiOperation(value = "gameEvaluationService.selectOne", notes = "")
     @RequestMapping(value = "/api/game/getGameEvaluationSelectOne", method = RequestMethod.POST)
-    ResultDto<GameEvaluationDto> getGameEvaluationSelectOne(@RequestParam("memberId") String memberId,@RequestParam("targetId") String targetId){
+    ResultDto<GameEvaluationDto> getGameEvaluationSelectOne(@RequestParam("memberId") String memberId, @RequestParam("targetId") String targetId) {
         GameEvaluation gameEvaluation = gameEvaluationServiceImap.selectOne(new EntityWrapper<GameEvaluation>().eq("member_id", memberId).eq("game_id", targetId).eq("state", 0));
         GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
-        BeanUtils.copyProperties(gameEvaluation,gameEvaluationDto);
+        BeanUtils.copyProperties(gameEvaluation, gameEvaluationDto);
         return ResultDto.success(gameEvaluationDto);
     }
 
     @ApiOperation(value = "gameEvaluationService.selectById", notes = "")
     @RequestMapping(value = "/api/game/getGameEvaluationSelectById", method = RequestMethod.POST)
-    ResultDto<GameEvaluationDto> getGameEvaluationSelectById(@RequestParam("commentId") String commentId){
+    ResultDto<GameEvaluationDto> getGameEvaluationSelectById(@RequestParam("commentId") String commentId) {
         GameEvaluation gameEvaluation = gameEvaluationServiceImap.selectById(commentId);
         GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
-        BeanUtils.copyProperties(gameEvaluation,gameEvaluationDto);
+        BeanUtils.copyProperties(gameEvaluation, gameEvaluationDto);
         return ResultDto.success(gameEvaluationDto);
     }
 
     @ApiOperation(value = "getPreGameEvaluation上一评论", notes = "")
     @RequestMapping(value = "/api/game/getPreGameEvaluation", method = RequestMethod.POST)
-    ResultDto<GameEvaluationDto> getPreGameEvaluation(@RequestParam("createdAt") String createdAt,@RequestParam("id") String id){
+    ResultDto<GameEvaluationDto> getPreGameEvaluation(@RequestParam("createdAt") String createdAt, @RequestParam("id") String id) {
         GameEvaluation pre = gameEvaluationServiceImap.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).gt("created_at", createdAt).ne("id", id).orderBy("concat(sort,created_at)").last("limit 1"));
         GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
-        BeanUtils.copyProperties(pre,gameEvaluationDto);
+        BeanUtils.copyProperties(pre, gameEvaluationDto);
         return ResultDto.success(gameEvaluationDto);
     }
 
     @ApiOperation(value = "getNextGameEvaluation下一评论", notes = "")
     @RequestMapping(value = "/api/game/getNextGameEvaluation", method = RequestMethod.POST)
-    ResultDto<GameEvaluationDto> getNextGameEvaluation(@RequestParam("createdAt") String createdAt,@RequestParam("id") String id){
+    ResultDto<GameEvaluationDto> getNextGameEvaluation(@RequestParam("createdAt") String createdAt, @RequestParam("id") String id) {
         GameEvaluation next = gameEvaluationServiceImap.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).le("created_at", createdAt).ne("id", id).orderBy("concat(sort,created_at)", false).last("limit 1"));
         GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
-        BeanUtils.copyProperties(next,gameEvaluationDto);
+        BeanUtils.copyProperties(next, gameEvaluationDto);
         return ResultDto.success(gameEvaluationDto);
     }
 
 
     @ApiOperation(value = "getEvaluationEntityWrapper", notes = "")
     @RequestMapping(value = "/api/game/getEvaluationEntityWrapper", method = RequestMethod.POST)
-    ResultDto<List<GameEvaluationDto>> getEvaluationEntityWrapper(@RequestParam("memberId") String memberId,@RequestParam("startDate") String startDate,@RequestParam("endDate") String endDate){
+    ResultDto<List<GameEvaluationDto>> getEvaluationEntityWrapper(@RequestParam("memberId") String memberId, @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate) {
         EntityWrapper<GameEvaluation> evaluationEntityWrapper = new EntityWrapper<>();
         evaluationEntityWrapper.eq("member_id", memberId);
         evaluationEntityWrapper.between("updated_at", startDate, endDate);
@@ -975,10 +984,10 @@ public class FeignServiceController {
         evaluationEntityWrapper.in("type", new Integer[]{1, 2});
         List<GameEvaluation> gameEvaluationsList = gameEvaluationServiceImap.selectList(evaluationEntityWrapper);
         List<GameEvaluationDto> gameEvaluationDtos = new ArrayList<>();
-        if (gameEvaluationsList != null && gameEvaluationsList.size()>0){
+        if (gameEvaluationsList != null && gameEvaluationsList.size() > 0) {
             for (GameEvaluation gameEvaluation : gameEvaluationsList) {
                 GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
-                BeanUtils.copyProperties(gameEvaluation,gameEvaluationDto);
+                BeanUtils.copyProperties(gameEvaluation, gameEvaluationDto);
                 gameEvaluationDtos.add(gameEvaluationDto);
             }
         }
@@ -988,7 +997,7 @@ public class FeignServiceController {
 
     @ApiOperation(value = "getEvaluationEntityWrapperByPageDtoAndMemberId", notes = "")
     @RequestMapping(value = "/api/game/getEvaluationEntityWrapperByPageDtoAndMemberId", method = RequestMethod.POST)
-    FungoPageResultDto<GameEvaluationDto> getEvaluationEntityWrapperByPageDtoAndMemberId(@RequestBody EvaluationInputPageDto pageDto,@RequestParam("memberId") String memberId){
+    FungoPageResultDto<GameEvaluationDto> getEvaluationEntityWrapperByPageDtoAndMemberId(@RequestBody EvaluationInputPageDto pageDto, @RequestParam("memberId") String memberId) {
         Wrapper<GameEvaluation> commentWrapper = new EntityWrapper<GameEvaluation>();
         commentWrapper.eq("game_id", pageDto.getGame_id());
         commentWrapper.and("state !={0}", -1);
@@ -1015,10 +1024,10 @@ public class FeignServiceController {
         List<GameEvaluation> list = page.getRecords();
 
         List<GameEvaluationDto> gameEvaluationDtos = new ArrayList<>();
-        if (list != null && list.size()>0){
+        if (list != null && list.size() > 0) {
             for (GameEvaluation gameEvaluation : list) {
                 GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
-                BeanUtils.copyProperties(gameEvaluation,gameEvaluationDto);
+                BeanUtils.copyProperties(gameEvaluation, gameEvaluationDto);
                 gameEvaluationDtos.add(gameEvaluationDto);
             }
         }
@@ -1027,9 +1036,11 @@ public class FeignServiceController {
     }
 
 
-
-
-
+    @GetMapping("/api/game/selectedGames")
+    public CardIndexBean selectedGames() {
+        CardIndexBean indexBean = gameCollectionItemService.selectedGames();
+        return indexBean;
+    }
 
 
 }
