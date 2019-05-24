@@ -53,7 +53,7 @@ eureka:
 
 
   #-------------------声明接口依赖的服务名----------------------
-  fungoServer:
+fungoServer:
     commmunity.uri: lb://FUNGO-GAME-COMMUNITY
     system.uri: lb://FUNGO-GAME-SYSTEM
     game.uri: lb://FUNGO-GAME-GAMES

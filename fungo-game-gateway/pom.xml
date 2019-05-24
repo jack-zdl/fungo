@@ -92,7 +92,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>fungo-game-gateway-8182</finalName>
+        <finalName>fungo-game-gateway-8183</finalName>
     </build>
 
 </project>
