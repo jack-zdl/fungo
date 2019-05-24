@@ -1,7 +1,7 @@
-package com.fungo.system.service;
+package com.fungo.games.service;
 
 import com.baomidou.mybatisplus.service.IService;
-import com.fungo.system.entity.BasTag;
+import com.fungo.games.entity.BasTag;
 
 /**
  * <p>

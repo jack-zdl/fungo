@@ -27,6 +27,7 @@ import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
+import net.bytebuddy.asm.Advice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +81,12 @@ public class GameServiceImpl implements IGameService {
 
     @Autowired
     private GameTagAttitudeService gameTagAttitudeService;
+
+    @Autowired
+    private BasTagService basTagService;
+
+    @Autowired
+    private BasTagGroupService basTagGroupService;
 
     @Override
     public FungoPageResultDto<GameOutPage> getGameList(GameInputPageDto gameInputDto, String memberId, String os) {
@@ -477,10 +484,9 @@ public class GameServiceImpl implements IGameService {
         //andNew("type = {0}",1).or("like_num > {0}",5).orderBy("like_num", false).last("LIMIT 5"));
         if (gameTagList != null && gameTagList.size() > 0) {
 //            迁移微服务 根据判断集合id获取BasTagList集合
-//            List<BasTag> tagList = bagTagService.selectList(new EntityWrapper<BasTag>().in("id",
-//                    gameTagList.stream().map(GameTag::getTagId).collect(Collectors.toList())));
-            List<String> collect = gameTagList.stream().map(GameTag::getTagId).collect(Collectors.toList());
-            List<BasTagDto> tagList = iEvaluateProxyService.getBasTagBySelectListInId(collect);
+              List<BasTag> tagList = basTagService.selectList(new EntityWrapper<BasTag>().in("id", gameTagList.stream().map(GameTag::getTagId).collect(Collectors.toList())));
+
+
             if (tagList != null && tagList.size() > 0) {
                 List<String> tagNames = new ArrayList<>();
                 tagList.forEach(tag -> tagNames.add(tag.getName()));
@@ -537,12 +543,12 @@ public class GameServiceImpl implements IGameService {
 //        迁移微服务 根据group_id获取BasTag集合
 //        2019-05-13
 //        lyc
-//        List<BasTag> tagList = bagTagService.selectList(new EntityWrapper<BasTag>().eq("group_id", "5ad55eb4ac502e0042ae29d9"));
-        BasTagDto basTagDto = new BasTagDto();
+        List<BasTag> tagList = basTagService.selectList(new EntityWrapper<BasTag>().eq("group_id", "5ad55eb4ac502e0042ae29d9"));
+       /* BasTagDto basTagDto = new BasTagDto();
         basTagDto.setGroupId("5ad55eb4ac502e0042ae29d9");
-        List<BasTagDto> tagList = iEvaluateProxyService.getBasTagBySelectListGroupId(basTagDto);
+        List<BasTagDto> tagList = iEvaluateProxyService.getBasTagBySelectListGroupId(basTagDto);*/
         outList = new ArrayList<>();
-        for (BasTagDto tag : tagList) {
+        for (BasTag tag : tagList) {
             TagOutPage out = new TagOutPage();
             out.setObjectId(tag.getId());
             out.setName(tag.getName());
@@ -983,10 +989,10 @@ public class GameServiceImpl implements IGameService {
 //                迁移微服务 根据id获取BasTag对象
 //                2019-05-15
 //                lyc
-//                BasTag tagName = basTagService.selectById(gameTag.getTagId());// 标签名称
-                BasTagDto basTagDto = new BasTagDto();
+                BasTag tagName = basTagService.selectById(gameTag.getTagId());// 标签名称
+               /* BasTagDto basTagDto = new BasTagDto();
                 basTagDto.setId(gameTag.getTagId());
-                BasTagDto tagName = iEvaluateProxyService.getBasTagBySelectById(basTagDto);
+                BasTagDto tagName = iEvaluateProxyService.getBasTagBySelectById(basTagDto);*/
 //				if(tagName == null) {
 //					return ResultDto.error("251", "找不到符合要求的标签");
 //				}
@@ -1041,10 +1047,10 @@ public class GameServiceImpl implements IGameService {
 //                    迁移微服务 根据id获取BasTag对象
 //                    2019-05-15
 //                    lyc
-//                    BasTag tagName = basTagService.selectById(gameTag.getTagId());// 标签名称
-                    BasTagDto basTagDto = new BasTagDto();
+                    BasTag tagName = basTagService.selectById(gameTag.getTagId());// 标签名称
+                   /* BasTagDto basTagDto = new BasTagDto();
                     basTagDto.setId(gameTag.getTagId());
-                    BasTagDto tagName = iEvaluateProxyService.getBasTagBySelectById(basTagDto);// 标签名称
+                    BasTagDto tagName = iEvaluateProxyService.getBasTagBySelectById(basTagDto);*/// 标签名称
                     if (tagName == null) {
                         return ResultDto.error("251", "找不到符合要求的标签");
                     }
@@ -1457,10 +1463,10 @@ public class GameServiceImpl implements IGameService {
 //        迁移微服务
 //        2019-05-15
 //        lyc
-//        List<BasTag> hotTagList = basTagService.selectList(new EntityWrapper<BasTag>().in("id", hotIdList));
-        List<BasTagDto> hotTagList = iEvaluateProxyService.getBasTagBySelectListInId(hotIdList);
+        List<BasTag> hotTagList = basTagService.selectList(new EntityWrapper<BasTag>().in("id", hotIdList));
+       // List<BasTagDto> hotTagList = iEvaluateProxyService.getBasTagBySelectListInId(hotIdList);
         List<HashMap<String, String>> resultList = new ArrayList<HashMap<String, String>>();
-        for (BasTagDto hotTag : hotTagList) {
+        for (BasTag hotTag : hotTagList) {
             HashMap<String, String> map = new HashMap<>();
             map.put("name", hotTag.getName());
             map.put("objectId", hotTag.getId());
@@ -1504,8 +1510,8 @@ public class GameServiceImpl implements IGameService {
 //        迁移微服务 根据id集合获取bastag集合
 //        2019-05-15
 //        lyc
-//        List<BasTag> tagList = basTagService.selectList(new EntityWrapper<BasTag>().in("id", TagIdList));
-        List<BasTagDto> tagList = iEvaluateProxyService.getBasTagBySelectListInId(TagIdList);
+        List<BasTag> tagList = basTagService.selectList(new EntityWrapper<BasTag>().in("id", TagIdList));
+        //List<BasTagDto> tagList = iEvaluateProxyService.getBasTagBySelectListInId(TagIdList);
         List<Map<String, Object>> tagByGameId = getTagByGameId(game_id, TagIdList).getData();
         List<Map<String, String>> selectedList = new ArrayList<>();
 //		for(BasTag tag : tagList) {
@@ -1577,16 +1583,16 @@ public class GameServiceImpl implements IGameService {
 //        迁移微服务 判断BasTagGroup属性值获取BasTagGroup集合
 //        2019-05-15
 //        lyc
-//        List<BasTagGroup> basTagGroupList = basTagGroupService.selectList(new EntityWrapper<BasTagGroup>());
-        BasTagGroupDto basTagGroupDto = new BasTagGroupDto();
-        List<BasTagGroupDto> basTagGroupList = iEvaluateProxyService.getBasTagGroupBySelectList(basTagGroupDto);
+        List<BasTagGroup> basTagGroupList = basTagGroupService.selectList(new EntityWrapper<BasTagGroup>());
+       /* BasTagGroupDto basTagGroupDto = new BasTagGroupDto();
+        List<BasTagGroupDto> basTagGroupList = iEvaluateProxyService.getBasTagGroupBySelectList(basTagGroupDto);*/
         if (basTagGroupList == null || basTagGroupList.isEmpty()) {
             return ResultDto.error("251", "找不到标签分类信息");
         }
         // 第一集合
         List<Map<String, Object>> totalList = new ArrayList<>();
         // 根据标签分类整理标签
-        for (BasTagGroupDto tagGroup : basTagGroupList) {
+        for (BasTagGroup tagGroup : basTagGroupList) {
             // 第二集合
             Map<String, Object> groupData = new HashMap<String, Object>();
             String groupId = tagGroup.getId();
@@ -1597,17 +1603,17 @@ public class GameServiceImpl implements IGameService {
 //            迁移微服务 根据BasTag中group_id属性获取BasTag集合
 //            2019-05-15
 //            lyc
-//            List<BasTag> unionTagList = basTagService.selectList(new EntityWrapper<BasTag>().eq("group_id", groupId));
-            BasTagDto basTagDto = new BasTagDto();
+            List<BasTag> unionTagList = basTagService.selectList(new EntityWrapper<BasTag>().eq("group_id", groupId));
+           /* BasTagDto basTagDto = new BasTagDto();
             basTagDto.setGroupId(groupId);
-            List<BasTagDto> unionTagList = iEvaluateProxyService.getBasTagBySelectListGroupId(basTagDto);
+            List<BasTagDto> unionTagList = iEvaluateProxyService.getBasTagBySelectListGroupId(basTagDto);*/
             // 标签个数
             int count = 0;
             // 加入标签
             if (unionTagList != null && unionTagList.size() != 0) {
                 // 第三集合
                 List<Map<String, Object>> tagList = new ArrayList<>();
-                for (BasTagDto tag : unionTagList) {
+                for (BasTag tag : unionTagList) {
                     // 第四集合
                     Map<String, Object> tagData = new HashMap<String, Object>();
                     tagData.put("name", tag.getName());

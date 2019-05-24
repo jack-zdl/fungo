@@ -1,9 +1,9 @@
-package com.fungo.system.service.impl;
+package com.fungo.games.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.fungo.system.dao.BasTagGroupDao;
-import com.fungo.system.entity.BasTagGroup;
-import com.fungo.system.service.BasTagGroupService;
+import com.fungo.games.dao.BasTagGroupDao;
+import com.fungo.games.entity.BasTagGroup;
+import com.fungo.games.service.BasTagGroupService;
 import org.springframework.stereotype.Service;
 
 /**

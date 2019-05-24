@@ -198,10 +198,10 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      */
     /*@HystrixCommand(fallbackMethod = "hystrixGetBasTagBySelectListInId",ignoreExceptions = {Exception.class},
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
-    @Override
+  /*  @Override
     public List<BasTagDto> getBasTagBySelectListInId(List<String> collect) {
         return systemFeignClient.getBasTagBySelectListInId(collect).getData();
-    }
+    }*/
 
     public List<BasTagDto> hystrixGetBasTagBySelectListInId(List<String> collect) {
         return null;
@@ -282,10 +282,10 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      */
     /*@HystrixCommand(fallbackMethod = "hystrixGetBasTagBySelectById",ignoreExceptions = {Exception.class},
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
-    @Override
+   /* @Override
     public BasTagDto getBasTagBySelectById(BasTagDto basTagDto) {
         return systemFeignClient.getBasTagBySelectById(basTagDto.getId()).getData();
-    }
+    }*/
 
     public BasTagDto hystrixGetBasTagBySelectById(BasTagDto basTagDto) {
         return new BasTagDto();
@@ -299,10 +299,10 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      */
    /* @HystrixCommand(fallbackMethod = "hystrixGetBasTagGroupBySelectList",ignoreExceptions = {Exception.class},
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
-    @Override
+   /* @Override
     public List<BasTagGroupDto> getBasTagGroupBySelectList(BasTagGroupDto basTagGroupDto) {
         return systemFeignClient.getBasTagGroupBySelectList(basTagGroupDto).getData();
-    }
+    }*/
 
     public List<BasTagGroupDto> hystrixGetBasTagGroupBySelectList(BasTagGroupDto basTagGroupDto) {
         return new ArrayList<BasTagGroupDto>();
@@ -316,10 +316,10 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      */
     /*@HystrixCommand(fallbackMethod = "hystrixGetSortTags",ignoreExceptions = {Exception.class},
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
-    @Override
+ /*   @Override
     public List<TagBean> getSortTags(List<String> tags) {
         return systemFeignClient.listSortTags(tags).getData();
-    }
+    }*/
 
     /**
      * 根据用户会员DTO对象分页查询用户会员

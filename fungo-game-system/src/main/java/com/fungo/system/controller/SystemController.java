@@ -1,13 +1,10 @@
 package com.fungo.system.controller;
 
 import com.fungo.system.service.SystemService;
-import com.game.common.bean.TagBean;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
-import com.game.common.dto.game.BasTagDto;
-import com.game.common.dto.game.BasTagGroupDto;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.IncentRuleRankDto;
@@ -500,7 +497,7 @@ public class SystemController {
         }
    }
 
-   @RequestMapping("/listBasTags")
+   /*@RequestMapping("/listBasTags")
    @ApiOperation(value="根据标签id集合获取标签集合")
   public ResultDto<List<BasTagDto>> listBasTags (@RequestBody List<String> collect){
       ResultDto<List<BasTagDto>> re = null;
@@ -512,9 +509,9 @@ public class SystemController {
       }finally {
           return re;
       }
-    }
+    }*/
 
-    @GetMapping("/listSortTags")
+   /* @GetMapping("/listSortTags")
    @ApiOperation(value="批量获取标签获取")
   public ResultDto<List<TagBean>> listSortTags (@RequestParam List<String> tags){
       ResultDto<List<TagBean>> re = null;
@@ -526,11 +523,11 @@ public class SystemController {
       }finally {
           return re;
       }
-    }
+    }*/
 
 
 
-    @GetMapping("/listBasTagByGroup")
+  /*  @GetMapping("/listBasTagByGroup")
    @ApiOperation(value="根据group id集合获取标签集合")
   public ResultDto<List<BasTagDto>> listBasTagByGroup (@RequestParam("groupId") String groupId){
       ResultDto<List<BasTagDto>> re = null;
@@ -542,9 +539,9 @@ public class SystemController {
       }finally {
           return re;
       }
-    }
+    }*/
 
-    @GetMapping("/getBasTagById")
+ /*   @GetMapping("/getBasTagById")
    @ApiOperation(value="根据id获取标签")
   public ResultDto<BasTagDto> getBasTagById (@RequestParam("id") String id){
       ResultDto<BasTagDto> re = null;
@@ -556,9 +553,9 @@ public class SystemController {
       }finally {
           return re;
       }
-    }
+    }*/
 
-    @RequestMapping("/listBasTagGroupByCondition")
+   /* @RequestMapping("/listBasTagGroupByCondition")
     @ApiOperation(value="根据指定条件获取标签集合")
    public ResultDto<List<BasTagGroupDto>> listBasTagGroupByCondition(@RequestBody BasTagGroupDto basTagGroupDto) {
        ResultDto<List<BasTagGroupDto>> re = null;
@@ -570,7 +567,7 @@ public class SystemController {
        }finally {
            return re;
        }
-   }
+   }*/
 
     /**
      * 查询指定用户所关注的其他用户列表

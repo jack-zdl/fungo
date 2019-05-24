@@ -82,6 +82,9 @@ public class FeignServiceController {
     @Autowired
     private GameTagService gameTagService;
 
+    @Autowired
+    private BasTagService basTagService;
+
 /****************************************************ActionController**********************************************************************/
 
     @ApiOperation(value = "更新计数器", notes = "")
@@ -830,10 +833,11 @@ public class FeignServiceController {
                     strings.add(gameTag.getTagId());
                 }
             }
-            List<TagBean> tags = iEvaluateProxyService.getSortTags(strings);
+            List<BasTag> tags = basTagService.selectList(new EntityWrapper<BasTag>().in("id", strings));
+            //List<TagBean> tags = iEvaluateProxyService.getSortTags(strings);
             String tag = "";
             if (tags.size() > 0) {
-                for (TagBean tagBean : tags) {
+                for (BasTag tagBean : tags) {
                     tag += tagBean.getName() + " ";
                 }
             }

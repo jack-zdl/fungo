@@ -74,7 +74,7 @@ public interface IEvaluateProxyService {
      * @param collect
      * @return
      */
-    List<BasTagDto> getBasTagBySelectListInId(List<String> collect);
+    //List<BasTagDto> getBasTagBySelectListInId(List<String> collect);
 
     /**
      * 根据group_id获取BasTag集合
@@ -110,21 +110,21 @@ public interface IEvaluateProxyService {
      * @param basTagDto
      * @return
      */
-    BasTagDto getBasTagBySelectById(BasTagDto basTagDto);
+    //BasTagDto getBasTagBySelectById(BasTagDto basTagDto);
 
     /**
      * 判断BasTagGroup属性值获取BasTagGroup集合
      * @param basTagGroupDto
      * @return
      */
-    List<BasTagGroupDto> getBasTagGroupBySelectList(BasTagGroupDto basTagGroupDto);
+   // List<BasTagGroupDto> getBasTagGroupBySelectList(BasTagGroupDto basTagGroupDto);
 
     /**
      * 特殊 根据gameId获取TagBean集合
      * @param tags
      * @return
      */
-    List<TagBean> getSortTags(List<String> tags);
+    //List<TagBean> getSortTags(List<String> tags);
 
     /**
      * 根据用户会员DTO对象分页查询用户会员

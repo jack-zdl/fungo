@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.games.dao.GameDao;
+import com.fungo.games.entity.BasTag;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameEvaluation;
 import com.fungo.games.entity.GameTag;
@@ -130,6 +131,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
+
+    @Autowired
+    private BasTagService tagService;
 
     @Override
     @Transactional
@@ -671,10 +675,10 @@ public class EvaluateServiceImpl implements IEvaluateService {
 //                迁移微服务 根据bastagid获取basTag对象
 //                2019-05-14
 //                lyc
-//                BasTag tag = tagService.selectById(categoryId);
-                BasTagDto basTagDto = new BasTagDto();
+               BasTag tag = tagService.selectById(categoryId);
+              /*  BasTagDto basTagDto = new BasTagDto();
                 basTagDto.setId(categoryId);
-                BasTagDto tag = iEvaluateProxyService.getBasTagBySelectById(basTagDto);
+                BasTagDto tag = iEvaluateProxyService.getBasTagBySelectById(basTagDto);*/
                 tagsFormGame = tag.getName();
             }
         }else {//官方标签不存在(1)
@@ -698,10 +702,10 @@ public class EvaluateServiceImpl implements IEvaluateService {
 //                迁移微服务 根据bastagid获取basTag对象
 //                2019-05-14
 //                lyc
-//            BasTag tag = tagService.selectById(categoryId);
-            BasTagDto basTagDto = new BasTagDto();
+            BasTag tag = tagService.selectById(categoryId);
+           /* BasTagDto basTagDto = new BasTagDto();
             basTagDto.setId(categoryId);
-            BasTagDto tag = iEvaluateProxyService.getBasTagBySelectById(basTagDto);
+            BasTagDto tag = iEvaluateProxyService.getBasTagBySelectById(basTagDto);*/
             tagsFormGame = tag.getName();
         }
 

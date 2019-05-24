@@ -1,12 +1,11 @@
 package com.fungo.system.service;
 
-import com.game.common.bean.TagBean;
+
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
-import com.game.common.dto.game.BasTagDto;
-import com.game.common.dto.game.BasTagGroupDto;
+
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.IncentRuleRankDto;
@@ -65,7 +64,7 @@ public interface SystemService {
 
     ResultDto<List<HashMap<String,Object>>> getStatusImage(String memberId);
 
-    ResultDto<List<BasTagDto>> listBasTags(List<String> collect);
+  //  ResultDto<List<BasTagDto>> listBasTags(List<String> collect);
 
     ResultDto<List<MemberDto>> listWatchMebmber(Integer limit, String currentMbId) throws IOException, ClassNotFoundException;
 
@@ -87,15 +86,15 @@ public interface SystemService {
 
     ResultDto<Integer> countActionNumGameUse(BasActionDto basActionDto);
 
-    ResultDto<List<BasTagDto>> listBasTagByGroup(String groupId);
+   // ResultDto<List<BasTagDto>> listBasTagByGroup(String groupId);
 
-    ResultDto<BasTagDto> getBasTagById(String id);
+   // ResultDto<BasTagDto> getBasTagById(String id);
 
-    ResultDto<List<BasTagGroupDto>> listBasTagGroupByCondition(BasTagGroupDto basTagGroupDto);
+  //  ResultDto<List<BasTagGroupDto>> listBasTagGroupByCondition(BasTagGroupDto basTagGroupDto);
 
     ResultDto<Integer> countSerchUserName(String keyword);
 
-    ResultDto<List<TagBean>> listSortTags(List<String> gameId);
+ //   ResultDto<List<TagBean>> listSortTags(List<String> gameId);
 
     /**
      * 修改通知数据

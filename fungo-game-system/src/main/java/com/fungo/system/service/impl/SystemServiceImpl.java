@@ -9,13 +9,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.entity.*;
 import com.fungo.system.service.*;
-import com.game.common.bean.TagBean;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
-import com.game.common.dto.game.BasTagDto;
-import com.game.common.dto.game.BasTagGroupDto;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.IncentRuleRankDto;
@@ -33,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -42,7 +38,6 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -91,8 +86,6 @@ public class SystemServiceImpl implements SystemService {
     @Autowired
     private IUserService userService;
 
-    @Autowired
-    private BasTagService bagTagService;
 
     @Autowired
     private ScoreLogService scoreLogService;
@@ -100,12 +93,6 @@ public class SystemServiceImpl implements SystemService {
     @Autowired
     private IncentRuleRankService rankRuleService;
 
-    @Autowired
-    private BasTagGroupService basTagGroupService;
-
-
-    @Autowired
-    private StringRedisTemplate redisTemplate;
 
     /**
      * 功能描述: 根据用户id查询被关注人的id集合
@@ -679,7 +666,7 @@ public class SystemServiceImpl implements SystemService {
         return ResultDto.success(image);
     }
 
-    @Override
+ /*   @Override
     public ResultDto<List<BasTagDto>> listBasTags(List<String> collect) {
         List<BasTag> tagList = bagTagService.selectList(new EntityWrapper<BasTag>().in("id", collect));
         List<BasTagDto> tagDtoList = null;
@@ -690,9 +677,9 @@ public class SystemServiceImpl implements SystemService {
             return ResultDto.error("-1", "SystemService.listBasTags error");
         }
         return ResultDto.success(tagDtoList);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public ResultDto<List<BasTagDto>> listBasTagByGroup(String groupId) {
         List<BasTag> tagList = bagTagService.selectList(new EntityWrapper<BasTag>().in("group_id", groupId));
         List<BasTagDto> tagDtoList = null;
@@ -722,15 +709,9 @@ public class SystemServiceImpl implements SystemService {
             return ResultDto.error("-1", "SystemService.listBasTagGroupByCondition error");
         }
         return ResultDto.success(basTagDtoList);
-    }
+    }*/
 
-    @Override
-    public ResultDto<Integer> countSerchUserName(String keyword) {
-        int count = memberServiceImap.selectCount(new EntityWrapper<Member>().where("state = {0}", 0).like("user_name", keyword));
-        return ResultDto.success(count);
-    }
-
-    @Override
+ /*   @Override
     public ResultDto<List<TagBean>> listSortTags(List<String> tags) {
         List<BasTag> tagList = bagTagService.selectList(new EntityWrapper<BasTag>().in("id", tags));
         ArrayList<TagBean> list = new ArrayList<>();
@@ -740,9 +721,9 @@ public class SystemServiceImpl implements SystemService {
             list.add(tagBean);
         }
         return ResultDto.success(list);
-    }
+    }*/
 
-    @Override
+  /*  @Override
     public ResultDto<BasTagDto> getBasTagById(String id) {
         BasTag tag = bagTagService.selectById(id);
         if(tag == null){
@@ -756,7 +737,15 @@ public class SystemServiceImpl implements SystemService {
             return ResultDto.error("-1", "SystemService.getBasTagById error");
         }
         return ResultDto.success(tagDto);
+    }*/
+
+    @Override
+    public ResultDto<Integer> countSerchUserName(String keyword) {
+        int count = memberServiceImap.selectCount(new EntityWrapper<Member>().where("state = {0}", 0).like("user_name", keyword));
+        return ResultDto.success(count);
     }
+
+
 
 
     @Override

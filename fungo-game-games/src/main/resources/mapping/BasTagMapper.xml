@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.fungo.system.dao.BasTagGroupDao">
+<mapper namespace="com.fungo.games.dao.BasTagDao">
 
 	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.fungo.system.entity.BasTagGroup">
+	<resultMap id="BaseResultMap" type="com.fungo.games.entity.BasTag">
 		<id column="id" property="id" />
 		<result column="name" property="name" />
-		<result column="icon" property="icon" />
+		<result column="game_num" property="gameNum" />
+		<result column="group_id" property="groupId" />
 		<result column="created_at" property="createdAt" />
 		<result column="updated_at" property="updatedAt" />
+		<result column="sort" property="sort" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, icon, created_at AS createdAt, updated_at AS updatedAt
+        id, name, game_num AS gameNum, group_id AS groupId, created_at AS createdAt, updated_at AS updatedAt, sort
     </sql>
+    
+
 
 </mapper>
