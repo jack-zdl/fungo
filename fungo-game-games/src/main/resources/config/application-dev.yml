@@ -25,7 +25,7 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url:  jdbc:mysql://39.105.18.214:3306/fungo_games?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url:  jdbc:mysql://39.105.18.214:3306/fungo_dev?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
     password: affdB440821920A9
     hikari:

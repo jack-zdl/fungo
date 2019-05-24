@@ -78,10 +78,10 @@ spring:
           isolation:
             strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
             thread:
-              timeoutInMilliseconds: 60000  #命令执行超时时间，默认1000ms
+              timeoutInMilliseconds: 600000  #命令执行超时时间，默认1000ms
   ribbon:
     ConnectTimeout: 50000
-    ReadTimeout: 50000
+    ReadTimeout: 150000
   #-----------------------------------------------------------------------------------------------------------------------------------
   aop:
     proxy-target-class: true
@@ -89,7 +89,7 @@ spring:
     #DB配置
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://39.105.18.214:3306/fungo_community?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://39.105.18.214:3306/fungo_dev?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
     password: affdB440821920A9
     # 连接池配置

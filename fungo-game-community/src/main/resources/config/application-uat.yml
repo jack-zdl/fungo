@@ -48,10 +48,10 @@ spring:
           isolation:
             strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
             thread:
-              timeoutInMilliseconds: 60000  #命令执行超时时间，默认1000ms
+              timeoutInMilliseconds: 600000  #命令执行超时时间，默认1000ms
   ribbon:
     ConnectTimeout: 50000
-    ReadTimeout: 50000
+    ReadTimeout: 150000
   #-----------------------------------------------------------------------------------------------------------------------------------
 
   aop:
