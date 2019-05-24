@@ -321,6 +321,17 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
         return systemFeignClient.listSortTags(tags).getData();
     }
 
+    /**
+     * 根据用户会员DTO对象分页查询用户会员
+     * @param memberDto
+     */
+    @HystrixCommand(fallbackMethod = "hystrixGetSortTags",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    @Override
+    public FungoPageResultDto<MemberDto> listMemberDtoPag(MemberDto memberDto) {
+        return systemFeignClient.listMemberDtoPag(memberDto);
+    }
+
 
     /****************************************降级区*************************************************************/
 
