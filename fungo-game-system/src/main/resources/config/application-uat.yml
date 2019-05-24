@@ -1,6 +1,6 @@
 server:
-  port: 8771
-
+  #port: 8771
+  port: 8772
 #--------------------------------------------------------------------------------------------------
 eureka:
   instance:
@@ -10,7 +10,7 @@ eureka:
     lease-renewal-interval-in-seconds: 5
   client:
     serviceUrl:
-      defaultZone:   http://peer1:8761/eureka/,http://peer2:8762/eureka/,http://peer2:8763/eureka/
+      defaultZone: http://172.17.18.228:8762/eureka/,http://172.17.18.227:8761/eureka/
 
 
 #--------------------------------------------------------------------------------------------------
@@ -19,7 +19,8 @@ spring:
     inetutils:
       ignored-interfaces[0]: docker0
     client:
-      ipAddress:  localhost
+      #ipAddress: 172.17.18.227
+      ipAddress: 172.17.18.228
   application:
     name: fungo-game-system
 
@@ -27,9 +28,9 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url:  jdbc:mysql://39.105.18.214:3306/fungo_system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: root
-    password: affdB440821920A9
+    url:  jdbc:mysql://rm-bp145sizta1yg4585xo.mysql.rds.aliyuncs.com:3306/fungo_uat?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: fungo_uat
+    password: b1dcfae36fa84Db88479efbd36b16e
     hikari:
       # 连接池标题
       pool-name: funGoApiHikariCP
@@ -76,10 +77,10 @@ spring:
   session:
     store-type: redis
   #--------------------------------------------------------------------------------------------------
-  zipkin:
-    base-url: http://peer1:9411
-    sender:
-      type: web
+#  zipkin:
+#    base-url: http://peer1:9411
+#    sender:
+#      type: web
   #--------------------------------------------------------------------------------------------------
   sleuth:
     sampler:
@@ -257,7 +258,7 @@ fungo:
 
 #系统配置-集群编号
 sys.config.fungo:
-  cluster.index: 1
+  cluster.index: 6
 
 #--------------------------------------------------------------------------------------------------
 #安全机制接口身份key
