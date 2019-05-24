@@ -21,9 +21,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.servlet.MultipartConfigElement;
 
 @SpringBootApplication
+@ComponentScan(basePackages = {"com.*"})
 @EnableFeignClients(basePackages = {"com.fungo.community.feign"})
 @EnableCaching
-@ComponentScan(basePackages = {"com.*"})
 @EnableHystrix
 //@EnableTurbine
 @EnableHystrixDashboard
