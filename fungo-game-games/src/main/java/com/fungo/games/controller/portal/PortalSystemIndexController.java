@@ -70,27 +70,12 @@ public class PortalSystemIndexController {
         List<GameEvaluation> plist = page.getRecords();
         for (GameEvaluation gameEvaluation : plist) {
             AmwayWallBean bean = new AmwayWallBean();
-//            迁移微服务 根据用户id获取authorbean对象
-//            2019-05-13
-//            lyc
-//            bean.setAuthor(this.userService.getAuthor(gameEvaluation.getMemberId()));
+
             bean.setAuthor(iEvaluateProxyService.getAuthor(gameEvaluation.getMemberId()));
             Game game = this.gameService.selectById(gameEvaluation.getGameId());
             bean.setEvaluation(CommonUtils.filterWord(gameEvaluation.getContent()));
             bean.setEvaluationId(gameEvaluation.getId());
-//			ObjectMapper objectMapper = new ObjectMapper();
-//			ArrayList<String> imgs=null;
-//	        try {
-//		    	if(gameEvaluation.getImages()!=null) {
-//		    		imgs = (ArrayList<String>)objectMapper.readValue(gameEvaluation.getImages(), ArrayList.class);
-//		    	}
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//
-//	        if(imgs!=null&&imgs.size()!=0) {
-//				bean.setGameImage(imgs.get(0));
-//	        }
+
             bean.setGameImage(game.getCoverImage());
             bean.setGameIcon(game.getIcon());
             bean.setGameId(gameEvaluation.getGameId());
@@ -108,6 +93,11 @@ public class PortalSystemIndexController {
         return re;
 
     }
+
+
+
+
+
 
 
     //--------
