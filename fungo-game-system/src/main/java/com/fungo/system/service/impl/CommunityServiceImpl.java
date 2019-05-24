@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.dao.MemberDao;
 import com.fungo.system.entity.BasAction;
 import com.fungo.system.entity.Member;
+import com.fungo.system.proxy.ICommunityProxyService;
+import com.fungo.system.proxy.IGameProxyService;
 import com.fungo.system.service.BasActionService;
 import com.fungo.system.service.ICommunityService;
 import com.fungo.system.service.MemberService;
@@ -32,6 +34,11 @@ public class CommunityServiceImpl implements ICommunityService {
     @Autowired
     private MemberDao memberDao;
 
+    @Autowired
+    private ICommunityProxyService communityProxyService;
+
+    @Autowired
+    private IGameProxyService iGameProxyService;
 
     //@Cacheable(cacheNames = {FunGoGameConsts.CACHE_EH_NAME}, key = "'" + FunGoGameConsts.CACHE_EH_KEY_PRE_MEMBER + "_recommendMembers'+ #currentMb_id")
     @Override
@@ -190,8 +197,8 @@ public class CommunityServiceImpl implements ICommunityService {
 
 
             //1.先查询发布文章数大于10条的用户
-            List<String> sendArticleMembers = memberDao.getRecommendMembersFromCmmPost(sendArticles,
-                    limitSize, wathMbsSet);
+            // @todo 5.22
+            List<String> sendArticleMembers = communityProxyService.getRecommendMembersFromCmmPost(sendArticles,limitSize, wathMbsSet); //memberDao.getRecommendMembersFromCmmPost(sendArticles, limitSize, wathMbsSet);
             LOGGER.info("查询发布文章数大于10条的用户:{}", sendArticleMembers.toString());
 
             if (null != sendArticleMembers && !sendArticleMembers.isEmpty()) {
@@ -200,8 +207,8 @@ public class CommunityServiceImpl implements ICommunityService {
             }
 
             //2.再查询发布游戏评论>大于14条的，前10名用户
-            List<String> sendCommentMembers = memberDao.getRecommendMembersFromEvaluation(sendComments,
-                    limitSize, wathMbsSet);
+            // @todo 5.22
+            List<String> sendCommentMembers = iGameProxyService.getRecommendMembersFromEvaluation(Long.valueOf(sendComments).intValue(), Long.valueOf(limitSize).intValue(), wathMbsSet);   //memberDao.getRecommendMembersFromEvaluation(sendComments, limitSize, wathMbsSet);
 
             LOGGER.info("查询发布游戏评论>大于14条的，前10名用户:{}", sendCommentMembers.toString());
             if (null != sendCommentMembers && !sendCommentMembers.isEmpty()) {

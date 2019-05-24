@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.service.msService.IMSServicePostService;
+import com.game.common.bean.CollectionBean;
 import com.game.common.dto.community.CmmPostDto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -258,6 +259,23 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
             LOGGER.error("ms/service/cmm/post/topicPosts--listCmmPostTopicPost-出现异常:", ex);
         }
         return cmmPostDtoList;
+    }
+
+    @Override
+    public List<CollectionBean> getCollection(int pageNum, int limit, List<String> postIds) {
+        try {
+
+            if (null == postIds || postIds.isEmpty()) {
+                return null;
+            }
+
+            Page<CollectionBean> page = new Page<CollectionBean>(pageNum, limit);
+            return postDaoService.getCollection(page, postIds);
+
+        } catch (Exception ex) {
+            LOGGER.error("/ms/service/cmm/post/user/collect--getCollection-出现异常:", ex);
+        }
+        return null;
     }
 
 

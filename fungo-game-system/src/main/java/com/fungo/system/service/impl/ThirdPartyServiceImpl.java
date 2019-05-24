@@ -306,7 +306,7 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
 
             if (!"pc".equals(channel)) {
                 //记录登录用户
-                memberLoginedStatisticsService.addLoginToBucket(member.getId(), appVersion);
+                memberLoginedStatisticsService.addLoginToBucket(user.getId(), appVersion);
             }
             return rest;
         }

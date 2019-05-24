@@ -41,37 +41,8 @@
         id, salt, last_visit AS lastVisit, email, sesion_token AS sesionToken, password, exp, user_name AS userName, state, has_password AS hasPassword, level, email_verified AS emailVerified, mobile_phone_num AS mobilePhoneNum, avatar, complete, gender, auth_data AS authData, import_from_parse AS importFromParse, mobile_phone_verified AS mobilePhoneVerified, followee_num AS followeeNum, publish_num AS publishNum, follower_num AS followerNum, report_num AS reportNum, created_at AS createdAt, updated_at AS updatedAt, sign, member_no AS memberNo, qq_open_id AS qqOpenId, weixin_open_id AS weixinOpenId, weibo_open_id AS weiboOpenId
     </sql>
 
-    <select id="getRandomMember" resultMap="BaseResultMap" parameterType="java.util.Map">
-        <!--  and id not in(
-            select follower_id as id from t_member_follower  where member_id=#{memberId} and     state=1 or state=2
-            UNION
-            select member_id as id from t_member_follower  where state=4  and follower_id =#{memberId}
-            ) -->
-        <![CDATA[
-    	SELECT * FROM t_member where  type=2 and  id <> #{memberId}	
-    	and id not in(
-        select follower_id as id from t_member_follower  where member_id=#{memberId} and  state=1 or state=2 
-        UNION 
-        select member_id as id from t_member_follower  where state=4  and follower_id =#{memberId} 
-        )	ORDER BY RAND()  LIMIT 0,#{pageSize}
-			]]>
-    </select>
-
-	<!-- 管控台获取用户动态 -->
-    <select id="getComment" resultType="com.game.common.bean.CommentBean" parameterType="String">
-    	<![CDATA[
 
 
-			(select id,content,5 as type,date_format(created_at, '%Y-%c-%d %H:%i:%s' ) as createdAt,reply_num as replyNum,like_num as likeNum from t_cmm_comment where member_id = #{userId} and state != -1) 
-			UNION ALL
-			(select id,content,6 as type,date_format(created_at, '%Y-%c-%d %H:%i:%s' ) as createdAt,reply_num as replyNum,like_num as likeNum from t_game_evaluation where member_id = #{userId} and state != -1) 
-			UNION ALL 
-			(select id,content,8 as type,date_format(created_at, '%Y-%c-%d %H:%i:%s' ) as createdAt,reply_num as replyNum,like_num as likeNum from t_moo_message where member_id = #{userId} and state != -1)
-			ORDER BY createdAt desc
-
-
-        ]]>
-	</select>
 
 	<!-- 我的动态 - 我的评论 -->
     <select id="getAllComments" resultType="com.game.common.bean.CommentBean" parameterType="String">
@@ -94,18 +65,6 @@
 			]]>
     </select>
 
-	<!-- 已弃用 -->
-    <select id="getRecommendMembers" resultType="java.util.HashMap">
-		SELECT d.member_id,sum(d.b) as pubconut FROM(
-		 (SELECT * FROM
-			(SELECT member_id,count(*) as b FROM t_game_evaluation GROUP BY member_id) as i WHERE i.b >= 10)
-		UNION ALL
-		(SELECT * FROM
-			(SELECT member_id,count(*) as b FROM t_cmm_post GROUP BY member_id) as i WHERE i.b >= 10)
-		)
-		as d GROUP BY d.member_id  ORDER BY pubconut DESC LIMIT 10
-			
-	</select>
 
 
     <!-- 查询游戏评论表中发表评论大于14条，前10名的用户 -->
@@ -161,21 +120,7 @@
 
 	</select>
 	
-	
-	<!-- 用户精品帖子数 -->
-	 <select id="getHonorQualificationOfEssencePost" resultType="java.util.HashMap">
-	 	SELECT * FROM
-		(SELECT member_id,COUNT(*) as post_count,0 as eva_count,0 as like_count FROM t_cmm_post WHERE type = 2 GROUP BY member_id) 
-		a WHERE a.post_count >= 2
-	</select>
-	
-	<!-- 用户游戏评测精品数 -->
-	 <select id="getHonorQualificationOfEssenceEva" resultType="java.util.HashMap">
-	 	SELECT * FROM
-		(SELECT member_id,0 as post_count,COUNT(*) as eva_count,0 as like_count FROM t_game_evaluation WHERE type = 2 GROUP BY member_id) 
-		a WHERE a.eva_count >= 2
-	</select>
-	
+
 	<!-- 用户被点赞数 -->
 	 <select id="getHonorQualificationOfBeLiked" resultType="java.util.HashMap">
 	 	SELECT * FROM

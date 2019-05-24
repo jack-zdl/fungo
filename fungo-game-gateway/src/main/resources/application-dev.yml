@@ -3,8 +3,8 @@ eureka:
     serviceUrl:
       defaultZone:  http://127.0.0.1:8761/eureka/
   instance:
-    instance-id: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
-#    prefer-ip-address: true
+    instance-id:    ${spring.cloud.client.ipAddress}:${server.port}  #${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+    prefer-ip-address: true
     appname: scyp-gateway
 server:
   port: 8182
@@ -36,6 +36,9 @@ management:
 #
 # 路由配置
 zuul:
+  host:
+    connect-timeout-millis: 15000
+    socket-timeout-millis: 60000
   routes:
     fungo-game-system-1:
       path: /api/action/**
@@ -157,6 +160,16 @@ zuul:
       serviceId:  FUNGO-GAME-SYSTEM
       sensitiveHeaders:
       strip-prefix: false
+    fungo-game-system-26:
+      path: /api/upload/**
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-system-27:
+      path: /api/invite/users
+      serviceId:  FUNGO-GAME-SYSTEM
+      sensitiveHeaders:
+      strip-prefix: false
 
  #社区接口
     fungo-game-commmunity-1:
@@ -234,8 +247,16 @@ zuul:
       serviceId:  FUNGO-GAME-COMMUNITY
       sensitiveHeaders:
       strip-prefix: false
-
-
+    fungo-game-commmunity-19:
+      path: /api/search/communitys
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
+    fungo-game-commmunity-20:
+      path: /api/search/posts
+      serviceId:  FUNGO-GAME-COMMUNITY
+      sensitiveHeaders:
+      strip-prefix: false
 
 
     #      *****************游戏开始************************************
@@ -400,7 +421,7 @@ hystrix:
 #          thread:
 #            timeoutInMilliseconds: 40000  #命令执行超时时间，默认1000ms
 ribbon:
-  ConnectTimeout: 5000
+  ConnectTimeout: 10000
   ReadTimeout: 15000
 
 
