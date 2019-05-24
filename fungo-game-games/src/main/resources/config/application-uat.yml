@@ -1,5 +1,7 @@
 server:
-  port: 8781
+  #port: 8781
+  port: 8782
+
 
 #-----------------------------------------------------------------------------------------------------------
 eureka:
@@ -11,13 +13,14 @@ eureka:
     lease-renewal-interval-in-seconds: 5
   client:
     serviceUrl:
-      defaultZone:  http://peer1:8761/eureka/,http://peer2:8762/eureka/,http://peer2:8763/eureka/
+      defaultZone:  http://172.17.18.228:8762/eureka/,http://172.17.18.227:8761/eureka/
 
 #-----------------------------------------------------------------------------------------------------------
 spring:
   cloud:
     client:
-      ipAddress: 39.105.18.214
+      #ipAddress: 172.17.18.227
+      ipAddress: 172.17.18.228
   application:
     name: fungo-game-games
 
@@ -25,9 +28,9 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url:  jdbc:mysql://39.105.18.214:3306/fungo_games?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: root
-    password: affdB440821920A9
+    url:  jdbc:mysql://rm-bp145sizta1yg4585xo.mysql.rds.aliyuncs.com:3306/fungo_uat?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: fungo_uat
+    password: b1dcfae36fa84Db88479efbd36b16e
     hikari:
       # 连接池标题
       pool-name: funGoApiHikariCP
@@ -54,14 +57,13 @@ spring:
       suffix: .html
 
 
-
   #---------------------------------------mq----------------------------------------------
   rabbitmq:
     host: 1811420479436984.mq-amqp.cn-hangzhou-a.aliyuncs.com
     port: 5672
     username: LTAIsW4qLBG6M3Vf
     password: EBQbTTZGhPptMw3tGJ1grmG4r6uD7l
-    virtual-host: dev
+    virtual-host: uat
     template:
       mandatory: true
     publisher-confirms: true
@@ -86,10 +88,10 @@ spring:
 #-----------------------------------------------------------------------------------------------------------
   session:
     store-type: redis
-  zipkin:
-    base-url:  http://peer1:9411
-    sender:
-      type: web
+#  zipkin:
+#    base-url:  http://peer1:9411
+#    sender:
+#      type: web
   sleuth:
     sampler:
       probability: 1.0
@@ -131,7 +133,7 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
 
-  #-----------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------
 #  type-aliases-package: com.fungo.system.entity
 ## 当post /refresh方式刷新配置 时 ，会有个安全限制，关掉就可以了
 #management:
@@ -185,11 +187,11 @@ aliyun.vod:
   vodRegionId: cn-shanghai
   #阿里云视频点播分类id
   vodCateId: 1000013332
-
+#-----------------------------------------------------------------------------------------------------------
 #阿里云短信模板
 aliyun.sms:
   template.code: SMS_158942300
-
+#-----------------------------------------------------------------------------------------------------------
 fungo:
   secretKey: asdflasjfdlajsdf
   mall:
@@ -201,7 +203,7 @@ fungo:
 
 #系统配置-集群编号
 sys.config.fungo:
-  cluster.index: 1
+  cluster.index: 4
 
 #-----------------------------------------------------------------------------------------------------------
 #安全机制接口身份key
