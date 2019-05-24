@@ -54,7 +54,7 @@
 
 
     <!-- 获取关注用户和社区的帖子分页数据 -->
-    <select id="getAllFollowerPostWithPage" resultType="com.game.common.dto.community.CmmPostBean"
+    <select id="getAllFollowerPostWithPage" resultType="com.fungo.community.entity.CmmPost"
             parameterType="java.util.Map">
         SELECT * FROM t_cmm_post where (
         <trim prefixOverrides="or">

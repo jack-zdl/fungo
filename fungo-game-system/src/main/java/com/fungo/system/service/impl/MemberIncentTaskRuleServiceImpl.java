@@ -66,7 +66,7 @@ public class MemberIncentTaskRuleServiceImpl implements IMemberIncentTaskRuleSer
         try {
             String keyPrefix = "ScoreRuleListV2.4.6";
 
-            Object indexCache = fungoCacheTask.getIndexCache(keyPrefix, "");
+           // Object indexCache = fungoCacheTask.getIndexCache(keyPrefix, "");
 
 
             scoreRuleList = (List<ScoreRule>) fungoCacheTask.getIndexCache(keyPrefix, "");
@@ -114,9 +114,11 @@ public class MemberIncentTaskRuleServiceImpl implements IMemberIncentTaskRuleSer
     @Override
     public ScoreRule getScoreRule(int code_idt) {
         List<ScoreRule> scoreRuleList = this.getScoreRules(null);
-        for (ScoreRule scoreRule : scoreRuleList) {
-            if (code_idt == scoreRule.getCodeIdt()) {
-                return scoreRule;
+        if(scoreRuleList!=null&&!scoreRuleList.isEmpty()){
+            for (ScoreRule scoreRule : scoreRuleList) {
+                if (code_idt == scoreRule.getCodeIdt()) {
+                    return scoreRule;
+                }
             }
         }
         return null;

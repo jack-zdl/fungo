@@ -598,7 +598,7 @@ public class UserServiceImpl implements IUserService {
 //			member.setSign(msg.getSign());
 //			gameProxy.addTaskCore(Setting.ACTION_TYPE_INTRO, memberId, "", -1);
 //		}
-        if (null != msg.getSign() && !member.getSign().equals(msg.getSign())) {//简介
+        if (null != msg.getSign() &&!"".equals(msg.getSign().trim())&& !member.getSign().equals(msg.getSign())) {//简介
             member.setSign(msg.getSign());
 
             //V2.4.6版本之前任务
