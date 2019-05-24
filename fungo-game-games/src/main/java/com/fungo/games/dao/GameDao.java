@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.entity.Game;
 import com.game.common.bean.HotValue;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
@@ -28,4 +29,7 @@ public interface GameDao extends BaseMapper<Game> {
     String getMemberIdByTargetId(Map<String, String> map);
 //  平均分20190521复制
     HashMap<String, BigDecimal> getRateData1(String gameId);
+
+    @MapKey("id")
+    Map<String,Game> listGame(@Param("ids") List<String> ids);
 }

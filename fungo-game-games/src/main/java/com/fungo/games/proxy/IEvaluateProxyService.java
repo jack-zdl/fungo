@@ -90,6 +90,13 @@ public interface IEvaluateProxyService {
     CmmCommunityDto getCmmCommunitySelectOneById(CmmCommunityDto ccd);
 
     /**
+     * 根据社区id集合获取相关信息
+     * @param ids
+     * @return
+     */
+    public Map<String, Integer> listCommunityFolloweeNum(List<String> ids);
+
+    /**
      * Mqfeign调用
      * @param inviteMemberId
      * @param i

@@ -2,17 +2,16 @@ package com.fungo.games.feign;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.community.ReplyInputPageDto;
 import com.game.common.dto.game.ReplyDto;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,4 +40,7 @@ public interface CommunityFeignClient {
 //    @RequestMapping(value="/cty/lists", method= RequestMethod.POST)
     @PostMapping("/ms/service/cmm/cty/lists")
     FungoPageResultDto<CmmCommunityDto> getCmmCommunitySelectOneById(@RequestBody CmmCommunityDto cmmCommunityDto);
+
+    @RequestMapping(value = "/api/search/listCommunityFolloweeNum", method = RequestMethod.POST)
+    public ResultDto<Map<String,Integer>> listCommunityFolloweeNum(@RequestBody List<String> communityIds);
 }

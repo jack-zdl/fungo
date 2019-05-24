@@ -16,6 +16,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 
 @RestController
 @Api(value = "", description = "社区")
@@ -109,6 +112,13 @@ public class CommunityController {
         String keyword = searchInputDto.getKey_word();
         return communityService.searchCommunitys(page, limit, keyword, userId);
     }
+
+    @ApiOperation(value = "根据社区id集合查找社区推荐度", notes = "")
+    @RequestMapping(value = "/api/search/listCommunityFolloweeNum", method = RequestMethod.POST)
+    public ResultDto<Map<String,Integer>> listCommunityFolloweeNum(@RequestBody List<String> communityIds){
+        return communityService.listCommunityFolloweeNum(communityIds);
+    }
+
     //-----------
 
 }

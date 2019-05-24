@@ -753,15 +753,16 @@ public class CommunityServiceImpl implements ICommunityService {
 
     /**
      * 获取官方推荐和符合条件推荐用户
-     *       玩家推荐规则：
-     *          规则一 玩家推荐：
-     *           发布文章数 大于10 或者 游戏评论数大于14
-     *          规则二 玩家已关注列表替换规则：
-     *           1.显示已经关注用户数量：最大10个
-     *           2.若有新的推荐用户，且未关注，替换到玩家已关注列表的前面。且 该类别数量恒定10人
+     * 玩家推荐规则：
+     * 规则一 玩家推荐：
+     * 发布文章数 大于10 或者 游戏评论数大于14
+     * 规则二 玩家已关注列表替换规则：
+     * 1.显示已经关注用户数量：最大10个
+     * 2.若有新的推荐用户，且未关注，替换到玩家已关注列表的前面。且 该类别数量恒定10人
+     *
      * @param limit
      * @param currentMb_id 当前登录用户ID
-     * @param wathMbsSet 当前登录用户，已经关注的用户IDS
+     * @param wathMbsSet   当前登录用户，已经关注的用户IDS
      * @return
      */
     private List<MemberDto> getRecommeMembers(int limit, String currentMb_id, List<String> wathMbsSet) {
@@ -967,6 +968,22 @@ public class CommunityServiceImpl implements ICommunityService {
         PageTools.pageToResultDto(re, cmmPage);
         re.setData(dataList);
         return re;
+    }
+
+    @Override
+    public ResultDto<Map<String, Integer>> listCommunityFolloweeNum(List<String> communityIds) {
+        HashMap<String, Integer> map1 = new HashMap<>();
+        if(communityIds==null||communityIds.isEmpty()){
+            return ResultDto.success(map1);
+        }
+        Map<String, CmmCommunity> map = communityDao.listCommunityFolloweeNum(communityIds);
+        for (String s : map.keySet()) {
+            CmmCommunity community = map.get(s);
+            if (community!=null&&community.getFolloweeNum()!=null){
+                map1.put(s,community.getFolloweeNum());
+            }
+        }
+        return ResultDto.success(map1);
     }
 
     //-------

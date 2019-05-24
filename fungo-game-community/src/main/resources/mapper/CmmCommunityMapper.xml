@@ -41,6 +41,13 @@
 	  ) f GROUP BY f.member_id ORDER BY SUM(f.c+f.d+f.f) DESC,f.member_id DESC
     </select>
 
+    <select id="listCommunityFolloweeNum" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select id,followee_num from t_cmm_community where id in
+        <foreach collection="communityIds" item="communityId" open="(" close=")" separator=",">
+            #{communityId}
+        </foreach>
+    </select>
+
 
     <!-- 查询社区评论数 -->
     <select id="getCommentNumOfCommunity" resultType="int" parameterType="String">
