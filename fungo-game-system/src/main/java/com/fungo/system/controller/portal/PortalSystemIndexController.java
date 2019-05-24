@@ -70,5 +70,16 @@ public class PortalSystemIndexController {
     }
 
 
+
+
+    @ApiOperation(value = "广告位置活动位 | 专属活动", notes = "")
+    @ApiImplicitParams({})
+    @RequestMapping(value = "/api/portal/index/adt/activity", method = RequestMethod.GET)
+    public ResultDto<List<AdvertOutBean>> getAdvertWithPc() {
+
+
+
+    }
+
 //---------
 }
