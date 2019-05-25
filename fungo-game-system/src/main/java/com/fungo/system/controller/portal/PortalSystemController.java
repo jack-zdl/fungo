@@ -24,7 +24,7 @@ import java.util.List;
  * @update 2019/5/5 16:26
  */
 @RestController
-public class PortalSystemIndexController {
+public class PortalSystemController {
 
 
     @Autowired
@@ -33,13 +33,7 @@ public class PortalSystemIndexController {
     @Autowired
     private FungoCacheAdvert fungoCacheAdvert;
 
-    /**
-     * 功能描述: 首页轮播
-     * @param: []
-     * @return: com.game.common.dto.ResultDto<java.util.List<com.game.common.dto.advert.AdvertOutBean>>
-     * @auther: dl.zhang
-     * @date: 2019/5/24 16:57
-     */
+
     @ApiOperation(value = "首页游戏banner接口(v2.3)", notes = "")
     @ApiImplicitParams({})
     @RequestMapping(value = "/api/portal/index/adt/bnr", method = RequestMethod.GET)
