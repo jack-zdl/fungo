@@ -210,6 +210,96 @@ public class IndexServiceImpl implements IIndexService {
         return re;
     }
 
+    @Override
+    public FungoPageResultDto<CardIndexBean> index(InputPageDto input) {
+        FungoPageResultDto<CardIndexBean> re = null;
+        //先从Redis获取
+        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX;
+        String keySuffix = JSON.toJSONString(input);
+        re = (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+
+        if (null != re && null != re.getData() && re.getData().size() > 0) {
+            return re;
+        }
+        re = new FungoPageResultDto<>();
+        List<CardIndexBean> clist = new ArrayList<>();
+        int page = input.getPage();
+
+        Page<CardIndexBean> pageBean = null;
+
+        if (1 == page) {
+            //轮播
+//			CardIndexBean topic = this.topic();
+//			clist.add(topic);
+            //活动位
+            CardIndexBean activities = this.activities();
+
+            if (activities != null) {
+                clist.add(activities);
+            }
+            //本周精选(游戏)
+            CardIndexBean hotGames = this.hotGames();
+            if (hotGames != null) {
+                clist.add(hotGames);
+            }
+            //精选文章
+            CardIndexBean postHost = this.selectPosts("0006");
+            if (postHost != null) {
+                clist.add(postHost);
+            }
+            //安利墙 ios 当前版本是否 隐藏
+            CardIndexBean anliWall = this.anliWall();
+
+            if (anliWall != null) {
+                clist.add(anliWall);
+            }
+            CardIndexBean postVidoe = this.selectPosts("0007");
+            if (postVidoe != null) {
+                clist.add(postVidoe);
+            }
+            re.setAfter(2);
+            re.setBefore(1);
+
+        } else if (page == 2) {
+
+            //安利墙 ios 当前版本是否 隐藏
+            CardIndexBean postVidoe = this.selectPosts("0007");
+            if (postVidoe != null) {
+                clist.add(postVidoe);
+            }
+            CardIndexBean postFine = this.selectPosts("0008");
+            if (postFine != null) {
+                clist.add(postFine);
+            }
+            //大家都在玩 ios 当前版本是否 隐藏
+            CardIndexBean selectedGames = this.selectedGames();
+            if (selectedGames != null) {
+                clist.add(selectedGames);
+            }
+            //置顶
+//			ArrayList<CardIndexBean> topicPosts = this.topicPosts(0,3,8);
+//			clist.addAll(topicPosts);
+            re.setAfter(3);
+            re.setBefore(1);
+        } else {
+            page = page - 2;
+//			ArrayList<CardIndexBean> topicPosts = this.topicPosts(10*(page-1) - 7,10,10*(page-1)+1);
+            ArrayList<CardIndexBean> topicPosts = this.topicPosts(page, 10, 10 * (page - 1) + 1);
+            clist.addAll(topicPosts);
+//			PageTools.pageToResultDto(re, pageBean);
+            if (topicPosts.size() == 0) {
+                re.setAfter(-1);
+            } else {
+                re.setAfter(page + 3);
+            }
+//			pageBean = this.pageFormat(clist,page,count);
+        }
+        re.setData(clist);
+        //redis cache
+        fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
+        return re;
+    }
+
 
     //安利墙
     public CardIndexBean anliWall() {
