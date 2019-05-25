@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 用户登录
+ * pc端用户登录
  * @author sam
  *
  */
@@ -167,7 +167,7 @@ public class PortalSystemUserController {
     }
 
     @ApiOperation(value = "发送验证码", notes = "发送验证码")
-    @RequestMapping(value = "/api/user/smscode", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/user/smscode", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "mobile", value = "手机号", paramType = "form", dataType = "string")
     })
@@ -177,7 +177,7 @@ public class PortalSystemUserController {
     }
 
     @ApiOperation(value = "校验验证码", notes = "校验验证码")
-    @RequestMapping(value = "/api/user/verifymobile", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/user/verifymobile", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "code", value = "验证码", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "mobile", value = "手机号", paramType = "form", dataType = "string")
@@ -188,7 +188,7 @@ public class PortalSystemUserController {
     }
 
     @ApiOperation(value = "手机号校验（是否被注册）", notes = "手机号校验（是否被注册）")
-    @RequestMapping(value = "/api/user/mobileusable", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/user/mobileusable", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "mobile", value = "手机号", paramType = "form", dataType = "string")
     })
@@ -198,7 +198,7 @@ public class PortalSystemUserController {
     }
 
     @ApiOperation(value = "忘记密码", notes = "忘记密码")
-    @RequestMapping(value = "/api/user/forgotpassword", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/user/forgotpassword", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "code", value = "验证码", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "mobile", value = "手机号", paramType = "form", dataType = "string")
@@ -210,7 +210,7 @@ public class PortalSystemUserController {
     /*********************************************************************************/
 
     @ApiOperation(value = "修改密码", notes = "修改密码")
-    @RequestMapping(value = "/api/mine/updatepassword", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/mine/updatepassword", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "old_password", value = "旧密码", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "new_password", value = "新密码", paramType = "form", dataType = "string")
@@ -222,7 +222,7 @@ public class PortalSystemUserController {
 
 
     @ApiOperation(value = "退出登录", notes = "退出登录")
-    @RequestMapping(value = "/api/mine/logout", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/mine/logout", method = RequestMethod.POST)
     @ApiImplicitParams({
     })
     public ResultDto<String> logon(MemberUserProfile memberUserPrefile) {
@@ -232,7 +232,7 @@ public class PortalSystemUserController {
     }
 
     @ApiOperation(value = "修改绑定手机号", notes = "修改绑定手机号")
-    @RequestMapping(value = "/api/mine/mobile", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/mine/mobile", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "code", value = "验证码", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "mobile", value = "手机号", paramType = "form", dataType = "string")
@@ -244,7 +244,7 @@ public class PortalSystemUserController {
 
 
     @ApiOperation(value = "用户身份校验(配合修改密码操作)", notes = "用户身份校验(配合修改密码操作)")
-    @RequestMapping(value = "/api/mine/verify", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/mine/verify", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "code", value = "验证码", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "type", value = "类型", paramType = "form", dataType = "string"),
@@ -255,7 +255,7 @@ public class PortalSystemUserController {
     }
 
     @ApiOperation(value = "设置新密码", notes = "设置新密码(v.2.4)")
-    @RequestMapping(value = "/api/mine/setnewpassword", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/mine/setnewpassword", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "password", value = "密码", paramType = "form", dataType = "string"),
     })
@@ -265,7 +265,7 @@ public class PortalSystemUserController {
     }
 
     @ApiOperation(value = "设置新密码", notes = "设置新密码")
-    @RequestMapping(value = "/api/mine/password", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/mine/password", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "password", value = "密码", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "token", value = "token验证", paramType = "form", dataType = "string")
@@ -279,7 +279,7 @@ public class PortalSystemUserController {
 
 
     @ApiOperation(value = "个人资料", notes = "用户身份校验(配合修改密码操作)")
-    @RequestMapping(value = "/api/mine/info", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/portal/mine/info", method = RequestMethod.GET)
     @ApiImplicitParams({})
     public ResultDto<MemberOutBean> getUserInfo(MemberUserProfile memberUserPrefile) throws Exception {
         String memberId = "";
@@ -291,7 +291,7 @@ public class PortalSystemUserController {
 
 
     @ApiOperation(value = "编辑个人资料", notes = "编辑个人资料")
-    @RequestMapping(value = "/api/mine/info", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/mine/info", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "gender", value = "性别", paramType = "form", dataType = "int"),
             @ApiImplicitParam(name = "sign", value = "签名", paramType = "form", dataType = "String"),
@@ -307,7 +307,7 @@ public class PortalSystemUserController {
 
 
     @ApiOperation(value = "验证手机验证码有效性", notes = "验证手机验证码有效性")
-    @RequestMapping(value = "/api/user/verifycode", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/user/verifycode", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "mobile", value = "手机号", paramType = "form", dataType = "String"),
             @ApiImplicitParam(name = "code", value = "验证码", paramType = "form", dataType = "String")
@@ -325,52 +325,13 @@ public class PortalSystemUserController {
     }
 
 
-    @ApiOperation(value = "用户绑定appleId(v2.3)", notes = "")
-    @RequestMapping(value = "/api/user/addAppleId", method = RequestMethod.POST)
-    @ApiImplicitParams({})
-    public ResultDto<String> addAppleId(MemberUserProfile memberUserPrefile, @RequestBody AppleInputBean msg) throws Exception {
-//		 ResultDto<String> re =new  ResultDto<String>();
-//		 MemberApple ma= this.memberAppleService.selectOne(new EntityWrapper<MemberApple>().eq("member_id", memberUserPrefile.getLoginId()));
-//		 if(ma==null) {
-//			 MemberApple apple=new MemberApple();
-//			 apple.setAppleId(msg.getAppleId());
-//			 apple.setCreatedAt(new Date());
-//			 apple.setMemberId(memberUserPrefile.getLoginId());
-//			 apple.setName(msg.getName());
-//			 apple.setSurname(msg.getSurname());
-//			 apple.setUpdatedAt(new Date());
-//			 apple.insert();
-//		 }
-        String memberId = "";
-        if (memberUserPrefile != null) {
-            memberId = memberUserPrefile.getLoginId();
-        }
-        return userService.addAppleId(memberId, msg);
-    }
-
-    @ApiOperation(value = "获取appleId(v2.3)", notes = "")
-    @RequestMapping(value = "/api/user/getAppleId", method = RequestMethod.POST)
-    @ApiImplicitParams({})
-    public ResultDto<AppleInputBean> getAppleId(MemberUserProfile memberUserPrefile) {
-        ResultDto<AppleInputBean> re = new ResultDto<AppleInputBean>();
-        MemberApple ma = this.memberAppleService.selectOne(new EntityWrapper<MemberApple>().eq("member_id", memberUserPrefile.getLoginId()));
-        if (ma != null) {
-            AppleInputBean a = new AppleInputBean();
-            a.setAppleId(ma.getAppleId());
-            a.setName(ma.getName());
-            a.setSurname(ma.getSurname());
-            re.setData(a);
-        }
-        return re;
-    }
-
     @Autowired
     private IFileService fileService;
     private String allowSuffix = "jpg,png,gif,jpeg";//允许文件格式
     private long allowSize = 10L;//允许文件大小
 
     @ApiOperation(value = "上传图片", notes = "上传图片")
-    @RequestMapping(value = "/api/mine/avatar", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/mine/avatar", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "avatarImage", value = "图片", paramType = "form", dataType = "string")
     })
@@ -422,18 +383,6 @@ public class PortalSystemUserController {
 
     public String getAllowSuffix() {
         return allowSuffix;
-    }
-
-    public void setAllowSuffix(String allowSuffix) {
-        this.allowSuffix = allowSuffix;
-    }
-
-    public long getAllowSize() {
-        return allowSize;
-    }
-
-    public void setAllowSize(long allowSize) {
-        this.allowSize = allowSize;
     }
 
 

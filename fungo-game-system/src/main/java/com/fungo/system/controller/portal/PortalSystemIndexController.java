@@ -1,20 +1,28 @@
 package com.fungo.system.controller.portal;
 
-
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.entity.Banner;
+import com.fungo.system.proxy.IGameProxyService;
+import com.fungo.system.proxy.IndexProxyService;
 import com.fungo.system.service.BannerService;
+import com.fungo.system.service.IIndexService;
+import com.game.common.api.InputPageDto;
+import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.advert.AdvertOutBean;
+import com.game.common.dto.index.CardIndexBean;
 import com.game.common.repo.cache.facade.FungoCacheAdvert;
 import com.game.common.util.CommonUtils;
+import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,12 +34,20 @@ import java.util.List;
 @RestController
 public class PortalSystemIndexController {
 
-
     @Autowired
     private BannerService bannerService;
 
     @Autowired
     private FungoCacheAdvert fungoCacheAdvert;
+
+    @Autowired
+    private IndexProxyService indexProxyService;
+
+    @Autowired
+    private IGameProxyService iGameProxyService;
+
+    @Autowired
+    private IIndexService indexService;
 
     /**
      * 功能描述: 首页轮播
@@ -77,6 +93,16 @@ public class PortalSystemIndexController {
 
 
 
+    @ApiOperation(value = "首页(v2.4)", notes = "")
+    @RequestMapping(value = "/api/portal/recommend/index", method = RequestMethod.POST)
+    @ApiImplicitParams({})
+    /*
+     * iosChannel (int,optional): 1,2,3 (1:appStore上线,2:appTestFlight开发包,3:appInhouse企业包)
+     */
+    public FungoPageResultDto<CardIndexBean> recommendList(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPageDto) {
+        return indexService.index(inputPageDto);
+    }
+
 //
 //    @ApiOperation(value = "广告位置活动位 | 专属活动", notes = "")
 //    @ApiImplicitParams({})
@@ -85,6 +111,9 @@ public class PortalSystemIndexController {
 //
 //        return null;
 //    }
+
+
+
 
 //---------
 }
