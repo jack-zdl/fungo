@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.proxy.IGameProxyService;
-import com.fungo.system.service.impl.MemberIncentRiskServiceImpl;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
@@ -18,12 +17,12 @@ import com.game.common.dto.index.CardIndexBean;
 import com.game.common.enums.CommonEnum;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
-import org.apache.poi.openxml4j.opc.PackagingURIHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -74,7 +73,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public CmmPostDto selectCmmPostById(CmmPostDto param) {
-        CmmPostDto re = new CmmPostDto();
+        CmmPostDto re = null;
         FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(param);
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmPostDtoFungoPageResultDto.getStatus()) && cmmPostDtoFungoPageResultDto.getData().size() > 0){
             re = cmmPostDtoFungoPageResultDto.getData().get(0);
@@ -114,7 +113,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public GameEvaluationDto selectGameEvaluationById(GameEvaluationDto gameEvaluationDto) {
-         GameEvaluationDto re = new GameEvaluationDto();
+         GameEvaluationDto re = null;
          Page<GameEvaluationDto> gameEvaluationDtoPage = gamesFeignClient.getGameEvaluationPage(gameEvaluationDto);
          if(gameEvaluationDtoPage.getRecords().size() > 0){
              re = gameEvaluationDtoPage.getRecords().get(0);
@@ -156,9 +155,9 @@ public class GameProxyServiceImpl implements IGameProxyService {
         param.setId(id);
         FungoPageResultDto<MooMoodDto> re = communityFeignClient.queryCmmMoodList(param);
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
-            param = re.getData().get(0);
+            return re.getData().get(0);
         }
-        return param;
+        return null;
     }
 
     /**
@@ -177,9 +176,9 @@ public class GameProxyServiceImpl implements IGameProxyService {
         mooMessageDto.setId(id);
         FungoPageResultDto<MooMessageDto>  re = communityFeignClient.queryCmmMoodCommentList(mooMessageDto);
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
-            mooMessageDto = re.getData().get(0);
+            return re.getData().get(0);
         }
-        return mooMessageDto;
+        return null;
     }
 
 
@@ -222,6 +221,24 @@ public class GameProxyServiceImpl implements IGameProxyService {
 
     public CardIndexBean selectedGames(){
         return gamesFeignClient.selectedGames();
+    }
+
+    @Override
+    public List<GameEvaluationDto> selectGameEvaluationPage() {
+        FungoPageResultDto<GameEvaluationDto> re = gamesFeignClient.selectGameEvaluationPage();
+        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
+            return re.getData();
+        }
+        return new ArrayList<GameEvaluationDto>();
+    }
+
+    @Override
+    public List<Map> getHonorQualificationOfEssenceEva() {
+        ResultDto<List<Map>> re = gamesFeignClient.getUserGameReviewBoutiqueNumber();
+        if(re.isSuccess()&&re.getData()!=null&&re.getData().size()>0){
+            return re.getData();
+        }
+        return new ArrayList<>();
     }
 
     public List<GameEvaluationDto> hystrixGetEvaluationEntityWrapper(String memberId, String startDate,String endDate) {

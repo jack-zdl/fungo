@@ -305,8 +305,8 @@ public class IndexServiceImpl implements IIndexService {
     public CardIndexBean anliWall() {
 //		re.setData(list);
         // @todo
-        Page<GameEvaluationDto> page = new Page<GameEvaluationDto>(); //gameEvaluationService.selectPage(new Page<GameEvaluation>(1, 6), new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy("RAND()"));
-        List<GameEvaluationDto> plist = page.getRecords();
+        List<GameEvaluationDto> plist = iGameProxyService.selectGameEvaluationPage();
+        //gameEvaluationService.selectPage(new Page<GameEvaluation>(1, 6), new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy("RAND()"));
         ArrayList<CardDataBean> evaDateList = new ArrayList<>();
         CardIndexBean cb = new CardIndexBean();
         for (GameEvaluationDto gameEvaluation : plist) {

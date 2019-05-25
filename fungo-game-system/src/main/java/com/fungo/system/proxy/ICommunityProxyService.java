@@ -2,7 +2,8 @@ package com.fungo.system.proxy;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.game.common.bean.CollectionBean;
-import com.game.common.bean.CommentBean;
+
+import com.game.common.dto.community.CommentBean;
 import org.apache.ibatis.annotations.Param;
 
 import java.io.IOException;
@@ -38,4 +39,5 @@ public interface ICommunityProxyService {
      */
     List<String> getRecommendMembersFromCmmPost(@Param("ccnt") long ccnt, @Param("limitSize") long limitSize, @Param("wathMbsSet") List<String> wathMbsSet);
 
+    List<Map> getHonorQualificationOfEssencePost();
 }

@@ -25,6 +25,7 @@ import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
+import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
@@ -124,6 +125,9 @@ public class PostController {
             @ApiImplicitParam(name = "videoId", value = "视频id,  可选", paramType = "form", dataType = "string")
     })
     public ResultDto<ObjectId> addPost(MemberUserProfile memberUserPrefile, @RequestBody PostInput postInput) throws Exception {
+        if(StringUtil.isNull(postInput.getContent())){
+            return ResultDto.error("-1","文章内容不可为空");
+        }
         String userId = memberUserPrefile.getLoginId();
         return bsPostService.addPost(postInput, userId);
     }

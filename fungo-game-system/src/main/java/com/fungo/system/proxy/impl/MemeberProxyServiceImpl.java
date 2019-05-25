@@ -147,7 +147,7 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public CmmCmtReplyDto selectReplyById(CmmCmtReplyDto replyDto) {
-        CmmCmtReplyDto reply = new CmmCmtReplyDto();
+        CmmCmtReplyDto reply =null;
         FungoPageResultDto<CmmCmtReplyDto>  re = communityFeignClient.querySecondLevelCmtList(replyDto);
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
             reply =  re.getData().get(0);

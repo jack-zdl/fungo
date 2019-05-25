@@ -40,5 +40,5 @@ public interface GameEvaluationDao extends BaseMapper<GameEvaluation> {
      * 用户游戏评测精品数
      * @return
      */
-    Map<String, Object> getUserGameReviewBoutiqueNumber();
+    List<Map> getUserGameReviewBoutiqueNumber();
 }

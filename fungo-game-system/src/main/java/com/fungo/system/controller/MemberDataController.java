@@ -3,6 +3,8 @@ package com.fungo.system.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.dao.MemberDao;
 import com.fungo.system.entity.Member;
+import com.fungo.system.proxy.ICommunityProxyService;
+import com.fungo.system.proxy.IGameProxyService;
 import com.fungo.system.service.MemberService;
 import com.fungo.system.service.ScoreLogService;
 import com.game.common.util.date.DateTools;
@@ -34,6 +36,13 @@ public class MemberDataController {
 	private MemberService memberService;
 	@Autowired
 	private ScoreLogService scoreLogService;
+
+	@Autowired
+	private ICommunityProxyService communityProxyService;
+	@Autowired
+	private IGameProxyService gameProxyService;
+
+
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(MemberDataController.class);
 	
@@ -58,11 +67,12 @@ public class MemberDataController {
 		LOGGER.info("开始添加用户徽章");
 		//@todo 社区微服务
 		//精品文章
-		List<Map> postMapList = new CopyOnWriteArrayList<>(); //memberDao.getHonorQualificationOfEssencePost();
+		//List<Map> postMapList = new CopyOnWriteArrayList<>(); //memberDao.getHonorQualificationOfEssencePost();
+		List<Map> postMapList = communityProxyService.getHonorQualificationOfEssencePost();
 
 		//@todo 游戏微服务
 		//精品评测
-		List<Map> evaMapList = new CopyOnWriteArrayList<>(); //memberDao.getHonorQualificationOfEssenceEva();
+		List<Map> evaMapList = gameProxyService.getHonorQualificationOfEssenceEva();//new CopyOnWriteArrayList<>(); //memberDao.getHonorQualificationOfEssenceEva();
 		
 		//点赞
 		List<Map> likeMapList = memberDao.getHonorQualificationOfBeLiked();
