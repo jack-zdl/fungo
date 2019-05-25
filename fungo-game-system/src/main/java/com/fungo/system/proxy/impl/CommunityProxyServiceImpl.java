@@ -7,9 +7,10 @@ import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.proxy.ICommunityProxyService;
 import com.fungo.system.service.ICommunityService;
 import com.game.common.bean.CollectionBean;
-import com.game.common.bean.CommentBean;
+
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.CommentBean;
 import com.game.common.enums.CommonEnum;
 import com.game.common.util.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,7 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(resultDto.getStatus()) && resultDto.getData().size() > 0){
             return resultDto.getData();
         }
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
@@ -92,5 +93,14 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
     public List<String> getRecommendMembersFromCmmPost(long ccnt, long limitSize, List<String> wathMbsSet) {
         ResultDto<List<String>> resultDto = communityFeignClient.getRecommendMembersFromCmmPost(ccnt,limitSize,wathMbsSet);
         return resultDto.getData();
+    }
+
+    @Override
+    public List<Map> getHonorQualificationOfEssencePost() {
+        FungoPageResultDto<Map> re = communityFeignClient.queryCmmPostEssenceList();
+        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus())){
+            return  re.getData();
+        }
+        return new ArrayList<>();
     }
 }

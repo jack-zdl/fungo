@@ -127,4 +127,16 @@ public interface GamesFeignClient {
 
     @GetMapping("/ms/service/game/api/game/selectedGames")
     public CardIndexBean selectedGames();
+
+    @GetMapping("/api/game/selectGameEvaluationPage")
+    FungoPageResultDto<GameEvaluationDto> selectGameEvaluationPage();
+
+    /**
+     * 用户游戏评测精品数
+     *
+     * @return
+     */
+    @RequestMapping(value = "/api/game/getUserGameReviewBoutiqueNumber", method = RequestMethod.POST)
+    ResultDto<List<Map>> getUserGameReviewBoutiqueNumber();
+
 }

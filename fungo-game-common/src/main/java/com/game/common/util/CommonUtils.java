@@ -106,7 +106,9 @@ public class CommonUtils {
 	}
 	
 	public static String reduceString(String content,int length) {
-		
+		if(content==null){
+			return "";
+		}
 		return content.length()>length?content.substring(0, length)+"......[省略]":content;
 		
 	}

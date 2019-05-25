@@ -529,6 +529,12 @@ public class EvaluateServiceImpl implements IEvaluateService {
             return ResultDto.error("-1", "该评论详情不存在");
         }
         bean.setObjectId(comment.getId());
+
+        if (StringUtils.isNotBlank(comment.getContent())) {
+            String interactContent = FilterEmojiUtil.decodeEmoji(comment.getContent());
+            comment.setContent(interactContent);
+        }
+
         if (!CommonUtil.isNull(comment.getContent())) {
             bean.setContent(CommonUtils.filterWord(comment.getContent()));
         }

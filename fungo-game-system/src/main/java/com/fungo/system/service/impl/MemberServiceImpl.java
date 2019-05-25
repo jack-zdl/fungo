@@ -18,7 +18,7 @@ import com.fungo.system.proxy.IMemeberProxyService;
 import com.fungo.system.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.bean.CollectionBean;
-import com.game.common.bean.CommentBean;
+
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.Setting;
 import com.game.common.dto.*;

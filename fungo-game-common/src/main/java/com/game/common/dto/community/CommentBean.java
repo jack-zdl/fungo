@@ -1,8 +1,9 @@
 package com.game.common.dto.community;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class CommentBean {
+public class CommentBean implements Serializable {
 
 	private String id;
 	private String content;

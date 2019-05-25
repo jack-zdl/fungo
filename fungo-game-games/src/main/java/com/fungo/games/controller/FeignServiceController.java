@@ -85,6 +85,9 @@ public class FeignServiceController {
     @Autowired
     private BasTagService basTagService;
 
+    @Autowired
+    private GameEvaluationService gameEvaluationService;
+
     /****************************************************ActionController**********************************************************************/
 
     @ApiOperation(value = "更新计数器", notes = "")
@@ -153,8 +156,8 @@ public class FeignServiceController {
      */
     @ApiOperation(value = "用户游戏评测精品数", notes = "")
     @RequestMapping(value = "/api/game/getUserGameReviewBoutiqueNumber", method = RequestMethod.POST)
-    ResultDto<Map<String, Object>> getUserGameReviewBoutiqueNumber() {
-        Map<String, Object> userGameReviewBoutiqueNumber = gameEvaluationDao.getUserGameReviewBoutiqueNumber();
+    ResultDto<List<Map>> getUserGameReviewBoutiqueNumber() {
+        List<Map> userGameReviewBoutiqueNumber = gameEvaluationDao.getUserGameReviewBoutiqueNumber();
         return ResultDto.success(userGameReviewBoutiqueNumber);
     }
 
@@ -1040,6 +1043,24 @@ public class FeignServiceController {
     public CardIndexBean selectedGames() {
         CardIndexBean indexBean = gameCollectionItemService.selectedGames();
         return indexBean;
+    }
+
+    @GetMapping("/api/game/selectGameEvaluationPage")
+    public FungoPageResultDto<GameEvaluationDto> selectGameEvaluationPage(){
+        Page<GameEvaluation> page = gameEvaluationService.selectPage(new Page<GameEvaluation>(1, 6), new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy("RAND()"));
+        FungoPageResultDto<GameEvaluationDto> re = new FungoPageResultDto<GameEvaluationDto>();
+        PageTools.pageToResultDto(re, page);
+        List<GameEvaluation> list = page.getRecords();
+        List<GameEvaluationDto> gameEvaluationDtos = new ArrayList<>();
+        if (list != null && list.size() > 0) {
+            for (GameEvaluation gameEvaluation : list) {
+                GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
+                BeanUtils.copyProperties(gameEvaluation, gameEvaluationDto);
+                gameEvaluationDtos.add(gameEvaluationDto);
+            }
+        }
+        re.setData(gameEvaluationDtos);
+        return re;
     }
 
 

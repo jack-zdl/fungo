@@ -150,5 +150,8 @@ public interface CommunityFeignClient {
     public FungoPageResultDto<Map<String, Object>> getFollowerCommunity(@RequestParam("pageNum") int pageNum,
                                                                         @RequestParam("limit") int limit, @RequestParam("communityIds") List<String> communityIds);
 
+    @GetMapping("/ms/service/cmm/post/essences")
+    FungoPageResultDto<Map> queryCmmPostEssenceList();
+
 
 }

@@ -8,7 +8,6 @@ import com.game.common.dto.community.MooMoodDto;
 import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.game.GameInviteDto;
 import com.game.common.dto.index.CardIndexBean;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -46,4 +45,8 @@ public interface IGameProxyService {
     List<String> getRecommendMembersFromEvaluation(Integer x, Integer y, List<String> wathMbsSet);
 
     CardIndexBean selectedGames();
+
+    List<GameEvaluationDto> selectGameEvaluationPage();
+
+    List<Map> getHonorQualificationOfEssenceEva();
 }

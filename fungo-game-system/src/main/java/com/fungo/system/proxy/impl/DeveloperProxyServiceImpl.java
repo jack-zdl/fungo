@@ -105,8 +105,8 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 	}
 
 
-	@HystrixCommand(fallbackMethod = "hystrixGetMemberIdByTargetId",ignoreExceptions = {Exception.class},
-			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+	/*@HystrixCommand(fallbackMethod = "hystrixGetMemberIdByTargetId",ignoreExceptions = {Exception.class},
+			commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
 	@Override
 	public String getMemberIdByTargetId(Map<String, String> map) {
 		return gamesFeignClient.getMemberIdByTargetId(map);

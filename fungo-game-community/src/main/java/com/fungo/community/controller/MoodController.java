@@ -7,6 +7,7 @@ import com.game.common.dto.ObjectId;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.MoodBean;
 import com.game.common.dto.community.MoodInput;
+import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -42,7 +43,9 @@ public class MoodController {
 			@ApiImplicitParam(name = "videoId", value = "视频id,  可选", paramType = "form", dataType = "string")
 	})
 	public ResultDto<ObjectId> addMood(MemberUserProfile memberUserPrefile, @RequestBody MoodInput input) throws Exception {
-		
+		if(StringUtil.isNull(input.getContent())){
+			return ResultDto.error("-1","内容不可为空");
+		}
 		return moodService.addMood(memberUserPrefile.getLoginId(),input);
 	}
 
