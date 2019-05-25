@@ -1,0 +1,137 @@
+package com.fungo.games.controller.portal;
+
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.fungo.games.dao.GameDao;
+import com.fungo.games.entity.Game;
+import com.fungo.games.entity.GameCollectionGroup;
+import com.fungo.games.entity.GameCollectionItem;
+import com.fungo.games.proxy.IEvaluateProxyService;
+import com.fungo.games.service.GameCollectionGroupService;
+import com.fungo.games.service.GameCollectionItemService;
+import com.fungo.games.service.GameService;
+import com.fungo.games.service.IIndexService;
+import com.game.common.api.InputPageDto;
+import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.MemberUserProfile;
+import com.game.common.dto.ResultDto;
+import com.game.common.repo.cache.facade.FungoCacheIndex;
+import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.date.DateTools;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * <p>
+ * PC首页
+ * <p>
+ *
+ * @version V3.0.0
+ * @Author lyc
+ * @create 2019/5/25 12:42
+ */
+@RestController
+@Api(value = "", description = "PC首页")
+public class PortalGamesIndexController {
+
+    @Autowired
+    private IIndexService indexService;
+
+    @Autowired
+    private FungoCacheIndex fungoCacheIndex;
+
+//    @Autowired
+//    private IEvaluateProxyService iEvaluateProxyService;
+
+    @Autowired
+    private GameCollectionGroupService gameCollectionGroupService;
+
+    @Autowired
+    private GameCollectionItemService gameCollectionItemService;
+
+    @Autowired
+    private GameService gameService;
+
+    @Autowired
+    private GameDao gameDao;
+
+    @ApiOperation(value = "pc端发现页游戏合集", notes = "")
+    @RequestMapping(value = "/api/portal/recommend/pc/gamegroup", method = RequestMethod.POST)
+    @ApiImplicitParams({
+    })
+    public FungoPageResultDto<Map<String, Object>> pcGameGroup(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto input) {
+        return indexService.pcGameGroup(input);
+    }
+
+    @SuppressWarnings("all")
+    @ApiOperation(value = "pc端游戏合集详情", notes = "")
+    @RequestMapping(value = "/api/portal/recommend/pc/groupdetail/{groupId}", method = RequestMethod.GET)
+    @ApiImplicitParams({
+    })
+    public ResultDto<Map<String, Object>> groupDetail(@Anonymous MemberUserProfile memberUserPrefile, @PathVariable("groupId") String groupId) {
+
+
+        Map<String, Object> map = null;
+        ResultDto<Map<String, Object>> resultMap = null;
+
+        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_PC_GROUPDETAIL;
+        map = (Map<String, Object>) fungoCacheIndex.getIndexCache(keyPrefix, groupId);
+
+        if (null != map) {
+            resultMap = ResultDto.success(map);
+            return resultMap;
+        }
+
+        GameCollectionGroup group = gameCollectionGroupService.selectById(groupId);
+        map = new HashMap<>();
+
+        if (group != null) {
+            map.put("topic_name", group.getName());
+            List<GameCollectionItem> ilist = this.gameCollectionItemService.selectList(new EntityWrapper<GameCollectionItem>().eq("group_id", group.getId()).eq("show_state", "1").orderBy("sort", false));
+//			if(ilist == null || ilist.size() == 0) {
+//				continue;
+//			}
+            List<Map<String, Object>> lists = new ArrayList<Map<String, Object>>();
+            for (GameCollectionItem gameCollectionItem : ilist) {
+                Game game = this.gameService.selectById(gameCollectionItem.getGameId());
+                HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
+                Map<String, Object> map1 = new HashMap<String, Object>();
+                if (rateData != null) {
+                    if (rateData.get("avgRating") != null) {
+                        map1.put("rating", rateData.get("avgRating"));
+                    } else {
+                        map1.put("rating", 0.0);
+                    }
+                } else {
+                    map1.put("rating", 0.0);
+                }
+                map1.put("name", game.getName());
+                map1.put("tag", game.getTags());
+                map1.put("cover_image", game.getCoverImage());
+                map1.put("icon", game.getIcon());
+                map1.put("objectId", game.getId());
+                map1.put("createdAt", DateTools.fmtDate(game.getCreatedAt()));
+                map1.put("updatedAt", DateTools.fmtDate(game.getUpdatedAt()));
+                map1.put("hot_value", 100);
+                lists.add(map1);
+            }
+            map.put("game_list", lists);
+
+        }
+
+        resultMap = ResultDto.success(map);
+        //redis cacahe
+        fungoCacheIndex.excIndexCache(true, keyPrefix, groupId, map);
+
+        return resultMap;
+    }
+}
