@@ -157,7 +157,15 @@ public class MemberServiceImpl implements IMemberService {
         for (CollectionBean collectionBean : plist) {
             CollectionOutBean bean = new CollectionOutBean();
             bean.setAuthor(userService.getAuthor(collectionBean.getMemberId()));
-            bean.setContent(CommonUtils.filterWord(collectionBean.getContent()));
+            if (org.apache.commons.lang3.StringUtils.isNotBlank(collectionBean.getContent())) {
+                String interactContent = FilterEmojiUtil.decodeEmoji(collectionBean.getContent());
+                collectionBean.setContent(interactContent);
+            }
+
+            if (!CommonUtil.isNull(collectionBean.getContent())) {
+                bean.setContent(CommonUtils.filterWord(collectionBean.getContent()));
+            }
+            bean.setContent(collectionBean.getContent());
             bean.setCover_image(collectionBean.getCoverImage());
             bean.setCreatedAt(collectionBean.getCreatedAt());
             bean.setObjectId(collectionBean.getId());
