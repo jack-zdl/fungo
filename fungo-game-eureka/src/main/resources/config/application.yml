@@ -1,17 +1,9 @@
-server:
-  port: 8761
-security:
-  basic:
-    enabled: true
-eureka:
-  server:
-    enable-self-preservation: false
-  instance:
-    hostname: localhost
-  client:
-    healthcheck:    # eureka添加健康检查
-      enabled: true
-    registerWithEureka: false
-    fetchRegistry: false
-    serviceUrl:
-      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+spring:
+  profiles:
+    active: dev
+management:
+  security:
+    enabled:  false
+application.version : V3.0.0-SNAPSHOT
+#debug: true
+
