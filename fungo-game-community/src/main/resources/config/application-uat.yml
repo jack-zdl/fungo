@@ -40,10 +40,10 @@ spring:
             strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
             thread:
               timeoutInMilliseconds: 60000  #命令执行超时时间，默认1000ms
-  ribbon:
-    ConnectTimeout: 300000
-    ReadTimeout: 300000
-  #-----------------------------------------------------------------------------------------------------------------------------------
+ribbon:
+    ConnectTimeout: 60000
+    ReadTimeout: 60000
+#-----------------------------------------------------------------------------------------------------------------------------------
 
   aop:
     proxy-target-class: true
