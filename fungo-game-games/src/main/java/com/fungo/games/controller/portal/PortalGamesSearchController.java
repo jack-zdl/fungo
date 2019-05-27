@@ -63,4 +63,18 @@ public class PortalGamesSearchController {
             return FungoPageResultDto.error("-1", "操作失败");
         }
     }
+
+    @ApiOperation(value = "上周下载数+评论数 排名前10位的游戏", notes = "")
+    @RequestMapping(value = "/api/portal/games/search/games", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "页数号", paramType = "form", dataType = "int"),
+            @ApiImplicitParam(name = "limit", value = "每页显示数", paramType = "form", dataType = "int"),
+            @ApiImplicitParam(name = "key_word", value = "关键字", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "tag", value = "游戏分类", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "sort", value = "排序字段（‘+，- ，表示返回顺序）", paramType = "form", dataType = "string")
+    })
+    public FungoPageResultDto<GameSearchOut> searchGamesByDownload(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto, HttpServletRequest request) {
+        int page = searchInputDto.getPage();
+        return null;
+    }
 }

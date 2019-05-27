@@ -1,4 +1,4 @@
-package com.fungo.system.service.impl;
+package com.fungo.system.service.portal.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -8,9 +8,9 @@ import com.fungo.system.proxy.IGameProxyService;
 import com.fungo.system.proxy.IMemeberProxyService;
 import com.fungo.system.proxy.IndexProxyService;
 import com.fungo.system.service.BannerService;
-import com.fungo.system.service.IIndexService;
 import com.fungo.system.service.IUserService;
 import com.fungo.system.service.SysVersionService;
+import com.fungo.system.service.portal.PortalSystemIIndexService;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
@@ -27,18 +27,23 @@ import com.game.common.util.CommonUtils;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
+/**
+ * <p></p>
+ *
+ * @Author: dl.zhang
+ * @Date: 2019/5/27
+ */
 @Service
-public class IndexServiceImpl implements IIndexService {
+public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(IndexServiceImpl.class);
 
     @Autowired
     private IUserService userService;
@@ -61,45 +66,24 @@ public class IndexServiceImpl implements IIndexService {
     @Autowired
     private BannerService bannerService;
 
-
-
     @Override
-    public FungoPageResultDto<CardIndexBean> index(InputPageDto input, String os, String iosChannel, String app_channel, String appVersion) {
-
+    public FungoPageResultDto<CardIndexBean> index(InputPageDto input) {
         FungoPageResultDto<CardIndexBean> re = null;
         //先从Redis获取
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX;
-        String keySuffix = JSON.toJSONString(input) + os + iosChannel;
-        if (StringUtils.isNotBlank(app_channel)) {
-            keySuffix += app_channel;
-        }
-
-        re = (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+        String keySuffix = JSON.toJSONString(input);
+        // re = (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
 
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
         }
-
-        if (os == null) {
-            os = "";
-        }
-
-        re = new FungoPageResultDto<CardIndexBean>();
-
-        List<CardIndexBean> clist = new ArrayList<CardIndexBean>();
+        re = new FungoPageResultDto<>();
+        List<CardIndexBean> clist = new ArrayList<>();
         int page = input.getPage();
 
-        //在ios平台下首页是否关闭部分功能
-        boolean isCloseIndexSection = isCloseIndexSection(os, app_channel, appVersion);
-
-        LOGGER.info("-----------在ios平台下首页是否关闭部分功能----os:{},------app_channel:{}------appVersion:{}-----isCloseIndexSection:{}", os, app_channel, appVersion,
-                isCloseIndexSection);
-
-        //int count = postService.selectCount(new EntityWrapper<CmmPost>().eq("type", 3));
         Page<CardIndexBean> pageBean = null;
 
         if (1 == page) {
-
             //轮播
 //			CardIndexBean topic = this.topic();
 //			clist.add(topic);
@@ -109,83 +93,51 @@ public class IndexServiceImpl implements IIndexService {
             if (activities != null) {
                 clist.add(activities);
             }
-
-            //ios 当前版本是否 隐藏
-            if (!isCloseIndexSection) {
-
-                //本周精选(游戏)
-                CardIndexBean hotGames = this.hotGames();
-                if (hotGames != null) {
-                    clist.add(hotGames);
-                }
-
-            }
-
-//			ActionBean a = new ActionBean();
-//			indexBean.setUprightAction(a);
-
+            //本周精选(游戏)
+//            CardIndexBean hotGames = this.hotGames();
+//            if (hotGames != null) {
+//                clist.add(hotGames);
+//            }
             //精选文章
             CardIndexBean postHost = this.selectPosts("0006");
-
             if (postHost != null) {
                 clist.add(postHost);
             }
-
             //安利墙 ios 当前版本是否 隐藏
-            if (!isCloseIndexSection) {
+            CardIndexBean anliWall = this.anliWall();
 
-                CardIndexBean anliWall = this.anliWall();
-
-                if (anliWall != null) {
-                    clist.add(anliWall);
-                }
-
-            } else {
-
-                CardIndexBean postVidoe = this.selectPosts("0007");
-
-                if (postVidoe != null) {
-                    clist.add(postVidoe);
-                }
-
+            if (anliWall != null) {
+                clist.add(anliWall);
             }
-
+            CardIndexBean postVidoe = this.selectPosts("0007");
+            if (postVidoe != null) {
+                clist.add(postVidoe);
+            }
             re.setAfter(2);
-
             re.setBefore(1);
 
         } else if (page == 2) {
 
             //安利墙 ios 当前版本是否 隐藏
-            if (!isCloseIndexSection) {
-                CardIndexBean postVidoe = this.selectPosts("0007");
-                if (postVidoe != null) {
-                    clist.add(postVidoe);
-                }
+            CardIndexBean postVidoe = this.selectPosts("0007");
+            if (postVidoe != null) {
+                clist.add(postVidoe);
             }
-
-
             CardIndexBean postFine = this.selectPosts("0008");
             if (postFine != null) {
                 clist.add(postFine);
             }
-
             //大家都在玩 ios 当前版本是否 隐藏
-            if (!isCloseIndexSection) {
-                CardIndexBean selectedGames = this.selectedGames();
-                if (selectedGames != null) {
-                    clist.add(selectedGames);
-                }
+            CardIndexBean selectedGames = this.selectedGames();
+            if (selectedGames != null) {
+                clist.add(selectedGames);
             }
             //置顶
 //			ArrayList<CardIndexBean> topicPosts = this.topicPosts(0,3,8);
 //			clist.addAll(topicPosts);
             re.setAfter(3);
             re.setBefore(1);
-
-
         } else {
-
             page = page - 2;
 //			ArrayList<CardIndexBean> topicPosts = this.topicPosts(10*(page-1) - 7,10,10*(page-1)+1);
             ArrayList<CardIndexBean> topicPosts = this.topicPosts(page, 10, 10 * (page - 1) + 1);
@@ -193,27 +145,22 @@ public class IndexServiceImpl implements IIndexService {
 //			PageTools.pageToResultDto(re, pageBean);
             if (topicPosts.size() == 0) {
                 re.setAfter(-1);
-
             } else {
-
                 re.setAfter(page + 3);
-
             }
 //			pageBean = this.pageFormat(clist,page,count);
         }
-
         re.setData(clist);
-
         //redis cache
         fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
-
         return re;
     }
+
 
     //安利墙
     public CardIndexBean anliWall() {
 //		re.setData(list);
-        // @todo
+        // @todo  没有写
         Page<GameEvaluationDto> page = new Page<GameEvaluationDto>(); //gameEvaluationService.selectPage(new Page<GameEvaluation>(1, 6), new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy("RAND()"));
         List<GameEvaluationDto> plist = page.getRecords();
         ArrayList<CardDataBean> evaDateList = new ArrayList<>();
@@ -264,7 +211,6 @@ public class IndexServiceImpl implements IIndexService {
 
     //社区置顶文章
     public ArrayList<CardIndexBean> topicPosts(int page, int limit, int order) {
-        //@todo
         CmmPostDto cmmPostDto = new CmmPostDto();
         cmmPostDto.setPage(page);
         cmmPostDto.setLimit(limit);
@@ -282,9 +228,8 @@ public class IndexServiceImpl implements IIndexService {
             CmmCommunityDto communityDto = new CmmCommunityDto();
             communityDto.setId(post.getCommunityId());
             communityDto.setState(-1);
+            //@todo
             @SuppressWarnings("unchecked")
-                    //@todo
-
             CmmCommunityDto c = indexProxyService.selectCmmCommuntityDetail(communityDto);  new CmmCommunityDto();  //communityService.selectOne(Condition.create().setSqlSelect("id,name,icon,cover_image").eq("id", post.getCommunityId()).ne("state", -1));
             bean.setImageUrl(post.getCoverImage());
 //			if(!CommonUtil.isNull(post.getCoverImage())) {
@@ -303,10 +248,7 @@ public class IndexServiceImpl implements IIndexService {
             if (StringUtils.isNotBlank(postContent)) {
                 postContent = FilterEmojiUtil.decodeEmoji(postContent);
             }
-
             bean.setMainTitle(CommonUtils.filterWord(postTitle));
-
-
             bean.setSubtitle(postContent);
             bean.setContent(postContent);
 
@@ -495,7 +437,6 @@ public class IndexServiceImpl implements IIndexService {
         if (!StringUtils.equalsIgnoreCase("ios", os)) {
             return false;
         }
-
         String version = appVersion;
 
         String mobile_type = "";
@@ -517,5 +458,4 @@ public class IndexServiceImpl implements IIndexService {
         return false;
     }
 
-    //----------
 }

@@ -2,10 +2,8 @@ package com.fungo.system.controller.portal;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.entity.Banner;
-import com.fungo.system.proxy.IGameProxyService;
-import com.fungo.system.proxy.IndexProxyService;
 import com.fungo.system.service.BannerService;
-import com.fungo.system.service.IIndexService;
+import com.fungo.system.service.portal.PortalSystemIIndexService;
 import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
@@ -41,13 +39,7 @@ public class PortalSystemIndexController {
     private FungoCacheAdvert fungoCacheAdvert;
 
     @Autowired
-    private IndexProxyService indexProxyService;
-
-    @Autowired
-    private IGameProxyService iGameProxyService;
-
-    @Autowired
-    private IIndexService indexService;
+    private PortalSystemIIndexService portalSystemIIndexServiceImpl;
 
     /**
      * 功能描述: 首页轮播
@@ -106,20 +98,7 @@ public class PortalSystemIndexController {
      * iosChannel (int,optional): 1,2,3 (1:appStore上线,2:appTestFlight开发包,3:appInhouse企业包)
      */
     public FungoPageResultDto<CardIndexBean> recommendList(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPageDto) {
-        return indexService.index(inputPageDto);
+        return portalSystemIIndexServiceImpl.index(inputPageDto);
     }
 
-//
-//    @ApiOperation(value = "广告位置活动位 | 专属活动", notes = "")
-//    @ApiImplicitParams({})
-//    @RequestMapping(value = "/api/portal/index/adt/activity", method = RequestMethod.GET)
-//    public ResultDto<List<AdvertOutBean>> getAdvertWithPc() {
-//
-//        return null;
-//    }
-
-
-
-
-//---------
 }
