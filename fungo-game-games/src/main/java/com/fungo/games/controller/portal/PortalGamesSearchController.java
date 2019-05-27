@@ -1,8 +1,11 @@
 package com.fungo.games.controller.portal;
 
 import com.fungo.games.service.IGameService;
+import com.fungo.games.service.portal.PortalGamesIGameService;
+import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
+import com.game.common.dto.game.GameOutPage;
 import com.game.common.dto.search.GameSearchOut;
 import com.game.common.dto.search.SearchInputPageDto;
 import com.game.common.util.annotation.Anonymous;
@@ -28,6 +31,9 @@ public class PortalGamesSearchController {
 
     @Autowired
     private IGameService iGameService;
+
+    @Autowired
+    private PortalGamesIGameService portalGamesIGameServiceImpl;
 
     @ApiOperation(value = "搜索游戏", notes = "")
     @RequestMapping(value = "/api/portal/games/search/games", method = RequestMethod.POST)
@@ -65,7 +71,7 @@ public class PortalGamesSearchController {
     }
 
     @ApiOperation(value = "上周下载数+评论数 排名前10位的游戏", notes = "")
-    @RequestMapping(value = "/api/portal/games/search/games", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/games/get/games", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "页数号", paramType = "form", dataType = "int"),
             @ApiImplicitParam(name = "limit", value = "每页显示数", paramType = "form", dataType = "int"),
@@ -73,8 +79,13 @@ public class PortalGamesSearchController {
             @ApiImplicitParam(name = "tag", value = "游戏分类", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "sort", value = "排序字段（‘+，- ，表示返回顺序）", paramType = "form", dataType = "string")
     })
-    public FungoPageResultDto<GameSearchOut> searchGamesByDownload(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto, HttpServletRequest request) {
-        int page = searchInputDto.getPage();
-        return null;
+    public FungoPageResultDto<GameOutPage> searchGamesByDownload(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto input) {
+        int page = input.getPage();
+        String memberId = "";
+        if (memberUserPrefile != null) {
+            memberId = memberUserPrefile.getLoginId();
+        }
+        FungoPageResultDto<GameOutPage>  re = portalGamesIGameServiceImpl.searchGamesByDownload(memberId,input);
+        return re;
     }
 }

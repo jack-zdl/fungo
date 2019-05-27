@@ -8,10 +8,10 @@ import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.game.GameOutPage;
+import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.util.PageTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,17 +29,21 @@ public class PortalGamesIGameServiceImpl implements PortalGamesIGameService {
     @Autowired
     private GameDao gameDao;
 
+
+    @Autowired
+    private FungoCacheGame fungoCacheGame;
+
     @Override
     public FungoPageResultDto<GameOutPage> searchGamesByDownload(String userId, InputPageDto input) {
         String keySuffix = JSON.toJSONString(input);
         // @todo 缓存
-        FungoPageResultDto<GameOutPage> re = null; //(FungoPageResultDto<GameOutPage>) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_RECENTEVA + userId, keySuffix);
+        FungoPageResultDto<GameOutPage> re = (FungoPageResultDto<GameOutPage>) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_RECENTEVA + userId, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
         }
 
         Page page = new Page<>(input.getPage(), input.getLimit());
-        List<HashMap<String, Object>> list = gameDao.getRecentCommentedGames(page, userId);
+        List<HashMap<String, Object>> list = gameDao.getGamesByDownload(page, userId);
         List<GameOutPage> olist = new ArrayList<>();
 
         for (HashMap<String, Object> map : list) {
@@ -67,7 +71,7 @@ public class PortalGamesIGameServiceImpl implements PortalGamesIGameService {
         re.setData(olist);
 
         //redis cache
-//        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_RECENTEVA + userId, keySuffix, re);
+        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_RECENTEVA + userId, keySuffix, re);
         return re;
     }
 }

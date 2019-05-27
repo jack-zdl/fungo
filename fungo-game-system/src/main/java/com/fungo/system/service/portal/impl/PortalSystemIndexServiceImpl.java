@@ -98,8 +98,8 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
 //            if (hotGames != null) {
 //                clist.add(hotGames);
 //            }
-            //精选文章
-            CardIndexBean postHost = this.selectPosts("0006");
+            //精选文章1
+            CardIndexBean postHost = this.selectPosts("0006",1);
             if (postHost != null) {
                 clist.add(postHost);
             }
@@ -109,21 +109,24 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
             if (anliWall != null) {
                 clist.add(anliWall);
             }
-            CardIndexBean postVidoe = this.selectPosts("0007");
+            // 精选文章2（视频）
+            CardIndexBean postVidoe = this.selectPosts("0007",2);
             if (postVidoe != null) {
                 clist.add(postVidoe);
             }
+            ArrayList<CardIndexBean> topicPosts = this.topicPosts(page, 10, 10 * (page - 1) + 1);
+            clist.addAll(topicPosts);
             re.setAfter(2);
             re.setBefore(1);
 
         } else if (page == 2) {
 
             //安利墙 ios 当前版本是否 隐藏
-            CardIndexBean postVidoe = this.selectPosts("0007");
+            CardIndexBean postVidoe = this.selectPosts("0007",2);
             if (postVidoe != null) {
                 clist.add(postVidoe);
             }
-            CardIndexBean postFine = this.selectPosts("0008");
+            CardIndexBean postFine = this.selectPosts("0008",1);
             if (postFine != null) {
                 clist.add(postFine);
             }
@@ -161,8 +164,7 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
     public CardIndexBean anliWall() {
 //		re.setData(list);
         // @todo  没有写
-        Page<GameEvaluationDto> page = new Page<GameEvaluationDto>(); //gameEvaluationService.selectPage(new Page<GameEvaluation>(1, 6), new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy("RAND()"));
-        List<GameEvaluationDto> plist = page.getRecords();
+        List<GameEvaluationDto> plist = iGameProxyService.selectGameEvaluationPage(); //gameEvaluationService.selectPage(new Page<GameEvaluation>(1, 6), new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy("RAND()"));
         ArrayList<CardDataBean> evaDateList = new ArrayList<>();
         CardIndexBean cb = new CardIndexBean();
         for (GameEvaluationDto gameEvaluation : plist) {
@@ -206,7 +208,7 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
     //大家都在玩
     public CardIndexBean selectedGames() {
         // @todo 调用Fegin接口
-        return  new CardIndexBean();
+        return iGameProxyService.selectedGames();
     }
 
     //社区置顶文章
@@ -355,9 +357,73 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
     }
 
     //精选文章
-    public CardIndexBean selectPosts(String type) {
+    public CardIndexBean selectPosts(String type,int limit) {
         //2 6(视频) 7
-        Banner videoBanner = bannerService.selectOne(new EntityWrapper<Banner>().eq("position_code", type).eq("target_type", 1).eq("state", "0").orderBy("sort", false).last("limit 1"));
+        Banner videoBanner = bannerService.selectOne(new EntityWrapper<Banner>().eq("position_code", type).eq("target_type", 1).eq("state", "0").orderBy("sort", false).last("limit "+limit));
+        CardIndexBean cb = new CardIndexBean();
+        if (videoBanner == null) {
+            return null;
+        } else {
+            CmmPostDto cmmPostParam = new CmmPostDto();
+            cmmPostParam.setId(videoBanner.getTargetId());
+            cmmPostParam.setState(1);
+            CmmPostDto post =  indexProxyService.selctCmmPostOne(cmmPostParam);
+            if (post == null) {
+                return null;
+            }
+            CardDataBean dataBean = new CardDataBean();
+            dataBean.setMainTitle(videoBanner.getTitle());
+            dataBean.setImageUrl(videoBanner.getCoverImage());
+            dataBean.setSubtitle(videoBanner.getIntro());
+            dataBean.setUserinfo(userService.getAuthor(post.getMemberId()));
+            dataBean.setVideoUrl(post.getVideo());
+            if (!CommonUtil.isNull(post.getContent())) {
+//				dataBean.setContent(post.getContent().length()>25?CommonUtils.filterWord(post.getContent().substring(0, 25)):CommonUtils.filterWord(post.getContent()));
+                dataBean.setContent(post.getContent());
+            } else {
+                dataBean.setContent(post.getContent());
+            }
+            dataBean.setUpperLeftCorner(videoBanner.getTag());
+//			dataBean.setLowerRightCorner(post.getReportNum()+"");
+
+            dataBean.setReplyNum(post.getReportNum());
+            CmmCommunityDto communityParam = new CmmCommunityDto();
+            communityParam.setId(post.getCommunityId());
+            CmmCommunityDto community = iMemeberProxyService.selectCmmCommunityById(communityParam); //  communityService.selectById(post.getCommunityId());
+            if (community != null) {
+                dataBean.setLowerRightCorner(community.getName());
+            }
+            if (!CommonUtil.isNull(post.getVideo()) && CommonUtil.isNull(videoBanner.getCoverImage())) {
+                if (community != null) {
+                    dataBean.setImageUrl(community.getCoverImage());
+                }
+            }
+
+            dataBean.setActionType("1");
+            dataBean.setHref(videoBanner.getHref());
+            dataBean.setTargetType(videoBanner.getTargetType());
+            dataBean.setTargetId(videoBanner.getTargetId());
+
+            ArrayList<CardDataBean> cl = new ArrayList<CardDataBean>();
+            cl.add(dataBean);
+            cb.setDataList(cl);
+            cb.setCardName("精品文章");
+            if ("0007".equals(type)) {
+                cb.setCardType(6);
+            } else {
+                cb.setCardType(4);
+            }
+            cb.setOrder(6);
+            cb.setSize(1);
+        }
+        return cb;
+    }
+
+
+    //社区置顶文章
+    public CardIndexBean selectCommunity(String type,int limit) {
+        //2 6(视频) 7
+        Banner videoBanner = bannerService.selectOne(new EntityWrapper<Banner>().eq("position_code", type).eq("target_type", 1).eq("state", "0").orderBy("sort", false).last("limit "+limit));
         CardIndexBean cb = new CardIndexBean();
         if (videoBanner == null) {
             return null;
@@ -405,7 +471,7 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
             ArrayList<CardDataBean> cl = new ArrayList<CardDataBean>();
             cl.add(dataBean);
             cb.setDataList(cl);
-            cb.setCardName("精品文章");
+            cb.setCardName("社区置顶文章");
             if ("0007".equals(type)) {
                 cb.setCardType(6);
             } else {

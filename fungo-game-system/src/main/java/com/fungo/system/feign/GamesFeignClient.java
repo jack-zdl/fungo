@@ -128,7 +128,7 @@ public interface GamesFeignClient {
     @GetMapping("/ms/service/game/api/game/selectedGames")
     public CardIndexBean selectedGames();
 
-    @GetMapping("/api/game/selectGameEvaluationPage")
+    @GetMapping("/ms/service/game/api/game/selectGameEvaluationPage")
     FungoPageResultDto<GameEvaluationDto> selectGameEvaluationPage();
 
     /**
@@ -136,7 +136,7 @@ public interface GamesFeignClient {
      *
      * @return
      */
-    @RequestMapping(value = "/api/game/getUserGameReviewBoutiqueNumber", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/game/api/game/getUserGameReviewBoutiqueNumber", method = RequestMethod.POST)
     ResultDto<List<Map>> getUserGameReviewBoutiqueNumber();
 
 }

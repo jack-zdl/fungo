@@ -61,6 +61,7 @@ public class GameServiceImpl implements IGameService {
 
     @Autowired
     private GameSurveyRelService surveyRelService;
+
     @Autowired
     private GameDao gameDao;
 
