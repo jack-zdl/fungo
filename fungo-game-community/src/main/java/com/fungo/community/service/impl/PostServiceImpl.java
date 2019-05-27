@@ -1042,7 +1042,7 @@ public class PostServiceImpl implements IPostService {
 
         String gameList = mapper.writeValueAsString(gameMapList);
 
-        if (os.equalsIgnoreCase("iOS") || os.equalsIgnoreCase("Android")) {
+        if (StringUtils.equalsIgnoreCase("iOS",os) || StringUtils.equalsIgnoreCase("Android",os)) {
             if (origin != null && !"".equals(origin)) {
 
                 out.setHtml(SerUtils.returnOriginHrml(SerUtils.getOriginImageContent(CommonUtils.filterWord(origin), out.getImages(), gameList)));
