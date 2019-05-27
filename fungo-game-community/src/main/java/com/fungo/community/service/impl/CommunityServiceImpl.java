@@ -867,7 +867,10 @@ public class CommunityServiceImpl implements ICommunityService {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        if (null == ml1 || ml1.isEmpty() || ml1.size() < limitSize) {
+        if (null == ml1) {
+            ml1 = new ArrayList<>();
+        }
+        if (ml1.size() < limitSize) {
 
             //官方推荐用户id
             List<String> reIds = new ArrayList<>();
