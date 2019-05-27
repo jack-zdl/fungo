@@ -40,9 +40,6 @@ spring:
             strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
             thread:
               timeoutInMilliseconds: 60000  #命令执行超时时间，默认1000ms
-ribbon:
-    ConnectTimeout: 60000
-    ReadTimeout: 60000
 
 #-----------------------------------------------------------------------------------------------------------------------------------
 
@@ -113,6 +110,10 @@ ribbon:
     publisher-confirms: true
     publisher-returns: true
 #---------------------------------------mq----------------------------------------------
+
+ribbon:
+    ConnectTimeout: 60000
+    ReadTimeout: 60000
 
 #------------------------------------------------------------------mybatis-------------------------------------------------
 #db mybatis
