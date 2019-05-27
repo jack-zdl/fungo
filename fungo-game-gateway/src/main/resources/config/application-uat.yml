@@ -29,9 +29,11 @@ hystrix:
 #          strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
 #          thread:
 #            timeoutInMilliseconds: 40000  #命令执行超时时间，默认1000ms
+
+
 ribbon:
-  ConnectTimeout: 50000
-  ReadTimeout: 50000
+  ConnectTimeout: 60000
+  ReadTimeout: 60000
 
 #-----------------------------------------------------------------------------------------------------
 logging:
