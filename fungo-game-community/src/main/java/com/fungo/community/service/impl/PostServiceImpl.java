@@ -1042,7 +1042,7 @@ public class PostServiceImpl implements IPostService {
 
         String gameList = mapper.writeValueAsString(gameMapList);
 
-        if (StringUtils.equalsIgnoreCase("iOS",os) || StringUtils.equalsIgnoreCase("Android",os)) {
+        if (StringUtils.equalsIgnoreCase("iOS", os) || StringUtils.equalsIgnoreCase("Android", os)) {
             if (origin != null && !"".equals(origin)) {
 
                 out.setHtml(SerUtils.returnOriginHrml(SerUtils.getOriginImageContent(CommonUtils.filterWord(origin), out.getImages(), gameList)));
@@ -1265,19 +1265,19 @@ public class PostServiceImpl implements IPostService {
         out.setLink_community(communityMap);
 
         //!fixme 获取用户数据
+        AuthorBean authorBean = new AuthorBean();
         try {
             //out.setAuthor(IUserService.getUserCard(cmmPost.getMemberId(), userId));
             if (StringUtils.isNotBlank(userId) && StringUtils.isNotBlank(cmmPost.getMemberId())) {
                 ResultDto<AuthorBean> userCardResult = systemFeignClient.getUserCard(cmmPost.getMemberId(), userId);
                 if (null != userCardResult) {
-                    AuthorBean authorBean = userCardResult.getData();
-                    out.setAuthor(authorBean);
+                    authorBean = userCardResult.getData();
                 }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
+        out.setAuthor(authorBean);
         out.setType(cmmPost.getType());
 
         //更新文件浏览量
