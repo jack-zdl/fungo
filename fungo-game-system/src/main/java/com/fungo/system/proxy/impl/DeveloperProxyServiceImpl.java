@@ -10,6 +10,7 @@ import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.game.*;
+import com.game.common.enums.CommonEnum;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import org.checkerframework.checker.units.qual.A;
@@ -43,8 +44,15 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 		gameInputPageDto.setLimit(limit);
 		gameInputPageDto.setPage(page);
 		gameInputPageDto.setId_list(collect.toArray(new String[collect.size()]));
-		FungoPageResultDto<GameOutBean>  gameOutBeans = gamesFeignClient.getGameList(gameItemInput);
-		return gameOutBeans;
+		try{
+		FungoPageResultDto<Map> re = communityFeignClient.queryCmmPostEssenceList();
+
+				FungoPageResultDto<GameOutBean>  gameOutBeans = gamesFeignClient.getGameList(gameItemInput);
+				return  gameOutBeans;
+			}catch (Exception e){
+				logger.error("远程调用异常:"+e);
+			}
+		return new FungoPageResultDto<GameOutBean>();
 	}
 
 //	updateCounter

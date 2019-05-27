@@ -104,7 +104,13 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public AuthorBean getAuthor(String memberId) {
-        return systemFeignClient.getAuthor(memberId).getData();
+        try{
+            AuthorBean data = systemFeignClient.getAuthor(memberId).getData();
+            return data;
+        }catch (Exception e){
+            logger.error("远程调用异常:"+e);
+        }
+        return new AuthorBean();
     }
 
     public AuthorBean hystrixGetAuthor(String memberId) {
@@ -122,7 +128,12 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public int getBasActionSelectCount(BasActionDto basActionDto) {
-        return systemFeignClient.getBasActionSelectCount(basActionDto).getData();
+        try{
+            return systemFeignClient.getBasActionSelectCount(basActionDto).getData();
+        }catch (Exception e){
+            logger.error("远程调用异常:"+e);
+        }
+        return 0;
     }
 
     public int hystrixGetBasActionSelectCount(BasActionDto basActionDto) {
@@ -145,11 +156,17 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
         ssrd.setTargetId(replyInputPageDto.getTarget_id());
         ssrd.setMemberId(replyInputPageDto.getUser_id());
         ssrd.setState(replyInputPageDto.getState());
-        FungoPageResultDto<CmmCmtReplyDto> replyDtoBysSelectPageOrderByCreatedAt = communityFeignClient.getReplyDtoBysSelectPageOrderByCreatedAt(ssrd);
-        List<CmmCmtReplyDto> data = replyDtoBysSelectPageOrderByCreatedAt.getData();
-        Page<CmmCmtReplyDto> replyDtoPage = new Page<>();
-        replyDtoPage.setRecords(data);
-        return replyDtoPage;
+
+        try{
+            FungoPageResultDto<CmmCmtReplyDto> replyDtoBysSelectPageOrderByCreatedAt = communityFeignClient.getReplyDtoBysSelectPageOrderByCreatedAt(ssrd);
+            List<CmmCmtReplyDto> data = replyDtoBysSelectPageOrderByCreatedAt.getData();
+            Page<CmmCmtReplyDto> replyDtoPage = new Page<>();
+            replyDtoPage.setRecords(data);
+            return replyDtoPage;
+        }catch (Exception e){
+            logger.error("远程调用异常:"+e);
+        }
+       return new Page<CmmCmtReplyDto>();
     }
 
     public Page<CmmCmtReplyDto> hystrixGetReplyDtoBysSelectPageOrderByCreatedAt(ReplyInputPageDto replyInputPageDto) {
@@ -166,7 +183,12 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public MemberDto getMemberDtoBySelectOne(MemberDto md) {
-        return systemFeignClient.getMembersByid(md.getId()).getData();
+        try{
+            return systemFeignClient.getMembersByid(md.getId()).getData();
+        }catch (Exception e){
+            logger.error("远程调用异常:"+e);
+        }
+       return new MemberDto();
     }
 
     public MemberDto hystrixGetMemberDtoBySelectOne(MemberDto md) {
@@ -183,7 +205,12 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public List<HashMap<String, Object>> getStatusImageByMemberId(String memberId) {
-        return systemFeignClient.getStatusImageByMemberId(memberId).getData();
+        try{
+            return systemFeignClient.getStatusImageByMemberId(memberId).getData();
+        }catch (Exception e){
+            logger.error("远程调用异常:"+e);
+        }
+        return new ArrayList<>();
     }
 
     public List<HashMap<String, Object>> hystrixGetStatusImageByMemberId(String memberId) {
@@ -217,7 +244,12 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public List<BasTagDto> getBasTagBySelectListGroupId(BasTagDto basTagDto) {
-        return systemFeignClient.getBasTagBySelectListGroupId(basTagDto.getGroupId()).getData();
+        try{
+            return systemFeignClient.getBasTagBySelectListGroupId(basTagDto.getGroupId()).getData();
+        }catch (Exception e){
+            logger.error("远程调用异常:"+e);
+        }
+        return new ArrayList<>();
     }
 
     public List<BasTagDto> hystrixGetBasTagBySelectListGroupId(BasTagDto basTagDto) {
@@ -234,20 +266,30 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public CmmCommunityDto getCmmCommunitySelectOneById(CmmCommunityDto ccd) {
-        FungoPageResultDto<CmmCommunityDto> cmmCommunitySelectOneById = communityFeignClient.getCmmCommunitySelectOneById(ccd);
-        List<CmmCommunityDto> data = cmmCommunitySelectOneById.getData();
         CmmCommunityDto cmmCommunityDto = new CmmCommunityDto();
-        if (data != null && data.size() > 0) {
-            cmmCommunityDto = data.get(0);
+        try{
+            FungoPageResultDto<CmmCommunityDto> cmmCommunitySelectOneById = communityFeignClient.getCmmCommunitySelectOneById(ccd);
+            List<CmmCommunityDto> data = cmmCommunitySelectOneById.getData();
+            if (data != null && data.size() > 0) {
+                cmmCommunityDto = data.get(0);
+            }
+        }catch (Exception e){
+            logger.error("远程调用出错:",e);
         }
+
         return cmmCommunityDto;
     }
 
     public Map<String, Integer> listCommunityFolloweeNum(List<String> ids) {
-        ResultDto<Map<String, Integer>> resultDto = communityFeignClient.listCommunityFolloweeNum(ids);
-        if(resultDto!=null&&resultDto.isSuccess()){
-            return  resultDto.getData();
+        try{
+            ResultDto<Map<String, Integer>> resultDto = communityFeignClient.listCommunityFolloweeNum(ids);
+            if(resultDto!=null&&resultDto.isSuccess()){
+                return  resultDto.getData();
+            }
+        }catch (Exception e){
+            logger.error("远程调用出错:",e);
         }
+
         return new HashMap<String, Integer>();
     }
 
@@ -266,7 +308,12 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public void push(String inviteMemberId, int i, String appVersion) {
-        systemFeignClient.push(inviteMemberId, i, appVersion);
+        try{
+            systemFeignClient.push(inviteMemberId, i, appVersion);
+        }catch (Exception e){
+            logger.error("远程调用出错:",e);
+        }
+
     }
 
     public void hystrixPush(String inviteMemberId, int i, String appVersion) {
@@ -329,6 +376,7 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public FungoPageResultDto<MemberDto> listMemberDtoPag(MemberDto memberDto) {
+
         return systemFeignClient.listMemberDtoPag(memberDto);
     }
 

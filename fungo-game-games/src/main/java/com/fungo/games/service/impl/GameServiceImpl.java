@@ -637,6 +637,12 @@ public class GameServiceImpl implements IGameService {
             List<Game> gamel = gameService.selectList(new EntityWrapper<Game>().in("id", gameIdList));
             for (Game game : gamel) {
                 GameItem it = new GameItem();
+                if(game.getAndroidPackageName()==null){
+                    game.setAndroidPackageName("");
+                }
+                if(game.getApk()==null){
+                    game.setApk("");
+                }
                 it.setAndroidPackageName(game.getAndroidPackageName());
                 it.setAndroidState(game.getAndroidState());
                 it.setApkUrl(game.getApk());

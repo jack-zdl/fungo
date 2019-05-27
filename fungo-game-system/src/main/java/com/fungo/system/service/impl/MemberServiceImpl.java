@@ -1181,7 +1181,7 @@ public class MemberServiceImpl implements IMemberService {
 
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_COMMENTS;
         String keySuffix = loginId + JSON.toJSONString(input);
-        re = (FungoPageResultDto<MyCommentBean>) fungoCacheArticle.getIndexCache(keyPrefix, keySuffix);
+        re = null ;//(FungoPageResultDto<MyCommentBean>) fungoCacheArticle.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
         }
@@ -1211,7 +1211,7 @@ public class MemberServiceImpl implements IMemberService {
             //回复二级回复
             if (!CommonUtil.isNull(c.getReplyToId()) && !CommonUtil.isNull(c.getReplyContentId())) {
                 bean.setReplyToId(c.getReplyToId());
-                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", c.getReplyToId()));
+                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name as userName").eq("id", c.getReplyToId()));
                 if (m != null) {
                     bean.setReplyToName(m.getUserName());
                 }
@@ -1281,7 +1281,7 @@ public class MemberServiceImpl implements IMemberService {
                     }
 
                     bean.setReplyToId(comment.getMemberId());
-                    Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", comment.getMemberId()));
+                    Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name as userName").eq("id", comment.getMemberId()));
                     if (m != null) {
                         bean.setReplyToName(m.getUserName());
                     }
@@ -1300,7 +1300,7 @@ public class MemberServiceImpl implements IMemberService {
                     }
 
                     bean.setReplyToId(evaluation.getMemberId());
-                    Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", evaluation.getMemberId()));
+                    Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name as userName").eq("id", evaluation.getMemberId()));
                     if (m != null) {
                         bean.setReplyToName(m.getUserName());
                     }
@@ -1317,7 +1317,7 @@ public class MemberServiceImpl implements IMemberService {
                     }
 
                     bean.setReplyToId(message.getMemberId());
-                    Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", message.getMemberId()));
+                    Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name as userName").eq("id", message.getMemberId()));
                     if (m != null) {
                         bean.setReplyToName(m.getUserName());
                     }

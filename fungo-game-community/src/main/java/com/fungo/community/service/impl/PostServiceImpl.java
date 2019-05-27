@@ -1583,7 +1583,7 @@ public class PostServiceImpl implements IPostService {
 //		}
         @SuppressWarnings("unchecked")
         Page<CmmPost> postPage = postService.selectPage(new Page<>(page, limit),
-                Condition.create().setSqlSelect("id,title,content,cover_image,member_id,video,created_at,updated_at,video_cover_image")
+                Condition.create().setSqlSelect("id,title,content,cover_image as coverImage ,member_id as memberId ,video,created_at as createdAt,updated_at as updatedAt,video_cover_image as videoCoverImage")
                         .where("state = {0}", 1).andNew("title like '%" + keyword + "%'").or("content like " + "'%" + keyword + "%'"));
 //						.or("content like "+ "'%" + keyword+ "%'"));
         List<CmmPost> postList = postPage.getRecords();
