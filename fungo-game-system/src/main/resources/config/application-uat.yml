@@ -1,6 +1,6 @@
 server:
-  port: 8771
-  #port: 8772
+  #port: 8771
+  port: 8772
 #--------------------------------------------------------------------------------------------------
 eureka:
   instance:
@@ -19,8 +19,8 @@ spring:
     inetutils:
       ignored-interfaces[0]: docker0
     client:
-      ipAddress: 172.17.18.227
-      #ipAddress: 172.17.18.228
+      #ipAddress: 172.17.18.227
+      ipAddress: 172.17.18.228
   application:
     name: fungo-game-system
 
@@ -73,38 +73,6 @@ spring:
     jackson:
       time-zone: GMT+8
 
-  #--------------------------------------------------------------------------------------------------
-  session:
-    store-type: redis
-  #--------------------------------------------------------------------------------------------------
-#  zipkin:
-#    base-url: http://peer1:9411
-#    sender:
-#      type: web
-  #--------------------------------------------------------------------------------------------------
-  sleuth:
-    sampler:
-      probability: 1.0
-
-  #--------------------------------------------------------------------------------------------------
-#  rabbitmq:
-#    host: 47.104.87.10
-#    port: 5672
-#    username: admin
-#    password: admin
-#    virtual-host: /
-#    publisher-confirms: true  # 开启发送确认
-#    publisher-returns: true   # 开启发送失败退回
-#    listener:
-#      direct:
-#        acknowledge-mode: manual
-#      simple:
-#        acknowledge-mode: manual
-#
-#    templates:
-#      retry:
-#        enabled: true
-#        initial-interval: 2s
 
 #---------------------------------------mq----------------------------------------------
   rabbitmq:
@@ -120,8 +88,8 @@ spring:
       mandatory: true
     publisher-confirms: true
     publisher-returns: true
-  #---------------------------------------mq----------------------------------------------
 
+#---------------------------------------mq----------------------------------------------
 
   #热部署
   devtools:
@@ -129,40 +97,7 @@ spring:
       enabled: true
     restart:
       enabled: true
-# stream 绑定一个接受消息的input管道
-#  cloud:
-#    stream:
-#      bindings:
-#        input:
-#          destination: mydest
-#          content-type: application/json
-#      kafka:
-#        binder:
-#          zkNodes: 127.0.0.1
-#          brokers: 127.0.0.1
-#          input:
-#            consumer:
-#              resetOffsets: true
-#      binders:
-#        defaultRabbit:
-#          type: rabbit
-#          environment:
-#            spring:
-#              rabbitmq:
-#              addresses: 47.104.87.10:5672
-#              username: admin
-#              password: admin
-#              virtual-host: /
-#                host: 47.104.87.10
-#                port: 5672
-#                username: admin
-#                password: admin
-#                virtual-host: /
-#      bindings:  # 服务的整合处理
-#        output:  # 这个名字是一个通道的名称，在分析具体源代码的时候会进行说明
-#          destination: studyExchange   # 表示要使用的Exchange名称定义
-#          content-type: application/json   # 设置消息类型，本次为对象json，如果是文本则设置“text/plain”
-#          binder:  defaultRabbit # 设置要绑定的消息服务的具体设置
+
 #--------------------------------------------------------------------------------------------------
 mybatis-plus:
 #  mapper-locations: classpath:mapping/*Mapper.xml
@@ -173,37 +108,7 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
 
-#--------------------------------------------------------------------------------------------------
 
-#  type-aliases-package: com.fungo.system.entity
-## 当post /refresh方式刷新配置 时 ，会有个安全限制，关掉就可以了
-#security:
-#  basic:
-#    enabled: false
-management:
-#  security:
-#    enabled: false
-  endpoint:
-    shutdown:
-      enabled: true
-    dbcheck:
-      enabled: true
-    health:
-      show-details: always
-  endpoints:
-    web:
-      exposure:
-        include: "*"  # 暴露所有服务监控端口，也可以只暴露 hystrix.stream端口
-
-#--------------------------------------------------------------------------------------------------
-turbine:
-  #  1.被监控的服务应用没有配置 context-path 的情况下
-  # 配置 Eureka 中的 serviceId 列表，指定要监控的服务
-  app-config: FUNGO-GAME-GAMES,FUNGO-GAME-SYSTEM
-  aggregator:
-    cluster-config: default
-  cluster-name-expression: new String("default")
-#  combine-host-port: true
 #--------------------------------------------------------------------------------------------------
 
 
@@ -218,8 +123,8 @@ hystrix:
           thread:
             timeoutInMilliseconds: 60000  #命令执行超时时间，默认1000ms
 ribbon:
-  ConnectTimeout: 50000
-  ReadTimeout: 50000
+  ConnectTimeout: 60000
+  ReadTimeout: 60000
 
 #--------------------------------------------------------------------------------------------------
 
@@ -258,7 +163,7 @@ fungo:
 
 #系统配置-集群编号
 sys.config.fungo:
-  cluster.index: 5
+  cluster.index: 6
 
 #--------------------------------------------------------------------------------------------------
 #安全机制接口身份key
@@ -270,7 +175,6 @@ fungo.security:
 
 
 spring.aop.auto: true
-#spring.aop.proxy-target-class: true
 
 #--------------------------------------------------------------------------------------------------
 
