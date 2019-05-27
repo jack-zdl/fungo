@@ -1,21 +1,24 @@
 package com.fungo.games.controller.portal;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameCollectionGroup;
 import com.fungo.games.entity.GameCollectionItem;
+import com.fungo.games.entity.GameEvaluation;
 import com.fungo.games.proxy.IEvaluateProxyService;
-import com.fungo.games.service.GameCollectionGroupService;
-import com.fungo.games.service.GameCollectionItemService;
-import com.fungo.games.service.GameService;
-import com.fungo.games.service.IIndexService;
+import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.index.AmwayWallBean;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
+import com.game.common.util.CommonUtils;
+import com.game.common.util.PageTools;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.date.DateTools;
 import io.swagger.annotations.Api;
@@ -39,6 +42,7 @@ import java.util.Map;
  * @Author lyc
  * @create 2019/5/25 12:42
  */
+@SuppressWarnings("all")
 @RestController
 @Api(value = "", description = "PC首页")
 public class PortalGamesIndexController {
@@ -49,8 +53,8 @@ public class PortalGamesIndexController {
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
 
-//    @Autowired
-//    private IEvaluateProxyService iEvaluateProxyService;
+    @Autowired
+    private IEvaluateProxyService iEvaluateProxyService;
 
     @Autowired
     private GameCollectionGroupService gameCollectionGroupService;
@@ -64,17 +68,20 @@ public class PortalGamesIndexController {
     @Autowired
     private GameDao gameDao;
 
-    @ApiOperation(value = "pc端发现页游戏合集", notes = "")
-    @RequestMapping(value = "/api/portal/recommend/pc/gamegroup", method = RequestMethod.POST)
+    @Autowired
+    private GameEvaluationService gameEvaluationService;
+
+    @ApiOperation(value = "PC2.0端发现页游戏合集", notes = "")
+    @RequestMapping(value = "/api/portal/games/recommend/pc/gamegroup", method = RequestMethod.POST)
     @ApiImplicitParams({
     })
     public FungoPageResultDto<Map<String, Object>> pcGameGroup(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto input) {
         return indexService.pcGameGroup(input);
     }
 
-    @SuppressWarnings("all")
-    @ApiOperation(value = "pc端游戏合集详情", notes = "")
-    @RequestMapping(value = "/api/portal/recommend/pc/groupdetail/{groupId}", method = RequestMethod.GET)
+
+    @ApiOperation(value = "PC2.0端游戏合集详情", notes = "")
+    @RequestMapping(value = "/api/portal/games/recommend/pc/groupdetail/{groupId}", method = RequestMethod.GET)
     @ApiImplicitParams({
     })
     public ResultDto<Map<String, Object>> groupDetail(@Anonymous MemberUserProfile memberUserPrefile, @PathVariable("groupId") String groupId) {
@@ -133,5 +140,49 @@ public class PortalGamesIndexController {
         fungoCacheIndex.excIndexCache(true, keyPrefix, groupId, map);
 
         return resultMap;
+    }
+
+
+    @ApiOperation(value = "PC2.0安利墙游戏评价列表(v2.3)", notes = "")
+    @RequestMapping(value = "/api/portal/games/index/games/amwaywall/list", method = RequestMethod.POST)
+    @ApiImplicitParams({})
+    public FungoPageResultDto<AmwayWallBean> getAmwayWallList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto) {
+        //从redis获取
+        String keyPrefix = "/api/index/games/amwaywall/list";
+        String keySuffix = JSON.toJSONString(inputPageDto);
+        FungoPageResultDto<AmwayWallBean> re = (FungoPageResultDto<AmwayWallBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+        if (null != re && null != re.getData() && re.getData().size() > 0) {
+            //return re;
+        }
+        re = new FungoPageResultDto<AmwayWallBean>();
+        List<AmwayWallBean> list = new ArrayList<AmwayWallBean>();
+        re.setData(list);
+        //精选游戏评测 按照标记和发布日期排序
+        Page<GameEvaluation> page = gameEvaluationService.selectPage(new Page<GameEvaluation>(inputPageDto.getPage(), inputPageDto.getLimit()), new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy("concat(sort,created_at)", false));
+        List<GameEvaluation> plist = page.getRecords();
+        for (GameEvaluation gameEvaluation : plist) {
+            AmwayWallBean bean = new AmwayWallBean();
+
+            bean.setAuthor(iEvaluateProxyService.getAuthor(gameEvaluation.getMemberId()));
+            Game game = this.gameService.selectById(gameEvaluation.getGameId());
+            bean.setEvaluation(CommonUtils.filterWord(gameEvaluation.getContent()));
+            bean.setEvaluationId(gameEvaluation.getId());
+
+            bean.setGameImage(game.getCoverImage());
+            bean.setGameIcon(game.getIcon());
+            bean.setGameId(gameEvaluation.getGameId());
+            bean.setGameName(game.getName());
+            bean.setRecommend(gameEvaluation.getIsRecommend().equals("1") ? true : false);
+            if (gameEvaluation.getRating() != null) {
+                bean.setRating(new BigDecimal(gameEvaluation.getRating()));
+            }
+            list.add(bean);
+        }
+        PageTools.pageToResultDto(re, page);
+
+        //Redis cache
+        fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
+        return re;
+
     }
 }

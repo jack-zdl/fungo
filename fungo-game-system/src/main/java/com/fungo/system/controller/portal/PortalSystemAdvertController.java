@@ -33,6 +33,7 @@ import java.util.Map;
  * @Author lyc
  * @create 2019/5/25 11:43
  */
+@SuppressWarnings("all")
 @RestController
 @Api(value = "", description = "PC广告")
 public class PortalSystemAdvertController {
@@ -52,13 +53,13 @@ public class PortalSystemAdvertController {
     @Autowired
     private IGameProxyService iGameProxyService;
 
-    @ApiOperation(value = "PC发现页轮播", notes = "")
-    @RequestMapping(value = "/api/portal/recommend/discover", method = RequestMethod.GET)
+    @ApiOperation(value = "PC2.0发现页轮播", notes = "")
+    @RequestMapping(value = "/api/portal/system/recommend/discover", method = RequestMethod.GET)
     @ApiImplicitParams({})
     public ResultDto<List<Map<String, String>>> discover(@Anonymous MemberUserProfile memberUserPrefile) {
 
         ResultDto<List<Map<String, String>>> re = new ResultDto<List<Map<String, String>>>();
-        List<Map<String, String>> listResult = (List<Map<String, String>>) fungoCacheAdvert.getIndexCache("/api/portal/recommend/discover",
+        List<Map<String, String>> listResult = (List<Map<String, String>>) fungoCacheAdvert.getIndexCache("/api/recommend/discover",
                 "");
         if (null != listResult && !listResult.isEmpty()) {
             re.setData(listResult);
@@ -87,7 +88,7 @@ public class PortalSystemAdvertController {
         }
         re.setData(list);
         //redis cache
-        fungoCacheAdvert.excIndexCache(true, "/api/portal/recommend/discover", "", list);
+        fungoCacheAdvert.excIndexCache(true, "/api/recommend/discover", "", list);
         return re;
     }
 }
