@@ -897,7 +897,7 @@ public class CommunityServiceImpl implements ICommunityService {
             //2.再查询发布游戏评论>大于14条的，前10名用户
             //memberDao.getRecommendMembersFromEvaluation(sendComments,   limitSize, wathMbsSet);
 
-            List<String> sendCommentMembers = null;
+            List<String> sendCommentMembers = new ArrayList<>();
 
             try {
                 ResultDto<List<String>> gameEvaRs = gameFeignClient.getRecommendMembersFromEvaluation(Integer.valueOf(sendComments + ""), Integer.valueOf(limitSize + ""), wathMbsSet);
