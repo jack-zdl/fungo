@@ -164,7 +164,12 @@ public class PostServiceImpl implements IPostService {
 
         List<String> idsList = new ArrayList<String>();
         idsList.add(user_id);
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+        ResultDto<List<MemberDto>> listMembersByids = null;
+        try {
+            listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -549,7 +554,13 @@ public class PostServiceImpl implements IPostService {
 
         List<String> idsList = new ArrayList<String>();
         idsList.add(userId);
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+
+        ResultDto<List<MemberDto>> listMembersByids = null;
+        try {
+            systemFeignClient.listMembersByids(idsList, null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -731,7 +742,12 @@ public class PostServiceImpl implements IPostService {
 
         List<String> idsList = new ArrayList<String>();
         idsList.add(userId);
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+        ResultDto<List<MemberDto>> listMembersByids = null;
+        try {
+            listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+        } catch (Exception ex) {
+
+        }
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -1013,7 +1029,12 @@ public class PostServiceImpl implements IPostService {
 
                 //获取游戏平均分
                 String gameId = (String) m.get("objectId");
-                double gameAverage = gameFeignClient.selectGameAverage(gameId, 0);
+                double gameAverage = 0;
+                try {
+                    gameAverage = gameFeignClient.selectGameAverage(gameId, 0);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 m.put("gameRating", gameAverage);
 
             }
@@ -1122,7 +1143,12 @@ public class PostServiceImpl implements IPostService {
                 */
 
                 //获取游戏平均分
-                double gameAverage = gameFeignClient.selectGameAverage(community.getGameId(), 0);
+                double gameAverage = 0;
+                try {
+                    gameAverage = gameFeignClient.selectGameAverage(community.getGameId(), 0);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 communityMap.put("gameRating", gameAverage);
 
 
@@ -1133,9 +1159,13 @@ public class PostServiceImpl implements IPostService {
                 //Game game = gameService.selectOne(Condition.create().setSqlSelect("id,tags").eq("id", community.getGameId()).eq("state", 0));
 
                 GameDto gameDto = null;
-                ResultDto<GameDto> gameDtoResultDto = gameFeignClient.selectGameDetails(community.getGameId(), 0);
-                if (null != gameDtoResultDto) {
-                    gameDtoResultDto.getData();
+                try {
+                    ResultDto<GameDto> gameDtoResultDto = gameFeignClient.selectGameDetails(community.getGameId(), 0);
+                    if (null != gameDtoResultDto) {
+                        gameDtoResultDto.getData();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
                 if (gameDto != null) {
@@ -1158,8 +1188,12 @@ public class PostServiceImpl implements IPostService {
 
             List<String> idsList = new ArrayList<String>();
             idsList.add(userId);
-            ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList, null);
-
+            ResultDto<List<MemberDto>> listMembersByids = null;
+            try {
+                listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             MemberDto memberDto = null;
             if (null != listMembersByids) {
                 List<MemberDto> memberDtoList = listMembersByids.getData();
@@ -1187,13 +1221,17 @@ public class PostServiceImpl implements IPostService {
                 basActionDtoLike.setState(0);
                 basActionDtoLike.setTargetId(cmmPost.getId());
 
-                ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
-
                 int like = 0;
-                if (null != resultDtoLike) {
-                    like = resultDtoLike.getData();
-                }
 
+                try {
+                    ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
+
+                    if (null != resultDtoLike) {
+                        like = resultDtoLike.getData();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
 
                 //--收藏 | 4
                 BasActionDto basActionDtoCollected = new BasActionDto();
@@ -1202,12 +1240,16 @@ public class PostServiceImpl implements IPostService {
                 basActionDtoCollected.setType(4);
                 basActionDtoCollected.setState(0);
                 basActionDtoCollected.setTargetId(cmmPost.getId());
-
-                ResultDto<Integer> resultDtoCollected = systemFeignClient.countActionNum(basActionDtoCollected);
-
                 int collected = 0;
-                if (null != resultDtoCollected) {
-                    collected = resultDtoCollected.getData();
+
+                try {
+                    ResultDto<Integer> resultDtoCollected = systemFeignClient.countActionNum(basActionDtoCollected);
+
+                    if (null != resultDtoCollected) {
+                        collected = resultDtoCollected.getData();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
                 //boolean is_followed = followed >0 ? true:false;
@@ -1223,14 +1265,18 @@ public class PostServiceImpl implements IPostService {
         out.setLink_community(communityMap);
 
         //!fixme 获取用户数据
-        //out.setAuthor(IUserService.getUserCard(cmmPost.getMemberId(), userId));
-
-        ResultDto<AuthorBean> userCardResult = systemFeignClient.getUserCard(cmmPost.getMemberId(), userId);
-        if (null != userCardResult) {
-            AuthorBean authorBean = userCardResult.getData();
-            out.setAuthor(authorBean);
+        try {
+            //out.setAuthor(IUserService.getUserCard(cmmPost.getMemberId(), userId));
+            if (StringUtils.isNotBlank(userId) && StringUtils.isNotBlank(cmmPost.getMemberId())) {
+                ResultDto<AuthorBean> userCardResult = systemFeignClient.getUserCard(cmmPost.getMemberId(), userId);
+                if (null != userCardResult) {
+                    AuthorBean authorBean = userCardResult.getData();
+                    out.setAuthor(authorBean);
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-
 
         out.setType(cmmPost.getType());
 
@@ -1332,11 +1378,14 @@ public class PostServiceImpl implements IPostService {
 
             //!fixme 查询用户数据
             //bean.setAuthor(iUserService.getAuthor(post.getMemberId()));
-
-            ResultDto<AuthorBean> authorBeanResultDto = systemFeignClient.getAuthor(post.getMemberId());
-            if (null != authorBeanResultDto) {
-                AuthorBean authorBean = authorBeanResultDto.getData();
-                bean.setAuthor(authorBean);
+            try {
+                ResultDto<AuthorBean> authorBeanResultDto = systemFeignClient.getAuthor(post.getMemberId());
+                if (null != authorBeanResultDto) {
+                    AuthorBean authorBean = authorBeanResultDto.getData();
+                    bean.setAuthor(authorBean);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
 
             if (bean.getAuthor() == null) {
@@ -1402,11 +1451,15 @@ public class PostServiceImpl implements IPostService {
                 basActionDto.setState(0);
                 basActionDto.setTargetId(post.getId());
 
-                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
-
                 int liked = 0;
-                if (null != resultDto) {
-                    liked = resultDto.getData();
+                try {
+                    ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                    if (null != resultDto) {
+                        liked = resultDto.getData();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
 
@@ -1624,11 +1677,14 @@ public class PostServiceImpl implements IPostService {
             //AuthorBean author = iuserService.getAuthor(post.getMemberId());
 
             AuthorBean author = null;
-            ResultDto<AuthorBean> authorBeanResultDto = systemFeignClient.getAuthor(post.getMemberId());
-            if (null != authorBeanResultDto) {
-                author = authorBeanResultDto.getData();
+            try {
+                ResultDto<AuthorBean> authorBeanResultDto = systemFeignClient.getAuthor(post.getMemberId());
+                if (null != authorBeanResultDto) {
+                    author = authorBeanResultDto.getData();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-
             postData.put("author", author);
             postData.put("videoCoverImage", post.getVideoCoverImage());
 

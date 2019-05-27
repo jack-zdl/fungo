@@ -1,7 +1,6 @@
 package com.fungo.community.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -242,9 +241,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //t.setAuthor(userService.getAuthor(memberId));
 
         AuthorBean author = null;
-        ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(memberId);
-        if (null != beanResultDto) {
-            author = beanResultDto.getData();
+        try {
+            ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(memberId);
+            if (null != beanResultDto) {
+                author = beanResultDto.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         t.setAuthor(author);
@@ -469,9 +472,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //bean.setAuthor(this.userService.getAuthor(comment.getMemberId()));
 
         AuthorBean authorBean = new AuthorBean();
-        ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(comment.getMemberId());
-        if (null != beanResultDto) {
-            authorBean = beanResultDto.getData();
+        try {
+            ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(comment.getMemberId());
+            if (null != beanResultDto) {
+                authorBean = beanResultDto.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         bean.setAuthor(authorBean);
 
@@ -491,11 +498,15 @@ public class EvaluateServiceImpl implements IEvaluateService {
             basActionDto.setState(0);
             basActionDto.setTargetId(comment.getId());
 
-            ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
-
             int liked = 0;
-            if (null != resultDto) {
-                liked = resultDto.getData();
+            try {
+                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                if (null != resultDto) {
+                    liked = resultDto.getData();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
 
             bean.setIs_liked(liked > 0 ? true : false);
@@ -548,9 +559,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //bean.setAuthor(this.userService.getAuthor(comment.getMemberId()));
 
         AuthorBean authorBean = new AuthorBean();
-        ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(comment.getMemberId());
-        if (null != beanResultDto) {
-            authorBean = beanResultDto.getData();
+        try {
+            ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(comment.getMemberId());
+            if (null != beanResultDto) {
+                authorBean = beanResultDto.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         bean.setAuthor(authorBean);
 
@@ -571,13 +586,17 @@ public class EvaluateServiceImpl implements IEvaluateService {
             basActionDto.setState(0);
             basActionDto.setTargetId(comment.getId());
 
-            ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
-
             int liked = 0;
-            if (null != resultDto) {
-                liked = resultDto.getData();
-            }
 
+            try {
+                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                if (null != resultDto) {
+                    liked = resultDto.getData();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             bean.setIs_liked(liked > 0 ? true : false);
         }
         re.setData(bean);
@@ -672,11 +691,14 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 //AuthorBean author = userService.getAuthor(mooMessage.getMemberId());
 
                 AuthorBean author = null;
-                ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(mooMessage.getMemberId());
-                if (null != beanResultDto) {
-                    author = beanResultDto.getData();
+                try {
+                    ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(mooMessage.getMemberId());
+                    if (null != beanResultDto) {
+                        author = beanResultDto.getData();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-
                 if (null != author) {
                     ctem.setAuthor(author);
                 }
@@ -696,9 +718,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     //AuthorBean replyAuthor = userService.getAuthor(reply.getMemberId());
 
                     AuthorBean replyAuthor = null;
-                    ResultDto<AuthorBean> beanResultDtoReply = systemFeignClient.getAuthor(mooMessage.getMemberId());
-                    if (null != beanResultDtoReply) {
-                        replyAuthor = beanResultDtoReply.getData();
+                    try {
+                        ResultDto<AuthorBean> beanResultDtoReply = systemFeignClient.getAuthor(mooMessage.getMemberId());
+                        if (null != beanResultDtoReply) {
+                            replyAuthor = beanResultDtoReply.getData();
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
 
                     if (null != replyAuthor) {
@@ -721,7 +747,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
                     List<String> idsList = new ArrayList<String>();
                     idsList.add(reply.getReplayToId());
-                    ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+
+                    ResultDto<List<MemberDto>> listMembersByids = null;
+                    try {
+                        listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
 
                     MemberDto memberDto = null;
                     if (null != listMembersByids) {
@@ -751,11 +783,15 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     basActionDto.setState(0);
                     basActionDto.setTargetId(mooMessage.getId());
 
-                    ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
-
                     int liked = 0;
-                    if (null != resultDto) {
-                        liked = resultDto.getData();
+                    try {
+                        ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                        if (null != resultDto) {
+                            liked = resultDto.getData();
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
 
                     ctem.setIs_liked(liked > 0 ? true : false);
@@ -812,11 +848,14 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 //AuthorBean author = userService.getAuthor(cmmComment.getMemberId());
 
                 AuthorBean author = null;
-                ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(cmmComment.getMemberId());
-                if (null != beanResultDto) {
-                    author = beanResultDto.getData();
+                try {
+                    ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(cmmComment.getMemberId());
+                    if (null != beanResultDto) {
+                        author = beanResultDto.getData();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
-
 
                 if (null != author) {
                     ctem.setAuthor(author);
@@ -836,9 +875,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     //AuthorBean authorReply = userService.getAuthor(reply.getMemberId());
 
                     AuthorBean authorReply = null;
-                    ResultDto<AuthorBean> beanResultDtoReply = systemFeignClient.getAuthor(reply.getMemberId());
-                    if (null != beanResultDtoReply) {
-                        authorReply = beanResultDtoReply.getData();
+                    try {
+                        ResultDto<AuthorBean> beanResultDtoReply = systemFeignClient.getAuthor(reply.getMemberId());
+                        if (null != beanResultDtoReply) {
+                            authorReply = beanResultDtoReply.getData();
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
 
 
@@ -871,7 +914,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     List<String> idsList = new ArrayList<String>();
                     idsList.add(reply.getReplayToId());
 
-                    ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList ,null);
+                    ResultDto<List<MemberDto>> listMembersByids = null;
+
+                    try {
+                        listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
 
                     MemberDto memberDto = null;
                     if (null != listMembersByids) {
@@ -903,12 +952,17 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     basActionDto.setType(0);
                     basActionDto.setState(0);
                     basActionDto.setTargetId(cmmComment.getId());
-
-                    ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
-
                     int liked = 0;
-                    if (null != resultDto) {
-                        liked = resultDto.getData();
+
+                    try {
+
+                        ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                        if (null != resultDto) {
+                            liked = resultDto.getData();
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
 
                     ctem.setIs_liked(liked > 0 ? true : false);
@@ -937,9 +991,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //GameEvaluation evaluation = gameEvaluationService.selectOne(new EntityWrapper<GameEvaluation>().eq("member_id", memberId).eq("game_id", commentInput.getTarget_id()).eq("state", 0));
 
         GameEvaluationDto gameEvaluationDto = null;
-        ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getGameEvaluationSelectOne(memberId, commentInput.getTarget_id());
-        if (null != evaluationDtoResultDto) {
-            gameEvaluationDto = evaluationDtoResultDto.getData();
+        try {
+            ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getGameEvaluationSelectOne(memberId, commentInput.getTarget_id());
+            if (null != evaluationDtoResultDto) {
+                gameEvaluationDto = evaluationDtoResultDto.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         //int times = -1;
@@ -1123,9 +1181,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //t.setAuthor(userService.getAuthor(memberId));
 
         AuthorBean author = new AuthorBean();
-        ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(memberId);
-        if (null != beanResultDto) {
-            author = beanResultDto.getData();
+        try {
+            ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(memberId);
+            if (null != beanResultDto) {
+                author = beanResultDto.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         t.setAuthor(author);
 
@@ -1307,9 +1369,14 @@ public class EvaluateServiceImpl implements IEvaluateService {
         // Game game = gameService.selectOne(Condition.create().setSqlSelect("id,name").eq("id", commentInput.getTarget_id()));
 
         GameDto gameDto = null;
-        ResultDto<GameDto> gameDtoResultDto = gameFeignClient.selectGameDetails(commentInput.getTarget_id(), null);
-        if (null != gameDtoResultDto) {
-            gameDto = gameDtoResultDto.getData();
+        ResultDto<GameDto> gameDtoResultDto = null;
+        try {
+            gameDtoResultDto = gameFeignClient.selectGameDetails(commentInput.getTarget_id(), null);
+            if (null != gameDtoResultDto) {
+                gameDto = gameDtoResultDto.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         if (gameDto != null) {
@@ -1361,9 +1428,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //GameEvaluation evaluation = gameEvaluationService.selectById(commentId);
 
         GameEvaluationDto gameEvaluationDto = null;
-        ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getGameEvaluationSelectById(commentId);
-        if (null != evaluationDtoResultDto) {
-            gameEvaluationDto = evaluationDtoResultDto.getData();
+        try {
+            ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getGameEvaluationSelectById(commentId);
+            if (null != evaluationDtoResultDto) {
+                gameEvaluationDto = evaluationDtoResultDto.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         if (gameEvaluationDto == null) {
@@ -1380,9 +1451,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //bean.setAuthor(this.userService.getAuthor(evaluation.getMemberId()));
 
         AuthorBean replyAuthor = null;
-        ResultDto<AuthorBean> beanResultDtoReply = systemFeignClient.getAuthor(gameEvaluationDto.getMemberId());
-        if (null != beanResultDtoReply) {
-            replyAuthor = beanResultDtoReply.getData();
+        try {
+            ResultDto<AuthorBean> beanResultDtoReply = systemFeignClient.getAuthor(gameEvaluationDto.getMemberId());
+            if (null != beanResultDtoReply) {
+                replyAuthor = beanResultDtoReply.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         bean.setAuthor(replyAuthor);
 
@@ -1431,11 +1506,15 @@ public class EvaluateServiceImpl implements IEvaluateService {
             basActionDto.setState(0);
             basActionDto.setTargetId(bean.getGameId());
 
-            ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
-
             int liked = 0;
-            if (null != resultDto) {
-                liked = resultDto.getData();
+            try {
+                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                if (null != resultDto) {
+                    liked = resultDto.getData();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
 
 
@@ -1464,9 +1543,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //Game game = gameService.selectById(pageDto.getGame_id());
 
         GameEvaluationDto gameEvaluationDto = null;
-        ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getGameEvaluationSelectById(pageDto.getGame_id());
-        if (null != evaluationDtoResultDto) {
-            gameEvaluationDto = evaluationDtoResultDto.getData();
+        try {
+            ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getGameEvaluationSelectById(pageDto.getGame_id());
+            if (null != evaluationDtoResultDto) {
+                gameEvaluationDto = evaluationDtoResultDto.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         if (gameEvaluationDto == null) {
@@ -1498,10 +1581,14 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //总记录数
         int total = 0;
         List<GameEvaluationDto> list = new ArrayList<>();
-        FungoPageResultDto<GameEvaluationDto> evaluationListRs = gameFeignClient.getEvaluationEntityWrapperByPageDtoAndMemberId(pageDto, memberId);
-        if (null != evaluationListRs) {
-            list = evaluationListRs.getData();
-            total = evaluationListRs.getCount();
+        try {
+            FungoPageResultDto<GameEvaluationDto> evaluationListRs = gameFeignClient.getEvaluationEntityWrapperByPageDtoAndMemberId(pageDto, memberId);
+            if (null != evaluationListRs) {
+                list = evaluationListRs.getData();
+                total = evaluationListRs.getCount();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         for (GameEvaluationDto cmmComment : list) {
@@ -1526,9 +1613,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
             //ctem.setAuthor(this.userService.getAuthor(cmmComment.getMemberId()));
 
             AuthorBean replyAuthor = null;
-            ResultDto<AuthorBean> beanResultDtoReply = systemFeignClient.getAuthor(cmmComment.getMemberId());
-            if (null != beanResultDtoReply) {
-                replyAuthor = beanResultDtoReply.getData();
+            try {
+                ResultDto<AuthorBean> beanResultDtoReply = systemFeignClient.getAuthor(cmmComment.getMemberId());
+                if (null != beanResultDtoReply) {
+                    replyAuthor = beanResultDtoReply.getData();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
             ctem.setAuthor(replyAuthor);
 
@@ -1551,9 +1642,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 //replybean.setAuthor(this.userService.getAuthor(reply.getMemberId()));
 
                 AuthorBean authorBean = null;
-                ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(reply.getMemberId());
-                if (null != beanResultDto) {
-                    authorBean = beanResultDto.getData();
+                try {
+                    ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(reply.getMemberId());
+                    if (null != beanResultDto) {
+                        authorBean = beanResultDto.getData();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
                 replybean.setAuthor(authorBean);
 
@@ -1576,7 +1671,12 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 List<String> idsList = new ArrayList<String>();
                 idsList.add(reply.getReplayToId());
 
-                ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+                ResultDto<List<MemberDto>> listMembersByids = null;
+                try {
+                    listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
 
                 MemberDto memberDto = null;
                 if (null != listMembersByids) {
@@ -1609,11 +1709,14 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 basActionDto.setState(0);
                 basActionDto.setTargetId(cmmComment.getId());
 
-                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
-
                 int liked = 0;
-                if (null != resultDto) {
-                    liked = resultDto.getData();
+                try {
+                    ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+                    if (null != resultDto) {
+                        liked = resultDto.getData();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
                 ctem.setIs_liked(liked > 0 ? true : false);
@@ -1661,7 +1764,12 @@ public class EvaluateServiceImpl implements IEvaluateService {
         List<String> idsList = new ArrayList<String>();
         idsList.add(reply.getReplayToId());
 
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList , null);
+        ResultDto<List<MemberDto>> listMembersByids = null;
+        try {
+            listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -1899,9 +2007,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //t.setAuthor(this.userService.getAuthor(memberId));
 
         AuthorBean authorBean = null;
-        ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(memberId);
-        if (null != beanResultDto) {
-            authorBean = beanResultDto.getData();
+        try {
+            ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(memberId);
+            if (null != beanResultDto) {
+                authorBean = beanResultDto.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         t.setAuthor(authorBean);
 
@@ -1916,10 +2028,15 @@ public class EvaluateServiceImpl implements IEvaluateService {
             //t.setReply_to(this.userService.getAuthor(replyInput.getReply_to()));
 
             AuthorBean replyAuthorBean = null;
-            ResultDto<AuthorBean> replybeanResultDto = systemFeignClient.getAuthor(replyInput.getReply_to());
-            if (null != replybeanResultDto) {
-                replyAuthorBean = replybeanResultDto.getData();
+            try {
+                ResultDto<AuthorBean> replybeanResultDto = systemFeignClient.getAuthor(replyInput.getReply_to());
+                if (null != replybeanResultDto) {
+                    replyAuthorBean = replybeanResultDto.getData();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
+
             t.setReply_to(replyAuthorBean);
 
         }
@@ -1968,10 +2085,15 @@ public class EvaluateServiceImpl implements IEvaluateService {
             //bean.setAuthor(this.userService.getAuthor(reply.getMemberId()));
 
             AuthorBean replyAuthorBean = null;
-            ResultDto<AuthorBean> replybeanResultDto = systemFeignClient.getAuthor(reply.getMemberId());
-            if (null != replybeanResultDto) {
-                replyAuthorBean = replybeanResultDto.getData();
+            try {
+                ResultDto<AuthorBean> replybeanResultDto = systemFeignClient.getAuthor(reply.getMemberId());
+                if (null != replybeanResultDto) {
+                    replyAuthorBean = replybeanResultDto.getData();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
+
             bean.setAuthor(replyAuthorBean);
 
 
@@ -1991,9 +2113,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 //bean.setReply_to(this.userService.getAuthor(reply.getReplayToId()));
 
                 AuthorBean replyToAuthorBean = null;
-                ResultDto<AuthorBean> replyToBeanResultDto = systemFeignClient.getAuthor(reply.getReplayToId());
-                if (null != replyToBeanResultDto) {
-                    replyToAuthorBean = replyToBeanResultDto.getData();
+                try {
+                    ResultDto<AuthorBean> replyToBeanResultDto = systemFeignClient.getAuthor(reply.getReplayToId());
+                    if (null != replyToBeanResultDto) {
+                        replyToAuthorBean = replyToBeanResultDto.getData();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
                 bean.setReply_to(replyToAuthorBean);
 
@@ -2015,11 +2141,15 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 basActionDto.setState(0);
                 basActionDto.setTargetId(reply.getId());
 
-                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
-
                 int liked = 0;
-                if (null != resultDto) {
-                    liked = resultDto.getData();
+                try {
+                    ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                    if (null != resultDto) {
+                        liked = resultDto.getData();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
                 bean.setIs_liked(liked > 0 ? true : false);
@@ -2042,9 +2172,14 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
 
         GameDto gameDto = null;
-        ResultDto<GameDto> gameDtoResultDto = gameFeignClient.selectGameDetails(eva.getGameId(), null);
-        if (null != gameDtoResultDto) {
-            gameDto = gameDtoResultDto.getData();
+        ResultDto<GameDto> gameDtoResultDto = null;
+        try {
+            gameDtoResultDto = gameFeignClient.selectGameDetails(eva.getGameId(), null);
+            if (null != gameDtoResultDto) {
+                gameDto = gameDtoResultDto.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
 
@@ -2059,9 +2194,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //!fixme 上一评论
         //GameEvaluation pre = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).gt("created_at", eva.getCreatedAt()).ne("id", id).orderBy("concat(sort,created_at)").last("limit 1"));
         GameEvaluationDto pre = null;
-        ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getPreGameEvaluation(eva.getCreatedAt(), id);
-        if (null != evaluationDtoResultDto) {
-            pre = evaluationDtoResultDto.getData();
+        try {
+            ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getPreGameEvaluation(eva.getCreatedAt(), id);
+            if (null != evaluationDtoResultDto) {
+                pre = evaluationDtoResultDto.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         //		GameEvaluation pree = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}",-1).le("sort",sort).ne("id", id).orderBy("concat(sort,created_at)",false).last("limit 1"));
@@ -2069,9 +2208,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //GameEvaluation next = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).le("created_at", eva.getCreatedAt()).ne("id", id).orderBy("concat(sort,created_at)", false).last("limit 1"));
 
         GameEvaluationDto next = null;
-        ResultDto<GameEvaluationDto> nextGameEvaluationRs = gameFeignClient.getNextGameEvaluation(eva.getCreatedAt(), id);
-        if (null != nextGameEvaluationRs) {
-            next = nextGameEvaluationRs.getData();
+        try {
+            ResultDto<GameEvaluationDto> nextGameEvaluationRs = gameFeignClient.getNextGameEvaluation(eva.getCreatedAt(), id);
+            if (null != nextGameEvaluationRs) {
+                next = nextGameEvaluationRs.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         if (pre != null) {
@@ -2103,9 +2246,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
             */
 
             List<GameEvaluationDto> gameEvaluationsList = null;
-            ResultDto<List<GameEvaluationDto>> gameEvaRS = gameFeignClient.getEvaluationEntityWrapper(mb_id, startDate, endDate);
-            if (null != gameEvaRS) {
-                gameEvaluationsList = gameEvaRS.getData();
+            try {
+                ResultDto<List<GameEvaluationDto>> gameEvaRS = gameFeignClient.getEvaluationEntityWrapper(mb_id, startDate, endDate);
+                if (null != gameEvaRS) {
+                    gameEvaluationsList = gameEvaRS.getData();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
 
 
@@ -2127,8 +2274,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
     }
 
 
-
-
     //获取回复信息
     private ReplyBean getReplyBean(Reply reply) {
         ReplyBean replybean = new ReplyBean();
@@ -2137,9 +2282,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //replybean.setAuthor(this.userService.getAuthor(reply.getMemberId()));
 
         AuthorBean replyToAuthorBean = null;
-        ResultDto<AuthorBean> replyToBeanResultDto = systemFeignClient.getAuthor(reply.getMemberId());
-        if (null != replyToBeanResultDto) {
-            replyToAuthorBean = replyToBeanResultDto.getData();
+        try {
+            ResultDto<AuthorBean> replyToBeanResultDto = systemFeignClient.getAuthor(reply.getMemberId());
+            if (null != replyToBeanResultDto) {
+                replyToAuthorBean = replyToBeanResultDto.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         replybean.setAuthor(replyToAuthorBean);
 
@@ -2162,8 +2311,12 @@ public class EvaluateServiceImpl implements IEvaluateService {
         List<String> idsList = new ArrayList<String>();
         idsList.add(reply.getReplayToId());
 
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList , null);
-
+        ResultDto<List<MemberDto>> listMembersByids = null;
+        try {
+            listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         MemberDto memberDto = null;
         if (null != listMembersByids) {
             List<MemberDto> memberDtoList = listMembersByids.getData();

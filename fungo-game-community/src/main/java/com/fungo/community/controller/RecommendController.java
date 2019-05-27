@@ -163,10 +163,14 @@ public class RecommendController {
             MemberFollowerVo memberFollowerVo = new MemberFollowerVo();
             memberFollowerVo.setMemberId(memberUserPrefile.getLoginId());
 
-            FungoPageResultDto<String> followerUserIdResult = systemFeignClient.getFollowerUserId(memberFollowerVo);
+            try {
+                FungoPageResultDto<String> followerUserIdResult = systemFeignClient.getFollowerUserId(memberFollowerVo);
 
-            if (null != followerUserIdResult) {
-                olist.addAll(followerUserIdResult.getData());
+                if (null != followerUserIdResult) {
+                    olist.addAll(followerUserIdResult.getData());
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
 
             if (olist.size() > 0) {
@@ -248,9 +252,13 @@ public class RecommendController {
             //bean.setAuthor(userService.getAuthor(mooMood.getMemberId()));
 
             AuthorBean authorBean = new AuthorBean();
-            ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(mooMood.getMemberId());
-            if (null != beanResultDto) {
-                authorBean = beanResultDto.getData();
+            try {
+                ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(mooMood.getMemberId());
+                if (null != beanResultDto) {
+                    authorBean = beanResultDto.getData();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
 
             bean.setAuthor(authorBean);
@@ -294,9 +302,14 @@ public class RecommendController {
                 basActionDto.setState(0);
                 basActionDto.setTargetId(mooMood.getId());
 
-                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+                int followed = 0;
+                try {
+                    ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
 
-                int followed = resultDto.getData();
+                    followed = resultDto.getData();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
 
                 bean.setLiked(followed > 0 ? true : false);
             }
@@ -326,9 +339,15 @@ public class RecommendController {
                     //Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", 0));
 
                     GameDto gameDto = null;
-                    ResultDto<GameDto> gameDtoResultDto = gameFeignClient.selectGameDetails(gameId, 0);
-                    if (null != gameDtoResultDto) {
-                        gameDtoResultDto.getData();
+                    ResultDto<GameDto> gameDtoResultDto = null;
+
+                    try {
+                        gameDtoResultDto = gameFeignClient.selectGameDetails(gameId, 0);
+                        if (null != gameDtoResultDto) {
+                            gameDtoResultDto.getData();
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
 
 
@@ -496,11 +515,16 @@ public class RecommendController {
                 basActionDto.setState(0);
                 basActionDto.setTargetId(cmmCommunity.getId());
 
-                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
-
                 int followed = 0;
-                if (null != resultDto) {
-                    followed = resultDto.getData();
+                try {
+
+                    ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                    if (null != resultDto) {
+                        followed = resultDto.getData();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
                 bean.setFollowed(followed > 0 ? true : false);
