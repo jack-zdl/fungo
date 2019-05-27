@@ -4,12 +4,14 @@ package com.fungo.games.controller.portal;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameEvaluation;
 import com.fungo.games.proxy.IEvaluateProxyService;
 import com.fungo.games.service.GameEvaluationService;
 import com.fungo.games.service.GameService;
 import com.game.common.api.InputPageDto;
+import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.index.AmwayWallBean;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -35,7 +38,7 @@ import java.util.List;
  * @update 2019/5/5 16:26
  */
 @RestController
-public class PortalSystemIndexController {
+public class PortalGamesIndexController {
 
 
     @Autowired
@@ -50,9 +53,12 @@ public class PortalSystemIndexController {
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
 
+    @Autowired
+    private GameDao gameDao;
+
 
     @ApiOperation(value = "安利墙游戏评价列表(v2.3)", notes = "")
-    @RequestMapping(value = "/api/portal/index/games/amwaywall/list", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/games/amwaywall/list", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public FungoPageResultDto<AmwayWallBean> getAmwayWallList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto) {
         //从redis获取
@@ -94,6 +100,71 @@ public class PortalSystemIndexController {
 
     }
 
+    @ApiOperation(value = "安利墙首页接口(v2.3)", notes = "")
+    @RequestMapping(value = "/api/portal/games/amwaywall", method = RequestMethod.POST)
+    @ApiImplicitParams({})
+    public FungoPageResultDto<AmwayWallBean> getAmwayWall(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto) {
+
+        //从redis获取
+        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_INDEX_AMWAYWALL;
+        String keySuffix = JSON.toJSONString(inputPageDto);
+        FungoPageResultDto<AmwayWallBean> re = (FungoPageResultDto<AmwayWallBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+        if (null != re && null != re.getData() && re.getData().size() > 0) {
+            return re;
+        }
+
+        re = new FungoPageResultDto<AmwayWallBean>();
+
+        List<AmwayWallBean> list = new ArrayList<AmwayWallBean>();
+        re.setData(list);
+        //精选游戏评测
+        Page<GameEvaluation> page = gameEvaluationService.selectPage(new Page<GameEvaluation>(inputPageDto.getPage(), inputPageDto.getLimit()), new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy("RAND()"));
+        List<GameEvaluation> plist = page.getRecords();
+        for (GameEvaluation gameEvaluation : plist) {
+            AmwayWallBean bean = new AmwayWallBean();
+            //            迁移微服务 根据用户id获取authorbean对象
+//            2019-05-13
+//            lyc
+//            bean.setAuthor(this.userService.getAuthor(gameEvaluation.getMemberId()));
+            bean.setAuthor(iEvaluateProxyService.getAuthor(gameEvaluation.getMemberId()));
+            Game game = this.gameService.selectById(gameEvaluation.getGameId());
+            bean.setEvaluation(CommonUtils.filterWord(gameEvaluation.getContent()));
+            bean.setEvaluationId(gameEvaluation.getId());
+//			ObjectMapper objectMapper = new ObjectMapper();
+//			ArrayList<String> imgs=null;
+//	        try {
+//		    	if(gameEvaluation.getImages()!=null) {
+//		    		imgs = (ArrayList<String>)objectMapper.readValue(gameEvaluation.getImages(), ArrayList.class);
+//		    	}
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//
+//	        if(imgs!=null&&imgs.size()!=0) {
+//				bean.setGameImage(imgs.get(0));
+//	        }
+            HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
+            if (rateData != null) {
+                if (rateData.get("avgRating") != null) {
+                    bean.setRating(rateData.get("avgRating"));
+                } else {
+                    bean.setRating(new BigDecimal(0.0));
+                }
+            } else {
+                bean.setRating(new BigDecimal(0.0));
+            }
+            bean.setGameImage(game.getCoverImage());
+            bean.setGameIcon(game.getIcon());
+            bean.setGameId(gameEvaluation.getGameId());
+            bean.setGameName(game.getName());
+            bean.setRecommend(gameEvaluation.getIsRecommend().equals("1") ? true : false);
+            list.add(bean);
+        }
+
+        //save redis
+        fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
+        return re;
+    }
 
 
 

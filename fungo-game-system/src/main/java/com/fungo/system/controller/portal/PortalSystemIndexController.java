@@ -58,7 +58,7 @@ public class PortalSystemIndexController {
      */
     @ApiOperation(value = "首页游戏banner接口(v2.3)", notes = "")
     @ApiImplicitParams({})
-    @RequestMapping(value = "/api/portal/index/adt/bnr", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/portal/system/adt/bnr", method = RequestMethod.GET)
     public ResultDto<List<AdvertOutBean>> getAdvertWithPc() {
 
         ResultDto<List<AdvertOutBean>> re = new ResultDto<List<AdvertOutBean>>();
@@ -92,9 +92,15 @@ public class PortalSystemIndexController {
     }
 
 
-
+    /**
+     * 功能描述: 首页安利墙和精品文章1和2和社区文章
+     * @param: [memberUserPrefile, request, inputPageDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: dl.zhang
+     * @date: 2019/5/27 11:12
+     */
     @ApiOperation(value = "首页(v2.4)", notes = "")
-    @RequestMapping(value = "/api/portal/recommend/index", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/system/recommend/index", method = RequestMethod.POST)
     @ApiImplicitParams({})
     /*
      * iosChannel (int,optional): 1,2,3 (1:appStore上线,2:appTestFlight开发包,3:appInhouse企业包)

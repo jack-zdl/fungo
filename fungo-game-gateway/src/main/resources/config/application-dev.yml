@@ -152,8 +152,10 @@ spring:
         uri: ${fungoServer.commmunity.uri}
         predicates:
         - Path=/api/search/posts
-
-
+      - id:fungo-game-community-20:
+        uri: ${fungoServer.commmunity.uri}
+        predicates:
+          - Path=/api/portal/communitys/**
       #-------------系统------------------------
       - id:fungo-game-system-1:
         uri: ${fungoServer.system.uri}
@@ -285,6 +287,11 @@ spring:
         uri:  ${fungoServer.system.uri}
         predicates:
         - Path=/api/invite/users
+
+      - id:fungo-game-system-28:
+        uri:  ${fungoServer.system.uri}
+        predicates:
+        - Path=/api/portal/system/**
 
 
 
@@ -419,7 +426,10 @@ spring:
         uri:  ${fungoServer.game.uri}
         predicates:
         - Path=/api/recommend/topic
-
+      - id:fungo-game-games-26:
+        uri: ${fungoServer.game.uri}
+        predicates:
+          - Path=/api/portal/games/**
 
       #      *****************游戏2019-05-20结束************************************
       - id:fungo-game-commmunity-14:

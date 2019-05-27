@@ -7,6 +7,7 @@ import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.CommunitySearchOut;
 import com.game.common.dto.search.SearchInputPageDto;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.ApiImplicitParam;
@@ -32,7 +33,7 @@ public class PortalSystemSearchController {
     private ISeacherService searchService;
 
     @ApiOperation(value = "获取搜索关键词", notes = "")
-    @RequestMapping(value = "/api/portal/api/search/keywords", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/portal/system/search/keywords", method = RequestMethod.GET)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "用户id", paramType = "form", dataType = "string"),
     })
@@ -48,7 +49,7 @@ public class PortalSystemSearchController {
     }
 
     @ApiOperation(value = "搜索用户", notes = "")
-    @RequestMapping(value = "/api/portal/api/search/users", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/system/search/users", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "key_word", value = "关键字", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "page", value = "页数号", paramType = "form", dataType = "int"),
@@ -77,6 +78,8 @@ public class PortalSystemSearchController {
         }
 
     }
+
+
 
 //---------
 }
