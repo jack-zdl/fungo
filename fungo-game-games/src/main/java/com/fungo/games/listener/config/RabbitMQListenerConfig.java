@@ -94,11 +94,8 @@ public class RabbitMQListenerConfig {
                 String msgBody = StringUtils.toEncodedString(message.getBody(), Charset.forName("UTF-8"));
                 LOGGER.info("MQTopicQueueListener-onMessage-msgBody:{}", msgBody);
                 //同步业务处理
-                boolean b = mQDataReceiveService.onMessageWithMQTopic(msgBody);
-                if (b) {
-                    channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-                }
-
+                mQDataReceiveService.onMessageWithMQTopic(msgBody);
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
             }
         };
     }
