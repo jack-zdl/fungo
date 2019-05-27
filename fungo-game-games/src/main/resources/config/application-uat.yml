@@ -1,6 +1,6 @@
 server:
-  #port: 8781
-  port: 8782
+  port: 8781
+  #port: 8782
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -19,8 +19,8 @@ eureka:
 spring:
   cloud:
     client:
-      #ipAddress: 172.17.18.227
-      ipAddress: 172.17.18.228
+      ipAddress: 172.17.18.227
+      #ipAddress: 172.17.18.228
   application:
     name: fungo-game-games
 
@@ -28,7 +28,7 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url:  jdbc:mysql://rm-bp145sizta1yg4585xo.mysql.rds.aliyuncs.com:3306/fungo_uat?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url:  jdbc:mysql://rm-bp145sizta1yg4585xo.mysql.rds.aliyuncs.com:3306/fungo_cloud_uat?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: fungo_uat
     password: b1dcfae36fa84Db88479efbd36b16e
     hikari:
@@ -203,7 +203,7 @@ fungo:
 
 #系统配置-集群编号
 sys.config.fungo:
-  cluster.index: 4
+  cluster.index: 3
 
 #-----------------------------------------------------------------------------------------------------------
 #安全机制接口身份key
