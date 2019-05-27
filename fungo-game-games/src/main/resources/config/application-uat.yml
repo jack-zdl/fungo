@@ -1,13 +1,14 @@
 server:
-  port: 8781
-  #port: 8782
+  #port: 8781
+  port: 8782
 
 
 #-----------------------------------------------------------------------------------------------------------
 eureka:
   instance:
-#    prefer-ip-address: true
-    instance-id: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+    prefer-ip-address: true
+    #${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+    instance-id:  ${spring.cloud.client.ipAddress}:${server.port}
     lease-expiration-duration-in-seconds: 15
     lease-renewal-interval-in-seconds: 5
   client:
@@ -18,8 +19,8 @@ eureka:
 spring:
   cloud:
     client:
-      ipAddress: 172.17.18.227
-      #ipAddress: 172.17.18.228
+      #ipAddress: 172.17.18.227
+      ipAddress: 172.17.18.228
   application:
     name: fungo-game-games
 
@@ -95,33 +96,6 @@ spring:
     sampler:
       probability: 1.0
 
-  #-----------------------------------------------------------------------------------------------------------
-## stream 绑定一个接受消息的input管道
-#  cloud:
-#    stream:
-#      bindings:
-#        input:
-#          destination: mydest
-#          content-type: application/json
-#      kafka:
-#        binder:
-#          zkNodes: 127.0.0.1
-#          brokers: 127.0.0.1
-#          input:
-#            consumer:
-#              resetOffsets: true
-
-#      binders:
-#        rabbit1:
-#          type: rabbit
-#          environment:
-#            spring:
-#              rabbitmq:
-#                host: 137.0.0.1
-#                port: 5672
-#                username: guest
-#                password: guest
-#                virtual-host: /hostName
 #-----------------------------------------------------------------------------------------------------------
 mybatis-plus:
   mapper-locations: classpath:mapping/*Mapper.xml
@@ -132,28 +106,8 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
 
-  #-----------------------------------------------------------------------------------------------------------
-#  type-aliases-package: com.fungo.system.entity
-## 当post /refresh方式刷新配置 时 ，会有个安全限制，关掉就可以了
-#management:
-#  security:
-#    enabled: false
-management:
-  #  security:
-  #    enabled: false
-  endpoints:
-    web:
-      exposure:
-        include: "*"  # 暴露所有服务监控端口，也可以只暴露 hystrix.stream端口
-#-----------------------------------------------------------------------------------------------------------
-#turbine:
-#  #  1.被监控的服务应用没有配置 context-path 的情况下
-#  # 配置 Eureka 中的 serviceId 列表，指定要监控的服务
-#  app-config: FUNGO-GAME-GAMES,FUNGO-GAME-SYSTEM
-#  aggregator:
-#    cluster-config: default
-#  cluster-name-expression: "'default'"
-#  combine-host-port: true
+
+
 #-----------------------------------------------------------------------------------------------------------
 hystrix:
   command:
@@ -165,8 +119,8 @@ hystrix:
           thread:
             timeoutInMilliseconds: 60000
 ribbon:
-  ConnectTimeout: 50000
-  ReadTimeout: 50000
+  ConnectTimeout: 60000
+  ReadTimeout: 60000
 
 #-----------------------------------------------------------------------------------------------------------
 
@@ -186,11 +140,11 @@ aliyun.vod:
   vodRegionId: cn-shanghai
   #阿里云视频点播分类id
   vodCateId: 1000013332
-
+#-----------------------------------------------------------------------------------------------------------
 #阿里云短信模板
 aliyun.sms:
   template.code: SMS_158942300
-
+#-----------------------------------------------------------------------------------------------------------
 fungo:
   secretKey: asdflasjfdlajsdf
   mall:
@@ -198,24 +152,23 @@ fungo:
       aesSecretKey: a612e866e73bf05f15aa9d98cff38016
   api:
     sKey: 021a0af9720f1c005f35c9618839cc3b
-
+#-----------------------------------------------------------------------------------------------------------
 
 #系统配置-集群编号
 sys.config.fungo:
-  cluster.index: 3
+  cluster.index: 4
 
-
+#-----------------------------------------------------------------------------------------------------------
 #安全机制接口身份key
 fungo.security:
   core.api:
     secret.key: 5a058f3f3f4de23234f536479156acde
 
-
+#-----------------------------------------------------------------------------------------------------------
 
 
 spring.aop.auto: true
-#spring.aop.proxy-target-class: true
-
+#-----------------------------------------------------------------------------------------------------------
 
 
 #sql控制台输出
@@ -223,27 +176,7 @@ logging:
   level:
     com.fungo.game.mall.mapper: DEBUG
     com.fungo.games.dao: DEBUG
-
+#-----------------------------------------------------------------------------------------------------------
 #数据迁移接口授权秘钥
 fgoTransfAuth: adfe35cf834349b0b98b549292c1d65b
-
-#系统监控配置
-javamelody:
-  enabled: true
-  excluded-datasources: secretSource,topSecretSource
-  spring-monitoring-enabled: true
-  advisor-auto-proxy-creator-enabled: false
-  scheduled-monitoring-enabled: true
-  init-parameters:
-    log: true
-    # to exclude images, css, fonts and js urls from the monitoring:
-    #url-exclude-pattern: (/webjars/.*|/css/.*|/images/.*|/fonts/.*|/js/.*)
-    # to aggregate digits in http requests:
-    #http-transform-pattern: \d+
-    # to add basic auth:
-    authorized-users: admin:pwd
-    # to change the default storage directory:
-    storage-directory: /tmp/javamelody_node8088
-    # to change the default "/monitoring" path:
-    #monitoring-path: /admin/performance
-
+#-----------------------------------------------------------------------------------------------------------
