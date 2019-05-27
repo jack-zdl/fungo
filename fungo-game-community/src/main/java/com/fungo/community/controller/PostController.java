@@ -125,8 +125,8 @@ public class PostController {
             @ApiImplicitParam(name = "videoId", value = "视频id,  可选", paramType = "form", dataType = "string")
     })
     public ResultDto<ObjectId> addPost(MemberUserProfile memberUserPrefile, @RequestBody PostInput postInput) throws Exception {
-        if(StringUtil.isNull(postInput.getContent())){
-            return ResultDto.error("-1","文章内容不可为空");
+        if (StringUtil.isNull(postInput.getContent())) {
+            return ResultDto.error("-1", "文章内容不可为空");
         }
         String userId = memberUserPrefile.getLoginId();
         return bsPostService.addPost(postInput, userId);
@@ -210,8 +210,6 @@ public class PostController {
     }
 
 
-
-
     @ApiOperation(value = "社区置顶文章(2.4.3)", notes = "")
     @RequestMapping(value = "/api/content/post/topic/{communityId}", method = RequestMethod.GET)
 
@@ -289,9 +287,14 @@ public class PostController {
 
                 // 获取关注社区ID集合
                 List<String> olist = new ArrayList<String>();
-                ResultDto<List<String>> listFollowerCommunityIdResult = systemFeignClient.listFollowerCommunityId(memberUserPrefile.getLoginId());
-                if (null != listFollowerCommunityIdResult) {
-                    olist.addAll(listFollowerCommunityIdResult.getData());
+
+                try {
+                    ResultDto<List<String>> listFollowerCommunityIdResult = systemFeignClient.listFollowerCommunityId(memberUserPrefile.getLoginId());
+                    if (null != listFollowerCommunityIdResult) {
+                        olist.addAll(listFollowerCommunityIdResult.getData());
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
 
@@ -340,10 +343,16 @@ public class PostController {
                 MemberFollowerVo memberFollowerVo = new MemberFollowerVo();
                 memberFollowerVo.setMemberId(memberUserPrefile.getLoginId());
 
-                FungoPageResultDto<String> followerUserIdResult = systemFeignClient.getFollowerUserId(memberFollowerVo);
+                FungoPageResultDto<String> followerUserIdResult = null;
+                try {
 
-                if (null != followerUserIdResult) {
-                    olist.addAll(followerUserIdResult.getData());
+                    followerUserIdResult = systemFeignClient.getFollowerUserId(memberFollowerVo);
+
+                    if (null != followerUserIdResult) {
+                        olist.addAll(followerUserIdResult.getData());
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
                 if (olist.size() > 0) {
@@ -423,17 +432,25 @@ public class PostController {
                 MemberFollowerVo memberFollowerVo = new MemberFollowerVo();
                 memberFollowerVo.setMemberId(memberUserPrefile.getLoginId());
 
-                FungoPageResultDto<String> followerUserIdResult = systemFeignClient.getFollowerUserId(memberFollowerVo);
+                try {
 
-                if (null != followerUserIdResult) {
-                    memberIdList.addAll(followerUserIdResult.getData());
+                    FungoPageResultDto<String> followerUserIdResult = systemFeignClient.getFollowerUserId(memberFollowerVo);
+                    if (null != followerUserIdResult) {
+                        memberIdList.addAll(followerUserIdResult.getData());
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
                 // 获取关注社区ID集合
                 List<String> communityIdList = new ArrayList<String>();
-                ResultDto<List<String>> listFollowerCommunityIdResult = systemFeignClient.listFollowerCommunityId(memberUserPrefile.getLoginId());
-                if (null != listFollowerCommunityIdResult) {
-                    communityIdList.addAll(listFollowerCommunityIdResult.getData());
+                try {
+                    ResultDto<List<String>> listFollowerCommunityIdResult = systemFeignClient.listFollowerCommunityId(memberUserPrefile.getLoginId());
+                    if (null != listFollowerCommunityIdResult) {
+                        communityIdList.addAll(listFollowerCommunityIdResult.getData());
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
                 Map<String, Object> map = new HashMap<String, Object>();
@@ -542,9 +559,13 @@ public class PostController {
             //bean.setAuthor(userService.getAuthor(cmmPost.getMemberId()));
 
             AuthorBean authorBean = new AuthorBean();
-            ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(cmmPost.getMemberId());
-            if (null != beanResultDto) {
-                authorBean = beanResultDto.getData();
+            try {
+                ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(cmmPost.getMemberId());
+                if (null != beanResultDto) {
+                    authorBean = beanResultDto.getData();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
             bean.setAuthor(authorBean);
 
@@ -612,11 +633,19 @@ public class PostController {
                 basActionDto.setState(0);
                 basActionDto.setTargetId(cmmPost.getId());
 
-                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
                 int liked = 0;
-                if (null != resultDto) {
-                    liked = resultDto.getData();
+
+                try {
+                    ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                    if (null != resultDto) {
+                        liked = resultDto.getData();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
+
+
                 bean.setLiked(liked > 0 ? true : false);
             }
 

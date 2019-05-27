@@ -101,8 +101,12 @@ public class PostHtmlContentController {
 
                     //获取游戏平均分
                     String gameId = (String) m.get("objectId");
-                    double gameAverage = gameFeignClient.selectGameAverage(gameId, 0);
-
+                    double gameAverage = 0;
+                    try {
+                        gameAverage = gameFeignClient.selectGameAverage(gameId, 0);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                     m.put("rating", String.valueOf(gameAverage));
                 }
 

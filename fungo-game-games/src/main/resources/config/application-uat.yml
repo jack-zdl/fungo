@@ -1,6 +1,6 @@
 server:
-  port: 8781
-  #port: 8782
+  #port: 8781
+  port: 8782
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -19,8 +19,8 @@ eureka:
 spring:
   cloud:
     client:
-      ipAddress: 172.17.18.227
-      #ipAddress: 172.17.18.228
+      #ipAddress: 172.17.18.227
+      ipAddress: 172.17.18.228
   application:
     name: fungo-game-games
 
@@ -96,33 +96,6 @@ spring:
     sampler:
       probability: 1.0
 
-  #-----------------------------------------------------------------------------------------------------------
-## stream 绑定一个接受消息的input管道
-#  cloud:
-#    stream:
-#      bindings:
-#        input:
-#          destination: mydest
-#          content-type: application/json
-#      kafka:
-#        binder:
-#          zkNodes: 127.0.0.1
-#          brokers: 127.0.0.1
-#          input:
-#            consumer:
-#              resetOffsets: true
-
-#      binders:
-#        rabbit1:
-#          type: rabbit
-#          environment:
-#            spring:
-#              rabbitmq:
-#                host: 137.0.0.1
-#                port: 5672
-#                username: guest
-#                password: guest
-#                virtual-host: /hostName
 #-----------------------------------------------------------------------------------------------------------
 mybatis-plus:
   mapper-locations: classpath:mapping/*Mapper.xml
@@ -133,28 +106,8 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
 
-#-----------------------------------------------------------------------------------------------------------
-#  type-aliases-package: com.fungo.system.entity
-## 当post /refresh方式刷新配置 时 ，会有个安全限制，关掉就可以了
-#management:
-#  security:
-#    enabled: false
-management:
-  #  security:
-  #    enabled: false
-  endpoints:
-    web:
-      exposure:
-        include: "*"  # 暴露所有服务监控端口，也可以只暴露 hystrix.stream端口
-#-----------------------------------------------------------------------------------------------------------
-#turbine:
-#  #  1.被监控的服务应用没有配置 context-path 的情况下
-#  # 配置 Eureka 中的 serviceId 列表，指定要监控的服务
-#  app-config: FUNGO-GAME-GAMES,FUNGO-GAME-SYSTEM
-#  aggregator:
-#    cluster-config: default
-#  cluster-name-expression: "'default'"
-#  combine-host-port: true
+
+
 #-----------------------------------------------------------------------------------------------------------
 hystrix:
   command:
@@ -166,8 +119,8 @@ hystrix:
           thread:
             timeoutInMilliseconds: 60000
 ribbon:
-  ConnectTimeout: 50000
-  ReadTimeout: 50000
+  ConnectTimeout: 60000
+  ReadTimeout: 60000
 
 #-----------------------------------------------------------------------------------------------------------
 
@@ -203,7 +156,7 @@ fungo:
 
 #系统配置-集群编号
 sys.config.fungo:
-  cluster.index: 3
+  cluster.index: 4
 
 #-----------------------------------------------------------------------------------------------------------
 #安全机制接口身份key
@@ -215,7 +168,6 @@ fungo.security:
 
 
 spring.aop.auto: true
-#spring.aop.proxy-target-class: true
 #-----------------------------------------------------------------------------------------------------------
 
 

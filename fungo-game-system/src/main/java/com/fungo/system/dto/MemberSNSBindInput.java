@@ -16,9 +16,9 @@ import javax.validation.constraints.NotNull;
  * @author mxf
  * @since 2018-12-03
  */
-@Setter
-@Getter
-@ToString
+//@Setter
+//@Getter
+//@ToString
 public class MemberSNSBindInput extends InputDto {
 
     /**
@@ -88,5 +88,83 @@ public class MemberSNSBindInput extends InputDto {
      */
     private Integer bindAction = -1;
 
+    public Integer getSnsType() {
+        return snsType;
+    }
 
+    public void setSnsType(Integer snsType) {
+        this.snsType = snsType;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getExpiration() {
+        return expiration;
+    }
+
+    public void setExpiration(String expiration) {
+        this.expiration = expiration;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getIconurl() {
+        return iconurl;
+    }
+
+    public void setIconurl(String iconurl) {
+        this.iconurl = iconurl;
+    }
+
+    public String getOpenid() {
+        return openid;
+    }
+
+    public void setOpenid(String openid) {
+        this.openid = openid;
+    }
+
+    public String getUnionid() {
+        return unionid;
+    }
+
+    public void setUnionid(String unionid) {
+        this.unionid = unionid;
+    }
+
+    public Integer getGender() {
+        return gender;
+    }
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
+    }
+
+    public Integer getBindAction() {
+        return bindAction;
+    }
+
+    public void setBindAction(Integer bindAction) {
+        this.bindAction = bindAction;
+    }
 }

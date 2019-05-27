@@ -138,8 +138,13 @@ public class CommunityServiceImpl implements ICommunityService {
         //!fixme 查询是否关注 根据用户id查询用户详情
         List<String> idsList = new ArrayList<String>();
         idsList.add(userId);
-        ResultDto<List<MemberDto>> mbsListResultDto = systemFeignClient.listMembersByids(idsList, null);
 
+        ResultDto<List<MemberDto>> mbsListResultDto = null;
+        try {
+            mbsListResultDto = systemFeignClient.listMembersByids(idsList, null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         MemberDto memberDto = null;
         if (null != mbsListResultDto) {
             final List<MemberDto> memberDtoList = mbsListResultDto.getData();
@@ -162,11 +167,16 @@ public class CommunityServiceImpl implements ICommunityService {
             basActionDto.setTargetType(4);
             basActionDto.setTargetId(communityId);
 
-            ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
-
             int count = 0;
-            if (null != resultDto) {
-                count = resultDto.getData();
+
+            try {
+                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                if (null != resultDto) {
+                    count = resultDto.getData();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
 
 
@@ -212,7 +222,12 @@ public class CommunityServiceImpl implements ICommunityService {
                 pulishFromCommunityList.addAll(mlist);
             }
             //从游戏评论表获取用户数量
-            ResultDto<List<MemberPulishFromCommunity>> gameMemberCtmRs = gameFeignClient.getMemberOrder(community.getGameId(), null);
+            ResultDto<List<MemberPulishFromCommunity>> gameMemberCtmRs = null;
+            try {
+                gameMemberCtmRs = gameFeignClient.getMemberOrder(community.getGameId(), null);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             if (null != gameMemberCtmRs) {
 
                 List<MemberPulishFromCommunity> pulishFromCmtList = gameMemberCtmRs.getData();
@@ -300,8 +315,13 @@ public class CommunityServiceImpl implements ICommunityService {
 
                 List<String> mbIdsList = new ArrayList<String>();
                 idsList.add(m.getMemberId());
-                ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(mbIdsList, null);
 
+                ResultDto<List<MemberDto>> listMembersByids = null;
+                try {
+                    listMembersByids = systemFeignClient.listMembersByids(mbIdsList, null);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 MemberDto memberDtoPulish = null;
                 if (null != listMembersByids) {
                     List<MemberDto> memberDtoList = listMembersByids.getData();
@@ -322,23 +342,32 @@ public class CommunityServiceImpl implements ICommunityService {
                     incentRankedDto.setRankType(2);
 
                     IncentRankedDto mBIncentRankedDto = null;
-                    FungoPageResultDto<IncentRankedDto> incentRankedPageRs = systemFeignClient.getIncentRankedList(incentRankedDto);
-                    if (null != incentRankedPageRs) {
-                        List<IncentRankedDto> rankedDtoList = incentRankedPageRs.getData();
-                        if (null != rankedDtoList && !rankedDtoList.isEmpty()) {
-                            mBIncentRankedDto = rankedDtoList.get(0);
+                    try {
+                        FungoPageResultDto<IncentRankedDto> incentRankedPageRs = systemFeignClient.getIncentRankedList(incentRankedDto);
+                        if (null != incentRankedPageRs) {
+                            List<IncentRankedDto> rankedDtoList = incentRankedPageRs.getData();
+                            if (null != rankedDtoList && !rankedDtoList.isEmpty()) {
+                                mBIncentRankedDto = rankedDtoList.get(0);
+                            }
                         }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
 
                     if (mBIncentRankedDto != null) {
 
                         //!fixme 获取权益规则
                         //IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
-
-                        ResultDto<IncentRuleRankDto> IncentRuleRankResultDto = systemFeignClient.getIncentRuleRankById(String.valueOf(mBIncentRankedDto.getCurrentRankId().longValue()));
                         IncentRuleRankDto incentRuleRankDto = null;
-                        if (null != IncentRuleRankResultDto) {
-                            incentRuleRankDto = IncentRuleRankResultDto.getData();
+
+                        try {
+                            ResultDto<IncentRuleRankDto> IncentRuleRankResultDto = systemFeignClient.getIncentRuleRankById(String.valueOf(mBIncentRankedDto.getCurrentRankId().longValue()));
+
+                            if (null != IncentRuleRankResultDto) {
+                                incentRuleRankDto = IncentRuleRankResultDto.getData();
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
 
                         if (incentRuleRankDto != null) {
@@ -372,11 +401,15 @@ public class CommunityServiceImpl implements ICommunityService {
         basActionDtoLike.setTargetId(communityId);
         basActionDtoLike.setTargetType(4);
 
-        ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
-
         int focusCount = 0;
-        if (null != resultDtoLike) {
-            focusCount = resultDtoLike.getData();
+        try {
+            ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
+
+            if (null != resultDtoLike) {
+                focusCount = resultDtoLike.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         out.setMemberNum(focusCount);
@@ -428,7 +461,15 @@ public class CommunityServiceImpl implements ICommunityService {
 
         List<String> idsList = new ArrayList<String>();
         idsList.add(userId);
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+        ResultDto<List<MemberDto>> listMembersByids = null;
+
+        try {
+
+            listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -467,9 +508,13 @@ public class CommunityServiceImpl implements ICommunityService {
             basActionDto.setTargetType(4);
             basActionDto.setState(0);
 
-            ResultDto<List<BasActionDto>> actionByConditionRs = systemFeignClient.listActionByCondition(basActionDto);
-            if (null != actionByConditionRs) {
-                actionList = actionByConditionRs.getData();
+            try {
+                ResultDto<List<BasActionDto>> actionByConditionRs = systemFeignClient.listActionByCondition(basActionDto);
+                if (null != actionByConditionRs) {
+                    actionList = actionByConditionRs.getData();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
 
             List<String> communityIdList = new ArrayList<>();
@@ -556,13 +601,16 @@ public class CommunityServiceImpl implements ICommunityService {
                 basActionDtoLike.setTargetId(community.getId());
                 basActionDtoLike.setTargetType(4);
 
-                ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
-
                 int selectCount = 0;
-                if (null != resultDtoLike) {
-                    selectCount = resultDtoLike.getData();
-                }
+                try {
+                    ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
 
+                    if (null != resultDtoLike) {
+                        selectCount = resultDtoLike.getData();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
 
                 if (selectCount != 0) {
                     out.setIs_followed(true);
@@ -605,11 +653,14 @@ public class CommunityServiceImpl implements ICommunityService {
 
                 //!fixme 获取用户数据
                 // c.setAuthorBean(userService.getAuthor(m.getMemberId()));
-
-                ResultDto<AuthorBean> authorBeanResultDto = systemFeignClient.getAuthor(m.getMemberId());
-                if (null != authorBeanResultDto) {
-                    AuthorBean authorBean = authorBeanResultDto.getData();
-                    c.setAuthorBean(authorBean);
+                try {
+                    ResultDto<AuthorBean> authorBeanResultDto = systemFeignClient.getAuthor(m.getMemberId());
+                    if (null != authorBeanResultDto) {
+                        AuthorBean authorBean = authorBeanResultDto.getData();
+                        c.setAuthorBean(authorBean);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
 
@@ -626,9 +677,14 @@ public class CommunityServiceImpl implements ICommunityService {
                     memberFollowerDtoParam.setFollowerId(m.getMemberId());
 
                     MemberFollowerDto memberFollowerDtoData = null;
-                    ResultDto<MemberFollowerDto> followerDtoResultDto = systemFeignClient.getMemberFollower1(memberFollowerDtoParam);
-                    if (null != followerDtoResultDto) {
-                        memberFollowerDtoData = followerDtoResultDto.getData();
+
+                    try {
+                        ResultDto<MemberFollowerDto> followerDtoResultDto = systemFeignClient.getMemberFollower1(memberFollowerDtoParam);
+                        if (null != followerDtoResultDto) {
+                            memberFollowerDtoData = followerDtoResultDto.getData();
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
 
                     if (memberFollowerDtoData != null) {
@@ -803,12 +859,18 @@ public class CommunityServiceImpl implements ICommunityService {
        */
 
         List<MemberDto> ml1 = null;
-        ResultDto<List<MemberDto>> mbListResultDto = systemFeignClient.listRecommendedMebmber(Integer.valueOf(limitSize + ""), currentMb_id, wathMbsSet);
-        if (null != mbListResultDto) {
-            ml1 = mbListResultDto.getData();
+        try {
+            ResultDto<List<MemberDto>> mbListResultDto = systemFeignClient.listRecommendedMebmber(Integer.valueOf(limitSize + ""), currentMb_id, wathMbsSet);
+            if (null != mbListResultDto) {
+                ml1 = mbListResultDto.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-
-        if (null == ml1 || ml1.isEmpty() || ml1.size() < limitSize) {
+        if (null == ml1) {
+            ml1 = new ArrayList<>();
+        }
+        if (ml1.size() < limitSize) {
 
             //官方推荐用户id
             List<String> reIds = new ArrayList<>();
@@ -837,9 +899,13 @@ public class CommunityServiceImpl implements ICommunityService {
 
             List<String> sendCommentMembers = null;
 
-            ResultDto<List<String>> gameEvaRs = gameFeignClient.getRecommendMembersFromEvaluation(Integer.valueOf(sendComments + ""), Integer.valueOf(limitSize + ""), wathMbsSet);
-            if (null != gameEvaRs) {
-                sendCommentMembers = gameEvaRs.getData();
+            try {
+                ResultDto<List<String>> gameEvaRs = gameFeignClient.getRecommendMembersFromEvaluation(Integer.valueOf(sendComments + ""), Integer.valueOf(limitSize + ""), wathMbsSet);
+                if (null != gameEvaRs) {
+                    sendCommentMembers = gameEvaRs.getData();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
 
             LOGGER.info("查询发布游戏评论>大于14条的，前10名用户:{}", sendCommentMembers.toString());
@@ -875,11 +941,15 @@ public class CommunityServiceImpl implements ICommunityService {
                 //List<Member> recommendList = menberService.selectList(new EntityWrapper<Member>().in("id", memberIds).eq("state", 0));
                 //ml1.addAll(recommendList);
 
-                ResultDto<List<MemberDto>> mbsListResultDto = systemFeignClient.listMembersByids(memberIds, 0);
+                try {
+                    ResultDto<List<MemberDto>> mbsListResultDto = systemFeignClient.listMembersByids(memberIds, 0);
 
-                if (null != mbsListResultDto) {
-                    List<MemberDto> memberDtoList = mbsListResultDto.getData();
-                    ml1.addAll(memberDtoList);
+                    if (null != mbsListResultDto) {
+                        List<MemberDto> memberDtoList = mbsListResultDto.getData();
+                        ml1.addAll(memberDtoList);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
             }
@@ -895,7 +965,7 @@ public class CommunityServiceImpl implements ICommunityService {
 //		keyword = keyword.replace(" ", "");
         @SuppressWarnings("unchecked")
         Page<CmmCommunity> cmmPage = communityService.selectPage(new Page<>(page, limit), Condition.create()
-                .setSqlSelect("id,icon,name,intro,created_at,updated_at,followee_num,post_num,type")
+                .setSqlSelect("id,icon,name,intro,created_at as createdAt ,updated_at as  updatedAt  ,followee_num as followeeNum,post_num as postNum,type")
                 .like("name", keyword).and("state = {0}", 1));
         List<CmmCommunity> communityList = cmmPage.getRecords();
 //		if (communityList == null || communityList.isEmpty()) {
@@ -924,7 +994,13 @@ public class CommunityServiceImpl implements ICommunityService {
 
             List<String> idsList = new ArrayList<String>();
             idsList.add(userId);
-            ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+
+            ResultDto<List<MemberDto>> listMembersByids = null;
+            try {
+                listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
 
             MemberDto memberDto = null;
             if (null != listMembersByids) {
@@ -950,11 +1026,15 @@ public class CommunityServiceImpl implements ICommunityService {
                 basActionDtoLike.setTargetType(4);
                 basActionDtoLike.setTargetId(community.getId());
 
-                ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
-
                 int like = 0;
-                if (null != resultDtoLike) {
-                    like = resultDtoLike.getData();
+                try {
+
+                    ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
+                    if (null != resultDtoLike) {
+                        like = resultDtoLike.getData();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
                 if (like > 0) {
@@ -973,14 +1053,14 @@ public class CommunityServiceImpl implements ICommunityService {
     @Override
     public ResultDto<Map<String, Integer>> listCommunityFolloweeNum(List<String> communityIds) {
         HashMap<String, Integer> map1 = new HashMap<>();
-        if(communityIds==null||communityIds.isEmpty()){
+        if (communityIds == null || communityIds.isEmpty()) {
             return ResultDto.success(map1);
         }
         Map<String, CmmCommunity> map = communityDao.listCommunityFolloweeNum(communityIds);
         for (String s : map.keySet()) {
             CmmCommunity community = map.get(s);
-            if (community!=null&&community.getFolloweeNum()!=null){
-                map1.put(s,community.getFolloweeNum());
+            if (community != null && community.getFolloweeNum() != null) {
+                map1.put(s, community.getFolloweeNum());
             }
         }
         return ResultDto.success(map1);
