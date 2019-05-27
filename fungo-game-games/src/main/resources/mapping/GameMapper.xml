@@ -200,6 +200,13 @@
 		ORDER BY e.updated_at DESC
 	</select>
 
+    <!--获取上周下载数+评论数 排名前10位的游戏 -->
+    <select id="getRecentCommentedGames" resultType="java.util.HashMap" parameterType="String">
+		select  SUM(g.download_num+g.comment_num) as number, g.id as game_id,g.name,g.icon,g.tags,g.community_id,g.comment_num
+		from t_game g
+		GROUP BY id  ORDER BY number desc;
+	</select>
+
 
     <select id="query2018GameDownloadCount" resultType="java.util.HashMap">
 		SELECT
