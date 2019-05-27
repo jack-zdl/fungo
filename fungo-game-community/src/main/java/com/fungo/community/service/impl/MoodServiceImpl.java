@@ -124,7 +124,14 @@ public class MoodServiceImpl implements IMoodService {
 
         List<String> idsList = new ArrayList<String>();
         idsList.add(memberId);
-        ResultDto<List<MemberDto>> listMembersByids = systemFeignClient.listMembersByids(idsList,null);
+
+        ResultDto<List<MemberDto>> listMembersByids = null;
+
+        try {
+            listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
         MemberDto memberDto = null;
         if (null != listMembersByids) {
@@ -452,11 +459,14 @@ public class MoodServiceImpl implements IMoodService {
         //moodBean.setAuthor(this.userService.getAuthor(mood.getMemberId()));
 
         AuthorBean authorBean = new AuthorBean();
-        ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(mood.getMemberId());
-        if (null != beanResultDto) {
-            authorBean = beanResultDto.getData();
+        try {
+            ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(mood.getMemberId());
+            if (null != beanResultDto) {
+                authorBean = beanResultDto.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-
         moodBean.setAuthor(authorBean);
 
 
@@ -499,11 +509,15 @@ public class MoodServiceImpl implements IMoodService {
             basActionDto.setState(0);
             basActionDto.setTargetId(mood.getId());
 
-            ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
-
             int liked = 0;
-            if (null != resultDto) {
-                liked = resultDto.getData();
+            try {
+                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                if (null != resultDto) {
+                    liked = resultDto.getData();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
 
             moodBean.setIs_liked(liked > 0 ? true : false);
@@ -541,9 +555,13 @@ public class MoodServiceImpl implements IMoodService {
                 //Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", 0));
 
                 GameDto gameDto = null;
-                ResultDto<GameDto> gameDtoResultDto = gameFeignClient.selectGameDetails(gameId, 0);
-                if (null != gameDtoResultDto) {
-                    gameDtoResultDto.getData();
+                try {
+                    ResultDto<GameDto> gameDtoResultDto = gameFeignClient.selectGameDetails(gameId, 0);
+                    if (null != gameDtoResultDto) {
+                        gameDtoResultDto.getData();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
 
                 if (gameDto != null) {
@@ -567,8 +585,13 @@ public class MoodServiceImpl implements IMoodService {
                     map.put("category", game.getTags());
                     */
 
-                    //获取游戏平均分
-                    double gameAverage = gameFeignClient.selectGameAverage(gameDto.getId(), 0);
+                    //获取游戏平均分'
+                    double gameAverage = 0;
+                    try {
+                        gameAverage = gameFeignClient.selectGameAverage(gameDto.getId(), 0);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                     map.put("gameRating", gameAverage);
 
 
