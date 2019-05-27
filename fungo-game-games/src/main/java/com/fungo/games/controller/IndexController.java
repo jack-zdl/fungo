@@ -16,6 +16,7 @@ import com.fungo.games.proxy.IEvaluateProxyService;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
@@ -378,7 +379,11 @@ public class IndexController {
 //            2019-05-13
 //            lyc
 //            bean.setAuthor(this.userService.getAuthor(gameEvaluation.getMemberId()));
-            bean.setAuthor(iEvaluateProxyService.getAuthor(gameEvaluation.getMemberId()));
+            AuthorBean author = iEvaluateProxyService.getAuthor(gameEvaluation.getMemberId());
+            if(author==null){
+                continue;
+            }
+            bean.setAuthor(author);
             Game game = this.gameService.selectById(gameEvaluation.getGameId());
             bean.setEvaluation(CommonUtils.filterWord(gameEvaluation.getContent()));
             bean.setEvaluationId(gameEvaluation.getId());
