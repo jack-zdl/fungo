@@ -29,17 +29,6 @@ spring:
     store-type: redis
   main:
     allow-bean-definition-overriding: true #当遇到同样名字的时候，是否允许覆盖注册
-  #-----------------------------------------------------------------------------------------------------------
-  hystrix:
-    command:
-      default:
-        execution:
-          timeout:
-            enabled: false
-          isolation:
-            strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
-            thread:
-              timeoutInMilliseconds: 60000  #命令执行超时时间，默认1000ms
 
 #-----------------------------------------------------------------------------------------------------------------------------------
 
@@ -110,6 +99,17 @@ spring:
     publisher-confirms: true
     publisher-returns: true
 #---------------------------------------mq----------------------------------------------
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: false
+        isolation:
+          strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
+          thread:
+            timeoutInMilliseconds: 60000  #命令执行超时时间，默认1000ms
+
 
 ribbon:
     ConnectTimeout: 60000
