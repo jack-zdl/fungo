@@ -1,32 +1,25 @@
-server:
-  port: 8771
-
-#--------------------------------------------------------------------------------------------------
 eureka:
   instance:
     prefer-ip-address: true
-    #${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
-    instance-id:  ${spring.cloud.client.ipAddress}:${server.port}
+    instance-id:  ${spring.cloud.client.ipAddress}:${server.port}   #${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}} #  ${spring.cloud.client.ipAddress}:${server.port}
     lease-expiration-duration-in-seconds: 15
     lease-renewal-interval-in-seconds: 5
   client:
     serviceUrl:
       defaultZone:  http://127.0.0.1:8761/eureka/
-
-
-#--------------------------------------------------------------------------------------------------
+server:
+  port: 8771
 spring:
-  cloud:
-    client:
-      ipAddress: 127.0.0.1
+#  cloud:
+#    client:
+#      ipAddress: 127.0.0.1
   application:
     name: fungo-game-system
-
-#--------------------------------------------------------------------------------------------------
   datasource:
+
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url:  jdbc:mysql://39.105.18.214:3306/fungo_dev?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url:  jdbc:mysql://39.105.18.214:3306/fungo_system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
     password: affdB440821920A9
     hikari:
@@ -54,13 +47,11 @@ spring:
       prefix: /
       suffix: .html
 
-
-#--------------------------------------------------------------------------------------------------
   redis:
     sentinel:
       master: mymaster
       nodes: 39.105.18.214:26379,39.105.18.214:26380,39.105.18.214:26381
-    database: 0
+    database: 1
     lettuce:
       pool:
         max-active: 8
@@ -71,13 +62,8 @@ spring:
     password: fungoredisdev
     jackson:
       time-zone: GMT+8
-
-
-  #--------------------------------------------------------------------------------------------------
   session:
     store-type: redis
-
-  #--------------------------------------------------------------------------------------------------
   zipkin:
     base-url: http://127.0.0.1:9411
     sender:
@@ -86,7 +72,6 @@ spring:
     sampler:
       probability: 1.0
 
-  #--------------------------------------------------------------------------------------------------
 #  rabbitmq:
 #    host: 47.104.87.10
 #    port: 5672
@@ -164,7 +149,6 @@ spring:
 #          content-type: application/json   # 设置消息类型，本次为对象json，如果是文本则设置“text/plain”
 #          binder:  defaultRabbit # 设置要绑定的消息服务的具体设置
 
-#--------------------------------------------------------------------------------------------------
 mybatis-plus:
 #  mapper-locations: classpath:mapping/*Mapper.xml
   global-config:
@@ -173,10 +157,6 @@ mybatis-plus:
     db-column-underline: true
   configuration:
     map-underscore-to-camel-case: true
-
-
-#--------------------------------------------------------------------------------------------------
-
 
 #  type-aliases-package: com.fungo.system.entity
 ## 当post /refresh方式刷新配置 时 ，会有个安全限制，关掉就可以了
@@ -198,8 +178,6 @@ management:
       exposure:
         include: "*"  # 暴露所有服务监控端口，也可以只暴露 hystrix.stream端口
 
-
-#--------------------------------------------------------------------------------------------------
 turbine:
   #  1.被监控的服务应用没有配置 context-path 的情况下
   # 配置 Eureka 中的 serviceId 列表，指定要监控的服务
@@ -209,23 +187,19 @@ turbine:
   cluster-name-expression: new String("default")
 #  combine-host-port: true
 
-
-#--------------------------------------------------------------------------------------------------
 hystrix:
   command:
     default:
       execution:
-        timeout:
-          enabled: false
         isolation:
           strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
           thread:
-            timeoutInMilliseconds: 60000  #命令执行超时时间，默认1000ms
+            timeoutInMilliseconds: 40000  #命令执行超时时间，默认1000ms
 ribbon:
-  ConnectTimeout: 50000
-  ReadTimeout: 50000
+  ConnectTimeout: 5000
+  ReadTimeout: 15000
 
-#--------------------------------------------------------------------------------------------------
+
 
 aliyun.oss:
   endpoint: http://oss-cn-beijing.aliyuncs.com
@@ -235,7 +209,7 @@ aliyun.oss:
   imgDomain: https://output-mingbo.oss-cn-beijing.aliyuncs.com/
   regionId : cn-hangzhou
 
-#--------------------------------------------------------------------------------------------------
+
 #阿里云云视频点播服务鉴权秘钥
 aliyun.vod:
   vodAccessKeyId: LTAILu78tcMMnOwk
@@ -244,13 +218,10 @@ aliyun.vod:
   #阿里云视频点播分类id
   vodCateId: 1000013332
 
-#--------------------------------------------------------------------------------------------------
 #阿里云短信模板
 aliyun.sms:
   template.code: SMS_158942300
 
-
-#--------------------------------------------------------------------------------------------------
 fungo:
   secretKey: asdflasjfdlajsdf
   mall:
@@ -259,34 +230,54 @@ fungo:
   api:
     sKey: 021a0af9720f1c005f35c9618839cc3b
 
-#--------------------------------------------------------------------------------------------------
+
 #系统配置-集群编号
 sys.config.fungo:
   cluster.index: 1
 
-#--------------------------------------------------------------------------------------------------
+
 #安全机制接口身份key
 fungo.security:
   core.api:
     secret.key: 5a058f3f3f4de23234f536479156acde
 
 
-#--------------------------------------------------------------------------------------------------
+
 
 spring.aop.auto: true
 #spring.aop.proxy-target-class: true
 
 
-#--------------------------------------------------------------------------------------------------
+
 #sql控制台输出
 logging:
   level:
     com.fungo.game.mall.mapper: DEBUG
     com.fungo.system.dao: DEBUG
-#--------------------------------------------------------------------------------------------------
+
 #数据迁移接口授权秘钥
 fgoTransfAuth: adfe35cf834349b0b98b549292c1d65b
-#--------------------------------------------------------------------------------------------------
+
+#系统监控配置
+javamelody:
+  enabled: true
+  excluded-datasources: secretSource,topSecretSource
+  spring-monitoring-enabled: true
+  advisor-auto-proxy-creator-enabled: false
+  scheduled-monitoring-enabled: true
+  init-parameters:
+    log: true
+    # to exclude images, css, fonts and js urls from the monitoring:
+    #url-exclude-pattern: (/webjars/.*|/css/.*|/images/.*|/fonts/.*|/js/.*)
+    # to aggregate digits in http requests:
+    #http-transform-pattern: \d+
+    # to add basic auth:
+    authorized-users: admin:pwd
+    # to change the default storage directory:
+    storage-directory: /tmp/javamelody_node8088
+    # to change the default "/monitoring" path:
+    #monitoring-path: /admin/performance
+
 
 
 #---------------MQ重发参数------------------
@@ -301,5 +292,3 @@ message:
     send.3.time: 2
     send.4.time: 5
     send.5.time: 15
-
-#--------------------------------------------------------------------------------------------------

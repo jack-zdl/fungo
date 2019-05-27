@@ -18,6 +18,13 @@ public interface IIndexService {
 	 * @param appVersion app release版本号
 	 * @return
 	 */
-	public FungoPageResultDto<CardIndexBean> index(InputPageDto input, String os, String iosChannel, String app_channel, String appVersion);
+	FungoPageResultDto<CardIndexBean> index(InputPageDto input, String os, String iosChannel, String app_channel, String appVersion);
+
+	/**
+	 * 首页显示内容
+	 * @param input 入参
+	 * @return
+	 */
+	FungoPageResultDto<CardIndexBean> index(InputPageDto input);
 
 }
