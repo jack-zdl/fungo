@@ -62,15 +62,11 @@ public class RabbitMQListenerConfig {
         return new ChannelAwareMessageListener() {
             @Override
             public void onMessage(Message message, Channel channel) throws Exception {
-
                 String msgBody = StringUtils.toEncodedString(message.getBody(), Charset.forName("UTF-8"));
                 LOGGER.info("MQTopicQueueListener-onMessage-msgBody:{}", msgBody);
-
                 //同步业务处理
-                boolean isExcute = mQDataReceiveService.onMessageWithMQTopic(msgBody);
-                if (isExcute) {
-                    channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-                }
+                mQDataReceiveService.onMessageWithMQTopic(msgBody);
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
             }
         };
     }
