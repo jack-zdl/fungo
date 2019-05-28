@@ -24,8 +24,6 @@ public class MybatisPlus4MysqlConfig {
     @Autowired
     public DataSource dataSource;
 
-    @Autowired
-    private  PaginationInterceptor paginationInterceptor;
 
     @Primary
     @Bean("mysqlSqlSessionFactory")
@@ -39,11 +37,21 @@ public class MybatisPlus4MysqlConfig {
         sqlSessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver()
                 .getResources("classpath:mapper/*.xml"));
         sqlSessionFactory.setPlugins(new Interceptor[]{
-                paginationInterceptor
+                paginationInterceptor()
         });
 
         return sqlSessionFactory.getObject();
     }
 
+
+    /**
+     *   mybatis-plus分页插件
+     */
+    @Bean
+    public PaginationInterceptor paginationInterceptor() {
+        PaginationInterceptor page = new PaginationInterceptor();
+        page.setDialectType("mysql");
+        return page;
+    }
 
 }
