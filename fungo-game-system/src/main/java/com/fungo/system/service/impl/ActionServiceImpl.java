@@ -735,11 +735,9 @@ public class ActionServiceImpl implements IActionService {
     private boolean getCounterBoolean(ActionInput inputDto, Map<String, String> map) {
         if (CommonlyConst.getCommunityList().contains(inputDto.getTarget_type())){
 //            社区服务空缺 19-05-07
-            if (false){
                 //@todo mq 消息
                 mqProduct.communityUpdate(map); //communityFeignClient.updateCounter(map);
                 return true;
-            }
         }
         if (CommonlyConst.getGameList().contains(inputDto.getTarget_type())){
 //            feign客户端调用游戏服务
