@@ -871,16 +871,9 @@ public class MemberServiceImpl implements IMemberService {
         param.setLimit(input.getLimit());
 
 
-        FungoPageResultDto<GameEvaluationDto> p = iMemeberProxyService.selectGameEvaluationPage(param); // evaluationService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameEvaluation>()
+        Page<GameEvaluationDto>  p = iMemeberProxyService.selectGameEvaluationPage(param); // evaluationService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameEvaluation>()
 //                .eq("member_id", loginId).eq("state", 0).orderBy("updated_at", false));
-        List<GameEvaluationDto> elist = new ArrayList<GameEvaluationDto>();
-
-        if (null != p) {
-            List<GameEvaluationDto> evaluationDtoList = p.getData();
-            if (null != evaluationDtoList && !evaluationDtoList.isEmpty()) {
-                elist = evaluationDtoList;
-            }
-        }
+        List<GameEvaluationDto> elist = p.getRecords();
 
         List<MyEvaluationBean> olist = new ArrayList<>();
 
@@ -1360,7 +1353,7 @@ public class MemberServiceImpl implements IMemberService {
     @Override
     public void initRank() throws Exception {
         //获取所有用户
-        List<Member> memberList = memberService.selectList(Condition.create().setSqlSelect("id,user_name,created_at"));
+        List<Member> memberList = memberService.selectList(Condition.create().setSqlSelect("id,user_name as userName,created_at as createdAt"));
         //IncentRuleRank selectById = rankRuleService.selectById(24);
 
         ObjectMapper mapper = new ObjectMapper();

@@ -730,7 +730,7 @@ public class GameServiceImpl implements IGameService {
                 GameOutBean out = new GameOutBean();
                 out.setAndroidState(game.getAndroidState() == null ? 0 : game.getAndroidState());
 //			out.setCheckState(3);
-                GameReleaseLog log = logService.selectOne(Condition.create().setSqlSelect("id,approve_state").eq("game_id",game.getId()).orderBy("created_at",false));
+                GameReleaseLog log = logService.selectOne(Condition.create().setSqlSelect("id,approve_state as approveState").eq("game_id",game.getId()).orderBy("created_at",false));
                 if(log != null){
                     out.setCheckState(log.getApproveState());
                     out.setiOState(game.getIosState() == null ? 0 : game.getIosState());
@@ -1478,7 +1478,7 @@ public class GameServiceImpl implements IGameService {
     public ResultDto<List> getHotTagList() {
         @SuppressWarnings("unchecked")
         List<GameTag> hotGameTagList = gameTagService
-                .selectList(Condition.create().setSqlSelect("tag_id").orderBy("like_num", false).last("LIMIT 10"));
+                .selectList(Condition.create().setSqlSelect("tag_id as tagId").orderBy("like_num", false).last("LIMIT 10"));
         List<String> hotIdList = new ArrayList<String>();
         for (int i = 0; i < hotGameTagList.size(); i++) {
             hotIdList.add(hotGameTagList.get(i).getTagId());
@@ -1517,7 +1517,7 @@ public class GameServiceImpl implements IGameService {
         TagSelectOut out = new TagSelectOut();
         //获取用户对此游戏的支持标签
         @SuppressWarnings("unchecked")
-        List<GameTag> gameTagList = gameTagService.selectList(Condition.create().setSqlSelect("id,tag_id").eq("game_id", game_id));
+        List<GameTag> gameTagList = gameTagService.selectList(Condition.create().setSqlSelect("id,tag_id as tagId").eq("game_id", game_id));
         String userId = memberUserPrefile.getLoginId();
         // 目标游戏的所有标签中被用户点赞的
         List<GameTagAttitude> gameTagAttitudeList = gameTagAttitudeService.selectList(

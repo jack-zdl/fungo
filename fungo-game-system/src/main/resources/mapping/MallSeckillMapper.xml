@@ -21,6 +21,9 @@
 		<result column="ext1" property="ext1" />
 		<result column="ext2" property="ext2" />
 		<result column="ext3" property="ext3" />
+		<result column="ext4" property="ext4" />
+		<result column="ext5" property="ext5" />
+		<result column="ext6" property="ext6" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->

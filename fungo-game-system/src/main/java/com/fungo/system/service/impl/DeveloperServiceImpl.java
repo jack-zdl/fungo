@@ -795,7 +795,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
         List<DeveloperGameRel> relList = dgrService.selectList(new EntityWrapper<DeveloperGameRel>().eq("game_id",gameId));
         List<String> collect = relList.stream().map(DeveloperGameRel::getMemberId).collect(Collectors.toList());
         @SuppressWarnings("unchecked")
-        List<Member> memberList = memberService.selectList(Condition.create().setSqlSelect("id,user_name,member_no").in("id", collect));
+        List<Member> memberList = memberService.selectList(Condition.create().setSqlSelect("id,user_name as userName,member_no as memberNo").in("id", collect));
         List<Map<String,Object>> developerList = new ArrayList<>();
         for(Member m:memberList ) {
             Map<String,Object> map = new HashMap<>();

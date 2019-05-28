@@ -165,8 +165,13 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
     @HystrixCommand(fallbackMethod = "hystrixSelectGameEvaluationPage",ignoreExceptions = {Exception.class},
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
-    public  FungoPageResultDto<GameEvaluationDto>  selectGameEvaluationPage(GameEvaluationDto gameEvaluationDto) {
-        return gamesFeignClient.getGameEvaluationPage(gameEvaluationDto);
+    public  Page<GameEvaluationDto>  selectGameEvaluationPage(GameEvaluationDto gameEvaluationDto) {
+        Page<GameEvaluationDto> page = new Page<>();
+        FungoPageResultDto<GameEvaluationDto> resultDto = gamesFeignClient.getGameEvaluationPage(gameEvaluationDto);
+        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(resultDto.getStatus()) && resultDto.getData().size() > 0){
+            page.setRecords(resultDto.getData());
+        }
+        return page;
     }
 
     /**

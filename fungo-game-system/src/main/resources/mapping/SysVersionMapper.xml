@@ -16,6 +16,9 @@
         <result column="apk_url" property="apkUrl"/>
         <result column="game_download_switch" property="gameDownloadSwitch"/>
         <result column="index_banner_switch" property="indexBannerSwitch"/>
+        <result column="code" property="code" />
+        <result column="new_version" property="newVersion" />
+        <result column="is_auth" property="isAuth" />
     </resultMap>
 
     <!-- 通用查询结果列 -->

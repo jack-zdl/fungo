@@ -28,7 +28,7 @@ public interface IMemeberProxyService {
 
     CmmCmtReplyDto selectReplyById(CmmCmtReplyDto replyDto);
 
-    FungoPageResultDto<GameEvaluationDto> selectGameEvaluationPage(GameEvaluationDto gameEvaluationDto);
+    Page<GameEvaluationDto> selectGameEvaluationPage(GameEvaluationDto gameEvaluationDto);
 
     Page<CmmPostDto> selectCmmPostpage(CmmPostDto  cmmPostDto);
 

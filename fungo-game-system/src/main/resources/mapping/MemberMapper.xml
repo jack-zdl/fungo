@@ -34,6 +34,10 @@
         <result column="qq_open_id" property="qqOpenId"/>
         <result column="weixin_open_id" property="weixinOpenId"/>
         <result column="weibo_open_id" property="weiboOpenId"/>
+        <result column="status" property="status" />
+        <result column="sort" property="sort" />
+        <result column="type" property="type" />
+        <result column="isFollowed" property="isFollowed" />
     </resultMap>
 
     <!-- 通用查询结果列 -->

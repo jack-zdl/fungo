@@ -5,6 +5,7 @@
 	<!-- 通用查询映射结果 -->
 	<resultMap id="BaseResultMap" type="com.fungo.system.entity.MessageCode">
 		<result column="id" property="id" jdbcType="VARCHAR"/>
+		<result column="re_msg" property="reMsg" jdbcType="VARCHAR"/>
 		<result column="msg_type" property="msgType" jdbcType="VARCHAR"/>
 		<result column="msg_code" property="msgCode" jdbcType="VARCHAR"/>
 		<result column="phone_number" property="phoneNumber" jdbcType="VARCHAR"/>
@@ -12,8 +13,8 @@
 		<result column="expiration" property="expiration" jdbcType="DATE"/>
 		<result column="created_at" property="createdAt" jdbcType="DATE"/>
 		<result column="updated_at" property="updatedAt" jdbcType="DATE"/>
-		<result column="state" property="state" jdbcType="INTEGER"/>
-		<result column="re_msg" property="reMsg" jdbcType="VARCHAR"/>
+<!--		<result column="state" property="state" jdbcType="INTEGER"/>-->
+<!--		<result column="re_msg" property="reMsg" jdbcType="VARCHAR"/>-->
 	</resultMap>
 
     <!-- 通用查询结果列 -->
