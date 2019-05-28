@@ -15,6 +15,7 @@
 		<result column="created_at" property="createdAt" />
 		<result column="updated_at" property="updatedAt" />
 		<result column="type" property="type" />
+		<result column="moo_id" property="mooId" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->

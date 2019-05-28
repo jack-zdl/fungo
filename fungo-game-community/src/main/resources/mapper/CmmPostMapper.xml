@@ -23,6 +23,7 @@
         <result column="report_num" property="reportNum"/>
         <result column="created_at" property="createdAt"/>
         <result column="updated_at" property="updatedAt"/>
+        <result column="post_id" property="postId"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
