@@ -29,7 +29,7 @@ public interface CommunityFeignClient {
      * @return
      */
 //    @RequestMapping(value="/cmt/s/lists", method= RequestMethod.POST)
-    @PostMapping("/ms/service/cmm/cmt/s/lists")
+    @PostMapping("/ms/service/cmm/cmt/s/getReplyDtoBysSelectPageOrderByCreatedAt")
     FungoPageResultDto<CmmCmtReplyDto>  getReplyDtoBysSelectPageOrderByCreatedAt(@RequestBody CmmCmtReplyDto replyDto);
 
     /**

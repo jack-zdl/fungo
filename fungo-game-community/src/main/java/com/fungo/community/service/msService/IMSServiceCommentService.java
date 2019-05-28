@@ -23,7 +23,13 @@ public interface IMSServiceCommentService {
      * @return
      */
     public FungoPageResultDto<CmmCmtReplyDto> querySecondLevelCmtList(CmmCmtReplyDto replyDto);
+//
 
+    /**
+     * 根据创建时间排序 上游游戏业务需求
+     * @return
+     */
+    public FungoPageResultDto<CmmCmtReplyDto> getReplyDtoBysSelectPageOrderByCreatedAt(CmmCmtReplyDto replyDto);
 
     /**
      * 分页查询 一级评论数据列表
