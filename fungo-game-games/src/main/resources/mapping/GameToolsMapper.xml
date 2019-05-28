@@ -17,6 +17,13 @@
 		<result column="ext1" property="ext1" />
 		<result column="ext2" property="ext2" />
 		<result column="ext3" property="ext3" />
+		<!--2019-05-28 补充遗漏的字段 lyc-->
+		<result column="tools_type" property="toolsType" />
+		<result column="type_title" property="typeTitle" />
+		<result column="origin_url" property="originUrl" />
+		<result column="app_id" property="appId" />
+		<result column="app_size" property="appSize" />
+		<result column="sort" property="sort" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->

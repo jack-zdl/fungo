@@ -23,6 +23,12 @@
 		<result column="token" property="token" />
 		<result column="brand" property="brand" />
 		<result column="user_agent" property="userAgent" />
+		<!--2019-05-28 补充遗漏的字段 lyc-->
+		<result column="appversion" property="appversion" />
+		<result column="height" property="height" />
+		<result column="width" property="width" />
+		<result column="version" property="version" />
+		<result column="udid" property="udid" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->
