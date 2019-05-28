@@ -866,11 +866,15 @@ public class MemberServiceImpl implements IMemberService {
 
         re = new FungoPageResultDto<MyEvaluationBean>();
         //@todo 游戏接口
+
         GameEvaluationDto param = new GameEvaluationDto();
+
         param.setMemberId(loginId);
         param.setState(0);
         param.setPage(input.getPage());
-        param.setLikeNum(input.getLimit());
+        param.setLimit(input.getLimit());
+
+
         FungoPageResultDto<GameEvaluationDto> p = iMemeberProxyService.selectGameEvaluationPage(param); // evaluationService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameEvaluation>()
 //                .eq("member_id", loginId).eq("state", 0).orderBy("updated_at", false));
         List<GameEvaluationDto> elist = new ArrayList<GameEvaluationDto>();
