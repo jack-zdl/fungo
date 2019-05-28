@@ -174,6 +174,7 @@ public class FeignServiceController {
     FungoPageResultDto<GameEvaluationDto> getGameEvaluationPage(@RequestBody GameEvaluationDto gameEvaluationDto) {
         List<GameEvaluationDto> gameEvaluationList = null;
         FungoPageResultDto<GameEvaluationDto> fungoPageResultDto = new FungoPageResultDto<>();
+        Page<GameEvaluation> cmmPostPageSelect = null;
         try {
             int page = gameEvaluationDto.getPage();
             int limit = gameEvaluationDto.getLimit();
@@ -205,10 +206,10 @@ public class FeignServiceController {
 
             if (null != gameEvaluationPage) {
 
-                Page<GameEvaluation> cmmPostPageSelect = this.gameEvaluationServiceImap.selectPage(gameEvaluationPage, evaluationWrapper);
+                cmmPostPageSelect = this.gameEvaluationServiceImap.selectPage(gameEvaluationPage, evaluationWrapper);
 
                 if (null != cmmPostPageSelect) {
-                    PageTools.pageToResultDto(fungoPageResultDto, cmmPostPageSelect);
+//                    PageTools.pageToResultDto(fungoPageResultDto, cmmPostPageSelect);
                     selectRecords = cmmPostPageSelect.getRecords();
 
                     //设置分页数据
@@ -240,6 +241,7 @@ public class FeignServiceController {
 //        gameEvaluationDtoPage.setRecords(gameEvaluationList);
 
         fungoPageResultDto.setData(gameEvaluationList);
+        PageTools.pageToResultDto(fungoPageResultDto, cmmPostPageSelect);
         return fungoPageResultDto;
     }
 
@@ -299,6 +301,7 @@ public class FeignServiceController {
     FungoPageResultDto<GameSurveyRelDto> getGameSurveyRelPage(@RequestBody GameSurveyRelDto gameSurveyDto) {
         List<GameSurveyRelDto> gameSurveyList = null;
         FungoPageResultDto<GameSurveyRelDto> fungoPageResultDto = new FungoPageResultDto<>();
+        Page<GameSurveyRel> gameSurveyRelPageSelect = null;
         try {
             int page = gameSurveyDto.getPage();
             int limit = gameSurveyDto.getLimit();
@@ -319,10 +322,10 @@ public class FeignServiceController {
 
             if (null != gameSurveyPage) {
 
-                Page<GameSurveyRel> gameSurveyRelPageSelect = this.gameSurveyRelService.selectPage(gameSurveyPage, surveyWrapper);
+                gameSurveyRelPageSelect = this.gameSurveyRelService.selectPage(gameSurveyPage, surveyWrapper);
 
                 if (null != gameSurveyRelPageSelect) {
-                    PageTools.pageToResultDto(fungoPageResultDto, gameSurveyRelPageSelect);
+//                    PageTools.pageToResultDto(fungoPageResultDto, gameSurveyRelPageSelect);
                     selectRecords = gameSurveyRelPageSelect.getRecords();
                 }
             } else {
@@ -345,9 +348,10 @@ public class FeignServiceController {
         } catch (Exception ex) {
             LOGGER.error("/ms/service/game/api/evaluation/getGameSurveyRelPage--getGameSurveyRelPage-出现异常:", ex);
         }
-        Page<GameSurveyRelDto> gameEvaluationDtoPage = new Page<>();
-        gameEvaluationDtoPage.setRecords(gameSurveyList);
+//        Page<GameSurveyRelDto> gameEvaluationDtoPage = new Page<>();
+//        gameEvaluationDtoPage.setRecords(gameSurveyList);
         fungoPageResultDto.setData(gameSurveyList);
+        PageTools.pageToResultDto(fungoPageResultDto, gameSurveyRelPageSelect);
         return fungoPageResultDto;
     }
 
@@ -356,6 +360,7 @@ public class FeignServiceController {
     FungoPageResultDto<GameInviteDto> getGameInvitePage(@RequestBody GameInviteDto gameInviteDto) {
         List<GameInviteDto> gameInviteList = null;
         FungoPageResultDto<GameInviteDto> fungoPageResultDto = new FungoPageResultDto<>();
+        Page<GameInvite> gameInvitePage1 = new Page<>();
         try {
             int page = gameInviteDto.getPage();
             int limit = gameInviteDto.getLimit();
@@ -376,10 +381,10 @@ public class FeignServiceController {
 
             if (null != gameInvitePage) {
 
-                Page<GameInvite> gameInvitePage1 = this.gameInviteService.selectPage(gameInvitePage, gameInviteWrapper);
+                gameInvitePage1 = this.gameInviteService.selectPage(gameInvitePage, gameInviteWrapper);
 
                 if (null != gameInvitePage1) {
-                    PageTools.pageToResultDto(fungoPageResultDto, gameInvitePage1);
+//                    PageTools.pageToResultDto(fungoPageResultDto, gameInvitePage1);
                     selectRecords = gameInvitePage1.getRecords();
                 }
             } else {
@@ -402,9 +407,10 @@ public class FeignServiceController {
         } catch (Exception ex) {
             LOGGER.error("/ms/service/game/api/evaluation/getGameInvitePage--getGameInvitePage-出现异常:", ex);
         }
-        Page<GameInviteDto> gameEvaluationDtoPage = new Page<>();
-        gameEvaluationDtoPage.setRecords(gameInviteList);
+//        Page<GameInviteDto> gameEvaluationDtoPage = new Page<>();
+//        gameEvaluationDtoPage.setRecords(gameInviteList);
         fungoPageResultDto.setData(gameInviteList);
+        PageTools.pageToResultDto(fungoPageResultDto, gameInvitePage1);
         return fungoPageResultDto;
     }
 
@@ -502,6 +508,8 @@ public class FeignServiceController {
     FungoPageResultDto<GameReleaseLogDto> getGameReleaseLogPage(@RequestBody GameReleaseLogDto gameReleaseLogDto) {
         List<GameReleaseLogDto> gameReleaseLogList = null;
         FungoPageResultDto<GameReleaseLogDto> fungoPageResultDto = new FungoPageResultDto<>();
+        Page<GameReleaseLog> gameSurveyRelPageSelect = new Page<>();
+
         try {
             int page = gameReleaseLogDto.getPage();
             int limit = gameReleaseLogDto.getLimit();
@@ -520,10 +528,10 @@ public class FeignServiceController {
 
             if (null != gameReleaseLogPage) {
 
-                Page<GameReleaseLog> gameSurveyRelPageSelect = this.gameReleaseLogService.selectPage(gameReleaseLogPage, gameReleaseLogWrapper);
+                gameSurveyRelPageSelect = this.gameReleaseLogService.selectPage(gameReleaseLogPage, gameReleaseLogWrapper);
 
                 if (null != gameSurveyRelPageSelect) {
-                    PageTools.pageToResultDto(fungoPageResultDto, gameSurveyRelPageSelect);
+//                    PageTools.pageToResultDto(fungoPageResultDto, gameSurveyRelPageSelect);
                     selectRecords = gameSurveyRelPageSelect.getRecords();
                 }
             } else {
@@ -545,9 +553,10 @@ public class FeignServiceController {
         } catch (Exception ex) {
             LOGGER.error("/ms/service/game/api/evaluation/getGameReleaseLogPage--getGameReleaseLogPage-出现异常:", ex);
         }
-        Page<GameReleaseLogDto> gameReleaseLogDtoPage = new Page<>();
-        gameReleaseLogDtoPage.setRecords(gameReleaseLogList);
+//        Page<GameReleaseLogDto> gameReleaseLogDtoPage = new Page<>();
+//        gameReleaseLogDtoPage.setRecords(gameReleaseLogList);
         fungoPageResultDto.setData(gameReleaseLogList);
+        PageTools.pageToResultDto(fungoPageResultDto, gameSurveyRelPageSelect);
         return fungoPageResultDto;
     }
 
@@ -556,6 +565,7 @@ public class FeignServiceController {
     FungoPageResultDto<GameDto> getGamePage(@RequestBody GameDto gameDto) {
         List<GameDto> gameList = null;
         FungoPageResultDto<GameDto> fungoPageResultDto = new FungoPageResultDto<>();
+        Page<Game> gamePageSelect = new Page<>();
         try {
             int page = gameDto.getPage();
             int limit = gameDto.getLimit();
@@ -574,10 +584,10 @@ public class FeignServiceController {
 
             if (null != gamePage) {
 
-                Page<Game> gamePageSelect = this.gameService.selectPage(gamePage, gameWrapper);
+                gamePageSelect = this.gameService.selectPage(gamePage, gameWrapper);
 
                 if (null != gamePageSelect) {
-                    PageTools.pageToResultDto(fungoPageResultDto, gamePageSelect);
+//                    PageTools.pageToResultDto(fungoPageResultDto, gamePageSelect);
                     selectRecords = gamePageSelect.getRecords();
                 }
             } else {
@@ -599,9 +609,10 @@ public class FeignServiceController {
         } catch (Exception ex) {
             LOGGER.error("/ms/service/game/api/geme/getGamePage--getGamePage-出现异常:", ex);
         }
-        Page<GameDto> gameDtoPage = new Page<>();
-        gameDtoPage.setRecords(gameList);
+//        Page<GameDto> gameDtoPage = new Page<>();
+//        gameDtoPage.setRecords(gameList);
         fungoPageResultDto.setData(gameList);
+        PageTools.pageToResultDto(fungoPageResultDto, gamePageSelect);
         return fungoPageResultDto;
     }
 
@@ -805,7 +816,7 @@ public class FeignServiceController {
     FungoPageResultDto<GameEvaluationDto> getGameEvaluationSelectPageByTypeAndStateOrderByRAND() {
         Page<GameEvaluation> type = gameEvaluationServiceImap.selectPage(new Page<GameEvaluation>(1, 6), new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy("RAND()"));
         FungoPageResultDto<GameEvaluationDto> re = new FungoPageResultDto<GameEvaluationDto>();
-        PageTools.pageToResultDto(re, type);
+//        PageTools.pageToResultDto(re, type);
         List<GameEvaluation> data = type.getRecords();
         List<GameEvaluationDto> gameEvaluationDtos = new ArrayList<>();
         for (GameEvaluation gameEvaluation : data) {
@@ -814,6 +825,7 @@ public class FeignServiceController {
             gameEvaluationDtos.add(gameEvaluationDto);
         }
         re.setData(gameEvaluationDtos);
+        PageTools.pageToResultDto(re, type);
         return re;
     }
 
@@ -1028,7 +1040,7 @@ public class FeignServiceController {
         Page<GameEvaluation> page = gameEvaluationServiceImap.selectPage(new Page<>(pageDto.getPage(), pageDto.getLimit()), commentWrapper);
 
         FungoPageResultDto<GameEvaluationDto> re = new FungoPageResultDto<GameEvaluationDto>();
-        PageTools.pageToResultDto(re, page);
+//        PageTools.pageToResultDto(re, page);
 
         List<GameEvaluation> list = page.getRecords();
 
@@ -1041,6 +1053,7 @@ public class FeignServiceController {
             }
         }
         re.setData(gameEvaluationDtos);
+        PageTools.pageToResultDto(re, page);
         return re;
     }
 
@@ -1055,7 +1068,7 @@ public class FeignServiceController {
     public FungoPageResultDto<GameEvaluationDto> selectGameEvaluationPage(){
         Page<GameEvaluation> page = gameEvaluationService.selectPage(new Page<GameEvaluation>(1, 6), new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy("RAND()"));
         FungoPageResultDto<GameEvaluationDto> re = new FungoPageResultDto<GameEvaluationDto>();
-        PageTools.pageToResultDto(re, page);
+//        PageTools.pageToResultDto(re, page);
         List<GameEvaluation> list = page.getRecords();
         List<GameEvaluationDto> gameEvaluationDtos = new ArrayList<>();
         if (list != null && list.size() > 0) {
@@ -1066,6 +1079,7 @@ public class FeignServiceController {
             }
         }
         re.setData(gameEvaluationDtos);
+        PageTools.pageToResultDto(re, page);
         return re;
     }
 

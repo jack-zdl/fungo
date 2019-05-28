@@ -565,8 +565,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
             }
             relist.add(ctem);
         }
-        PageTools.pageToResultDto(re, page);
         re.setData(relist);
+        PageTools.pageToResultDto(re, page);
+
 
         //redis cache
         fungoCacheGame.excIndexCache(true, keyPrefix, keySuffix, re);
@@ -793,8 +794,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
             olist.add(bean);
         }
-        PageTools.pageToResultDto(re, p);
         re.setData(olist);
+        PageTools.pageToResultDto(re, p);
+
 
         //redis cache
         fungoCacheGame.excIndexCache(true, keyPrefix, keySuffix, re);

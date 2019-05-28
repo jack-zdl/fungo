@@ -101,8 +101,9 @@ public class DeveloperServiceImpl implements IDeveloperService {
 			olist.add(out);
 		}
 		FungoPageResultDto<GameHistoryOut> re = new FungoPageResultDto<GameHistoryOut>();
-		PageTools.pageToResultDto(re, page);
 		re.setData(olist);
+		PageTools.pageToResultDto(re, page);
+
 		return re;
 	}
 	

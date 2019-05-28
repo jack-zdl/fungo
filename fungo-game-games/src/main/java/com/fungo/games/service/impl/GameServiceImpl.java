@@ -181,8 +181,9 @@ public class GameServiceImpl implements IGameService {
             dataList.add(out);
         }
         re = new FungoPageResultDto<GameOutPage>();
-        PageTools.pageToResultDto(re, p);
         re.setData(dataList);
+        PageTools.pageToResultDto(re, p);
+
         //redis cache
         fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_LIST + memberId, keySuffix, re);
         return re;
@@ -615,8 +616,9 @@ public class GameServiceImpl implements IGameService {
             olist.add(out);
         }
         re = new FungoPageResultDto<GameOutPage>();
-        PageTools.pageToResultDto(re, page);
         re.setData(olist);
+        PageTools.pageToResultDto(re, page);
+
 
         //redis cache
         fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_RECENTEVA + userId, keySuffix, re);
@@ -691,8 +693,9 @@ public class GameServiceImpl implements IGameService {
 
                 ilist.add(it);
             }
-            PageTools.pageToResultDto(re, itemPage);
             re.setData(ilist);
+            PageTools.pageToResultDto(re, itemPage);
+
         }
         //redis cache
         fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_ITEMS, keySuffix, re);
@@ -724,7 +727,7 @@ public class GameServiceImpl implements IGameService {
             }
             Page<Game> page = gameService.selectPage(new Page<>(input.getPage(), input.getLimit()),wrapper);
             gameList = page.getRecords();
-            PageTools.pageToResultDto(re, page);
+
             List<GameOutBean> relist = new ArrayList<>();
             for (Game game : gameList) {
                 GameOutBean out = new GameOutBean();
@@ -743,6 +746,7 @@ public class GameServiceImpl implements IGameService {
                 }
             }
             re.setData(relist);
+            PageTools.pageToResultDto(re, page);
         }catch (Exception e){
             e.printStackTrace();
             logger.error("根据id集合查询游戏合集项列表失败",e);
@@ -828,9 +832,10 @@ public class GameServiceImpl implements IGameService {
                     list.add(bean);
                 }
             }
+            re.setData(list);
             PageTools.pageToResultDto(re, page);
         }
-        re.setData(list);
+
         //redis cache
         fungoCacheMember.excIndexCache(true, keyPrefix, keySuffix, re);
         return re;
@@ -964,8 +969,9 @@ public class GameServiceImpl implements IGameService {
             dataList.add(out);
         }
         FungoPageResultDto<GameSearchOut> re=new FungoPageResultDto<GameSearchOut>();
-        PageTools.pageToResultDto(re, gamePage);
         re.setData(dataList);
+        PageTools.pageToResultDto(re, gamePage);
+
         return re;
     }
 
@@ -1577,7 +1583,7 @@ public class GameServiceImpl implements IGameService {
                 }
                 Page<Game> page = gameService.selectPage(new Page<>(input.getPage(), input.getLimit()),wrapper);
                 gameList = page.getRecords();
-                PageTools.pageToResultDto(re, page);
+
             List<GameOutBean> relist = new ArrayList<>();
             for (Game game : gameList) {
                 GameOutBean out = new GameOutBean();
@@ -1596,6 +1602,7 @@ public class GameServiceImpl implements IGameService {
                 relist.add(out);
             }
             re.setData(relist);
+            PageTools.pageToResultDto(re, page);
         }
         return re;
     }
