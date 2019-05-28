@@ -17,7 +17,7 @@ import java.io.IOException;
 /**
  * ysx
  */
-// @Configuration
+ @Configuration
 public class JacksonConfig {
 
     @Bean
