@@ -16,6 +16,11 @@
 		<result column="updated_at" property="updatedAt" />
 		<result column="type" property="type" />
 		<result column="moo_id" property="mooId" />
+
+		<result column="video" property="video" />
+		<result column="game_list" property="gameList" />
+		<result column="video_urls" property="videoUrls" />
+		<result column="video_cover_image" property="videoCoverImage" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->

@@ -14,6 +14,9 @@
 		<result column="target_type" property="targetType" />
 		<result column="created_at" property="createdAt" />
 		<result column="updated_at" property="updatedAt" />
+
+		<result column="reply_name" property="replyName" />
+		<result column="reply_to_content_id" property="replyToContentId" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->

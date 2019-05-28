@@ -14,7 +14,7 @@
         <result column="comment_num" property="commentNum"/>
         <result column="state" property="state"/>
         <result column="like_num" property="likeNum"/>
-        <result column="editedAt" property="editedAt"/>
+        <result column="edited_at" property="editedAt"/>
         <result column="community_id" property="communityId"/>
         <result column="title" property="title"/>
         <result column="member_id" property="memberId"/>
@@ -24,6 +24,17 @@
         <result column="created_at" property="createdAt"/>
         <result column="updated_at" property="updatedAt"/>
         <result column="post_id" property="postId"/>
+
+        <result column="type" property="type"/>
+        <result column="sort" property="sort"/>
+        <result column="video" property="video"/>
+        <result column="game_list" property="gameList"/>
+        <result column="topic" property="topic"/>
+        <result column="video_urls" property="videoUrls"/>
+        <result column="last_reply_at" property="lastReplyAt"/>
+        <result column="video_cover_image" property="videoCoverImage"/>
+        <result column="boom_watch_num" property="boomWatchNum"/>
+
     </resultMap>
 
     <!-- 通用查询结果列 -->
