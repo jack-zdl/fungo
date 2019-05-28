@@ -13,6 +13,11 @@
 		<result column="batch_no" property="batchNo" />
 		<result column="created_at" property="createdAt" />
 		<result column="updated_at" property="updatedAt" />
+		<!--2019-05-28 补充遗漏的字段 lyc-->
+		<result column="phone_model" property="phoneModel" />
+		<result column="apple_id" property="appleId" />
+		<result column="surname" property="surname" />
+		<result column="name" property="name" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->
