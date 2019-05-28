@@ -149,6 +149,12 @@ public class GameServiceImpl implements IGameService {
             out.setAndroidState(game.getAndroidState());
             out.setIosState(game.getIosState());
             out.setRating(getGameRating(game.getId()));
+            if(game.getAndroidPackageName()==null){
+                game.setAndroidPackageName("");
+            }
+            if(game.getApk()==null){
+                game.setApk("");
+            }
             out.setApkUrl(game.getApk());
             out.setItunesId(game.getItunesId());
             out.setAndroidPackageName(game.getAndroidPackageName());
@@ -595,6 +601,17 @@ public class GameServiceImpl implements IGameService {
             out.setComment_num((int) map.get("comment_num"));
             out.setLink_community((String) map.get("community_id"));
             out.setCategory((String) map.get("tags"));
+            if(map.get("apk")!=null){
+                out.setApkUrl((String)map.get("apk"));
+            }else{
+                out.setApkUrl("");
+            }
+            if(map.get("android_package_name")!=null){
+                out.setAndroidPackageName((String)map.get("android_package_name"));
+            }else{
+                out.setAndroidPackageName("");
+            }
+
             olist.add(out);
         }
         re = new FungoPageResultDto<GameOutPage>();
@@ -920,11 +937,11 @@ public class GameServiceImpl implements IGameService {
             out.setEvaluation_num(evaCount);
             out.setGame_size(game.getGameSize());
 
-            out.setAndroidPackageName(game.getAndroidPackageName());
+            out.setAndroidPackageName( game.getAndroidPackageName() == null ? "" : game.getAndroidPackageName());
             out.setAndroidState(game.getAndroidState());
             out.setIosState(game.getIosState());
             out.setItunesId(game.getItunesId());
-            out.setApkUrl(game.getApk());
+            out.setApkUrl(game.getApk()==null?"":game.getApk());
 
             if(unredNum != 0) {
                 DecimalFormat df = new DecimalFormat("#.00");
