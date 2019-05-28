@@ -1,13 +1,13 @@
 package com.fungo.system.proxy;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.community.MooMoodDto;
 import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.game.GameSurveyRelDto;
-import com.game.common.dto.game.ReplyDto;
 
 /**
  * <p>MerberServiceImpl的对外接口层</p>
@@ -18,7 +18,7 @@ public interface IMemeberProxyService {
 
     CmmPostDto selectCmmPost(String id);
 
-    Page<GameSurveyRelDto> selectGameSurveyRelPage(int page,int limit,String memberId,int status);
+    FungoPageResultDto<GameSurveyRelDto> selectGameSurveyRelPage(int page,int limit,String memberId,int status);
 
     int selectMooMoodCount(MooMoodDto mooMoodDto);
 
@@ -28,7 +28,7 @@ public interface IMemeberProxyService {
 
     CmmCmtReplyDto selectReplyById(CmmCmtReplyDto replyDto);
 
-    Page<GameEvaluationDto> selectGameEvaluationPage(GameEvaluationDto gameEvaluationDto);
+    FungoPageResultDto<GameEvaluationDto> selectGameEvaluationPage(GameEvaluationDto gameEvaluationDto);
 
     Page<CmmPostDto> selectCmmPostpage(CmmPostDto  cmmPostDto);
 

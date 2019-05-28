@@ -725,8 +725,16 @@ public class MemberServiceImpl implements IMemberService {
 
         if (2 == inputPage.getType()) {
             // @todo 游戏的接口
-            Page<GameSurveyRelDto> page = iMemeberProxyService.selectGameSurveyRelPage(inputPage.getPage(), inputPage.getLimit(), memberId, 0); //gameSurveyRelService.selectPage(new Page<GameSurveyRel>(inputPage.getPage(), inputPage.getLimit()), new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0));
-            List<GameSurveyRelDto> plist = page.getRecords();
+            FungoPageResultDto<GameSurveyRelDto> page = iMemeberProxyService.selectGameSurveyRelPage(inputPage.getPage(), inputPage.getLimit(), memberId, 0); //gameSurveyRelService.selectPage(new Page<GameSurveyRel>(inputPage.getPage(), inputPage.getLimit()), new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0));
+            List<GameSurveyRelDto> plist = new ArrayList<>();
+            if (null != page){
+                List<GameSurveyRelDto> surveyRelDtoList = page.getData();
+                if (null != surveyRelDtoList && !surveyRelDtoList.isEmpty()){
+                    plist = surveyRelDtoList;
+                }
+            }
+
+
             for (GameSurveyRelDto gameSurveyRel : plist) {
                 GameDto param = new GameDto();
                 param.setId(gameSurveyRel.getGameId());
@@ -858,14 +866,26 @@ public class MemberServiceImpl implements IMemberService {
 
         re = new FungoPageResultDto<MyEvaluationBean>();
         //@todo 游戏接口
+
         GameEvaluationDto param = new GameEvaluationDto();
+
         param.setMemberId(loginId);
         param.setState(0);
         param.setPage(input.getPage());
-        param.setLikeNum(input.getLimit());
-        Page<GameEvaluationDto> p = iMemeberProxyService.selectGameEvaluationPage(param); // evaluationService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameEvaluation>()
+        param.setLimit(input.getLimit());
+
+
+        FungoPageResultDto<GameEvaluationDto> p = iMemeberProxyService.selectGameEvaluationPage(param); // evaluationService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameEvaluation>()
 //                .eq("member_id", loginId).eq("state", 0).orderBy("updated_at", false));
-        List<GameEvaluationDto> elist = p.getRecords();
+        List<GameEvaluationDto> elist = new ArrayList<GameEvaluationDto>();
+
+        if (null != p) {
+            List<GameEvaluationDto> evaluationDtoList = p.getData();
+            if (null != evaluationDtoList && !evaluationDtoList.isEmpty()) {
+                elist = evaluationDtoList;
+            }
+        }
+
         List<MyEvaluationBean> olist = new ArrayList<>();
 
 //		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -1181,7 +1201,7 @@ public class MemberServiceImpl implements IMemberService {
 
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_COMMENTS;
         String keySuffix = loginId + JSON.toJSONString(input);
-        re = null ;//(FungoPageResultDto<MyCommentBean>) fungoCacheArticle.getIndexCache(keyPrefix, keySuffix);
+        re = null;//(FungoPageResultDto<MyCommentBean>) fungoCacheArticle.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
         }

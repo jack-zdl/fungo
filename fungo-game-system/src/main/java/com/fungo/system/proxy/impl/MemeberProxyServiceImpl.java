@@ -72,7 +72,7 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
     @HystrixCommand(fallbackMethod = "hystrixSelectGameSurveyRelPage",ignoreExceptions = {Exception.class},
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
-    public Page<GameSurveyRelDto> selectGameSurveyRelPage(int page, int limit, String memberId, int status) {
+    public FungoPageResultDto<GameSurveyRelDto> selectGameSurveyRelPage(int page, int limit, String memberId, int status) {
         GameSurveyRelDto gameSurveyRelDto = new GameSurveyRelDto();
         gameSurveyRelDto.setMemberId(memberId);
         gameSurveyRelDto.setState(status);
@@ -165,7 +165,7 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
     @HystrixCommand(fallbackMethod = "hystrixSelectGameEvaluationPage",ignoreExceptions = {Exception.class},
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
-    public Page<GameEvaluationDto> selectGameEvaluationPage(GameEvaluationDto gameEvaluationDto) {
+    public  FungoPageResultDto<GameEvaluationDto>  selectGameEvaluationPage(GameEvaluationDto gameEvaluationDto) {
         return gamesFeignClient.getGameEvaluationPage(gameEvaluationDto);
     }
 
