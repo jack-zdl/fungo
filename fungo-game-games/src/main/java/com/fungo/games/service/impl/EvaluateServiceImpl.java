@@ -513,36 +513,39 @@ public class EvaluateServiceImpl implements IEvaluateService {
             replyInputPageDto.setLimit(3);
             replyInputPageDto.setTarget_id(cmmComment.getId());
             replyInputPageDto.setState(0);
-            Page<CmmCmtReplyDto> replyList = iEvaluateProxyService.getReplyDtoBysSelectPageOrderByCreatedAt(replyInputPageDto);
+            FungoPageResultDto<CmmCmtReplyDto> replyList = iEvaluateProxyService.getReplyDtoBysSelectPageOrderByCreatedAt(replyInputPageDto);
             int i = 0;
-            for (CmmCmtReplyDto reply : replyList.getRecords()) {
-                i = i + 1;
-                if (i == 3) {
-                    ctem.setReply_more(true);
-                    break;
-                }
-                ReplyBean replybean = new ReplyBean();
-                replybean.setAuthor(iEvaluateProxyService.getAuthor(reply.getMemberId()));
-                replybean.setContent(CommonUtils.filterWord(reply.getContent()));
-                replybean.setCreatedAt(DateTools.fmtDate(reply.getCreatedAt()));
-                replybean.setObjectId(reply.getId());
-                replybean.setUpdatedAt(DateTools.fmtDate(reply.getUpdatedAt()));
-                replybean.setLike_num(reply.getLikeNum());
-                replybean.setReplyToId(reply.getReplayToId());
-//                微服务 根据条件判断获取memberDto对象
-//                2019-05-11
-//                lyc
-//                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
-                if (reply.getReplayToId()!= null){
-                    MemberDto md = new MemberDto();
-                    md.setId(reply.getReplayToId());
-                    MemberDto m = iEvaluateProxyService.getMemberDtoBySelectOne(md);
-                    if (m != null) {
-                        replybean.setReplyToName(m.getUserName());
+            if (replyList.getData() != null){
+                for (CmmCmtReplyDto reply : replyList.getData()) {
+                    i = i + 1;
+                    if (i == 3) {
+                        ctem.setReply_more(true);
+                        break;
                     }
-                }
+                    ReplyBean replybean = new ReplyBean();
+                    replybean.setAuthor(iEvaluateProxyService.getAuthor(reply.getMemberId()));
+                    replybean.setContent(CommonUtils.filterWord(reply.getContent()));
+                    replybean.setCreatedAt(DateTools.fmtDate(reply.getCreatedAt()));
+                    replybean.setObjectId(reply.getId());
+                    replybean.setUpdatedAt(DateTools.fmtDate(reply.getUpdatedAt()));
+                    replybean.setLike_num(reply.getLikeNum());
+                    replybean.setReplyToId(reply.getReplayToId());
+    //                微服务 根据条件判断获取memberDto对象
+    //                2019-05-11
+    //                lyc
+    //                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
+                    if (reply.getReplayToId()!= null){
+                        MemberDto md = new MemberDto();
+                        md.setId(reply.getReplayToId());
+                        MemberDto m = iEvaluateProxyService.getMemberDtoBySelectOne(md);
+                        if (m != null) {
+                            replybean.setReplyToName(m.getUserName());
+                        }
+                    }
 
-                ctem.getReplys().add(replybean);
+                    ctem.getReplys().add(replybean);
+                }
+            ctem.setReply_count(replyList.getCount());
             }
 
             //是否点赞
@@ -562,8 +565,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
             }
             relist.add(ctem);
         }
-        PageTools.pageToResultDto(re, page);
         re.setData(relist);
+        PageTools.pageToResultDto(re, page);
+
 
         //redis cache
         fungoCacheGame.excIndexCache(true, keyPrefix, keySuffix, re);
@@ -617,9 +621,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
         }
         // 获取游戏的官方标签(分类) 后台标签 type = 1 type = 2
         List<GameTag> gameTagList = gameTagService
-                .selectList(Condition.create().setSqlSelect("id,tag_id").eq("game_id", gameId).eq("type", 2));//1
+                .selectList(Condition.create().setSqlSelect("id,tag_id as tagId").eq("game_id", gameId).eq("type", 2));//1
         GameTag cTag = gameTagService
-                .selectOne(Condition.create().setSqlSelect("id,tag_id").eq("game_id", gameId).eq("type", 1));//2
+                .selectOne(Condition.create().setSqlSelect("id,tag_id as tagId").eq("game_id", gameId).eq("type", 1));//2
         List<String> preTagIdList = new ArrayList<String>();//已有后台标签
         String preCategory = null;
         if(gameTagList != null && gameTagList.size()>0) {
@@ -790,8 +794,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
             olist.add(bean);
         }
-        PageTools.pageToResultDto(re, p);
         re.setData(olist);
+        PageTools.pageToResultDto(re, p);
+
 
         //redis cache
         fungoCacheGame.excIndexCache(true, keyPrefix, keySuffix, re);

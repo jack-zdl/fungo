@@ -1,6 +1,5 @@
 package com.fungo.system.feign;
 
-import com.baomidou.mybatisplus.plugins.Page;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
@@ -38,7 +37,7 @@ public interface GamesFeignClient {
     @SuppressWarnings("all")
     @ApiOperation(value = "根据游戏版本日志审批对象查询集合", notes = "")
     @RequestMapping(value = "/ms/service/game/api/evaluation/getGameReleaseLogPage", method = RequestMethod.POST)
-    Page<GameReleaseLogDto> getGameReleaseLogPage(@RequestBody GameReleaseLogDto gameReleaseLogDto);
+    FungoPageResultDto<GameReleaseLogDto>  getGameReleaseLogPage(@RequestBody GameReleaseLogDto gameReleaseLogDto);
 
     @RequestMapping(value = "/ms/service/game/api/game/{gameId}", method = RequestMethod.POST)
     GameDto selectOne(@PathVariable("gameId") String gameId);
@@ -80,11 +79,11 @@ public interface GamesFeignClient {
      */
     @ApiOperation(value = "游戏评价的分页查询", notes = "")
     @RequestMapping(value = "/ms/service/game/api/evaluation/getGameEvaluationPage", method = RequestMethod.POST)
-    Page<GameEvaluationDto> getGameEvaluationPage(@RequestBody GameEvaluationDto gameEvaluationDto);
+    FungoPageResultDto<GameEvaluationDto> getGameEvaluationPage(@RequestBody GameEvaluationDto gameEvaluationDto);
 
     @ApiOperation(value = "根据游戏对象查询集合", notes = "")
     @RequestMapping(value = "/ms/service/game/api/geme/getGamePage", method = RequestMethod.POST)
-    Page<GameDto> getGamePage(@RequestBody GameDto gameDto);
+    FungoPageResultDto<GameDto> getGamePage(@RequestBody GameDto gameDto);
 
     /**
      * 游戏测试会员关联表的分页查询
@@ -94,7 +93,7 @@ public interface GamesFeignClient {
     @SuppressWarnings("all")
     @ApiOperation(value = "游戏测试会员关联表的分页查询", notes = "")
     @RequestMapping(value = "/ms/service/game/api/evaluation/getGameSurveyRelPage", method = RequestMethod.POST)
-    Page<GameSurveyRelDto> getGameSurveyRelPage(@RequestBody GameSurveyRelDto gameSurveyDto);
+    FungoPageResultDto<GameSurveyRelDto> getGameSurveyRelPage(@RequestBody GameSurveyRelDto gameSurveyDto);
 
     @ApiOperation(value = "getGameSelectCountByLikeNameAndState", notes = "")
     @RequestMapping(value = "/ms/service/game/api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.POST)
@@ -126,7 +125,7 @@ public interface GamesFeignClient {
     ResultDto<List<String>> getRecommendMembersFromEvaluation(@RequestParam("x") Integer x, @RequestParam("y") Integer y, @RequestParam("wathMbsSet") List<String> wathMbsSet);
 
     @GetMapping("/ms/service/game/api/game/selectedGames")
-    public CardIndexBean selectedGames();
+    CardIndexBean selectedGames();
 
     @GetMapping("/ms/service/game/api/game/selectGameEvaluationPage")
     FungoPageResultDto<GameEvaluationDto> selectGameEvaluationPage();

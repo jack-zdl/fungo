@@ -10,6 +10,8 @@
 		<result column="current_task_name" property="currentTaskName" />
 		<result column="task_idt_ids" property="taskIdtIds" />
 		<result column="task_type" property="taskType" />
+		<result column="created_at" property="createdAt" />
+		<result column="updated_at" property="updatedAt" />
 		<result column="ext1" property="ext1" />
 		<result column="ext2" property="ext2" />
 		<result column="ext3" property="ext3" />

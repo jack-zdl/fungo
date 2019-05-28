@@ -38,15 +38,26 @@ public class MSServiceCommentController {
     @PostMapping("/ms/service/cmm/cmt/s/lists")
     public FungoPageResultDto<CmmCmtReplyDto> querySecondLevelCmtList(@RequestBody CmmCmtReplyDto replyDto) {
 
-        FungoPageResultDto<CmmCmtReplyDto> resultDto = new FungoPageResultDto<CmmCmtReplyDto>();
+//        FungoPageResultDto<CmmCmtReplyDto> resultDto = new FungoPageResultDto<CmmCmtReplyDto>();
 
-        List<CmmCmtReplyDto> cmmPostDtoList = imsServiceCommentService.querySecondLevelCmtList(replyDto);
+        FungoPageResultDto<CmmCmtReplyDto> cmmPostDtoList = imsServiceCommentService.querySecondLevelCmtList(replyDto);
 
-        resultDto.setData(cmmPostDtoList);
+//        resultDto.setData(cmmPostDtoList);
 
-        return resultDto;
+        return cmmPostDtoList;
     }
 
+    /**
+     * 根据创建时间排序 上游游戏业务需求
+     * @param replyDto
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/cmt/s/getReplyDtoBysSelectPageOrderByCreatedAt")
+    public FungoPageResultDto<CmmCmtReplyDto> getReplyDtoBysSelectPageOrderByCreatedAt(@RequestBody CmmCmtReplyDto replyDto) {
+        FungoPageResultDto<CmmCmtReplyDto> cmmPostDtoList = imsServiceCommentService.getReplyDtoBysSelectPageOrderByCreatedAt(replyDto);
+
+        return cmmPostDtoList;
+    }
 
     /**
      * 分页查询 一级评论 数据

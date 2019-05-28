@@ -133,8 +133,9 @@ public class IndexServiceImpl implements IIndexService {
 
         }
         re = new FungoPageResultDto<Map<String, Object>>();
-        PageTools.pageToResultDto(re, gpage);
         re.setData(list);
+        PageTools.pageToResultDto(re, gpage);
+
 
         //redis cache
         fungoCacheIndex.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_PC_GAMEGROUP,

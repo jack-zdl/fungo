@@ -184,7 +184,7 @@ public class CommunityServiceImpl implements ICommunityService {
         }
 
         //置顶文章
-        List<CmmPost> plist = postService.selectList(Condition.create().setSqlSelect("id,title,member_id,video").eq("community_id", communityId).eq("type", 3).ne("state", -1));
+        List<CmmPost> plist = postService.selectList(Condition.create().setSqlSelect("id,title,member_id as memberId,video").eq("community_id", communityId).eq("type", 3).ne("state", -1));
         List<Map<String, String>> topicPosts = new ArrayList<>();
         for (CmmPost p : plist) {
             Map<String, String> map = new HashMap<>();
@@ -867,7 +867,10 @@ public class CommunityServiceImpl implements ICommunityService {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        if (null == ml1 || ml1.isEmpty() || ml1.size() < limitSize) {
+        if (null == ml1) {
+            ml1 = new ArrayList<>();
+        }
+        if (ml1.size() < limitSize) {
 
             //官方推荐用户id
             List<String> reIds = new ArrayList<>();
@@ -894,7 +897,7 @@ public class CommunityServiceImpl implements ICommunityService {
             //2.再查询发布游戏评论>大于14条的，前10名用户
             //memberDao.getRecommendMembersFromEvaluation(sendComments,   limitSize, wathMbsSet);
 
-            List<String> sendCommentMembers = null;
+            List<String> sendCommentMembers = new ArrayList<>();
 
             try {
                 ResultDto<List<String>> gameEvaRs = gameFeignClient.getRecommendMembersFromEvaluation(Integer.valueOf(sendComments + ""), Integer.valueOf(limitSize + ""), wathMbsSet);

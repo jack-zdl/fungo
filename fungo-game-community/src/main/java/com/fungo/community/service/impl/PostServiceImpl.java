@@ -1042,7 +1042,7 @@ public class PostServiceImpl implements IPostService {
 
         String gameList = mapper.writeValueAsString(gameMapList);
 
-        if (os.equalsIgnoreCase("iOS") || os.equalsIgnoreCase("Android")) {
+        if (StringUtils.equalsIgnoreCase("iOS", os) || StringUtils.equalsIgnoreCase("Android", os)) {
             if (origin != null && !"".equals(origin)) {
 
                 out.setHtml(SerUtils.returnOriginHrml(SerUtils.getOriginImageContent(CommonUtils.filterWord(origin), out.getImages(), gameList)));
@@ -1265,19 +1265,20 @@ public class PostServiceImpl implements IPostService {
         out.setLink_community(communityMap);
 
         //!fixme 获取用户数据
+        AuthorBean authorBean = new AuthorBean();
         try {
             //out.setAuthor(IUserService.getUserCard(cmmPost.getMemberId(), userId));
-            if (StringUtils.isNotBlank(userId) && StringUtils.isNotBlank(cmmPost.getMemberId())) {
+           // if (StringUtils.isNotBlank(userId) && StringUtils.isNotBlank(cmmPost.getMemberId())) {
+            if (StringUtils.isNotBlank(cmmPost.getMemberId())) {
                 ResultDto<AuthorBean> userCardResult = systemFeignClient.getUserCard(cmmPost.getMemberId(), userId);
                 if (null != userCardResult) {
-                    AuthorBean authorBean = userCardResult.getData();
-                    out.setAuthor(authorBean);
+                    authorBean = userCardResult.getData();
                 }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
+        out.setAuthor(authorBean);
         out.setType(cmmPost.getType());
 
         //更新文件浏览量
@@ -1636,7 +1637,7 @@ public class PostServiceImpl implements IPostService {
 //		}
         @SuppressWarnings("unchecked")
         Page<CmmPost> postPage = postService.selectPage(new Page<>(page, limit),
-                Condition.create().setSqlSelect("id,title,content,cover_image,member_id,video,created_at,updated_at,video_cover_image")
+                Condition.create().setSqlSelect("id,title,content,cover_image as coverImage ,member_id as memberId ,video,created_at as createdAt,updated_at as updatedAt,video_cover_image as videoCoverImage")
                         .where("state = {0}", 1).andNew("title like '%" + keyword + "%'").or("content like " + "'%" + keyword + "%'"));
 //						.or("content like "+ "'%" + keyword+ "%'"));
         List<CmmPost> postList = postPage.getRecords();

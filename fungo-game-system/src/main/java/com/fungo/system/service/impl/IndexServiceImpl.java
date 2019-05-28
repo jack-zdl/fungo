@@ -74,7 +74,7 @@ public class IndexServiceImpl implements IIndexService {
             keySuffix += app_channel;
         }
 
-        re = null;// (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+        re =  (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
 
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
@@ -84,7 +84,7 @@ public class IndexServiceImpl implements IIndexService {
             os = "";
         }
 
-        re = new FungoPageResultDto<CardIndexBean>();
+        re = new FungoPageResultDto<>();
 
         List<CardIndexBean> clist = new ArrayList<CardIndexBean>();
         int page = input.getPage();
@@ -471,7 +471,7 @@ public class IndexServiceImpl implements IIndexService {
         ArrayList<CardDataBean> gameDateList = new ArrayList<>();
         CardIndexBean indexBean = new CardIndexBean();
         for (Banner banner : blist) {
-            HashMap<String, BigDecimal> rateData = indexProxyService.getRateData(banner.getTargetId());  //gameDao.getRateData(banner.getTargetId());
+            Map<String, BigDecimal> rateData = indexProxyService.getRateData(banner.getTargetId());  //gameDao.getRateData(banner.getTargetId());
             //
             GameDto gameParam = new GameDto();
             gameParam.setId(banner.getTargetId());

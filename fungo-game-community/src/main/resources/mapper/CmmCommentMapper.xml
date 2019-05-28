@@ -12,6 +12,8 @@
 		<result column="member_id" property="memberId" />
 		<result column="post_id" property="postId" />
 		<result column="floor" property="floor" />
+		<result column="type" property="type" />
+		<result column="community_id" property="communityId" />
 		<result column="created_at" property="createdAt" />
 		<result column="updated_at" property="updatedAt" />
 	</resultMap>

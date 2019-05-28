@@ -13,6 +13,8 @@
 		<result column="ext1" property="ext1" />
 		<result column="ext2" property="ext2" />
 		<result column="ext3" property="ext3" />
+		<result column="created_at" property="createdAt" />
+		<result column="updated_at" property="updatedAt" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->

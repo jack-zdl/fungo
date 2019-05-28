@@ -186,7 +186,7 @@ public class IndexController {
                 map1.put("androidPackageName", game.getAndroidPackageName() == null ? "" : game.getAndroidPackageName());
                 map1.put("game_size", game.getGameSize());
                 map1.put("itunesId", game.getItunesId());
-                map1.put("apkUrl", game.getApk());
+                map1.put("apkUrl", game.getApk()==null?"":game.getApk());
                 lists.add(map1);
             }
             map.put("game_list", lists);
@@ -194,8 +194,9 @@ public class IndexController {
         }
 
         re = new FungoPageResultDto<Map<String, Object>>();
-        PageTools.pageToResultDto(re, gpage);
         re.setData(list);
+        PageTools.pageToResultDto(re, gpage);
+
 
         //reids cache
         fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);

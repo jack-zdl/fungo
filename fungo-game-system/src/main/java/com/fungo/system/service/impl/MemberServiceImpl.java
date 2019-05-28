@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.dao.BasNoticeDao;
 import com.fungo.system.dao.MemberDao;
-import com.fungo.system.dto.FollowInptPageDao;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
 import com.fungo.system.proxy.ICommunityProxyService;
@@ -18,7 +17,6 @@ import com.fungo.system.proxy.IMemeberProxyService;
 import com.fungo.system.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.bean.CollectionBean;
-
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.Setting;
 import com.game.common.dto.*;
@@ -26,7 +24,6 @@ import com.game.common.dto.StreamInfo;
 import com.game.common.dto.community.*;
 import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.game.GameSurveyRelDto;
-import com.game.common.dto.game.ReplyDto;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.repo.cache.facade.FungoCacheMember;
@@ -37,7 +34,6 @@ import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import org.apache.commons.lang.StringUtils;
-import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -704,6 +700,7 @@ public class MemberServiceImpl implements IMemberService {
         return re;
     }
 
+    @Deprecated
     @Override
     public FungoPageResultDto<MyGameBean> getGameList(String memberId, MyGameInputPageDto inputPage, String os) {
 
@@ -725,8 +722,16 @@ public class MemberServiceImpl implements IMemberService {
 
         if (2 == inputPage.getType()) {
             // @todo 游戏的接口
-            Page<GameSurveyRelDto> page = iMemeberProxyService.selectGameSurveyRelPage(inputPage.getPage(), inputPage.getLimit(), memberId, 0); //gameSurveyRelService.selectPage(new Page<GameSurveyRel>(inputPage.getPage(), inputPage.getLimit()), new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0));
-            List<GameSurveyRelDto> plist = page.getRecords();
+            FungoPageResultDto<GameSurveyRelDto> page = iMemeberProxyService.selectGameSurveyRelPage(inputPage.getPage(), inputPage.getLimit(), memberId, 0); //gameSurveyRelService.selectPage(new Page<GameSurveyRel>(inputPage.getPage(), inputPage.getLimit()), new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0));
+            List<GameSurveyRelDto> plist = new ArrayList<>();
+            if (null != page){
+                List<GameSurveyRelDto> surveyRelDtoList = page.getData();
+                if (null != surveyRelDtoList && !surveyRelDtoList.isEmpty()){
+                    plist = surveyRelDtoList;
+                }
+            }
+
+
             for (GameSurveyRelDto gameSurveyRel : plist) {
                 GameDto param = new GameDto();
                 param.setId(gameSurveyRel.getGameId());
@@ -844,6 +849,7 @@ public class MemberServiceImpl implements IMemberService {
         return ResultDto.success(map);
     }
 
+    @Deprecated
     @Override
     public FungoPageResultDto<MyEvaluationBean> getMyEvaluationList(String loginId, InputPageDto input) throws Exception {
         FungoPageResultDto<MyEvaluationBean> re = null;
@@ -858,14 +864,19 @@ public class MemberServiceImpl implements IMemberService {
 
         re = new FungoPageResultDto<MyEvaluationBean>();
         //@todo 游戏接口
+
         GameEvaluationDto param = new GameEvaluationDto();
+
         param.setMemberId(loginId);
         param.setState(0);
         param.setPage(input.getPage());
-        param.setLikeNum(input.getLimit());
-        Page<GameEvaluationDto> p = iMemeberProxyService.selectGameEvaluationPage(param); // evaluationService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameEvaluation>()
+        param.setLimit(input.getLimit());
+
+
+        Page<GameEvaluationDto>  p = iMemeberProxyService.selectGameEvaluationPage(param); // evaluationService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameEvaluation>()
 //                .eq("member_id", loginId).eq("state", 0).orderBy("updated_at", false));
         List<GameEvaluationDto> elist = p.getRecords();
+
         List<MyEvaluationBean> olist = new ArrayList<>();
 
 //		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -1181,7 +1192,7 @@ public class MemberServiceImpl implements IMemberService {
 
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_COMMENTS;
         String keySuffix = loginId + JSON.toJSONString(input);
-        re = (FungoPageResultDto<MyCommentBean>) fungoCacheArticle.getIndexCache(keyPrefix, keySuffix);
+        re = null;//(FungoPageResultDto<MyCommentBean>) fungoCacheArticle.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
         }
@@ -1211,7 +1222,7 @@ public class MemberServiceImpl implements IMemberService {
             //回复二级回复
             if (!CommonUtil.isNull(c.getReplyToId()) && !CommonUtil.isNull(c.getReplyContentId())) {
                 bean.setReplyToId(c.getReplyToId());
-                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", c.getReplyToId()));
+                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name as userName").eq("id", c.getReplyToId()));
                 if (m != null) {
                     bean.setReplyToName(m.getUserName());
                 }
@@ -1281,7 +1292,7 @@ public class MemberServiceImpl implements IMemberService {
                     }
 
                     bean.setReplyToId(comment.getMemberId());
-                    Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", comment.getMemberId()));
+                    Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name as userName").eq("id", comment.getMemberId()));
                     if (m != null) {
                         bean.setReplyToName(m.getUserName());
                     }
@@ -1300,7 +1311,7 @@ public class MemberServiceImpl implements IMemberService {
                     }
 
                     bean.setReplyToId(evaluation.getMemberId());
-                    Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", evaluation.getMemberId()));
+                    Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name as userName").eq("id", evaluation.getMemberId()));
                     if (m != null) {
                         bean.setReplyToName(m.getUserName());
                     }
@@ -1317,7 +1328,7 @@ public class MemberServiceImpl implements IMemberService {
                     }
 
                     bean.setReplyToId(message.getMemberId());
-                    Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", message.getMemberId()));
+                    Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name as userName").eq("id", message.getMemberId()));
                     if (m != null) {
                         bean.setReplyToName(m.getUserName());
                     }
@@ -1344,7 +1355,7 @@ public class MemberServiceImpl implements IMemberService {
     @Override
     public void initRank() throws Exception {
         //获取所有用户
-        List<Member> memberList = memberService.selectList(Condition.create().setSqlSelect("id,user_name,created_at"));
+        List<Member> memberList = memberService.selectList(Condition.create().setSqlSelect("id,user_name as userName,created_at as createdAt"));
         //IncentRuleRank selectById = rankRuleService.selectById(24);
 
         ObjectMapper mapper = new ObjectMapper();

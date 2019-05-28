@@ -5,8 +5,12 @@
 	<!-- 通用查询映射结果 -->
 	<resultMap id="BaseResultMap" type="com.fungo.system.entity.IncentRuleRankGroup">
 		<id column="id" property="id" />
+		<result column="group_parent_id" property="groupParentId" />
 		<result column="group_name" property="groupName" />
 		<result column="group_intro" property="groupIntro" />
+		<result column="rank_type" property="rankType" />
+		<result column="rank_flag" property="rankFlag" />
+		<result column="sort" property="sort" />
 		<result column="created_at" property="createdAt" />
 		<result column="updated_at" property="updatedAt" />
 		<result column="ext1" property="ext1" />

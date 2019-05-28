@@ -551,6 +551,9 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public ResultDto<List<MemberDto>> listMembersByids(List<String> ids, Integer state) {
         EntityWrapper<Member> wrapper = new EntityWrapper<>();
+        if(ids==null||ids.size()==0){
+            return ResultDto.success(new ArrayList<>());
+        }
         wrapper.in("id", ids);
         if (state != null) {
             wrapper.eq("state", state);

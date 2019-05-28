@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * <p></p>
@@ -43,25 +44,6 @@ public class GameProxyServiceImpl implements IGameProxyService {
     @Autowired
     private GamesFeignClient gamesFeignClient;
 
-//    /**
-//     * 功能描述:
-//     * @param: [map]
-//     * @return: java.lang.String
-//     * @auther: dl.zhang
-//     * @date: 2019/5/14 11:12
-//     */
-//    @HystrixCommand(fallbackMethod = "hystrixGetMemberIdByTargetId",ignoreExceptions = {Exception.class},
-//            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
-//    @Override
-//    public String getMemberIdByTargetId(Map<String, String> map) {
-//        return communityFeignClient.getMemberIdByTargetId(map);
-//    }
-//
-//    public String hystrixGetMemberIdByTargetId(Map<String, String> map){
-//        logger.warn("GameProxyServiceImpl.getMemberIdByTargetId获取被点赞用户的id异常");
-//        return null;
-//    }
-    
     /**
      * 功能描述:  根据主键获取社区帖子
      * @param: [id] 主键id
@@ -69,36 +51,34 @@ public class GameProxyServiceImpl implements IGameProxyService {
      * @auther: dl.zhang
      * @date: 2019/5/14 11:12
      */
-    @HystrixCommand(fallbackMethod = "hystrixSelectCmmPostById",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    @HystrixCommand(fallbackMethod = "hystrixSelectCmmPostById", ignoreExceptions = {Exception.class})
     @Override
     public CmmPostDto selectCmmPostById(CmmPostDto param) {
-        CmmPostDto re = null;
+        CmmPostDto re = new CmmPostDto();
         FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(param);
-        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmPostDtoFungoPageResultDto.getStatus()) && cmmPostDtoFungoPageResultDto.getData().size() > 0){
+        if (Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmPostDtoFungoPageResultDto.getStatus()) && cmmPostDtoFungoPageResultDto.getData().size() > 0) {
             re = cmmPostDtoFungoPageResultDto.getData().get(0);
-        }
+        }else
+            logger.warn("GameProxyServiceImpl selectCmmPostById");
         return re;
     }
 
     /**
-     * @todo 社区没有接口
      * 功能描述: 根据主键查询社区一级评论
      * @param: [id] 社区一级评论主键id
      * @return: com.game.common.dto.community.CmmCommentDto
      * @auther: dl.zhang
      * @date: 2019/5/14 11:17
      */
-    @HystrixCommand(fallbackMethod = "hystrixSelectCmmCommentById",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    @HystrixCommand(fallbackMethod = "hystrixSelectCmmCommentById", ignoreExceptions = {Exception.class}) //Unable to derive ExecutionIsolationStrategy from property value: Semaphore
     @Override
     public CmmCommentDto selectCmmCommentById(String id) {
         CmmCommentDto param = new CmmCommentDto();
         param.setId(id);
-        FungoPageResultDto<CmmCommentDto>  cmmCommentDtoFungoPageResultDto = communityFeignClient.queryFirstLevelCmtList(param);
-        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmCommentDtoFungoPageResultDto.getStatus()) && cmmCommentDtoFungoPageResultDto.getData().size() > 0){
+        FungoPageResultDto<CmmCommentDto> cmmCommentDtoFungoPageResultDto = communityFeignClient.queryFirstLevelCmtList(param);
+        if (Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmCommentDtoFungoPageResultDto.getStatus()) && cmmCommentDtoFungoPageResultDto.getData().size() > 0) {
             param = cmmCommentDtoFungoPageResultDto.getData().get(0);
-        }
+        }else logger.warn("GameProxyServiceImpl selectCmmCommentById");
         return param;
     }
 
@@ -109,15 +89,17 @@ public class GameProxyServiceImpl implements IGameProxyService {
      * @auther: dl.zhang
      * @date: 2019/5/14 11:26
      */
-     @HystrixCommand(fallbackMethod = "hystrixSelectGameEvaluationById",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    @HystrixCommand(fallbackMethod = "hystrixSelectGameEvaluationById", ignoreExceptions = {Exception.class})
     @Override
     public GameEvaluationDto selectGameEvaluationById(GameEvaluationDto gameEvaluationDto) {
-         GameEvaluationDto re = null;
-         Page<GameEvaluationDto> gameEvaluationDtoPage = gamesFeignClient.getGameEvaluationPage(gameEvaluationDto);
-         if(gameEvaluationDtoPage.getRecords().size() > 0){
-             re = gameEvaluationDtoPage.getRecords().get(0);
-         }
+        GameEvaluationDto re = new GameEvaluationDto();
+        FungoPageResultDto<GameEvaluationDto> gameEvaluationDtoPage = gamesFeignClient.getGameEvaluationPage(gameEvaluationDto);
+        if (null != gameEvaluationDtoPage) {
+            List<GameEvaluationDto> gameEvaluationDtoList = gameEvaluationDtoPage.getData();
+            if (null != gameEvaluationDtoList && !gameEvaluationDtoList.isEmpty()) {
+                re = gameEvaluationDtoList.get(0);
+            }
+        }
         return re;
     }
 
@@ -128,15 +110,18 @@ public class GameProxyServiceImpl implements IGameProxyService {
      * @auther: dl.zhang
      * @date: 2019/5/14 11:30
      */
-    @HystrixCommand(fallbackMethod = "hystrixSelectGameById",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    @HystrixCommand(fallbackMethod = "hystrixSelectGameById", ignoreExceptions = {Exception.class})
     @Override
     public GameDto selectGameById(GameDto param) {
         GameDto re = new GameDto();
-        Page<GameDto> gamePage =   gamesFeignClient.getGamePage(param);
-        if(gamePage.getRecords().size() > 0 ){
-            re = gamePage.getRecords().get(0);
+        FungoPageResultDto<GameDto> gamePage = gamesFeignClient.getGamePage(param);
+        if (null != gamePage) {
+            List<GameDto> gameDtoList = gamePage.getData();
+            if (null != gameDtoList && !gameDtoList.isEmpty()) {
+                re = gameDtoList.get(0);
+            }
         }
+
         return re;
     }
 
@@ -147,16 +132,15 @@ public class GameProxyServiceImpl implements IGameProxyService {
      * @auther: dl.zhang
      * @date: 2019/5/14 11:34
      */
-    @HystrixCommand(fallbackMethod = "hystrixSelectMooMoodById",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    @HystrixCommand(fallbackMethod = "hystrixSelectMooMoodById", ignoreExceptions = {Exception.class})
     @Override
     public MooMoodDto selectMooMoodById(String id) {
         MooMoodDto param = new MooMoodDto();
         param.setId(id);
         FungoPageResultDto<MooMoodDto> re = communityFeignClient.queryCmmMoodList(param);
-        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
+        if (Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0) {
             return re.getData().get(0);
-        }
+        }else logger.warn("GameProxyServiceImpl selectMooMoodById");
         return null;
     }
 
@@ -168,17 +152,16 @@ public class GameProxyServiceImpl implements IGameProxyService {
      * @auther: dl.zhang
      * @date: 2019/5/14 11:37
      */
-    @HystrixCommand(fallbackMethod = "hystrixSelectMooMessageById",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    @HystrixCommand(fallbackMethod = "hystrixSelectMooMessageById", ignoreExceptions = {Exception.class})
     @Override
     public MooMessageDto selectMooMessageById(String id) {
         MooMessageDto mooMessageDto = new MooMessageDto();
         mooMessageDto.setId(id);
-        FungoPageResultDto<MooMessageDto>  re = communityFeignClient.queryCmmMoodCommentList(mooMessageDto);
-        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
+        FungoPageResultDto<MooMessageDto> re = communityFeignClient.queryCmmMoodCommentList(mooMessageDto);
+        if (Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0) {
             return re.getData().get(0);
-        }
-        return null;
+        }else  logger.warn("GameProxyServiceImpl selectMooMessageById");
+        return mooMessageDto;
     }
 
 
@@ -188,23 +171,21 @@ public class GameProxyServiceImpl implements IGameProxyService {
     }
 
     //    getEvaluationEntityWrapper
-    @HystrixCommand(fallbackMethod = "hystrixGetEvaluationEntityWrapper",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    @HystrixCommand(fallbackMethod = "hystrixGetEvaluationEntityWrapper", ignoreExceptions = {Exception.class})
     @Override
     public List<GameEvaluationDto> getEvaluationEntityWrapper(String memberId, String startDate, String endDate) {
         ResultDto<List<GameEvaluationDto>> evaluationEntityWrapper = gamesFeignClient.getEvaluationEntityWrapper(memberId, startDate, endDate);
         return evaluationEntityWrapper.getData();
     }
 
-    @HystrixCommand(fallbackMethod = "hystrixSelectGameInvite",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    @HystrixCommand(fallbackMethod = "hystrixSelectGameInvite", ignoreExceptions = {Exception.class})
     @Override
     public GameInviteDto selectGameInvite(GameInviteDto gameInviteDto) {
-        GameInviteDto result = null;
-        FungoPageResultDto<GameInviteDto> re =  gamesFeignClient.getGameInvitePage(gameInviteDto);
-        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
+        GameInviteDto result = new GameInviteDto();
+        FungoPageResultDto<GameInviteDto> re = gamesFeignClient.getGameInvitePage(gameInviteDto);
+        if (Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0) {
             result = re.getData().get(0);
-        }
+        }else  logger.warn("GameProxyServiceImpl selectGameInvite");
         return result;
     }
 
@@ -215,69 +196,69 @@ public class GameProxyServiceImpl implements IGameProxyService {
 
     @Override
     public List<String> getRecommendMembersFromEvaluation(Integer x, Integer y, List<String> wathMbsSet) {
-        ResultDto<List<String>> re = gamesFeignClient.getRecommendMembersFromEvaluation(x,y,wathMbsSet);
+        ResultDto<List<String>> re = gamesFeignClient.getRecommendMembersFromEvaluation(x, y, wathMbsSet);
         return re.getData();
     }
 
-    public CardIndexBean selectedGames(){
+    public CardIndexBean selectedGames() {
         return gamesFeignClient.selectedGames();
     }
 
     @Override
     public List<GameEvaluationDto> selectGameEvaluationPage() {
         FungoPageResultDto<GameEvaluationDto> re = gamesFeignClient.selectGameEvaluationPage();
-        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
+        if (Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0) {
             return re.getData();
-        }
-        return new ArrayList<GameEvaluationDto>();
+        }else logger.warn("GameProxyServiceImpl selectGameEvaluationPage");
+        return new ArrayList<>();
     }
 
     @Override
     public List<Map> getHonorQualificationOfEssenceEva() {
         ResultDto<List<Map>> re = gamesFeignClient.getUserGameReviewBoutiqueNumber();
-        if(re.isSuccess()&&re.getData()!=null&&re.getData().size()>0){
+        if (re.isSuccess() && re.getData() != null && re.getData().size() > 0) {
             return re.getData();
         }
         return new ArrayList<>();
     }
 
-    public List<GameEvaluationDto> hystrixGetEvaluationEntityWrapper(String memberId, String startDate,String endDate) {
+    public List<GameEvaluationDto> hystrixGetEvaluationEntityWrapper(String memberId, String startDate, String endDate) {
         logger.warn("IndexProxyServiceImpl.hystrixGetEvaluationEntityWrapper ");
-        return null;
+        return new CopyOnWriteArrayList<>();
     }
 
-    public CmmPostDto hystrixSelectCmmPostById(CmmPostDto param){
+    public CmmPostDto hystrixSelectCmmPostById(CmmPostDto param) {
         logger.warn("GameProxyServiceImpl.selectCmmPostById根据主键获取社区帖子异常");
-        return null;
+        return new CmmPostDto();
     }
 
-    public CmmCommentDto hystrixSelectCmmCommentById(String id){
+    public CmmCommentDto hystrixSelectCmmCommentById(String id) {
         logger.warn("GameProxyServiceImpl.selectCmmCommentById根据主键查询社区一级评论异常");
-        return null;
+        return new CmmCommentDto();
     }
 
-    public GameEvaluationDto hystrixSelectGameEvaluationById(GameEvaluationDto gameEvaluationDto){
+    public GameEvaluationDto hystrixSelectGameEvaluationById(GameEvaluationDto gameEvaluationDto) {
         logger.warn("GameProxyServiceImpl.selectGameEvaluationById根据主键查询游戏评价异常");
-        return null;
+        return new GameEvaluationDto();
     }
 
-    public GameDto hystrixSelectGameById(GameDto param){
+    public GameDto hystrixSelectGameById(GameDto param) {
         logger.warn("GameProxyServiceImpl.selectGameById根据主键查询游戏评价异常");
-        return null;
+        return new GameDto();
     }
 
     public MooMoodDto hystrixSelectMooMoodById(String id) {
         logger.warn("GameProxyServiceImpl.selectMooMoodById根据主键查询游戏评价异常");
-        return null;
+        return new MooMoodDto();
     }
 
     public MooMessageDto hystrixSelectMooMessageById(String id) {
         logger.warn("GameProxyServiceImpl.selectMooMessageById根据主键查询游戏评价异常");
-        return null;
+        return new MooMessageDto();
     }
 
     public GameInviteDto hystrixSelectGameInvite(GameInviteDto gameInviteDto) {
         logger.warn("GameProxyServiceImpl.hystrixSelectGameInvite根据主键查询游戏评价异常");
-        return null;
+        return new GameInviteDto();
     }
 }

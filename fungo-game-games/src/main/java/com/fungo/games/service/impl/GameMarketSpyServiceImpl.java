@@ -144,7 +144,7 @@ public class GameMarketSpyServiceImpl implements IGameMarketSpyService {
             identityHashMap.put("is_obtain", 2);
 
             EntityWrapper<GameMarketSpy> entityWrapper = new EntityWrapper<GameMarketSpy>();
-            entityWrapper.setSqlSelect("id,game_id,is_obtain");
+            entityWrapper.setSqlSelect("id,game_id as gameId,is_obtain as isObtain");
 
             entityWrapper.allEq(identityHashMap);
 

@@ -55,6 +55,8 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
         FungoPageResultDto<CmmPostDto> re = communityFeignClient.queryCmmPostList(param);
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
             param = re.getData().get(0);
+        }else {
+            logger.warn("MemeberProxyServiceImpl.selectCmmPost 异常");
         }
         return param;
     }
@@ -72,7 +74,7 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
     @HystrixCommand(fallbackMethod = "hystrixSelectGameSurveyRelPage",ignoreExceptions = {Exception.class},
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
-    public Page<GameSurveyRelDto> selectGameSurveyRelPage(int page, int limit, String memberId, int status) {
+    public FungoPageResultDto<GameSurveyRelDto> selectGameSurveyRelPage(int page, int limit, String memberId, int status) {
         GameSurveyRelDto gameSurveyRelDto = new GameSurveyRelDto();
         gameSurveyRelDto.setMemberId(memberId);
         gameSurveyRelDto.setState(status);
@@ -117,7 +119,8 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
             mooMoodPage.setRecords(re.getData());
             mooMoodPage.setTotal(re.getCount());
-        }
+        }else
+            logger.warn("MemeberProxyServiceImpl.selectMooMoodPage 异常");
         return mooMoodPage;
     }
 
@@ -151,7 +154,8 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
         FungoPageResultDto<CmmCmtReplyDto>  re = communityFeignClient.querySecondLevelCmtList(replyDto);
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
             reply =  re.getData().get(0);
-        }
+        }else
+            logger.warn("MemeberProxyServiceImpl.selectReplyById 异常");
         return reply;
     }
 
@@ -165,8 +169,14 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
     @HystrixCommand(fallbackMethod = "hystrixSelectGameEvaluationPage",ignoreExceptions = {Exception.class},
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
-    public Page<GameEvaluationDto> selectGameEvaluationPage(GameEvaluationDto gameEvaluationDto) {
-        return gamesFeignClient.getGameEvaluationPage(gameEvaluationDto);
+    public  Page<GameEvaluationDto>  selectGameEvaluationPage(GameEvaluationDto gameEvaluationDto) {
+        Page<GameEvaluationDto> page = new Page<>();
+        FungoPageResultDto<GameEvaluationDto> resultDto = gamesFeignClient.getGameEvaluationPage(gameEvaluationDto);
+        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(resultDto.getStatus()) && resultDto.getData().size() > 0){
+            page.setRecords(resultDto.getData());
+        }else
+            logger.warn("MemeberProxyServiceImpl.selectGameEvaluationPage 异常");
+        return page;
     }
 
     /**
@@ -184,7 +194,8 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
         FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(cmmPostDto);
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmPostDtoFungoPageResultDto.getStatus()) && cmmPostDtoFungoPageResultDto.getData().size() > 0){
             page.setRecords(cmmPostDtoFungoPageResultDto.getData());
-        }
+        }else
+            logger.warn("MemeberProxyServiceImpl.selectCmmPostpage 异常");
         return page;
     }
 
@@ -203,7 +214,8 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
         FungoPageResultDto<CmmCommunityDto> re = communityFeignClient.queryCmmPostList(cmmCommunityDto);
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
             communityDto = re.getData().get(0);
-        }
+        }else
+            logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById 异常");
         return communityDto;
     }
 
@@ -216,13 +228,13 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
 
     public CmmPostDto hystrixSelectCmmPost(String id) {
         logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");
-        return null;
+        return new CmmPostDto();
     }
 
 
-    public Page<GameSurveyRelDto> hystrixSelectGameSurveyRelPage(int page, int limit, String memberId, int status) {
+    public FungoPageResultDto<GameSurveyRelDto> hystrixSelectGameSurveyRelPage(int page, int limit, String memberId, int status) {
         logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");
-        return null;
+        return new FungoPageResultDto<>();
     }
 
     public int hystrixSelectMooMoodCount(MooMoodDto mooMoodDto) {
@@ -232,7 +244,7 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
 
     public Page<MooMoodDto> hystrixSelectMooMoodPage(MooMoodDto mooMoodDto) {
         logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");
-        return null;
+        return new Page<>();
     }
 
     public int hystrixSelectReplyCount(ReplyDto replyDto) {
@@ -241,22 +253,22 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
     }
 
     public ReplyDto hystrixSelectReplyById(ReplyDto replyDto) {
-        return null;
+        return new ReplyDto();
     }
 
     public Page<GameEvaluationDto> hystrixSelectGameEvaluationPage(GameEvaluationDto gameEvaluationDto) {
         logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");
-        return null;
+        return new Page<>();
     }
 
 
     public Page<CmmPostDto> hystrixSelectCmmPostpage(CmmPostDto cmmPostDto) {
         logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");
-        return null;
+        return new Page<>();
     }
 
     public CmmCommunityDto hystrixSelectCmmCommunityById(CmmCommunityDto cmmCommunityDto) {
         logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");
-        return null;
+        return new CmmCommunityDto();
     }
 }

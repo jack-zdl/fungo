@@ -13,6 +13,10 @@
 		<result column="video_id" property="videoId" />
 		<result column="biz_video_url" property="bizVideoUrl" />
 		<result column="re_video_url" property="reVideoUrl" />
+
+		<result column="video_cover_image" property="videoCoverImage" />
+		<result column="video_urls" property="videoUrls" />
+
 	</resultMap>
 
     <!-- 通用查询结果列 -->

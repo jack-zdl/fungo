@@ -150,6 +150,12 @@ public class GameServiceImpl implements IGameService {
             out.setAndroidState(game.getAndroidState());
             out.setIosState(game.getIosState());
             out.setRating(getGameRating(game.getId()));
+            if(game.getAndroidPackageName()==null){
+                game.setAndroidPackageName("");
+            }
+            if(game.getApk()==null){
+                game.setApk("");
+            }
             out.setApkUrl(game.getApk());
             out.setItunesId(game.getItunesId());
             out.setAndroidPackageName(game.getAndroidPackageName());
@@ -176,8 +182,9 @@ public class GameServiceImpl implements IGameService {
             dataList.add(out);
         }
         re = new FungoPageResultDto<GameOutPage>();
-        PageTools.pageToResultDto(re, p);
         re.setData(dataList);
+        PageTools.pageToResultDto(re, p);
+
         //redis cache
         fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_LIST + memberId, keySuffix, re);
         return re;
@@ -596,11 +603,23 @@ public class GameServiceImpl implements IGameService {
             out.setComment_num((int) map.get("comment_num"));
             out.setLink_community((String) map.get("community_id"));
             out.setCategory((String) map.get("tags"));
+            if(map.get("apk")!=null){
+                out.setApkUrl((String)map.get("apk"));
+            }else{
+                out.setApkUrl("");
+            }
+            if(map.get("android_package_name")!=null){
+                out.setAndroidPackageName((String)map.get("android_package_name"));
+            }else{
+                out.setAndroidPackageName("");
+            }
+
             olist.add(out);
         }
         re = new FungoPageResultDto<GameOutPage>();
-        PageTools.pageToResultDto(re, page);
         re.setData(olist);
+        PageTools.pageToResultDto(re, page);
+
 
         //redis cache
         fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_RECENTEVA + userId, keySuffix, re);
@@ -638,6 +657,12 @@ public class GameServiceImpl implements IGameService {
             List<Game> gamel = gameService.selectList(new EntityWrapper<Game>().in("id", gameIdList));
             for (Game game : gamel) {
                 GameItem it = new GameItem();
+                if(game.getAndroidPackageName()==null){
+                    game.setAndroidPackageName("");
+                }
+                if(game.getApk()==null){
+                    game.setApk("");
+                }
                 it.setAndroidPackageName(game.getAndroidPackageName());
                 it.setAndroidState(game.getAndroidState());
                 it.setApkUrl(game.getApk());
@@ -669,8 +694,9 @@ public class GameServiceImpl implements IGameService {
 
                 ilist.add(it);
             }
-            PageTools.pageToResultDto(re, itemPage);
             re.setData(ilist);
+            PageTools.pageToResultDto(re, itemPage);
+
         }
         //redis cache
         fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_ITEMS, keySuffix, re);
@@ -702,13 +728,13 @@ public class GameServiceImpl implements IGameService {
             }
             Page<Game> page = gameService.selectPage(new Page<>(input.getPage(), input.getLimit()),wrapper);
             gameList = page.getRecords();
-            PageTools.pageToResultDto(re, page);
+
             List<GameOutBean> relist = new ArrayList<>();
             for (Game game : gameList) {
                 GameOutBean out = new GameOutBean();
                 out.setAndroidState(game.getAndroidState() == null ? 0 : game.getAndroidState());
 //			out.setCheckState(3);
-                GameReleaseLog log = logService.selectOne(Condition.create().setSqlSelect("id,approve_state").eq("game_id",game.getId()).orderBy("created_at",false));
+                GameReleaseLog log = logService.selectOne(Condition.create().setSqlSelect("id,approve_state as approveState").eq("game_id",game.getId()).orderBy("created_at",false));
                 if(log != null){
                     out.setCheckState(log.getApproveState());
                     out.setiOState(game.getIosState() == null ? 0 : game.getIosState());
@@ -721,6 +747,7 @@ public class GameServiceImpl implements IGameService {
                 }
             }
             re.setData(relist);
+            PageTools.pageToResultDto(re, page);
         }catch (Exception e){
             e.printStackTrace();
             logger.error("根据id集合查询游戏合集项列表失败",e);
@@ -806,9 +833,10 @@ public class GameServiceImpl implements IGameService {
                     list.add(bean);
                 }
             }
+            re.setData(list);
             PageTools.pageToResultDto(re, page);
         }
-        re.setData(list);
+
         //redis cache
         fungoCacheMember.excIndexCache(true, keyPrefix, keySuffix, re);
         return re;
@@ -915,11 +943,11 @@ public class GameServiceImpl implements IGameService {
             out.setEvaluation_num(evaCount);
             out.setGame_size(game.getGameSize());
 
-            out.setAndroidPackageName(game.getAndroidPackageName());
+            out.setAndroidPackageName( game.getAndroidPackageName() == null ? "" : game.getAndroidPackageName());
             out.setAndroidState(game.getAndroidState());
             out.setIosState(game.getIosState());
             out.setItunesId(game.getItunesId());
-            out.setApkUrl(game.getApk());
+            out.setApkUrl(game.getApk()==null?"":game.getApk());
 
             if(unredNum != 0) {
                 DecimalFormat df = new DecimalFormat("#.00");
@@ -942,8 +970,9 @@ public class GameServiceImpl implements IGameService {
             dataList.add(out);
         }
         FungoPageResultDto<GameSearchOut> re=new FungoPageResultDto<GameSearchOut>();
-        PageTools.pageToResultDto(re, gamePage);
         re.setData(dataList);
+        PageTools.pageToResultDto(re, gamePage);
+
         return re;
     }
 
@@ -1456,7 +1485,7 @@ public class GameServiceImpl implements IGameService {
     public ResultDto<List> getHotTagList() {
         @SuppressWarnings("unchecked")
         List<GameTag> hotGameTagList = gameTagService
-                .selectList(Condition.create().setSqlSelect("tag_id").orderBy("like_num", false).last("LIMIT 10"));
+                .selectList(Condition.create().setSqlSelect("tag_id as tagId").orderBy("like_num", false).last("LIMIT 10"));
         List<String> hotIdList = new ArrayList<String>();
         for (int i = 0; i < hotGameTagList.size(); i++) {
             hotIdList.add(hotGameTagList.get(i).getTagId());
@@ -1495,7 +1524,7 @@ public class GameServiceImpl implements IGameService {
         TagSelectOut out = new TagSelectOut();
         //获取用户对此游戏的支持标签
         @SuppressWarnings("unchecked")
-        List<GameTag> gameTagList = gameTagService.selectList(Condition.create().setSqlSelect("id,tag_id").eq("game_id", game_id));
+        List<GameTag> gameTagList = gameTagService.selectList(Condition.create().setSqlSelect("id,tag_id as tagId").eq("game_id", game_id));
         String userId = memberUserPrefile.getLoginId();
         // 目标游戏的所有标签中被用户点赞的
         List<GameTagAttitude> gameTagAttitudeList = gameTagAttitudeService.selectList(
@@ -1555,7 +1584,7 @@ public class GameServiceImpl implements IGameService {
                 }
                 Page<Game> page = gameService.selectPage(new Page<>(input.getPage(), input.getLimit()),wrapper);
                 gameList = page.getRecords();
-                PageTools.pageToResultDto(re, page);
+
             List<GameOutBean> relist = new ArrayList<>();
             for (Game game : gameList) {
                 GameOutBean out = new GameOutBean();
@@ -1574,6 +1603,7 @@ public class GameServiceImpl implements IGameService {
                 relist.add(out);
             }
             re.setData(relist);
+            PageTools.pageToResultDto(re, page);
         }
         return re;
     }
