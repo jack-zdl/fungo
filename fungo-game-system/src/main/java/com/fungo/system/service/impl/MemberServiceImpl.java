@@ -1357,7 +1357,7 @@ public class MemberServiceImpl implements IMemberService {
     @Override
     public void initRank() throws Exception {
         //获取所有用户
-        List<Member> memberList = memberService.selectList(Condition.create().setSqlSelect("id,user_name,created_at"));
+        List<Member> memberList = memberService.selectList(Condition.create().setSqlSelect("id,user_name as userName,created_at as createdAt"));
         //IncentRuleRank selectById = rankRuleService.selectById(24);
 
         ObjectMapper mapper = new ObjectMapper();

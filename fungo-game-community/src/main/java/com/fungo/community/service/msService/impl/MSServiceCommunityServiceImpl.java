@@ -140,7 +140,7 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
                 return cmmCommunityDtoRs;
             }
 
-            CmmCommunity cmmCommunity = cmmCommunityDaoService.selectOne(Condition.create().setSqlSelect("id,name,icon,cover_image").eq("id", cmmCommunityDto.getId()).ne("state", -1));
+            CmmCommunity cmmCommunity = cmmCommunityDaoService.selectOne(Condition.create().setSqlSelect("id,name,icon,cover_image as coverImage").eq("id", cmmCommunityDto.getId()).ne("state", -1));
             if (null != cmmCommunity) {
                 cmmCommunityDtoRs = new CmmCommunityDto();
 

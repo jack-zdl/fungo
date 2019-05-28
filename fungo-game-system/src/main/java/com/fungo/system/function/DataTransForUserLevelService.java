@@ -168,7 +168,7 @@ public class DataTransForUserLevelService {
 
 
         EntityWrapper<Member> memberEntityWrapper = new EntityWrapper<>();
-        memberEntityWrapper.setSqlSelect("id,level,user_name,created_at,mobile_phone_num");
+        memberEntityWrapper.setSqlSelect("id,level,user_name as userName,created_at as createdAt,mobile_phone_num as mobilePhoneNum");
 
         memberEntityWrapper.like("user_name", user_name);
 
