@@ -47,6 +47,17 @@ public class MSServiceCommentController {
         return cmmPostDtoList;
     }
 
+    /**
+     * 根据创建时间排序 上游游戏业务需求
+     * @param replyDto
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/cmt/s/getReplyDtoBysSelectPageOrderByCreatedAt")
+    public FungoPageResultDto<CmmCmtReplyDto> getReplyDtoBysSelectPageOrderByCreatedAt(@RequestBody CmmCmtReplyDto replyDto) {
+        FungoPageResultDto<CmmCmtReplyDto> cmmPostDtoList = imsServiceCommentService.getReplyDtoBysSelectPageOrderByCreatedAt(replyDto);
+
+        return cmmPostDtoList;
+    }
 
     /**
      * 分页查询 一级评论 数据

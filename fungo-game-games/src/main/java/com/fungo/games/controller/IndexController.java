@@ -194,8 +194,9 @@ public class IndexController {
         }
 
         re = new FungoPageResultDto<Map<String, Object>>();
-        PageTools.pageToResultDto(re, gpage);
         re.setData(list);
+        PageTools.pageToResultDto(re, gpage);
+
 
         //reids cache
         fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
