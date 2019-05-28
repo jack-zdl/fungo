@@ -125,7 +125,7 @@ public interface GamesFeignClient {
     ResultDto<List<String>> getRecommendMembersFromEvaluation(@RequestParam("x") Integer x, @RequestParam("y") Integer y, @RequestParam("wathMbsSet") List<String> wathMbsSet);
 
     @GetMapping("/ms/service/game/api/game/selectedGames")
-    public CardIndexBean selectedGames();
+    CardIndexBean selectedGames();
 
     @GetMapping("/ms/service/game/api/game/selectGameEvaluationPage")
     FungoPageResultDto<GameEvaluationDto> selectGameEvaluationPage();
