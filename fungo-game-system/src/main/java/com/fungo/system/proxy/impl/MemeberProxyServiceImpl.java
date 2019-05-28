@@ -232,9 +232,9 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
     }
 
 
-    public Page<GameSurveyRelDto> hystrixSelectGameSurveyRelPage(int page, int limit, String memberId, int status) {
+    public FungoPageResultDto<GameSurveyRelDto> hystrixSelectGameSurveyRelPage(int page, int limit, String memberId, int status) {
         logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");
-        return new Page<GameSurveyRelDto>();
+        return new FungoPageResultDto<>();
     }
 
     public int hystrixSelectMooMoodCount(MooMoodDto mooMoodDto) {
