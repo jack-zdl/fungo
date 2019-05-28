@@ -875,16 +875,9 @@ public class MemberServiceImpl implements IMemberService {
         param.setLimit(input.getLimit());
 
 
-        FungoPageResultDto<GameEvaluationDto> p = iMemeberProxyService.selectGameEvaluationPage(param); // evaluationService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameEvaluation>()
+        Page<GameEvaluationDto>  p = iMemeberProxyService.selectGameEvaluationPage(param); // evaluationService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameEvaluation>()
 //                .eq("member_id", loginId).eq("state", 0).orderBy("updated_at", false));
-        List<GameEvaluationDto> elist = new ArrayList<GameEvaluationDto>();
-
-        if (null != p) {
-            List<GameEvaluationDto> evaluationDtoList = p.getData();
-            if (null != evaluationDtoList && !evaluationDtoList.isEmpty()) {
-                elist = evaluationDtoList;
-            }
-        }
+        List<GameEvaluationDto> elist = p.getRecords();
 
         List<MyEvaluationBean> olist = new ArrayList<>();
 

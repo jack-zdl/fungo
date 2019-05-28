@@ -22,6 +22,7 @@
 		<result column="created_by" property="createdBy" />
 		<result column="created_name" property="createdName" />
 		<result column="sort" property="sort" />
+		<result column="adv_type" property="advType" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->

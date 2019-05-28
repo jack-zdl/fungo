@@ -11,6 +11,20 @@
 		<result column="member_id" property="memberId" />
 		<result column="created_at" property="createdAt" />
 		<result column="updated_at" property="updatedAt" />
+		<result column="group_id" property="groupId" />
+		<result column="rule_id" property="ruleId" />
+		<result column="rule_name" property="ruleName" />
+		<result column="code_idt" property="codeIdt" />
+		<result column="mb_user_name" property="mbUserName" />
+		<result column="task_type" property="taskType" />
+		<result column="ext1" property="ext1" />
+		<result column="ext2" property="ext2" />
+		<result column="ext3" property="ext3" />
+		<result column="produce_type" property="produceType" />
+		<result column="creator_id" property="creatorId" />
+		<result column="creator_name" property="creatorName" />
+		<result column="target_type" property="targetType" />
+		<result column="target_id" property="targetId" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->

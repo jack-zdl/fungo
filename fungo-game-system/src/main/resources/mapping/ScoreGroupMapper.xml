@@ -8,6 +8,19 @@
 		<result column="name" property="name" />
 		<result column="created_at" property="createdAt" />
 		<result column="updated_at" property="updatedAt" />
+		<result column="task_type" property="taskType" />
+		<result column="task_flag" property="taskFlag" />
+		<result column="indate_start" property="indateStart" />
+		<result column="indate_end" property="indateEnd" />
+		<result column="market_imgs" property="marketImgs" />
+		<result column="market_intro" property="marketIntro" />
+		<result column="sort" property="sort" />
+		<result column="creator_id" property="creator_id" />
+		<result column="is_active" property="isActive" />
+		<result column="creator_name" property="creatorName" />
+		<result column="ext1" property="ext1" />
+		<result column="ext2" property="ext2" />
+		<result column="ext3" property="ext3" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->
