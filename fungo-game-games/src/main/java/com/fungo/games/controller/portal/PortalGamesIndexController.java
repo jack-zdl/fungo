@@ -144,11 +144,11 @@ public class PortalGamesIndexController {
 
 
     @ApiOperation(value = "PC2.0安利墙游戏评价列表(v2.3)", notes = "")
-    @RequestMapping(value = "/api/portal/games/index/games/amwaywall/list", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/games/amwaywall/list", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public FungoPageResultDto<AmwayWallBean> getAmwayWallList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto) {
         //从redis获取
-        String keyPrefix = "/api/index/games/amwaywall/list";
+        String keyPrefix = "/api/amwaywall/list";
         String keySuffix = JSON.toJSONString(inputPageDto);
         FungoPageResultDto<AmwayWallBean> re = (FungoPageResultDto<AmwayWallBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
