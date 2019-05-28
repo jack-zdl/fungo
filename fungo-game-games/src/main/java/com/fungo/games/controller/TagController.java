@@ -1,7 +1,9 @@
 package com.fungo.games.controller;
 
 
+import com.fungo.games.service.BasTagService;
 import com.fungo.games.service.IGameService;
+import com.fungo.games.service.ITagService;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.TagInput;
@@ -23,18 +25,18 @@ import java.util.List;
 @Api(value="",description="标签")
 public class TagController {
 	
-//	@Autowired
-//	private ITagService tagService;
+	@Autowired
+	private ITagService iTagService;
 
 	@Autowired
 	private IGameService iGameService;
 	
-	/*@ApiOperation(value="获得全部游戏标签", notes="")
+	@ApiOperation(value="获得全部游戏标签", notes="")
 	@RequestMapping(value="/api/tag/taglist", method= {RequestMethod.POST , RequestMethod.GET})
 	public ResultDto<List> getTagListAll(@Anonymous MemberUserProfile memberUserPrefile) {
-		return tagService.getTagListAll();
+		return iTagService.getTagListAll();
 		
-	}*/
+	}
 	
 	@ApiOperation(value="根据游戏ID获取游戏标签列表(2.4修改)", notes="")
 	@RequestMapping(value="/api/tag/game/taglist", method= RequestMethod.POST)

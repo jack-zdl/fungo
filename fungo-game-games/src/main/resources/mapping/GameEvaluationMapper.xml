@@ -16,6 +16,21 @@
 		<result column="is_recommend" property="isRecommend" />
 		<result column="created_at" property="createdAt" />
 		<result column="updated_at" property="updatedAt" />
+		<!--2019-05-28 补充遗漏的字段 lyc-->
+		<result column="type" property="type" />
+		<result column="sort" property="sort" />
+		<result column="rating" property="rating" />
+		<result column="trait1" property="trait1" />
+		<result column="trait2" property="trait2" />
+		<result column="trait3" property="trait3" />
+		<result column="trait4" property="trait4" />
+		<result column="trait5" property="trait5" />
+		<result column="trait6" property="trait6" />
+		<result column="trait7" property="trait7" />
+		<result column="trait8" property="trait8" />
+		<result column="trait9" property="trait9" />
+		<result column="trait10" property="trait10" />
+		<result column="game_name" property="gameName" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->

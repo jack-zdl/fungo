@@ -98,6 +98,9 @@
         <result column="credentials" property="credentials"/>
         <result column="issue_id" property="issueId"/>
         <result column="android_package_name" property="androidPackageName"/>
+        <!--2019-05-28 补充遗漏的字段 lyc-->
+        <result column="comment_num" property="commentNum"/>
+        <result column="boom_download_num" property="boomDownloadNum"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->

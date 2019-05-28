@@ -49,6 +49,9 @@
 		<result column="ios_state" property="iosState" />
 		<result column="test_number" property="testNumber" />
 		<result column="tset_date" property="tsetDate" />
+		<!--2019-05-28 补充遗漏的字段 lyc-->
+		<result column="remark" property="remark" />
+		<result column="community_intro" property="communityIntro" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->
