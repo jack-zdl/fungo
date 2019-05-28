@@ -13,7 +13,6 @@ import com.fungo.games.proxy.IEvaluateProxyService;
 import com.fungo.games.service.*;
 import com.fungo.games.service.impl.GameEvaluationServiceImap;
 import com.game.common.bean.MemberPulishFromCommunity;
-import com.game.common.bean.TagBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
@@ -31,7 +30,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * feignService 调用中心
@@ -208,6 +210,9 @@ public class FeignServiceController {
                 if (null != cmmPostPageSelect) {
                     PageTools.pageToResultDto(fungoPageResultDto, cmmPostPageSelect);
                     selectRecords = cmmPostPageSelect.getRecords();
+
+                    //设置分页数据
+                    fungoPageResultDto.setCount(cmmPostPageSelect.getTotal());
                 }
 
             } else {
@@ -231,8 +236,9 @@ public class FeignServiceController {
         } catch (Exception ex) {
             LOGGER.error("/ms/service/game/api/evaluation/getGameEvaluationPage--getGameEvaluationPage-出现异常:", ex);
         }
-        Page<GameEvaluationDto> gameEvaluationDtoPage = new Page<>();
-        gameEvaluationDtoPage.setRecords(gameEvaluationList);
+//        Page<GameEvaluationDto> gameEvaluationDtoPage = new Page<>();
+//        gameEvaluationDtoPage.setRecords(gameEvaluationList);
+
         fungoPageResultDto.setData(gameEvaluationList);
         return fungoPageResultDto;
     }
