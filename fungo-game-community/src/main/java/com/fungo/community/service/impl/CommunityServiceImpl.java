@@ -184,7 +184,7 @@ public class CommunityServiceImpl implements ICommunityService {
         }
 
         //置顶文章
-        List<CmmPost> plist = postService.selectList(Condition.create().setSqlSelect("id,title,member_id,video").eq("community_id", communityId).eq("type", 3).ne("state", -1));
+        List<CmmPost> plist = postService.selectList(Condition.create().setSqlSelect("id,title,member_id as memberId,video").eq("community_id", communityId).eq("type", 3).ne("state", -1));
         List<Map<String, String>> topicPosts = new ArrayList<>();
         for (CmmPost p : plist) {
             Map<String, String> map = new HashMap<>();
