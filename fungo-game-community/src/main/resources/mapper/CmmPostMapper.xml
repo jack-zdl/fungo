@@ -172,8 +172,8 @@
         p.cover_image as coverImage,
         p.video as video,
         p.member_id as memberId,
-        p.updated_at as updatedAt
-
+        p.updated_at as updatedAt,
+        p.created_at as createdAt
         from t_cmm_post p
 
         <where>
