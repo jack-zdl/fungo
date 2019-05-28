@@ -36,12 +36,7 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
     @Autowired
     private CommunityFeignClient communityFeignClient;
 
-    @Autowired
-    private GamesFeignClient gamesFeignClient;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunityProxyServiceImpl.class);
-
-
 
     @Override
     public List<CollectionBean> getCollection(Page<CollectionBean> page, List<String> list) {
@@ -54,6 +49,7 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
             }
         }catch (Exception e) {
             e.printStackTrace();
+            LOGGER.error("CommunityProxyServiceImpl.getCollection",e);
         }
         return new ArrayList<>();
     }
@@ -68,6 +64,7 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
                 return resultDto.getData();
             }
         }catch (Exception e){
+            e.printStackTrace();
             LOGGER.error("社区远程调用异常:"+e);
         }
 
@@ -97,7 +94,7 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new ArrayList<CommentBean>();
+        return new ArrayList<>();
     }
 
     @Override
