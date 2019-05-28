@@ -10,7 +10,6 @@ import com.fungo.community.service.msService.IMSServiceCommentService;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.CmmCommentDto;
-import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.util.PageTools;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -110,13 +109,13 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
                 param.put("reply_to_content_id", reply_to_content_id);
             }
 
+            replyEntityWrapper.allEq(param);
 
             //内容
             String content = postDto.getReplayToId();
             if (StringUtils.isNotBlank(content)) {
                 replyEntityWrapper.orNew("content like '%" + content + "%'");
             }
-
 
             //根据修改时间倒叙
             replyEntityWrapper.orderBy("updated_at", false);

@@ -74,6 +74,8 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
                 param.put("type", type);
             }
 
+            moodDtoEntityWrapper.allEq(param);
+
             //内容
             String content = mooMoodDto.getContent();
             if (StringUtils.isNotBlank(content)) {
