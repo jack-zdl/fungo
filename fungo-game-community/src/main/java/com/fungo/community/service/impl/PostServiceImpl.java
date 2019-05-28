@@ -1268,7 +1268,8 @@ public class PostServiceImpl implements IPostService {
         AuthorBean authorBean = new AuthorBean();
         try {
             //out.setAuthor(IUserService.getUserCard(cmmPost.getMemberId(), userId));
-            if (StringUtils.isNotBlank(userId) && StringUtils.isNotBlank(cmmPost.getMemberId())) {
+           // if (StringUtils.isNotBlank(userId) && StringUtils.isNotBlank(cmmPost.getMemberId())) {
+            if (StringUtils.isNotBlank(cmmPost.getMemberId())) {
                 ResultDto<AuthorBean> userCardResult = systemFeignClient.getUserCard(cmmPost.getMemberId(), userId);
                 if (null != userCardResult) {
                     authorBean = userCardResult.getData();

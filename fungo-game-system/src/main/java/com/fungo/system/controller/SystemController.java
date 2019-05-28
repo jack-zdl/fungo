@@ -440,7 +440,7 @@ public class SystemController {
 
     @GetMapping("/getUserCard")
     @ApiOperation(value="获取会员信息")
-    public ResultDto<AuthorBean> getUserCard(@RequestParam("cardId") String cardId, @RequestParam("memberId") String memberId){
+    public ResultDto<AuthorBean> getUserCard(@RequestParam("cardId") String cardId, @RequestParam(value = "memberId",required = false) String memberId){
         ResultDto<AuthorBean> re = null;
         try {
             re = systemService.getUserCard(cardId,memberId);
