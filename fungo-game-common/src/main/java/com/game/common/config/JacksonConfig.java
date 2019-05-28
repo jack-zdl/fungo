@@ -3,6 +3,7 @@ package com.game.common.config;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -34,11 +35,16 @@ public class JacksonConfig {
             @Override
             public void serialize(Object o, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
                 jsonGenerator.writeString("");
-//            	Class<? extends Object> clazz = o.getClass();
-//            	System.out.println(clazz.getTypeName());
-//                jsonGenerator.writeObject(new ArrayList<>());
+
             }
         });
+
+
+        //json反序列化 将 "" ---》 null 避免类型错误
+        objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+        objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
+        objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+
         return objectMapper;
     }
 }
