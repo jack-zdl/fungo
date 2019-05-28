@@ -471,7 +471,7 @@ public class IndexServiceImpl implements IIndexService {
         ArrayList<CardDataBean> gameDateList = new ArrayList<>();
         CardIndexBean indexBean = new CardIndexBean();
         for (Banner banner : blist) {
-            HashMap<String, BigDecimal> rateData = indexProxyService.getRateData(banner.getTargetId());  //gameDao.getRateData(banner.getTargetId());
+            Map<String, BigDecimal> rateData = indexProxyService.getRateData(banner.getTargetId());  //gameDao.getRateData(banner.getTargetId());
             //
             GameDto gameParam = new GameDto();
             gameParam.setId(banner.getTargetId());

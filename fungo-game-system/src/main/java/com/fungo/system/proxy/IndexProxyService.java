@@ -10,6 +10,7 @@ import com.game.common.dto.index.CardIndexBean;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p></p>
@@ -22,7 +23,7 @@ public interface IndexProxyService {
     CmmPostDto selctCmmPostOne(CmmPostDto cmmPostDto);
 
 
-    HashMap<String, BigDecimal>  getRateData(String id);
+    Map<String, BigDecimal> getRateData(String id);
 
     Page<CmmPostDto> selectCmmPostPage(CmmPostDto cmmPostDto);
     CmmCommunityDto selectCmmCommuntityDetail(CmmCommunityDto cmmCommunityDto);

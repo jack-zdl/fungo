@@ -141,7 +141,7 @@ public class AdvertController {
         //获取广告位
         List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0002").eq("state", 0).orderBy("sort", false));
         for (Banner banner : blist) {
-            HashMap<String, BigDecimal> rateData = indexProxyService.getRateData(banner.getTargetId());  //gameDao.getRateData(banner.getTargetId());
+            Map<String, BigDecimal> rateData = indexProxyService.getRateData(banner.getTargetId());  //gameDao.getRateData(banner.getTargetId());
             Map<String, String> map1 = new HashMap<String, String>();
 //				 map1.put("rating",rateData.get("avgRating").toString());
             if (1 == banner.getTargetType()) {

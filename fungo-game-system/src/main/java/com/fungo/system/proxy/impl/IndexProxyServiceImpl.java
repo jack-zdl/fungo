@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p></p>
@@ -47,20 +49,22 @@ public class IndexProxyServiceImpl implements IndexProxyService {
         FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(cmmPostDto);
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmPostDtoFungoPageResultDto.getStatus()) && cmmPostDtoFungoPageResultDto.getData().size() > 0){
             re = cmmPostDtoFungoPageResultDto.getData().get(0);
-        }
+        }else
+            logger.warn("IndexProxyServiceImpl.selctCmmPostOne  返回为0");
         return re;
     }
 
     @HystrixCommand(fallbackMethod = "hystrixGetRateData",ignoreExceptions = {Exception.class},
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
-    public HashMap<String, BigDecimal> getRateData(String gameId) {
+    public Map<String, BigDecimal> getRateData(String gameId) {
         // @todo
         ResultDto<HashMap<String, BigDecimal>> resultDto = gamesFeignClient.getRateData(gameId);
         if(resultDto.isSuccess()){
             return resultDto.getData();
-        }
-        return null;
+        }else
+            logger.warn("IndexProxyServiceImpl.getRateData  返回为0");
+        return new HashMap<>();
     }
 
     @HystrixCommand(fallbackMethod = "hystrixSelectCmmPostPage",ignoreExceptions = {Exception.class},
@@ -72,7 +76,8 @@ public class IndexProxyServiceImpl implements IndexProxyService {
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmPostDtoFungoPageResultDto.getStatus()) && cmmPostDtoFungoPageResultDto.getData().size() > 0){
             page.setRecords(cmmPostDtoFungoPageResultDto.getData());
             page.setTotal(cmmPostDtoFungoPageResultDto.getData().size());
-        }
+        }else
+            logger.warn("IndexProxyServiceImpl.selectCmmPostPage  返回为0");
         return page;
     }
 
@@ -84,7 +89,8 @@ public class IndexProxyServiceImpl implements IndexProxyService {
         FungoPageResultDto<CmmCommunityDto>  cmmCommunityDtoFungoPageResultDto =  communityFeignClient.queryCmmCtyDetail(cmmCommunityDto);
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmCommunityDtoFungoPageResultDto.getStatus()) && cmmCommunityDtoFungoPageResultDto.getData().size() > 0){
             re = cmmCommunityDtoFungoPageResultDto.getData().get(0);
-        }
+        }else
+            logger.warn("IndexProxyServiceImpl.selectCmmCommuntityDetail  返回为0");
         return re;
     }
 
@@ -98,26 +104,26 @@ public class IndexProxyServiceImpl implements IndexProxyService {
 
     public CmmPostDto hystrixSelctCmmPostOne(CmmPostDto cmmPostDto) {
         logger.warn("IndexProxyServiceImpl.hystrixSelctCmmPostOne ");
-        return null;
+        return new CmmPostDto();
     }
 
-    public HashMap<String, BigDecimal> hystrixGetRateData(String id) {
+    public Map<String, BigDecimal> hystrixGetRateData(String id) {
         logger.warn("IndexProxyServiceImpl.hystrixGetRateData ");
-        return null;
+        return new HashMap<>();
     }
 
     public Page<CmmPostDto> hystrixSelectCmmPostPage(CmmPostDto cmmPostDto) {
         logger.warn("IndexProxyServiceImpl.hystrixSelectCmmPostPage ");
-        return null;
+        return new Page<>();
     }
 
     public CmmCommunityDto hystrixSelectCmmCommuntityDetail(CmmCommunityDto cmmCommunityDto) {
         logger.warn("IndexProxyServiceImpl.hystrixSelectCmmCommuntityDetail ");
-        return null;
+        return new CmmCommunityDto();
     }
 
     public CardIndexBean hystrixSelectedGames() {
         logger.warn("IndexProxyServiceImpl.hystrixSelectedGames ");
-        return null;
+        return new CardIndexBean();
     }
 }
