@@ -700,6 +700,7 @@ public class MemberServiceImpl implements IMemberService {
         return re;
     }
 
+    @Deprecated
     @Override
     public FungoPageResultDto<MyGameBean> getGameList(String memberId, MyGameInputPageDto inputPage, String os) {
 
@@ -848,6 +849,7 @@ public class MemberServiceImpl implements IMemberService {
         return ResultDto.success(map);
     }
 
+    @Deprecated
     @Override
     public FungoPageResultDto<MyEvaluationBean> getMyEvaluationList(String loginId, InputPageDto input) throws Exception {
         FungoPageResultDto<MyEvaluationBean> re = null;

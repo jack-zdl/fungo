@@ -93,7 +93,7 @@ public class SeacherServiceImpl implements ISeacherService {
 		@SuppressWarnings("unchecked")
 		 
 		Page<Member> userPage= memberService.selectPage(new Page<>(page,limit),Condition.create()
-				.setSqlSelect("id,user_name,avatar,sign,level,created_at,updated_at,member_no").where("state = {0}", 0)
+				.setSqlSelect("id,user_name as userName,avatar,sign,level,created_at as createdAt,updated_at as updatedAt,member_no as memberNo").where("state = {0}", 0)
 				.like("user_name", keyword));
 		List<Member> userList = userPage.getRecords();
 //		if (userList == null || userList.size() == 0) {

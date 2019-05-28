@@ -180,13 +180,13 @@ public class MemberController {
         return memberService.getTimeLine(memberUserPrefile.getLoginId());
     }
 
-    @ApiOperation(value = "我的游戏列表", notes = "我的游戏列表")
-    @RequestMapping(value = "/api/mine/gameList", method = RequestMethod.POST)
-    @ApiImplicitParams({})
-    public FungoPageResultDto<MyGameBean> getGameList(MemberUserProfile memberUserPrefile, @RequestBody MyGameInputPageDto inputPage, HttpServletRequest request) {
-        String os = (String) request.getAttribute("os");
-        return memberService.getGameList(memberUserPrefile.getLoginId(), inputPage,os);
-    }
+//    @ApiOperation(value = "我的游戏列表", notes = "我的游戏列表")
+//    @RequestMapping(value = "/api/mine/gameList", method = RequestMethod.POST)
+//    @ApiImplicitParams({})
+//    public FungoPageResultDto<MyGameBean> getGameList(MemberUserProfile memberUserPrefile, @RequestBody MyGameInputPageDto inputPage, HttpServletRequest request) {
+//        String os = (String) request.getAttribute("os");
+//        return memberService.getGameList(memberUserPrefile.getLoginId(), inputPage,os);
+//    }
 
 
 //	//获取用户动态
@@ -367,19 +367,17 @@ public class MemberController {
         return memberService.getUserInfoPc(memberId);
     }
 
-
-
-    @ApiOperation(value = "我的游戏评测(2.4.3)", notes = "我的游戏评测")
-    @RequestMapping(value = "/api/mine/evaluationList", method = RequestMethod.POST)
-    @ApiImplicitParams({})
-    public FungoPageResultDto<MyEvaluationBean> getMyEvaluationList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody MermberSearchInput input) throws Exception {
-//		String loginId = memberUserPrefile.getLoginId();
-        String memberId = input.getMemberId();
-        if (CommonUtil.isNull(memberId)) {
-            return FungoPageResultDto.error("-1", "未指定用户");
-        }
-        return memberService.getMyEvaluationList(memberId, input);
-    }
+//    @ApiOperation(value = "我的游戏评测(2.4.3)", notes = "我的游戏评测")
+//    @RequestMapping(value = "/api/mine/evaluationList", method = RequestMethod.POST)
+//    @ApiImplicitParams({})
+//    public FungoPageResultDto<MyEvaluationBean> getMyEvaluationList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody MermberSearchInput input) throws Exception {
+////		String loginId = memberUserPrefile.getLoginId();
+//        String memberId = input.getMemberId();
+//        if (CommonUtil.isNull(memberId)) {
+//            return FungoPageResultDto.error("-1", "未指定用户");
+//        }
+//        return memberService.getMyEvaluationList(memberId, input);
+//    }
 
 
 

@@ -60,7 +60,7 @@ public interface IMemberService {
 
 	//获取用户测试游戏
 	public FungoPageResultDto<MyGameBean> getGameList(String memberId, MyGameInputPageDto inputPage, String os);
-	
+
 	//用户信息
 	ResultDto<AuthorBean> getUserInfo(String memberId);
 	//用户信息 (pc)
