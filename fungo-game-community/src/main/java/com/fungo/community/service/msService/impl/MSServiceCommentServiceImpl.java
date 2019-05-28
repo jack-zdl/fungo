@@ -7,8 +7,10 @@ import com.fungo.community.dao.service.ReplyDaoService;
 import com.fungo.community.entity.CmmComment;
 import com.fungo.community.entity.Reply;
 import com.fungo.community.service.msService.IMSServiceCommentService;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.CmmCommentDto;
+import com.game.common.util.PageTools;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +36,10 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
     private CmmCommentDaoService cmmCommentDaoService;
 
     @Override
-    public List<CmmCmtReplyDto> querySecondLevelCmtList(CmmCmtReplyDto postDto) {
+    public FungoPageResultDto<CmmCmtReplyDto> querySecondLevelCmtList(CmmCmtReplyDto postDto) {
 
         List<CmmCmtReplyDto> cmmCmtReplyDtoList = null;
-
+        FungoPageResultDto<CmmCmtReplyDto> fungoPageResultDto = new FungoPageResultDto<>();
         try {
 
 
@@ -107,13 +109,13 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
                 param.put("reply_to_content_id", reply_to_content_id);
             }
 
+            replyEntityWrapper.allEq(param);
 
             //内容
             String content = postDto.getReplayToId();
             if (StringUtils.isNotBlank(content)) {
                 replyEntityWrapper.orNew("content like '%" + content + "%'");
             }
-
 
             //根据修改时间倒叙
             replyEntityWrapper.orderBy("updated_at", false);
@@ -125,8 +127,18 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
 
                 Page<Reply> cmmPostPageSelect = this.replyDaoService.selectPage(replyPage, replyEntityWrapper);
 
+//                需要总数修改
+//                2019-05-28
+//                lyc
+//                if (null != cmmPostPageSelect) {
+//                    selectRecords = cmmPostPageSelect.getRecords();
+//                }
                 if (null != cmmPostPageSelect) {
+                    PageTools.pageToResultDto(fungoPageResultDto, cmmPostPageSelect);
                     selectRecords = cmmPostPageSelect.getRecords();
+
+                    //设置分页数据
+                    fungoPageResultDto.setCount(cmmPostPageSelect.getTotal());
                 }
 
             } else {
@@ -150,7 +162,8 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
         } catch (Exception ex) {
             LOGGER.error("/ms/service/cmm/cmt/s/list--querySecondLevelCmtList-出现异常:", ex);
         }
-        return cmmCmtReplyDtoList;
+        fungoPageResultDto.setData(cmmCmtReplyDtoList);
+        return fungoPageResultDto;
     }
 
     @Override

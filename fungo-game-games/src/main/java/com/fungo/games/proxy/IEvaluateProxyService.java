@@ -53,7 +53,7 @@ public interface IEvaluateProxyService {
      * @param replyInputPageDto
      * @return
      */
-    Page<CmmCmtReplyDto> getReplyDtoBysSelectPageOrderByCreatedAt(ReplyInputPageDto replyInputPageDto);
+    FungoPageResultDto<CmmCmtReplyDto> getReplyDtoBysSelectPageOrderByCreatedAt(ReplyInputPageDto replyInputPageDto);
 
     /**
      * 根据条件判断获取memberDto对象

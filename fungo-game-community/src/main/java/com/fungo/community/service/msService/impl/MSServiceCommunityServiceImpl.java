@@ -85,12 +85,14 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
                 param.put("recommend_state", recommend_state);
             }
 
+            cmmCommunityEntityWrapper.allEq(param);
 
             //社区名称
             String name = communityDto.getName();
             if (StringUtils.isNotBlank(name)) {
                 cmmCommunityEntityWrapper.orNew("name like '%" + name + "%'");
             }
+
 
             //根据修改时间倒叙
             cmmCommunityEntityWrapper.orderBy("updated_at", false);
@@ -140,7 +142,7 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
                 return cmmCommunityDtoRs;
             }
 
-            CmmCommunity cmmCommunity = cmmCommunityDaoService.selectOne(Condition.create().setSqlSelect("id,name,icon,cover_image").eq("id", cmmCommunityDto.getId()).ne("state", -1));
+            CmmCommunity cmmCommunity = cmmCommunityDaoService.selectOne(Condition.create().setSqlSelect("id,name,icon,cover_image as coverImage").eq("id", cmmCommunityDto.getId()).ne("state", -1));
             if (null != cmmCommunity) {
                 cmmCommunityDtoRs = new CmmCommunityDto();
 

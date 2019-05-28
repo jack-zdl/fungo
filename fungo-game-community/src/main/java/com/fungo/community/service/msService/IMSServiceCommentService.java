@@ -1,6 +1,7 @@
 package com.fungo.community.service.msService;
 
 
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.CmmCommentDto;
 
@@ -21,7 +22,7 @@ public interface IMSServiceCommentService {
      * 分页查询 二级评论数据列表
      * @return
      */
-    public List<CmmCmtReplyDto> querySecondLevelCmtList(CmmCmtReplyDto replyDto);
+    public FungoPageResultDto<CmmCmtReplyDto> querySecondLevelCmtList(CmmCmtReplyDto replyDto);
 
 
     /**

@@ -149,7 +149,7 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
     /*@HystrixCommand(fallbackMethod = "hystrixGetReplyDtoBysSelectPageOrderByCreatedAt",ignoreExceptions = {Exception.class},
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
-    public Page<CmmCmtReplyDto> getReplyDtoBysSelectPageOrderByCreatedAt(ReplyInputPageDto replyInputPageDto) {
+    public FungoPageResultDto<CmmCmtReplyDto> getReplyDtoBysSelectPageOrderByCreatedAt(ReplyInputPageDto replyInputPageDto) {
         CmmCmtReplyDto ssrd = new CmmCmtReplyDto();
         ssrd.setPage(replyInputPageDto.getPage());
         ssrd.setLimit(replyInputPageDto.getLimit());
@@ -159,14 +159,14 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
 
         try{
             FungoPageResultDto<CmmCmtReplyDto> replyDtoBysSelectPageOrderByCreatedAt = communityFeignClient.getReplyDtoBysSelectPageOrderByCreatedAt(ssrd);
-            List<CmmCmtReplyDto> data = replyDtoBysSelectPageOrderByCreatedAt.getData();
-            Page<CmmCmtReplyDto> replyDtoPage = new Page<>();
-            replyDtoPage.setRecords(data);
-            return replyDtoPage;
+//            List<CmmCmtReplyDto> data = replyDtoBysSelectPageOrderByCreatedAt.getData();
+//            Page<CmmCmtReplyDto> replyDtoPage = new Page<>();
+//            replyDtoPage.setRecords(data);
+            return replyDtoBysSelectPageOrderByCreatedAt;
         }catch (Exception e){
             logger.error("远程调用异常:"+e);
         }
-       return new Page<CmmCmtReplyDto>();
+       return new FungoPageResultDto<CmmCmtReplyDto>();
     }
 
     public Page<CmmCmtReplyDto> hystrixGetReplyDtoBysSelectPageOrderByCreatedAt(ReplyInputPageDto replyInputPageDto) {

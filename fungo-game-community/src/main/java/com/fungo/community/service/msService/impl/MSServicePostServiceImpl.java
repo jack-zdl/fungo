@@ -80,7 +80,6 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
                 param.put("topic", topic);
             }
 
-
             postEntityWrapper.allEq(param);
 
             //标题

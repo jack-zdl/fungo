@@ -38,13 +38,13 @@ public class MSServiceCommentController {
     @PostMapping("/ms/service/cmm/cmt/s/lists")
     public FungoPageResultDto<CmmCmtReplyDto> querySecondLevelCmtList(@RequestBody CmmCmtReplyDto replyDto) {
 
-        FungoPageResultDto<CmmCmtReplyDto> resultDto = new FungoPageResultDto<CmmCmtReplyDto>();
+//        FungoPageResultDto<CmmCmtReplyDto> resultDto = new FungoPageResultDto<CmmCmtReplyDto>();
 
-        List<CmmCmtReplyDto> cmmPostDtoList = imsServiceCommentService.querySecondLevelCmtList(replyDto);
+        FungoPageResultDto<CmmCmtReplyDto> cmmPostDtoList = imsServiceCommentService.querySecondLevelCmtList(replyDto);
 
-        resultDto.setData(cmmPostDtoList);
+//        resultDto.setData(cmmPostDtoList);
 
-        return resultDto;
+        return cmmPostDtoList;
     }
 
 
