@@ -20,6 +20,7 @@
         <result column="hot_value" property="hotValue"/>
         <result column="recommend_state" property="recommendState"/>
         <result column="sort" property="sort"/>
+        <result column="post_num" property="postNum"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
