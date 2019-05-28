@@ -513,38 +513,40 @@ public class EvaluateServiceImpl implements IEvaluateService {
             replyInputPageDto.setLimit(3);
             replyInputPageDto.setTarget_id(cmmComment.getId());
             replyInputPageDto.setState(0);
-            Page<CmmCmtReplyDto> replyList = iEvaluateProxyService.getReplyDtoBysSelectPageOrderByCreatedAt(replyInputPageDto);
+            FungoPageResultDto<CmmCmtReplyDto> replyList = iEvaluateProxyService.getReplyDtoBysSelectPageOrderByCreatedAt(replyInputPageDto);
             int i = 0;
-            for (CmmCmtReplyDto reply : replyList.getRecords()) {
-                i = i + 1;
-                if (i == 3) {
-                    ctem.setReply_more(true);
-                    break;
-                }
-                ReplyBean replybean = new ReplyBean();
-                replybean.setAuthor(iEvaluateProxyService.getAuthor(reply.getMemberId()));
-                replybean.setContent(CommonUtils.filterWord(reply.getContent()));
-                replybean.setCreatedAt(DateTools.fmtDate(reply.getCreatedAt()));
-                replybean.setObjectId(reply.getId());
-                replybean.setUpdatedAt(DateTools.fmtDate(reply.getUpdatedAt()));
-                replybean.setLike_num(reply.getLikeNum());
-                replybean.setReplyToId(reply.getReplayToId());
-//                微服务 根据条件判断获取memberDto对象
-//                2019-05-11
-//                lyc
-//                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
-                if (reply.getReplayToId()!= null){
-                    MemberDto md = new MemberDto();
-                    md.setId(reply.getReplayToId());
-                    MemberDto m = iEvaluateProxyService.getMemberDtoBySelectOne(md);
-                    if (m != null) {
-                        replybean.setReplyToName(m.getUserName());
+            if (replyList.getData() != null){
+                for (CmmCmtReplyDto reply : replyList.getData()) {
+                    i = i + 1;
+                    if (i == 3) {
+                        ctem.setReply_more(true);
+                        break;
                     }
-                }
+                    ReplyBean replybean = new ReplyBean();
+                    replybean.setAuthor(iEvaluateProxyService.getAuthor(reply.getMemberId()));
+                    replybean.setContent(CommonUtils.filterWord(reply.getContent()));
+                    replybean.setCreatedAt(DateTools.fmtDate(reply.getCreatedAt()));
+                    replybean.setObjectId(reply.getId());
+                    replybean.setUpdatedAt(DateTools.fmtDate(reply.getUpdatedAt()));
+                    replybean.setLike_num(reply.getLikeNum());
+                    replybean.setReplyToId(reply.getReplayToId());
+    //                微服务 根据条件判断获取memberDto对象
+    //                2019-05-11
+    //                lyc
+    //                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
+                    if (reply.getReplayToId()!= null){
+                        MemberDto md = new MemberDto();
+                        md.setId(reply.getReplayToId());
+                        MemberDto m = iEvaluateProxyService.getMemberDtoBySelectOne(md);
+                        if (m != null) {
+                            replybean.setReplyToName(m.getUserName());
+                        }
+                    }
 
-                ctem.getReplys().add(replybean);
+                    ctem.getReplys().add(replybean);
+                }
+            ctem.setReply_count(replyList.getCount());
             }
-            ctem.setReply_count(replyList.getRecords() == null ? 0: replyList.getRecords().size());
 
             //是否点赞
             if ("".equals(memberId) || memberId == null) {
