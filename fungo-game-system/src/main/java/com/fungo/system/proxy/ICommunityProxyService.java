@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public interface ICommunityProxyService {
 
-    List<CollectionBean> getCollection(Page<CollectionBean> page, List<String> list);
+    List<CollectionBean> getCollection(Page<CollectionBean> page, List<String> postIds);
 
     List<Map<String,Object>> getFollowerCommunity(Page page, List<String> communityIds);
 

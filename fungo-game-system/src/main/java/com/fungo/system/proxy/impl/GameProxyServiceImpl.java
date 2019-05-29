@@ -51,7 +51,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
      * @auther: dl.zhang
      * @date: 2019/5/14 11:12
      */
-    @HystrixCommand(fallbackMethod = "hystrixSelectCmmPostById", ignoreExceptions = {Exception.class})
+//    @HystrixCommand(fallbackMethod = "hystrixSelectCmmPostById", ignoreExceptions = {Exception.class})
     @Override
     public CmmPostDto selectCmmPostById(CmmPostDto param) {
         CmmPostDto re = new CmmPostDto();
@@ -70,7 +70,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
      * @auther: dl.zhang
      * @date: 2019/5/14 11:17
      */
-    @HystrixCommand(fallbackMethod = "hystrixSelectCmmCommentById", ignoreExceptions = {Exception.class}) //Unable to derive ExecutionIsolationStrategy from property value: Semaphore
+//    @HystrixCommand(fallbackMethod = "hystrixSelectCmmCommentById", ignoreExceptions = {Exception.class}) //Unable to derive ExecutionIsolationStrategy from property value: Semaphore
     @Override
     public CmmCommentDto selectCmmCommentById(String id) {
         CmmCommentDto param = new CmmCommentDto();
@@ -89,7 +89,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
      * @auther: dl.zhang
      * @date: 2019/5/14 11:26
      */
-    @HystrixCommand(fallbackMethod = "hystrixSelectGameEvaluationById", ignoreExceptions = {Exception.class})
+//    @HystrixCommand(fallbackMethod = "hystrixSelectGameEvaluationById", ignoreExceptions = {Exception.class})
     @Override
     public GameEvaluationDto selectGameEvaluationById(GameEvaluationDto gameEvaluationDto) {
         GameEvaluationDto re = new GameEvaluationDto();
@@ -110,7 +110,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
      * @auther: dl.zhang
      * @date: 2019/5/14 11:30
      */
-    @HystrixCommand(fallbackMethod = "hystrixSelectGameById", ignoreExceptions = {Exception.class})
+//    @HystrixCommand(fallbackMethod = "hystrixSelectGameById", ignoreExceptions = {Exception.class})
     @Override
     public GameDto selectGameById(GameDto param) {
         GameDto re = new GameDto();
@@ -132,7 +132,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
      * @auther: dl.zhang
      * @date: 2019/5/14 11:34
      */
-    @HystrixCommand(fallbackMethod = "hystrixSelectMooMoodById", ignoreExceptions = {Exception.class})
+//    @HystrixCommand(fallbackMethod = "hystrixSelectMooMoodById", ignoreExceptions = {Exception.class})
     @Override
     public MooMoodDto selectMooMoodById(String id) {
         MooMoodDto param = new MooMoodDto();
@@ -145,14 +145,14 @@ public class GameProxyServiceImpl implements IGameProxyService {
     }
 
     /**
-     * @todo 心情评论
+     *
      * 功能描述: 根据心情评论主键查询心情评论
      * @param: [id] 心情评论主键
      * @return: com.game.common.dto.community.MooMessageDto
      * @auther: dl.zhang
      * @date: 2019/5/14 11:37
      */
-    @HystrixCommand(fallbackMethod = "hystrixSelectMooMessageById", ignoreExceptions = {Exception.class})
+//    @HystrixCommand(fallbackMethod = "hystrixSelectMooMessageById", ignoreExceptions = {Exception.class})
     @Override
     public MooMessageDto selectMooMessageById(String id) {
         MooMessageDto mooMessageDto = new MooMessageDto();
@@ -171,14 +171,14 @@ public class GameProxyServiceImpl implements IGameProxyService {
     }
 
     //    getEvaluationEntityWrapper
-    @HystrixCommand(fallbackMethod = "hystrixGetEvaluationEntityWrapper", ignoreExceptions = {Exception.class})
+//    @HystrixCommand(fallbackMethod = "hystrixGetEvaluationEntityWrapper", ignoreExceptions = {Exception.class})
     @Override
     public List<GameEvaluationDto> getEvaluationEntityWrapper(String memberId, String startDate, String endDate) {
         ResultDto<List<GameEvaluationDto>> evaluationEntityWrapper = gamesFeignClient.getEvaluationEntityWrapper(memberId, startDate, endDate);
         return evaluationEntityWrapper.getData();
     }
 
-    @HystrixCommand(fallbackMethod = "hystrixSelectGameInvite", ignoreExceptions = {Exception.class})
+//    @HystrixCommand(fallbackMethod = "hystrixSelectGameInvite", ignoreExceptions = {Exception.class})
     @Override
     public GameInviteDto selectGameInvite(GameInviteDto gameInviteDto) {
         GameInviteDto result = new GameInviteDto();
@@ -200,6 +200,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
         return re.getData();
     }
 
+    @Override
     public CardIndexBean selectedGames() {
         return gamesFeignClient.selectedGames();
     }

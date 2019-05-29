@@ -47,21 +47,21 @@ public class CommunityTSMQService {
         try {
             TransactionMessageDto transactionMessageDto = JSON.parseObject(msgData, TransactionMessageDto.class);
             //消息id不可为空
-            if (null != transactionMessageDto&&transactionMessageDto.getMessageId() != null) {
-                msgId = transactionMessageDto.getMessageId() .toString();
+            if (null != transactionMessageDto && transactionMessageDto.getMessageId() != null) {
+                msgId = transactionMessageDto.getMessageId().toString();
                 switch (transactionMessageDto.getMessageDataType()) {
                     //接收到的消息，本服务是否应该处理 -- 在校验重复消费前做是否处理校验，避免redis存入数据
                     case TransactionMessageDto.MESSAGE_DATA_TYPE_SYSTEM:
                         //校验是否重复消费
                         if (!UniqueIdCkeckUtil.checkUniqueIdAndSave(msgId)) {
-                            LOGGER.warn("社区服务-重复消费驳回,消息内容:"+msgData);
+                            LOGGER.warn("社区服务-重复消费驳回,消息内容:" + msgData);
                             return true;
                         }
                         isOk = excSystem(transactionMessageDto.getMessageBody());
                         if (isOk) {
                             //删除消息
                             feignClient.deleteMessageByMessageId(transactionMessageDto.getMessageId());
-                        }else{
+                        } else {
                             //执行不成功，不确认消费，让定时任务重试（删除唯一请求标志）
                             UniqueIdCkeckUtil.deleteUniqueId(msgId);
                         }
@@ -96,6 +96,8 @@ public class CommunityTSMQService {
             //处理系统微服务发送的   SYSTEM_MQ_DATA_TYPE_COMMUNITY_UPDATE(7,"java.util.HashMap"), // 社区计数器
             if (MQResultDto.SystemMQDataType.SYSTEM_MQ_DATA_TYPE_COMMUNITY_UPDATE.getCode() == mqResultDto.getType()) {
                 String bodyStr = mqResultDto.getBody().toString();
+                Map<String, String> bodyMap = JSON.parseObject(bodyStr, Map.class);
+
                 /*
                  *       Map<String, String> map = new HashMap<String, String>();
                  *         map.put("tableName", getTableName(inputDto.getTarget_type()));
@@ -103,18 +105,14 @@ public class CommunityTSMQService {
                  *         map.put("id", inputDto.getTarget_id());
                  *         map.put("type", "add");
                  */
-                if (StringUtils.isNotBlank(bodyStr)) {
-                    Map<String, String> bodyMap = JSON.parseObject(bodyStr, Map.class);
 
-                    if (null != bodyMap && !bodyMap.isEmpty()) {
-                        String typeAdd = bodyMap.get("type");
+                if (null != bodyMap && !bodyMap.isEmpty()) {
+                    String typeAdd = bodyMap.get("type");
 
-                        if (StringUtils.isNotBlank(typeAdd) && StringUtils.equalsAnyIgnoreCase("add", typeAdd)) {
-
-                            String tableName = bodyMap.get("tableName");
-                            String fieldName = bodyMap.get("fieldName");
-                            String id = bodyMap.get("id");
-
+                    if (StringUtils.isNotBlank(typeAdd) && StringUtils.equalsAnyIgnoreCase("add", typeAdd)) {
+                        String tableName = bodyMap.get("tableName");
+                        String fieldName = bodyMap.get("fieldName");
+                        String id = bodyMap.get("id");
                             if (StringUtils.isNotBlank(tableName) && StringUtils.isNotBlank(fieldName) && StringUtils.isNotBlank(id)) {
                                 return iCounterService.addCounter(tableName, fieldName, id);
                             }
@@ -127,11 +125,10 @@ public class CommunityTSMQService {
                                 return iCounterService.subCounter(tableName, fieldName, id);
                             }
                         }
-
                     }
+
                 }
             }
-        }
         return false;
     }
 
