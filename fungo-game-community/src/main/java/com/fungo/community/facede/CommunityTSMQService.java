@@ -95,7 +95,7 @@ public class CommunityTSMQService {
             MQResultDto mqResultDto = JSON.parseObject(messageBody, MQResultDto.class);
             //处理系统微服务发送的   SYSTEM_MQ_DATA_TYPE_COMMUNITY_UPDATE(7,"java.util.HashMap"), // 社区计数器
             if (MQResultDto.SystemMQDataType.SYSTEM_MQ_DATA_TYPE_COMMUNITY_UPDATE.getCode() == mqResultDto.getType()) {
-                String bodyStr = (String) mqResultDto.getBody();
+                String bodyStr = mqResultDto.getBody().toString();
                 /*
                  *       Map<String, String> map = new HashMap<String, String>();
                  *         map.put("tableName", getTableName(inputDto.getTarget_type()));
@@ -117,6 +117,14 @@ public class CommunityTSMQService {
 
                             if (StringUtils.isNotBlank(tableName) && StringUtils.isNotBlank(fieldName) && StringUtils.isNotBlank(id)) {
                                 return iCounterService.addCounter(tableName, fieldName, id);
+                            }
+                        }else if(StringUtils.isNotBlank(typeAdd) && StringUtils.equalsAnyIgnoreCase("sub", typeAdd)){
+                            String tableName = bodyMap.get("tableName");
+                            String fieldName = bodyMap.get("fieldName");
+                            String id = bodyMap.get("id");
+
+                            if (StringUtils.isNotBlank(tableName) && StringUtils.isNotBlank(fieldName) && StringUtils.isNotBlank(id)) {
+                                return iCounterService.subCounter(tableName, fieldName, id);
                             }
                         }
 
