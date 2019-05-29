@@ -224,7 +224,14 @@ public class SystemServiceImpl implements SystemService {
             re = new FungoPageResultDto<>();
             IncentRanked incentRanked = new IncentRanked();
             BeanUtils.copyProperties(incentRanked, incentRankedDto);
-            EntityWrapper<IncentRanked> wrapper = new EntityWrapper<>(incentRanked);
+            EntityWrapper<IncentRanked> wrapper = new EntityWrapper<>();
+            if(incentRankedDto.getId() != null)
+                wrapper.eq("id", incentRankedDto.getId());
+            if(incentRankedDto.getRankType() != null)
+                wrapper.eq("rank_type", incentRankedDto.getRankType());
+            if(StringUtil.isNotNull(incentRankedDto.getMbId()))
+                wrapper.eq("mb_id", incentRankedDto.getMbId());
+//            EntityWrapper<IncentRanked> wrapper = new EntityWrapper<>(incentRanked);
             Page<IncentRanked> page = incentRankedServiceImap.selectPage(basNoticePage, wrapper);
             PageTools.pageToResultDto(re, page);
             List<IncentRanked> memberFollowers = page.getRecords();
