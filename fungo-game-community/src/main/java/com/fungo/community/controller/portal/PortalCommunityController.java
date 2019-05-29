@@ -28,7 +28,7 @@ public class PortalCommunityController {
 
 
     @ApiOperation(value = "搜索社区", notes = "")
-    @RequestMapping(value = "/api/portal/communitys/search/communitys", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/community/search/communitys", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "页数号", paramType = "form", dataType = "int"),
             @ApiImplicitParam(name = "limit", value = "每页显示数", paramType = "form", dataType = "int"),
@@ -55,7 +55,7 @@ public class PortalCommunityController {
             @ApiImplicitParam(name = "userid", value = "社区id", paramType = "form", dataType = "String"),
             @ApiImplicitParam(name = "filter", value = "过滤字段", paramType = "form", dataType = "String"),
     })
-    @RequestMapping(value = "/api/portal/communitys/content/communitys", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/community/content/communitys", method = RequestMethod.POST)
     public FungoPageResultDto<CommunityOutPageDto> getCommunityList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody CommunityInputPageDto communityInputPageDto) {
         String userId = "";
         if (memberUserPrefile != null) {

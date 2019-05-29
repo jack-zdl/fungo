@@ -57,7 +57,7 @@ public class PortalCommunityRelyController {
 
 
     @ApiOperation(value = "PC2.0回复列表", notes = "")
-    @RequestMapping(value = "/api/portal/communitys/content/replys", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/community/content/replys", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "target_id", value = "对象id", paramType = "path", dataType = "string"),
             @ApiImplicitParam(name = "user_id", value = "用户id", paramType = "path", dataType = "string")
