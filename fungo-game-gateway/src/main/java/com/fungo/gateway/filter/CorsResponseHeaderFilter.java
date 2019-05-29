@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 
 /**
- * <p></p>
+ * <p> 跨域请求头处理过滤器扩展</p>
  *
  * @Author: dl.zhang
  * @Date: 2019/5/28
