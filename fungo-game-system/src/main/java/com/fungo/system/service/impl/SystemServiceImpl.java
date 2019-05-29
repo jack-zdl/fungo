@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.entity.*;
 import com.fungo.system.service.*;
@@ -229,7 +230,7 @@ public class SystemServiceImpl implements SystemService {
                 wrapper.eq("id", incentRankedDto.getId());
             if(incentRankedDto.getRankType() != null)
                 wrapper.eq("rank_type", incentRankedDto.getRankType());
-            if(StringUtil.isNotNull(incentRankedDto.getMbId()))
+            if(StringUtils.isNoneBlank(incentRankedDto.getMbId()))
                 wrapper.eq("mb_id", incentRankedDto.getMbId());
 //            EntityWrapper<IncentRanked> wrapper = new EntityWrapper<>(incentRanked);
             Page<IncentRanked> page = incentRankedServiceImap.selectPage(basNoticePage, wrapper);
