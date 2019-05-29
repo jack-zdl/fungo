@@ -125,8 +125,8 @@ public class PostController {
             @ApiImplicitParam(name = "videoId", value = "视频id,  可选", paramType = "form", dataType = "string")
     })
     public ResultDto<ObjectId> addPost(MemberUserProfile memberUserPrefile, @RequestBody PostInput postInput) throws Exception {
-        if (StringUtil.isNull(postInput.getContent())) {
-            return ResultDto.error("-1", "文章内容不可为空");
+        if (StringUtil.isNull(postInput.getHtml()) || StringUtil.isNull(postInput.getTitle())) {
+            return ResultDto.error("-1", "文章内容或者标题不可为空");
         }
         String userId = memberUserPrefile.getLoginId();
         return bsPostService.addPost(postInput, userId);
