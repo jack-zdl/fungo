@@ -176,10 +176,7 @@ spring:
         predicates:
         - Path=/api/config/**
 
-      - id:fungo-game-system-5:
-        uri:  ${fungoServer.system.uri}
-        predicates:
-        - Path=/api/mine/**
+
 
       - id:fungo-game-system-6:
         uri:  ${fungoServer.system.uri}
@@ -234,7 +231,7 @@ spring:
       - id:fungo-game-system-16:
         uri:  ${fungoServer.system.uri}
         predicates:
-        - Path=/api/push//**
+        - Path=/api/push/**
 
       - id:fungo-game-system-17:
         uri:  ${fungoServer.system.uri}
@@ -299,6 +296,11 @@ spring:
         predicates:
         - Path=/api/developer/gameHistory
 
+      - id:fungo-game-games-14:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/mine/gameList
+
       - id:fungo-game-games-2:
         uri:  ${fungoServer.game.uri}
         predicates:
@@ -313,11 +315,6 @@ spring:
         uri:  ${fungoServer.game.uri}
         predicates:
         - Path=/api/gamereleaselog
-
-      - id:fungo-game-games-5:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/game/**
 
       - id:fungo-game-games-6:
         uri:  ${fungoServer.game.uri}
@@ -359,11 +356,6 @@ spring:
         predicates:
         - Path=/api/invite/**
 
-      - id:fungo-game-games-14:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/mine/gameList
-
       - id:fungo-game-games-15:
         uri:  ${fungoServer.game.uri}
         predicates:
@@ -373,11 +365,6 @@ spring:
         uri:  ${fungoServer.game.uri}
         predicates:
         - Path=/api/search/games
-
-      - id:fungo-game-games-17:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/tag/**
 
       - id:fungo-game-games-18:
         uri:  ${fungoServer.game.uri}
@@ -431,4 +418,17 @@ spring:
         uri:  ${fungoServer.system.uri}
         predicates:
         - Path=/api/search/**
+      - id:fungo-game-system-5:
+        uri:  ${fungoServer.system.uri}
+        predicates:
+        - Path=/api/mine/**
 
+      - id:fungo-game-games-5:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/game/**
+
+      - id:fungo-game-games-17:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/tag/**
