@@ -252,8 +252,8 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
         return 0;
     }
 
-    public ReplyDto hystrixSelectReplyById(ReplyDto replyDto) {
-        return new ReplyDto();
+    public CmmCmtReplyDto hystrixSelectReplyById(ReplyDto replyDto) {
+        return new CmmCmtReplyDto();
     }
 
     public Page<GameEvaluationDto> hystrixSelectGameEvaluationPage(GameEvaluationDto gameEvaluationDto) {
