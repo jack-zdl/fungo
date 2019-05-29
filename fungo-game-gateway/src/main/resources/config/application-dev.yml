@@ -418,6 +418,7 @@ spring:
         uri:  ${fungoServer.system.uri}
         predicates:
         - Path=/api/search/**
+
       - id:fungo-game-system-5:
         uri:  ${fungoServer.system.uri}
         predicates:
