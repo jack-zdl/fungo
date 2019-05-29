@@ -1,6 +1,6 @@
 server:
-  #port: 8182
-  port: 8183
+  port: 8182
+  #port: 8183
 
 
 #-----------------------------------------------------------------------------------------------------
@@ -46,9 +46,10 @@ logging:
 eureka:
   client:
     serviceUrl:
-      defaultZone:  http://172.17.18.228:8762/eureka/,http://172.17.18.227:8761/eureka/
+      defaultZone: http://172.17.18.228:8762/eureka/,http://172.17.18.227:8761/eureka/
+
   instance:
-    instance-id: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
     prefer-ip-address: true
     appname: fungo-game-gateway
 
@@ -83,8 +84,11 @@ spring:
         locator:
           enabled: true
 
+
+
       #---------------url映射--------------------
       #-------------社区------------------------
+
       routes:
       - id:fungo-game-commmunity-1:
         uri: ${fungoServer.commmunity.uri}
@@ -178,10 +182,7 @@ spring:
         predicates:
         - Path=/api/config/**
 
-      - id:fungo-game-system-5:
-        uri:  ${fungoServer.system.uri}
-        predicates:
-        - Path=/api/mine/**
+
 
       - id:fungo-game-system-6:
         uri:  ${fungoServer.system.uri}
@@ -236,7 +237,7 @@ spring:
       - id:fungo-game-system-16:
         uri:  ${fungoServer.system.uri}
         predicates:
-        - Path=/api/push//**
+        - Path=/api/push/**
 
       - id:fungo-game-system-17:
         uri:  ${fungoServer.system.uri}
@@ -287,7 +288,6 @@ spring:
         uri:  ${fungoServer.system.uri}
         predicates:
         - Path=/api/invite/users
-
 
 
 
@@ -424,6 +424,7 @@ spring:
         uri:  ${fungoServer.system.uri}
         predicates:
         - Path=/api/search/**
+
       - id:fungo-game-system-5:
         uri:  ${fungoServer.system.uri}
         predicates:
@@ -438,5 +439,3 @@ spring:
         uri:  ${fungoServer.game.uri}
         predicates:
         - Path=/api/tag/**
-
-
