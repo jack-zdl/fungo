@@ -26,6 +26,7 @@ public class CounterServiceImpl implements ICounterService {
 	}
 
 
+
 	//表字段 增数
 	@Override
 	public boolean addCounter(String memberId, int type, ActionInput inputDto) {
