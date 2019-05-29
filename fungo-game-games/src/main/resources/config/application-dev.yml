@@ -1,3 +1,6 @@
+server:
+  port: 8781
+
 eureka:
   instance:
     prefer-ip-address: true
@@ -7,19 +10,24 @@ eureka:
   client:
     serviceUrl:
       defaultZone:  http://127.0.0.1:8761/eureka/
-server:
-  port: 8781
+
 spring:
   application:
     name: fungo-game-games
-
+  cloud:
+    client:
+       ipAddress: 127.0.0.1
   #-----------------------------------------------
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url:  jdbc:mysql://39.105.18.214:3306/fungo_games?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: root
-    password: affdB440821920A9
+#    url:  jdbc:mysql://39.105.18.214:3306/fungo_games?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+#    username: root
+#    password: affdB440821920A9
+    #RDS主实例外网地址
+    url: jdbc:mysql://rm-bp145sizta1yg4585xo.mysql.rds.aliyuncs.com:3306/fungo_cloud_uat?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: fungo_uat
+    password: b1dcfae36fa84Db88479efbd36b16e
     hikari:
       # 连接池标题
       pool-name: funGoApiHikariCP
