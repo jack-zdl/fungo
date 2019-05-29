@@ -29,7 +29,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -326,7 +325,7 @@ public class SystemServiceImpl implements SystemService {
     public ResultDto<List<BasActionDto>> listActionByCondition(BasActionDto basActionDto) {
         //条件拼接
         EntityWrapper<BasAction> actionEntityWrapper = new EntityWrapper<>();
-        if (basActionDto.getMemberId() != null) {
+        if (StringUtils.isNotBlank(basActionDto.getMemberId())) {
             actionEntityWrapper.eq("member_id", basActionDto.getMemberId());
         }
         if (basActionDto.getType() != null) {
@@ -335,7 +334,7 @@ public class SystemServiceImpl implements SystemService {
         if (basActionDto.getTargetType() != null) {
             actionEntityWrapper.eq("target_type", basActionDto.getTargetType());
         }
-        if (basActionDto.getTargetId() != null) {
+        if (StringUtils.isNotBlank(basActionDto.getTargetId()) ) {
             actionEntityWrapper.eq("target_id", basActionDto.getTargetId());
         }
         if (basActionDto.getState() != null) {
