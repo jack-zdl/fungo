@@ -77,7 +77,8 @@ spring:
   # 路由配置
   cloud:
     client:
-      ipAddress:  ${spring.cloud.client.ip-address}
+      ipAddress: 172.17.18.227
+      #ipAddress: 172.17.18.228
     gateway:
       default-filters:
       discovery:
@@ -158,6 +159,227 @@ spring:
         uri: ${fungoServer.commmunity.uri}
         predicates:
         - Path=/api/search/posts
+
+
+        #*****************游戏开始************************************
+      - id:fungo-game-games-0:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/developer/gemeAnalyze
+
+      - id:fungo-game-games-1:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/developer/gameHistory
+
+      - id:fungo-game-games-2:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/content/evaluation
+
+      - id:fungo-game-games-3:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/content/evaluation/**
+
+      - id:fungo-game-games-4:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/content/evaluations
+
+      - id:fungo-game-games-5:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/content/anliEvaluation/**
+
+      - id:fungo-game-games-7:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/content/games
+
+      - id:fungo-game-games-8:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/recommend/tag/game
+
+      - id:fungo-game-games-9:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/content/game/package
+
+      - id:fungo-game-games-10:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/content/game/recenteva
+
+      - id:fungo-game-games-11:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/content/game/collections
+
+      - id:fungo-game-games-12:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/content/game/items
+
+      - id:fungo-game-games-13:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/content/gameList
+
+      - id:fungo-game-games-15:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/gamereleaselog
+
+      - id:fungo-game-games-16:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/game/**
+
+      - id:fungo-game-games-18:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/gameSurveyRel
+
+      - id:fungo-game-games-19:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/gameEvaluation
+
+      - id:fungo-game-games-20:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/mk/**
+
+      - id:fungo-game-games-21:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/tools/game/list/**
+
+      - id:fungo-game-games-22:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/recommend/topic
+
+      - id:fungo-game-games-23:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/amwaywall
+
+      - id:fungo-game-games-24:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/amwaywall/list
+
+      - id:fungo-game-games-25:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/recommend/pc/gamegroup
+
+      - id:fungo-game-games-26:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/recommend/pc/groupdetail/**
+
+      - id:fungo-game-games-27:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/make/game
+
+      - id:fungo-game-games-28:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/make/cancel
+
+      - id:fungo-game-games-29:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/make/bindingAppleID
+
+      - id:fungo-game-games-30:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/make/game/clause
+
+      - id:fungo-game-games-31:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/make/game/help
+
+      - id:fungo-game-games-32:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/make/game/check
+
+      - id:fungo-game-games-33:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/make/game/agree
+
+      - id:fungo-game-games-34:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/invite/game
+
+      - id:fungo-game-games-35:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/invite/cancel
+
+      - id:fungo-game-games-36:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/mine/gameList
+
+      - id:fungo-game-games-37:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/mine/evaluationList
+
+      - id:fungo-game-games-38:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/search/games
+
+      - id:fungo-game-games-39:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/tag/taglist
+
+      - id:fungo-game-games-40:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/tag/game/taglist
+
+      - id:fungo-game-games-41:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/tag/game/addtag
+
+      - id:fungo-game-games-42:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/tag/game/addattitude
+
+      - id:fungo-game-games-43:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/tag/hotlist
+
+      - id:fungo-game-games-44:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/tag/taglist/selected
+
+
+      - id:fungo-game-games-6:
+        uri:  ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/content/game/**
+
+
+        #      *****************游戏2019-05-20结束************************************
 
 
       #-------------系统------------------------
@@ -291,130 +513,6 @@ spring:
 
 
 
-      #*****************游戏开始************************************
-      - id:fungo-game-games-0:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/developer/gemeAnalyze
-
-      - id:fungo-game-games-1:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/developer/gameHistory
-
-      - id:fungo-game-games-14:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/mine/gameList
-
-      - id:fungo-game-games-2:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/content/game/**
-
-      - id:fungo-game-games-3:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/recommend/pc/**
-
-      - id:fungo-game-games-4:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/gamereleaselog
-
-      - id:fungo-game-games-6:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/gameSurveyRel
-
-      - id:fungo-game-games-7:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/gameEvaluation
-
-      - id:fungo-game-games-8:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/mk/**
-
-      - id:fungo-game-games-9:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/tools/game/**
-
-      - id:fungo-game-games-10:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/amwaywall
-
-      - id:fungo-game-games-11:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/amwaywall/**
-
-      - id:fungo-game-games-12:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/make/**
-
-      - id:fungo-game-games-13:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/invite/**
-
-      - id:fungo-game-games-15:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/mine/evaluationList
-
-      - id:fungo-game-games-16:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/search/games
-
-      - id:fungo-game-games-18:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/content/games
-
-      - id:fungo-game-games-19:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/content/gameList
-
-      - id:fungo-game-games-20:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/content/evaluation
-
-      - id:fungo-game-games-21:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/content/evaluation/**
-
-      - id:fungo-game-games-22:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/content/evaluations
-
-      - id:fungo-game-games-23:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/content/anliEvaluation/**
-
-
-      - id:fungo-game-games-24:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/recommend/tag/**
-
-      - id:fungo-game-games-25:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/recommend/topic
-
-
-      #      *****************游戏2019-05-20结束************************************
       - id:fungo-game-commmunity-14:
         uri: ${fungoServer.commmunity.uri}
         predicates:
@@ -430,12 +528,3 @@ spring:
         predicates:
         - Path=/api/mine/**
 
-      - id:fungo-game-games-5:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/game/**
-
-      - id:fungo-game-games-17:
-        uri:  ${fungoServer.game.uri}
-        predicates:
-        - Path=/api/tag/**
