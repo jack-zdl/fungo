@@ -206,9 +206,13 @@ public class CommunityServiceImpl implements ICommunityService {
         //社区玩家榜 前6位
         List<Map<String, Object>> userList = new ArrayList<>();
         if (community != null) {
+
+            String game_id = community.getId();
             map.put("communityId", community.getId());
             if (!CommonUtil.isNull(community.getGameId())) {
                 map.put("gameId", community.getGameId());
+
+                game_id = community.getGameId();
             }
 
             //!fixme 从文章表、社区一级评论表 和 游戏评论表获取用户数量
@@ -217,6 +221,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
             List<MemberPulishFromCommunity> pulishFromCommunityList = new ArrayList<MemberPulishFromCommunity>();
 
+            //从文章表、社区一级评论表获取用户数量
             List<MemberPulishFromCommunity> mlist = communityDao.getMemberOrder(page, map);
             if (null != mlist && !mlist.isEmpty()) {
                 pulishFromCommunityList.addAll(mlist);
@@ -224,7 +229,7 @@ public class CommunityServiceImpl implements ICommunityService {
             //从游戏评论表获取用户数量
             ResultDto<List<MemberPulishFromCommunity>> gameMemberCtmRs = null;
             try {
-                gameMemberCtmRs = gameFeignClient.getMemberOrder(community.getGameId(), null);
+                gameMemberCtmRs = gameFeignClient.getMemberOrder(game_id, null);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -314,7 +319,7 @@ public class CommunityServiceImpl implements ICommunityService {
                 //Member member = menberService.selectById(m.getMemberId());
 
                 List<String> mbIdsList = new ArrayList<String>();
-                idsList.add(m.getMemberId());
+                mbIdsList.add(m.getMemberId());
 
                 ResultDto<List<MemberDto>> listMembersByids = null;
                 try {
