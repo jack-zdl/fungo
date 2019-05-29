@@ -37,7 +37,7 @@ public class PortalCommunityCommunityController {
             @ApiImplicitParam(name = "communityId", value = "社区id", paramType = "path", dataType = "string"),
             @ApiImplicitParam(name = "userId", value = "用户id", paramType = "form", dataType = "string")
     })
-    @RequestMapping(value = "/api/portal/community/content/community/{communityId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/portal/communitys/content/community/{communityId}", method = RequestMethod.GET)
     public ResultDto<CommunityOut> getCommunityDetail(@Anonymous MemberUserProfile memberUserPrefile,
                                                       @PathVariable("communityId") String communityId) {
         String userId = "";

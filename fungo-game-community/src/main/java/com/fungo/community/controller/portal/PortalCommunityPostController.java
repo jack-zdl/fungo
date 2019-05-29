@@ -35,7 +35,7 @@ public class PortalCommunityPostController {
     private IPostService bsPostService;
 
     @ApiOperation(value = "PC2.0帖子列表", notes = "")
-    @RequestMapping(value = "/api/portal/community/content/posts", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/communitys/content/posts", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "int"),
             @ApiImplicitParam(name = "sort", value = "排序字段", paramType = "form", dataType = "int"),

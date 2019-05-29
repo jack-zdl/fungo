@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@Api(value = "", description = "社区")
+@Api(value = "", description = "PC2.0社区")
 public class PortalCommunityController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PortalCommunityController.class);
@@ -46,6 +46,23 @@ public class PortalCommunityController {
         String keyword = searchInputDto.getKey_word();
         return communityService.searchCommunitys(page, limit, keyword, userId);
     }
-    //-----------
+
+    @ApiOperation(value = "PC2.0社区列表", notes = "")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "int"),
+            @ApiImplicitParam(name = "sort", value = "排序字段", paramType = "form", dataType = "int"),
+            @ApiImplicitParam(name = "page", value = "页数", paramType = "form", dataType = "int"),
+            @ApiImplicitParam(name = "userid", value = "社区id", paramType = "form", dataType = "String"),
+            @ApiImplicitParam(name = "filter", value = "过滤字段", paramType = "form", dataType = "String"),
+    })
+    @RequestMapping(value = "/api/portal/communitys/content/communitys", method = RequestMethod.POST)
+    public FungoPageResultDto<CommunityOutPageDto> getCommunityList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody CommunityInputPageDto communityInputPageDto) {
+        String userId = "";
+        if (memberUserPrefile != null) {
+            userId = memberUserPrefile.getLoginId();
+        }
+        return communityService.getCmmCommunityList(userId, communityInputPageDto);
+
+    }
 
 }
