@@ -40,9 +40,9 @@ public class IndexProxyServiceImpl implements IndexProxyService {
 
     @Autowired
     private GamesFeignClient gamesFeignClient;
-
-    @HystrixCommand(fallbackMethod = "hystrixSelctCmmPostOne",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+//
+//    @HystrixCommand(fallbackMethod = "hystrixSelctCmmPostOne",ignoreExceptions = {Exception.class},
+//            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public CmmPostDto selctCmmPostOne(CmmPostDto cmmPostDto) {
         CmmPostDto re = new CmmPostDto();
@@ -54,8 +54,8 @@ public class IndexProxyServiceImpl implements IndexProxyService {
         return re;
     }
 
-    @HystrixCommand(fallbackMethod = "hystrixGetRateData",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+//    @HystrixCommand(fallbackMethod = "hystrixGetRateData",ignoreExceptions = {Exception.class},
+//            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public Map<String, BigDecimal> getRateData(String gameId) {
         // @todo
@@ -67,8 +67,8 @@ public class IndexProxyServiceImpl implements IndexProxyService {
         return new HashMap<>();
     }
 
-    @HystrixCommand(fallbackMethod = "hystrixSelectCmmPostPage",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+//    @HystrixCommand(fallbackMethod = "hystrixSelectCmmPostPage",ignoreExceptions = {Exception.class},
+//            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public Page<CmmPostDto> selectCmmPostPage(CmmPostDto cmmPostDto) {
         Page<CmmPostDto> page = new Page<>();
@@ -81,8 +81,8 @@ public class IndexProxyServiceImpl implements IndexProxyService {
         return page;
     }
 
-    @HystrixCommand(fallbackMethod = "hystrixSelectCmmCommuntityDetail",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+//    @HystrixCommand(fallbackMethod = "hystrixSelectCmmCommuntityDetail",ignoreExceptions = {Exception.class},
+//            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public CmmCommunityDto selectCmmCommuntityDetail(CmmCommunityDto cmmCommunityDto) {
         CmmCommunityDto re = new CmmCommunityDto();
@@ -94,8 +94,8 @@ public class IndexProxyServiceImpl implements IndexProxyService {
         return re;
     }
 
-    @HystrixCommand(fallbackMethod = "hystrixSelectedGames",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+//    @HystrixCommand(fallbackMethod = "hystrixSelectedGames",ignoreExceptions = {Exception.class},
+//            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public CardIndexBean selectedGames() {
         ResultDto<CardIndexBean>  cardIndexBeanResultDto = gamesFeignClient.getSelectedGames();
