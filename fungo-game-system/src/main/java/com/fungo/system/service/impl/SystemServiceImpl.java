@@ -477,7 +477,7 @@ public class SystemServiceImpl implements SystemService {
     public ResultDto<Integer> countActionNum(BasActionDto basActionDto) {
         //条件拼接
         EntityWrapper<BasAction> actionEntityWrapper = new EntityWrapper<>();
-        if (basActionDto.getMemberId() != null) {
+        if (StringUtil.isNotNull(basActionDto.getMemberId()) ) {
             actionEntityWrapper.eq("member_id", basActionDto.getMemberId());
         }
         if (basActionDto.getType() != null) {
@@ -486,7 +486,7 @@ public class SystemServiceImpl implements SystemService {
         if (basActionDto.getTargetType() != null) {
             actionEntityWrapper.eq("target_type", basActionDto.getTargetType());
         }
-        if (basActionDto.getTargetId() != null) {
+        if ( StringUtil.isNotNull(basActionDto.getTargetId())) {
             actionEntityWrapper.eq("target_id", basActionDto.getTargetId());
         }
         if (basActionDto.getState() != null) {
@@ -507,7 +507,7 @@ public class SystemServiceImpl implements SystemService {
 
         Wrapper<BasAction> wrapper = Condition.create().setSqlSelect(" target_id as targetId");
 
-        if (basActionDto.getMemberId() != null) {
+        if (StringUtil.isNotNull(basActionDto.getMemberId() )) {
             wrapper.eq("member_id", basActionDto.getMemberId());
         }
         if (basActionDto.getType() != null) {
