@@ -12,6 +12,7 @@ import com.fungo.system.service.BasActionService;
 import com.fungo.system.service.IMemberService;
 import com.fungo.system.service.IUserService;
 import com.fungo.system.service.MemberService;
+import com.fungo.system.service.portal.PortalSystemIMemberService;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.AuthorBean;
@@ -43,7 +44,7 @@ import java.util.*;
 public class PortalSystemMemberController {
 
     @Autowired
-    private IMemberService memberService;
+    private PortalSystemIMemberService memberService;
 
     @ApiOperation(value = "获取点赞我的", notes = "获取点赞我的")
     @RequestMapping(value = "/api/portal/system/mine/like", method = RequestMethod.POST)
