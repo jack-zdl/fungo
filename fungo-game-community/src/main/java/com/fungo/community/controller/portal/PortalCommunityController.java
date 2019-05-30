@@ -1,6 +1,7 @@
 package com.fungo.community.controller.portal;
 
 import com.fungo.community.service.ICommunityService;
+import com.fungo.community.service.portal.IPortalCommunityService;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
@@ -14,6 +15,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 @SuppressWarnings("all")
@@ -25,6 +27,10 @@ public class PortalCommunityController {
 
     @Autowired
     private ICommunityService communityService;
+
+    @Autowired
+    private IPortalCommunityService iPortalCommunityService;
+
 
     @ApiOperation(value = "PC2.0社区详情", notes = "")
     @ApiImplicitParams({
@@ -81,7 +87,7 @@ public class PortalCommunityController {
         if (memberUserPrefile != null) {
             userId = memberUserPrefile.getLoginId();
         }
-        return communityService.getCmmCommunityList(userId, communityInputPageDto);
+        return iPortalCommunityService.getCmmCommunityList(userId, communityInputPageDto);
 
     }
 
