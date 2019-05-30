@@ -52,7 +52,6 @@ public class CommunityServiceImpl implements ICommunityService {
     @Autowired
     private CmmCommunityDao communityDao;
 
-
     @Autowired
     private FungoCacheCommunity fungoCacheCommunity;
 
