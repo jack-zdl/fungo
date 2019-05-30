@@ -1,7 +1,6 @@
 package com.fungo.system.service.impl;
 
 
-import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.constts.CommonlyConst;
@@ -21,6 +20,7 @@ import com.game.common.dto.ActionInput;
 import com.game.common.dto.ResultDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -577,28 +577,54 @@ public class ActionServiceImpl implements IActionService {
                 action = this.buildAction(memberId, Setting.ACTION_TYPE_DOWNLOAD, inputDto);
 
                 this.actionService.insert(action);
-//                    19-05-06
-//                    切换feign客户端 调用
-//                    lyc
-//                counterService.addCounter("t_game", "download_num", inputDto.getTarget_id());//增加下载数
-//                切换feign客户端 调用游戏服务
-//                lyc
-                gameFeignClientUpdateCounterByDownLoad(inputDto);
 
+                //fix : 游戏下载量 随机增加[by mxf 2019-05-07]
+                //增加下载数
+                //counterService.addCounter("t_game", "download_num", inputDto.getTarget_id());
+                //end
             }
 
             //登录用户下载游戏后  clear redis cache
             String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_GAMELIST + memberId;
             fungoCacheMember.excIndexCache(false, keyPrefix, "", null);
 
-        } else {
-            //                    19-05-06
-            //                    切换feign客户端 调用
-            //                    lyc
-//            counterService.addCounter("t_game", "download_num", inputDto.getTarget_id());//增加下载数
-            //                切换feign客户端 调用游戏服务
-            gameFeignClientUpdateCounterByDownLoad(inputDto);
         }
+
+        //fix : 游戏下载量 随机增加[by mxf 2019-05-07]
+        /*
+        else {
+            //增加下载数
+            counterService.addCounter("t_game", "download_num", inputDto.getTarget_id());
+        }*/
+        //end
+//        微服务迁移 游戏下载量变化
+//        2019-05-30
+//        lyc
+        /*
+        String game_id = inputDto.getTarget_id();
+        if (StringUtils.isNotBlank(game_id)) {
+            EntityWrapper<Game> gameEntityWrapper = new EntityWrapper<Game>();
+            gameEntityWrapper.setSqlSelect("id,boom_download_num,download_num");
+            gameEntityWrapper.eq("id", game_id);
+            Game gameDB = gameService.selectOne(gameEntityWrapper);
+            if (null != gameDB) {
+                Long downNumNew = 0L;
+                if (null == gameDB.getBoomDownloadNum() || 0 == gameDB.getBoomDownloadNum()) {
+                    downNumNew = gameDB.getDownloadNum().longValue();
+                } else {
+                    downNumNew = gameDB.getBoomDownloadNum();
+                }
+                downNumNew = FungoLivelyCalculateUtils.calcViewAndDownloadCount(downNumNew);
+                gameDB.setBoomDownloadNum(downNumNew);
+                gameDB.setDownloadNum(gameDB.getDownloadNum() + 1);
+                gameDB.updateById();
+            }
+        }*/
+//        游戏下载量变化
+        Map<String, String> ssmap = new HashMap<>();
+        ssmap.put("gameId",inputDto.getTarget_id());
+        mqProduct.updateGameDownNumAndBoomDownloadNum(ssmap);
+
 
         //V2.4.6之前版本任务
         // times = gameProxy.addTaskCore(Setting.ACTION_TYPE_DOWNLOAD, memberId, inputDto.getTarget_id(), inputDto.getTarget_type());
