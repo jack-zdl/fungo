@@ -9,7 +9,7 @@ eureka:
     prefer-ip-address: true
     #${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
     instance-id:  ${spring.cloud.client.ipAddress}:${server.port}
-    lease-expiration-duration-in-seconds: 15
+    lease-expiration-duration-in-seconds: 10
     lease-renewal-interval-in-seconds: 5
 
 
@@ -18,7 +18,7 @@ eureka:
     #默认30s
     registryFetchIntervalSeconds: 5
     serviceUrl:
-      defaultZone:  http://172.17.18.228:8762/eureka/,http://172.17.18.227:8761/eureka/
+      defaultZone:  http://fungoEurekaAdmin:9140f6ad68d1e@172.17.18.228:8762/eureka/,http://fungoEurekaAdmin:9140f6ad68d1e@172.17.18.227:8761/eureka/
 
 
 
