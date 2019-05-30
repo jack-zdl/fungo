@@ -107,7 +107,7 @@ public class IndexProxyServiceImpl implements IndexProxyService {
         return new CmmPostDto();
     }
 
-    public Map<String, BigDecimal> hystrixGetRateData(String id) {
+    public Map<String, BigDecimal> hystrixGetRateData(String gameId) {
         logger.warn("IndexProxyServiceImpl.hystrixGetRateData ");
         return new HashMap<>();
     }

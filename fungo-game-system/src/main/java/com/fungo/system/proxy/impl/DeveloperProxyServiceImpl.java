@@ -32,8 +32,7 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
     @Autowired
     private CommunityFeignClient communityFeignClient;
 
-//    @HystrixCommand(fallbackMethod = "hystrixGameList", ignoreExceptions = {Exception.class},
-//            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+//    @HystrixCommand(fallbackMethod = "hystrixGameList")
     @Override
     public FungoPageResultDto<GameOutBean> gameList(List<String> collect, int page, int limit) {
         String ids = collect.toString();
@@ -59,8 +58,7 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 //	updateCounter
 
 
-//    @HystrixCommand(fallbackMethod = "hystrixUpdateCounter", ignoreExceptions = {Exception.class},
-//            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+//    @HystrixCommand(fallbackMethod = "hystrixUpdateCounter")
     @Override
     public boolean updateCounter(Map<String, String> map) {
         return gamesFeignClient.updateCounter(map);
@@ -75,8 +73,7 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
     }
 
 
-//    @HystrixCommand(fallbackMethod = "hystrixSelectReleaseLog", ignoreExceptions = {Exception.class},
-//            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+//    @HystrixCommand(fallbackMethod = "hystrixSelectReleaseLog")
     @Override
     public List<GameReleaseLogDto> selectGameReleaseLog(GameReleaseLogDto gameReleaseLog) {
         FungoPageResultDto<GameReleaseLogDto> gameReleases = gamesFeignClient.getGameReleaseLogPage(gameReleaseLog);
@@ -86,42 +83,38 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
         return new ArrayList<GameReleaseLogDto>();
     }
 
+    //    @HystrixCommand(fallbackMethod = "hystrixAddGameTag")
     @Override
     public ResultDto<String> addGameTag(List<String> tags, String categoryId, String gameId) {
         return null;
     }
 
-//    @HystrixCommand(fallbackMethod = "hystrixSelectGame", ignoreExceptions = {Exception.class},
-//            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+//    @HystrixCommand(fallbackMethod = "hystrixSelectGame")
     @Override
     public GameDto selectGame(String gameId) {
         return gamesFeignClient.selectOne(gameId);
     }
 
-//    @HystrixCommand(fallbackMethod = "hystrixSelectCount", ignoreExceptions = {Exception.class},
-//            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+//    @HystrixCommand(fallbackMethod = "hystrixSelectCount")
     @Override
     public int selectCount(GameSurveyRelDto gameSurveyRel) {
         return gamesFeignClient.gameSurveySelectCount(gameSurveyRel);
     }
 
-//    @HystrixCommand(fallbackMethod = "hystrixSelectGameEvaluationCount", ignoreExceptions = {Exception.class},
-//            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+//    @HystrixCommand(fallbackMethod = "hystrixSelectGameEvaluationCount")
     @Override
     public int selectGameEvaluationCount(GameEvaluationDto gameEvaluation) {
         return gamesFeignClient.gameEvaluationSelectCount(gameEvaluation);
     }
 
-//    @HystrixCommand(fallbackMethod = "hystrixSelectPostCount", ignoreExceptions = {Exception.class},
-//            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+//    @HystrixCommand(fallbackMethod = "hystrixSelectPostCount")
     @Override
     public int selectPostCount(CmmPostDto cmmPostDto) {
         return communityFeignClient.queryCmmPostCount(cmmPostDto).getData();
     }
 
 
-    /*@HystrixCommand(fallbackMethod = "hystrixGetMemberIdByTargetId",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
+    /*@HystrixCommand(fallbackMethod = "hystrixGetMemberIdByTargetId")*/
     @Override
     public String getMemberIdByTargetId(Map<String, String> map) {
         return gamesFeignClient.getMemberIdByTargetId(map);
@@ -153,16 +146,24 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 
     public List<GameReleaseLogDto> hystrixSelectReleaseLog(GameReleaseLogDto gameReleaseLog) {
         logger.warn("DeveloperProxyServiceImpl.ReleaseLog根据主键查询游戏评价异常");
-        return null;
+        return new ArrayList<>();
     }
 
     public GameDto hystrixSelectGame(String gameId) {
         logger.warn("DeveloperProxyServiceImpl.game根据主键查询游戏评价异常");
-        return null;
+        return new GameDto();
     }
 
     public boolean hystrixUpdateCounter(Map<String, String> map) {
         logger.warn("DeveloperProxyServiceImpl.UpdateCounter根据主键查询游戏评价异常");
         return false;
+    }
+
+    public ResultDto<String> hystrixAddGameTag(List<String> tags, String categoryId, String gameId) {
+        return new ResultDto<>();
+    }
+
+    public String hystrixGetMemberIdByTargetId(Map<String, String> map) {
+        return "";
     }
 }

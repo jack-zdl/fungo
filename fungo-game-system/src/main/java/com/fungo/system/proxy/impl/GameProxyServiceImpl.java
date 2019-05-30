@@ -164,7 +164,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
         return mooMessageDto;
     }
 
-
+    //    @HystrixCommand(fallbackMethod = "hystrixGetGameSelectCountByLikeNameAndState", ignoreExceptions = {Exception.class})
     @Override
     public int getGameSelectCountByLikeNameAndState(GameDto gameDto) {
         return gamesFeignClient.getGameSelectCountByLikeNameAndState(gameDto);
@@ -189,22 +189,26 @@ public class GameProxyServiceImpl implements IGameProxyService {
         return result;
     }
 
+    //    @HystrixCommand(fallbackMethod = "hystrixGetEvaluationFeeds", ignoreExceptions = {Exception.class})
     @Override
     public List<Map<String, Object>> getEvaluationFeeds(Map<String, Object> map) {
         return null;
     }
 
+    //    @HystrixCommand(fallbackMethod = "hystrixGetRecommendMembersFromEvaluation", ignoreExceptions = {Exception.class})
     @Override
     public List<String> getRecommendMembersFromEvaluation(Integer x, Integer y, List<String> wathMbsSet) {
         ResultDto<List<String>> re = gamesFeignClient.getRecommendMembersFromEvaluation(x, y, wathMbsSet);
         return re.getData();
     }
 
+    //    @HystrixCommand(fallbackMethod = "hystrixSelectedGames", ignoreExceptions = {Exception.class})
     @Override
     public CardIndexBean selectedGames() {
         return gamesFeignClient.selectedGames();
     }
 
+    //    @HystrixCommand(fallbackMethod = "hystrixSelectGameEvaluationPage", ignoreExceptions = {Exception.class})
     @Override
     public List<GameEvaluationDto> selectGameEvaluationPage() {
         FungoPageResultDto<GameEvaluationDto> re = gamesFeignClient.selectGameEvaluationPage();
@@ -214,6 +218,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
         return new ArrayList<>();
     }
 
+    //    @HystrixCommand(fallbackMethod = "hystrixGetHonorQualificationOfEssenceEva", ignoreExceptions = {Exception.class})
     @Override
     public List<Map> getHonorQualificationOfEssenceEva() {
         ResultDto<List<Map>> re = gamesFeignClient.getUserGameReviewBoutiqueNumber();
@@ -259,7 +264,36 @@ public class GameProxyServiceImpl implements IGameProxyService {
     }
 
     public GameInviteDto hystrixSelectGameInvite(GameInviteDto gameInviteDto) {
-        logger.warn("GameProxyServiceImpl.hystrixSelectGameInvite根据主键查询游戏评价异常");
+        logger.warn("GameProxyServiceImpl.hystrixSelectGameInvite  根据主键查询游戏评价异常");
         return new GameInviteDto();
+    }
+
+    public int hystrixGetGameSelectCountByLikeNameAndState(GameDto gameDto) {
+        logger.warn("GameProxyServiceImpl.hystrixGetGameSelectCountByLikeNameAndState  根据主键查询游戏评价异常");
+        return 0;
+    }
+
+    public List<Map<String, Object>> hystrixGetEvaluationFeeds(Map<String, Object> map) {
+        logger.warn("GameProxyServiceImpl.hystrixGetEvaluationFeeds   根据主键查询游戏评价异常");
+        return new ArrayList<>();
+    }
+
+    public List<String> hystrixGetRecommendMembersFromEvaluation(Integer x, Integer y, List<String> wathMbsSet) {
+        logger.warn("GameProxyServiceImpl.hystrixGetRecommendMembersFromEvaluation   根据主键查询游戏评价异常");
+        return new ArrayList<>();
+    }
+
+    public CardIndexBean hystrixSelectedGames() {
+        return new CardIndexBean();
+    }
+
+    public List<GameEvaluationDto> hystrixSelectGameEvaluationPage() {
+        logger.warn("GameProxyServiceImpl.hystrixSelectGameEvaluationPage   根据主键查询游戏评价异常");
+        return new ArrayList<>();
+    }
+
+    public List<Map> hystrixGetHonorQualificationOfEssenceEva() {
+        logger.warn("GameProxyServiceImpl.hystrixGetHonorQualificationOfEssenceEva   根据主键查询游戏评价异常");
+        return new ArrayList<>();
     }
 }
