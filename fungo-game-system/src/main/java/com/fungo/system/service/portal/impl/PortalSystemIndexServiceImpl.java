@@ -81,6 +81,7 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
         re = new FungoPageResultDto<>();
         List<CardIndexBean> clist = new ArrayList<>();
         int page = input.getPage();
+        int limit = input.getLimit();
 
         Page<CardIndexBean> pageBean = null;
 
@@ -115,47 +116,16 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
             if (postVidoe != null) {
                 clist.add(postVidoe);
             }
-            ArrayList<CardIndexBean> topicPosts = this.topicPosts(page, 10, 10 * (page - 1) + 1);
+            ArrayList<CardIndexBean> topicPosts = this.topicPosts(page, limit, 10 * (page - 1) + 1);
             clist.addAll(topicPosts);
             re.setAfter(2);
             re.setBefore(1);
 
-        } else if (page == 2) {
-
-            //安利墙 ios 当前版本是否 隐藏
-            CardIndexBean postVidoe = this.selectPosts("0007",2);
-            if (postVidoe != null) {
-                clist.add(postVidoe);
-            }
-            CardIndexBean postFine = this.selectPosts("0008",1);
-            if (postFine != null) {
-                clist.add(postFine);
-            }
-            //大家都在玩 ios 当前版本是否 隐藏
-            CardIndexBean selectedGames = this.selectedGames();
-            if (selectedGames != null) {
-                clist.add(selectedGames);
-            }
-            //置顶
-//			ArrayList<CardIndexBean> topicPosts = this.topicPosts(0,3,8);
-//			clist.addAll(topicPosts);
-            re.setAfter(3);
-            re.setBefore(1);
         } else {
-            page = page - 2;
-//			ArrayList<CardIndexBean> topicPosts = this.topicPosts(10*(page-1) - 7,10,10*(page-1)+1);
-            ArrayList<CardIndexBean> topicPosts = this.topicPosts(page, 10, 10 * (page - 1) + 1);
+            ArrayList<CardIndexBean> topicPosts = this.topicPosts(page, limit, 10 * (page - 1) + 1);
             clist.addAll(topicPosts);
-//			PageTools.pageToResultDto(re, pageBean);
-            if (topicPosts.size() == 0) {
-                re.setAfter(-1);
-            } else {
-                re.setAfter(page + 3);
-            }
-//			pageBean = this.pageFormat(clist,page,count);
         }
         re.setData(clist);
-        //redis cache
         fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
         return re;
     }
@@ -164,7 +134,6 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
     //安利墙
     public CardIndexBean anliWall() {
 //		re.setData(list);
-        // @todo  没有写
         List<GameEvaluationDto> plist = iGameProxyService.selectGameEvaluationPage(); //gameEvaluationService.selectPage(new Page<GameEvaluation>(1, 6), new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy("RAND()"));
         ArrayList<CardDataBean> evaDateList = new ArrayList<>();
         CardIndexBean cb = new CardIndexBean();
@@ -208,7 +177,6 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
 
     //大家都在玩
     public CardIndexBean selectedGames() {
-        // @todo 调用Fegin接口
         return iGameProxyService.selectedGames();
     }
 
@@ -223,17 +191,17 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
 //		List<CmmPost> list = postService.selectList(new EntityWrapper<CmmPost>().eq("type", 3).orderBy("created_at", false).last("limit " + start+","+limit));
 //		List<CmmPost> list = p.getRecords();
         ArrayList<CardIndexBean> indexList = new ArrayList<>();
+        CardIndexBean index = new CardIndexBean();
+        ArrayList<CardDataBean> gameDateList = new ArrayList<>();
         for (CmmPostDto post : pageList.getRecords()) {
-            ArrayList<CardDataBean> gameDateList = new ArrayList<>();
+
             CardDataBean bean = new CardDataBean();
-            CardIndexBean index = new CardIndexBean();
             // 图片/标题/用户名/头像/评论数
             CmmCommunityDto communityDto = new CmmCommunityDto();
             communityDto.setId(post.getCommunityId());
             communityDto.setState(-1);
-            //@todo
             @SuppressWarnings("unchecked")
-            CmmCommunityDto c = indexProxyService.selectCmmCommuntityDetail(communityDto);  new CmmCommunityDto();  //communityService.selectOne(Condition.create().setSqlSelect("id,name,icon,cover_image").eq("id", post.getCommunityId()).ne("state", -1));
+            CmmCommunityDto c = indexProxyService.selectCmmCommuntityDetail(communityDto);   //communityService.selectOne(Condition.create().setSqlSelect("id,name,icon,cover_image").eq("id", post.getCommunityId()).ne("state", -1));
             bean.setImageUrl(post.getCoverImage());
 //			if(!CommonUtil.isNull(post.getCoverImage())) {
 //				bean.setImageUrl(post.getCoverImage());
@@ -275,16 +243,15 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
             bean.setActionType("1");
             bean.setTargetId(post.getId());
             bean.setTargetType(1);
-
             gameDateList.add(bean);
-            index.setCardName("社区置顶文章");
-            index.setCardType(8);
-            index.setOrder(order);
-            index.setSize(1);
-            order++;
-            index.setDataList(gameDateList);
-            indexList.add(index);
         }
+        index.setCardName("社区置顶文章");
+        index.setCardType(8);
+        index.setOrder(order);
+        index.setSize(gameDateList.size());
+//        order++;
+        index.setDataList(gameDateList);
+        indexList.add(index);
         return indexList;
     }
 
