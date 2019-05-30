@@ -1,6 +1,6 @@
 server:
-  port: 8761
-  #port: 8762
+  #port: 8761
+  port: 8762
 
 spring:
   application:
@@ -35,8 +35,8 @@ eureka:
     registryFetchIntervalSeconds: 5
 
     serviceUrl:
-      defaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@172.17.18.228:8762/eureka/
-      #defaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@172.17.18.227:8761/eureka/
+      #defaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@172.17.18.228:8762/eureka/
+      defaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@172.17.18.227:8761/eureka/
 
   server:
     #测试时关闭自我保护机制，保证不可用服务及时剔除，生产环境要开启自我保护机制
