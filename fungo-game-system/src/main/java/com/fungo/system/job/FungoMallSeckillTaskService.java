@@ -1,11 +1,15 @@
-package com.fungo.system.mall.service.commons;
+package com.fungo.system.job;
 
 
+import com.fungo.system.mall.service.commons.FungoMallFailureOrderService;
+import com.fungo.system.mall.service.commons.FungoMallScanOrderWithSeckillService;
+import com.fungo.system.mall.service.commons.FungoMallSeckillTaskStateCommand;
 import com.game.common.util.exception.BusinessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 /**
  * <p>
@@ -15,7 +19,7 @@ import org.springframework.scheduling.annotation.Scheduled;
  * @author mxf
  * @since 2018-12-04
  */
-//@Component
+@Component
 public class FungoMallSeckillTaskService {
 
 
@@ -32,7 +36,7 @@ public class FungoMallSeckillTaskService {
      * 处理秒杀开始后，已经下的单子
      * 每2秒执行扫描一次订单表
      */
-//    @Scheduled(cron = "0/2 * * * * ? ")
+    @Scheduled(cron = "0/2 * * * * ? ")
     public void excuteSeckillOrderScan() throws Exception {
         try {
 
@@ -62,7 +66,7 @@ public class FungoMallSeckillTaskService {
      * 处理 秒杀失败的订单(创建订单超过4小时)，把用户已冻结的fungo币账户解冻，同时设置订单为 3 无效订单
      *
      */
-//    @Scheduled(cron = "0 0 0/4 * * ? ")
+    @Scheduled(cron = "0 0 0/4 * * ? ")
     public void excuteSeckillOrderScanWithFailure() {
         try {
             LOGGER.info("处理秒杀失败的订单定时器启动...");
