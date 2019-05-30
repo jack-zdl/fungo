@@ -219,6 +219,7 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
         return communityDto;
     }
 
+    //    @HystrixCommand(fallbackMethod = "hystrixCmmPostCount" )
     @Override
     public int CmmPostCount(CmmPostDto cmmPostDto) {
         ResultDto<Integer> re = communityFeignClient.queryCmmPostCount(cmmPostDto);
@@ -271,4 +272,8 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
 //        logger.warn("MemeberProxyServiceImpl.selectCmmCommunityById根据主键获取社区帖子异常");
 //        return new CmmCommunityDto();
 //    }
+
+    public int hystrixCmmPostCount(CmmPostDto cmmPostDto) {
+        return 0;
+    }
 }

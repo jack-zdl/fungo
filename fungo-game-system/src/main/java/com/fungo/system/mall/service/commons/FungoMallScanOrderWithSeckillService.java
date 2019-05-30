@@ -18,6 +18,8 @@ import com.fungo.system.mall.entity.MallVirtualCard;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
 import com.fungo.system.service.IncentAccountCoinDaoService;
 import com.game.common.consts.FunGoGameConsts;
+import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.FunGoEHCacheUtils;
 import com.game.common.util.FungoAESUtil;
 import com.game.common.util.FungoCRC32Util;
@@ -35,6 +37,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static com.game.common.consts.FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST;
 
 /**
  * <p>
@@ -50,6 +55,7 @@ public class FungoMallScanOrderWithSeckillService {
 
     private static final Logger logger = LoggerFactory.getLogger(FungoMallScanOrderWithSeckillService.class);
 
+    private ReentrantLock lock = new ReentrantLock();
 
     @Autowired
     private MallSeckillDaoService mallSeckillDaoService;
@@ -75,7 +81,8 @@ public class FungoMallScanOrderWithSeckillService {
     @Value("${fungo.mall.seckill.aesSecretKey}")
     private String aESSecretKey;
 
-
+    @Autowired
+    private FungoCacheTask fungoCacheTask;
     /**
      * 扫描订单表
      * 把 订单状态 order_status 为1 已确认
@@ -172,45 +179,59 @@ public class FungoMallScanOrderWithSeckillService {
                                         continue;
                                     }
 
-                                    //6. 交易成功修改订单状态  5 交易成功 & 2 已付款   &  4 无收货信息
-                                    boolean isUpdateSucc = updateOrderStatusWithScan(mb_id, orderId, 5, 2, 4);
 
-                                    logger.info("mb_id:{}--order_id:{}--goods_id:{}--交易成功修改订单状态:5 交易成功,2 已付款,4 无收货信息",
-                                            mb_id, orderId, goods.getGoodsId());
+                                    lock.lock();
+                                    try {
+                                        //6. 交易成功修改订单状态  5 交易成功 & 2 已付款   &  4 无收货信息
+                                        boolean isUpdateSucc = updateOrderStatusWithScan(mb_id, orderId, 5, 2, 4);
 
+                                        logger.info("mb_id:{}--order_id:{}--goods_id:{}--交易成功修改订单状态:5 交易成功,2 已付款,4 无收货信息",
+                                                mb_id, orderId, goods.getGoodsId());
 
-                                    //6.1 若是虚拟商品，把虚拟卡号，转移给用户对应的虚拟商品 ,
-                                    // 修改虚拟卡表为已经卖出状态，同时把虚拟卡信息保存到订单商品表中
-                                    // 若虚拟商品不存在，则由客户手动处理，程序不做处理
-                                    MallVirtualCard vCardNewWithOrderGoods = null;
-                                    switch (goods.getGoodsType().intValue()) {
-                                        case 21:
-                                            vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
-                                            break;
-                                        case 22:
-                                            vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
-                                            break;
-                                        case 23:
-                                            vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
-                                            break;
-                                        default:
-                                            break;
+                                        //6.1 若是虚拟商品，把虚拟卡号，转移给用户对应的虚拟商品 ,
+                                        // 修改虚拟卡表为已经卖出状态，同时把虚拟卡信息保存到订单商品表中
+                                        // 若虚拟商品不存在，则由客户手动处理，程序不做处理
+                                        MallVirtualCard vCardNewWithOrderGoods = null;
+                                        switch (goods.getGoodsType().intValue()) {
+                                            case 21:
+                                                vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
+                                                break;
+                                            case 22:
+                                                vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
+                                                break;
+                                            case 23:
+                                                vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
+                                                break;
+                                            default:
+                                                break;
+                                        }
+
+                                        //7. 记录用户fungo币消费明细
+                                        if(isUpdateSucc){
+                                            addFungoPayLogs(mb_id, mallOrder.getMbMobile(), mallOrder.getMbName(), String.valueOf(goods.getGoodsPriceVcy()),
+                                                    goods.getGoodsName());
+                                        }
+                                        //8. 推送系统消息通知用户商品秒杀成功和虚拟卡商品卡号密码等信息
+                                        if (isUpdateSucc) {
+                                            pushMsgToMember(mb_id, goods.getGoodsName(), goods.getGoodsType(), vCardNewWithOrderGoods);
+                                        }
+                                    }catch (Exception e){
+                                        e.printStackTrace();
+                                        logger.error("lock锁执行失败");
+                                    }finally {
+                                        lock.unlock();
                                     }
-
-                                    //7. 记录用户fungo币消费明细
-                                    addFungoPayLogs(mb_id, mallOrder.getMbMobile(), mallOrder.getMbName(), String.valueOf(goods.getGoodsPriceVcy()),
-                                            goods.getGoodsName());
-                                    //8. 推送系统消息通知用户商品秒杀成功和虚拟卡商品卡号密码等信息
-                                    if (isUpdateSucc) {
-                                        pushMsgToMember(mb_id, goods.getGoodsName(), goods.getGoodsType(), vCardNewWithOrderGoods);
-                                    }
-
                                 }
                             }
                             // 9. 清除缓存的订单数据
                             logger.info("用户订单交易成功，删除该用户订单缓存,mb_id:{}", mb_id);
                             removeCacheWithOrders(mb_id, String.valueOf(orderId));
                             removeCacheWithOrders(mb_id, "");
+
+                            String cacheKey = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + mb_id;
+                            logger.info("扫描处理订单-清除缓存的用户fun币消耗", cacheKey);
+                            fungoCacheTask.excIndexCache(false, cacheKey, "", null);
+
                         }
                     }
 
