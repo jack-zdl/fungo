@@ -23,7 +23,7 @@ eureka:
     #默认30s
     lease-renewal-interval-in-seconds: 5
     # Eureka服务器在接收到实例的最后一次发出的心跳后，需要等待多久才可以将此实例删除，默认为90秒
-    leaseExpirationDurationInSeconds: 15
+    leaseExpirationDurationInSeconds: 10
   client:
     #表示是否注册自身到eureka服务器
     registerWithEureka: false
@@ -32,6 +32,10 @@ eureka:
     #eureka client刷新本地缓存时间
     #默认30s
     registryFetchIntervalSeconds: 5
+
+    healthcheck:
+      enabled: true
+
     serviceUrl:
       defaultZone: http://fungoEurekaAdmin:3e0914041adb1@127.0.0.1:8761/eureka/
 
