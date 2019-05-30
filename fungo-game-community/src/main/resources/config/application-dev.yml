@@ -11,12 +11,31 @@ eureka:
     #EurekaClient 向注册中心发送心跳的时间间隔，（单位：秒）客户端告诉注册服务端自己会按照该规则发送心跳
     lease-renewal-interval-in-seconds: 5
     #EurekaServer在收到最后一次心跳后等待的时间上限，（单位：秒），超过则剔除。客户端告诉注册服务端自己会按照该规则发送心跳
-    lease-expiration-duration-in-seconds: 15
+    lease-expiration-duration-in-seconds: 10
 
 #-----------------------------------------------------------------------------------------------------------
   client:
     serviceUrl:
-      defaultZone:  http://127.0.0.1:8761/eureka/
+      defaultZone:  http://fungoEurekaAdmin:3e0914041adb1@127.0.0.1:8761/eureka/
+
+
+#-----------------------------------------------------------------------------------------------------------
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: false
+        isolation:
+          strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
+          thread:
+            timeoutInMilliseconds: 600000  #命令执行超时时间，默认1000ms
+
+ribbon:
+  ConnectTimeout: 50000
+  ReadTimeout: 150000
+#-----------------------------------------------------------------------------------------------------------
+
 #-----------------------------------------------------------------------------------------------------------
 spring:
   cloud:
@@ -38,50 +57,6 @@ spring:
     allow-bean-definition-overriding: true #当遇到同样名字的时候，是否允许覆盖注册
 
 
-  #-----------------------------------------------------------------------------------------------------------
-
-  #  type-aliases-package: com.fungo.system.entity
-  ## 当post /refresh方式刷新配置 时 ，会有个安全限制，关掉就可以了
-  #security:
-  #  basic:
-  #    enabled: false
-  management:
-    #  security:
-    #    enabled: false
-    endpoint:
-      shutdown:
-        enabled: true
-      dbcheck:
-        enabled: true
-      health:
-        show-details: always
-    endpoints:
-      web:
-        exposure:
-          include: "*"  # 暴露所有服务监控端口，也可以只暴露 hystrix.stream端口
-  #-----------------------------------------------------------------------------------------------------------
-  turbine:
-    #  1.被监控的服务应用没有配置 context-path 的情况下
-    # 配置 Eureka 中的 serviceId 列表，指定要监控的服务
-    app-config: FUNGO-GAME-GAMES,FUNGO-GAME-SYSTEM
-    aggregator:
-      cluster-config: default
-    cluster-name-expression: new String("default")
-  #  combine-host-port: true
-  #-----------------------------------------------------------------------------------------------------------
-  hystrix:
-    command:
-      default:
-        execution:
-          timeout:
-            enabled: false
-          isolation:
-            strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
-            thread:
-              timeoutInMilliseconds: 600000  #命令执行超时时间，默认1000ms
-  ribbon:
-    ConnectTimeout: 50000
-    ReadTimeout: 150000
   #-----------------------------------------------------------------------------------------------------------------------------------
   aop:
     proxy-target-class: true
@@ -166,9 +141,6 @@ mybatis-plus:
 
 
 #----------------------------------------------------------------------------------------------------------------------
-
-
-
 aliyun.oss:
   endpoint: http://oss-cn-beijing.aliyuncs.com
   accessKeyId: LTAIsW4qLBG6M3Vf
