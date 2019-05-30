@@ -1,16 +1,16 @@
 package com.fungo.games.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameEvaluation;
 import com.fungo.games.entity.GameReleaseLog;
-import com.fungo.games.service.GameEvaluationService;
-import com.fungo.games.service.IEvaluateService;
-import com.fungo.games.service.IGameService;
-import com.fungo.games.service.IMQService;
+import com.fungo.games.service.*;
+import com.fungo.games.utils.FungoLivelyCalculateUtils;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.game.GameReleaseLogDto;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +37,8 @@ public class MQServiceImpl implements IMQService {
     private IEvaluateService iEvaluateService;
     @Autowired
     private GameEvaluationService gameEvaluationService;
+    @Autowired
+    private GameService gameService;
 
     /**
      * 游戏更新
@@ -118,5 +120,34 @@ public class MQServiceImpl implements IMQService {
         GameEvaluation gameEvaluation = new GameEvaluation();
         BeanUtils.copyProperties(gameEvaluationDto,gameEvaluation);
         return gameEvaluationService.updateById(gameEvaluation);
+    }
+
+    /**
+     * 游戏下载量变化
+     * @param map
+     * @return
+     */
+    @Override
+    public boolean mqUpdateGameDownLoadNum(Map map) {
+        String game_id = (String)map.get("gameId");
+        if (StringUtils.isNotBlank(game_id)) {
+            EntityWrapper<Game> gameEntityWrapper = new EntityWrapper<Game>();
+            gameEntityWrapper.setSqlSelect("id,boom_download_num as boomDownloadNum,download_num as downloadNum");
+            gameEntityWrapper.eq("id", game_id);
+            Game gameDB = gameService.selectOne(gameEntityWrapper);
+            if (null != gameDB) {
+                Long downNumNew = 0L;
+                if (null == gameDB.getBoomDownloadNum() || 0 == gameDB.getBoomDownloadNum()) {
+                    downNumNew = gameDB.getDownloadNum().longValue();
+                } else {
+                    downNumNew = gameDB.getBoomDownloadNum();
+                }
+                downNumNew = FungoLivelyCalculateUtils.calcViewAndDownloadCount(downNumNew);
+                gameDB.setBoomDownloadNum(downNumNew);
+                gameDB.setDownloadNum(gameDB.getDownloadNum() + 1);
+                return gameDB.updateById();
+            }
+        }
+        return false;
     }
 }
