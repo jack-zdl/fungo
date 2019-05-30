@@ -87,5 +87,14 @@ public class MQProduct {
         rabbitMQProduct.mqCommunity(mqResultDto);
     }
 
-
+    /**
+     * 游戏下载量变化
+     * @param ssmap
+     */
+    public void updateGameDownNumAndBoomDownloadNum(Map<String, String> ssmap) {
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAMES_DOWNLOAD.getCode());
+        mqResultDto.setBody(ssmap);
+        rabbitMQProduct.mqGames(mqResultDto);
+    }
 }

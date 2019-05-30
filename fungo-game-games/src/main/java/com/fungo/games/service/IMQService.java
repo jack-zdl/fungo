@@ -33,4 +33,7 @@ public interface IMQService {
     boolean mqGameEvaluationInsert(GameEvaluationDto gameEvaluationDto);
 
 	boolean mqGameEvaluationUpdate(GameEvaluationDto gameEvaluationDto);
+
+    boolean mqUpdateGameDownLoadNum(Map map);
+
 }

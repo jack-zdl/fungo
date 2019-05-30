@@ -78,13 +78,17 @@ public class MQDataReceiveServiceImpl implements MQDataReceiveService {
                     GameEvaluationDto gameEvaluationDto = JSON.parseObject(body.toString(), GameEvaluationDto.class);
     //                mq添加游戏评论
                     return businessBoolean(imqService.mqGameEvaluationInsert(gameEvaluationDto),messageId);
-                }
-                if (mqResultDto.getType() == MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_GAME_EVALUATION_UPDATE.getCode()){
+                }else if (mqResultDto.getType() == MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_GAME_EVALUATION_UPDATE.getCode()){
                     //                修改游戏评论
                     Object body = mqResultDto.getBody();
                     GameEvaluationDto gameEvaluationDto = JSON.parseObject(body.toString(), GameEvaluationDto.class);
     //                mq修改游戏评论
                     return businessBoolean(imqService.mqGameEvaluationUpdate(gameEvaluationDto),messageId);
+                }else{
+                    if (messageId != null) {
+                        UniqueIdCkeckUtil.deleteUniqueId(messageId.toString());
+                    }
+                    return false;
                 }
             } else {
                 if (mqResultDto.getType() == MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAMEUPDATE.getCode()) {
@@ -93,34 +97,41 @@ public class MQDataReceiveServiceImpl implements MQDataReceiveService {
                     GameDto gameDto1 = JSON.parseObject(body.toString(), GameDto.class);
     //                mq游戏更新
                     return businessBoolean(imqService.mqGameUpdate(gameDto1),messageId);
-                }
-                if (mqResultDto.getType() == MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAMEINSERT.getCode()) {
+                }else if (mqResultDto.getType() == MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAMEINSERT.getCode()) {
     //                游戏添加
                     Object body = mqResultDto.getBody();
                     GameDto gameDto1 = JSON.parseObject(body.toString(), GameDto.class);
     //                mq游戏添加
                     return businessBoolean(imqService.mqGameInsert(gameDto1),messageId);
-                }
-                if (mqResultDto.getType() == MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAMERELEASELOG.getCode()) {
+                }else if (mqResultDto.getType() == MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAMERELEASELOG.getCode()) {
     //                插入游戏版本日志审批
                     Object body = mqResultDto.getBody();
                     GameReleaseLogDto gameReleaseLogDto = JSON.parseObject(body.toString(), GameReleaseLogDto.class);
     //                mq插入游戏版本日志审批
                     return businessBoolean(imqService.mqGameReleaseLogInsert(gameReleaseLogDto),messageId);
-                }
-                if (mqResultDto.getType() == MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_COUNTER.getCode()) {
+                }else if (mqResultDto.getType() == MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_COUNTER.getCode()) {
     //                计数器(动态表)
                     Object body = mqResultDto.getBody();
                     Map map = JSON.parseObject(body.toString(), Map.class);
     //                mq计数器(动态表)
                     return businessBoolean(imqService.mqCounterUpdate(map),messageId);
-                }
-                if (mqResultDto.getType() == MQResultDto.SystemMQDataType.SYSTEM_MQ_DATA_TYPE_ADDGAMETAG.getCode()) {
+                }else if (mqResultDto.getType() == MQResultDto.SystemMQDataType.SYSTEM_MQ_DATA_TYPE_ADDGAMETAG.getCode()) {
     //                根据后台标签id集合，分类标签，游戏id
                     Object body = mqResultDto.getBody();
                     Map map = JSON.parseObject(body.toString(), Map.class);
     //                mq根据后台标签id集合，分类标签，游戏id
                     return businessBoolean(imqService.mqAddGametag(map),messageId);
+                }else if (mqResultDto.getType() == MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAMES_DOWNLOAD.getCode()) {
+                    //                游戏下载量变化
+                    Object body = mqResultDto.getBody();
+                    Map map = JSON.parseObject(body.toString(), Map.class);
+                    //                游戏下载量变化
+                    return businessBoolean(imqService.mqUpdateGameDownLoadNum(map),messageId);
+                }else{
+                    if (messageId != null) {
+                        UniqueIdCkeckUtil.deleteUniqueId(messageId.toString());
+                    }
+                    return false;
                 }
             }
         } catch (Exception e) {
