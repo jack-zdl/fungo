@@ -146,7 +146,8 @@ public class MQResultDto {
         SYSTEM_DATA_TYPE_COMMUNITYINSERT(5, "com.game.common.dto.community.CmmCommunityDto"),
         SYSTEM_MQ_DATA_TYPE_ADDGAMETAG(6,"java.util.HashMap"), // addGameTag方法
         SYSTEM_MQ_DATA_TYPE_COMMUNITY_UPDATE(7,"java.util.HashMap"), // 社区计数器
-        SYSTEM_MQ_DATA_TYPE_GAMES_UPDATE(8,"java.util.HashMap");
+        SYSTEM_MQ_DATA_TYPE_GAMES_UPDATE(8,"java.util.HashMap"),
+        SYSTEM_DATA_TYPE_GAMES_DOWNLOAD(9, "java.util.HashMap");
 
         private int code;
         private String name;

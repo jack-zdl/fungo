@@ -55,6 +55,10 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
                 mooMoodPage = new Page<MooMood>(page, limit);
             }
 
+            //id
+            if (StringUtils.isNotBlank(mooMoodDto.getId())) {
+                param.put("id", mooMoodDto.getId());
+            }
             //会员id
             String member_id = mooMoodDto.getMemberId();
             if (StringUtils.isNotBlank(member_id)) {
