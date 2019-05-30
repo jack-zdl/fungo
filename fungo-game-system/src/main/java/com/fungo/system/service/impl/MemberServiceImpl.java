@@ -1013,7 +1013,7 @@ public class MemberServiceImpl implements IMemberService {
         MooMoodDto moomoodParam = new MooMoodDto();
         moomoodParam.setPage(input.getPage());
         moomoodParam.setLimit(input.getLimit());
-        moomoodParam.setId(loginId);
+        moomoodParam.setMemberId(loginId);
         moomoodParam.setState(-1);
         Page<MooMoodDto> page = iMemeberProxyService.selectMooMoodPage(moomoodParam); //moodService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<MooMood>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
         List<MooMoodDto> mlist = page.getRecords();
@@ -1192,7 +1192,7 @@ public class MemberServiceImpl implements IMemberService {
 
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_COMMENTS;
         String keySuffix = loginId + JSON.toJSONString(input);
-        re = null;//(FungoPageResultDto<MyCommentBean>) fungoCacheArticle.getIndexCache(keyPrefix, keySuffix);
+        re = (FungoPageResultDto<MyCommentBean>) fungoCacheArticle.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
         }

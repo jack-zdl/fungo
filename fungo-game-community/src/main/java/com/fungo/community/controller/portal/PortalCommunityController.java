@@ -1,6 +1,7 @@
 package com.fungo.community.controller.portal;
 
 import com.fungo.community.service.ICommunityService;
+import com.fungo.community.service.portal.IPortalCommunityService;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
@@ -14,9 +15,10 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
-
+@SuppressWarnings("all")
 @RestController
 @Api(value = "", description = "PC2.0社区")
 public class PortalCommunityController {
@@ -25,6 +27,30 @@ public class PortalCommunityController {
 
     @Autowired
     private ICommunityService communityService;
+
+    @Autowired
+    private IPortalCommunityService iPortalCommunityService;
+
+
+    @ApiOperation(value = "PC2.0社区详情", notes = "")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "communityId", value = "社区id", paramType = "path", dataType = "string"),
+            @ApiImplicitParam(name = "userId", value = "用户id", paramType = "form", dataType = "string")
+    })
+    @RequestMapping(value = "/api/portal/community/content/community/{communityId}", method = RequestMethod.GET)
+    public ResultDto<CommunityOut> getCommunityDetail(@Anonymous MemberUserProfile memberUserPrefile,
+                                                      @PathVariable("communityId") String communityId) {
+        String userId = "";
+        if (memberUserPrefile != null) {
+            userId = memberUserPrefile.getLoginId();
+        }
+        try {
+            return communityService.getCommunityDetail(communityId, userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultDto.error("-1", "操作失败");
+        }
+    }
 
 
     @ApiOperation(value = "搜索社区", notes = "")
@@ -61,7 +87,7 @@ public class PortalCommunityController {
         if (memberUserPrefile != null) {
             userId = memberUserPrefile.getLoginId();
         }
-        return communityService.getCmmCommunityList(userId, communityInputPageDto);
+        return iPortalCommunityService.getCmmCommunityList(userId, communityInputPageDto);
 
     }
 

@@ -32,8 +32,8 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
     @Autowired
     private CommunityFeignClient communityFeignClient;
 
-    @HystrixCommand(fallbackMethod = "hystrixGameList", ignoreExceptions = {Exception.class},
-            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+//    @HystrixCommand(fallbackMethod = "hystrixGameList", ignoreExceptions = {Exception.class},
+//            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
     @Override
     public FungoPageResultDto<GameOutBean> gameList(List<String> collect, int page, int limit) {
         String ids = collect.toString();
@@ -59,22 +59,24 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
 //	updateCounter
 
 
-    @HystrixCommand(fallbackMethod = "hystrixUpdateCounter", ignoreExceptions = {Exception.class},
-            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+//    @HystrixCommand(fallbackMethod = "hystrixUpdateCounter", ignoreExceptions = {Exception.class},
+//            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+    @Override
     public boolean updateCounter(Map<String, String> map) {
         return gamesFeignClient.updateCounter(map);
     }
 
 
-    @HystrixCommand(fallbackMethod = "hystrixUpdateCounter", ignoreExceptions = {Exception.class},
-            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+//    @HystrixCommand(fallbackMethod = "hystrixUpdateCounter", ignoreExceptions = {Exception.class},
+//            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+    @Override
     public boolean updatecommunityCounter(Map<String, String> map) {
         return gamesFeignClient.updateCounter(map);
     }
 
 
-    @HystrixCommand(fallbackMethod = "hystrixSelectReleaseLog", ignoreExceptions = {Exception.class},
-            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+//    @HystrixCommand(fallbackMethod = "hystrixSelectReleaseLog", ignoreExceptions = {Exception.class},
+//            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
     @Override
     public List<GameReleaseLogDto> selectGameReleaseLog(GameReleaseLogDto gameReleaseLog) {
         FungoPageResultDto<GameReleaseLogDto> gameReleases = gamesFeignClient.getGameReleaseLogPage(gameReleaseLog);
@@ -89,29 +91,29 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
         return null;
     }
 
-    @HystrixCommand(fallbackMethod = "hystrixSelectGame", ignoreExceptions = {Exception.class},
-            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+//    @HystrixCommand(fallbackMethod = "hystrixSelectGame", ignoreExceptions = {Exception.class},
+//            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
     @Override
     public GameDto selectGame(String gameId) {
         return gamesFeignClient.selectOne(gameId);
     }
 
-    @HystrixCommand(fallbackMethod = "hystrixSelectCount", ignoreExceptions = {Exception.class},
-            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+//    @HystrixCommand(fallbackMethod = "hystrixSelectCount", ignoreExceptions = {Exception.class},
+//            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
     @Override
     public int selectCount(GameSurveyRelDto gameSurveyRel) {
         return gamesFeignClient.gameSurveySelectCount(gameSurveyRel);
     }
 
-    @HystrixCommand(fallbackMethod = "hystrixSelectGameEvaluationCount", ignoreExceptions = {Exception.class},
-            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+//    @HystrixCommand(fallbackMethod = "hystrixSelectGameEvaluationCount", ignoreExceptions = {Exception.class},
+//            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
     @Override
     public int selectGameEvaluationCount(GameEvaluationDto gameEvaluation) {
         return gamesFeignClient.gameEvaluationSelectCount(gameEvaluation);
     }
 
-    @HystrixCommand(fallbackMethod = "hystrixSelectPostCount", ignoreExceptions = {Exception.class},
-            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+//    @HystrixCommand(fallbackMethod = "hystrixSelectPostCount", ignoreExceptions = {Exception.class},
+//            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
     @Override
     public int selectPostCount(CmmPostDto cmmPostDto) {
         return communityFeignClient.queryCmmPostCount(cmmPostDto).getData();

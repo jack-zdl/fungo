@@ -941,7 +941,7 @@ public class PostServiceImpl implements IPostService {
         PostOut out = null;
 
         //from redis cache
-        out = (PostOut) fungoCacheArticle.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, postId + os);
+        out = (PostOut) fungoCacheArticle.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, postId);
         if (null != out) {
 
             //更新文章浏览量数据
@@ -1291,7 +1291,7 @@ public class PostServiceImpl implements IPostService {
         cmmPostUpdate.updateById();
 
         //redis cache
-        fungoCacheArticle.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, postId + os, out);
+        fungoCacheArticle.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, postId, out);
         //记录浏览量 同时保存到Redis中
         fungoCacheArticle.excIndexCache(true, FungoCacheArticle.FUNGO_CORE_API_POST_CONTENT_DETAIL_WATCHNUM, postId, cmmPostWatchNum);
 

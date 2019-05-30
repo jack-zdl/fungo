@@ -83,7 +83,7 @@ spring:
     port: 5672
     username: LTAIsW4qLBG6M3Vf
     password: EBQbTTZGhPptMw3tGJ1grmG4r6uD7l
-    virtual-host: dev
+    virtual-host: uat
     template:
       mandatory: true
     publisher-confirms: true

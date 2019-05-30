@@ -2,6 +2,7 @@ package com.fungo.system.controller.portal;
 
 import com.fungo.system.dto.MemberNoticeInput;
 import com.fungo.system.service.IMemberNoticeService;
+import com.fungo.system.service.portal.PortalSystemIMemberNoticeService;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,7 @@ public class PortalSystemMemberNoticeController {
 
 
     @Autowired
-    private IMemberNoticeService iMemberNoticeService;
-
+    private PortalSystemIMemberNoticeService iMemberNoticeService;
 
     /**
      * 客户端轮询获取用户系统消息接口

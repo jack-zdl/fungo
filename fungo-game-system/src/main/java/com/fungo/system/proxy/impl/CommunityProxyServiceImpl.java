@@ -39,11 +39,11 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunityProxyServiceImpl.class);
 
     @Override
-    public List<CollectionBean> getCollection(Page<CollectionBean> page, List<String> list) {
+    public List<CollectionBean> getCollection(Page<CollectionBean> page, List<String> postIds) {
         int pageNum = page.getPages();
         int limit  = page.getLimit();
         try {
-        FungoPageResultDto<CollectionBean>  re = communityFeignClient.listCmmPostUsercollect(pageNum,limit,list);
+        FungoPageResultDto<CollectionBean>  re = communityFeignClient.listCmmPostUsercollect(pageNum,limit,postIds);
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
             return CommonUtils.deepCopy(re.getData(),CollectionBean.class);
             }

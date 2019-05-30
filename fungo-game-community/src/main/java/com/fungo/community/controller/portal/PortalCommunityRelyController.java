@@ -38,7 +38,7 @@ public class PortalCommunityRelyController {
     private IEvaluateService evaluateService;
 
     @ApiOperation(value = "PC2.0发表回复", notes = "")
-    @RequestMapping(value = "/api/portal/communitys/content/reply", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/community/content/reply", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "content", value = "评论内容", paramType = "path", dataType = "string"),
             @ApiImplicitParam(name = "target_id", value = "目标对象id", paramType = "path", dataType = "string"),
