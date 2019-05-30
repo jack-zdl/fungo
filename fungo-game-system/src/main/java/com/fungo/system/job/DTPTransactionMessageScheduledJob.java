@@ -1,5 +1,6 @@
-package com.fungo.system.ts.mq.job;
+package com.fungo.system.job;
 
+import com.fungo.system.ts.mq.job.DTPTransactionMessageScheduledService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class DTPTransactionMessageScheduledJob   {
     private DTPTransactionMessageScheduledService dTPTransactionMessageScheduledService;
 
     //每60秒 执行任务
-//    @Scheduled(cron = "0/60 * * * * ?")
+    @Scheduled(cron = "0/60 * * * * ?")
     public void execute() {
 
         LOGGER.info(".......DTPTransactionMessageScheduledJob-execute-start...." );
