@@ -43,7 +43,7 @@ logging:
 eureka:
   client:
     serviceUrl:
-      defaultZone:  http://127.0.0.1:8761/eureka/
+      defaultZone:  http://fungoEurekaAdmin:3e0914041adb1@127.0.0.1:8761/eureka/
   instance:
     instance-id: ${spring.cloud.client.ipAddress}:${server.port}
     prefer-ip-address: true
