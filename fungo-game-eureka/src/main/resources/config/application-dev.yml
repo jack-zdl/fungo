@@ -1,7 +1,7 @@
 server:
   port: 8761
 
-
+#-----------------------------------
 spring:
   application:
     name: eureka-server
@@ -10,8 +10,7 @@ spring:
     user:
       name: fungoEurekaAdmin
       password: 3e0914041adb1
-
-
+#-----------------------------------
 eureka:
   instance:
     hostname: ${spring.cloud.client.ip-address}
