@@ -141,10 +141,11 @@ public class SystemServiceImpl implements SystemService {
             BeanUtils.copyProperties(memberFollower, vo);
             EntityWrapper<MemberFollower> memberFollowerWrapper = new EntityWrapper<>(memberFollower);
             Page<MemberFollower> page = memberFollowerServiceImap.selectPage(basNoticePage, memberFollowerWrapper);
-            PageTools.pageToResultDto(re, page);
             List<MemberFollower> memberFollowers = page.getRecords();
             List<MemberFollowerDto> memberFollowerDtos = CommonUtils.deepCopy(memberFollowers, MemberFollowerDto.class);
             re.setData(memberFollowerDtos);
+            PageTools.pageToResultDto(re, page);
+
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("SystemServiceImpl.getMemberFollowerList", e);
@@ -174,10 +175,11 @@ public class SystemServiceImpl implements SystemService {
             BeanUtils.copyProperties(memberFollower, memberDto);
             EntityWrapper<Member> memberFollowerWrapper = new EntityWrapper<>(memberFollower);
             Page<Member> page = memberServiceImap.selectPage(basNoticePage, memberFollowerWrapper);
-            PageTools.pageToResultDto(re, page);
             List<Member> memberFollowers = page.getRecords();
             List<MemberDto> memberFollowerDtos = CommonUtils.deepCopy(memberFollowers, MemberDto.class);
             re.setData(memberFollowerDtos);
+            PageTools.pageToResultDto(re, page);
+
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("SystemServiceImpl.getMemberFollowerList", e);
@@ -203,10 +205,11 @@ public class SystemServiceImpl implements SystemService {
         try {
             Page<Member> page = memberServiceImap.selectPage(new Page<Member>(memberDto.getPage(), memberDto.getLimit()), new EntityWrapper<Member>().ne("id", memberDto.getId()).orderBy("sort", false));
             re = new FungoPageResultDto<MemberDto>();
-            PageTools.pageToResultDto(re, page);
             List<Member> memberFollowers = page.getRecords();
             List<MemberDto> memberFollowerDtos = CommonUtils.deepCopy(memberFollowers, MemberDto.class);
             re.setData(memberFollowerDtos);
+            PageTools.pageToResultDto(re, page);
+
         } catch (Exception e) {
             LOGGER.error("SystemServiceImpl.listMemberDtoPag", e);
             re = FungoPageResultDto.error("-1", "找不到目标");
@@ -234,10 +237,11 @@ public class SystemServiceImpl implements SystemService {
                 wrapper.eq("mb_id", incentRankedDto.getMbId());
 //            EntityWrapper<IncentRanked> wrapper = new EntityWrapper<>(incentRanked);
             Page<IncentRanked> page = incentRankedServiceImap.selectPage(basNoticePage, wrapper);
-            PageTools.pageToResultDto(re, page);
             List<IncentRanked> memberFollowers = page.getRecords();
             List<IncentRankedDto> memberFollowerDtos = CommonUtils.deepCopy(memberFollowers, IncentRankedDto.class);
             re.setData(memberFollowerDtos);
+            PageTools.pageToResultDto(re, page);
+
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("SystemServiceImpl.getMemberFollowerList", e);

@@ -5,11 +5,11 @@ eureka:
   instance:
     prefer-ip-address: true
     instance-id: ${spring.cloud.client.ipAddress}:${server.port}
-    lease-expiration-duration-in-seconds: 15
+    lease-expiration-duration-in-seconds: 10
     lease-renewal-interval-in-seconds: 5
   client:
     serviceUrl:
-      defaultZone:  http://127.0.0.1:8761/eureka/
+      defaultZone:  http://fungoEurekaAdmin:3e0914041adb1@127.0.0.1:8761/eureka/
 
 spring:
   application:
