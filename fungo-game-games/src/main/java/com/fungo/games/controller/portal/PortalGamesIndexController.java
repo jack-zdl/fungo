@@ -8,7 +8,7 @@ import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameCollectionGroup;
 import com.fungo.games.entity.GameCollectionItem;
 import com.fungo.games.entity.GameEvaluation;
-import com.fungo.games.proxy.IEvaluateProxyService;
+import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;

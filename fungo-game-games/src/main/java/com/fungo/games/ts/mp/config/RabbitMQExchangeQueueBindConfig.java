@@ -1,6 +1,5 @@
-package com.fungo.games.listener.config;
+package com.fungo.games.ts.mp.config;
 
-import com.fungo.games.helper.MQConfig;
 import com.game.common.ts.mq.config.RabbitMQConfig;
 import com.game.common.ts.mq.enums.RabbitMQEnum;
 import org.slf4j.Logger;
