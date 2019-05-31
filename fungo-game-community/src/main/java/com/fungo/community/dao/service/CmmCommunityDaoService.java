@@ -35,4 +35,9 @@ public interface CmmCommunityDaoService extends IService<CmmCommunity> {
      */
     public List<Map<String,Object>> getFollowerCommunity(Page page,List<String> communityIds);
 
+    /**
+     * PC2.0圈子首页列表
+     * @param pageLimiter
+     */
+    void getCommunityListPC2_0(Map<String, Integer> pageLimiter);
 }

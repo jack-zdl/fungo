@@ -21,4 +21,12 @@ public interface IPortalCommunityService {
      * @return
      */
     FungoPageResultDto<CommunityOutPageDto> getCmmCommunityList(String userId, CommunityInputPageDto communityInputPageDto);
+
+    /**
+     * PC2.0圈子首页列表
+     * @param userId
+     * @param communityInputPageDto
+     * @return
+     */
+    FungoPageResultDto<CommunityOutPageDto> getCommunityListPC2_0(String userId, CommunityInputPageDto communityInputPageDto);
 }

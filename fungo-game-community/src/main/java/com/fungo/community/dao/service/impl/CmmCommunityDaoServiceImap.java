@@ -36,4 +36,13 @@ public class CmmCommunityDaoServiceImap extends ServiceImpl<CmmCommunityDao, Cmm
     public List<Map<String, Object>> getFollowerCommunity(Page page, List<String> communityIds) {
         return communityDao.getFollowerCommunity(page, communityIds);
     }
+
+    /**
+     * PC2.0圈子首页列表
+     * @param pageLimiter
+     */
+    @Override
+    public void getCommunityListPC2_0(Map<String, Integer> pageLimiter) {
+        communityDao.getCommunityListPC2_0(pageLimiter);
+    }
 }

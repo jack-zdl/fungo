@@ -29,6 +29,7 @@ import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.repo.cache.facade.FungoCacheCommunity;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
+import com.game.common.util.TempPageUtils;
 import com.game.common.util.date.DateTools;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -61,7 +62,6 @@ public class PortalCommunityServiceImpl implements IPortalCommunityService {
 
     @Override
     public FungoPageResultDto<CommunityOutPageDto> getCmmCommunityList(String userId, CommunityInputPageDto communityInputPageDto) {
-
         FungoPageResultDto<CommunityOutPageDto> re = null;
         //from redis cache
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_LIST;
@@ -71,44 +71,32 @@ public class PortalCommunityServiceImpl implements IPortalCommunityService {
         if (null != re) {
             return re;
         }
-
         String filter = communityInputPageDto.getFilter();
         String keyword = communityInputPageDto.getKey_word();
-
         int limit = communityInputPageDto.getLimit();
         int page = communityInputPageDto.getPage();
         int sort = communityInputPageDto.getSort();
-
         List<CmmCommunity> communityList = new ArrayList<>();
         Wrapper<CmmCommunity> entityWrapper = new EntityWrapper<CmmCommunity>();
         entityWrapper.and("state = {0}", 1);
-
         // 关键字
         if (keyword != null && !keyword.equals("")) {
             keyword = keyword.replace(" ", "");
             entityWrapper = entityWrapper.like("name", keyword);
         }
-
-
         re = new FungoPageResultDto<CommunityOutPageDto>();
         List<CommunityOutPageDto> dataList = new ArrayList<>();
         re.setData(dataList);
-
         //!fixme 获取用户详情
         // Member user = menberService.selectById(userId);
-
         List<String> idsList = new ArrayList<String>();
         idsList.add(userId);
         ResultDto<List<MemberDto>> listMembersByids = null;
-
         try {
-
             listMembersByids = systemFeignClient.listMembersByids(idsList, null);
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
         MemberDto memberDto = null;
         if (null != listMembersByids) {
             List<MemberDto> memberDtoList = listMembersByids.getData();
@@ -116,7 +104,6 @@ public class PortalCommunityServiceImpl implements IPortalCommunityService {
                 memberDto = memberDtoList.get(0);
             }
         }
-
         if (filter.equals("official")) {
             //官方社区
             entityWrapper = entityWrapper.eq("type", 1);
@@ -127,7 +114,6 @@ public class PortalCommunityServiceImpl implements IPortalCommunityService {
             if (memberDto == null) {
                 return FungoPageResultDto.error("1", "找不到用户");
             }
-
             //!fixme 根据用户id，动作类型，目前类型，状态获取目前id集合
             /*
             List<BasAction> actionList = actionService.selectList(Condition.create().setSqlSelect("target_id")
@@ -136,16 +122,12 @@ public class PortalCommunityServiceImpl implements IPortalCommunityService {
 //			if(actionList == null || actionList.size() == 0) {
 //				return FungoPageResultDto.error("241","没有找到用户关注的社区");
 //			}
-
             List<BasActionDto> actionList = null;
-
             BasActionDto basActionDto = new BasActionDto();
-
             basActionDto.setMemberId(userId);
             basActionDto.setType(5);
             basActionDto.setTargetType(4);
             basActionDto.setState(0);
-
             try {
                 ResultDto<List<BasActionDto>> actionByConditionRs = systemFeignClient.listActionByCondition(basActionDto);
                 if (null != actionByConditionRs) {
@@ -154,10 +136,8 @@ public class PortalCommunityServiceImpl implements IPortalCommunityService {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-
             List<String> communityIdList = new ArrayList<>();
             Page<CmmCommunity> cmmPage = new Page<CmmCommunity>();
-
             if (actionList != null && actionList.size() > 0) {
                 for (BasActionDto action : actionList) {
                     if (!CommonUtil.isNull(action.getTargetId())) {
@@ -179,7 +159,6 @@ public class PortalCommunityServiceImpl implements IPortalCommunityService {
                 out.setIntro(community.getIntro());
                 out.setIcon(community.getIcon());
                 out.setIs_followed(true);
-
                 //社区文章评论数
                 int commentNum = communityDao.getCommentNumOfCommunity(community.getId());
                 //社区热度
@@ -267,6 +246,22 @@ public class PortalCommunityServiceImpl implements IPortalCommunityService {
         fungoCacheCommunity.excIndexCache(true, keyPrefix, keySuffix, re);
 
         return re;
+    }
+
+    /**
+     * PC2.0圈子首页列表
+     * 优先显示官方社区
+     * 其次游戏社区
+     * @param userId
+     * @param communityInputPageDto
+     * @return
+     */
+    @Override
+    public FungoPageResultDto<CommunityOutPageDto> getCommunityListPC2_0(String userId, CommunityInputPageDto communityInputPageDto) {
+//      分页计算起始行,行数
+        Map<String, Integer> pageLimiter = TempPageUtils.getPageLimiter(communityInputPageDto.getPage(), communityInputPageDto.getLimit());
+        communityService.getCommunityListPC2_0(pageLimiter);
+        return null;
     }
 
 
