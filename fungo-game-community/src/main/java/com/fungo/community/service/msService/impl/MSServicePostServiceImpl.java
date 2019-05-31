@@ -228,7 +228,7 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
                 return cmmPostDtoList;
             }
             int page = cmmPostDto.getPage();
-            int limit = cmmPostDto.getPage();
+            int limit = cmmPostDto.getLimit();
 
             EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<>();
             postEntityWrapper.eq("type", 3);

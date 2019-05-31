@@ -1,24 +1,47 @@
 server:
   port: 8761
 
-
+#-----------------------------------
 spring:
   application:
     name: eureka-server
-
+  #登录安全配置
+  security:
+    user:
+      name: fungoEurekaAdmin
+      password: 3e0914041adb1
+#-----------------------------------
 eureka:
   instance:
-    hostname: eureka-server
+    hostname: ${spring.cloud.client.ip-address}
+    # #指定通过IP注册,一般服务集群时配置,需要ip-address参数一起设置(保证hostName和ip-address一样)，以免eureka管理页面出现不可用分片提示信息(unavailable-replicas),服务的注册默认是通过hostName注册的，当判断注册的hostName和服务
+    prefer-ip-address: true
+    instance-id: ${eureka.instance.hostname}:${server.port}
+    #强制指定eureka的ip地址
+    ip-address: ${EUREKA_IP:${eureka.instance.hostname}}
+    #服务刷新时间配置，每隔这个时间会主动心跳一次
+    #默认30s
+    lease-renewal-interval-in-seconds: 5
+    # Eureka服务器在接收到实例的最后一次发出的心跳后，需要等待多久才可以将此实例删除，默认为90秒
+    leaseExpirationDurationInSeconds: 10
   client:
     #表示是否注册自身到eureka服务器
     registerWithEureka: false
     #是否从eureka上获取注册信息
     fetchRegistry: false
+    #eureka client刷新本地缓存时间
+    #默认30s
+    registryFetchIntervalSeconds: 5
+
+    healthcheck:
+      enabled: true
+
     serviceUrl:
-      defaultZone: http://127.0.0.1:8761/eureka/
+      defaultZone: http://fungoEurekaAdmin:3e0914041adb1@127.0.0.1:8761/eureka/
 
   server:
     #测试时关闭自我保护机制，保证不可用服务及时剔除，生产环境要开启自我保护机制
     enable-self-preservation: false
     #间隔6秒踢出
-    eviction-interval-timer-in-ms: 60000
+    eviction-interval-timer-in-ms: 30000
+

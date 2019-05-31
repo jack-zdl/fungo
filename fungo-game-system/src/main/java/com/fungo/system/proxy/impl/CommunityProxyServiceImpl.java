@@ -11,6 +11,7 @@ import com.game.common.bean.CollectionBean;
 
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.community.CommentBean;
 import com.game.common.enums.CommonEnum;
 import com.game.common.util.CommonUtils;
@@ -38,6 +39,7 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommunityProxyServiceImpl.class);
 
+    //    @HystrixCommand(fallbackMethod = "hystrixGetCollection")
     @Override
     public List<CollectionBean> getCollection(Page<CollectionBean> page, List<String> postIds) {
         int pageNum = page.getPages();
@@ -54,6 +56,12 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
         return new ArrayList<>();
     }
 
+    public List<CollectionBean> hystrixGetCollection(Page<CollectionBean> page, List<String> postIds) {
+        LOGGER.warn("CommunityProxyServiceImpl.hystrixGetCollection 熔断器打开");
+        return new ArrayList<>();
+    }
+
+    //    @HystrixCommand(fallbackMethod = "hystrixGetFollowerCommunity")
     @Override
     public List<Map<String, Object>> getFollowerCommunity(Page page, List<String> communityIds) {
         int pageNum = page.getPages();
@@ -71,16 +79,34 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
         return new ArrayList<>();
     }
 
+    public List<Map<String, Object>> hystrixGetFollowerCommunity(Page page, List<String> communityIds) {
+        LOGGER.warn("CommunityProxyServiceImpl.hystrixGetFollowerCommunity 熔断器打开");
+        return new ArrayList<>();
+    }
+
+    //    @HystrixCommand(fallbackMethod = "hystrixGetPostFeeds")
     @Override
     public List<Map<String, Object>> getPostFeeds(Map<String, Object> map) {
         return null;
     }
 
+    public List<Map<String, Object>> hystrixGetPostFeeds(Map<String, Object> map) {
+        LOGGER.warn("CommunityProxyServiceImpl.hystrixGetPostFeeds 熔断器打开");
+        return null;
+    }
+
+    //    @HystrixCommand(fallbackMethod = "hystrixGetMoodFeeds")
     @Override
     public List<Map<String, Object>> getMoodFeeds(Map<String, Object> map) {
         return null;
     }
 
+    public List<Map<String, Object>> hystrixGetMoodFeeds(Map<String, Object> map) {
+        LOGGER.warn("CommunityProxyServiceImpl.hystrixGetMoodFeeds 熔断器打开");
+        return null;
+    }
+
+    //    @HystrixCommand(fallbackMethod = "hystrixGetAllComments")
     @Override
     public List<CommentBean> getAllComments(Page<CommentBean> page, String userId) {
         int pageNum = page.getPages();
@@ -97,6 +123,12 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
         return new ArrayList<>();
     }
 
+    public List<CommentBean> hystrixGetAllComments(Page<CommentBean> page, String userId) {
+        LOGGER.warn("CommunityProxyServiceImpl.hystrixGetAllComments 熔断器打开");
+        return new ArrayList<>();
+    }
+
+    //    @HystrixCommand(fallbackMethod = "hystrixGetRecommendMembersFromCmmPost")
     @Override
     public List<String> getRecommendMembersFromCmmPost(long ccnt, long limitSize, List<String> wathMbsSet) {
         try{
@@ -109,6 +141,12 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
         return new ArrayList<>();
     }
 
+    public List<String> hystrixGetRecommendMembersFromCmmPost(long ccnt, long limitSize, List<String> wathMbsSet) {
+        LOGGER.warn("CommunityProxyServiceImpl.hystrixGetRecommendMembersFromCmmPost 熔断器打开");
+        return new ArrayList<>();
+    }
+
+    //    @HystrixCommand(fallbackMethod = "hystrixGetHonorQualificationOfEssencePost")
     @Override
     public List<Map> getHonorQualificationOfEssencePost() {
         try{
@@ -119,6 +157,11 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
         }catch (Exception e){
             LOGGER.error("社区远程调用异常:"+e);
         }
+        return new ArrayList<>();
+    }
+
+    public List<Map> hystrixGetHonorQualificationOfEssencePost() {
+        LOGGER.warn("CommunityProxyServiceImpl.hystrixGetHonorQualificationOfEssencePost 熔断器打开");
         return new ArrayList<>();
     }
 }

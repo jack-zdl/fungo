@@ -14,7 +14,7 @@ import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameEvaluation;
 import com.fungo.games.entity.GameTag;
 import com.fungo.games.helper.MQProduct;
-import com.fungo.games.proxy.IEvaluateProxyService;
+import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
@@ -26,9 +26,6 @@ import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.ReplyBean;
 import com.game.common.dto.community.ReplyInputPageDto;
 import com.game.common.dto.evaluation.*;
-import com.game.common.dto.game.BasTagDto;
-import com.game.common.dto.game.MermberSearchInput;
-import com.game.common.dto.game.ReplyDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
@@ -45,7 +42,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
 
@@ -616,7 +612,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
     @Override
     @Transactional
     public boolean feignAddGameTagInsert(List<String> tags, String categoryId, String gameId) {
-        if (tags.size() > 3) {
+        if (tags == null || tags.size() > 3) {
             return false;
         }
         // 获取游戏的官方标签(分类) 后台标签 type = 1 type = 2

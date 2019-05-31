@@ -39,7 +39,7 @@ public class TransactionMessageDomain extends Model<TransactionMessageDomain> {
      * 5 游戏
      * 6 首页
      */
-    @TableField("message_dataType")
+    @TableField("message_data_type")
     private Integer messageDataType;
     /**
      * 消费队列
@@ -56,7 +56,7 @@ public class TransactionMessageDomain extends Model<TransactionMessageDomain> {
     /**
      * 消息重发次数 最大5
      */
-    @TableField("message_sendTimes")
+    @TableField("message_send_times")
     private Integer messageSendTimes;
     /**
      * 是否死亡: 1 是, 2 否

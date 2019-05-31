@@ -46,7 +46,7 @@ public class IndexProxyServiceImpl implements IndexProxyService {
     @Override
     public CmmPostDto selctCmmPostOne(CmmPostDto cmmPostDto) {
         CmmPostDto re = new CmmPostDto();
-        FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(cmmPostDto);
+            FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(cmmPostDto);
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmPostDtoFungoPageResultDto.getStatus()) && cmmPostDtoFungoPageResultDto.getData().size() > 0){
             re = cmmPostDtoFungoPageResultDto.getData().get(0);
         }else
@@ -107,7 +107,7 @@ public class IndexProxyServiceImpl implements IndexProxyService {
         return new CmmPostDto();
     }
 
-    public Map<String, BigDecimal> hystrixGetRateData(String id) {
+    public Map<String, BigDecimal> hystrixGetRateData(String gameId) {
         logger.warn("IndexProxyServiceImpl.hystrixGetRateData ");
         return new HashMap<>();
     }

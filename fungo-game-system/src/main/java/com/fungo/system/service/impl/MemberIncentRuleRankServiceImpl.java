@@ -431,7 +431,9 @@ public class MemberIncentRuleRankServiceImpl implements IMemberIncentRuleRankSer
             String keySuffix = "all";
 
             //from redis cache
-            List<IncentRuleRank> incentRuleRankList = (List<IncentRuleRank>) fungoCacheIncentRule.getIndexCache(keyPrefix, keySuffix);
+            List<IncentRuleRank> incentRuleRankList = null;
+            //不再从Redis读取
+            //(List<IncentRuleRank>) fungoCacheIncentRule.getIndexCache(keyPrefix, keySuffix);
 
             if (null == incentRuleRankList || incentRuleRankList.isEmpty()) {
                 incentRuleRankList = iMembertIncentRuleRankDaoService.selectList(new EntityWrapper<IncentRuleRank>());
