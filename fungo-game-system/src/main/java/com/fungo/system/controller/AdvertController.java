@@ -2,8 +2,8 @@ package com.fungo.system.controller;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.entity.Banner;
-import com.fungo.system.proxy.IGameProxyService;
-import com.fungo.system.proxy.IndexProxyService;
+import com.fungo.system.facede.IGameProxyService;
+import com.fungo.system.facede.IndexProxyService;
 import com.fungo.system.service.BannerService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.MemberUserProfile;

@@ -1,17 +1,12 @@
-package com.fungo.system.proxy.impl;
+package com.fungo.system.facede.impl;
 
 import com.baomidou.mybatisplus.plugins.Page;
-import com.fungo.system.controller.SystemController;
-import com.fungo.system.entity.Member;
 import com.fungo.system.feign.CommunityFeignClient;
-import com.fungo.system.feign.GamesFeignClient;
-import com.fungo.system.proxy.ICommunityProxyService;
-import com.fungo.system.service.ICommunityService;
+import com.fungo.system.facede.ICommunityProxyService;
 import com.game.common.bean.CollectionBean;
 
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
-import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.community.CommentBean;
 import com.game.common.enums.CommonEnum;
 import com.game.common.util.CommonUtils;
@@ -20,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

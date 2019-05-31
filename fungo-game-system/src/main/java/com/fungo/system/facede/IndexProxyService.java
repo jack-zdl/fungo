@@ -1,15 +1,11 @@
-package com.fungo.system.proxy;
+package com.fungo.system.facede;
 
 import com.baomidou.mybatisplus.plugins.Page;
-import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.CmmPostDto;
-import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.index.CardIndexBean;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

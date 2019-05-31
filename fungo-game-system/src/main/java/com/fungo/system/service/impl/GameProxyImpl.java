@@ -5,8 +5,8 @@ import com.fungo.system.constts.CommonlyConst;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.entity.BasNotice;
 import com.fungo.system.entity.Member;
-import com.fungo.system.proxy.IDeveloperProxyService;
-import com.fungo.system.proxy.IGameProxyService;
+import com.fungo.system.facede.IDeveloperProxyService;
+import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.service.*;
 import com.game.common.consts.Setting;
 import com.game.common.dto.GameDto;
@@ -120,7 +120,7 @@ public class GameProxyImpl implements IGameProxy {
 			date.put("message_content",mooMessage.getContent());
 			date.put("mood_id",mooMessage.getMoodId());
 			// @todo 心情
-			MooMoodDto mood = iGameProxyService.selectMooMoodById(target_id); // this.moodService.selectById(mooMessage.getMoodId());
+			MooMoodDto mood = iGameProxyService.selectMooMoodById(mooMessage.getMoodId()); // this.moodService.selectById(mooMessage.getMoodId());
 			date.put("mood_content", mood.getContent());
 			msgType=11;//消息类型
 			push = CommonUtils.versionAdapte(appVersion, "2.4.4");
