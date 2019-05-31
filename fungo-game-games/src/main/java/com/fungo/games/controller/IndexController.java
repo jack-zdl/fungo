@@ -1,18 +1,15 @@
 package com.fungo.games.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameCollectionGroup;
 import com.fungo.games.entity.GameCollectionItem;
 import com.fungo.games.entity.GameEvaluation;
-import com.fungo.games.proxy.IEvaluateProxyService;
+import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
@@ -20,7 +17,6 @@ import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
-import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.index.AmwayWallBean;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.CommonUtils;
@@ -35,8 +31,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 

@@ -1,21 +1,13 @@
 package com.fungo.games.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.games.entity.Game;
-import com.fungo.games.entity.GameEvaluation;
-import com.fungo.games.entity.GameSurveyRel;
-import com.fungo.games.entity.GameTag;
-import com.fungo.games.feign.MQFeignClient;
 import com.fungo.games.feign.SystemFeignClient;
 import com.fungo.games.helper.MQProduct;
-import com.fungo.games.proxy.IEvaluateProxyService;
 import com.fungo.games.service.GameService;
 import com.fungo.games.service.GameSurveyRelService;
-import com.fungo.games.service.GameTagService;
 import com.fungo.games.service.IGameService;
 import com.game.common.api.InputPageDto;
-import com.game.common.bean.TagBean;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;

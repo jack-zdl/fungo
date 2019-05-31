@@ -225,7 +225,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
             mqProduct.communityInsert(c);
             game.setCommunityId(c.getId());
             mqProduct.gameUpdate(game);
-            if(input.getTagList() != null || !CommonUtil.isNull(input.getCategoryId())) {
+            if(input.getTagList() != null || input.getTagList().size() != 0 || !CommonUtil.isNull(input.getCategoryId())) {
                 if (input.getTagList().size() > 3) {
                     return ResultDto.error("13", "最多添加3个标签");
                 }

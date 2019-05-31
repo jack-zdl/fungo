@@ -1,14 +1,9 @@
-package com.fungo.games.listener.config;
+package com.fungo.games.ts.mp.config;
 
-import com.alibaba.fastjson.JSON;
 import com.fungo.games.feign.MQFeignClient;
-import com.fungo.games.feign.SystemFeignClient;
-import com.fungo.games.helper.MQConfig;
 import com.game.common.ts.mq.config.RabbitMQConfig;
-import com.game.common.ts.mq.dto.TransactionMessageDto;
 import com.game.common.ts.mq.enums.RabbitMQEnum;
 import com.game.common.ts.mq.service.MQDataReceiveService;
-import com.game.common.util.UniqueIdCkeckUtil;
 import com.rabbitmq.client.Channel;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
