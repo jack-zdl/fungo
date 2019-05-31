@@ -11,8 +11,8 @@ import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
-import com.fungo.community.feign.GameFeignClient;
-import com.fungo.community.feign.SystemFeignClient;
+import com.fungo.community.facede.GameFacedeService;
+import com.fungo.community.facede.SystemFacedeService;
 import com.fungo.community.service.ICommunityService;
 import com.game.common.bean.MemberPulishFromCommunity;
 import com.game.common.consts.FungoCoreApiConstant;
@@ -58,36 +58,14 @@ public class CommunityServiceImpl implements ICommunityService {
 
     //依赖系统和用户微服务
     @Autowired(required = false)
-    private SystemFeignClient systemFeignClient;
+    private SystemFacedeService systemFacedeService;
 
     //依赖游戏微服务
     @Autowired(required = false)
-    private GameFeignClient gameFeignClient;
+    private GameFacedeService gameFacedeService;
 
 
-    //@Autowired
-    //private GameService gameService;
 
-  /*
-    @Autowired
-    private MemberService menberService;
-
-    @Autowired
-    private BasActionService actionService;
-
-    @Autowired
-    private IncentRuleRankService rankRuleService;
-    @Autowired
-    private IncentRankedService rankedService;
-
-    @Autowired
-    private IUserService userService;
-    @Autowired
-    private MemberFollowerService followService;
-
-    @Autowired
-    private MemberDao memberDao;
-*/
 
     @Override
     public ResultDto<CommunityOut> getCommunityDetail(String communityId, String userId)
@@ -141,7 +119,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
         ResultDto<List<MemberDto>> mbsListResultDto = null;
         try {
-            mbsListResultDto = systemFeignClient.listMembersByids(idsList, null);
+            mbsListResultDto = systemFacedeService.listMembersByids(idsList, null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -170,7 +148,7 @@ public class CommunityServiceImpl implements ICommunityService {
             int count = 0;
 
             try {
-                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+                ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
 
                 if (null != resultDto) {
                     count = resultDto.getData();
@@ -229,7 +207,7 @@ public class CommunityServiceImpl implements ICommunityService {
             //从游戏评论表获取用户数量
             ResultDto<List<MemberPulishFromCommunity>> gameMemberCtmRs = null;
             try {
-                gameMemberCtmRs = gameFeignClient.getMemberOrder(game_id, null);
+                gameMemberCtmRs = gameFacedeService.getMemberOrder(game_id, null);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -323,7 +301,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
                 ResultDto<List<MemberDto>> listMembersByids = null;
                 try {
-                    listMembersByids = systemFeignClient.listMembersByids(mbIdsList, null);
+                    listMembersByids = systemFacedeService.listMembersByids(mbIdsList, null);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -348,7 +326,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
                     IncentRankedDto mBIncentRankedDto = null;
                     try {
-                        FungoPageResultDto<IncentRankedDto> incentRankedPageRs = systemFeignClient.getIncentRankedList(incentRankedDto);
+                        FungoPageResultDto<IncentRankedDto> incentRankedPageRs = systemFacedeService.getIncentRankedList(incentRankedDto);
                         if (null != incentRankedPageRs) {
                             List<IncentRankedDto> rankedDtoList = incentRankedPageRs.getData();
                             if (null != rankedDtoList && !rankedDtoList.isEmpty()) {
@@ -366,7 +344,7 @@ public class CommunityServiceImpl implements ICommunityService {
                         IncentRuleRankDto incentRuleRankDto = null;
 
                         try {
-                            ResultDto<IncentRuleRankDto> IncentRuleRankResultDto = systemFeignClient.getIncentRuleRankById(String.valueOf(mBIncentRankedDto.getCurrentRankId().longValue()));
+                            ResultDto<IncentRuleRankDto> IncentRuleRankResultDto = systemFacedeService.getIncentRuleRankById(String.valueOf(mBIncentRankedDto.getCurrentRankId().longValue()));
 
                             if (null != IncentRuleRankResultDto) {
                                 incentRuleRankDto = IncentRuleRankResultDto.getData();
@@ -408,7 +386,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
         int focusCount = 0;
         try {
-            ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
+            ResultDto<Integer> resultDtoLike = systemFacedeService.countActionNum(basActionDtoLike);
 
             if (null != resultDtoLike) {
                 focusCount = resultDtoLike.getData();
@@ -470,7 +448,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
         try {
 
-            listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+            listMembersByids = systemFacedeService.listMembersByids(idsList, null);
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -514,7 +492,7 @@ public class CommunityServiceImpl implements ICommunityService {
             basActionDto.setState(0);
 
             try {
-                ResultDto<List<BasActionDto>> actionByConditionRs = systemFeignClient.listActionByCondition(basActionDto);
+                ResultDto<List<BasActionDto>> actionByConditionRs = systemFacedeService.listActionByCondition(basActionDto);
                 if (null != actionByConditionRs) {
                     actionList = actionByConditionRs.getData();
                 }
@@ -608,7 +586,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
                 int selectCount = 0;
                 try {
-                    ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
+                    ResultDto<Integer> resultDtoLike = systemFacedeService.countActionNum(basActionDtoLike);
 
                     if (null != resultDtoLike) {
                         selectCount = resultDtoLike.getData();
@@ -659,7 +637,7 @@ public class CommunityServiceImpl implements ICommunityService {
                 //!fixme 获取用户数据
                 // c.setAuthorBean(userService.getAuthor(m.getMemberId()));
                 try {
-                    ResultDto<AuthorBean> authorBeanResultDto = systemFeignClient.getAuthor(m.getMemberId());
+                    ResultDto<AuthorBean> authorBeanResultDto = systemFacedeService.getAuthor(m.getMemberId());
                     if (null != authorBeanResultDto) {
                         AuthorBean authorBean = authorBeanResultDto.getData();
                         c.setAuthorBean(authorBean);
@@ -684,7 +662,7 @@ public class CommunityServiceImpl implements ICommunityService {
                     MemberFollowerDto memberFollowerDtoData = null;
 
                     try {
-                        ResultDto<MemberFollowerDto> followerDtoResultDto = systemFeignClient.getMemberFollower1(memberFollowerDtoParam);
+                        ResultDto<MemberFollowerDto> followerDtoResultDto = systemFacedeService.getMemberFollower1(memberFollowerDtoParam);
                         if (null != followerDtoResultDto) {
                             memberFollowerDtoData = followerDtoResultDto.getData();
                         }
@@ -723,7 +701,7 @@ public class CommunityServiceImpl implements ICommunityService {
             //!fixme 关注用户List
             //watchMebmberList = this.getWatchMebmber(0, currentMb_id);
 
-            ResultDto<List<MemberDto>> listWatchMebmberRs = systemFeignClient.listWatchMebmber(0, currentMb_id);
+            ResultDto<List<MemberDto>> listWatchMebmberRs = systemFacedeService.listWatchMebmber(0, currentMb_id);
             if (null != listWatchMebmberRs) {
                 watchMebmberList = listWatchMebmberRs.getData();
             }
@@ -865,7 +843,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
         List<MemberDto> ml1 = null;
         try {
-            ResultDto<List<MemberDto>> mbListResultDto = systemFeignClient.listRecommendedMebmber(Integer.valueOf(limitSize + ""), currentMb_id, wathMbsSet);
+            ResultDto<List<MemberDto>> mbListResultDto = systemFacedeService.listRecommendedMebmber(Integer.valueOf(limitSize + ""), currentMb_id, wathMbsSet);
             if (null != mbListResultDto) {
                 ml1 = mbListResultDto.getData();
             }
@@ -905,7 +883,7 @@ public class CommunityServiceImpl implements ICommunityService {
             List<String> sendCommentMembers = new ArrayList<>();
 
             try {
-                ResultDto<List<String>> gameEvaRs = gameFeignClient.getRecommendMembersFromEvaluation(Integer.valueOf(sendComments + ""), Integer.valueOf(limitSize + ""), wathMbsSet);
+                ResultDto<List<String>> gameEvaRs = gameFacedeService.getRecommendMembersFromEvaluation(Integer.valueOf(sendComments + ""), Integer.valueOf(limitSize + ""), wathMbsSet);
                 if (null != gameEvaRs) {
                     sendCommentMembers = gameEvaRs.getData();
                 }
@@ -947,7 +925,7 @@ public class CommunityServiceImpl implements ICommunityService {
                 //ml1.addAll(recommendList);
 
                 try {
-                    ResultDto<List<MemberDto>> mbsListResultDto = systemFeignClient.listMembersByids(memberIds, 0);
+                    ResultDto<List<MemberDto>> mbsListResultDto = systemFacedeService.listMembersByids(memberIds, 0);
 
                     if (null != mbsListResultDto) {
                         List<MemberDto> memberDtoList = mbsListResultDto.getData();
@@ -1002,7 +980,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
             ResultDto<List<MemberDto>> listMembersByids = null;
             try {
-                listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+                listMembersByids = systemFacedeService.listMembersByids(idsList, null);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -1034,7 +1012,7 @@ public class CommunityServiceImpl implements ICommunityService {
                 int like = 0;
                 try {
 
-                    ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
+                    ResultDto<Integer> resultDtoLike = systemFacedeService.countActionNum(basActionDtoLike);
                     if (null != resultDtoLike) {
                         like = resultDtoLike.getData();
                     }

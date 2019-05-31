@@ -14,9 +14,9 @@ import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.entity.BasVideoJob;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
-import com.fungo.community.feign.GameFeignClient;
-import com.fungo.community.feign.SystemFeignClient;
-import com.fungo.community.feign.TSFeignClient;
+import com.fungo.community.facede.GameFacedeService;
+import com.fungo.community.facede.SystemFacedeService;
+import com.fungo.community.facede.TSMQFacedeService;
 import com.fungo.community.function.FungoLivelyCalculateUtils;
 import com.fungo.community.function.SerUtils;
 import com.fungo.community.service.ICounterService;
@@ -86,62 +86,16 @@ public class PostServiceImpl implements IPostService {
 
 
     //依赖系统和用户微服务
-    @Autowired(required = false)
-    private SystemFeignClient systemFeignClient;
+    @Autowired
+    private SystemFacedeService systemFacedeService;
 
     //依赖游戏微服务
-    @Autowired(required = false)
-    private GameFeignClient gameFeignClient;
-
-    @Autowired(required = false)
-    private TSFeignClient tsFeignClient;
-
-
-
-  /*
-   @Autowired
-    private MemberService memberService;
+    @Autowired
+    private GameFacedeService gameFacedeService;
 
     @Autowired
-    private BasActionService actionService;
-    @Autowired
-    private ScoreLogService logService;
-    @Autowired
-    private IActionService iActionService;
+    private TSMQFacedeService tSMQFacedeService;
 
-    @Autowired
-    private IVdService vdService;
-    @Autowired
-    private GameService gameService;
-    @Autowired
-    private GameDao gameDao;
-    @Autowired
-    private IUserService IUserService;
-    @Autowired
-    private IGameProxy gameProxyService;
-    @Autowired
-    private IUserService iUserService;
-
-    @Autowired
-    private IncentAccountScoreService accountScoreService;
-
-    @Autowired
-    private IMemberAccountScoreDaoService IAccountDaoService;
-
-    @Autowired
-    private ScoreLogService scoreLogService;
-    @Autowired
-    private IncentRuleRankService ruleRankService;
-    @Autowired
-    private IncentRankedService rankedService;
-
-    @Autowired
-    private IGameService iGameService;
-
-    //用户成长业务
-    @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
-    private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
-    */
 
 
     @Override
@@ -166,7 +120,7 @@ public class PostServiceImpl implements IPostService {
         idsList.add(user_id);
         ResultDto<List<MemberDto>> listMembersByids = null;
         try {
-            listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+            listMembersByids = systemFacedeService.listMembersByids(idsList, null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -376,7 +330,7 @@ public class PostServiceImpl implements IPostService {
 
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         //执行MQ发送
-        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
         logger.info("--添加帖子-执行添加用户动作行为数据--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
         //-----start
 
@@ -430,13 +384,13 @@ public class PostServiceImpl implements IPostService {
         try {
 
             //coin task
-            ResultDto<Map<String, Object>> coinTaskResultDto = systemFeignClient.exTask(taskDtoCoin);
+            ResultDto<Map<String, Object>> coinTaskResultDto = systemFacedeService.exTask(taskDtoCoin);
             if (null != coinTaskResultDto) {
                 resMapCoin = coinTaskResultDto.getData();
             }
 
             //exp task
-            ResultDto<Map<String, Object>> expTaskResultDto = systemFeignClient.exTask(taskDtoExp);
+            ResultDto<Map<String, Object>> expTaskResultDto = systemFacedeService.exTask(taskDtoExp);
             if (null != expTaskResultDto) {
                 resMapExp = expTaskResultDto.getData();
             }
@@ -528,7 +482,7 @@ public class PostServiceImpl implements IPostService {
 
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         //执行MQ发送
-        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
         logger.info("--社区文章用户发布文章执行任务--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
         //-----start
     }
@@ -557,7 +511,7 @@ public class PostServiceImpl implements IPostService {
 
         ResultDto<List<MemberDto>> listMembersByids = null;
         try {
-            systemFeignClient.listMembersByids(idsList, null);
+            systemFacedeService.listMembersByids(idsList, null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -681,7 +635,7 @@ public class PostServiceImpl implements IPostService {
 
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         //执行MQ发送
-        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
         logger.info("--删除帖子执行扣减用户经验值和等级--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
         //-----start
 
@@ -744,7 +698,7 @@ public class PostServiceImpl implements IPostService {
         idsList.add(userId);
         ResultDto<List<MemberDto>> listMembersByids = null;
         try {
-            listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+            listMembersByids = systemFacedeService.listMembersByids(idsList, null);
         } catch (Exception ex) {
 
         }
@@ -1031,7 +985,7 @@ public class PostServiceImpl implements IPostService {
                 String gameId = (String) m.get("objectId");
                 double gameAverage = 0;
                 try {
-                    gameAverage = gameFeignClient.selectGameAverage(gameId, 0);
+                    gameAverage = gameFacedeService.selectGameAverage(gameId, 0);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -1145,7 +1099,7 @@ public class PostServiceImpl implements IPostService {
                 //获取游戏平均分
                 double gameAverage = 0;
                 try {
-                    gameAverage = gameFeignClient.selectGameAverage(community.getGameId(), 0);
+                    gameAverage = gameFacedeService.selectGameAverage(community.getGameId(), 0);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -1160,7 +1114,7 @@ public class PostServiceImpl implements IPostService {
 
                 GameDto gameDto = null;
                 try {
-                    ResultDto<GameDto> gameDtoResultDto = gameFeignClient.selectGameDetails(community.getGameId(), 0);
+                    ResultDto<GameDto> gameDtoResultDto = gameFacedeService.selectGameDetails(community.getGameId(), 0);
                     if (null != gameDtoResultDto) {
                         gameDtoResultDto.getData();
                     }
@@ -1190,7 +1144,7 @@ public class PostServiceImpl implements IPostService {
             idsList.add(userId);
             ResultDto<List<MemberDto>> listMembersByids = null;
             try {
-                listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+                listMembersByids = systemFacedeService.listMembersByids(idsList, null);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -1224,7 +1178,7 @@ public class PostServiceImpl implements IPostService {
                 int like = 0;
 
                 try {
-                    ResultDto<Integer> resultDtoLike = systemFeignClient.countActionNum(basActionDtoLike);
+                    ResultDto<Integer> resultDtoLike = systemFacedeService.countActionNum(basActionDtoLike);
 
                     if (null != resultDtoLike) {
                         like = resultDtoLike.getData();
@@ -1243,7 +1197,7 @@ public class PostServiceImpl implements IPostService {
                 int collected = 0;
 
                 try {
-                    ResultDto<Integer> resultDtoCollected = systemFeignClient.countActionNum(basActionDtoCollected);
+                    ResultDto<Integer> resultDtoCollected = systemFacedeService.countActionNum(basActionDtoCollected);
 
                     if (null != resultDtoCollected) {
                         collected = resultDtoCollected.getData();
@@ -1270,7 +1224,7 @@ public class PostServiceImpl implements IPostService {
             //out.setAuthor(IUserService.getUserCard(cmmPost.getMemberId(), userId));
            // if (StringUtils.isNotBlank(userId) && StringUtils.isNotBlank(cmmPost.getMemberId())) {
             if (StringUtils.isNotBlank(cmmPost.getMemberId())) {
-                ResultDto<AuthorBean> userCardResult = systemFeignClient.getUserCard(cmmPost.getMemberId(), userId);
+                ResultDto<AuthorBean> userCardResult = systemFacedeService.getUserCard(cmmPost.getMemberId(), userId);
                 if (null != userCardResult) {
                     authorBean = userCardResult.getData();
                 }
@@ -1380,7 +1334,7 @@ public class PostServiceImpl implements IPostService {
             //!fixme 查询用户数据
             //bean.setAuthor(iUserService.getAuthor(post.getMemberId()));
             try {
-                ResultDto<AuthorBean> authorBeanResultDto = systemFeignClient.getAuthor(post.getMemberId());
+                ResultDto<AuthorBean> authorBeanResultDto = systemFacedeService.getAuthor(post.getMemberId());
                 if (null != authorBeanResultDto) {
                     AuthorBean authorBean = authorBeanResultDto.getData();
                     bean.setAuthor(authorBean);
@@ -1454,7 +1408,7 @@ public class PostServiceImpl implements IPostService {
 
                 int liked = 0;
                 try {
-                    ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+                    ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
 
                     if (null != resultDto) {
                         liked = resultDto.getData();
@@ -1679,7 +1633,7 @@ public class PostServiceImpl implements IPostService {
 
             AuthorBean author = null;
             try {
-                ResultDto<AuthorBean> authorBeanResultDto = systemFeignClient.getAuthor(post.getMemberId());
+                ResultDto<AuthorBean> authorBeanResultDto = systemFacedeService.getAuthor(post.getMemberId());
                 if (null != authorBeanResultDto) {
                     author = authorBeanResultDto.getData();
                 }
