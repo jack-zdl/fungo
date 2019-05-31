@@ -372,6 +372,10 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
             dataBean.setTargetType(videoBanner.getTargetType());
             dataBean.setTargetId(videoBanner.getTargetId());
 
+            ActionBean actionBean = new ActionBean();
+            actionBean.setTargetId(community.getId());
+            dataBean.setSource(actionBean);
+
             ArrayList<CardDataBean> cl = new ArrayList<CardDataBean>();
             cl.add(dataBean);
             cb.setDataList(cl);
@@ -435,6 +439,10 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
             dataBean.setHref(videoBanner.getHref());
             dataBean.setTargetType(videoBanner.getTargetType());
             dataBean.setTargetId(videoBanner.getTargetId());
+
+            ActionBean actionBean = new ActionBean();
+            actionBean.setTargetId(community.getId());
+            dataBean.setSource(actionBean);
 
             ArrayList<CardDataBean> cl = new ArrayList<CardDataBean>();
             cl.add(dataBean);
