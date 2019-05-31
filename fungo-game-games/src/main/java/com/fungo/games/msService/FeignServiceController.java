@@ -1,4 +1,4 @@
-package com.fungo.games.controller;
+package com.fungo.games.msService;
 
 
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.dao.GameDao;
 import com.fungo.games.dao.GameEvaluationDao;
 import com.fungo.games.entity.*;
-import com.fungo.games.proxy.IEvaluateProxyService;
+import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.service.*;
 import com.fungo.games.service.impl.GameEvaluationServiceImap;
 import com.game.common.bean.MemberPulishFromCommunity;

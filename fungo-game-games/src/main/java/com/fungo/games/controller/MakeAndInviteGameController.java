@@ -1,23 +1,19 @@
 package com.fungo.games.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameInvite;
 import com.fungo.games.helper.MQProduct;
-import com.fungo.games.proxy.IEvaluateProxyService;
+import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.service.GameInviteService;
 import com.fungo.games.service.GameService;
 import com.fungo.games.service.IMakeAndInviteGameService;
 import com.game.common.bean.advice.BasNoticeDto;
-import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.MsgTplBean;
 import com.game.common.dto.ResultDto;
-import com.game.common.dto.community.FollowUserOutBean;
-import com.game.common.dto.game.GameInviteDto;
 import com.game.common.dto.mark.*;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.util.CommonUtil;
