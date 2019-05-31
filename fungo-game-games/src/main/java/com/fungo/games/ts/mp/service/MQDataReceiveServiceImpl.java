@@ -1,4 +1,4 @@
-package com.fungo.games.listener.service.impl;
+package com.fungo.games.ts.mp.service;
 
 import com.alibaba.fastjson.JSON;
 import com.fungo.games.consts.MQMessageTypeConstant;
@@ -10,12 +10,10 @@ import com.game.common.dto.game.GameReleaseLogDto;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
 import com.game.common.ts.mq.service.MQDataReceiveService;
-import com.game.common.ts.mq.service.MQDataSendService;
 import com.game.common.util.UniqueIdCkeckUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

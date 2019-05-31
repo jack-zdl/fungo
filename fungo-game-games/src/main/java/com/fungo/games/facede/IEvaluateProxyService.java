@@ -1,4 +1,4 @@
-package com.fungo.games.proxy;
+package com.fungo.games.facede;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.game.common.bean.TagBean;
