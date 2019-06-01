@@ -26,12 +26,6 @@ public class CommunityFacedeHystrixService implements FallbackFactory<CommunityF
 
     private static final Logger logger = LoggerFactory.getLogger(CommunityFacedeHystrixService.class);
 
-    public static void main(String[] args) {
-        String a = "abc";
-        String b= new String("abc").intern();
-        System.out.println(a==b);
-    }
-
     @Override
     public CommunityFeignClient create(Throwable throwable) {
         return new CommunityFeignClient() {
