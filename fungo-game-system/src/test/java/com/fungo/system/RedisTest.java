@@ -3,7 +3,6 @@ package com.fungo.system;
 import com.alibaba.fastjson.JSON;
 import com.fungo.system.dto.MemberSNSBindInput;
 import com.fungo.system.dto.MemberSNSBindOutput;
-import com.fungo.system.proxy.IGameProxyService;
 import com.fungo.system.service.IMemberSNSService;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmPostDto;
@@ -24,8 +23,6 @@ public class RedisTest {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
-    @Autowired
-    private IGameProxyService iGameProxyService;
 
     @Autowired
     private IMemberSNSService iMemberSNSService;
@@ -56,12 +53,12 @@ public class RedisTest {
 
     @Test
     public void testCommunity() {
-        CmmPostDto cmmPostParam = new CmmPostDto();
+      /*  CmmPostDto cmmPostParam = new CmmPostDto();
         cmmPostParam.setId("0003d879a8bf48c9af94493746f25fcf111");
         CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostParam);  //this.postService.selectById(target_id);
         System.out.println(post + "---" + post.getCreatedAt());
         String date = DateTools.fmtDate(post.getCreatedAt());
-        System.out.println(date);
+        System.out.println(date);*/
     }
 
     @Test
