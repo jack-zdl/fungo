@@ -52,7 +52,8 @@ public class GameOut {
 	private int iosState;
 	private int androidState;
 	private String video;
-	
+	private String fungoTalk;
+
 	 @ApiModelProperty(value="游戏评分(v2.4)",example="")
 	 private double rating;
 	 @ApiModelProperty(value="游戏评分比例列表(v2.4)",example="")
@@ -371,13 +372,11 @@ public class GameOut {
 		this.ratingList = ratingList;
 	}
 
-	
+	public String getFungoTalk() {
+		return fungoTalk;
+	}
 
-
-	
-	
-	
-	
-	
-	
+	public void setFungoTalk(String fungoTalk) {
+		this.fungoTalk = fungoTalk;
+	}
 }

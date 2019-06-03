@@ -79,6 +79,7 @@
         <result column="unrecommend_num" property="unrecommendNum"/>
         <result column="state" property="state"/>
         <result column="intro" property="intro"/>
+        <result column="fungo_talk" property="fungoTalk"/>
         <result column="developer" property="developer"/>
         <result column="version_main" property="versionMain"/>
         <result column="isbn_id" property="isbnId"/>

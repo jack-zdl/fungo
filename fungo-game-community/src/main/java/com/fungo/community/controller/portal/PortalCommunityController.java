@@ -97,7 +97,7 @@ public class PortalCommunityController {
             @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "int"),
             @ApiImplicitParam(name = "page", value = "页数", paramType = "form", dataType = "int"),
     })
-    @RequestMapping(value = "/api/portal/community/content/communitysPCList", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/community/content/communitysPCList", method = RequestMethod.GET)
     public FungoPageResultDto<CmmCommunityIndexDto> getCommunityListPC2_0(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody CommunityInputPageDto communityInputPageDto) {
         String userId = "";
         if (memberUserPrefile != null) {
