@@ -12,18 +12,18 @@ import com.fungo.community.entity.CmmPost;
 import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.service.IPostService;
 import com.game.common.consts.FungoCoreApiConstant;
-import com.game.common.dto.AuthorBean;
-import com.game.common.dto.FungoPageResultDto;
-import com.game.common.dto.MemberUserProfile;
-import com.game.common.dto.ResultDto;
+import com.game.common.dto.*;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.community.PostInput;
 import com.game.common.dto.community.PostInputPageDto;
+import com.game.common.dto.community.PostOut;
 import com.game.common.dto.community.PostOutBean;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
+import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
@@ -35,11 +35,9 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -103,6 +101,79 @@ public class PortalCommunityPostController {
         } catch (Exception e) {
             e.printStackTrace();
             return FungoPageResultDto.error("-1", "操作失败");
+        }
+    }
+
+    @ApiOperation(value = "PC2.0发帖", notes = "")
+    @RequestMapping(value = "/api/portal/community/content/post", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "html", value = "html内容", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "community_id", value = "社区id", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "title", value = "标题", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "content", value = "帖子内容", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "images", value = "图片", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "origin", value = "文本", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "videoId", value = "视频id,  可选", paramType = "form", dataType = "string")
+    })
+    public ResultDto<ObjectId> addPost(MemberUserProfile memberUserPrefile, @RequestBody PostInput postInput) throws Exception {
+        if (StringUtil.isNull(postInput.getHtml()) || StringUtil.isNull(postInput.getTitle())) {
+            return ResultDto.error("-1", "文章内容或者标题不可为空");
+        }
+        String userId = memberUserPrefile.getLoginId();
+        return bsPostService.addPost(postInput, userId);
+    }
+
+
+    @ApiOperation(value = "PC2.0删帖", notes = "")
+    @RequestMapping(value = "/api/portal/community/content/post/{postId}", method = RequestMethod.DELETE)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "postId", value = "帖子id", paramType = "form", dataType = "string"),
+    })
+    public ResultDto<String> deletePost(MemberUserProfile memberUserPrefile, @PathVariable("postId") String postId) {
+        String userId = memberUserPrefile.getLoginId();
+        return bsPostService.deletePost(postId, userId);
+    }
+
+
+    @ApiOperation(value = "PC2.0修改帖子", notes = "")
+    @RequestMapping(value = "/api/portal/community/content/post", method = RequestMethod.PUT)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "html", value = "html内容", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "postId", value = "帖子id", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "title", value = "标题", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "content", value = "帖子内容", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "images", value = "图片", paramType = "form", dataType = "string[]"),
+
+    })
+    public ResultDto<String> editPost(MemberUserProfile memberUserPrefile, HttpServletRequest request,
+                                      @RequestBody PostInput postInput) throws Exception {
+        String userId = memberUserPrefile.getLoginId();
+        System.out.println(userId);
+        String os = "";
+        os = (String) request.getAttribute("os");
+        return bsPostService.editPost(postInput, userId, os);
+//		return ResultDto.success();
+    }
+
+
+    @ApiOperation(value = "PC2.0帖子详情", notes = "")
+    @RequestMapping(value = "/api/portal/community/content/post/{postId}", method = RequestMethod.GET)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "postId", value = "帖子id", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "userId", value = "用户id", paramType = "form", dataType = "string")
+    })
+    public ResultDto<PostOut> getPostDetail(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @PathVariable("postId") String postId) {
+        String userId = "";
+        String os = "";
+        os = (String) request.getHeader("os");
+        if (memberUserPrefile != null) {
+            userId = memberUserPrefile.getLoginId();
+        }
+        try {
+            return bsPostService.getPostDetails(postId, userId, os);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultDto.error("-1", "操作失败");
         }
     }
 

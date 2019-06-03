@@ -411,7 +411,10 @@ public class FungoCoreApiConstant {
      * GET
      */
     public static final String FUNGO_CORE_API_TASK_USER_TASK_PROGRESS = "/api/user/incents/task/progress";
-
+    /**
+     * PC2.0圈子首页列表
+     */
+    public static final String FUNGO_CORE_API_GETCOMMUNITYLISTPC2_0 = "/api/portal/community/content/communitysPCList";
 
 
     //**************************************************游戏**************************************************

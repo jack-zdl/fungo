@@ -6,6 +6,7 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.*;
+import com.game.common.dto.community.portal.CmmCommunityIndexDto;
 import com.game.common.dto.search.SearchInputPageDto;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
@@ -88,6 +89,21 @@ public class PortalCommunityController {
             userId = memberUserPrefile.getLoginId();
         }
         return iPortalCommunityService.getCmmCommunityList(userId, communityInputPageDto);
+
+    }
+
+    @ApiOperation(value = "PC2.0圈子首页列表", notes = "")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "int"),
+            @ApiImplicitParam(name = "page", value = "页数", paramType = "form", dataType = "int"),
+    })
+    @RequestMapping(value = "/api/portal/community/content/communitysPCList", method = RequestMethod.POST)
+    public FungoPageResultDto<CmmCommunityIndexDto> getCommunityListPC2_0(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody CommunityInputPageDto communityInputPageDto) {
+        String userId = "";
+        if (memberUserPrefile != null) {
+            userId = memberUserPrefile.getLoginId();
+        }
+        return iPortalCommunityService.getCommunityListPC2_0(userId, communityInputPageDto);
 
     }
 
