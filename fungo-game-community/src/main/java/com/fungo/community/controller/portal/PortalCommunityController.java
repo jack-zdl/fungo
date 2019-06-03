@@ -97,14 +97,27 @@ public class PortalCommunityController {
             @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "int"),
             @ApiImplicitParam(name = "page", value = "页数", paramType = "form", dataType = "int"),
     })
-    @RequestMapping(value = "/api/portal/community/content/communitysPCList", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/portal/community/content/communitysPCList", method = RequestMethod.POST)
     public FungoPageResultDto<CmmCommunityIndexDto> getCommunityListPC2_0(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody CommunityInputPageDto communityInputPageDto) {
         String userId = "";
         if (memberUserPrefile != null) {
             userId = memberUserPrefile.getLoginId();
         }
         return iPortalCommunityService.getCommunityListPC2_0(userId, communityInputPageDto);
+    }
 
+    @ApiOperation(value = "PC2.0圈子首页最近浏览圈子", notes = "")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "int"),
+            @ApiImplicitParam(name = "page", value = "页数", paramType = "form", dataType = "int"),
+    })
+    @RequestMapping(value = "/api/portal/community/content/recentbrowsecommunity", method = RequestMethod.POST)
+    public FungoPageResultDto<CmmCommunityDto> getRecentBrowseCommunity(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody CommunityInputPageDto communityInputPageDto) {
+        String userId = "";
+        if (memberUserPrefile != null) {
+            userId = memberUserPrefile.getLoginId();
+        }
+        return iPortalCommunityService.getRecentBrowseCommunity(userId, communityInputPageDto);
     }
 
 }

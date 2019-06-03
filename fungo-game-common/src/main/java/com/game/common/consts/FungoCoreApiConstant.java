@@ -415,6 +415,8 @@ public class FungoCoreApiConstant {
      * PC2.0圈子首页列表
      */
     public static final String FUNGO_CORE_API_GETCOMMUNITYLISTPC2_0 = "/api/portal/community/content/communitysPCList";
+//    getRecentBrowseCommunity
+    public static final String FUNGO_CORE_API_GETRECENTBROWSECOMMUNITY = "/api/portal/community/content/recentbrowsecommunity";
 
 
     //**************************************************游戏**************************************************

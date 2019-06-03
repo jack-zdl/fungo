@@ -192,7 +192,24 @@
 	<update id="updateSort" parameterType="java.util.Map">
   		update ${tableName} set sort=${sort} where id=#{bannerId}
    </update>
-	
+	<!--getRecentBrowseCommunityByUserId 根据用户Id获取最近浏览圈子行为 8个-->
+	<select id="getRecentBrowseCommunityByUserId" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT
+			target_id
+		FROM
+			t_bas_action
+		WHERE
+			type = 12
+		AND state = 0
+		AND target_type = 4
+		AND member_id = #{userId}
+		GROUP BY
+			target_id
+		ORDER BY
+			created_at DESC
+		LIMIT 0,
+		 8
+	</select>
 	
 
 </mapper>

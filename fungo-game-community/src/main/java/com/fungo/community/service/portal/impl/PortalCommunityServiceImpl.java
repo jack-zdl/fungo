@@ -293,6 +293,53 @@ public class PortalCommunityServiceImpl implements IPortalCommunityService {
         return resultDto;
     }
 
+    /**
+     * PC2.0圈子首页最近浏览圈子
+     * @param userId
+     * @param communityInputPageDto
+     * @return
+     */
+    @Override
+    public FungoPageResultDto<CmmCommunityDto> getRecentBrowseCommunity(String userId, CommunityInputPageDto communityInputPageDto) {
+        FungoPageResultDto<CmmCommunityDto> resultDto = null;
+        List<CmmCommunityDto> cmmCommunityIndexDtos = new ArrayList<>();
+        //from redis cache
+        /*String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_GETRECENTBROWSECOMMUNITY;
+        String keySuffix = userId + JSON.toJSONString(communityInputPageDto);
+
+        resultDto = (FungoPageResultDto<CmmCommunityIndexDto>) fungoCacheCommunity.getIndexCache(keyPrefix, keySuffix);
+        if (null != resultDto) {
+            return resultDto;
+        }*/
+        if (StringUtils.isEmpty(userId)){
+            return new FungoPageResultDto<CmmCommunityDto>();
+        }
+//        根据用户Id获取最近浏览圈子行为 8个
+        ResultDto<List<String>> recentBrowseCommunityByUserId = systemFeignClient.getRecentBrowseCommunityByUserId(userId);
+
+        if (recentBrowseCommunityByUserId != null){
+            List<String> data = recentBrowseCommunityByUserId.getData();
+            if (data != null && data.size() > 0){
+//                首页最近浏览圈子
+                Wrapper<CmmCommunity> id = new EntityWrapper<CmmCommunity>().setSqlSelect("id,name,icon").in("id", data).eq("state", 1);
+                List<CmmCommunity> cmmCommunities = communityService.selectList(id);
+                for (CmmCommunity cmmCommunity:cmmCommunities) {
+                    CmmCommunityDto cmmCommunityDto = new CmmCommunityDto();
+                    BeanUtils.copyProperties(cmmCommunity, cmmCommunityDto);
+                    cmmCommunityIndexDtos.add(cmmCommunityDto);
+                }
+            }
+        }
+
+        resultDto = new FungoPageResultDto<CmmCommunityDto>();
+        resultDto.setData(cmmCommunityIndexDtos);
+        resultDto.setCount(cmmCommunityIndexDtos.size());
+        resultDto.setAfter(-1);
+        resultDto.setBefore(-1);
+        //redis cache
+//        fungoCacheCommunity.excIndexCache(true, keyPrefix, keySuffix, resultDto);
+        return resultDto;
+    }
 
 
 }

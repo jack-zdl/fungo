@@ -103,4 +103,11 @@ public interface SystemService {
      * @return 结果
      */
     public ResultDto<String> updateNoticeDate(String id,String data);
+
+    /**
+     * 根据用户Id获取最近浏览圈子行为 8个
+     * @param userId
+     * @return
+     */
+    ResultDto<List<String>> getRecentBrowseCommunityByUserId(String userId);
 }

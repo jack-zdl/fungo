@@ -47,4 +47,5 @@ public interface CmmCommunityDaoService extends IService<CmmCommunity> {
      * @return
      */
     int getCommunityListPC2_0Count();
+
 }

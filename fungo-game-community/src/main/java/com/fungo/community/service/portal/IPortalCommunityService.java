@@ -1,6 +1,7 @@
 package com.fungo.community.service.portal;
 
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.CommunityInputPageDto;
 import com.game.common.dto.community.CommunityOutPageDto;
 import com.game.common.dto.community.portal.CmmCommunityIndexDto;
@@ -30,4 +31,12 @@ public interface IPortalCommunityService {
      * @return
      */
     FungoPageResultDto<CmmCommunityIndexDto> getCommunityListPC2_0(String userId, CommunityInputPageDto communityInputPageDto);
+
+    /**
+     * PC2.0圈子首页最近浏览圈子
+     * @param userId
+     * @param communityInputPageDto
+     * @return
+     */
+    FungoPageResultDto<CmmCommunityDto> getRecentBrowseCommunity(String userId, CommunityInputPageDto communityInputPageDto);
 }
