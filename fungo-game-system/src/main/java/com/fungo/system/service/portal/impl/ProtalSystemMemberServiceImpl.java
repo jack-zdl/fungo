@@ -422,7 +422,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                 for (MemberNotice memberNotice : noticeListDB) {
                     String ntcDataJsonStr = memberNotice.getNtcData();
                     Map<String, Object> msgMap = JSON.parseObject(ntcDataJsonStr);
-                    if((int)msgMap.get(key) == 0) return;
+                    if((int)msgMap.get(key) == 0) continue;
                     Map<String,Object> oldMap = new HashMap<>();
                     oldMap.put(key,msgMap.get(key));
                     updateMap(oldMap,msgMap);
