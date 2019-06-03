@@ -511,7 +511,7 @@ public class PostServiceImpl implements IPostService {
 
         ResultDto<List<MemberDto>> listMembersByids = null;
         try {
-            systemFacedeService.listMembersByids(idsList, null);
+            listMembersByids = systemFacedeService.listMembersByids(idsList, null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
