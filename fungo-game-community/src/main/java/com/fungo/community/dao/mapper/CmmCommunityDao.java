@@ -3,6 +3,7 @@ package com.fungo.community.dao.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.community.entity.CmmCommunity;
+import com.fungo.community.entity.portal.CmmCommunityIndex;
 import com.game.common.bean.CommentBean;
 import com.game.common.bean.MemberPulishFromCommunity;
 import org.apache.ibatis.annotations.MapKey;
@@ -63,5 +64,11 @@ public interface CmmCommunityDao extends BaseMapper<CmmCommunity> {
      * PC2.0圈子首页列表
      * @param pageLimiter
      */
-    void getCommunityListPC2_0(@Param("map")Map<String, Integer> pageLimiter);
+    List<CmmCommunityIndex> getCommunityListPC2_0(@Param("map")Map<String, Integer> pageLimiter);
+
+    /**
+     * PC2.0圈子首页列表总数
+     * @return
+     */
+    int getCommunityListPC2_0Count();
 }

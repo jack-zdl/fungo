@@ -6,6 +6,7 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.*;
+import com.game.common.dto.community.portal.CmmCommunityIndexDto;
 import com.game.common.dto.search.SearchInputPageDto;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
@@ -96,8 +97,8 @@ public class PortalCommunityController {
             @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "int"),
             @ApiImplicitParam(name = "page", value = "页数", paramType = "form", dataType = "int"),
     })
-    @RequestMapping(value = "/api/portal/community/content/communitysPC2_0", method = RequestMethod.POST)
-    public FungoPageResultDto<CommunityOutPageDto> getCommunityListPC2_0(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody CommunityInputPageDto communityInputPageDto) {
+    @RequestMapping(value = "/api/portal/community/content/communitysPCList", method = RequestMethod.POST)
+    public FungoPageResultDto<CmmCommunityIndexDto> getCommunityListPC2_0(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody CommunityInputPageDto communityInputPageDto) {
         String userId = "";
         if (memberUserPrefile != null) {
             userId = memberUserPrefile.getLoginId();

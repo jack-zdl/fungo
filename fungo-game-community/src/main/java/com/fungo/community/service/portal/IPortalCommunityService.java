@@ -3,6 +3,7 @@ package com.fungo.community.service.portal;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.community.CommunityInputPageDto;
 import com.game.common.dto.community.CommunityOutPageDto;
+import com.game.common.dto.community.portal.CmmCommunityIndexDto;
 
 /**
  * <p>
@@ -28,5 +29,5 @@ public interface IPortalCommunityService {
      * @param communityInputPageDto
      * @return
      */
-    FungoPageResultDto<CommunityOutPageDto> getCommunityListPC2_0(String userId, CommunityInputPageDto communityInputPageDto);
+    FungoPageResultDto<CmmCommunityIndexDto> getCommunityListPC2_0(String userId, CommunityInputPageDto communityInputPageDto);
 }

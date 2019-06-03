@@ -3,6 +3,7 @@ package com.fungo.community.dao.service;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.fungo.community.entity.CmmCommunity;
+import com.fungo.community.entity.portal.CmmCommunityIndex;
 import com.game.common.bean.CommentBean;
 
 import java.util.List;
@@ -39,5 +40,11 @@ public interface CmmCommunityDaoService extends IService<CmmCommunity> {
      * PC2.0圈子首页列表
      * @param pageLimiter
      */
-    void getCommunityListPC2_0(Map<String, Integer> pageLimiter);
+    List<CmmCommunityIndex> getCommunityListPC2_0(Map<String, Integer> pageLimiter);
+
+    /**
+     * PC2.0圈子首页列表总数
+     * @return
+     */
+    int getCommunityListPC2_0Count();
 }
