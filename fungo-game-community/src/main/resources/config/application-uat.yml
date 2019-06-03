@@ -30,7 +30,7 @@ hystrix:
     default:
       execution:
         isolation:
-          strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
+          strategy: SEMAPHORE    #隔离策略，默认是Thread, 可选Thread｜Semaphore
         timeout:
           enabled: true
           thread:

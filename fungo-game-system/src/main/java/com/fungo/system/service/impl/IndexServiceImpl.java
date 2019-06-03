@@ -526,7 +526,7 @@ public class IndexServiceImpl implements IIndexService {
             dataBean.setVideoUrl(post.getVideo());
             if (!CommonUtil.isNull(post.getContent())) {
 
-                dataBean.setContent(post.getContent().length()>25?Html2Text.removeHtmlTag(post.getContent().substring(0, 25)):CommonUtils.filterWord(post.getContent()));
+                dataBean.setContent(post.getContent().length()>40?Html2Text.removeHtmlTag(post.getContent().substring(0, 40)):Html2Text.removeHtmlTag(post.getContent()));
                 //dataBean.setContent(post.getContent());
             } else {
                 dataBean.setContent(post.getContent());
