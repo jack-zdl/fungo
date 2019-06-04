@@ -2,8 +2,8 @@ package com.fungo.system.controller.portal;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.entity.Banner;
-import com.fungo.system.proxy.IGameProxyService;
-import com.fungo.system.proxy.IndexProxyService;
+import com.fungo.system.facede.IGameProxyService;
+import com.fungo.system.facede.IndexProxyService;
 import com.fungo.system.service.BannerService;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
