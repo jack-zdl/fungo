@@ -159,7 +159,11 @@ public class IndexController {
 //                lyc
 //                Wrapper wrapper = Condition.create().setSqlSelect("id,followee_num,post_num").eq("id", game.getCommunityId());
 //                CmmCommunity community = communityService.selectOne(wrapper);
-                Integer followeeNumValue = followeeNum.get(game.getCommunityId());
+                Integer followeeNumValue = null;
+                if (followeeNum != null){
+                    followeeNumValue = followeeNum.get(game.getCommunityId());
+                }
+
 
                 map1.put("name", game.getName());
                 map1.put("androidState", game.getAndroidState());
