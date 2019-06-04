@@ -201,8 +201,7 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
             for (ScoreGroup scoreGroup : taskGroupList) {
                 scoreGroupIdList.add(scoreGroup.getId());
             }
-
-            //根据scoreGroupId查询规则数据
+                  //根据scoreGroupId查询规则数据
             Wrapper wrapperRule = new EntityWrapper<ScoreRule>();
             Map<String, Object> criteriaMapRule = new HashMap<String, Object>();
 

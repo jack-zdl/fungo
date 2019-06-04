@@ -1,6 +1,7 @@
 package com.fungo.games.feign;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.games.facede.CommunityFacedeHystrixService;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmCmtReplyDto;
@@ -19,7 +20,7 @@ import java.util.Map;
  * @Author lyc
  * @create 2019/5/7 10:26
  */
-@FeignClient(name = "FUNGO-GAME-COMMUNITY")
+@FeignClient(name = "FUNGO-GAME-COMMUNITY",fallbackFactory = CommunityFacedeHystrixService.class)
 //@RequestMapping("/ms/service/cmm")
 public interface CommunityFeignClient {
 

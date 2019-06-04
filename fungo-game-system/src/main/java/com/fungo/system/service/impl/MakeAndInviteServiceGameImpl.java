@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.entity.IncentRuleRank;
 import com.fungo.system.entity.Member;
-import com.fungo.system.proxy.IGameProxyService;
+import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.service.IMakeAndInviteGameService;
 import com.fungo.system.service.IMemberIncentRuleRankService;
 import com.fungo.system.service.IMemberService;

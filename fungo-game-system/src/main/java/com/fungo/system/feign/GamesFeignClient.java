@@ -1,5 +1,6 @@
 package com.fungo.system.feign;
 
+import com.fungo.system.facede.impl.GameFacedeHystrixService;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
@@ -19,7 +20,7 @@ import java.util.Map;
  * @Author: dl.zhang
  * @Date: 2019/4/28
  */
-@FeignClient(name = "FUNGO-GAME-GAMES")
+@FeignClient(name = "FUNGO-GAME-GAMES",fallbackFactory = GameFacedeHystrixService.class)
 public interface GamesFeignClient {
 
     @RequestMapping(value = "/ms/service/game/api/content/gameList", method = RequestMethod.POST)

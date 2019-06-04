@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.entity.*;
-import com.fungo.system.proxy.IPostService;
+import com.fungo.system.facede.IPostService;
 import com.fungo.system.service.*;
 import com.game.common.common.MemberIncentCommonUtils;
 import com.game.common.consts.FunGoGameConsts;

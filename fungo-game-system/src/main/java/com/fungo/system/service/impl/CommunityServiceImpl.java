@@ -1,13 +1,11 @@
 package com.fungo.system.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.dao.MemberDao;
 import com.fungo.system.entity.BasAction;
 import com.fungo.system.entity.Member;
-import com.fungo.system.proxy.ICommunityProxyService;
-import com.fungo.system.proxy.IGameProxyService;
+import com.fungo.system.facede.ICommunityProxyService;
+import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.service.BasActionService;
 import com.fungo.system.service.ICommunityService;
 import com.fungo.system.service.MemberService;
