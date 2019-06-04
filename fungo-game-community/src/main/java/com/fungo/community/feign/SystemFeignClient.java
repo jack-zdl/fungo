@@ -1,6 +1,7 @@
 package com.fungo.community.feign;
 
 
+import com.fungo.community.facede.SystemFacedeHystrixService;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
@@ -30,7 +31,7 @@ import java.util.Map;
  * @author mxf
  * @since 2018-11-08
  */
-@FeignClient(name = "FUNGO-GAME-SYSTEM")
+@FeignClient(name = "FUNGO-GAME-SYSTEM",fallbackFactory = SystemFacedeHystrixService.class)
 @RequestMapping("/ms/service/system")
 public interface SystemFeignClient {
 

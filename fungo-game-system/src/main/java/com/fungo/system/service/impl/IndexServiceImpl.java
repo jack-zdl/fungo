@@ -4,9 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.entity.Banner;
-import com.fungo.system.proxy.IGameProxyService;
-import com.fungo.system.proxy.IMemeberProxyService;
-import com.fungo.system.proxy.IndexProxyService;
+import com.fungo.system.facede.IGameProxyService;
+import com.fungo.system.facede.IMemeberProxyService;
+import com.fungo.system.facede.IndexProxyService;
 import com.fungo.system.service.BannerService;
 import com.fungo.system.service.IIndexService;
 import com.fungo.system.service.IUserService;
@@ -24,6 +24,7 @@ import com.game.common.dto.index.CardIndexBean;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
+import com.game.common.util.Html2Text;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -74,7 +75,7 @@ public class IndexServiceImpl implements IIndexService {
             keySuffix += app_channel;
         }
 
-        re =  (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+        re =  null;//(FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
 
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
@@ -524,8 +525,9 @@ public class IndexServiceImpl implements IIndexService {
             dataBean.setUserinfo(userService.getAuthor(post.getMemberId()));
             dataBean.setVideoUrl(post.getVideo());
             if (!CommonUtil.isNull(post.getContent())) {
-//				dataBean.setContent(post.getContent().length()>25?CommonUtils.filterWord(post.getContent().substring(0, 25)):CommonUtils.filterWord(post.getContent()));
-                dataBean.setContent(post.getContent());
+
+                dataBean.setContent(post.getContent().length()>40?Html2Text.removeHtmlTag(post.getContent().substring(0, 40)):Html2Text.removeHtmlTag(post.getContent()));
+                //dataBean.setContent(post.getContent());
             } else {
                 dataBean.setContent(post.getContent());
             }

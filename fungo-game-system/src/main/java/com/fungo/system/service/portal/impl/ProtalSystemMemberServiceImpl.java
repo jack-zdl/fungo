@@ -11,10 +11,7 @@ import com.fungo.system.dao.BasNoticeDao;
 import com.fungo.system.dao.MemberDao;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
-import com.fungo.system.proxy.ICommunityProxyService;
-import com.fungo.system.proxy.IDeveloperProxyService;
-import com.fungo.system.proxy.IGameProxyService;
-import com.fungo.system.proxy.IMemeberProxyService;
+import com.fungo.system.facede.IMemeberProxyService;
 import com.fungo.system.service.*;
 import com.fungo.system.service.portal.PortalSystemIMemberService;
 import com.game.common.api.InputPageDto;
@@ -422,7 +419,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                 for (MemberNotice memberNotice : noticeListDB) {
                     String ntcDataJsonStr = memberNotice.getNtcData();
                     Map<String, Object> msgMap = JSON.parseObject(ntcDataJsonStr);
-                    if((int)msgMap.get(key) == 0) return;
+                    if((int)msgMap.get(key) == 0) continue;
                     Map<String,Object> oldMap = new HashMap<>();
                     oldMap.put(key,msgMap.get(key));
                     updateMap(oldMap,msgMap);

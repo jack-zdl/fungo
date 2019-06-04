@@ -59,8 +59,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param type_code_idt
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixExTask", ignoreExceptions = {Exception.class},
-            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+    /*@HystrixCommand(fallbackMethod = "hystrixExTask", ignoreExceptions = {Exception.class},
+            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))*/
     @Override
     public Map<String, Object> exTask(String memberId, int task_group_flag, int task_type, int type_code_idt, Long requestId) {
         TaskDto taskDto = new TaskDto();
@@ -167,8 +167,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
        return new FungoPageResultDto<CmmCmtReplyDto>();
     }
 
-    public Page<CmmCmtReplyDto> hystrixGetReplyDtoBysSelectPageOrderByCreatedAt(ReplyInputPageDto replyInputPageDto) {
-        return null;
+    public FungoPageResultDto<CmmCmtReplyDto> hystrixGetReplyDtoBysSelectPageOrderByCreatedAt(ReplyInputPageDto replyInputPageDto) {
+        return new FungoPageResultDto<CmmCmtReplyDto>();
     }
 
     /**
@@ -190,7 +190,7 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
     }
 
     public MemberDto hystrixGetMemberDtoBySelectOne(MemberDto md) {
-        return null;
+        return new MemberDto();
     }
 
     /**
@@ -212,7 +212,7 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
     }
 
     public List<HashMap<String, Object>> hystrixGetStatusImageByMemberId(String memberId) {
-        return null;
+        return new ArrayList<>();
     }
 
     /**
@@ -251,7 +251,7 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
     }
 
     public List<BasTagDto> hystrixGetBasTagBySelectListGroupId(BasTagDto basTagDto) {
-        return null;
+        return new ArrayList<>();
     }
 
     /**
@@ -344,7 +344,7 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      */
    /* @HystrixCommand(fallbackMethod = "hystrixGetBasTagGroupBySelectList",ignoreExceptions = {Exception.class},
             commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
-   /* @Override
+    /*@Override
     public List<BasTagGroupDto> getBasTagGroupBySelectList(BasTagGroupDto basTagGroupDto) {
         return systemFeignClient.getBasTagGroupBySelectList(basTagGroupDto).getData();
     }*/
@@ -370,8 +370,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * 根据用户会员DTO对象分页查询用户会员
      * @param memberDto
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetSortTags",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+   /* @HystrixCommand(fallbackMethod = "hystrixGetSortTags",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public FungoPageResultDto<MemberDto> listMemberDtoPag(MemberDto memberDto) {
 

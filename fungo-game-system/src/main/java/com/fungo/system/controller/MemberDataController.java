@@ -3,8 +3,8 @@ package com.fungo.system.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.dao.MemberDao;
 import com.fungo.system.entity.Member;
-import com.fungo.system.proxy.ICommunityProxyService;
-import com.fungo.system.proxy.IGameProxyService;
+import com.fungo.system.facede.ICommunityProxyService;
+import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.service.MemberService;
 import com.fungo.system.service.ScoreLogService;
 import com.game.common.util.date.DateTools;
@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
 public class MemberDataController {

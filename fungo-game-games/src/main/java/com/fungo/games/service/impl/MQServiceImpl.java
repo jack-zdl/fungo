@@ -46,10 +46,14 @@ public class MQServiceImpl implements IMQService {
      */
     @Override
     public boolean mqGameUpdate(GameDto gameDto1) {
+        if (gameDto1 == null || StringUtils.isEmpty(gameDto1.getId())){
+            return false;
+        }
         Game game = new Game();
         BeanUtils.copyProperties(gameDto1, game);
         return game.updateById();
     }
+
 
     /**
      * mq游戏添加

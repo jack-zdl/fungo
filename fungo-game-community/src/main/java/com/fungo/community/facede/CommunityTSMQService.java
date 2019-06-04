@@ -2,7 +2,6 @@ package com.fungo.community.facede;
 
 
 import com.alibaba.fastjson.JSON;
-import com.fungo.community.feign.TSFeignClient;
 import com.fungo.community.service.ICounterService;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
@@ -33,7 +32,7 @@ public class CommunityTSMQService {
     private ICounterService iCounterService;
 
     @Autowired
-    private TSFeignClient feignClient;
+    private TSMQFacedeService tSMQFacedeService;
 
 
     /**
@@ -60,7 +59,7 @@ public class CommunityTSMQService {
                         isOk = excSystem(transactionMessageDto.getMessageBody());
                         if (isOk) {
                             //删除消息
-                            feignClient.deleteMessageByMessageId(transactionMessageDto.getMessageId());
+                            tSMQFacedeService.deleteMessageByMessageId(transactionMessageDto.getMessageId());
                         } else {
                             //执行不成功，不确认消费，让定时任务重试（删除唯一请求标志）
                             UniqueIdCkeckUtil.deleteUniqueId(msgId);

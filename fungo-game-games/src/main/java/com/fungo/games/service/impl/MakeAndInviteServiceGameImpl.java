@@ -16,6 +16,7 @@ import com.game.common.dto.mark.BindingAppleInputBean;
 import com.game.common.dto.mark.MakeCheckOut;
 import com.game.common.dto.mark.MakeInputPageDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
+import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PKUtil;
@@ -55,6 +56,9 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
 //
     @Autowired
     private FungoCacheMember fungoCacheMember;
+
+    @Autowired
+    private FungoCacheGame fungoCacheGame;
 
 
     //用户成长业务
@@ -149,6 +153,8 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
         fungoCacheMember.excIndexCache(false,  FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, "", null);
         //游戏合集项列表,
         fungoCacheMember.excIndexCache(false,  FungoCoreApiConstant.FUNGO_CORE_API_GAME_ITEMS , "", null);
+        //游戏列表
+        fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_LIST + memberId, "", null);
         return re;
     }
 
@@ -170,6 +176,8 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
         fungoCacheMember.excIndexCache(false,  FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, "", null);
         //游戏合集项列表
         fungoCacheMember.excIndexCache(false,  FungoCoreApiConstant.FUNGO_CORE_API_GAME_ITEMS, "", null);
+        //游戏列表
+        fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_LIST + memberId, "", null);
         return ResultDto.success("取消成功");
     }
 

@@ -133,7 +133,7 @@ public class MQDataReceiveServiceImpl implements MQDataReceiveService {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("系统服务消费消息异常:" + msgData, e);
+            LOGGER.error("游戏服务消费消息异常:" + msgData, e);
             //手动开启事务回滚
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             //删除唯一请求标志,使逻辑可以重试

@@ -8,9 +8,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.community.dao.service.*;
 import com.fungo.community.entity.*;
-import com.fungo.community.feign.GameFeignClient;
-import com.fungo.community.feign.SystemFeignClient;
-import com.fungo.community.feign.TSFeignClient;
+import com.fungo.community.facede.GameFacedeService;
+import com.fungo.community.facede.SystemFacedeService;
+import com.fungo.community.facede.TSMQFacedeService;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IEvaluateService;
 import com.game.common.consts.FungoCoreApiConstant;
@@ -87,42 +87,18 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
 
     //依赖系统和用户微服务
-    @Autowired(required = false)
-    private SystemFeignClient systemFeignClient;
+    @Autowired
+    private SystemFacedeService systemFacedeService;
 
     //依赖游戏微服务
-    @Autowired(required = false)
-    private GameFeignClient gameFeignClient;
-
-    @Autowired(required = false)
-    private TSFeignClient tsFeignClient;
-
-
-    /*
     @Autowired
-    private MemberService memberService;
-
+    private GameFacedeService gameFacedeService;
 
     @Autowired
-    BasActionService actionService;
-    @Autowired
-    private GameEvaluationService gameEvaluationService;
-    @Autowired
-    private GameService gameService;
-    @Autowired
-    private IPushService pushService;
+    private TSMQFacedeService tSMQFacedeService;
 
 
-    @Autowired
-    private IUserService userService;
-    @Autowired
-    private IGameProxy gameProxy;
 
-
-    //用户成长业务
-    @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
-    private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
-    */
 
 
     @Override
@@ -242,7 +218,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         AuthorBean author = null;
         try {
-            ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(memberId);
+            ResultDto<AuthorBean> beanResultDto = systemFacedeService.getAuthor(memberId);
             if (null != beanResultDto) {
                 author = beanResultDto.getData();
             }
@@ -309,13 +285,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
         try {
 
             //coin task
-            ResultDto<Map<String, Object>> coinTaskResultDto = systemFeignClient.exTask(taskDtoCoin);
+            ResultDto<Map<String, Object>> coinTaskResultDto = systemFacedeService.exTask(taskDtoCoin);
             if (null != coinTaskResultDto) {
                 resMapCoin = coinTaskResultDto.getData();
             }
 
             //exp task
-            ResultDto<Map<String, Object>> expTaskResultDto = systemFeignClient.exTask(taskDtoExp);
+            ResultDto<Map<String, Object>> expTaskResultDto = systemFacedeService.exTask(taskDtoExp);
             if (null != expTaskResultDto) {
                 resMapExp = expTaskResultDto.getData();
             }
@@ -391,7 +367,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         //执行MQ发送
-        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
         logger.info("--添加评论-执行发送消息--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
         //-----start
 
@@ -424,7 +400,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         //执行MQ发送
-        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
         logger.info("--社区文章用户发布评论执行任务--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
         //-----start
     }
@@ -473,7 +449,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         AuthorBean authorBean = new AuthorBean();
         try {
-            ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(comment.getMemberId());
+            ResultDto<AuthorBean> beanResultDto = systemFacedeService.getAuthor(comment.getMemberId());
             if (null != beanResultDto) {
                 authorBean = beanResultDto.getData();
             }
@@ -500,7 +476,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
             int liked = 0;
             try {
-                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+                ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
 
                 if (null != resultDto) {
                     liked = resultDto.getData();
@@ -560,7 +536,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         AuthorBean authorBean = new AuthorBean();
         try {
-            ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(comment.getMemberId());
+            ResultDto<AuthorBean> beanResultDto = systemFacedeService.getAuthor(comment.getMemberId());
             if (null != beanResultDto) {
                 authorBean = beanResultDto.getData();
             }
@@ -589,7 +565,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
             int liked = 0;
 
             try {
-                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+                ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
 
                 if (null != resultDto) {
                     liked = resultDto.getData();
@@ -692,7 +668,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
                 AuthorBean author = null;
                 try {
-                    ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(mooMessage.getMemberId());
+                    ResultDto<AuthorBean> beanResultDto = systemFacedeService.getAuthor(mooMessage.getMemberId());
                     if (null != beanResultDto) {
                         author = beanResultDto.getData();
                     }
@@ -719,7 +695,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
                     AuthorBean replyAuthor = null;
                     try {
-                        ResultDto<AuthorBean> beanResultDtoReply = systemFeignClient.getAuthor(mooMessage.getMemberId());
+                        ResultDto<AuthorBean> beanResultDtoReply = systemFacedeService.getAuthor(mooMessage.getMemberId());
                         if (null != beanResultDtoReply) {
                             replyAuthor = beanResultDtoReply.getData();
                         }
@@ -750,7 +726,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
                     ResultDto<List<MemberDto>> listMembersByids = null;
                     try {
-                        listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+                        listMembersByids = systemFacedeService.listMembersByids(idsList, null);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -785,7 +761,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
                     int liked = 0;
                     try {
-                        ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+                        ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
 
                         if (null != resultDto) {
                             liked = resultDto.getData();
@@ -849,7 +825,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
                 AuthorBean author = null;
                 try {
-                    ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(cmmComment.getMemberId());
+                    ResultDto<AuthorBean> beanResultDto = systemFacedeService.getAuthor(cmmComment.getMemberId());
                     if (null != beanResultDto) {
                         author = beanResultDto.getData();
                     }
@@ -876,7 +852,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
                     AuthorBean authorReply = null;
                     try {
-                        ResultDto<AuthorBean> beanResultDtoReply = systemFeignClient.getAuthor(reply.getMemberId());
+                        ResultDto<AuthorBean> beanResultDtoReply = systemFacedeService.getAuthor(reply.getMemberId());
                         if (null != beanResultDtoReply) {
                             authorReply = beanResultDtoReply.getData();
                         }
@@ -917,7 +893,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     ResultDto<List<MemberDto>> listMembersByids = null;
 
                     try {
-                        listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+                        listMembersByids = systemFacedeService.listMembersByids(idsList, null);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -956,7 +932,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
                     try {
 
-                        ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+                        ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
 
                         if (null != resultDto) {
                             liked = resultDto.getData();
@@ -992,7 +968,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         GameEvaluationDto gameEvaluationDto = null;
         try {
-            ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getGameEvaluationSelectOne(memberId, commentInput.getTarget_id());
+            ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFacedeService.getGameEvaluationSelectOne(memberId, commentInput.getTarget_id());
             if (null != evaluationDtoResultDto) {
                 gameEvaluationDto = evaluationDtoResultDto.getData();
             }
@@ -1087,13 +1063,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
             try {
 
                 //coin task
-                ResultDto<Map<String, Object>> coinTaskResultDto = systemFeignClient.exTask(taskDtoCoin);
+                ResultDto<Map<String, Object>> coinTaskResultDto = systemFacedeService.exTask(taskDtoCoin);
                 if (null != coinTaskResultDto) {
                     resMapCoin = coinTaskResultDto.getData();
                 }
 
                 //exp task
-                ResultDto<Map<String, Object>> expTaskResultDto = systemFeignClient.exTask(taskDtoExp);
+                ResultDto<Map<String, Object>> expTaskResultDto = systemFacedeService.exTask(taskDtoExp);
                 if (null != expTaskResultDto) {
                     resMapExp = expTaskResultDto.getData();
                 }
@@ -1182,7 +1158,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         AuthorBean author = new AuthorBean();
         try {
-            ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(memberId);
+            ResultDto<AuthorBean> beanResultDto = systemFacedeService.getAuthor(memberId);
             if (null != beanResultDto) {
                 author = beanResultDto.getData();
             }
@@ -1292,7 +1268,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         //执行MQ发送
-        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
         logger.info("--社区用户修改游戏评论执行任务--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
 
 
@@ -1324,7 +1300,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         //执行MQ发送
-        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
         logger.info("--添加评论-执行添加用户动作行为数据--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
 
     }
@@ -1371,7 +1347,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         GameDto gameDto = null;
         ResultDto<GameDto> gameDtoResultDto = null;
         try {
-            gameDtoResultDto = gameFeignClient.selectGameDetails(commentInput.getTarget_id(), null);
+            gameDtoResultDto = gameFacedeService.selectGameDetails(commentInput.getTarget_id(), null);
             if (null != gameDtoResultDto) {
                 gameDto = gameDtoResultDto.getData();
             }
@@ -1409,7 +1385,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         //执行MQ发送
-        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
         logger.info("--社区用户发布游戏评论执行任务--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
 
         //---------------end----------------
@@ -1429,7 +1405,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         GameEvaluationDto gameEvaluationDto = null;
         try {
-            ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getGameEvaluationSelectById(commentId);
+            ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFacedeService.getGameEvaluationSelectById(commentId);
             if (null != evaluationDtoResultDto) {
                 gameEvaluationDto = evaluationDtoResultDto.getData();
             }
@@ -1452,7 +1428,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         AuthorBean replyAuthor = null;
         try {
-            ResultDto<AuthorBean> beanResultDtoReply = systemFeignClient.getAuthor(gameEvaluationDto.getMemberId());
+            ResultDto<AuthorBean> beanResultDtoReply = systemFacedeService.getAuthor(gameEvaluationDto.getMemberId());
             if (null != beanResultDtoReply) {
                 replyAuthor = beanResultDtoReply.getData();
             }
@@ -1508,7 +1484,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
             int liked = 0;
             try {
-                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+                ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
 
                 if (null != resultDto) {
                     liked = resultDto.getData();
@@ -1544,7 +1520,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         GameEvaluationDto gameEvaluationDto = null;
         try {
-            ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getGameEvaluationSelectById(pageDto.getGame_id());
+            ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFacedeService.getGameEvaluationSelectById(pageDto.getGame_id());
             if (null != evaluationDtoResultDto) {
                 gameEvaluationDto = evaluationDtoResultDto.getData();
             }
@@ -1582,7 +1558,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         int total = 0;
         List<GameEvaluationDto> list = new ArrayList<>();
         try {
-            FungoPageResultDto<GameEvaluationDto> evaluationListRs = gameFeignClient.getEvaluationEntityWrapperByPageDtoAndMemberId(pageDto, memberId);
+            FungoPageResultDto<GameEvaluationDto> evaluationListRs = gameFacedeService.getEvaluationEntityWrapperByPageDtoAndMemberId(pageDto, memberId);
             if (null != evaluationListRs) {
                 list = evaluationListRs.getData();
                 total = evaluationListRs.getCount();
@@ -1614,7 +1590,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
             AuthorBean replyAuthor = null;
             try {
-                ResultDto<AuthorBean> beanResultDtoReply = systemFeignClient.getAuthor(cmmComment.getMemberId());
+                ResultDto<AuthorBean> beanResultDtoReply = systemFacedeService.getAuthor(cmmComment.getMemberId());
                 if (null != beanResultDtoReply) {
                     replyAuthor = beanResultDtoReply.getData();
                 }
@@ -1643,7 +1619,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
                 AuthorBean authorBean = null;
                 try {
-                    ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(reply.getMemberId());
+                    ResultDto<AuthorBean> beanResultDto = systemFacedeService.getAuthor(reply.getMemberId());
                     if (null != beanResultDto) {
                         authorBean = beanResultDto.getData();
                     }
@@ -1673,7 +1649,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
                 ResultDto<List<MemberDto>> listMembersByids = null;
                 try {
-                    listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+                    listMembersByids = systemFacedeService.listMembersByids(idsList, null);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -1711,7 +1687,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
                 int liked = 0;
                 try {
-                    ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+                    ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
                     if (null != resultDto) {
                         liked = resultDto.getData();
                     }
@@ -1766,7 +1742,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         ResultDto<List<MemberDto>> listMembersByids = null;
         try {
-            listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+            listMembersByids = systemFacedeService.listMembersByids(idsList, null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -1967,13 +1943,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
         try {
 
             //coin task
-            ResultDto<Map<String, Object>> coinTaskResultDto = systemFeignClient.exTask(taskDtoCoin);
+            ResultDto<Map<String, Object>> coinTaskResultDto = systemFacedeService.exTask(taskDtoCoin);
             if (null != coinTaskResultDto) {
                 resMapCoin = coinTaskResultDto.getData();
             }
 
             //exp task
-            ResultDto<Map<String, Object>> expTaskResultDto = systemFeignClient.exTask(taskDtoExp);
+            ResultDto<Map<String, Object>> expTaskResultDto = systemFacedeService.exTask(taskDtoExp);
             if (null != expTaskResultDto) {
                 resMapExp = expTaskResultDto.getData();
             }
@@ -2008,7 +1984,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         AuthorBean authorBean = null;
         try {
-            ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(memberId);
+            ResultDto<AuthorBean> beanResultDto = systemFacedeService.getAuthor(memberId);
             if (null != beanResultDto) {
                 authorBean = beanResultDto.getData();
             }
@@ -2029,7 +2005,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
             AuthorBean replyAuthorBean = null;
             try {
-                ResultDto<AuthorBean> replybeanResultDto = systemFeignClient.getAuthor(replyInput.getReply_to());
+                ResultDto<AuthorBean> replybeanResultDto = systemFacedeService.getAuthor(replyInput.getReply_to());
                 if (null != replybeanResultDto) {
                     replyAuthorBean = replybeanResultDto.getData();
                 }
@@ -2086,7 +2062,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
             AuthorBean replyAuthorBean = null;
             try {
-                ResultDto<AuthorBean> replybeanResultDto = systemFeignClient.getAuthor(reply.getMemberId());
+                ResultDto<AuthorBean> replybeanResultDto = systemFacedeService.getAuthor(reply.getMemberId());
                 if (null != replybeanResultDto) {
                     replyAuthorBean = replybeanResultDto.getData();
                 }
@@ -2114,7 +2090,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
                 AuthorBean replyToAuthorBean = null;
                 try {
-                    ResultDto<AuthorBean> replyToBeanResultDto = systemFeignClient.getAuthor(reply.getReplayToId());
+                    ResultDto<AuthorBean> replyToBeanResultDto = systemFacedeService.getAuthor(reply.getReplayToId());
                     if (null != replyToBeanResultDto) {
                         replyToAuthorBean = replyToBeanResultDto.getData();
                     }
@@ -2143,7 +2119,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
                 int liked = 0;
                 try {
-                    ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+                    ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
 
                     if (null != resultDto) {
                         liked = resultDto.getData();
@@ -2174,7 +2150,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         GameDto gameDto = null;
         ResultDto<GameDto> gameDtoResultDto = null;
         try {
-            gameDtoResultDto = gameFeignClient.selectGameDetails(eva.getGameId(), null);
+            gameDtoResultDto = gameFacedeService.selectGameDetails(eva.getGameId(), null);
             if (null != gameDtoResultDto) {
                 gameDto = gameDtoResultDto.getData();
             }
@@ -2195,7 +2171,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //GameEvaluation pre = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).gt("created_at", eva.getCreatedAt()).ne("id", id).orderBy("concat(sort,created_at)").last("limit 1"));
         GameEvaluationDto pre = null;
         try {
-            ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFeignClient.getPreGameEvaluation(eva.getCreatedAt(), id);
+            ResultDto<GameEvaluationDto> evaluationDtoResultDto = gameFacedeService.getPreGameEvaluation(eva.getCreatedAt(), id);
             if (null != evaluationDtoResultDto) {
                 pre = evaluationDtoResultDto.getData();
             }
@@ -2209,7 +2185,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         GameEvaluationDto next = null;
         try {
-            ResultDto<GameEvaluationDto> nextGameEvaluationRs = gameFeignClient.getNextGameEvaluation(eva.getCreatedAt(), id);
+            ResultDto<GameEvaluationDto> nextGameEvaluationRs = gameFacedeService.getNextGameEvaluation(eva.getCreatedAt(), id);
             if (null != nextGameEvaluationRs) {
                 next = nextGameEvaluationRs.getData();
             }
@@ -2247,7 +2223,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
             List<GameEvaluationDto> gameEvaluationsList = null;
             try {
-                ResultDto<List<GameEvaluationDto>> gameEvaRS = gameFeignClient.getEvaluationEntityWrapper(mb_id, startDate, endDate);
+                ResultDto<List<GameEvaluationDto>> gameEvaRS = gameFacedeService.getEvaluationEntityWrapper(mb_id, startDate, endDate);
                 if (null != gameEvaRS) {
                     gameEvaluationsList = gameEvaRS.getData();
                 }
@@ -2283,7 +2259,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         AuthorBean replyToAuthorBean = null;
         try {
-            ResultDto<AuthorBean> replyToBeanResultDto = systemFeignClient.getAuthor(reply.getMemberId());
+            ResultDto<AuthorBean> replyToBeanResultDto = systemFacedeService.getAuthor(reply.getMemberId());
             if (null != replyToBeanResultDto) {
                 replyToAuthorBean = replyToBeanResultDto.getData();
             }
@@ -2313,7 +2289,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         ResultDto<List<MemberDto>> listMembersByids = null;
         try {
-            listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+            listMembersByids = systemFacedeService.listMembersByids(idsList, null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

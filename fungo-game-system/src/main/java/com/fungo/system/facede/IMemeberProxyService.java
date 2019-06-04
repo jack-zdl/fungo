@@ -1,4 +1,4 @@
-package com.fungo.system.proxy;
+package com.fungo.system.facede;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.game.common.dto.FungoPageResultDto;

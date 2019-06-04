@@ -19,24 +19,55 @@ eureka:
       defaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@172.17.18.228:8762/eureka/,http://fungoEurekaAdmin:9140f6ad68d1e@172.17.18.227:8761/eureka/
 
 #--------------------------------------------------------------------------------------------------------
+#----------------熔断配置
+# 开启熔断机制
+feign:
+  hystrix:
+    enabled: true
+
 hystrix:
   command:
     default:
       execution:
-        timeout:
-          enabled: false
         isolation:
-          strategy: Semaphore    #隔离策略，默认是Thread, 可选Thread｜Semaphore
+          strategy: SEMAPHORE    #隔离策略，默认是Thread, 可选Thread｜Semaphore
+        timeout:
+          enabled: true
           thread:
             timeoutInMilliseconds: 60000  #命令执行超时时间，默认1000ms
-
+        semaphore:
+          maxConcurrentRequests: 2
+      fallback:
+        enabled: true
+        isolation:
+          semaphore:
+            maxConcurrentRequests: 10
+      circuitBreaker:
+        enabled: true     #启用/禁用熔断机制
+        forceOpen: false  #强制开启熔断
+        forceClosed: false #强制关闭熔断
+        requestVolumeThreshold: 4    #前提条件，一定时间内发起一定数量的请求。  也就是5秒钟内(这个5秒对应下面的滚动窗口长度)至少请求4次，熔断器才发挥起作用。  默认20
+        errorThresholdPercentage: 50 #错误百分比。达到或超过这个百分比，熔断器打开。  比如：5秒内有4个请求，2个请求超时或者失败，就会自动开启熔断
+        sleepWindowInMilliseconds: 5000 #10秒后，进入半打开状态（熔断开启，间隔一段时间后，会让一部分的命令去请求服务提供者，如果结果依旧是失败，则又会进入熔断状态，如果成功，就关闭熔断）。 默认5秒
 
 ribbon:
+  # 开启eureka与ribbon的集成
+  eureka:
+    enabled: true
+  # 暂不开启熔断机制
+  hystrix:
+    enabled: false
   ConnectTimeout: 60000
   ReadTimeout: 150000
   #eureka客户端ribbon刷新时间
   #默认30s
   ServerListRefreshInterval: 1000
+  # 是否开启重试
+  OkToRetryOnAllOperations: true
+  # 重试的时候实例切换次数
+  MaxAutoRetriesNextServer: 3
+  # 每个实例重试次数
+  MaxAutoRetries: 2
 
 #-----------------------------------------------------------------------------------------------------------
 spring:
@@ -94,7 +125,7 @@ spring:
     sentinel:
       master: mymaster
       nodes: 39.105.18.214:26379,39.105.18.214:26380,39.105.18.214:26381
-    database: 0
+    database: 2
     lettuce:
       pool:
         max-active: 8

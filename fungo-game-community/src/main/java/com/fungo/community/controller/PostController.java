@@ -22,10 +22,7 @@ import com.game.common.dto.community.PostOutBean;
 import com.game.common.dto.search.SearchInputPageDto;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
-import com.game.common.util.CommonUtil;
-import com.game.common.util.CommonUtils;
-import com.game.common.util.PageTools;
-import com.game.common.util.StringUtil;
+import com.game.common.util.*;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
@@ -568,7 +565,7 @@ public class PostController {
                 ex.printStackTrace();
             }
             bean.setAuthor(authorBean);
-
+            // 
             //systemFeignClient.list
 
             if (bean.getAuthor() == null) {
@@ -577,7 +574,7 @@ public class PostController {
             String content = cmmPost.getContent();
             if (!CommonUtil.isNull(content)) {
                 //bean.setContent(content.length() > 100 ? CommonUtils.filterWord(content.substring(0, 100)) : CommonUtils.filterWord(content));
-                bean.setContent(CommonUtils.filterWord(content));
+                bean.setContent(content.length()>40?Html2Text.removeHtmlTag(content.substring(0, 40)):Html2Text.removeHtmlTag(content));
             }
             bean.setUpdated_at(DateTools.fmtDate(cmmPost.getUpdatedAt()));
             bean.setCreatedAt(DateTools.fmtDate(cmmPost.getCreatedAt()));

@@ -8,9 +8,9 @@ import com.fungo.community.dao.service.BasVideoJobDaoService;
 import com.fungo.community.dao.service.MooMoodDaoService;
 import com.fungo.community.entity.BasVideoJob;
 import com.fungo.community.entity.MooMood;
-import com.fungo.community.feign.GameFeignClient;
-import com.fungo.community.feign.SystemFeignClient;
-import com.fungo.community.feign.TSFeignClient;
+import com.fungo.community.facede.GameFacedeService;
+import com.fungo.community.facede.SystemFacedeService;
+import com.fungo.community.facede.TSMQFacedeService;
 import com.fungo.community.service.IMoodService;
 import com.fungo.community.service.IVideoService;
 import com.game.common.consts.FungoCoreApiConstant;
@@ -72,41 +72,16 @@ public class MoodServiceImpl implements IMoodService {
     private String clusterIndex;
 
 
-    @Autowired(required = false)
-    private GameFeignClient gameFeignClient;
-
-    @Autowired(required = false)
-    private SystemFeignClient systemFeignClient;
-
-    @Autowired(required = false)
-    private TSFeignClient tsFeignClient;
-
-
-    /*
     @Autowired
-    private IUserService userService;
-    @Autowired
-    private IActionService iactionService;
-    @Autowired
-    private GameProxyImpl proxy;
+    private GameFacedeService gameFacedeService;
 
     @Autowired
-    private IVdService vdService;
-    @Autowired
-    private GameService gameService;
-    @Autowired
-    private GameDao gameDao;
-    @Autowired
-    private MemberService memberService;
+    private SystemFacedeService systemFacedeService;
 
     @Autowired
-    private BasActionService actionService;
+    private TSMQFacedeService tSMQFacedeService;
 
 
-    //用户成长业务
-    @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
-    private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
-    */
 
 
     @Override
@@ -128,7 +103,7 @@ public class MoodServiceImpl implements IMoodService {
         ResultDto<List<MemberDto>> listMembersByids = null;
 
         try {
-            listMembersByids = systemFeignClient.listMembersByids(idsList, null);
+            listMembersByids = systemFacedeService.listMembersByids(idsList, null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -272,7 +247,7 @@ public class MoodServiceImpl implements IMoodService {
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
 
         //执行MQ发送
-        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
 
         LOGGER.info("--添加心情-执行添加用户动作行为数据--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
         //-----end-------------
@@ -326,13 +301,13 @@ public class MoodServiceImpl implements IMoodService {
         try {
 
             //coin task
-            ResultDto<Map<String, Object>> coinTaskResultDto = systemFeignClient.exTask(taskDtoCoin);
+            ResultDto<Map<String, Object>> coinTaskResultDto = systemFacedeService.exTask(taskDtoCoin);
             if (null != coinTaskResultDto) {
                 resMapCoin = coinTaskResultDto.getData();
             }
 
             //exp task
-            ResultDto<Map<String, Object>> expTaskResultDto = systemFeignClient.exTask(taskDtoExp);
+            ResultDto<Map<String, Object>> expTaskResultDto = systemFacedeService.exTask(taskDtoExp);
             if (null != expTaskResultDto) {
                 resMapExp = expTaskResultDto.getData();
             }
@@ -415,7 +390,7 @@ public class MoodServiceImpl implements IMoodService {
 
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         //执行MQ发送
-        ResultDto<Long> messageResult = tsFeignClient.saveAndSendMessage(transactionMessageDto);
+        ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
         LOGGER.info("--社区文章用户发布文章执行任务--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
         //-----start
     }
@@ -460,7 +435,7 @@ public class MoodServiceImpl implements IMoodService {
 
         AuthorBean authorBean = new AuthorBean();
         try {
-            ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(mood.getMemberId());
+            ResultDto<AuthorBean> beanResultDto = systemFacedeService.getAuthor(mood.getMemberId());
             if (null != beanResultDto) {
                 authorBean = beanResultDto.getData();
             }
@@ -511,7 +486,7 @@ public class MoodServiceImpl implements IMoodService {
 
             int liked = 0;
             try {
-                ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+                ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
 
                 if (null != resultDto) {
                     liked = resultDto.getData();
@@ -556,7 +531,7 @@ public class MoodServiceImpl implements IMoodService {
 
                 GameDto gameDto = null;
                 try {
-                    ResultDto<GameDto> gameDtoResultDto = gameFeignClient.selectGameDetails(gameId, 0);
+                    ResultDto<GameDto> gameDtoResultDto = gameFacedeService.selectGameDetails(gameId, 0);
                     if (null != gameDtoResultDto) {
                         gameDtoResultDto.getData();
                     }
@@ -588,7 +563,7 @@ public class MoodServiceImpl implements IMoodService {
                     //获取游戏平均分'
                     double gameAverage = 0;
                     try {
-                        gameAverage = gameFeignClient.selectGameAverage(gameDto.getId(), 0);
+                        gameAverage = gameFacedeService.selectGameAverage(gameDto.getId(), 0);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
