@@ -36,7 +36,7 @@ public class FungoMallSeckillTaskService {
      * 处理秒杀开始后，已经下的单子
      * 每2秒执行扫描一次订单表
      */
-    //@Scheduled(cron = "0/2 * * * * ? ")
+    @Scheduled(cron = "0/2 * * * * ? ")
     public void excuteSeckillOrderScan() throws Exception {
         try {
 
