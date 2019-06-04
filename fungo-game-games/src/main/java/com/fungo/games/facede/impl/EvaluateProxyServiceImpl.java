@@ -59,8 +59,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param type_code_idt
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixExTask", ignoreExceptions = {Exception.class},
-            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))
+    /*@HystrixCommand(fallbackMethod = "hystrixExTask", ignoreExceptions = {Exception.class},
+            commandProperties = @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE"))*/
     @Override
     public Map<String, Object> exTask(String memberId, int task_group_flag, int task_type, int type_code_idt, Long requestId) {
         TaskDto taskDto = new TaskDto();
@@ -98,8 +98,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param memberId
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetAuthor",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixGetAuthor",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public AuthorBean getAuthor(String memberId) {
         try{
@@ -122,8 +122,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param basActionDto
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetBasActionSelectCount",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixGetBasActionSelectCount",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public int getBasActionSelectCount(BasActionDto basActionDto) {
         try{
@@ -144,8 +144,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param replyInputPageDto
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetReplyDtoBysSelectPageOrderByCreatedAt",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixGetReplyDtoBysSelectPageOrderByCreatedAt",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public FungoPageResultDto<CmmCmtReplyDto> getReplyDtoBysSelectPageOrderByCreatedAt(ReplyInputPageDto replyInputPageDto) {
         CmmCmtReplyDto ssrd = new CmmCmtReplyDto();
@@ -177,8 +177,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param md
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetMemberDtoBySelectOne",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixGetMemberDtoBySelectOne",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public MemberDto getMemberDtoBySelectOne(MemberDto md) {
         try{
@@ -199,8 +199,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param memberId
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetStatusImageByMemberId",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixGetStatusImageByMemberId",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public List<HashMap<String, Object>> getStatusImageByMemberId(String memberId) {
         try{
@@ -238,8 +238,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param basTagDto
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetBasTagBySelectListGroupId",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixGetBasTagBySelectListGroupId",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public List<BasTagDto> getBasTagBySelectListGroupId(BasTagDto basTagDto) {
         try{
@@ -260,8 +260,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param ccd
      * @return
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetCmmCommunitySelectOneById",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixGetCmmCommunitySelectOneById",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public CmmCommunityDto getCmmCommunitySelectOneById(CmmCommunityDto ccd) {
         CmmCommunityDto cmmCommunityDto = new CmmCommunityDto();
@@ -302,8 +302,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * @param i
      * @param appVersion
      */
-    @HystrixCommand(fallbackMethod = "hystrixPush",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+    /*@HystrixCommand(fallbackMethod = "hystrixPush",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public void push(String inviteMemberId, int i, String appVersion) {
         try{
@@ -370,8 +370,8 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
      * 根据用户会员DTO对象分页查询用户会员
      * @param memberDto
      */
-    @HystrixCommand(fallbackMethod = "hystrixGetSortTags",ignoreExceptions = {Exception.class},
-            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
+   /* @HystrixCommand(fallbackMethod = "hystrixGetSortTags",ignoreExceptions = {Exception.class},
+            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )*/
     @Override
     public FungoPageResultDto<MemberDto> listMemberDtoPag(MemberDto memberDto) {
 

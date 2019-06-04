@@ -1,9 +1,9 @@
-package com.fungo.system.proxy.impl;
+package com.fungo.system.facede.impl;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
-import com.fungo.system.proxy.IMemeberProxyService;
+import com.fungo.system.facede.IMemeberProxyService;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmCmtReplyDto;
@@ -12,10 +12,7 @@ import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.community.MooMoodDto;
 import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.game.GameSurveyRelDto;
-import com.game.common.dto.game.ReplyDto;
 import com.game.common.enums.CommonEnum;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

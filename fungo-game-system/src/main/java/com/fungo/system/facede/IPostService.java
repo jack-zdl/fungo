@@ -1,4 +1,4 @@
-package com.fungo.system.proxy;
+package com.fungo.system.facede;
 
 import java.util.Set;
 

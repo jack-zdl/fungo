@@ -145,7 +145,6 @@ public class SystemServiceImpl implements SystemService {
             List<MemberFollowerDto> memberFollowerDtos = CommonUtils.deepCopy(memberFollowers, MemberFollowerDto.class);
             re.setData(memberFollowerDtos);
             PageTools.pageToResultDto(re, page);
-
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("SystemServiceImpl.getMemberFollowerList", e);

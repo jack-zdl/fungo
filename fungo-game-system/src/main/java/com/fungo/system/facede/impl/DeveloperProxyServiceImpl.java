@@ -1,25 +1,24 @@
-package com.fungo.system.proxy.impl;
+package com.fungo.system.facede.impl;
 
 
-import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.system.facede.IDeveloperProxyService;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
-import com.fungo.system.proxy.IDeveloperProxyService;
+
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.game.*;
-import com.game.common.enums.CommonEnum;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
-import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class DeveloperProxyServiceImpl implements IDeveloperProxyService {

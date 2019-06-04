@@ -1,4 +1,4 @@
-package com.fungo.system.proxy;
+package com.fungo.system.facede;
 
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;

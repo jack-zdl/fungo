@@ -1,5 +1,6 @@
 package com.fungo.system.feign;
 
+import com.fungo.system.facede.impl.CommunityFacedeHystrixService;
 import com.game.common.bean.CollectionBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
@@ -15,7 +16,7 @@ import java.util.Map;
  * @Author lyc
  * @create 2019/5/7 10:26
  */
-@FeignClient(name = "FUNGO-GAME-COMMUNITY")
+@FeignClient(name = "FUNGO-GAME-COMMUNITY",fallbackFactory = CommunityFacedeHystrixService.class)
 public interface CommunityFeignClient {
 
     /**

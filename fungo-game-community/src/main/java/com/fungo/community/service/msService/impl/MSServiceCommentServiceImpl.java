@@ -355,6 +355,7 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
                 param.put("community_id", communityId);
             }
 
+            cmmCommentEntityWrapper.allEq(param);
             //内容
             String content = cmmCommentDto.getContent();
             if (StringUtils.isNotBlank(content)) {

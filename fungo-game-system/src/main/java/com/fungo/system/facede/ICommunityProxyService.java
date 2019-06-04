@@ -1,4 +1,4 @@
-package com.fungo.system.proxy;
+package com.fungo.system.facede;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.game.common.bean.CollectionBean;
@@ -6,7 +6,6 @@ import com.game.common.bean.CollectionBean;
 import com.game.common.dto.community.CommentBean;
 import org.apache.ibatis.annotations.Param;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 

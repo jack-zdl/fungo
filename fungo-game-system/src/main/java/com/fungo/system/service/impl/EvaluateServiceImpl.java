@@ -1,6 +1,6 @@
 package com.fungo.system.service.impl;
 
-import com.fungo.system.proxy.IGameProxyService;
+import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.service.IEvaluateService;
 import com.game.common.dto.game.GameEvaluationDto;
 import org.slf4j.Logger;
