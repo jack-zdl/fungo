@@ -130,7 +130,7 @@ spring:
     sentinel:
       master: mymaster
       nodes: 39.105.18.214:26379,39.105.18.214:26380,39.105.18.214:26381
-    database: 0
+    database: 2
     lettuce:
       pool:
         max-active: 8
