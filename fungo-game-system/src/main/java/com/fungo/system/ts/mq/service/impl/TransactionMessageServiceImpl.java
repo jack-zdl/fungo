@@ -392,6 +392,9 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
             if (null != createDate){
                 messageDomainEntityWrapper.le("create_time", createDate);
             }
+            if(transactionMessageDto.getStatus()!=null){
+                messageDomainEntityWrapper.eq("status",transactionMessageDto.getStatus());
+            }
         }
         messageDomainEntityWrapper.orderBy("create_time", true);
 
