@@ -29,7 +29,7 @@ public class PushFunction {
     //执行状态 0 未执行 1执行中 2已执行
     private static int executeState = 0;
 
-    @Scheduled(cron = "0 0/2 * * * ?")//每日隔2分钟执行
+//    @Scheduled(cron = "0 0/2 * * * ?")//每日隔2分钟执行
     public void pushControllerNotice() {
 
         if (executeState == 1) {

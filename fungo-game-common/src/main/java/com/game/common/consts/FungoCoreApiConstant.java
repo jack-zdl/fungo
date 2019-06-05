@@ -413,7 +413,18 @@ public class FungoCoreApiConstant {
     public static final String FUNGO_CORE_API_TASK_USER_TASK_PROGRESS = "/api/user/incents/task/progress" + "_cloud";
 
 
+    public static final String  FUNGO_CORE_API_GETSIGNINTASKGROUPANDTASKRULEDATA = "getSignInTaskGroupAndTaskRuleData"+"_cloud";
 
+
+    public static final String FUNGO_CORE_API_SCOREGROUPSV2 = "ScoreGroupsV2"+"_cloud"+"_cloud";
+
+    public static final String FUNGO_CORE_API_ScoreRuleListV2 = "ScoreRuleListV2.4.6_Cloud"+"_cloud";
+
+    public static final String ISREGISTEREDANDHASPHONE_CLOUD = "isRegisteredAndHasPhone_Cloud"+"cloud";
+
+    public static final String GETMEMBERWITHMBIDSNS_CLOUD = "getMemberWithMbIdSNS_Cloud"+"_cloud";
+
+    public static final String ISREGISTERED_CLOUD = "isRegistered_Cloud"+"_cloud";
     //**************************************************游戏**************************************************
 
 
