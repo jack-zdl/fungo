@@ -142,7 +142,7 @@ public class MemberSNSServiceImpl implements IMemberSNSService {
     private void unBindOldMemberAccount(String mb_id, MemberSNSBindInput bindInput) {
         //从 redis 缓存取
         Integer snsType = bindInput.getSnsType();
-        List<Member> memberList = (List<Member>) fungoCacheMember.getIndexCache("isRegisteredAndHasPhone" + mb_id, bindInput.getUnionid());
+        List<Member> memberList = (List<Member>) fungoCacheMember.getIndexCache("isRegisteredAndHasPhone_Cloud" + mb_id, bindInput.getUnionid());
         if (null == memberList || memberList.isEmpty()) {
             //从DB查
 
@@ -194,7 +194,7 @@ public class MemberSNSServiceImpl implements IMemberSNSService {
                 member.updateAllColumnById();
 
                 //删除该用户的redis cache
-                fungoCacheMember.excIndexCache(false, "getMemberWithMbIdSNS" + member.getId(), "", null);
+                fungoCacheMember.excIndexCache(false, "getMemberWithMbIdSNS_Cloud" + member.getId(), "", null);
             }
         }
     }
@@ -209,7 +209,7 @@ public class MemberSNSServiceImpl implements IMemberSNSService {
     private void deleteOldMemberAccount(String mb_id, MemberSNSBindInput bindInput) {
 
         //同时把该SNS id的fungo账号数据进行redis 缓存
-        List<Member> memberList = (List<Member>) fungoCacheMember.getIndexCache("isRegistered" + mb_id, bindInput.getUnionid());
+        List<Member> memberList = (List<Member>) fungoCacheMember.getIndexCache("isRegistered_Cloud" + mb_id, bindInput.getUnionid());
         if (null == memberList || memberList.isEmpty()) {
             //从DB获取
             String queryColumn = "";
@@ -244,7 +244,7 @@ public class MemberSNSServiceImpl implements IMemberSNSService {
                 memberService.updateById(udpateMb);
 
                 //删除该用户的redis cache
-                fungoCacheMember.excIndexCache(false, "getMemberWithMbIdSNS" + member.getId(), "", null);
+                fungoCacheMember.excIndexCache(false, "getMemberWithMbIdSNS_Cloud" + member.getId(), "", null);
             }
         }
 
