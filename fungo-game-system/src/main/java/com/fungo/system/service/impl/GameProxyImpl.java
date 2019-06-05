@@ -190,7 +190,7 @@ public class GameProxyImpl implements IGameProxy {
 			date.put("message_content",mooMessage.getContent());
 			date.put("mood_id",mooMessage.getMoodId());
 			// @todo 心情
-			MooMoodDto mood = iGameProxyService.selectMooMoodById(target_id);  // this.moodService.selectById(mooMessage.getMoodId());
+			MooMoodDto mood = iGameProxyService.selectMooMoodById(mooMessage.getMoodId());  // this.moodService.selectById(mooMessage.getMoodId());
 			date.put("mood_content", mood.getContent());
 			msgType=9;//消息类型
 			push = CommonUtils.versionAdapte(appVersion, "2.4.4");
