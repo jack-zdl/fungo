@@ -125,11 +125,10 @@ public class MemberSNSServiceImpl implements IMemberSNSService {
                 //继续SNS绑定
                 resultDto = bindSNS(mb_id, memberDetail, bindInput);
             }
-
         } catch (Exception ex) {
+            ex.printStackTrace();
             logger.error("绑第三方SNS平台账号出现异常", ex);
             resultDto = ResultDto.error("-1", "服务器非常繁忙，请耐心等一下");
-            throw ex;
         }
 
         logger.info("--bindThirdSNSWithLogged-resultDto: {}", JSON.toJSONString(resultDto));
