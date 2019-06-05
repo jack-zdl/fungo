@@ -695,7 +695,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
                     AuthorBean replyAuthor = null;
                     try {
-                        ResultDto<AuthorBean> beanResultDtoReply = systemFacedeService.getAuthor(mooMessage.getMemberId());
+                        ResultDto<AuthorBean> beanResultDtoReply = systemFacedeService.getAuthor(reply.getMemberId());
                         if (null != beanResultDtoReply) {
                             replyAuthor = beanResultDtoReply.getData();
                         }
