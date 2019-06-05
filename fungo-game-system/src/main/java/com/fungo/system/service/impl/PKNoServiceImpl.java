@@ -27,6 +27,10 @@ public class PKNoServiceImpl implements IPKNoService {
         String longPKStr = String.valueOf(longPK);
         //截取2位年2位月
         String idYearMonth = StringUtils.substring(longPKStr, 2, 6);
+//        PC2.0需求变更 member_no改为8位
+//        2019-06-04
+//        lyc
+        idYearMonth = idYearMonth.substring(1, 2) + idYearMonth.substring(3);
         //默认是2位年2位月 + 后6位
         if (StringUtils.isBlank(mb_id)) {
             String grapNo = StringUtils.substring(longPKStr, longPKStr.length() - 6);
