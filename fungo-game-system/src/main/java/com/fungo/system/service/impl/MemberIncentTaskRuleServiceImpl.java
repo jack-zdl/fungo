@@ -36,7 +36,7 @@ public class MemberIncentTaskRuleServiceImpl implements IMemberIncentTaskRuleSer
     public List<ScoreGroup> getScoreGroups() {
         List<ScoreGroup> scoreGroupList = null;
         try {
-            String keyPrefix = "ScoreGroupsV2.4.6";
+            String keyPrefix = "ScoreGroupsV2.4.6_Cloud";
 
             scoreGroupList = (List<ScoreGroup>) fungoCacheTask.getIndexCache(keyPrefix, "");
             if (null != scoreGroupList && !scoreGroupList.isEmpty()) {
@@ -64,7 +64,7 @@ public class MemberIncentTaskRuleServiceImpl implements IMemberIncentTaskRuleSer
 
         List<ScoreRule> scoreRuleList = null;
         try {
-            String keyPrefix = "ScoreRuleListV2.4.6";
+            String keyPrefix = "ScoreRuleListV2.4.6_Cloud";
 
            // Object indexCache = fungoCacheTask.getIndexCache(keyPrefix, "");
 
