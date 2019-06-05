@@ -396,6 +396,7 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
                 messageDomainEntityWrapper.eq("status",transactionMessageDto.getStatus());
             }
         }
+        messageDomainEntityWrapper.eq("areadly_dead",2);
         messageDomainEntityWrapper.orderBy("create_time", true);
 
         Page<TransactionMessageDomain> domainPage = new Page<>(pageNum, pageSize);
