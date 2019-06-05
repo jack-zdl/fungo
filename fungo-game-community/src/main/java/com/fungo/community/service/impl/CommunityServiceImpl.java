@@ -378,7 +378,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
         BasActionDto basActionDtoLike = new BasActionDto();
 
-        basActionDtoLike.setMemberId(userId);
+//        basActionDtoLike.setMemberId(userId);
         basActionDtoLike.setType(5);
         basActionDtoLike.setState(0);
         basActionDtoLike.setTargetId(communityId);
