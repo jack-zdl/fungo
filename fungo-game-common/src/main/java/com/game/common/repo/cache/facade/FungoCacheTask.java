@@ -58,7 +58,7 @@ public class FungoCacheTask {
     /**
      * 用户任务-用户签到数据缓存key
      */
-    public static String TASK_CACHE_KEY_MEMBER_CHECKIN = "MemberCheckIn";
+    public static String TASK_CACHE_KEY_MEMBER_CHECKIN = "MemberCheckIn_cloud";
 
 
     @Autowired

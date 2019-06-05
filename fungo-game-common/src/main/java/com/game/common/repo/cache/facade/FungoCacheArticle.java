@@ -29,7 +29,7 @@ public class FungoCacheArticle {
     /**
      * 帖子(文章)详情Redis key
      */
-    public static final String FUNGO_CORE_API_POST_CONTENT_DETAIL_WATCHNUM = "cmmPostWatchNum";
+    public static final String FUNGO_CORE_API_POST_CONTENT_DETAIL_WATCHNUM = "cmmPostWatchNum_cloud";
 
 
 
