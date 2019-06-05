@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.game.common.consts.FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_RECOMMEND_DISCOVER;
+
 @RestController
 @Api(value = "", description = "广告")
 public class AdvertController {
@@ -130,7 +132,7 @@ public class AdvertController {
     public ResultDto<List<Map<String, String>>> discover(@Anonymous MemberUserProfile memberUserPrefile) {
 
         ResultDto<List<Map<String, String>>> re = new ResultDto<List<Map<String, String>>>();
-        List<Map<String, String>> listResult = (List<Map<String, String>>) fungoCacheAdvert.getIndexCache("/api/recommend/discover",
+        List<Map<String, String>> listResult = (List<Map<String, String>>) fungoCacheAdvert.getIndexCache(FUNGO_CORE_API_ADVERT_RECOMMEND_DISCOVER,
                 "");
         if (null != listResult && !listResult.isEmpty()) {
             re.setData(listResult);
@@ -159,7 +161,7 @@ public class AdvertController {
         }
         re.setData(list);
         //redis cache
-        fungoCacheAdvert.excIndexCache(true, "/api/recommend/discover", "", list);
+        fungoCacheAdvert.excIndexCache(true, FUNGO_CORE_API_ADVERT_RECOMMEND_DISCOVER, "", list);
         return re;
     }
 }
