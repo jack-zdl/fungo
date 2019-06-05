@@ -37,7 +37,7 @@ public class FungoCacheNotice {
     /**
      * Redis 缓存用户详情数据 前缀
      */
-    public static final String REDIS_MEMBER_NOTICE = "memberNotice";
+    public static final String REDIS_MEMBER_NOTICE = "memberNotice_cloud";
 
 
     /**
