@@ -151,7 +151,7 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
 
         try {
 
-            int page = postDto.getPage();
+           /* int page = postDto.getPage();
             int limit = postDto.getLimit();
 
             EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<CmmPost>();
@@ -205,10 +205,10 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
             if (StringUtils.isNotBlank(content)) {
                 postEntityWrapper.orNew("content like '%" + content + "%'");
             }
-
-
-            int selectCount = postDaoService.selectCount(postEntityWrapper);
-
+            int selectCount  = postDaoService.selectCount(postEntityWrapper);*/
+           String keyword = postDto.getTitle();
+            int selectCount =  postDaoService.selectCount(new EntityWrapper<CmmPost>().where("state = {0}", 1).andNew("title like '%"+keyword+"%'")
+						.or("content like " + "'%"+ keyword + "%'").or("content like "+ "'%" + keyword+ "%'"));
             return selectCount;
 
         } catch (Exception ex) {
