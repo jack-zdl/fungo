@@ -138,7 +138,7 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
 
         CmmCommunityDto cmmCommunityDtoRs = null;
         try {
-            if (null == cmmCommunityDtoRs) {
+            if (null == cmmCommunityDto) {
                 return cmmCommunityDtoRs;
             }
 
