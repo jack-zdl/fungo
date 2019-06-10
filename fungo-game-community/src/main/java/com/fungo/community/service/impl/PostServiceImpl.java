@@ -1320,6 +1320,10 @@ public class PostServiceImpl implements IPostService {
             }
             if (StringUtils.isNotBlank(post.getContent())) {
                 String interactContent = FilterEmojiUtil.decodeEmoji(post.getContent());
+
+                    //bean.setContent(content.length() > 100 ? CommonUtils.filterWord(content.substring(0, 100)) : CommonUtils.filterWord(content));
+                interactContent =  interactContent.length()>40?Html2Text.removeHtmlTag(interactContent.substring(0, 40)):Html2Text.removeHtmlTag(interactContent);
+
                 post.setContent(interactContent);
             }
 

@@ -219,8 +219,12 @@ public class DTPTransactionMessageScheduledService {
 
         Map<String, TransactionMessageDomain> messageMap = new HashMap<String, TransactionMessageDomain>();
 
+        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+        if (null != messageDomain){
+            BeanUtils.copyProperties(messageDomain, transactionMessageDto);
+        }
 
-        Map<String, Object> msgMap = dTPTransactionMessageService.listPage(pageNum, numPerPage, null);
+        Map<String, Object> msgMap = dTPTransactionMessageService.listPage(pageNum, numPerPage, transactionMessageDto);
 
         List<TransactionMessageDomain> recordList = (List<TransactionMessageDomain>) msgMap.get("msgList");
         if (null == recordList || recordList.isEmpty()) {
@@ -241,7 +245,7 @@ public class DTPTransactionMessageScheduledService {
 
         for (pageNum = 2; pageNum <= pageCount; pageNum++) {
 
-            msgMap = dTPTransactionMessageService.listPage(pageNum, numPerPage, null);
+            msgMap = dTPTransactionMessageService.listPage(pageNum, numPerPage, transactionMessageDto);
             recordList = (List<TransactionMessageDomain>) msgMap.get("msgList");
 
             if (null == recordList || recordList.isEmpty()) {

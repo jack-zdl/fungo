@@ -133,8 +133,15 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
             //end
 
         } else {
-            sur.setState(0);
-            sur.updateById();
+//            针对数据多并发产生的多条数据
+//            2019-06-04
+//            lyc
+//            sur.setState(0);
+//            sur.updateById();
+            EntityWrapper<GameSurveyRel> gameSurveyRelEntityWrapper = new EntityWrapper<>();
+            GameSurveyRel gameSurveyRel = new GameSurveyRel();
+            gameSurveyRel.setState(0);
+            surveyRelService.update(gameSurveyRel,gameSurveyRelEntityWrapper.eq("member_id", memberId).eq("phone_model", phoneModel).eq("game_id", gameId));
         }
         ResultDto<String> re = new ResultDto<String>();
         if (StringUtils.isNotBlank(tips)) {
@@ -165,9 +172,15 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
         if (rel == null){
             return ResultDto.error("-1", "您还未预约成功!!!");
         }
-        rel.setState(-1);
-
-        rel.updateById();
+//            针对数据多并发产生的多条数据
+//            2019-06-04
+//            lyc
+//        rel.setState(-1);
+//        rel.updateById();
+        EntityWrapper<GameSurveyRel> gameSurveyRelEntityWrapper = new EntityWrapper<>();
+        GameSurveyRel gameSurveyRel = new GameSurveyRel();
+        gameSurveyRel.setState(-1);
+        surveyRelService.update(gameSurveyRel,gameSurveyRelEntityWrapper.eq("member_id", memberId).eq("phone_model", phoneModel).eq("game_id", gameId));
 
         //clear redis cache
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_GAMELIST + memberId;

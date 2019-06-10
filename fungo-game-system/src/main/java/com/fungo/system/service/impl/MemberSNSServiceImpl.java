@@ -27,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.List;
 
+import static com.game.common.consts.FungoCoreApiConstant.*;
+
 @Service
 public class MemberSNSServiceImpl implements IMemberSNSService {
 
@@ -125,11 +127,10 @@ public class MemberSNSServiceImpl implements IMemberSNSService {
                 //继续SNS绑定
                 resultDto = bindSNS(mb_id, memberDetail, bindInput);
             }
-
         } catch (Exception ex) {
+            ex.printStackTrace();
             logger.error("绑第三方SNS平台账号出现异常", ex);
             resultDto = ResultDto.error("-1", "服务器非常繁忙，请耐心等一下");
-            throw ex;
         }
 
         logger.info("--bindThirdSNSWithLogged-resultDto: {}", JSON.toJSONString(resultDto));
@@ -143,7 +144,7 @@ public class MemberSNSServiceImpl implements IMemberSNSService {
     private void unBindOldMemberAccount(String mb_id, MemberSNSBindInput bindInput) {
         //从 redis 缓存取
         Integer snsType = bindInput.getSnsType();
-        List<Member> memberList = (List<Member>) fungoCacheMember.getIndexCache("isRegisteredAndHasPhone" + mb_id, bindInput.getUnionid());
+        List<Member> memberList = (List<Member>) fungoCacheMember.getIndexCache(ISREGISTEREDANDHASPHONE_CLOUD+ mb_id, bindInput.getUnionid());
         if (null == memberList || memberList.isEmpty()) {
             //从DB查
 
@@ -195,7 +196,7 @@ public class MemberSNSServiceImpl implements IMemberSNSService {
                 member.updateAllColumnById();
 
                 //删除该用户的redis cache
-                fungoCacheMember.excIndexCache(false, "getMemberWithMbIdSNS" + member.getId(), "", null);
+                fungoCacheMember.excIndexCache(false, GETMEMBERWITHMBIDSNS_CLOUD + member.getId(), "", null);
             }
         }
     }
@@ -210,7 +211,7 @@ public class MemberSNSServiceImpl implements IMemberSNSService {
     private void deleteOldMemberAccount(String mb_id, MemberSNSBindInput bindInput) {
 
         //同时把该SNS id的fungo账号数据进行redis 缓存
-        List<Member> memberList = (List<Member>) fungoCacheMember.getIndexCache("isRegistered" + mb_id, bindInput.getUnionid());
+        List<Member> memberList = (List<Member>) fungoCacheMember.getIndexCache(ISREGISTERED_CLOUD + mb_id, bindInput.getUnionid());
         if (null == memberList || memberList.isEmpty()) {
             //从DB获取
             String queryColumn = "";
@@ -245,7 +246,7 @@ public class MemberSNSServiceImpl implements IMemberSNSService {
                 memberService.updateById(udpateMb);
 
                 //删除该用户的redis cache
-                fungoCacheMember.excIndexCache(false, "getMemberWithMbIdSNS" + member.getId(), "", null);
+                fungoCacheMember.excIndexCache(false, GETMEMBERWITHMBIDSNS_CLOUD+ member.getId(), "", null);
             }
         }
 
@@ -421,14 +422,14 @@ public class MemberSNSServiceImpl implements IMemberSNSService {
      */
     private Member getMemberWithMbId(String mb_id) {
         //先从Redis获取
-        Member member = (Member) fungoCacheMember.getIndexCache("getMemberWithMbIdSNS" + mb_id, "");
+        Member member = (Member) fungoCacheMember.getIndexCache(GETMEMBERWITHMBIDSNS_CLOUD+ mb_id, "");
         if (null != member) {
             return member;
         }
         Member memberDetail = memberService.selectById(mb_id);
 
         //redis cache
-        fungoCacheMember.excIndexCache(true, "getMemberWithMbIdSNS" + mb_id, "", memberDetail);
+        fungoCacheMember.excIndexCache(true, GETMEMBERWITHMBIDSNS_CLOUD + mb_id, "", memberDetail);
         return memberDetail;
     }
 
@@ -463,7 +464,7 @@ public class MemberSNSServiceImpl implements IMemberSNSService {
         List<Member> memberList = memberService.selectList(memberEntityWrapper);
         if (null != memberList && !memberList.isEmpty()) {
             //同时把该SNS id的fungo账号数据进行redis 缓存
-            fungoCacheMember.excIndexCache(true, "isRegistered" + mb_id, snsId, memberList);
+            fungoCacheMember.excIndexCache(true, ISREGISTERED_CLOUD+ mb_id, snsId, memberList);
             return true;
         }
         return false;
@@ -501,7 +502,7 @@ public class MemberSNSServiceImpl implements IMemberSNSService {
         List<Member> memberList = memberService.selectList(memberEntityWrapper);
         if (null != memberList && !memberList.isEmpty()) {
             //同时把该SNS id的fungo账号数据进行redis 缓存
-            fungoCacheMember.excIndexCache(true, "isRegisteredAndHasPhone" + mb_id, snsId, memberList);
+            fungoCacheMember.excIndexCache(true, ISREGISTEREDANDHASPHONE_CLOUD+ mb_id, snsId, memberList);
             StringBuffer stringBuffer = new StringBuffer();
             for (Member member : memberList) {
                 stringBuffer.append(member.getMobilePhoneNum()).append(",");
@@ -542,9 +543,9 @@ public class MemberSNSServiceImpl implements IMemberSNSService {
         boolean isUpdate = memberService.updateById(updateMember);
 
         //清除member 和  SNS id的 fungo账号数据进行redis 缓存
-        fungoCacheMember.excIndexCache(false, "getMemberWithMbIdSNS" + memberDetail.getId(), "", null);
-        fungoCacheMember.excIndexCache(false, "isRegistered" + memberDetail.getId(), bindInput.getUnionid(), null);
-        fungoCacheMember.excIndexCache(false, "isRegisteredAndHasPhone" + memberDetail.getId(), bindInput.getUnionid(), null);
+        fungoCacheMember.excIndexCache(false, GETMEMBERWITHMBIDSNS_CLOUD + memberDetail.getId(), "", null);
+        fungoCacheMember.excIndexCache(false, ISREGISTERED_CLOUD + memberDetail.getId(), bindInput.getUnionid(), null);
+        fungoCacheMember.excIndexCache(false, ISREGISTEREDANDHASPHONE_CLOUD + memberDetail.getId(), bindInput.getUnionid(), null);
         return isUpdate;
     }
 

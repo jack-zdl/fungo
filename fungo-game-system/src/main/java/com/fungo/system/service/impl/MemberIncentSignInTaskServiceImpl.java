@@ -29,6 +29,8 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.game.common.consts.FungoCoreApiConstant.FUNGO_CORE_API_GETSIGNINTASKGROUPANDTASKRULEDATA;
+
 
 @Service
 public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTaskService {
@@ -559,7 +561,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
         ScoreGroup scoreGroup = null;
 
         //from redis
-        String keyPrefix = "getSignInTaskGroupAndTaskRuleData";
+        String keyPrefix =  FUNGO_CORE_API_GETSIGNINTASKGROUPANDTASKRULEDATA; //"getSignInTaskGroupAndTaskRuleData";
         String keySuffix = "scoreGroup";
 
         scoreGroup = (ScoreGroup) fungoCacheTask.getIndexCache(keyPrefix, keySuffix);
@@ -593,7 +595,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
 
         List<ScoreRule> scoreRuleList = null;
         //from redis
-        String keyPrefix = "getSignInTaskGroupAndTaskRuleData";
+        String keyPrefix = FUNGO_CORE_API_GETSIGNINTASKGROUPANDTASKRULEDATA; //"getSignInTaskGroupAndTaskRuleData";
         String keySuffix = "scoreRuleList";
         scoreRuleList = (List<ScoreRule>) fungoCacheTask.getIndexCache(keyPrefix, keySuffix);
         if (null != scoreRuleList && !scoreRuleList.isEmpty()) {

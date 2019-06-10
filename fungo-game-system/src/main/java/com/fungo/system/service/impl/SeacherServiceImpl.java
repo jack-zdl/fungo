@@ -133,8 +133,8 @@ public class SeacherServiceImpl implements ISeacherService {
 			dataList.add(author);
 		}
 		FungoPageResultDto<AuthorBean> re=new FungoPageResultDto<AuthorBean>();
-		PageTools.pageToResultDto(re, userPage);
 		re.setData(dataList);
+		PageTools.pageToResultDto(re, userPage);
 		return re;
 	}
 

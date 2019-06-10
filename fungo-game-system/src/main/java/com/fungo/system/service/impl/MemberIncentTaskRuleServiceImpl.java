@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.game.common.consts.FungoCoreApiConstant.FUNGO_CORE_API_SCOREGROUPSV2;
+import static com.game.common.consts.FungoCoreApiConstant.FUNGO_CORE_API_ScoreRuleListV2;
+
 @Service
 public class MemberIncentTaskRuleServiceImpl implements IMemberIncentTaskRuleService {
 
@@ -36,7 +39,7 @@ public class MemberIncentTaskRuleServiceImpl implements IMemberIncentTaskRuleSer
     public List<ScoreGroup> getScoreGroups() {
         List<ScoreGroup> scoreGroupList = null;
         try {
-            String keyPrefix = "ScoreGroupsV2.4.6";
+            String keyPrefix = FUNGO_CORE_API_SCOREGROUPSV2; //"ScoreGroupsV2.4.6_Cloud";
 
             scoreGroupList = (List<ScoreGroup>) fungoCacheTask.getIndexCache(keyPrefix, "");
             if (null != scoreGroupList && !scoreGroupList.isEmpty()) {
@@ -64,7 +67,7 @@ public class MemberIncentTaskRuleServiceImpl implements IMemberIncentTaskRuleSer
 
         List<ScoreRule> scoreRuleList = null;
         try {
-            String keyPrefix = "ScoreRuleListV2.4.6";
+            String keyPrefix = FUNGO_CORE_API_ScoreRuleListV2; //"ScoreRuleListV2.4.6_Cloud";
 
            // Object indexCache = fungoCacheTask.getIndexCache(keyPrefix, "");
 
