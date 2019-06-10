@@ -37,7 +37,7 @@ public class FungoCacheNotice {
     /**
      * Redis 缓存用户详情数据 前缀
      */
-    public static final String REDIS_MEMBER_NOTICE = "memberNotice";
+    public static final String REDIS_MEMBER_NOTICE = "memberNotice_cloud";
 
 
     /**
@@ -50,7 +50,7 @@ public class FungoCacheNotice {
     public void excIndexCache(boolean isCache, String keyPrefix, String keySuffix, Object value) {
 
         //从redis获取
-        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_";
+        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_join_";
         if (StringUtils.isNotBlank(keySuffix)){
             redisKey += SecurityMD5.encrypt16(keySuffix);
         }
@@ -73,7 +73,7 @@ public class FungoCacheNotice {
     public void excIndexCache(boolean isCache, String keyPrefix, String keySuffix, Object value, Integer expire) {
 
         //从redis获取
-        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_";
+        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_join_";
         if (StringUtils.isNotBlank(keySuffix)){
             redisKey += SecurityMD5.encrypt16(keySuffix);
         }
@@ -93,7 +93,7 @@ public class FungoCacheNotice {
      */
     public String getIndexCache(String keyPrefix, String keySuffix) {
         //从redis获取
-        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_";
+        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_join_";
         if (StringUtils.isNotBlank(keySuffix)){
             redisKey += SecurityMD5.encrypt16(keySuffix);
         }
@@ -124,7 +124,7 @@ public class FungoCacheNotice {
     public void excIndexCacheWithOutSecurity(boolean isCache, String keyPrefix, String keySuffix, Object value) {
 
         //从redis获取
-        String redisKey =  keyPrefix + "_";
+        String redisKey =  keyPrefix + "_join_";
         if (StringUtils.isNotBlank(keySuffix)){
             redisKey += keySuffix;
         }
@@ -147,7 +147,7 @@ public class FungoCacheNotice {
     public void excIndexCacheWithOutSecurity(boolean isCache, String keyPrefix, String keySuffix, Object value, Integer expire) {
 
         //从redis获取
-        String redisKey =  keyPrefix + "_";
+        String redisKey =  keyPrefix + "_join_";
         if (StringUtils.isNotBlank(keySuffix)){
             redisKey += keySuffix;
         }
@@ -168,7 +168,7 @@ public class FungoCacheNotice {
      */
     public Set<Object> findKeys(String keyPrefix, String keySuffix) {
         //从redis获取
-        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_";
+        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_join_";
         if (StringUtils.isNotBlank(keySuffix)) {
             redisKey = redisKey + keySuffix;
         }
@@ -184,7 +184,7 @@ public class FungoCacheNotice {
      */
     public Set<Object> findKeysWithOutSecurity(String keyPrefix, String keySuffix) {
         //从redis获取
-        String redisKey = keyPrefix + "_";
+        String redisKey = keyPrefix + "_join_";
         if (StringUtils.isNotBlank(keySuffix)) {
             redisKey = redisKey + keySuffix;
         }

@@ -58,7 +58,7 @@ public class FungoCacheIncentRule {
     /**
      * 用户任务-用户签到数据缓存key
      */
-    public static String TASK_CACHE_KEY_MEMBER_CHECKIN = "MemberCheckIn";
+    public static String TASK_CACHE_KEY_MEMBER_CHECKIN = "MemberCheckIn_cloud";
 
 
     @Autowired
@@ -75,7 +75,7 @@ public class FungoCacheIncentRule {
     public void excIndexCache(boolean isCache, String keyPrefix, String keySuffix, Object value) {
 
         //从redis获取
-        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_";
+        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_join_";
         if (StringUtils.isNotBlank(keySuffix)) {
             redisKey += SecurityMD5.encrypt16(keySuffix);
         }
@@ -97,7 +97,7 @@ public class FungoCacheIncentRule {
     public void excIndexCache(boolean isCache, String keyPrefix, String keySuffix, Object value, Integer expire) {
 
         //从redis获取
-        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_";
+        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_join_";
         if (StringUtils.isNotBlank(keySuffix)) {
             redisKey += SecurityMD5.encrypt16(keySuffix);
         }
@@ -116,7 +116,7 @@ public class FungoCacheIncentRule {
      */
     public Object getIndexCache(String keyPrefix, String keySuffix) {
         //从redis获取
-        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_";
+        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_join_";
         if (StringUtils.isNotBlank(keySuffix)) {
             redisKey += SecurityMD5.encrypt16(keySuffix);
         }

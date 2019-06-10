@@ -29,7 +29,7 @@ public class FungoCacheArticle {
     /**
      * 帖子(文章)详情Redis key
      */
-    public static final String FUNGO_CORE_API_POST_CONTENT_DETAIL_WATCHNUM = "cmmPostWatchNum";
+    public static final String FUNGO_CORE_API_POST_CONTENT_DETAIL_WATCHNUM = "cmmPostWatchNum_cloud";
 
 
 
@@ -57,7 +57,7 @@ public class FungoCacheArticle {
     public void excIndexCache(boolean isCache, String keyPrefix, String keySuffix, Object value) {
 
         //从redis获取
-        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_";
+        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_join_";
 
         if (StringUtils.isNotBlank(keySuffix)){
             redisKey += SecurityMD5.encrypt16(keySuffix);
@@ -82,7 +82,7 @@ public class FungoCacheArticle {
     public void excIndexCache(boolean isCache, String keyPrefix, String keySuffix, Object value,Integer expire) {
 
         //从redis获取
-        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_";
+        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_join_";
         if (StringUtils.isNotBlank(keySuffix)){
             redisKey += SecurityMD5.encrypt16(keySuffix);
         }
@@ -103,7 +103,7 @@ public class FungoCacheArticle {
      */
     public Object getIndexCache(String keyPrefix, String keySuffix) {
         //从redis获取
-        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_";
+        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_join_";
         if (StringUtils.isNotBlank(keySuffix)){
             redisKey += SecurityMD5.encrypt16(keySuffix);
         }
@@ -119,7 +119,7 @@ public class FungoCacheArticle {
      */
     public String getIndexCacheWithStr(String keyPrefix, String keySuffix) {
         //从redis获取
-        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_" ;
+        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_join_" ;
         if (StringUtils.isNotBlank(keySuffix)){
             redisKey += SecurityMD5.encrypt16(keySuffix);
         }
@@ -128,7 +128,7 @@ public class FungoCacheArticle {
 
     public void setStringCache( String keyPrefix, String keySuffix,String value){
         //从redis获取
-        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_" ;
+        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_join_" ;
         if (StringUtils.isNotBlank(keySuffix)){
             redisKey += SecurityMD5.encrypt16(keySuffix);
         }

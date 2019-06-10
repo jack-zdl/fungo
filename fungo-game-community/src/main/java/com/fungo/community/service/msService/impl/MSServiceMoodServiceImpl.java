@@ -179,6 +179,8 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
                 param.put("type", type);
             }
 
+            mooMessageEntityWrapper.allEq(param);
+
             //内容
             String content = mooMessageDto.getContent();
             if (StringUtils.isNotBlank(content)) {
@@ -260,7 +262,7 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
             if (null != type) {
                 param.put("type", type);
             }
-
+            moodDtoEntityWrapper.allEq(param);
             //内容
             String content = mooMoodDto.getContent();
             if (StringUtils.isNotBlank(content)) {

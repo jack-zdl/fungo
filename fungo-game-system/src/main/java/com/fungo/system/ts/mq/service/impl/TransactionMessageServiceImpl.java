@@ -387,6 +387,16 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
     public Map<String, Object> listPage(int pageNum, int pageSize, TransactionMessageDto transactionMessageDto) throws BusinessException {
 
         EntityWrapper<TransactionMessageDomain> messageDomainEntityWrapper = new EntityWrapper<TransactionMessageDomain>();
+        if (null != transactionMessageDto){
+            Date createDate =  transactionMessageDto.getCreateTime();
+            if (null != createDate){
+                messageDomainEntityWrapper.le("create_time", createDate);
+            }
+            if(transactionMessageDto.getStatus()!=null){
+                messageDomainEntityWrapper.eq("status",transactionMessageDto.getStatus());
+            }
+        }
+        messageDomainEntityWrapper.eq("areadly_dead",2);
         messageDomainEntityWrapper.orderBy("create_time", true);
 
         Page<TransactionMessageDomain> domainPage = new Page<>(pageNum, pageSize);

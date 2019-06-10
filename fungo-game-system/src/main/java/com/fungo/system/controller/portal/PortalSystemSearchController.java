@@ -8,16 +8,14 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CommunitySearchOut;
+import com.game.common.dto.search.SearCount;
 import com.game.common.dto.search.SearchInputPageDto;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -77,6 +75,13 @@ public class PortalSystemSearchController {
             return FungoPageResultDto.error("-1", "操作失败");
         }
 
+    }
+
+    @ApiOperation(value = "搜索数据统计", notes = "")
+    @RequestMapping(value = "/api/portal/system/search/searchcount/{keyword}", method = RequestMethod.GET)
+    @ApiImplicitParams({})
+    public ResultDto<SearCount> getSearchCount(@PathVariable("keyword") String keyword) {
+        return searchService.getSearchCount(keyword);
     }
 
 
