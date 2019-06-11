@@ -11,6 +11,10 @@ public class CmmCircle {
 
     private String intro;
 
+    private String gameId;
+
+    private String cmmId;
+
     private Integer type;
 
     private Integer state;
@@ -59,6 +63,22 @@ public class CmmCircle {
 
     public void setIntro(String intro) {
         this.intro = intro;
+    }
+
+    public String getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
+    }
+
+    public String getCmmId() {
+        return cmmId;
+    }
+
+    public void setCmmId(String cmmId) {
+        this.cmmId = cmmId;
     }
 
     public Integer getType() {

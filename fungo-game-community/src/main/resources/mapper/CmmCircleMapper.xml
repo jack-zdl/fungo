@@ -6,6 +6,8 @@
     <result column="circle_name" jdbcType="VARCHAR" property="circleName" />
     <result column="circle_icon" jdbcType="VARCHAR" property="circleIcon" />
     <result column="intro" jdbcType="VARCHAR" property="intro" />
+    <result column="game_id" jdbcType="VARCHAR" property="gameId" />
+    <result column="cmm_id" jdbcType="VARCHAR" property="cmmId" />
     <result column="type" jdbcType="INTEGER" property="type" />
     <result column="state" jdbcType="INTEGER" property="state" />
     <result column="member_num" jdbcType="INTEGER" property="memberNum" />
@@ -17,7 +19,7 @@
     <result column="updated_by" jdbcType="VARCHAR" property="updatedBy" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, circle_name, circle_icon, intro, type, state, member_num, hot_value, sort, created_at, 
+    id, circle_name, circle_icon, intro,game_id,cmm_id, type, state, member_num, hot_value, sort, created_at,
     updated_at, created_by, updated_by
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
