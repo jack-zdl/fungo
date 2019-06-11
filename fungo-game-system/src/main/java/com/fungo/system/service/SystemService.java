@@ -103,4 +103,6 @@ public interface SystemService {
      * @return 结果
      */
     public ResultDto<String> updateNoticeDate(String id,String data);
+
+    ResultDto<List<String>> listCommunityHisIds(BasActionDto basActionDto);
 }
