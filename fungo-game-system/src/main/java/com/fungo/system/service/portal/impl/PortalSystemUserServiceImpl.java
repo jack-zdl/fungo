@@ -45,8 +45,7 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
             if (one != null) {
                 author.setIs_followed(true);
 //                PC2.0新增相互关注业务添加字段 mutualFollowed
-                MemberFollower two = followService.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", cardId).eq("follower_id", memberId).andNew("state = {0}", 1).or("state = {0}", 2));
-                if (two != null){
+                if (one.getState().equals(2)){
                     author.setMutualFollowed("1");
                 }
             }
