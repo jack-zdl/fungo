@@ -3,6 +3,7 @@ package com.fungo.system.controller.portal;
 
 
 import com.fungo.system.service.ISeacherService;
+import com.fungo.system.service.portal.PortalSystemISeacherService;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
@@ -29,6 +30,8 @@ public class PortalSystemSearchController {
 
     @Autowired
     private ISeacherService searchService;
+    @Autowired
+    private PortalSystemISeacherService portalSystemISeacherService;
 
     @ApiOperation(value = "获取搜索关键词", notes = "")
     @RequestMapping(value = "/api/portal/system/search/keywords", method = RequestMethod.GET)
@@ -69,7 +72,7 @@ public class PortalSystemSearchController {
             userId = memberUserPrefile.getLoginId();
         }
         try {
-            return searchService.searchUsers(keyword, page, limit, userId);
+            return portalSystemISeacherService.searchUsers(keyword, page, limit, userId);
         } catch (Exception e) {
             e.printStackTrace();
             return FungoPageResultDto.error("-1", "操作失败");
