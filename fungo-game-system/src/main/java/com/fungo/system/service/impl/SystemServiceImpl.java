@@ -93,6 +93,9 @@ public class SystemServiceImpl implements SystemService {
     @Autowired
     private IncentRuleRankService rankRuleService;
 
+    @Autowired
+    private  BasActionDao actionDao;
+
 
     /**
      * 功能描述: 根据用户id查询被关注人的id集合
@@ -813,6 +816,7 @@ public class SystemServiceImpl implements SystemService {
         return ResultDto.success();
     }
 
+
     @Override
     public ResultDto<List<String>> listCommunityHisIds(BasActionDto basActionDto) {
 
@@ -839,6 +843,16 @@ public class SystemServiceImpl implements SystemService {
 
         return ResultDto.success(list);
 
+
+    /**
+     * 根据用户Id获取最近浏览圈子行为 8个
+     * @param userId
+     * @return
+     */
+    @Override
+    public ResultDto<List<String>> getRecentBrowseCommunityByUserId(String userId) {
+        List<String> list = actionDao.getRecentBrowseCommunityByUserId(userId);
+        return ResultDto.success(list);
     }
 
     public ResultDto<List<MemberDto>> listRecommendedMebmber(Integer limit, String currentMbId, List<String> wathMbsSet) {

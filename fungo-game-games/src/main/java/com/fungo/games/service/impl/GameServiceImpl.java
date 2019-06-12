@@ -59,6 +59,7 @@ public class GameServiceImpl implements IGameService {
 
     @Autowired
     private GameSurveyRelService surveyRelService;
+
     @Autowired
     private GameDao gameDao;
 
@@ -314,6 +315,7 @@ public class GameServiceImpl implements IGameService {
         out.setImage_height(height);
         out.setImage_width(width);
         out.setVersion(game.getVersionMain() + "." + game.getVersionChild());
+        out.setFungoTalk(game.getFungoTalk());
 
 
         //根据当前运行环境生成链接

@@ -404,7 +404,12 @@ public class FungoCoreApiConstant {
 
     public static final String ISREGISTERED_CLOUD = "isRegistered_Cloud" + "_cloud";
     //**************************************************游戏**************************************************
-
+    /**
+     * PC2.0圈子首页列表
+     */
+    public static final String FUNGO_CORE_API_GETCOMMUNITYLISTPC2_0 = "/api/portal/community/content/communitysPCList";
+    //    getRecentBrowseCommunity
+    public static final String FUNGO_CORE_API_GETRECENTBROWSECOMMUNITY = "/api/portal/community/content/recentbrowsecommunity";
 
     //-------------
 }

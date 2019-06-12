@@ -104,5 +104,14 @@ public interface SystemService {
      */
     public ResultDto<String> updateNoticeDate(String id,String data);
 
+
     ResultDto<List<String>> listCommunityHisIds(BasActionDto basActionDto);
+
+    /**
+     * 根据用户Id获取最近浏览圈子行为 8个
+     * @param userId
+     * @return
+     */
+    ResultDto<List<String>> getRecentBrowseCommunityByUserId(String userId);
+
 }

@@ -95,6 +95,9 @@ public class AuthorBean {
     @ApiModelProperty(value="性别：0：女  1:男 2:未知",example="")
     private int gender;
 
+    @ApiModelProperty(value="PC2.0互相关注：0：否  1:是",example="")
+    private String mutualFollowed;
+
     public String getUsername() {
         return username;
     }
@@ -255,6 +258,12 @@ public class AuthorBean {
         this.gender = gender;
     }
 
+    public String getMutualFollowed() {
+        return mutualFollowed;
+    }
 
+    public void setMutualFollowed(String mutualFollowed) {
+        this.mutualFollowed = mutualFollowed;
+    }
 }
 
