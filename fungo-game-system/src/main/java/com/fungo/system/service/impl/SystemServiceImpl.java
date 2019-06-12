@@ -813,6 +813,34 @@ public class SystemServiceImpl implements SystemService {
         return ResultDto.success();
     }
 
+    @Override
+    public ResultDto<List<String>> listCommunityHisIds(BasActionDto basActionDto) {
+
+        //条件拼接
+        EntityWrapper<BasAction> actionEntityWrapper = new EntityWrapper<>();
+        actionEntityWrapper.setSqlSelect(" DISTINCT(target_id) as targetId");
+        if (StringUtils.isNotBlank(basActionDto.getMemberId())) {
+            actionEntityWrapper.eq("member_id", basActionDto.getMemberId());
+        }
+        if (basActionDto.getType() != null) {
+            actionEntityWrapper.eq("type", basActionDto.getType());
+        }
+        if (basActionDto.getTargetType() != null) {
+            actionEntityWrapper.eq("target_type", basActionDto.getTargetType());
+        }
+
+
+        //根据条件查询
+        List<BasAction> actions = actionServiceImap.selectList(actionEntityWrapper);
+        ArrayList<String> list = new ArrayList<>();
+        for (BasAction action : actions) {
+            list.add(action.getTargetId());
+        }
+
+        return ResultDto.success(list);
+
+    }
+
     public ResultDto<List<MemberDto>> listRecommendedMebmber(Integer limit, String currentMbId, List<String> wathMbsSet) {
         List<MemberDto> memberDtoList;
         EntityWrapper memberSqlWrapper = new EntityWrapper<Member>();

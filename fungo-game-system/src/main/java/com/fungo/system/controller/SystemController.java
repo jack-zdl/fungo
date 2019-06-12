@@ -366,6 +366,27 @@ public class SystemController {
         }
     }
 
+    @RequestMapping(value = "/listActionByCondition")
+    @ApiOperation(value="获取历史浏览社区")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "type",value = "行为类型",paramType = "form",dataType = "integer"),
+            @ApiImplicitParam(name = "targetType",value = "业务类型",paramType = "form",dataType = "integer"),
+            @ApiImplicitParam(name = "memberId",value = "会员id",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "state",value = "状态",paramType = "form",dataType = "integer")
+    })
+    public ResultDto<List<String>> listCommunityHisIds(@RequestBody BasActionDto basActionDto){
+        ResultDto<List<String>> re = null;
+        try {
+            re =  systemService.listCommunityHisIds(basActionDto);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("SystemController.listCommunityHisIds",e);
+            re = ResultDto.error("-1", "SystemController.listCommunityHisIds执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
 
 
     @RequestMapping(value = "/listtargetId")
