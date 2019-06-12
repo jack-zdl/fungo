@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.entity.*;
+import com.fungo.system.facede.ICommunityProxyService;
 import com.fungo.system.service.*;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
@@ -92,6 +93,9 @@ public class SystemServiceImpl implements SystemService {
 
     @Autowired
     private IncentRuleRankService rankRuleService;
+
+    @Autowired
+    private ICommunityProxyService communityProxyService;
 
 
     /**
@@ -813,32 +817,23 @@ public class SystemServiceImpl implements SystemService {
         return ResultDto.success();
     }
 
+    /**
+     * 获取最近浏览的游戏 取最近8条
+     */
     @Override
-    public ResultDto<List<String>> listCommunityHisIds(BasActionDto basActionDto) {
+    public ResultDto<List<String>> listCommunityHisIds(String memberId) {
 
-        //条件拼接
-        EntityWrapper<BasAction> actionEntityWrapper = new EntityWrapper<>();
-        actionEntityWrapper.setSqlSelect(" DISTINCT(target_id) as targetId");
-        if (StringUtils.isNotBlank(basActionDto.getMemberId())) {
-            actionEntityWrapper.eq("member_id", basActionDto.getMemberId());
-        }
-        if (basActionDto.getType() != null) {
-            actionEntityWrapper.eq("type", basActionDto.getType());
-        }
-        if (basActionDto.getTargetType() != null) {
-            actionEntityWrapper.eq("target_type", basActionDto.getTargetType());
-        }
-
-
-        //根据条件查询
-        List<BasAction> actions = actionServiceImap.selectList(actionEntityWrapper);
-        ArrayList<String> list = new ArrayList<>();
-        for (BasAction action : actions) {
-            list.add(action.getTargetId());
+        List<String> officialCommunityIds = communityProxyService.listOfficialCommunityIds();
+        //获取7天前时间
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DATE, - 7);
+        List<String> list = basActionDao.getRecentViewGame(memberId,officialCommunityIds,c.getTime());
+        //根据社区id获取游戏
+        if(list!=null&&!list.isEmpty()){
+           list = communityProxyService.listGameIds(list);
         }
 
         return ResultDto.success(list);
-
     }
 
     public ResultDto<List<MemberDto>> listRecommendedMebmber(Integer limit, String currentMbId, List<String> wathMbsSet) {

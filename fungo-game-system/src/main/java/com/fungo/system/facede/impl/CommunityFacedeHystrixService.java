@@ -136,6 +136,20 @@ public class CommunityFacedeHystrixService implements FallbackFactory<CommunityF
                 logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "queryCmmPostEssenceList");
                 return null;
             }
+
+            @Override
+            public ResultDto<List<String>> listOfficialCommunityIds() {
+                logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "listOfficialCommunityIds");
+                return null;
+            }
+
+            @Override
+            public ResultDto<List<String>> listGameIds(List<String> list) {
+                logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "listGameIds");
+                return null;
+            }
+
+
         };
 
     }

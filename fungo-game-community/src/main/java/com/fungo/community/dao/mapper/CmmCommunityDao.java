@@ -59,4 +59,5 @@ public interface CmmCommunityDao extends BaseMapper<CmmCommunity> {
     @MapKey("id")
     Map<String,CmmCommunity> listCommunityFolloweeNum(@Param("communityIds")List<String> communityIds);
 
+    List<String> listOfficialCommunityIds();
 }

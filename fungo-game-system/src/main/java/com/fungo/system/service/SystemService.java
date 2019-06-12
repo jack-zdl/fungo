@@ -104,5 +104,5 @@ public interface SystemService {
      */
     public ResultDto<String> updateNoticeDate(String id,String data);
 
-    ResultDto<List<String>> listCommunityHisIds(BasActionDto basActionDto);
+    ResultDto<List<String>> listCommunityHisIds(String basActionDto);
 }

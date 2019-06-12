@@ -102,5 +102,7 @@
 
     </select>
 
-
+    <select id="listOfficialCommunityIds" resultType="java.lang.String">
+        select id from t_cmm_community where type = 1 and state = 1
+    </select>
 </mapper>

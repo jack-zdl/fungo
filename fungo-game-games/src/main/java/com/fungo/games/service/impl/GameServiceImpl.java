@@ -86,6 +86,8 @@ public class GameServiceImpl implements IGameService {
     @Autowired
     private BasTagGroupService basTagGroupService;
 
+
+
     @Override
     public FungoPageResultDto<GameOutPage> getGameList(GameInputPageDto gameInputDto, String memberId, String os) {
         String keySuffix = JSON.toJSONString(gameInputDto) + os;
@@ -1603,6 +1605,69 @@ public class GameServiceImpl implements IGameService {
             PageTools.pageToResultDto(re, page);
         }
         return re;
+    }
+
+    @Override
+    public ResultDto<List<GameOutPage>> viewGames(String memberId) {
+        List<String> ids = iEvaluateProxyService.listGameHisIds(memberId);
+        List<GameOutPage> gameOutPages =  new ArrayList<>();
+        if(ids==null||ids.isEmpty()){
+            return ResultDto.success(gameOutPages);
+        }
+        StringBuilder orderby = new StringBuilder("FIELD(id");
+        for (String id : ids) {
+            orderby.append(",'"+id+"'");
+        }
+        orderby.append(")");
+
+
+        EntityWrapper<Game> wrapper = new EntityWrapper<>();
+        wrapper.in("id", ids);
+
+        wrapper.orderBy(orderby.toString());
+
+        List<Game> games = gameService.selectList(wrapper);
+        for (Game game : games) {
+            {
+                GameOutPage out = new GameOutPage();
+                out.setObjectId(game.getId());
+                out.setName(game.getName());
+                out.setIcon(game.getIcon());
+                //2.4.3
+                out.setAndroidState(game.getAndroidState());
+                out.setIosState(game.getIosState());
+                out.setRating(getGameRating(game.getId()));
+                if(game.getAndroidPackageName()==null){
+                    game.setAndroidPackageName("");
+                }
+                if(game.getApk()==null){
+                    game.setApk("");
+                }
+                out.setApkUrl(game.getApk());
+                out.setItunesId(game.getItunesId());
+                out.setAndroidPackageName(game.getAndroidPackageName());
+                out.setGame_size((long) game.getGameSize());
+                //推荐数据 已弃用
+                Integer recommend_total_count = game.getRecommendNum() + game.getUnrecommendNum();
+                DecimalFormat df = new DecimalFormat("#.00");
+                out.setRecommend_total_rate(recommend_total_count == 0 ? 0 : Double.parseDouble(df.format((double) game.getRecommendNum() / recommend_total_count * 100)));
+                out.setRecommend_total_count(gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", game.getId()).and("state != -1")));
+                //
+
+                out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
+                out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
+
+            /*    GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", game.getId()).eq("phone_model", os).eq("state", 0));
+                    if (srel != null) {
+                        out.setBinding(!StringUtils.isNullOrEmpty(srel.getAppleId()));
+                        out.setClause(1 == srel.getAgree() ? true : false);
+                        out.setMake(true);
+                    }*/
+
+                gameOutPages.add(out);
+            }
+        }
+        return ResultDto.success(gameOutPages);
     }
 
     //可修改

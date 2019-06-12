@@ -3,7 +3,6 @@ package com.fungo.games.service;
 
 import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
-import com.game.common.dto.GameDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.*;
@@ -154,4 +153,6 @@ public interface IGameService {
 	 * @return
 	 */
     FungoPageResultDto<GameOutBean> getGameList1(GameItemInput input);
+
+    ResultDto<List<GameOutPage>> viewGames(String memberId);
 }

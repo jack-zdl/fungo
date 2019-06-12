@@ -75,7 +75,6 @@ public class GameController {
             @ApiImplicitParam(name = "tag", value = "游戏分类", paramType = "path", dataType = "string")
     })
     public FungoPageResultDto<GameOutPage> getGameList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody GameInputPageDto gameInputDto, HttpServletRequest request) {
-
         String memberId = "";
         String os = "";
         if (memberUserPrefile != null) {
@@ -85,6 +84,21 @@ public class GameController {
 
         return gameService.getGameList(gameInputDto, memberId, os);
     }
+
+
+    @ApiOperation(value = "最近浏览游戏(社区)列表", notes = "")
+    @RequestMapping(value = "/api/content/viewGames", method = RequestMethod.GET)
+    public ResultDto<List<GameOutPage>> viewGames(@Anonymous MemberUserProfile memberUserPrefile) {
+
+        String memberId = "";
+        String os = "";
+        if (memberUserPrefile != null) {
+            memberId = memberUserPrefile.getLoginId();
+        }
+        //"cec9c9dfe70b4ba9b684f81e617f4833"
+        return gameService.viewGames(memberId);
+    }
+
 
     @ApiOperation(value = "官方游戏分类", notes = "")
     @RequestMapping(value = "/api/recommend/tag/game", method = RequestMethod.GET)

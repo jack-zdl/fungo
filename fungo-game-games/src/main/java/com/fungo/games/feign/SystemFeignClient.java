@@ -154,6 +154,9 @@ public interface SystemFeignClient {
     @RequestMapping(value = "/listMemberDtoPag")
     FungoPageResultDto<MemberDto> listMemberDtoPag(@RequestBody MemberDto memberDto);
 
+    @GetMapping(value = "/listGameHisIds")
+    ResultDto<List<String>> listGameHisIds(@RequestParam("memberid") String memberid);
+
 
     /**
      * 存储并发送消息
