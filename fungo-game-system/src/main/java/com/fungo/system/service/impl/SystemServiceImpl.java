@@ -97,6 +97,10 @@ public class SystemServiceImpl implements SystemService {
     @Autowired
     private ICommunityProxyService communityProxyService;
 
+    @Autowired
+    private  BasActionDao actionDao;
+
+
 
     /**
      * 功能描述: 根据用户id查询被关注人的id集合
@@ -826,13 +830,22 @@ public class SystemServiceImpl implements SystemService {
         List<String> officialCommunityIds = communityProxyService.listOfficialCommunityIds();
         //获取7天前时间
         Calendar c = Calendar.getInstance();
-        c.add(Calendar.DATE, - 7);
-        List<String> list = basActionDao.getRecentViewGame(memberId,officialCommunityIds,c.getTime());
+        c.add(Calendar.DATE, -7);
+        List<String> list = basActionDao.getRecentViewGame(memberId, officialCommunityIds, c.getTime());
         //根据社区id获取游戏
-        if(list!=null&&!list.isEmpty()){
-           list = communityProxyService.listGameIds(list);
+        if (list != null && !list.isEmpty()) {
+            list = communityProxyService.listGameIds(list);
         }
-
+        return ResultDto.success(list);
+    }
+     /*
+     * 根据用户Id获取最近浏览圈子行为 8个
+     * @param userId
+     * @return
+     */
+    @Override
+    public ResultDto<List<String>> getRecentBrowseCommunityByUserId(String userId) {
+        List<String> list = actionDao.getRecentBrowseCommunityByUserId(userId);
         return ResultDto.success(list);
     }
 

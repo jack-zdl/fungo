@@ -58,4 +58,8 @@ public interface BasActionDao extends BaseMapper<BasAction> {
 	List<String> listArticleIds(String memberId);
 
     List<String> getRecentViewGame(@Param("memberId") String memberId, @Param("officialCommunityIds") List<String> officialCommunityIds, @Param("date") Date date);
+
+//	根据用户Id获取最近浏览圈子行为 8个
+    List<String> getRecentBrowseCommunityByUserId(@Param("userId") String userId);
+
 }

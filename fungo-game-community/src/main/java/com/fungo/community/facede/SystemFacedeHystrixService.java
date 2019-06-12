@@ -132,6 +132,12 @@ public class SystemFacedeHystrixService implements FallbackFactory<SystemFeignCl
                 logger.error("--------------------SystemFeignClient--启动熔断:{}" , "getMemberFollower1");
                 return null;
             }
+
+            @Override
+            public ResultDto<List<String>> getRecentBrowseCommunityByUserId(String userId) {
+                logger.error("--------------------SystemFeignClient--启动熔断:{}" , "getRecentBrowseCommunityByUserId");
+                return null;
+            }
         };
     }
 }

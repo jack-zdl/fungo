@@ -75,6 +75,8 @@ ribbon:
 #-----------------------------------------------------------------------------------------------------------
 spring:
   cloud:
+    inetutils:
+      ignored-interfaces[0]: docker0
     client:
       #ipAddress: 172.17.18.227
       ipAddress: 172.17.18.228

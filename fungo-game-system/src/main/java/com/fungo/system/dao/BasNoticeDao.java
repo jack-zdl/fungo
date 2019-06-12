@@ -4,6 +4,7 @@ package com.fungo.system.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.fungo.system.entity.BasNotice;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.Map;
  * @Author lyc
  * @create 2019/5/5 16:26
  */
+@Repository
 public interface BasNoticeDao extends BaseMapper<BasNotice> {
 
 	//设置消息为已读

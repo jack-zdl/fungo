@@ -136,7 +136,7 @@ public interface GamesFeignClient {
      *
      * @return
      */
-    @RequestMapping(value = "/api/game/getUserGameReviewBoutiqueNumber", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/game/api/game/getUserGameReviewBoutiqueNumber", method = RequestMethod.POST)
     ResultDto<List<Map>> getUserGameReviewBoutiqueNumber();
 
 }

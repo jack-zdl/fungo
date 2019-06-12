@@ -15,6 +15,7 @@ import com.game.common.vo.MemberFollowerVo;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -193,9 +194,14 @@ public interface SystemFeignClient {
     @GetMapping(value = "/getMemberFollower1")
     public ResultDto<MemberFollowerDto> getMemberFollower1( @RequestBody MemberFollowerDto memberFollowerDto);
 
+    /**
+     * 根据用户Id获取最近浏览圈子行为 8个
+     * @param userId
+     * @return
+     */
+    @GetMapping(value = "/getRecentBrowseCommunityByUserId")
+    ResultDto<List<String>> getRecentBrowseCommunityByUserId(@RequestParam("userId") String userId);
 
-
-  
 
     //-------------
 }
