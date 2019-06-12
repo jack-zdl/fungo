@@ -32,12 +32,17 @@ import static com.game.common.consts.FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_
 @RestController
 @Api(value = "", description = "广告")
 public class AdvertController {
+
+
     @Autowired
     private BannerService bannerService;
-//    @Autowired
+
+
+    //    @Autowired
 //    private GameDao gameDao;
 //    @Autowired
 //    private CmmPostService postService;
+
 
     @Autowired
     private FungoCacheAdvert fungoCacheAdvert;
@@ -45,8 +50,10 @@ public class AdvertController {
     @Autowired
     private IndexProxyService indexProxyService;
 
+
     @Autowired
     private IGameProxyService iGameProxyService;
+
 
     @ApiOperation(value = "首页游戏banner接口(v2.3)", notes = "")
     @ApiImplicitParams({})
@@ -66,9 +73,24 @@ public class AdvertController {
         //获取广告位
         List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0001").eq("state", 0).orderBy("sort", false));
         for (Banner banner : blist) {
+
+
+            //业务类型:  3：游戏，1：帖子   [by mxf 2019-06-12 V2.5]
+            Integer targetType = banner.getTargetType();
+
+            //若targetType值为空或者0，则不展示，即不返回给前端
+            if (null == targetType || 0 == targetType) {
+                continue;
+            }
+            //end
+
             AdvertOutBean bean = new AdvertOutBean();
             bean.setBizId(banner.getTargetId());
-            bean.setBizType(1);
+
+            bean.setBizType(targetType);
+
+
+
             bean.setContent(CommonUtils.filterWord(banner.getIntro()));
             bean.setImageUrl(banner.getCoverImage());
             bean.setName(banner.getTag());
