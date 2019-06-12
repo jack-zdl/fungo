@@ -84,7 +84,6 @@ public class FungoCoreApiConstant {
     public static final String FUNGO_CORE_API_ADVERT_RECOMMEND_DISCOVER = "/api/recommend/discover" + "_cloud";
 
 
-
     //**************************************************游戏**************************************************
     /**
      * 游戏- 游戏合集项列表(2.4.3)
@@ -154,8 +153,7 @@ public class FungoCoreApiConstant {
      * 游戏评价列表
      * POST
      */
-    public static final String FUNGO_CORE_API_GAME_EVALUATIONS= " /api/content/evaluations" + "_cloud";
-
+    public static final String FUNGO_CORE_API_GAME_EVALUATIONS = " /api/content/evaluations" + "_cloud";
 
 
     //**************************************************系统**************************************************
@@ -246,7 +244,6 @@ public class FungoCoreApiConstant {
     public static final String FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST = "/api/user/incents/fortune/coin" + "_cloud";
 
 
-
     //**************************************************文章**************************************************
 
     /**
@@ -307,11 +304,6 @@ public class FungoCoreApiConstant {
     public static final String FUNGO_CORE_API_POST_RECOMMEND_USERS = "/api/recommend/users" + "_cloud";
 
 
-
-
-
-
-
     //**************************************************心情**************************************************
 
 
@@ -320,7 +312,6 @@ public class FungoCoreApiConstant {
      * POST
      */
     public static final String FUNGO_CORE_API_MEMBER_USER_MOODS = "/api/mine/moods" + "_cloud";
-
 
 
     /**
@@ -335,7 +326,6 @@ public class FungoCoreApiConstant {
      * get
      */
     public static final String FUNGO_CORE_API_MOOD_CONTENT_GET = "/api/content/mood/{moodId}" + "_cloud";
-
 
 
     //**************************************************社区**************************************************
@@ -360,8 +350,6 @@ public class FungoCoreApiConstant {
     public static final String FUNGO_CORE_API_COMMUNITYS_POST_LIST = "/api/content/posts" + "_cloud";
 
 
-
-
     //**************************************************评论**************************************************
 
 
@@ -379,15 +367,6 @@ public class FungoCoreApiConstant {
     public static final String FUNGO_CORE_API_MOOD_COMMENT_DETAIL = "/api/content/message/{messageId}" + "_cloud";
 
 
-
-
-
-
-
-
-
-
-
     //**************************************************任务**************************************************
 
 
@@ -396,7 +375,6 @@ public class FungoCoreApiConstant {
      * GET
      */
     public static final String FUNGO_CORE_API_TASK_RANK_SIGNINMOTTO = "/api/rank/signinmotto" + "_cloud";
-
 
 
     /**
@@ -413,18 +391,18 @@ public class FungoCoreApiConstant {
     public static final String FUNGO_CORE_API_TASK_USER_TASK_PROGRESS = "/api/user/incents/task/progress" + "_cloud";
 
 
-    public static final String  FUNGO_CORE_API_GETSIGNINTASKGROUPANDTASKRULEDATA = "getSignInTaskGroupAndTaskRuleData"+"_cloud";
+    public static final String FUNGO_CORE_API_GETSIGNINTASKGROUPANDTASKRULEDATA = "getSignInTaskGroupAndTaskRuleData" + "_cloud";
 
 
-    public static final String FUNGO_CORE_API_SCOREGROUPSV2 = "ScoreGroupsV2"+"_cloud"+"_cloud";
+    public static final String FUNGO_CORE_API_SCOREGROUPSV2 = "ScoreGroupsV2" + "_cloud" + "_cloud";
 
-    public static final String FUNGO_CORE_API_ScoreRuleListV2 = "ScoreRuleListV2.4.6_Cloud"+"_cloud";
+    public static final String FUNGO_CORE_API_ScoreRuleListV2 = "ScoreRuleListV2.4.6_Cloud" + "_cloud";
 
-    public static final String ISREGISTEREDANDHASPHONE_CLOUD = "isRegisteredAndHasPhone_Cloud"+"cloud";
+    public static final String ISREGISTEREDANDHASPHONE_CLOUD = "isRegisteredAndHasPhone_Cloud" + "cloud";
 
-    public static final String GETMEMBERWITHMBIDSNS_CLOUD = "getMemberWithMbIdSNS_Cloud"+"_cloud";
+    public static final String GETMEMBERWITHMBIDSNS_CLOUD = "getMemberWithMbIdSNS_Cloud" + "_cloud";
 
-    public static final String ISREGISTERED_CLOUD = "isRegistered_Cloud"+"_cloud";
+    public static final String ISREGISTERED_CLOUD = "isRegistered_Cloud" + "_cloud";
     //**************************************************游戏**************************************************
 
 
