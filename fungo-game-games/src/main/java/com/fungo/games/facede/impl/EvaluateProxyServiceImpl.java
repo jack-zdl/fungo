@@ -378,6 +378,15 @@ public class EvaluateProxyServiceImpl implements IEvaluateProxyService {
         return systemFeignClient.listMemberDtoPag(memberDto);
     }
 
+    @Override
+    public List<String> listGameHisIds(String memberId) {
+       ResultDto<List<String>>  resultDto = systemFeignClient.listGameHisIds(memberId);
+       if(resultDto!=null){
+           return resultDto.getData();
+       }
+        return null;
+    }
+
 
     /****************************************降级区*************************************************************/
 

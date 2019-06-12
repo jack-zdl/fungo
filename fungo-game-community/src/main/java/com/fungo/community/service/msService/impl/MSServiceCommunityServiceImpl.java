@@ -3,6 +3,7 @@ package com.fungo.community.service.msService.impl;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.community.dao.mapper.CmmCommunityDao;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.impl.CmmPostDaoServiceImap;
 import com.fungo.community.entity.CmmCommunity;
@@ -31,6 +32,9 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
 
     @Autowired
     private CmmPostDaoServiceImap cmmPostDaoServiceImap;
+    @Autowired
+    private CmmCommunityDao cmmCommunityDao;
+
 
 
     @Override
@@ -201,6 +205,26 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
             LOGGER.error("//ms/service/cmm/user/flw/cmtlists--getFollowerCommunity-出现异常:", ex);
         }
         return null;
+    }
+
+    @Override
+    public List<String> listOfficialCommunityIds() {
+       return  cmmCommunityDao.listOfficialCommunityIds();
+    }
+
+    @Override
+    public List<String> listGameIds(List<String> list) {
+        ArrayList<String> list1 = new ArrayList<>();
+        //不用in 保证顺序
+        if(list!=null&&!list.isEmpty()){
+            for (String s : list) {
+                CmmCommunity community = cmmCommunityDao.selectById(s);
+                if(community!=null){
+                    list1.add(community.getGameId());
+                }
+            }
+        }
+        return list1;
     }
 
 

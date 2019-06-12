@@ -60,6 +60,9 @@ public interface CmmCommunityDao extends BaseMapper<CmmCommunity> {
     @MapKey("id")
     Map<String,CmmCommunity> listCommunityFolloweeNum(@Param("communityIds")List<String> communityIds);
 
+
+    List<String> listOfficialCommunityIds();
+
     /**
      * PC2.0圈子首页列表
      * @param pageLimiter
@@ -71,4 +74,5 @@ public interface CmmCommunityDao extends BaseMapper<CmmCommunity> {
      * @return
      */
     int getCommunityListPC2_0Count();
+
 }

@@ -127,6 +127,12 @@
         </where>
         GROUP BY objectId order by created_at desc
     </select>
+
+
+    <select id="listOfficialCommunityIds" resultType="java.lang.String">
+        select id from t_cmm_community where type = 1 and state = 1
+    </select>
+
     <!--getCommunityListPC2_0 PC2.0圈子首页列表-->
     <select id="getCommunityListPC2_0" resultType="com.fungo.community.entity.portal.CmmCommunityIndex">
         SELECT

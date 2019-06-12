@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.entity.*;
+import com.fungo.system.facede.ICommunityProxyService;
 import com.fungo.system.service.*;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
@@ -93,7 +94,11 @@ public class SystemServiceImpl implements SystemService {
     private IncentRuleRankService rankRuleService;
 
     @Autowired
+    private ICommunityProxyService communityProxyService;
+
+    @Autowired
     private  BasActionDao actionDao;
+
 
 
     /**
@@ -816,34 +821,24 @@ public class SystemServiceImpl implements SystemService {
     }
 
 
+    /**
+     * 获取最近浏览的游戏 取最近8条
+     */
     @Override
-    public ResultDto<List<String>> listCommunityHisIds(BasActionDto basActionDto) {
+    public ResultDto<List<String>> listCommunityHisIds(String memberId) {
 
-        //条件拼接
-        EntityWrapper<BasAction> actionEntityWrapper = new EntityWrapper<>();
-        actionEntityWrapper.setSqlSelect(" DISTINCT(target_id) as targetId");
-        if (StringUtils.isNotBlank(basActionDto.getMemberId())) {
-            actionEntityWrapper.eq("member_id", basActionDto.getMemberId());
+        List<String> officialCommunityIds = communityProxyService.listOfficialCommunityIds();
+        //获取7天前时间
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DATE, -7);
+        List<String> list = basActionDao.getRecentViewGame(memberId, officialCommunityIds, c.getTime());
+        //根据社区id获取游戏
+        if (list != null && !list.isEmpty()) {
+            list = communityProxyService.listGameIds(list);
         }
-        if (basActionDto.getType() != null) {
-            actionEntityWrapper.eq("type", basActionDto.getType());
-        }
-        if (basActionDto.getTargetType() != null) {
-            actionEntityWrapper.eq("target_type", basActionDto.getTargetType());
-        }
-
-
-        //根据条件查询
-        List<BasAction> actions = actionServiceImap.selectList(actionEntityWrapper);
-        ArrayList<String> list = new ArrayList<>();
-        for (BasAction action : actions) {
-            list.add(action.getTargetId());
-        }
-
         return ResultDto.success(list);
     }
-
-    /**
+    /*
      * 根据用户Id获取最近浏览圈子行为 8个
      * @param userId
      * @return
