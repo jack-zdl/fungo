@@ -22,169 +22,23 @@
     id, circle_name, circle_icon, intro,game_id,cmm_id, type, state, member_num, hot_value, sort, created_at,
     updated_at, created_by, updated_by
   </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
+
+  <select id="selectAll" resultType="com.fungo.community.entity.CmmCircle" >
+    SELECT
+    <include refid="Base_Column_List"></include>
     from t_cmm_circle
-    where id = #{id,jdbcType=VARCHAR}
+    order  by type asc ,sort  desc ,hot_value desc;
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-    delete from t_cmm_circle
-    where id = #{id,jdbcType=VARCHAR}
-  </delete>
-  <insert id="insert" parameterType="com.fungo.community.entity.CmmCircle">
-    insert into t_cmm_circle (id, circle_name, circle_icon, 
-      intro, type, state, 
-      member_num, hot_value, sort, 
-      created_at, updated_at, created_by, 
-      updated_by)
-    values (#{id,jdbcType=VARCHAR}, #{circleName,jdbcType=VARCHAR}, #{circleIcon,jdbcType=VARCHAR}, 
-      #{intro,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, #{state,jdbcType=INTEGER}, 
-      #{memberNum,jdbcType=INTEGER}, #{hotValue,jdbcType=INTEGER}, #{sort,jdbcType=INTEGER}, 
-      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, #{createdBy,jdbcType=VARCHAR}, 
-      #{updatedBy,jdbcType=VARCHAR})
-  </insert>
-  <insert id="insertSelective" parameterType="com.fungo.community.entity.CmmCircle">
-    insert into t_cmm_circle
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="circleName != null">
-        circle_name,
-      </if>
-      <if test="circleIcon != null">
-        circle_icon,
-      </if>
-      <if test="intro != null">
-        intro,
-      </if>
-      <if test="type != null">
-        type,
-      </if>
-      <if test="state != null">
-        state,
-      </if>
-      <if test="memberNum != null">
-        member_num,
-      </if>
-      <if test="hotValue != null">
-        hot_value,
-      </if>
-      <if test="sort != null">
-        sort,
-      </if>
-      <if test="createdAt != null">
-        created_at,
-      </if>
-      <if test="updatedAt != null">
-        updated_at,
-      </if>
-      <if test="createdBy != null">
-        created_by,
-      </if>
-      <if test="updatedBy != null">
-        updated_by,
-      </if>
+
+  <select id="selectPageByKeyword" resultType="com.fungo.community.entity.CmmCircle" >
+    select
+    <include refid="Base_Column_List"></include>
+    from t_cmm_circle
+    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+        <if test="keyword != null || keyword != '' ">
+          circle_name like '%keyword%'
+        </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=VARCHAR},
-      </if>
-      <if test="circleName != null">
-        #{circleName,jdbcType=VARCHAR},
-      </if>
-      <if test="circleIcon != null">
-        #{circleIcon,jdbcType=VARCHAR},
-      </if>
-      <if test="intro != null">
-        #{intro,jdbcType=VARCHAR},
-      </if>
-      <if test="type != null">
-        #{type,jdbcType=INTEGER},
-      </if>
-      <if test="state != null">
-        #{state,jdbcType=INTEGER},
-      </if>
-      <if test="memberNum != null">
-        #{memberNum,jdbcType=INTEGER},
-      </if>
-      <if test="hotValue != null">
-        #{hotValue,jdbcType=INTEGER},
-      </if>
-      <if test="sort != null">
-        #{sort,jdbcType=INTEGER},
-      </if>
-      <if test="createdAt != null">
-        #{createdAt,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updatedAt != null">
-        #{updatedAt,jdbcType=TIMESTAMP},
-      </if>
-      <if test="createdBy != null">
-        #{createdBy,jdbcType=VARCHAR},
-      </if>
-      <if test="updatedBy != null">
-        #{updatedBy,jdbcType=VARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.fungo.community.entity.CmmCircle">
-    update t_cmm_circle
-    <set>
-      <if test="circleName != null">
-        circle_name = #{circleName,jdbcType=VARCHAR},
-      </if>
-      <if test="circleIcon != null">
-        circle_icon = #{circleIcon,jdbcType=VARCHAR},
-      </if>
-      <if test="intro != null">
-        intro = #{intro,jdbcType=VARCHAR},
-      </if>
-      <if test="type != null">
-        type = #{type,jdbcType=INTEGER},
-      </if>
-      <if test="state != null">
-        state = #{state,jdbcType=INTEGER},
-      </if>
-      <if test="memberNum != null">
-        member_num = #{memberNum,jdbcType=INTEGER},
-      </if>
-      <if test="hotValue != null">
-        hot_value = #{hotValue,jdbcType=INTEGER},
-      </if>
-      <if test="sort != null">
-        sort = #{sort,jdbcType=INTEGER},
-      </if>
-      <if test="createdAt != null">
-        created_at = #{createdAt,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updatedAt != null">
-        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
-      </if>
-      <if test="createdBy != null">
-        created_by = #{createdBy,jdbcType=VARCHAR},
-      </if>
-      <if test="updatedBy != null">
-        updated_by = #{updatedBy,jdbcType=VARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=VARCHAR}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.fungo.community.entity.CmmCircle">
-    update t_cmm_circle
-    set circle_name = #{circleName,jdbcType=VARCHAR},
-      circle_icon = #{circleIcon,jdbcType=VARCHAR},
-      intro = #{intro,jdbcType=VARCHAR},
-      type = #{type,jdbcType=INTEGER},
-      state = #{state,jdbcType=INTEGER},
-      member_num = #{memberNum,jdbcType=INTEGER},
-      hot_value = #{hotValue,jdbcType=INTEGER},
-      sort = #{sort,jdbcType=INTEGER},
-      created_at = #{createdAt,jdbcType=TIMESTAMP},
-      updated_at = #{updatedAt,jdbcType=TIMESTAMP},
-      created_by = #{createdBy,jdbcType=VARCHAR},
-      updated_by = #{updatedBy,jdbcType=VARCHAR}
-    where id = #{id,jdbcType=VARCHAR}
-  </update>
+    order  by type asc ,sort  desc ,hot_value desc;
+  </select>
 </mapper>

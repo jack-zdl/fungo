@@ -1,6 +1,7 @@
 package com.game.common.vo;
 
 import com.game.common.api.InputPageDto;
+import com.game.common.enums.BaseEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -52,5 +53,27 @@ public class CmmCircleVo extends InputPageDto {
     private Integer hotValue;
 
     private Integer sort;
+
+   public enum SorttypeEnum implements BaseEnum<SorttypeEnum,String> {
+        ALL("0","全部查询"),
+        BROWSE("1","最近浏览的圈子"),
+        FOLLOW("2","关注圈子");
+        String key;
+        String value;
+
+        SorttypeEnum(String s, String s1) {
+            this.key = s;
+            this.value = s1;
+        }
+        @Override
+        public String getKey() {
+            return key;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+    }
 
 }
