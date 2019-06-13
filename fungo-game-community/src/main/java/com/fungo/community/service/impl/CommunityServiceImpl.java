@@ -52,7 +52,6 @@ public class CommunityServiceImpl implements ICommunityService {
     @Autowired
     private CmmCommunityDao communityDao;
 
-
     @Autowired
     private FungoCacheCommunity fungoCacheCommunity;
 
@@ -70,24 +69,18 @@ public class CommunityServiceImpl implements ICommunityService {
     @Override
     public ResultDto<CommunityOut> getCommunityDetail(String communityId, String userId)
             throws Exception {
-
         CommunityOut out = null;
-
         //from redis cache
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_DETAIL + communityId;
         String keySuffix = userId;
         out = (CommunityOut) fungoCacheCommunity.getIndexCache(keyPrefix, keySuffix);
-
         if (null != out) {
             return ResultDto.success(out);
         }
-
-
         if (communityId == null || communityService.selectById(communityId) == null) {
             return ResultDto.error("241", "找不到指定社区");
         }
         Wrapper<CmmCommunity> wrapper = new EntityWrapper<CmmCommunity>().eq("id", communityId).eq("state", 1);
-
         CmmCommunity community = communityService.selectOne(wrapper);
         if (community == null) {
             return ResultDto.success();

@@ -6,9 +6,9 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.entity.*;
+import com.fungo.system.facede.ICommunityProxyService;
 import com.fungo.system.service.*;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
@@ -92,6 +92,13 @@ public class SystemServiceImpl implements SystemService {
 
     @Autowired
     private IncentRuleRankService rankRuleService;
+
+    @Autowired
+    private ICommunityProxyService communityProxyService;
+
+    @Autowired
+    private  BasActionDao actionDao;
+
 
 
     /**
@@ -813,6 +820,37 @@ public class SystemServiceImpl implements SystemService {
         return ResultDto.success();
     }
 
+
+    /**
+     * 获取最近浏览的游戏 取最近8条
+     */
+    @Override
+    public ResultDto<List<String>> listCommunityHisIds(String memberId) {
+
+        List<String> officialCommunityIds = communityProxyService.listOfficialCommunityIds();
+        //获取7天前时间
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DATE, -7);
+        List<String> list = basActionDao.getRecentViewGame(memberId, officialCommunityIds, c.getTime());
+        //根据社区id获取游戏
+        if (list != null && !list.isEmpty()) {
+            list = communityProxyService.listGameIds(list);
+        }
+        return ResultDto.success(list);
+    }
+    /*
+     * 根据用户Id获取最近浏览圈子行为 8个
+     * @param userId
+     * @return
+     */
+    @Override
+    public ResultDto<List<String>> getRecentBrowseCommunityByUserId(String userId) {
+        List<String> list = actionDao.getRecentBrowseCommunityByUserId(userId);
+        return ResultDto.success(list);
+    }
+
+
+    @Override
     public ResultDto<List<MemberDto>> listRecommendedMebmber(Integer limit, String currentMbId, List<String> wathMbsSet) {
         List<MemberDto> memberDtoList;
         EntityWrapper memberSqlWrapper = new EntityWrapper<Member>();
@@ -833,4 +871,6 @@ public class SystemServiceImpl implements SystemService {
         }
         return ResultDto.success(memberDtoList);
     }
+
+    //-----------
 }

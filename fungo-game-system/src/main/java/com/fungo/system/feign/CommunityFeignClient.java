@@ -155,4 +155,10 @@ public interface CommunityFeignClient {
     FungoPageResultDto<Map> queryCmmPostEssenceList();
 
 
+    @GetMapping("/ms/service/cmm/cty/listOfficialCommunityIds")
+    ResultDto<List<String>>listOfficialCommunityIds();
+
+    @GetMapping("/ms/service/cmm/cty/listGameIds")
+    ResultDto<List<String>> listGameIds(@RequestParam("communityIds") List<String> list);
+
 }

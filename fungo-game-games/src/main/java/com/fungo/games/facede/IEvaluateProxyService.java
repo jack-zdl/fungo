@@ -131,4 +131,6 @@ public interface IEvaluateProxyService {
      * @param memberDto
      */
     FungoPageResultDto<MemberDto> listMemberDtoPag(MemberDto memberDto);
+
+    List<String> listGameHisIds(String memberId);
 }

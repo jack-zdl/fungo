@@ -112,6 +112,12 @@ public class SystemFacedeHystrixService implements FallbackFactory<SystemFeignCl
                 logger.error("--------------------SystemFeignClient--启动熔断:{}" , "listMemberDtoPag");
                 return new FungoPageResultDto<MemberDto>();
             }
+
+            @Override
+            public ResultDto<List<String>> listGameHisIds(String memberid) {
+                logger.error("--------------------SystemFeignClient--启动熔断:{}" , "listGameHisIds");
+                return null ;
+            }
         };
     }
 }

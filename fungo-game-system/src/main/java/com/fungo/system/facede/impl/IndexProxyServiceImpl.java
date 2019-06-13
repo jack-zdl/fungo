@@ -41,7 +41,7 @@ public class IndexProxyServiceImpl implements IndexProxyService {
     @Override
     public CmmPostDto selctCmmPostOne(CmmPostDto cmmPostDto) {
         CmmPostDto re = new CmmPostDto();
-        FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(cmmPostDto);
+            FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(cmmPostDto);
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmPostDtoFungoPageResultDto.getStatus()) && cmmPostDtoFungoPageResultDto.getData().size() > 0){
             re = cmmPostDtoFungoPageResultDto.getData().get(0);
         }else

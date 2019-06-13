@@ -22,6 +22,34 @@
         <result column="sort" property="sort"/>
         <result column="post_num" property="postNum"/>
     </resultMap>
+    <!--PC2.0圈子首页列表 自定义一对多映射-->
+    <resultMap id="communityManyResultMap" type="com.fungo.community.entity.portal.CmmCommunityIndex">
+        <id column="id" property="id"/>
+        <result column="game_id" property="gameId"/>
+        <result column="name" property="name"/>
+        <result column="icon" property="icon"/>
+        <result column="intro" property="intro"/>
+        <result column="cover_image" property="coverImage"/>
+        <result column="type" property="type"/>
+        <result column="state" property="state"/>
+        <result column="followee_num" property="followeeNum"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="hot_value" property="hotValue"/>
+        <result column="recommend_state" property="recommendState"/>
+        <result column="sort" property="sort"/>
+        <result column="post_num" property="postNum"/>
+        <!--<collection property="requestOrderPrices" ofType="com.chiway.mobile.requestorder.model.RequestOrderPrice" column="id">
+            <result column="auto_fitting_name" property="autoFittingName"/>
+            <result column="auto_fitting_num" property="autoFittingNum"/>
+            <result column="price" property="price"/>
+            <result column="source_status" property="sourceStatus"/>
+            <result column="fitting_type" property="fittingType"/>
+            <result column="fittingDescription" property="description"/>
+        </collection>-->
+    </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
@@ -98,9 +126,47 @@
             </if>
         </where>
         GROUP BY objectId order by created_at desc
-
-
     </select>
 
+
+    <select id="listOfficialCommunityIds" resultType="java.lang.String">
+        select id from t_cmm_community where type = 1 and state = 1
+    </select>
+
+    <!--getCommunityListPC2_0 PC2.0圈子首页列表-->
+    <select id="getCommunityListPC2_0" resultType="com.fungo.community.entity.portal.CmmCommunityIndex">
+        SELECT
+            tcc.id AS targetId,
+            tcc.game_id AS gameId,
+            tcc.`name` AS targetName,
+            tcc.icon AS icon,
+            tcc.post_num AS postNum,
+            COALESCE (SUM(tcp.comment_num), 0) + tcc.followee_num + tcc.post_num AS hotValue
+        FROM
+            t_cmm_community AS tcc
+        LEFT JOIN t_cmm_post AS tcp ON tcc.id = tcp.community_id AND tcp.state = 1
+        WHERE
+            tcc.state = 1
+        GROUP BY
+            tcc.id,
+            tcc.game_id,
+            tcc.`name`,
+            tcc.icon,
+            tcc.post_num
+        ORDER BY
+            tcc.type DESC,
+            tcc.sort DESC,
+            COALESCE (SUM(tcp.comment_num), 0) + tcc.followee_num + tcc.post_num DESC
+        LIMIT #{map.beginRow},#{map.pageSize}
+    </select>
+    <!--getCommunityListPC2_0Count PC2.0圈子首页列表总数-->
+    <select id="getCommunityListPC2_0Count" resultType="java.lang.Integer">
+        SELECT
+            count(1)
+        FROM
+            t_cmm_community AS tcc
+        WHERE
+            tcc.state = 1
+    </select>
 
 </mapper>

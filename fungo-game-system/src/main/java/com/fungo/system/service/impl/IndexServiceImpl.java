@@ -70,7 +70,6 @@ public class IndexServiceImpl implements IIndexService {
     private BannerDao bannerDao;
 
 
-
     @Override
     public FungoPageResultDto<CardIndexBean> index(InputPageDto input, String os, String iosChannel, String app_channel, String appVersion) {
 
@@ -82,7 +81,7 @@ public class IndexServiceImpl implements IIndexService {
             keySuffix += app_channel;
         }
 
-        re =  (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+        re = (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
 
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
@@ -106,12 +105,14 @@ public class IndexServiceImpl implements IIndexService {
         //int count = postService.selectCount(new EntityWrapper<CmmPost>().eq("type", 3));
         Page<CardIndexBean> pageBean = null;
 
+        //第一页
         if (1 == page) {
 
-            //轮播
+            //position 1 轮播(position_code 0001)
 //			CardIndexBean topic = this.topic();
 //			clist.add(topic);
-            //活动位
+
+            //position 2. 活动位 (position_code 0005)
             CardIndexBean activities = this.activities();
 
             if (activities != null) {
@@ -131,14 +132,15 @@ public class IndexServiceImpl implements IIndexService {
 
 //			ActionBean a = new ActionBean();
 //			indexBean.setUprightAction(a);
-
-            //精选文章
+            //position 3 游戏攻略(精选文章)
+            //精选文章  position 3 (position_code 0006)
             CardIndexBean postHost = this.selectPosts("0006");
 
             if (postHost != null) {
                 clist.add(postHost);
             }
 
+            //position 4 安利墙
             //安利墙 ios 当前版本是否 隐藏
             if (!isCloseIndexSection) {
 
@@ -149,7 +151,7 @@ public class IndexServiceImpl implements IIndexService {
                 }
 
             } else {
-
+                ///position 5 精选文章 视频(position_code 0007)
                 CardIndexBean postVidoe = this.selectPosts("0007");
 
                 if (postVidoe != null) {
@@ -162,8 +164,10 @@ public class IndexServiceImpl implements IIndexService {
 
             re.setBefore(1);
 
+            //第二页
         } else if (page == 2) {
 
+            //安利墙
             //安利墙 ios 当前版本是否 隐藏
             if (!isCloseIndexSection) {
                 CardIndexBean postVidoe = this.selectPosts("0007");
@@ -172,12 +176,13 @@ public class IndexServiceImpl implements IIndexService {
                 }
             }
 
-
+            //精选文章 (视频)
             CardIndexBean postFine = this.selectPosts("0008");
             if (postFine != null) {
                 clist.add(postFine);
             }
 
+            //大家都在玩
             //大家都在玩 ios 当前版本是否 隐藏
             if (!isCloseIndexSection) {
                 CardIndexBean selectedGames = this.selectedGames();
@@ -432,7 +437,8 @@ public class IndexServiceImpl implements IIndexService {
         cmmPostDto.setLimit(limit);
         cmmPostDto.setType(3);
         cmmPostDto.setState(1);
-        Page<CmmPostDto> pageList = indexProxyService.selectCmmPostPage(cmmPostDto);    //  postService.selectPage(new Page<CmmPost>(page, limit), new EntityWrapper<CmmPost>().eq("type", 3).eq("state", 1).last("ORDER BY sort DESC,updated_at DESC"));
+        Page<CmmPostDto> pageList = indexProxyService.selectCmmPostPage(cmmPostDto);
+        //  postService.selectPage(new Page<CmmPost>(page, limit), new EntityWrapper<CmmPost>().eq("type", 3).eq("state", 1).last("ORDER BY sort DESC,updated_at DESC"));
 //		List<CmmPost> list = postService.selectList(new EntityWrapper<CmmPost>().eq("type", 3).orderBy("created_at", false).last("limit " + start+","+limit));
 //		List<CmmPost> list = p.getRecords();
         ArrayList<CardIndexBean> indexList = new ArrayList<>();
@@ -445,9 +451,10 @@ public class IndexServiceImpl implements IIndexService {
             communityDto.setId(post.getCommunityId());
             communityDto.setState(-1);
             @SuppressWarnings("unchecked")
-                    //@todo
+            //@todo
 
-            CmmCommunityDto c = indexProxyService.selectCmmCommuntityDetail(communityDto);  new CmmCommunityDto();  //communityService.selectOne(Condition.create().setSqlSelect("id,name,icon,cover_image").eq("id", post.getCommunityId()).ne("state", -1));
+                    CmmCommunityDto c = indexProxyService.selectCmmCommuntityDetail(communityDto);
+            new CmmCommunityDto();  //communityService.selectOne(Condition.create().setSqlSelect("id,name,icon,cover_image").eq("id", post.getCommunityId()).ne("state", -1));
             bean.setImageUrl(post.getCoverImage());
 //			if(!CommonUtil.isNull(post.getCoverImage())) {
 //				bean.setImageUrl(post.getCoverImage());
@@ -559,7 +566,7 @@ public class IndexServiceImpl implements IIndexService {
             //
             GameDto gameParam = new GameDto();
             gameParam.setId(banner.getTargetId());
-            GameDto game =  iGameProxyService.selectGameById(gameParam);   //gameService.selectById(banner.getTargetId());
+            GameDto game = iGameProxyService.selectGameById(gameParam);   //gameService.selectById(banner.getTargetId());
             CardDataBean b = new CardDataBean();
             b.setImageUrl(game.getIcon());
             b.setMainTitle(banner.getTitle());//游戏名称
@@ -597,7 +604,7 @@ public class IndexServiceImpl implements IIndexService {
             CmmPostDto cmmPostParam = new CmmPostDto();
             cmmPostParam.setId(videoBanner.getTargetId());
             cmmPostParam.setState(1);
-            CmmPostDto post =  indexProxyService.selctCmmPostOne(cmmPostParam);   //  postService.selectOne(new EntityWrapper<CmmPost>().eq("id", videoBanner.getTargetId()).eq("state", 1));
+            CmmPostDto post = indexProxyService.selctCmmPostOne(cmmPostParam);   //  postService.selectOne(new EntityWrapper<CmmPost>().eq("id", videoBanner.getTargetId()).eq("state", 1));
             if (post == null) {
                 return null;
             }
@@ -609,7 +616,7 @@ public class IndexServiceImpl implements IIndexService {
             dataBean.setVideoUrl(post.getVideo());
             if (!CommonUtil.isNull(post.getContent())) {
 
-                dataBean.setContent(post.getContent().length()>40?Html2Text.removeHtmlTag(post.getContent().substring(0, 40)):Html2Text.removeHtmlTag(post.getContent()));
+                dataBean.setContent(post.getContent().length() > 40 ? Html2Text.removeHtmlTag(post.getContent().substring(0, 40)) : Html2Text.removeHtmlTag(post.getContent()));
                 //dataBean.setContent(post.getContent());
             } else {
                 dataBean.setContent(post.getContent());
@@ -649,7 +656,6 @@ public class IndexServiceImpl implements IIndexService {
         }
         return cb;
     }
-
 
 
     /**

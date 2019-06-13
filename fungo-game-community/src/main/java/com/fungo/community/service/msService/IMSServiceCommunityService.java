@@ -69,4 +69,8 @@ public interface IMSServiceCommunityService {
      * @return
      */
     public List<Map<String,Object>> getFollowerCommunity(int pageNum,int limit, List<String> communityIds);
+
+    List<String> listOfficialCommunityIds();
+
+    List<String> listGameIds(List<String> list);
 }

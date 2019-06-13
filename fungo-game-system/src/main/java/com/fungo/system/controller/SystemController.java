@@ -97,6 +97,24 @@ public class SystemController {
     }
 
     /**
+     * 功能描述: 根据用户Id获取最近浏览圈子行为 8个
+     * @param userId
+     * @return
+     */
+    @RequestMapping(value = "/getRecentBrowseCommunityByUserId")
+    public ResultDto<List<String>> getRecentBrowseCommunityByUserId(@RequestParam("userId") String userId){
+        ResultDto<List<String>> re = null;
+        try {
+            re =  systemService.getRecentBrowseCommunityByUserId(userId);
+        }catch (Exception e){
+            LOGGER.error("SystemController.getRecentBrowseCommunityByUserId",e);
+            re = ResultDto.error("-1", "SystemController.getMemberFollower1执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
+    /**
      * 功能描述: 根据用户会员DTO对象分页查询用户会员
      * @param: [memberUserPrefile, memberDto]
      * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.user.MemberDto>
@@ -361,6 +379,21 @@ public class SystemController {
             e.printStackTrace();
             LOGGER.error("SystemController.listActionByCondition",e);
             re = ResultDto.error("-1", "SystemController.listActionByCondition执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
+    @GetMapping(value = "/listGameHisIds")
+    @ApiOperation(value="获取历史浏览游戏社区id集合")
+    public ResultDto<List<String>> listGameHisIds(@RequestParam("memberid") String memberid){
+        ResultDto<List<String>> re = null;
+        try {
+            re =  systemService.listCommunityHisIds(memberid);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("SystemController.listCommunityHisIds",e);
+            re = ResultDto.error("-1", "SystemController.listCommunityHisIds执行service出现异常");
         }finally {
             return re;
         }
