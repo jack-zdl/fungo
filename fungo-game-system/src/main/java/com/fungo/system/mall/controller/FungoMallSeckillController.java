@@ -7,6 +7,7 @@ import com.fungo.system.mall.service.IFungoMallSeckillService;
 import com.fungo.system.mall.service.commons.FungoMallSeckillTaskStateCommand;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.mall.MallGoodsOutBean;
 import com.game.common.dto.mall.MallOrderInput;
 import com.game.common.util.date.DateTools;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,10 +50,10 @@ public class FungoMallSeckillController {
 
     /**
      * 获取每日秒杀商品列表接口
-     * @return
+     * @return 返回 以json字符串方式返回商品数据
      */
     @PostMapping("/api/mall/goods/seckill/list")
-    public ResultDto<String> getGoodsListForSeckill(MemberUserProfile memberUserPrefile, HttpServletRequest request) {
+    public ResultDto<String> getGoodsListForSeckillJson(MemberUserProfile memberUserPrefile, HttpServletRequest request) {
 
         String loginId = null;
         if (null != memberUserPrefile) {
@@ -76,6 +78,42 @@ public class FungoMallSeckillController {
         }
         return ResultDto.success(DateTools.fmtDate(new Date()));
     }
+
+
+
+    /**
+     * 获取每日秒杀商品列表接口
+     * @return 返回 以json对象方式返回商品数据
+     */
+    @PostMapping("/api/mall/goods/game/list")
+    public ResultDto<List<MallGoodsOutBean>> getGoodsListForSeckill(MemberUserProfile memberUserPrefile, HttpServletRequest request) {
+
+        String loginId = null;
+        if (null != memberUserPrefile) {
+            loginId = memberUserPrefile.getLoginId();
+        }
+
+
+        String realIp = "";
+        if (null != request) {
+            realIp = request.getHeader("x-forwarded-for");
+        }
+
+        List<MallGoodsOutBean> goodsListForSeckillList = iFungoMallSeckillService.getGoodsListForSeckill(loginId, realIp);
+
+        if (null != goodsListForSeckillList && !goodsListForSeckillList.isEmpty()) {
+
+            ResultDto<List<MallGoodsOutBean>> resultDto = new ResultDto<List<MallGoodsOutBean>>();
+
+            resultDto.setData(goodsListForSeckillList);
+            resultDto.setMessage(DateTools.fmtDate(new Date()));
+
+            return resultDto;
+        }
+        return ResultDto.success(DateTools.fmtDate(new Date()));
+    }
+
+
 
 
     /**
