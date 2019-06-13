@@ -66,11 +66,12 @@ public class MallGoods extends Model<MallGoods> {
 	private Integer goodsStatus;
     /**
      * 商品类型
-				1 实物
-				2 虚拟物品
-				   21 零卡
-				   22 京东卡
-				   23 QB卡
+	 * 1 实物
+	 * 2 虚拟物品
+	 *    21 零卡
+	 *    22 京东卡
+	 *    23 QB卡
+	 * 3 游戏礼包
      */
 	@TableField("goods_type")
 	private Integer goodsType;
