@@ -166,7 +166,17 @@ public class FungoMallSeckillController {
             }
 
             //执行下单
-            Map<String, Object> orderMap = iFungoMallSeckillService.createOrderWithSeckill(mallOrderInput, realIp);
+            Map<String, Object> orderMap = null;
+            if (3 == mallOrderInput.getGoodsType()) {
+
+                orderMap = iFungoMallSeckillService.createOrderWithSeckillWithGame(mallOrderInput, realIp);
+
+            } else {
+
+                orderMap = iFungoMallSeckillService.createOrderWithSeckill(mallOrderInput, realIp);
+
+            }
+
             if (null == orderMap) {
                 return ResultDto.success("秒杀通道非常拥挤，本次秒杀失败，请继续秒杀");
             }
