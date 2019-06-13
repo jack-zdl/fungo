@@ -101,7 +101,38 @@ public class MallGoodsOutBean implements Serializable {
      */
     private boolean is_buy;
 
+    /**
+     * 游戏ID
+     */
     private String gameId;
+
+    /**
+     * 有效期信息描述
+     */
+    private String validPeriodIntro;
+
+
+    /**
+     * 使用方法描述
+     */
+    private String usageDesc;
+
+
+    public String getValidPeriodIntro() {
+        return validPeriodIntro;
+    }
+
+    public void setValidPeriodIntro(String validPeriodIntro) {
+        this.validPeriodIntro = validPeriodIntro;
+    }
+
+    public String getUsageDesc() {
+        return usageDesc;
+    }
+
+    public void setUsageDesc(String usageDesc) {
+        this.usageDesc = usageDesc;
+    }
 
     public String getId() {
         return id;
