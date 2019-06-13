@@ -83,13 +83,15 @@ public class MallOrderGoods extends Model<MallOrderGoods> {
      */
 	@TableField("goods_att")
 	private String goodsAtt;
+
     /**
-     * 商品类型
-			1 实物
-			2 虚拟物品
-			   21 零卡
-			   22 京东卡
-			   23 QB卡
+		 商品类型
+		 1 实物
+		 2 虚拟物品
+		 21 零卡
+		 22 京东卡
+		 23 QB卡
+		 3 游戏礼包
    
      */
 	@TableField("goods_type")
