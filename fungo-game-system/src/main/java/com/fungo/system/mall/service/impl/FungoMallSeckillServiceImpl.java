@@ -5,14 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.entity.IncentAccountCoin;
 import com.fungo.system.entity.Member;
-import com.fungo.system.mall.daoService.MallGoodsDaoService;
-import com.fungo.system.mall.daoService.MallOrderDaoService;
-import com.fungo.system.mall.daoService.MallOrderGoodsDaoService;
-import com.fungo.system.mall.daoService.MallSeckillDaoService;
-import com.fungo.system.mall.entity.MallGoods;
-import com.fungo.system.mall.entity.MallOrder;
-import com.fungo.system.mall.entity.MallOrderGoods;
-import com.fungo.system.mall.entity.MallSeckill;
+import com.fungo.system.mall.daoService.*;
+import com.fungo.system.mall.entity.*;
 import com.fungo.system.mall.service.IFungoMallSeckillService;
 import com.fungo.system.mall.service.IMallLogsService;
 import com.fungo.system.mall.service.commons.FungoMallSeckillTaskStateCommand;
@@ -55,6 +49,9 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     @Autowired
     private MallSeckillDaoService mallSeckillDaoService;
+
+    @Autowired
+    private MallVirtualCardDaoService mallVirtualCardDaoService;
 
     @Autowired
     private IncentAccountCoinDaoService incentAccountCoinService;
@@ -240,9 +237,13 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                     Integer sort = mallGoods.getSort();
                     String goods_intro = mallGoods.getGoodsIntro();
 
-                    //价格解密
                     Long seckill_price_vcy = mallGoods.getMarketPriceVcy();
 
+                    //有效期描述信息
+                    String validPeriodIntro = mallGoods.getExt1();
+
+                    //使用方法说明
+                    String usageDesc = mallGoods.getUsageDesc();
 
                     goodsOutBean.setId(String.valueOf(goodsId));
                     goodsOutBean.setGoodsName(goods_name);
@@ -251,7 +252,19 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                     goodsOutBean.setSort(sort);
                     goodsOutBean.setGoodsIntro(goods_intro);
 
+                    goodsOutBean.setValidPeriodIntro(validPeriodIntro);
+                    goodsOutBean.setUsageDesc(usageDesc);
+
                     goodsOutBeanList.add(goodsOutBean);
+
+
+                    //验证用户是否购买过
+                    boolean buyedValid = this.isBuyedVMCardValidWithGame(mb_id, goodsId);
+                    goodsOutBean.setIs_buy(buyedValid);
+
+                    //查询该商品剩余的卡号数量
+                    int unSaledVMCardCount = this.getUnSaledVMCardWithGame(mb_id, goodsId);
+                    goodsOutBean.setResidueStock(String.valueOf(unSaledVMCardCount));
 
 
                 }
@@ -1267,6 +1280,46 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         FunGoEHCacheUtils.remove(FunGoGameConsts.CACHE_EH_NAME, memberIdCacheKey);
 
     }
+
+
+    /**
+     * 验证用户是否购买过游戏礼包
+     * @param mb_id
+     * @param goods_id
+     * @return
+     */
+    private boolean isBuyedVMCardValidWithGame(String mb_id, Long goods_id) {
+
+        //查询虚拟卡验证用户是否购买过
+        EntityWrapper<MallVirtualCard> virtualCardEntityWrapper = new EntityWrapper<MallVirtualCard>();
+        virtualCardEntityWrapper.eq("goods_id", goods_id);
+        virtualCardEntityWrapper.eq("mb_id", mb_id);
+        virtualCardEntityWrapper.eq("card_type", 31);
+        virtualCardEntityWrapper.eq("is_saled", 1);
+
+        int count = mallVirtualCardDaoService.selectCount(virtualCardEntityWrapper);
+        return count > 0 ? true : false;
+    }
+
+
+    /**
+     * 验证用户是否购买过游戏礼包
+     * @param mb_id
+     * @param goods_id
+     * @return
+     */
+    private int getUnSaledVMCardWithGame(String mb_id, Long goods_id) {
+
+        //查询虚拟卡验证用户是否购买过
+        EntityWrapper<MallVirtualCard> virtualCardEntityWrapper = new EntityWrapper<MallVirtualCard>();
+        virtualCardEntityWrapper.eq("goods_id", goods_id);
+        virtualCardEntityWrapper.eq("card_type", 31);
+        virtualCardEntityWrapper.eq("is_saled", -1);
+
+        int count = mallVirtualCardDaoService.selectCount(virtualCardEntityWrapper);
+        return count;
+    }
+
 
     //---------
 
