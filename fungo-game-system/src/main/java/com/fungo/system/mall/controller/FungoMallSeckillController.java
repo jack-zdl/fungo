@@ -90,7 +90,7 @@ public class FungoMallSeckillController {
                                                                     @RequestBody MallGoodsInput mallGoodsInput) {
 
 
-        if (null != mallGoodsInput || mallGoodsInput.getGoods_type() <= 0) {
+        if (null != mallGoodsInput || mallGoodsInput.getGoodsType() <= 0 || StringUtils.isBlank(mallGoodsInput.getGameId())) {
             return ResultDto.error("-1", "请输入正确的商品类型参数");
         }
 

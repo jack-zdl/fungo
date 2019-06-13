@@ -23,11 +23,12 @@ public class MallSeckillDaoServiceImpl extends ServiceImpl<MallSeckillDao, MallS
 
 
     @Autowired
-    private  MallSeckillDao mallSeckillDao;
+    private MallSeckillDao mallSeckillDao;
 
     @Override
-    public List<Map<String, Object>> querySeckillGoods(String startTime, String endTime) throws Exception {
-        return mallSeckillDao.querySeckillGoods(startTime, endTime);
+    public List<Map<String, Object>> querySeckillGoods(String startTime, String endTime, String goods_type, int goods_status) throws Exception {
+        return mallSeckillDao.querySeckillGoods(startTime, endTime, goods_type, goods_status);
     }
+
 
 }

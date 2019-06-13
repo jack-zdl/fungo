@@ -33,7 +33,7 @@ public interface IFungoMallSeckillService {
      * @param mb_id 用户信息
      * @return 返回商品对象集合
      */
-    public List<MallGoodsOutBean> getGoodsListForSeckill(String mb_id, String realIp, MallGoodsInput mallGoodsInput);
+    public List<MallGoodsOutBean> getGoodsListForGame(String mb_id, String realIp, MallGoodsInput mallGoodsInput);
 
 
     /**

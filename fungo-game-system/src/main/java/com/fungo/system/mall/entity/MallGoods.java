@@ -98,6 +98,13 @@ public class MallGoods extends Model<MallGoods> {
      * 排序
      */
 	private Integer sort;
+
+	/**
+	 * 使用方法描述
+	 */
+	@TableField("usage_desc")
+	private String usageDesc;
+
     /**
      * 创建人ID
      */
@@ -290,6 +297,14 @@ public class MallGoods extends Model<MallGoods> {
 
 	public void setGameId(String gameId) {
 		this.gameId = gameId;
+	}
+
+	public String getUsageDesc() {
+		return usageDesc;
+	}
+
+	public void setUsageDesc(String usageDesc) {
+		this.usageDesc = usageDesc;
 	}
 
 	@Override

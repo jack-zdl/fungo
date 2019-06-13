@@ -141,7 +141,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
              * goods_status 产品状态 :
              *                       -1 已删除 ，1 已 下架  ，  2 已 上架
              */
-            List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(queryStartDate, queryEndDate,"1,2,21,22,23",2);
+            List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(queryStartDate, queryEndDate, "1,2,21,22,23", 2);
             if (null != goodsMapList && !goodsMapList.isEmpty()) {
                 goodsOutBeanList = new ArrayList<MallGoodsOutBean>();
 
@@ -210,7 +210,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
     }
 
     @Override
-    public List<MallGoodsOutBean> getGoodsListForSeckill(String mb_id, String realIp, MallGoodsInput mallGoodsInput) {
+    public List<MallGoodsOutBean> getGoodsListForGame(String mb_id, String realIp, MallGoodsInput mallGoodsInput) {
 
 
         List<MallGoodsOutBean> goodsOutBeanList = null;
@@ -218,52 +218,41 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         try {
 
             //获取秒杀当天的商品
-            List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(null, null,String.valueOf(mallGoodsInput.getGoods_type()),2);
+            EntityWrapper<MallGoods> mallGoodsEntityWrapper = new EntityWrapper<MallGoods>();
+
+            mallGoodsEntityWrapper.eq("game_id", mallGoodsInput.getGameId());
+            mallGoodsEntityWrapper.eq("goods_type", mallGoodsInput.getGoodsType());
+
+            mallGoodsEntityWrapper.orderBy("created_at", false);
+
+            List<MallGoods> goodsMapList = mallGoodsDaoService.selectList(mallGoodsEntityWrapper);
+
+
             if (null != goodsMapList && !goodsMapList.isEmpty()) {
                 goodsOutBeanList = new ArrayList<MallGoodsOutBean>();
 
-                for (Map<String, Object> objectMap : goodsMapList) {
+                for (MallGoods mallGoods : goodsMapList) {
 
                     MallGoodsOutBean goodsOutBean = new MallGoodsOutBean();
 
-                    Long goodsId = (Long) objectMap.get("goodsId");
-                    String goods_name = (String) objectMap.get("goods_name");
-                    String main_img = (String) objectMap.get("main_img");
-                    Integer sort = (Integer) objectMap.get("sort");
-                    String goods_intro = (String) objectMap.get("goods_intro");
+                    Long goodsId = mallGoods.getId();
+                    String goods_name = mallGoods.getGoodsName();
+                    Integer sort = mallGoods.getSort();
+                    String goods_intro = mallGoods.getGoodsIntro();
 
                     //价格解密
-                    String seckill_price_vcy = (String) objectMap.get("seckill_price_vcy");
-                    seckill_price_vcy = FungoAESUtil.decrypt(seckill_price_vcy,
-                            aESSecretKey + FungoMallSeckillConsts.AES_SALT);
+                    Long seckill_price_vcy = mallGoods.getMarketPriceVcy();
 
-
-                    //剩余库存解析
-                    String residue_stock = (String) objectMap.get("residue_stock");
-                    residue_stock = FungoAESUtil.decrypt(residue_stock,
-                            aESSecretKey + FungoMallSeckillConsts.AES_SALT);
-
-
-                    Date start_time = (Date) objectMap.get("start_time");
-                    if (null != start_time) {
-                        String startDate_s = DateTools.fmtSimpleDateToString(start_time);
-                        goodsOutBean.setStartTime(startDate_s);
-                    }
-                    Date end_time = (Date) objectMap.get("end_time");
-                    if (null != end_time) {
-                        String endDate_s = DateTools.fmtSimpleDateToString(end_time);
-                        goodsOutBean.setEndTime(endDate_s);
-                    }
 
                     goodsOutBean.setId(String.valueOf(goodsId));
                     goodsOutBean.setGoodsName(goods_name);
-                    goodsOutBean.setSeckillPriceVcy(seckill_price_vcy);
-                    goodsOutBean.setResidueStock(residue_stock);
-                    goodsOutBean.setMainImg(main_img);
+                    goodsOutBean.setSeckillPriceVcy(String.valueOf(seckill_price_vcy));
+
                     goodsOutBean.setSort(sort);
                     goodsOutBean.setGoodsIntro(goods_intro);
 
                     goodsOutBeanList.add(goodsOutBean);
+
 
                 }
             }
@@ -315,7 +304,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             }
 
             //获取秒杀当天的商品
-            List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(queryStartDate, queryEndDate,"1,2,21,22,23",2);
+            List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(queryStartDate, queryEndDate, "1,2,21,22,23", 2);
             if (null != goodsMapList && !goodsMapList.isEmpty()) {
                 goodsOutBeanList = new ArrayList<MallGoodsOutBean>();
 

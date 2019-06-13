@@ -18,13 +18,21 @@ import java.util.Map;
 public interface MallSeckillDao extends BaseMapper<MallSeckill> {
 
 
+
     /**
      * 查询秒杀的商品
      * @param startTime 开始时间
      * @param endTime 结束时间
+     * @param goods_type 商品类型
+     * @param goods_status 商品状态
+     * @param gameId 游戏Id
      * @return
      */
-    public List<Map<String,Object>> querySeckillGoods(@Param("startTime") String startTime, @Param("endTime") String endTime);
+    public List<Map<String,Object>> querySeckillGoods(@Param("startTime") String startTime, @Param("endTime") String endTime,
+                                                      @Param("goods_type") String goods_type,@Param("goods_status") int goods_status);
+
+
+
 
 
 }
