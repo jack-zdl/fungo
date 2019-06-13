@@ -213,7 +213,7 @@ public class FungoMallScanOrderWithSeckillService {
                                                     goods.getGoodsName());
                                         }
                                         //8. 推送系统消息通知用户商品秒杀成功和虚拟卡商品卡号密码等信息
-                                        if (isUpdateSucc) {
+                                        if (isUpdateSucc && 3 != goods.getGoodsType().intValue()) {
                                             pushMsgToMember(mb_id, goods.getGoodsName(), goods.getGoodsType(), vCardNewWithOrderGoods);
                                         }
                                     }catch (Exception e){
