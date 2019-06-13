@@ -61,6 +61,13 @@ public interface IFungoMallSeckillService {
     public Map<String,Object> createOrderWithSeckill(MallOrderInput orderInput, String realIp);
 
     /**
+     * 秒杀下单-游戏礼包
+     * @param orderInput
+     * @return
+     */
+    public Map<String,Object> createOrderWithSeckillWithGame(MallOrderInput orderInput, String realIp);
+
+    /**
      * 秒杀成功，修改订单
      * 修改收货人信息
      *  手机
@@ -79,7 +86,7 @@ public interface IFungoMallSeckillService {
      * @param  orderSn 订单编号
      * @return 返回订单数据对象
      */
-    public List<MallOrderOutBean> getOrdersWithSeckill(String mb_id, String orderId, String orderSn);
+    public List<MallOrderOutBean> getOrdersWithSeckillGame(String mb_id, String orderId, String orderSn, String orderType);
 
 
 

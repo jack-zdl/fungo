@@ -39,8 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.game.common.consts.FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST;
-
 /**
  * <p>
  *    fungo商城-秒杀订单扫描
@@ -202,6 +200,9 @@ public class FungoMallScanOrderWithSeckillService {
                                             case 23:
                                                 vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
                                                 break;
+                                            case 3:
+                                                vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
+                                                break;
                                             default:
                                                 break;
                                         }
@@ -212,7 +213,7 @@ public class FungoMallScanOrderWithSeckillService {
                                                     goods.getGoodsName());
                                         }
                                         //8. 推送系统消息通知用户商品秒杀成功和虚拟卡商品卡号密码等信息
-                                        if (isUpdateSucc) {
+                                        if (isUpdateSucc && 3 != goods.getGoodsType().intValue()) {
                                             pushMsgToMember(mb_id, goods.getGoodsName(), goods.getGoodsType(), vCardNewWithOrderGoods);
                                         }
                                     }catch (Exception e){
