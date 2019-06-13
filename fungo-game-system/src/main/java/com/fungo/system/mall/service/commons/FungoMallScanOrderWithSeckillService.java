@@ -39,8 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.game.common.consts.FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST;
-
 /**
  * <p>
  *    fungo商城-秒杀订单扫描
@@ -200,6 +198,9 @@ public class FungoMallScanOrderWithSeckillService {
                                                 vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
                                                 break;
                                             case 23:
+                                                vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
+                                                break;
+                                            case 3:
                                                 vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
                                                 break;
                                             default:
