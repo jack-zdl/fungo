@@ -24,7 +24,7 @@
         <result column="created_at" property="createdAt"/>
         <result column="updated_at" property="updatedAt"/>
         <result column="post_id" property="postId"/>
-
+        <result column="recommend" property="recommend"/>
         <result column="type" property="type"/>
         <result column="sort" property="sort"/>
         <result column="video" property="video"/>

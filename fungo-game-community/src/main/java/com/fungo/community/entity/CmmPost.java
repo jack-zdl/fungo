@@ -108,6 +108,10 @@ public class CmmPost extends Model<CmmPost> {
      */
 	@TableField("updated_at")
 	private Date updatedAt;
+
+	@TableField("recommend")
+	private Integer recommend;
+
     /**
      * 类型 1:普通 2:精华 3:置顶
      */
@@ -156,6 +160,14 @@ V2.4.3版本添加
 	@TableField("boom_watch_num")
 	private Long boomWatchNum;
 
+
+	public Integer getRecommend() {
+		return recommend;
+	}
+
+	public void setRecommend(Integer recommend) {
+		this.recommend = recommend;
+	}
 
 	public String getCommunityId() {
 		return communityId;
