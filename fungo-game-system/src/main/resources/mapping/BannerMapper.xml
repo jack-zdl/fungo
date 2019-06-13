@@ -23,11 +23,15 @@
 		<result column="created_name" property="createdName" />
 		<result column="sort" property="sort" />
 		<result column="adv_type" property="advType" />
+		<result column="generalize_title" property="generalizeTitle" />
+		<result column="begin_date" property="beginDate" />
+		<result column="end_date" property="endDate" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, action_type AS actionType, position_id AS positionId, position_code AS positionCode, release_time AS releaseTime, target_type AS targetType, target_id AS targetId, title, intro, tag, cover_image AS coverImage, href, state, created_at AS createdAt, updated_at AS updatedAt, created_by AS createdBy, created_name AS createdName, sort
+        id, action_type AS actionType, position_id AS positionId, position_code AS positionCode, release_time AS releaseTime, target_type AS targetType, target_id AS targetId, title, intro, tag, cover_image AS coverImage, href, state, created_at AS createdAt, updated_at AS updatedAt, created_by AS createdBy, created_name AS createdName, sort ,
+		generalize_title AS	generalizeTitle , begin_date AS beginDate , end_date AS endDate
     </sql>
     
   <!--   <update id="updateState">
@@ -45,6 +49,19 @@
    <select id="getDailyMotto" resultType="com.fungo.system.entity.Banner" parameterType="String">
   		select * from t_banner where adv_type = 2 and release_time = #{relDate}
    </select>
-   
+
+	<select id="beforeNewDateBanner" resultType="com.fungo.system.entity.Banner" >
+  		select
+		<include refid="Base_Column_List"></include>
+  		 from t_banner where position_code = '0005' and state = '0' and   end_date > now()  order by sort desc
+   </select>
+
+	<select id="afterNewDateBanner" resultType="com.fungo.system.entity.Banner" >
+  		select
+		<include refid="Base_Column_List"></include>
+  		 from t_banner where position_code = '0005' and state = '0' and now() > end_date order by sort desc
+   </select>
+
+
 
 </mapper>

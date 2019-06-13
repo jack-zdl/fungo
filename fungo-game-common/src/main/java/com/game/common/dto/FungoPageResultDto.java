@@ -1,5 +1,6 @@
 package com.game.common.dto;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.game.common.enums.CommonEnum;
 import com.game.common.enums.IEnum;
 
@@ -79,4 +80,41 @@ public class FungoPageResultDto<T> extends AbstractResultDto {
         return serialVersionUID;
     }
 
+
+    public static class FungoPageResultDtoFactory{
+
+
+        /**
+         * 警告返回请求结果和结果信息的方法
+         * @param msg 结果信息
+         * @return RespJson
+         */
+        public static FungoPageResultDto buildWarning(String code,String msg) {
+            return buildInfo(CommonEnum.ERROR.code(), code, msg, null,-1,-1);
+        }
+
+        /**
+         * 成功返回请求结果和结果信息和数据
+         * @param data 数据
+         * @return  RespJson
+         */
+        public static  FungoPageResultDto buildSuccess( Object data,int before,int after) {
+            return buildInfo(CommonEnum.SUCCESS.code(), CommonEnum.SUCCESS.code(), CommonEnum.SUCCESS.message(), data, before,after);
+        }
+
+
+        private static FungoPageResultDto buildInfo(String resultStr, String code, String msg, Object data, int before,int after) {
+            FungoPageResultDto respJson = new FungoPageResultDto();
+            respJson.setStatus(Integer.valueOf(resultStr));
+            respJson.setCode(code);
+            respJson.setMessage(msg);
+            respJson.setData((List) data);
+            respJson.setCount(((List) data).size());
+            respJson.setBefore(before);
+            respJson.setAfter(after);
+            return respJson;
+        }
+    }
+
 }
+

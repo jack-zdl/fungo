@@ -114,6 +114,22 @@ public class Banner extends Model<Banner> {
 	@TableField("adv_type")
 	private Integer advType;
 
+	/**
+	 * 活动推广标题
+	 */
+	@TableField("generalize_title;")
+	private String  generalizeTitle;
+
+	/**
+	 * 活动开始时间
+	 */
+	@TableField("begin_date")
+	private Date beginDate;
+	/**
+	 *  活动结束时间
+	 */
+	@TableField("end_date")
+	private Date endDate;
 
 	public String getId() {
 		return id;
@@ -265,6 +281,30 @@ public class Banner extends Model<Banner> {
 
 	public void setAdvType(Integer advType) {
 		this.advType = advType;
+	}
+
+	public String getGeneralizeTitle() {
+		return generalizeTitle;
+	}
+
+	public void setGeneralizeTitle(String generalizeTitle) {
+		this.generalizeTitle = generalizeTitle;
+	}
+
+	public Date getBeginDate() {
+		return beginDate;
+	}
+
+	public void setBeginDate(Date beginDate) {
+		this.beginDate = beginDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	@Override

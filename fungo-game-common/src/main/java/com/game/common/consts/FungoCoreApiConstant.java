@@ -411,5 +411,7 @@ public class FungoCoreApiConstant {
     //    getRecentBrowseCommunity
     public static final String FUNGO_CORE_API_GETRECENTBROWSECOMMUNITY = "/api/portal/community/content/recentbrowsecommunity";
 
+    public static final String FUNGO_CORE_API_CIRCLE_EVENT_INDEX = "/api/system/circle/event/list"+"_cloud";
+
     //-------------
 }

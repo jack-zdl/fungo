@@ -2,7 +2,9 @@ package com.fungo.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.system.dao.BannerDao;
 import com.fungo.system.entity.Banner;
 import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IMemeberProxyService;
@@ -21,6 +23,8 @@ import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.index.ActionBean;
 import com.game.common.dto.index.CardDataBean;
 import com.game.common.dto.index.CardIndexBean;
+import com.game.common.enums.BaseEnum;
+import com.game.common.enums.CommonEnum;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
@@ -61,6 +65,9 @@ public class IndexServiceImpl implements IIndexService {
 
     @Autowired
     private BannerService bannerService;
+
+    @Autowired
+    private BannerDao bannerDao;
 
 
     @Override
@@ -213,6 +220,70 @@ public class IndexServiceImpl implements IIndexService {
         //redis cache
         fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
 
+        return re;
+    }
+
+    /**
+     * 功能描述: 获取圈子页面上广告位
+     * @param: [input, os, iosChannel, app_channel, appVersion]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: dl.zhang
+     * @date: 2019/6/11 11:05
+     */
+    @Override
+    public FungoPageResultDto<CardIndexBean> circleEventList(InputPageDto input, String os, String iosChannel, String app_channel, String appVersion) {
+        FungoPageResultDto<CardIndexBean> re = new FungoPageResultDto<>();
+        //先从Redis获取
+        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_EVENT_INDEX;
+        String keySuffix = JSON.toJSONString(input) + os + iosChannel;
+        try {
+            if (StringUtils.isNotBlank(app_channel)) {
+                keySuffix += app_channel;
+            }
+            re =  (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+
+            if (null != re && null != re.getData() && re.getData().size() > 0) {
+                return re;
+            }
+            List<CardIndexBean> clist = new ArrayList<>();
+            /****/
+            List<Banner> bl = new ArrayList<>();
+            Page<Banner> page = new Page<>(input.getPage(), input.getLimit());
+            if(BannnerEnum.lving.getValue().equals(input.getFilter()))
+                bl = bannerDao.beforeNewDateBanner(page);
+            else if(BannnerEnum.past.getValue().equals(input.getFilter()))
+                bl = bannerDao.afterNewDateBanner(page);
+
+            CardIndexBean indexBean = new CardIndexBean();
+            if (bl.size() == 0) {
+                return null;
+            }
+            ArrayList<CardDataBean> list = new ArrayList<>();
+            for (Banner b : bl) {
+                CardDataBean b1 = new CardDataBean();
+                b1.setLowerLeftCorner("运营活动");
+                b1.setImageUrl(b.getCoverImage());
+                b1.setMainTitle(b.getGeneralizeTitle());
+                b1.setContent(b.getIntro());
+                b1.setActionType(String.valueOf(b.getActionType()));
+                b1.setHref(b.getHref());
+                b1.setTargetType(b.getTargetType());
+                b1.setTargetId(b.getTargetId());
+                b1.setLowerLeftCorner(DateTools.fmtDate(b.getBeginDate()));
+                b1.setLowerRightCorner(DateTools.fmtDate(b.getEndDate()));
+                list.add(b1);
+            }
+            /***/
+            if (indexBean != null) {
+                clist.add(indexBean);
+            }
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(list,input.getPage()-1,page.getPages()-input.getPage());
+//            re.setData(clist);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("获取圈子页面上广告位",e);
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(CommonEnum.ERROR.code(),"获取圈子页面上广告位失败,请联系管理员");
+        }
         return re;
     }
 
@@ -441,10 +512,10 @@ public class IndexServiceImpl implements IIndexService {
         return indexList;
     }
 
-    //活动
     public CardIndexBean activities() {
         //banner
-        List<Banner> bl = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0005").eq("state", "0").orderBy("sort", false).last("limit 1"));
+        List<Banner> bl = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0005")
+                .eq("state", "0").orderBy("sort", false).last("limit 1"));
         CardIndexBean indexBean = new CardIndexBean();
         if (bl.size() == 0) {
             return null;
@@ -469,6 +540,18 @@ public class IndexServiceImpl implements IIndexService {
         indexBean.setSize(list.size());
         return indexBean;
     }
+
+    //活动
+//    public CardIndexBean activities(InputPageDto input) {
+////banner
+////        List<Banner> bl = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0005")
+////                .eq("state", "0").orderBy("sort", false));  // .last("limit "+(page-1)*limit +" , "+(limit)));
+////        Wrapper wrapper = new EntityWrapper<Banner>().eq("position_code", "0005")
+////                .eq("state", "0").orderBy("sort", false);
+////        Page<Banner> bannerPage = bannerService.selectPage(page,wrapper );
+////        List<Banner> bl = page.getRecords();
+//
+//    }
 
     //本周精选(游戏)
     public CardIndexBean hotGames() {
@@ -613,6 +696,28 @@ public class IndexServiceImpl implements IIndexService {
             }
         }
         return false;
+    }
+
+    enum BannnerEnum implements BaseEnum<BannnerEnum, String> {
+        lving("1","living"),
+        past("1","past");
+
+        String key;
+        String value;
+
+        BannnerEnum(String key,String value){
+            this.key = key;
+            this.value = value;
+        }
+        @Override
+        public String getKey() {
+            return key;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
     }
 
     //----------
