@@ -427,6 +427,7 @@ public class FungoCoreApiConstant {
     public static final String ISREGISTERED_CLOUD = "isRegistered_Cloud"+"_cloud";
     //**************************************************游戏**************************************************
 
+    public static final String FUNGO_CORE_API_CIRCLE_EVENT_INDEX = "/api/system/circle/event/list"+"_cloud";
 
     //-------------
 }
