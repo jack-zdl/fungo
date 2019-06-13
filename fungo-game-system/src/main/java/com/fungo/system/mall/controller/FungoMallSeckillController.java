@@ -105,7 +105,7 @@ public class FungoMallSeckillController {
             realIp = request.getHeader("x-forwarded-for");
         }
 
-        List<MallGoodsOutBean> goodsListForSeckillList = iFungoMallSeckillService.getGoodsListForSeckill(loginId, realIp, mallGoodsInput);
+        List<MallGoodsOutBean> goodsListForSeckillList = iFungoMallSeckillService.getGoodsListForGame(loginId, realIp, mallGoodsInput);
 
         if (null != goodsListForSeckillList && !goodsListForSeckillList.isEmpty()) {
 
