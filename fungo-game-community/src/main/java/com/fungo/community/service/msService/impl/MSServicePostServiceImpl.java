@@ -277,6 +277,16 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
         return null;
     }
 
+    /**
+     * PC2.0新增浏览量 根据跟用户ID获取文章的浏览量
+     * @param cardId
+     * @return
+     */
+    @Override
+    public Integer getPostBoomWatchNumByCardId(String cardId) {
+        return postDaoService.getPostBoomWatchNumByCardId(cardId);
+    }
+
 
     //------
 }

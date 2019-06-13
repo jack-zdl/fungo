@@ -189,5 +189,19 @@
 
     </select>
 
+    <!--getPostBoomWatchNumByCardId  PC2.0新增浏览量 根据跟用户ID获取文章的浏览量-->
+    <select id="getPostBoomWatchNumByCardId" resultType="java.lang.Integer">
+    SELECT
+        SUM(
+            greatest(
+                IFNULL(watch_num, 0),
+                IFNULL(boom_watch_num, 0)
+            )
+        )
+    FROM
+        t_cmm_post
+    WHERE
+        member_id = #{cardId}
+    </select>
 
 </mapper>
