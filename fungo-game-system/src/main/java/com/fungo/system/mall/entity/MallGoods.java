@@ -29,6 +29,15 @@ public class MallGoods extends Model<MallGoods> {
      * 分类ID, 关联product_cates表ID
      */
 	private Long cid;
+
+
+	/**
+	 * 游戏ID
+	 */
+	@TableField("game_id")
+	private String gameId;
+
+
     /**
      * 商品名称
      */
@@ -273,6 +282,14 @@ public class MallGoods extends Model<MallGoods> {
 
 	public void setExt3(String ext3) {
 		this.ext3 = ext3;
+	}
+
+	public String getGameId() {
+		return gameId;
+	}
+
+	public void setGameId(String gameId) {
+		this.gameId = gameId;
 	}
 
 	@Override

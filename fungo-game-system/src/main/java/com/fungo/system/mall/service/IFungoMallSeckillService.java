@@ -1,6 +1,7 @@
 package com.fungo.system.mall.service;
 
 
+import com.game.common.dto.mall.MallGoodsInput;
 import com.game.common.dto.mall.MallGoodsOutBean;
 import com.game.common.dto.mall.MallOrderInput;
 import com.game.common.dto.mall.MallOrderOutBean;
@@ -25,6 +26,14 @@ public interface IFungoMallSeckillService {
      * @return 返回商品对象集合
      */
     public List<MallGoodsOutBean> getGoodsListForSeckill(String mb_id, String realIp);
+
+
+    /**
+     * 查询秒杀活动的商品
+     * @param mb_id 用户信息
+     * @return 返回商品对象集合
+     */
+    public List<MallGoodsOutBean> getGoodsListForSeckill(String mb_id, String realIp, MallGoodsInput mallGoodsInput);
 
 
     /**
