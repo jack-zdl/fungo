@@ -1,6 +1,5 @@
 package com.game.common.dto;
 
-import com.baomidou.mybatisplus.plugins.Page;
 import com.game.common.enums.CommonEnum;
 import com.game.common.enums.IEnum;
 
@@ -34,7 +33,7 @@ public class FungoPageResultDto<T> extends AbstractResultDto {
         status = Integer.valueOf(code);
     }
 
-    public static <T> FungoPageResultDto<T> error(String code, String message) {
+    public static <T> FungoPageResultDto error(String code, String message) {
         return new FungoPageResultDto<>(code, message);
     }
 
