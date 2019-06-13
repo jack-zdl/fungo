@@ -86,7 +86,7 @@ public interface IFungoMallSeckillService {
      * @param  orderSn 订单编号
      * @return 返回订单数据对象
      */
-    public List<MallOrderOutBean> getOrdersWithSeckill(String mb_id, String orderId, String orderSn);
+    public List<MallOrderOutBean> getOrdersWithSeckillGame(String mb_id, String orderId, String orderSn, String orderType);
 
 
 

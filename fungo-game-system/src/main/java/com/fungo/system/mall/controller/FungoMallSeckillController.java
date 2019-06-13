@@ -10,6 +10,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.mall.MallGoodsInput;
 import com.game.common.dto.mall.MallGoodsOutBean;
 import com.game.common.dto.mall.MallOrderInput;
+import com.game.common.dto.mall.MallOrderOutBean;
 import com.game.common.util.date.DateTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -256,6 +257,46 @@ public class FungoMallSeckillController {
 
         return resultDto;
     }
+
+
+
+
+    /**
+     * 我的秒杀订单列表和查询某个订单详情接口
+     *
+     * @return
+     */
+    @PostMapping("/api/mall/user/order/seckill/game/list")
+    public ResultDto<List<MallOrderOutBean> > getOrdersWithSeckillGame(MemberUserProfile memberUserPrefile, @RequestBody Map<String, String> param) {
+
+
+        String orderId = "";
+        String orderSn = "";
+        String orderType = null;
+        if (null != param && !param.isEmpty()) {
+            if (param.containsKey("orderId")) {
+                orderId = param.get("orderId");
+            }
+            if (param.containsKey("orderSn")) {
+                orderSn = param.get("orderSn");
+            }
+            if (param.containsKey("orderType")) {
+                orderType = param.get("orderType");
+            }
+        }
+        List<MallOrderOutBean>  ordersWithSeckill = iFungoMallSeckillService.getOrdersWithSeckillGame(memberUserPrefile.getLoginId(), orderId, orderSn,orderType);
+
+        if (null == ordersWithSeckill || ordersWithSeckill.isEmpty()) {
+            return ResultDto.success("暂无订单，请去秒杀商品吧");
+        }
+
+        ResultDto<List<MallOrderOutBean> > resultDto = new ResultDto<List<MallOrderOutBean> >();
+        resultDto.setData(ordersWithSeckill);
+
+        return resultDto;
+    }
+
+
 
 
     /**

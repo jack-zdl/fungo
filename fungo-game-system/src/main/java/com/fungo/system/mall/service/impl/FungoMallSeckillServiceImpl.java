@@ -817,17 +817,12 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
 
     @Override
-    public List<MallOrderOutBean> getOrdersWithSeckill(String mb_id, String orderId, String orderSn) {
+    public List<MallOrderOutBean> getOrdersWithSeckillGame(String mb_id, String orderId, String orderSn, String orderType) {
 
         List<MallOrderOutBean> orderOutBeanList = null;
         try {
 
-            logger.info("用户查询订单--用户id:{}--订单ID:{}--订单编号:{}", mb_id, orderId, orderSn);
-
-            /*
-              orderSn 若为空，则查询该用户的所有订单
-              否则查询，orderSn订单详情
-             */
+            logger.info("用户查询订单--用户id:{}--订单ID:{}--订单编号:{}---orderType:{}", mb_id, orderId, orderSn, orderType);
 
             orderOutBeanList = new ArrayList<MallOrderOutBean>();
 
@@ -848,9 +843,12 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
                     for (MallOrder mallOrder : mallOrders) {
                         //查询该订单关联的商品
-                        List<MallOrderGoods> mallOrderGoodsList = queryOrderGoodsWithMember(mb_id, String.valueOf(mallOrder.getId()));
-                        MallOrderOutBean orderOutBean = createMemberOrderOut(mallOrder, mallOrderGoodsList);
-                        orderOutBeanList.add(orderOutBean);
+                        List<MallOrderGoods> mallOrderGoodsList = queryOrderGoodsWithMember(mb_id, String.valueOf(mallOrder.getId()), orderType);
+
+                        if (null != mallOrderGoodsList && !mallOrderGoodsList.isEmpty()) {
+                            MallOrderOutBean orderOutBean = createMemberOrderOut(mallOrder, mallOrderGoodsList);
+                            orderOutBeanList.add(orderOutBean);
+                        }
 
                     }
                 }
@@ -959,6 +957,12 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                             goodsOutBean.setMainImg(mainImg);
                             goodsOutBean.setGoodsIntro(goodsIntro);
                         }
+
+                        //获取cardInfo
+                        JSONObject cardInfoJson = jsonObject.getJSONObject("cardInfo");
+                        if (null != cardInfoJson) {
+                            orderOutBean.setCardInfo(cardInfoJson);
+                        }
                     }
                 }
 
@@ -983,6 +987,20 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
         EntityWrapper<MallOrderGoods> orderGoodsEntityWrapper = new EntityWrapper<MallOrderGoods>();
         orderGoodsEntityWrapper.eq("mb_id", mb_id).eq("order_id", orderId);
+        return mallOrderGoodsDaoService.selectList(orderGoodsEntityWrapper);
+    }
+
+    /**
+     * 查询用户订单关联的商品数据
+     * @param mb_id
+     * @param orderId
+     * @return
+     */
+    private List<MallOrderGoods> queryOrderGoodsWithMember(String mb_id, String orderId, String orderType) {
+
+        EntityWrapper<MallOrderGoods> orderGoodsEntityWrapper = new EntityWrapper<MallOrderGoods>();
+        orderGoodsEntityWrapper.eq("mb_id", mb_id).eq("order_id", orderId);
+        orderGoodsEntityWrapper.eq("goods_type", orderType);
         return mallOrderGoodsDaoService.selectList(orderGoodsEntityWrapper);
     }
 
@@ -1362,7 +1380,6 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
     }
 
 
-
     /**
      *  添加订单和订单商品表
      * @param mb_id
@@ -1466,11 +1483,6 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
         return order;
     }
-
-
-
-
-
 
 
     //线程池
