@@ -4,6 +4,8 @@ import com.fungo.system.helper.RabbitMQProduct;
 import com.fungo.system.ts.mq.service.ITransactionMessageService;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.community.CmmCommunityDto;
+import com.game.common.dto.community.CmmPostDto;
+import com.game.common.dto.community.MooMoodDto;
 import com.game.common.dto.game.GameReleaseLogDto;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
@@ -29,6 +31,20 @@ public class MQProduct {
     public void communityInsert(CmmCommunityDto c){
         MQResultDto mqResultDto = new MQResultDto();
         mqResultDto.setType(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_COMMUNITYINSERT.getCode());
+        mqResultDto.setBody(c);
+        rabbitMQProduct.mqCommunity(mqResultDto);
+    }
+
+    public void postUpdate(CmmPostDto c){
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_POST_UPDATE.getCode());
+        mqResultDto.setBody(c);
+        rabbitMQProduct.mqCommunity(mqResultDto);
+    }
+
+    public void moodUpdate(MooMoodDto c){
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_MOOD_UPDATE.getCode());
         mqResultDto.setBody(c);
         rabbitMQProduct.mqCommunity(mqResultDto);
     }
