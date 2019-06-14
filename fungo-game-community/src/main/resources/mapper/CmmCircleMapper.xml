@@ -187,4 +187,10 @@
       updated_by = #{updatedBy,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
+
+  <select id="selectCircleByGameId" parameterType="java.lang.String" resultType="java.lang.String">
+    select id from t_cmm_circle where game_id = #{gameId} limit 1
+  </select>
+
+
 </mapper>
