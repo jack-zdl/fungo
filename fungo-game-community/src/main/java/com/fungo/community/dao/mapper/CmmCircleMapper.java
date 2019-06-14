@@ -1,13 +1,20 @@
 package com.fungo.community.dao.mapper;
 
 
+import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.fungo.community.entity.CmmCircle;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
-public interface CmmCircleMapper {
+
+import java.util.List;
+
+@Repository
+public interface CmmCircleMapper  extends BaseMapper<CmmCircle> {
     int deleteByPrimaryKey(String id);
 
-    int insert(CmmCircle record);
+    List<CmmCircle> selectPageByKeyword(Pagination page,String keyword);
 
     int insertSelective(CmmCircle record);
 

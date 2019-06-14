@@ -20,14 +20,26 @@ public class MallGoodsInput implements Serializable {
      * 2 商城虚拟商品 默认 ;<br/>
      * 3 游戏礼包商品
      */
-    private int goods_type;
+    private int goodsType;
 
+    /**
+     * 游戏id
+     */
+    private String gameId;
 
-    public int getGoods_type() {
-        return goods_type;
+    public int getGoodsType() {
+        return goodsType;
     }
 
-    public void setGoods_type(int goods_type) {
-        this.goods_type = goods_type;
+    public void setGoodsType(int goodsType) {
+        this.goodsType = goodsType;
+    }
+
+    public String getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
     }
 }

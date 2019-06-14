@@ -5,14 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.entity.IncentAccountCoin;
 import com.fungo.system.entity.Member;
-import com.fungo.system.mall.daoService.MallGoodsDaoService;
-import com.fungo.system.mall.daoService.MallOrderDaoService;
-import com.fungo.system.mall.daoService.MallOrderGoodsDaoService;
-import com.fungo.system.mall.daoService.MallSeckillDaoService;
-import com.fungo.system.mall.entity.MallGoods;
-import com.fungo.system.mall.entity.MallOrder;
-import com.fungo.system.mall.entity.MallOrderGoods;
-import com.fungo.system.mall.entity.MallSeckill;
+import com.fungo.system.mall.daoService.*;
+import com.fungo.system.mall.entity.*;
 import com.fungo.system.mall.service.IFungoMallSeckillService;
 import com.fungo.system.mall.service.IMallLogsService;
 import com.fungo.system.mall.service.commons.FungoMallSeckillTaskStateCommand;
@@ -55,6 +49,9 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     @Autowired
     private MallSeckillDaoService mallSeckillDaoService;
+
+    @Autowired
+    private MallVirtualCardDaoService mallVirtualCardDaoService;
 
     @Autowired
     private IncentAccountCoinDaoService incentAccountCoinService;
@@ -141,7 +138,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
              * goods_status 产品状态 :
              *                       -1 已删除 ，1 已 下架  ，  2 已 上架
              */
-            List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(queryStartDate, queryEndDate,"1,2,21,22,23",2);
+            List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(queryStartDate, queryEndDate, "1,2,21,22,23", 2);
             if (null != goodsMapList && !goodsMapList.isEmpty()) {
                 goodsOutBeanList = new ArrayList<MallGoodsOutBean>();
 
@@ -210,7 +207,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
     }
 
     @Override
-    public List<MallGoodsOutBean> getGoodsListForSeckill(String mb_id, String realIp, MallGoodsInput mallGoodsInput) {
+    public List<MallGoodsOutBean> getGoodsListForGame(String mb_id, String realIp, MallGoodsInput mallGoodsInput) {
 
 
         List<MallGoodsOutBean> goodsOutBeanList = null;
@@ -218,52 +215,57 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         try {
 
             //获取秒杀当天的商品
-            List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(null, null,String.valueOf(mallGoodsInput.getGoods_type()),2);
+            EntityWrapper<MallGoods> mallGoodsEntityWrapper = new EntityWrapper<MallGoods>();
+
+            mallGoodsEntityWrapper.eq("game_id", mallGoodsInput.getGameId());
+            mallGoodsEntityWrapper.eq("goods_type", mallGoodsInput.getGoodsType());
+
+            mallGoodsEntityWrapper.orderBy("created_at", false);
+
+            List<MallGoods> goodsMapList = mallGoodsDaoService.selectList(mallGoodsEntityWrapper);
+
+
             if (null != goodsMapList && !goodsMapList.isEmpty()) {
                 goodsOutBeanList = new ArrayList<MallGoodsOutBean>();
 
-                for (Map<String, Object> objectMap : goodsMapList) {
+                for (MallGoods mallGoods : goodsMapList) {
 
                     MallGoodsOutBean goodsOutBean = new MallGoodsOutBean();
 
-                    Long goodsId = (Long) objectMap.get("goodsId");
-                    String goods_name = (String) objectMap.get("goods_name");
-                    String main_img = (String) objectMap.get("main_img");
-                    Integer sort = (Integer) objectMap.get("sort");
-                    String goods_intro = (String) objectMap.get("goods_intro");
+                    Long goodsId = mallGoods.getId();
+                    String goods_name = mallGoods.getGoodsName();
+                    Integer sort = mallGoods.getSort();
+                    String goods_intro = mallGoods.getGoodsIntro();
 
-                    //价格解密
-                    String seckill_price_vcy = (String) objectMap.get("seckill_price_vcy");
-                    seckill_price_vcy = FungoAESUtil.decrypt(seckill_price_vcy,
-                            aESSecretKey + FungoMallSeckillConsts.AES_SALT);
+                    Long seckill_price_vcy = mallGoods.getMarketPriceVcy();
 
+                    //有效期描述信息
+                    String validPeriodIntro = mallGoods.getExt1();
 
-                    //剩余库存解析
-                    String residue_stock = (String) objectMap.get("residue_stock");
-                    residue_stock = FungoAESUtil.decrypt(residue_stock,
-                            aESSecretKey + FungoMallSeckillConsts.AES_SALT);
-
-
-                    Date start_time = (Date) objectMap.get("start_time");
-                    if (null != start_time) {
-                        String startDate_s = DateTools.fmtSimpleDateToString(start_time);
-                        goodsOutBean.setStartTime(startDate_s);
-                    }
-                    Date end_time = (Date) objectMap.get("end_time");
-                    if (null != end_time) {
-                        String endDate_s = DateTools.fmtSimpleDateToString(end_time);
-                        goodsOutBean.setEndTime(endDate_s);
-                    }
+                    //使用方法说明
+                    String usageDesc = mallGoods.getUsageDesc();
 
                     goodsOutBean.setId(String.valueOf(goodsId));
                     goodsOutBean.setGoodsName(goods_name);
-                    goodsOutBean.setSeckillPriceVcy(seckill_price_vcy);
-                    goodsOutBean.setResidueStock(residue_stock);
-                    goodsOutBean.setMainImg(main_img);
+                    goodsOutBean.setSeckillPriceVcy(String.valueOf(seckill_price_vcy));
+
                     goodsOutBean.setSort(sort);
                     goodsOutBean.setGoodsIntro(goods_intro);
 
+                    goodsOutBean.setValidPeriodIntro(validPeriodIntro);
+                    goodsOutBean.setUsageDesc(usageDesc);
+
                     goodsOutBeanList.add(goodsOutBean);
+
+
+                    //验证用户是否购买过
+                    boolean buyedValid = this.isBuyedVMCardValidWithGame(mb_id, goodsId);
+                    goodsOutBean.setIs_buy(buyedValid);
+
+                    //查询该商品剩余的卡号数量
+                    int unSaledVMCardCount = this.getUnSaledVMCardWithGame(mb_id, goodsId);
+                    goodsOutBean.setResidueStock(String.valueOf(unSaledVMCardCount));
+
 
                 }
             }
@@ -315,7 +317,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             }
 
             //获取秒杀当天的商品
-            List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(queryStartDate, queryEndDate,"1,2,21,22,23",2);
+            List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(queryStartDate, queryEndDate, "1,2,21,22,23", 2);
             if (null != goodsMapList && !goodsMapList.isEmpty()) {
                 goodsOutBeanList = new ArrayList<MallGoodsOutBean>();
 
@@ -465,6 +467,8 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                     }
                 }
             }
+
+
             if (!isFullGoodsStock) {
                 resultMap.put("seckillStatus", 4);
                 logger.info("秒杀商品失败--用户id:{}--商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "秒杀的商品库存不足");
@@ -582,6 +586,133 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
     }
 
 
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Map<String, Object> createOrderWithSeckillWithGame(MallOrderInput orderInput, String realIp) {
+
+        //记录日志
+        addMallLogs(orderInput.getMbId(), "", Long.parseLong(orderInput.getGoodsId()), realIp, 2);
+
+        logger.info("秒杀游戏礼包商品--用户id:{}--游戏礼包商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "开始了...");
+
+        Map<String, Object> resultMap = null;
+
+
+        try {
+
+            //查询出游戏礼包商品详情
+            EntityWrapper<MallGoods> goodsEntityWrapper = new EntityWrapper<MallGoods>();
+            goodsEntityWrapper.eq("id", orderInput.getGoodsId());
+            MallGoods goods = mallGoodsDaoService.selectOne(goodsEntityWrapper);
+
+            if (null == goods) {
+                resultMap.put("seckillStatus", 4);
+                return resultMap;
+            }
+
+            resultMap = new HashMap<String, Object>();
+            resultMap.put("mbId", orderInput.getMbId());
+
+
+            //2.验证秒杀的游戏礼包商品库存是否充足
+            //2.1  若是游戏礼包
+            int unSaledVMCardCount = this.getUnSaledVMCardWithGame(null, Long.parseLong(orderInput.getGoodsId()));
+
+            if (unSaledVMCardCount <= 0) {
+                resultMap.put("seckillStatus", 4);
+                logger.info("秒杀游戏礼包商品失败--用户id:{}--游戏礼包商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "秒杀的游戏礼包商品库存不足");
+                return resultMap;
+            }
+
+
+            //4.有足够的fungo币可用余额，且下单后要冻结与订单金额对等的可用余额
+            // 验证当前用户的fungo币可用余额是否大于等于当前游戏礼包商品的价格
+            //  4.1 若fungo币可用余额 足够秒杀当前游戏礼包商品，则下单
+            //  4.2 同时直接扣除可用余额，到冻结余额
+            boolean isFullMbFungo = false;
+
+            IncentAccountCoin incentAccountCoin = isFullMbFungo(orderInput.getMbId());
+            if (null == incentAccountCoin) {
+                resultMap.put("seckillStatus", 3);
+                logger.info("秒杀游戏礼包商品失败--用户id:{}--游戏礼包商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "用户fungo币不足");
+                return resultMap;
+            }
+
+
+            BigDecimal coinUsable = incentAccountCoin.getCoinUsable();
+            if (null == coinUsable) {
+                resultMap.put("seckillStatus", 3);
+                logger.info("秒杀游戏礼包商品失败--用户id:{}--游戏礼包商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "用户fungo币不足");
+                return resultMap;
+            }
+
+            int isHaveCoin = coinUsable.compareTo(BigDecimal.ZERO);
+            if (0 == isHaveCoin || -1 == isHaveCoin) {
+                resultMap.put("seckillStatus", 3);
+                logger.info("秒杀游戏礼包商品失败--用户id:{}--游戏礼包商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "用户fungo币不足");
+                return resultMap;
+            }
+
+            coinUsable = coinUsable.setScale(2);
+
+
+            BigDecimal goodsPriceVcyBD = new BigDecimal(goods.getMarketPriceVcy());
+            goodsPriceVcyBD = goodsPriceVcyBD.setScale(2);
+
+            //可用余额是否大于等于游戏礼包商品价格
+            int cmpResult = coinUsable.compareTo(goodsPriceVcyBD);
+            if (0 == cmpResult || 1 == cmpResult) {
+                isFullMbFungo = true;
+            }
+
+            if (!isFullMbFungo) {
+                resultMap.put("seckillStatus", 3);
+                logger.info("秒杀游戏礼包商品失败--用户id:{}--游戏礼包商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "用户fungo币不足");
+                return resultMap;
+            }
+
+
+            //5.执行下单
+            //5.1 先冻结用户的可用余额
+            int isFreezeMbCoinAccount = freezeMemberFungo(orderInput.getMbId(), incentAccountCoin, goodsPriceVcyBD);
+
+            //5.2 再创建订单
+            //冻结用户可用币量后生成订单
+            if (1 == isFreezeMbCoinAccount) {
+                logger.info("秒杀游戏礼包商品--用户id:{}--游戏礼包商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "冻结用户的可用fungo币量成功，开始创建订单");
+
+                //创建订单
+                MallOrder mallOrder = addSeckillOrderWithGame(orderInput.getMbId(), goods);
+
+                if (null != mallOrder && StringUtils.isNoneBlank(mallOrder.getOrderSn())) {
+
+                    logger.info("秒杀游戏礼包商品--用户id:{}--游戏礼包商品id:{}--订单号:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), mallOrder.getOrderSn(),
+                            "订单创建成功，正在排队秒杀游戏礼包商品...");
+                    resultMap.put("orderId", String.valueOf(mallOrder.getId()));
+                    resultMap.put("seckillStatus", 1);
+                }
+            } else {
+                throw new BusinessException("-1", "冻结用户可用币量失败");
+            }
+
+        } catch (Exception ex) {
+            logger.error("秒杀游戏礼包商品--用户id:{}--游戏礼包商品id:{}--出现异常:{}", orderInput.getMbId(), orderInput.getGoodsId(), ex);
+            ex.printStackTrace();
+            throw new BusinessException("-1", "秒杀游戏礼包商品出现异常");
+        } finally {
+
+            //清除缓存的订单数据
+            logger.info("用户创建订单成功，删除该用户订单缓存,mb_id:{}", orderInput.getMbId());
+
+            // 清除用户fun消耗缓存  FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST
+            String detailFunCoinCacheKey = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + orderInput.getMbId();
+
+        }
+
+        return resultMap;
+    }
+
+
     @Override
     public boolean updateOrderWithSeckill(MallOrderInput mallOrderInput) {
 
@@ -686,17 +817,12 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
 
     @Override
-    public List<MallOrderOutBean> getOrdersWithSeckill(String mb_id, String orderId, String orderSn) {
+    public List<MallOrderOutBean> getOrdersWithSeckillGame(String mb_id, String orderId, String orderSn, String orderType) {
 
         List<MallOrderOutBean> orderOutBeanList = null;
         try {
 
-            logger.info("用户查询订单--用户id:{}--订单ID:{}--订单编号:{}", mb_id, orderId, orderSn);
-
-            /*
-              orderSn 若为空，则查询该用户的所有订单
-              否则查询，orderSn订单详情
-             */
+            logger.info("用户查询订单--用户id:{}--订单ID:{}--订单编号:{}---orderType:{}", mb_id, orderId, orderSn, orderType);
 
             orderOutBeanList = new ArrayList<MallOrderOutBean>();
 
@@ -717,9 +843,12 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
                     for (MallOrder mallOrder : mallOrders) {
                         //查询该订单关联的商品
-                        List<MallOrderGoods> mallOrderGoodsList = queryOrderGoodsWithMember(mb_id, String.valueOf(mallOrder.getId()));
-                        MallOrderOutBean orderOutBean = createMemberOrderOut(mallOrder, mallOrderGoodsList);
-                        orderOutBeanList.add(orderOutBean);
+                        List<MallOrderGoods> mallOrderGoodsList = queryOrderGoodsWithMember(mb_id, String.valueOf(mallOrder.getId()), orderType);
+
+                        if (null != mallOrderGoodsList && !mallOrderGoodsList.isEmpty()) {
+                            MallOrderOutBean orderOutBean = createMemberOrderOut(mallOrder, mallOrderGoodsList);
+                            orderOutBeanList.add(orderOutBean);
+                        }
 
                     }
                 }
@@ -828,6 +957,12 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                             goodsOutBean.setMainImg(mainImg);
                             goodsOutBean.setGoodsIntro(goodsIntro);
                         }
+
+                        //获取cardInfo
+                        JSONObject cardInfoJson = jsonObject.getJSONObject("cardInfo");
+                        if (null != cardInfoJson) {
+                            orderOutBean.setCardInfo(cardInfoJson);
+                        }
                     }
                 }
 
@@ -852,6 +987,20 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
         EntityWrapper<MallOrderGoods> orderGoodsEntityWrapper = new EntityWrapper<MallOrderGoods>();
         orderGoodsEntityWrapper.eq("mb_id", mb_id).eq("order_id", orderId);
+        return mallOrderGoodsDaoService.selectList(orderGoodsEntityWrapper);
+    }
+
+    /**
+     * 查询用户订单关联的商品数据
+     * @param mb_id
+     * @param orderId
+     * @return
+     */
+    private List<MallOrderGoods> queryOrderGoodsWithMember(String mb_id, String orderId, String orderType) {
+
+        EntityWrapper<MallOrderGoods> orderGoodsEntityWrapper = new EntityWrapper<MallOrderGoods>();
+        orderGoodsEntityWrapper.eq("mb_id", mb_id).eq("order_id", orderId);
+        orderGoodsEntityWrapper.eq("goods_type", orderType);
         return mallOrderGoodsDaoService.selectList(orderGoodsEntityWrapper);
     }
 
@@ -1231,6 +1380,111 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
     }
 
 
+    /**
+     *  添加订单和订单商品表
+     * @param mb_id
+     * @param goods
+     */
+    public MallOrder addSeckillOrderWithGame(String mb_id, MallGoods goods) {
+
+
+        //查询出当前登录会员详情
+        EntityWrapper<Member> memberEntityWrapper = new EntityWrapper<Member>();
+        memberEntityWrapper.eq("id", mb_id);
+        Member member = memberService.selectOne(memberEntityWrapper);
+
+        //创建订单
+        MallOrder order = new MallOrder();
+
+        int clusterIndex_i = Integer.parseInt(clusterIndex);
+        String orderSN = "";
+        /*
+        订单编号
+            实物商品 以 R开头
+            虚拟物品 以 V开头
+                1 实物
+                2 虚拟物品
+                           21 零卡
+                           22 京东卡
+                           23 QB卡
+                3 游戏礼包
+
+        */
+        Integer goodsType = goods.getGoodsType();
+        switch (goodsType.intValue()) {
+            case 1:
+                orderSN = "R" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+                break;
+            case 3:
+                orderSN = "G" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+                break;
+            case 21:
+                orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+                break;
+
+            case 22:
+                orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+                break;
+
+            case 23:
+                orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+                break;
+            default:
+                break;
+        }
+
+        order.setId(PKUtil.getInstance(clusterIndex_i).longPK());
+        order.setOrderSn(orderSN);
+        order.setMbId(mb_id);
+
+        if (null != member) {
+            order.setMbName(member.getUserName());
+            order.setMbMobile(member.getMobilePhoneNum());
+        }
+
+        //订单状态 1 已确认
+        order.setOrderStatus(1);
+        //支付状态 3 已冻结余额
+        order.setPayStatus(3);
+        //发货状态 -1 未发货
+        order.setShippingStatus(-1);
+        order.setGoodsAmountVcy(goods.getMarketPriceVcy());
+
+        Date currentDateTime = new Date();
+        order.setCreateTime(currentDateTime);
+
+        boolean orderInsertOk = mallOrderDaoService.insert(order);
+        logger.info("秒杀下单，订单添加结果状态:{}--orderDetail:{}", orderInsertOk, JSON.toJSONString(order));
+
+        //添加订单商品关系表
+        MallOrderGoods orderGoods = new MallOrderGoods();
+        orderGoods.setId(PKUtil.getInstance(clusterIndex_i).longPK());
+        orderGoods.setMbId(mb_id);
+        orderGoods.setOrderId(order.getId());
+        orderGoods.setGoodsId(goods.getId());
+        orderGoods.setGoodsName(goods.getGoodsName());
+        //购买 商品数量
+        orderGoods.setGoodsNumber(1L);
+        orderGoods.setGoodsPriceVcy(goods.getMarketPriceVcy());
+
+        //若商品有虚拟卡信息，保存商品本身信息和兑换卡信息 {"goodsInfo":"" , "cardInfo:"}
+        Map<String, Object> goodsAttMap = new HashMap<String, Object>();
+        goodsAttMap.put("goodsInfo", JSON.toJSONString(goods));
+        goodsAttMap.put("cardInfo", "");
+
+        orderGoods.setGoodsAtt(JSON.toJSONString(goodsAttMap));
+
+        orderGoods.setGoodsType(goods.getGoodsType());
+        orderGoods.setCreatedAt(currentDateTime);
+        orderGoods.setUpdatedAt(currentDateTime);
+
+        boolean orderGoodsInsertOK = mallOrderGoodsDaoService.insert(orderGoods);
+        logger.info("秒杀下单，订单商品关系表添加结果状态:{}--orderDetail:{}", orderGoodsInsertOK, JSON.toJSONString(orderGoods));
+
+        return order;
+    }
+
+
     //线程池
     private ExecutorService fixedThreadPoolMallLog = Executors.newFixedThreadPool(8);
 
@@ -1278,6 +1532,46 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         FunGoEHCacheUtils.remove(FunGoGameConsts.CACHE_EH_NAME, memberIdCacheKey);
 
     }
+
+
+    /**
+     * 验证用户是否购买过游戏礼包
+     * @param mb_id
+     * @param goods_id
+     * @return
+     */
+    private boolean isBuyedVMCardValidWithGame(String mb_id, Long goods_id) {
+
+        //查询虚拟卡验证用户是否购买过
+        EntityWrapper<MallVirtualCard> virtualCardEntityWrapper = new EntityWrapper<MallVirtualCard>();
+        virtualCardEntityWrapper.eq("goods_id", goods_id);
+        virtualCardEntityWrapper.eq("mb_id", mb_id);
+        virtualCardEntityWrapper.eq("card_type", 3);
+        virtualCardEntityWrapper.eq("is_saled", 1);
+
+        int count = mallVirtualCardDaoService.selectCount(virtualCardEntityWrapper);
+        return count > 0 ? true : false;
+    }
+
+
+    /**
+     * 查询某个游戏礼包未卖出剩余的虚拟卡数量
+     * @param mb_id
+     * @param goods_id
+     * @return
+     */
+    private int getUnSaledVMCardWithGame(String mb_id, Long goods_id) {
+
+        //查询虚拟卡验证用户是否购买过
+        EntityWrapper<MallVirtualCard> virtualCardEntityWrapper = new EntityWrapper<MallVirtualCard>();
+        virtualCardEntityWrapper.eq("goods_id", goods_id);
+        virtualCardEntityWrapper.eq("card_type", 3);
+        virtualCardEntityWrapper.eq("is_saled", -1);
+
+        int count = mallVirtualCardDaoService.selectCount(virtualCardEntityWrapper);
+        return count;
+    }
+
 
     //---------
 

@@ -94,6 +94,46 @@ public class MallGoodsOutBean implements Serializable {
      */
     private String endTime;
 
+    /**
+     * 游戏礼包中，登录用户是否已经购买
+     * true 已经购买
+     * false 未购买
+     */
+    private boolean is_buy;
+
+    /**
+     * 游戏ID
+     */
+    private String gameId;
+
+    /**
+     * 有效期信息描述
+     */
+    private String validPeriodIntro;
+
+
+    /**
+     * 使用方法描述
+     */
+    private String usageDesc;
+
+
+    public String getValidPeriodIntro() {
+        return validPeriodIntro;
+    }
+
+    public void setValidPeriodIntro(String validPeriodIntro) {
+        this.validPeriodIntro = validPeriodIntro;
+    }
+
+    public String getUsageDesc() {
+        return usageDesc;
+    }
+
+    public void setUsageDesc(String usageDesc) {
+        this.usageDesc = usageDesc;
+    }
+
     public String getId() {
         return id;
     }
@@ -206,6 +246,23 @@ public class MallGoodsOutBean implements Serializable {
         this.goodsType = goodsType;
     }
 
+    public boolean isIs_buy() {
+        return is_buy;
+    }
+
+    public void setIs_buy(boolean is_buy) {
+        this.is_buy = is_buy;
+    }
+
+
+    public String getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
+    }
+
     @Override
     public String toString() {
         return "MallGoodsOutBean{" +
@@ -223,6 +280,10 @@ public class MallGoodsOutBean implements Serializable {
                 ", sort=" + sort +
                 ", startTime='" + startTime + '\'' +
                 ", endTime='" + endTime + '\'' +
+                ", is_buy=" + is_buy +
                 '}';
     }
+
+
+    //----------
 }

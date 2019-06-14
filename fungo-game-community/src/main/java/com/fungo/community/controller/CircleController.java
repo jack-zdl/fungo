@@ -6,6 +6,7 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.community.CmmCircleDto;
 import com.game.common.dto.index.CardIndexBean;
+import com.game.common.enums.CommonEnum;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.vo.CmmCircleVo;
 import io.swagger.annotations.Api;
@@ -37,8 +38,8 @@ public class CircleController {
     private CircleService circleServiceImpl;
 
     /**
-     * 功能描述: app端获取管控台设置的活动列表及详情
-     * @param: [memberUserPrefile, request, inputPageDto]
+     * 功能描述: app端获取圈子列表列表及详情
+     * @param: [memberUserPrefile, inputPageDto]
      * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
      * @auther: dl.zhang
      * @date: 2019/6/11 11:01
@@ -46,7 +47,7 @@ public class CircleController {
     @ApiOperation(value = "v2.5", notes = "")
     @RequestMapping(value = "/api/community/circle", method = RequestMethod.POST)
     @ApiImplicitParams({})
-    public FungoPageResultDto<CmmCircleDto> circleEventList(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody CmmCircleVo cmmCircleVo) {
+    public FungoPageResultDto<CmmCircleDto> circleEventList(@Anonymous MemberUserProfile memberUserPrefile,  @RequestBody CmmCircleVo cmmCircleVo) {
         FungoPageResultDto<CmmCircleDto> re = null;
         String memberId = memberUserPrefile == null ? "" : memberUserPrefile.getLoginId();
        try {
@@ -54,7 +55,7 @@ public class CircleController {
        }catch (Exception e){
            e.printStackTrace();
            LOGGER.error("获取活动列表异常",e);
-            re = FungoPageResultDto.error("-1","获取活动列表异常，请联系管理员");
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(CommonEnum.ERROR.code(),"获取圈子列表异常，请联系管理员");
        }
         return re;
     }

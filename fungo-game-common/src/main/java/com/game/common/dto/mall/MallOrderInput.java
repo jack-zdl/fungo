@@ -14,6 +14,15 @@ import java.io.Serializable;
 public class MallOrderInput implements Serializable {
 
     /**
+     * 商品类型:<br />
+     * 1 商城实物商品 默认 ;<br/>
+     * 2 商城虚拟商品 默认 ;<br/>
+     * 3 游戏礼包商品
+     */
+    private int goodsType;
+
+
+    /**
      * 用户id
      */
     private String mbId;
@@ -121,10 +130,20 @@ public class MallOrderInput implements Serializable {
         this.orderId = orderId;
     }
 
+    public int getGoodsType() {
+        return goodsType;
+    }
+
+    public void setGoodsType(int goodsType) {
+        this.goodsType = goodsType;
+    }
+
+
     @Override
     public String toString() {
         return "MallOrderInput{" +
-                "mbId='" + mbId + '\'' +
+                "goodsType=" + goodsType +
+                ", mbId='" + mbId + '\'' +
                 ", goodsId='" + goodsId + '\'' +
                 ", orderId='" + orderId + '\'' +
                 ", orderSn='" + orderSn + '\'' +
