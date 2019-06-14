@@ -1497,6 +1497,11 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         orderGoods.setCreatedAt(currentDateTime);
         orderGoods.setUpdatedAt(currentDateTime);
 
+        //扩展字段1   保存用户名称
+        orderGoods.setExt1(member.getUserName());
+        //扩展字段2  保存用户手机号
+        orderGoods.setExt2(member.getMobilePhoneNum());
+
         boolean orderGoodsInsertOK = mallOrderGoodsDaoService.insert(orderGoods);
         logger.info("秒杀下单，订单商品关系表添加结果状态:{}--orderDetail:{}", orderGoodsInsertOK, JSON.toJSONString(orderGoods));
 
