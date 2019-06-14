@@ -37,6 +37,11 @@ public class MallGoods extends Model<MallGoods> {
 	@TableField("game_id")
 	private String gameId;
 
+	/**
+	 * 游戏名称
+	 */
+	@TableField("game_name")
+	private String gameName;
 
     /**
      * 商品名称
@@ -306,6 +311,14 @@ public class MallGoods extends Model<MallGoods> {
 
 	public void setUsageDesc(String usageDesc) {
 		this.usageDesc = usageDesc;
+	}
+
+	public String getGameName() {
+		return gameName;
+	}
+
+	public void setGameName(String gameName) {
+		this.gameName = gameName;
 	}
 
 	@Override
