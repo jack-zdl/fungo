@@ -23,6 +23,7 @@ public class CmmCircle extends Model<CmmCircle> {
     @TableField("game_id")
     private String gameId;
 
+    @TableField("cmm_id")
     private String cmmId;
 
     private Integer type;

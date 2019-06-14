@@ -18,8 +18,6 @@ public interface CmmCircleMapper  extends BaseMapper<CmmCircle> {
 
     int insertSelective(CmmCircle record);
 
-    CmmCircle selectByPrimaryKey(String id);
-
     int updateByPrimaryKeySelective(CmmCircle record);
 
     int updateByPrimaryKey(CmmCircle record);

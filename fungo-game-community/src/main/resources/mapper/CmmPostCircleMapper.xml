@@ -5,16 +5,15 @@
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="post_id" jdbcType="VARCHAR" property="postId" />
     <result column="circle_id" jdbcType="VARCHAR" property="circleId" />
-    <result column="default_link"  property="defaultLink" />
-
+    <result column="default_link" jdbcType="INTEGER" property="defaultLink" />
     <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
     <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, post_id, circle_id, created_at, updated_at
+    id, post_id, circle_id, default_link, created_at, updated_at
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from t_cmm_post_circle
     where id = #{id,jdbcType=VARCHAR}
@@ -25,9 +24,11 @@
   </delete>
   <insert id="insert" parameterType="com.fungo.community.entity.CmmPostCircle">
     insert into t_cmm_post_circle (id, post_id, circle_id, 
-      created_at, updated_at)
+      default_link, created_at, updated_at
+      )
     values (#{id,jdbcType=VARCHAR}, #{postId,jdbcType=VARCHAR}, #{circleId,jdbcType=VARCHAR}, 
-      #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP})
+      #{defaultLink,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.fungo.community.entity.CmmPostCircle">
     insert into t_cmm_post_circle
@@ -40,6 +41,9 @@
       </if>
       <if test="circleId != null">
         circle_id,
+      </if>
+      <if test="defaultLink != null">
+        default_link,
       </if>
       <if test="createdAt != null">
         created_at,
@@ -58,6 +62,9 @@
       <if test="circleId != null">
         #{circleId,jdbcType=VARCHAR},
       </if>
+      <if test="defaultLink != null">
+        #{defaultLink,jdbcType=INTEGER},
+      </if>
       <if test="createdAt != null">
         #{createdAt,jdbcType=TIMESTAMP},
       </if>
@@ -75,6 +82,9 @@
       <if test="circleId != null">
         circle_id = #{circleId,jdbcType=VARCHAR},
       </if>
+      <if test="defaultLink != null">
+        default_link = #{defaultLink,jdbcType=INTEGER},
+      </if>
       <if test="createdAt != null">
         created_at = #{createdAt,jdbcType=TIMESTAMP},
       </if>
@@ -88,8 +98,13 @@
     update t_cmm_post_circle
     set post_id = #{postId,jdbcType=VARCHAR},
       circle_id = #{circleId,jdbcType=VARCHAR},
+      default_link = #{defaultLink,jdbcType=INTEGER},
       created_at = #{createdAt,jdbcType=TIMESTAMP},
       updated_at = #{updatedAt,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=VARCHAR}
   </update>
+
+  <select id="getCmmCircleByPostId" parameterType="java.lang.String" resultType="java.lang.String">
+    select circle_id from t_cmm_post_circle where post_id = #{postId} order by default_link desc limit 1
+  </select>
 </mapper>

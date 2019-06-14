@@ -15,4 +15,6 @@ public interface CmmPostCircleMapper {
     int updateByPrimaryKeySelective(CmmPostCircle record);
 
     int updateByPrimaryKey(CmmPostCircle record);
+
+    String getCmmCircleByPostId(String id);
 }

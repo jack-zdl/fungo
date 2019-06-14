@@ -1117,32 +1117,49 @@ public class PostServiceImpl implements IPostService {
 
 //		Member author = memberService.selectById(cmmPost.getMemberId());
         //查询是否发布到圈子
-        //TODO
-        // CmmCircle circle =  cmmPostCircleMapper.getCmmCircle();
-        CmmCommunity community = communityService.selectById(cmmPost.getCommunityId());
-        if (!CommonUtil.isNull(cmmPost.getVideo()) && CommonUtil.isNull(cmmPost.getCoverImage())) {
-            out.setCover_image(community.getCoverImage());
-        }
         Map<String, Object> communityMap = new HashMap<String, Object>();
+        //type 0 游戏社区 1：官方社区 2 圈子 3.什么都没有
+        communityMap.put("type", 3);
+        CmmCircle circle = null;
+         String circleId = cmmPostCircleMapper.getCmmCircleByPostId(cmmPost.getId());
+         if(StringUtil.isNotNull(circleId)){
+             circle = cmmCircleMapper.selectById(circleId);
+         }
+        if(circle!=null){
+            communityMap.put("objectId", circle.getId());
+            communityMap.put("name", circle.getCircleName());
+            communityMap.put("icon", circle.getCircleIcon());
+            communityMap.put("intro", circle.getIntro());
+            //3标识本次是圈子
+            communityMap.put("type", 2);
+        }else{
+            //分两种情况 是否关联了社区，关联社区走之前逻辑，否则走关联游戏逻辑
+            CmmCommunity community = null;
+            if(StringUtil.isNotNull(cmmPost.getCommunityId())){
+                community = communityService.selectById(cmmPost.getCommunityId());
+            }
+            if(community==null){
+                //找到文章关联的游戏，选择一个游戏社区
+                String communityId = cmmPostGameMapper.getCommunityIdByPostId(cmmPost.getId());
+                if(StringUtil.isNotNull(communityId)){
+                    community = communityService.selectById(communityId);
+                }
+            }
+            if(community!=null){
+                if (!CommonUtil.isNull(cmmPost.getVideo()) && CommonUtil.isNull(cmmPost.getCoverImage())) {
+                    out.setCover_image(community.getCoverImage());
+                }
+                if (community != null) {
+                    communityMap.put("objectId", community.getId());
+                    communityMap.put("name", community.getName());
+                    communityMap.put("icon", community.getIcon());
+                    communityMap.put("intro", community.getIntro());
+                    communityMap.put("type", community.getType());
+                    //游戏社区的评分 标签
+                    if (community.getType() == 0) {
+                        communityMap.put("gameId", community.getGameId());
 
-        //视频详情
-        if (!CommonUtil.isNull(cmmPost.getVideoUrls())) {
-            //ArrayList<StreamInfo> streams = mapper.readValue(cmmPost.getVideoUrls(), ArrayList.class);
-            ArrayList<StreamInfo> streams = (ArrayList<StreamInfo>) JSON.parseArray(cmmPost.getVideoUrls(), StreamInfo.class);
-            out.setVideoList(streams);
-        }
-
-        if (community != null) {
-            communityMap.put("objectId", community.getId());
-            communityMap.put("name", community.getName());
-            communityMap.put("icon", community.getIcon());
-            communityMap.put("intro", community.getIntro());
-            communityMap.put("type", community.getType());
-            //游戏社区的评分 标签
-            if (community.getType() == 0) {
-                communityMap.put("gameId", community.getGameId());
-
-                //!fixme 游戏平均分
+                        //!fixme 游戏平均分
               /*
                 HashMap<String, BigDecimal> rateData = gameDao.getRateData(community.getGameId());
                 if (rateData != null) {
@@ -1156,43 +1173,59 @@ public class PostServiceImpl implements IPostService {
                 }
                 */
 
-                //获取游戏平均分
-                double gameAverage = 0;
-                try {
-                    gameAverage = gameFacedeService.selectGameAverage(community.getGameId(), 0);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                communityMap.put("gameRating", gameAverage);
+                        //获取游戏平均分
+                        double gameAverage = 0;
+                        try {
+                            gameAverage = gameFacedeService.selectGameAverage(community.getGameId(), 0);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        communityMap.put("gameRating", gameAverage);
 
 
-            }
-            if (!CommonUtil.isNull(community.getGameId())) {
-
-                //!fixme 查询游戏详情
-                //Game game = gameService.selectOne(Condition.create().setSqlSelect("id,tags").eq("id", community.getGameId()).eq("state", 0));
-
-                GameDto gameDto = null;
-                try {
-                    ResultDto<GameDto> gameDtoResultDto = gameFacedeService.selectGameDetails(community.getGameId(), 0);
-                    if (null != gameDtoResultDto) {
-                        gameDtoResultDto.getData();
                     }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                    if (!CommonUtil.isNull(community.getGameId())) {
+
+                        //!fixme 查询游戏详情
+                        //Game game = gameService.selectOne(Condition.create().setSqlSelect("id,tags").eq("id", community.getGameId()).eq("state", 0));
+
+                        GameDto gameDto = null;
+                        try {
+                            ResultDto<GameDto> gameDtoResultDto = gameFacedeService.selectGameDetails(community.getGameId(), 0);
+                            if (null != gameDtoResultDto) {
+                                gameDtoResultDto.getData();
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+
+                        if (gameDto != null) {
+                            communityMap.put("gameTags", gameDto.getTags() == null ? new String[0] : gameDto.getTags().split(","));
+                        } else {
+                            communityMap.put("gameTags", new ArrayList<String>());
+                        }
+
+
+                    } else {
+                        communityMap.put("gameTags", new ArrayList<String>());
+                    }
                 }
-
-                if (gameDto != null) {
-                    communityMap.put("gameTags", gameDto.getTags() == null ? new String[0] : gameDto.getTags().split(","));
-                } else {
-                    communityMap.put("gameTags", new ArrayList<String>());
-                }
-
-
-            } else {
-                communityMap.put("gameTags", new ArrayList<String>());
             }
+
+
         }
+
+
+
+
+        //视频详情
+        if (!CommonUtil.isNull(cmmPost.getVideoUrls())) {
+            //ArrayList<StreamInfo> streams = mapper.readValue(cmmPost.getVideoUrls(), ArrayList.class);
+            ArrayList<StreamInfo> streams = (ArrayList<StreamInfo>) JSON.parseArray(cmmPost.getVideoUrls(), StreamInfo.class);
+            out.setVideoList(streams);
+        }
+
+
 
         //查询是否关注、收藏、点赞
         if (userId != null) {
