@@ -678,8 +678,9 @@ public class CommunityServiceImpl implements ICommunityService {
                 userList.add(c);
             }
         }
-        PageTools.pageToResultDto(re, page);
         re.setData(userList);
+        PageTools.pageToResultDto(re, page);
+
 
         return re;
     }

@@ -99,7 +99,7 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
             }
 
             //根据修改时间倒叙
-            postEntityWrapper.orderBy("updated_at", false);
+            postEntityWrapper.ne("state", -1).orderBy("updated_at", false);
 
             List<CmmPost> selectRecords = null;
 

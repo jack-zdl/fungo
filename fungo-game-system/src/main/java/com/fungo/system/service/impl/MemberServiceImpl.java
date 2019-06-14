@@ -987,8 +987,9 @@ public class MemberServiceImpl implements IMemberService {
 
             blist.add(bean);
         }
-        PageTools.pageToResultDto(re, page);
         re.setData(blist);
+        PageTools.pageToResultDto(re, page);
+
 
         //redis cache
         fungoCacheArticle.excIndexCache(true, keyPrefix, keySuffix, re);
@@ -1076,8 +1077,9 @@ public class MemberServiceImpl implements IMemberService {
 
             blist.add(bean);
         }
-        PageTools.pageToResultDto(re, page);
         re.setData(blist);
+        PageTools.pageToResultDto(re, page);
+
 
         //redis cache
         fungoCacheArticle.excIndexCache(true, keyPrefix, keySuffix, re);
@@ -1337,9 +1339,9 @@ public class MemberServiceImpl implements IMemberService {
             blist.add(bean);
 
         }
-
-        PageTools.pageToResultDto(re, page);
         re.setData(blist);
+        PageTools.pageToResultDto(re, page);
+
 
         //redis cache
         fungoCacheArticle.excIndexCache(true, keyPrefix, keySuffix, re);
