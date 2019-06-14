@@ -214,11 +214,13 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
         try {
 
-            //获取秒杀当天的商品
+
             EntityWrapper<MallGoods> mallGoodsEntityWrapper = new EntityWrapper<MallGoods>();
 
             mallGoodsEntityWrapper.eq("game_id", mallGoodsInput.getGameId());
             mallGoodsEntityWrapper.eq("goods_type", mallGoodsInput.getGoodsType());
+            //查询已上架的商品
+            mallGoodsEntityWrapper.eq("goods_status", 2);
 
             mallGoodsEntityWrapper.orderBy("created_at", false);
 
