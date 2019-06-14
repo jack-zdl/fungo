@@ -344,7 +344,7 @@ public class RecommendController {
                     try {
                         gameDtoResultDto = gameFeignClient.selectGameDetails(gameId, 0);
                         if (null != gameDtoResultDto) {
-                            gameDtoResultDto.getData();
+                            gameDto = gameDtoResultDto.getData();
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
