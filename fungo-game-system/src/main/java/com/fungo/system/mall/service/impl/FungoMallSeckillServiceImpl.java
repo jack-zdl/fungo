@@ -16,6 +16,7 @@ import com.fungo.system.service.MemberService;
 import com.game.common.consts.FunGoGameConsts;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.mall.*;
+import com.game.common.repo.cache.facade.FungoCacheSystem;
 import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.FunGoEHCacheUtils;
 import com.game.common.util.FungoAESUtil;
@@ -67,8 +68,13 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     @Autowired
     private MemberService memberService;
+
     @Autowired
     private FungoCacheTask fungoCacheTask;
+
+    @Autowired
+    private FungoCacheSystem fungoCacheSystem;
+
 
     @Value("${fungo.mall.seckill.aesSecretKey}")
     private String aESSecretKey;
@@ -214,6 +220,15 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
         try {
 
+            //从Redis获取
+            String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_GAME_GOODS_LIST;
+            String keySuffix = mb_id + "_" + JSON.toJSONString(mallGoodsInput);
+
+            goodsOutBeanList = (List<MallGoodsOutBean>) fungoCacheSystem.getIndexCache(keyPrefix, keySuffix);
+            if (null != goodsOutBeanList && !goodsOutBeanList.isEmpty()) {
+                return goodsOutBeanList;
+            }
+
 
             EntityWrapper<MallGoods> mallGoodsEntityWrapper = new EntityWrapper<MallGoods>();
 
@@ -271,6 +286,8 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
                 }
             }
+            //保存到Redis中
+            fungoCacheSystem.excIndexCache(true, keyPrefix, keySuffix, goodsOutBeanList);
 
         } catch (Exception ex) {
             logger.error("获取秒杀商品列表出现异常", ex);
