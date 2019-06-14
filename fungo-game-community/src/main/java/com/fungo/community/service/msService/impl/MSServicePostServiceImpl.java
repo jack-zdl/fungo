@@ -6,7 +6,10 @@ import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.service.msService.IMSServicePostService;
 import com.game.common.bean.CollectionBean;
+import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.community.CmmCommentDto;
 import com.game.common.dto.community.CmmPostDto;
+import com.game.common.util.PageTools;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,10 +33,10 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
     private CmmPostDaoService postDaoService;
 
     @Override
-    public List<CmmPostDto> queryCmmPostList(CmmPostDto postDto) {
-
+    public FungoPageResultDto<CmmPostDto> queryCmmPostList(CmmPostDto postDto) {
+        FungoPageResultDto<CmmPostDto> fungoPageResultDto = new FungoPageResultDto<>();
         List<CmmPostDto> cmmPostList = null;
-
+        Page<CmmPost> cmmPostPageSelect = null;
         try {
 
 
@@ -105,10 +108,14 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
 
             if (null != cmmPostPage) {
 
-                Page<CmmPost> cmmPostPageSelect = this.postDaoService.selectPage(cmmPostPage, postEntityWrapper);
+                cmmPostPageSelect = this.postDaoService.selectPage(cmmPostPage, postEntityWrapper);
 
                 if (null != cmmPostPageSelect) {
+//                    selectRecords = cmmPostPageSelect.getRecords();
+                    PageTools.pageToResultDto(fungoPageResultDto, cmmPostPageSelect);
                     selectRecords = cmmPostPageSelect.getRecords();
+                    //设置分页数据
+                    fungoPageResultDto.setCount(cmmPostPageSelect.getTotal());
                 }
 
             } else {
@@ -132,7 +139,9 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
         } catch (Exception ex) {
             LOGGER.error("/ms/service/cmm/post/lists--queryCmmPostList-出现异常:", ex);
         }
-        return cmmPostList;
+        fungoPageResultDto.setData(cmmPostList);
+        PageTools.pageToResultDto(fungoPageResultDto, cmmPostPageSelect);
+        return fungoPageResultDto;
     }
 
 

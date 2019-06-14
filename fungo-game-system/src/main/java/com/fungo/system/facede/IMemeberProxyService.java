@@ -30,7 +30,7 @@ public interface IMemeberProxyService {
 
     Page<GameEvaluationDto> selectGameEvaluationPage(GameEvaluationDto gameEvaluationDto);
 
-    Page<CmmPostDto> selectCmmPostpage(CmmPostDto  cmmPostDto);
+    FungoPageResultDto<CmmPostDto> selectCmmPostpage(CmmPostDto  cmmPostDto);
 
     CmmCommunityDto selectCmmCommunityById(CmmCommunityDto cmmCommunityDto);
 

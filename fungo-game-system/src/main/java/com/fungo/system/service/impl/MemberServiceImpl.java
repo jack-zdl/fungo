@@ -36,6 +36,7 @@ import com.game.common.util.emoji.FilterEmojiUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -933,8 +934,9 @@ public class MemberServiceImpl implements IMemberService {
         param.setLimit(input.getLimit());
         param.setMemberId(loginId);
         param.setState(-1);
-        Page<CmmPostDto> page = iMemeberProxyService.selectCmmPostpage(param); // postService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<CmmPost>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
-        List<CmmPostDto> plist = page.getRecords();
+        FungoPageResultDto<CmmPostDto> page = iMemeberProxyService.selectCmmPostpage(param); // postService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<CmmPost>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
+        List<CmmPostDto> plist = page.getData();
+        BeanUtils.copyProperties(page, re);
         List<MyPublishBean> blist = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         for (CmmPostDto post : plist) {
@@ -987,8 +989,9 @@ public class MemberServiceImpl implements IMemberService {
 
             blist.add(bean);
         }
+
         re.setData(blist);
-        PageTools.pageToResultDto(re, page);
+//        PageTools.pageToResultDto(re, page);
 
 
         //redis cache
