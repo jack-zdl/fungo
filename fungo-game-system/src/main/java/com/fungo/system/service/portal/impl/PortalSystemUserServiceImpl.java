@@ -57,7 +57,7 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
 //        PC2.0新增浏览量 根据跟用户ID获取文章的浏览量
         ResultDto<Integer> resultDto = communityFeignClient.getPostBoomWatchNumByCardId(cardId);
         if (resultDto != null){
-            author.setWatchNum(resultDto.getData());
+            author.setWatchNum(resultDto.getData() == null ? 0 : resultDto.getData());
         }
         //redis cache
         fungoCacheMember.excIndexCache(true, keyPrefix, memberId, author);
