@@ -186,14 +186,14 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
 //    @HystrixCommand(fallbackMethod = "hystrixSelectCmmPostpage",ignoreExceptions = {Exception.class},
 //            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
-    public Page<CmmPostDto> selectCmmPostpage(CmmPostDto cmmPostDto) {
+    public FungoPageResultDto<CmmPostDto> selectCmmPostpage(CmmPostDto cmmPostDto) {
         Page<CmmPostDto> page = new Page<CmmPostDto>();
         FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(cmmPostDto);
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmPostDtoFungoPageResultDto.getStatus()) && cmmPostDtoFungoPageResultDto.getData().size() > 0){
             page.setRecords(cmmPostDtoFungoPageResultDto.getData());
         }else
             logger.warn("MemeberProxyServiceImpl.selectCmmPostpage 异常");
-        return page;
+        return cmmPostDtoFungoPageResultDto;
     }
 
     /**

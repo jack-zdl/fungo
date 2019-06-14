@@ -40,11 +40,11 @@ public class MSServiceCommunityController {
     @PostMapping("/ms/service/cmm/cty/lists")
     public FungoPageResultDto<CmmCommunityDto> queryCmmPostList(@RequestBody CmmCommunityDto cmmCommunityDto) {
 
-        FungoPageResultDto<CmmCommunityDto> resultDto = new FungoPageResultDto<CmmCommunityDto>();
+//        FungoPageResultDto<CmmCommunityDto> resultDto = new FungoPageResultDto<CmmCommunityDto>();
 
-        List<CmmCommunityDto> cmmPostDtoList = imsServiceCommunityService.queryCmmCommunityList(cmmCommunityDto);
+        FungoPageResultDto<CmmCommunityDto> resultDto = imsServiceCommunityService.queryCmmCommunityList(cmmCommunityDto);
 
-        resultDto.setData(cmmPostDtoList);
+//        resultDto.setData(cmmPostDtoList);
 
         return resultDto;
     }

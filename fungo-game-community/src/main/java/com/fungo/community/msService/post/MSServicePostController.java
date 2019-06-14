@@ -37,9 +37,9 @@ public class MSServicePostController {
     @PostMapping("/ms/service/cmm/post/lists")
     public FungoPageResultDto<CmmPostDto> queryCmmPostList(@RequestBody CmmPostDto cmmPostDto) {
 
-        FungoPageResultDto<CmmPostDto> resultDto = new FungoPageResultDto<CmmPostDto>();
-        List<CmmPostDto> cmmPostDtoList = imsServicePostService.queryCmmPostList(cmmPostDto);
-        resultDto.setData(cmmPostDtoList);
+//        FungoPageResultDto<CmmPostDto> resultDto = new FungoPageResultDto<CmmPostDto>();
+        FungoPageResultDto<CmmPostDto> resultDto = imsServicePostService.queryCmmPostList(cmmPostDto);
+//        resultDto.setData(cmmPostDtoList);
         return resultDto;
     }
 

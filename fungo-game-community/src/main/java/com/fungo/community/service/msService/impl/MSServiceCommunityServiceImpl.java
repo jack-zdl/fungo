@@ -8,7 +8,10 @@ import com.fungo.community.dao.service.impl.CmmPostDaoServiceImap;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.service.msService.IMSServiceCommunityService;
 import com.game.common.bean.CommentBean;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.community.CmmCommunityDto;
+import com.game.common.dto.community.CmmPostDto;
+import com.game.common.util.PageTools;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +37,10 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
 
 
     @Override
-    public List<CmmCommunityDto> queryCmmCommunityList(CmmCommunityDto communityDto) {
-
+    public FungoPageResultDto<CmmCommunityDto> queryCmmCommunityList(CmmCommunityDto communityDto) {
+        FungoPageResultDto<CmmCommunityDto> fungoPageResultDto = new FungoPageResultDto<>();
         List<CmmCommunityDto> cmmCommunityDtoList = null;
-
+        Page<CmmCommunity> cmmCommunityPageResult = null;
         try {
 
             int page = communityDto.getPage();
@@ -102,10 +105,14 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
 
             if (null != cmmCommunityPage) {
 
-                Page<CmmCommunity> cmmCommunityPageResult = this.cmmCommunityDaoService.selectPage(cmmCommunityPage, cmmCommunityEntityWrapper);
+                cmmCommunityPageResult = this.cmmCommunityDaoService.selectPage(cmmCommunityPage, cmmCommunityEntityWrapper);
 
                 if (null != cmmCommunityPageResult) {
+//                    selectRecords = cmmCommunityPage.getRecords();
+                    PageTools.pageToResultDto(fungoPageResultDto, cmmCommunityPageResult);
                     selectRecords = cmmCommunityPage.getRecords();
+                    //设置分页数据
+                    fungoPageResultDto.setCount(cmmCommunityPageResult.getTotal());
                 }
 
             } else {
@@ -130,7 +137,9 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
         } catch (Exception ex) {
             LOGGER.error("/ms/service/cmm/cty/lists--queryCmmCommunityList-出现异常:", ex);
         }
-        return cmmCommunityDtoList;
+        fungoPageResultDto.setData(cmmCommunityDtoList);
+        PageTools.pageToResultDto(fungoPageResultDto, cmmCommunityPageResult);
+        return fungoPageResultDto;
     }
 
     @Override
