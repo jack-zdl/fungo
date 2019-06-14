@@ -41,4 +41,72 @@
     </trim>
     order  by type asc ,sort  desc ,hot_value desc;
   </select>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.fungo.community.entity.CmmCircle">
+    update t_cmm_circle
+    <set>
+      <if test="circleName != null">
+        circle_name = #{circleName,jdbcType=VARCHAR},
+      </if>
+      <if test="circleIcon != null">
+        circle_icon = #{circleIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="intro != null">
+        intro = #{intro,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="memberNum != null">
+        member_num = #{memberNum,jdbcType=INTEGER},
+      </if>
+      <if test="hotValue != null">
+        hot_value = #{hotValue,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdBy != null">
+        created_by = #{createdBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updatedBy != null">
+        updated_by = #{updatedBy,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fungo.community.entity.CmmCircle">
+    update t_cmm_circle
+    set circle_name = #{circleName,jdbcType=VARCHAR},
+      circle_icon = #{circleIcon,jdbcType=VARCHAR},
+      intro = #{intro,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      state = #{state,jdbcType=INTEGER},
+      member_num = #{memberNum,jdbcType=INTEGER},
+      hot_value = #{hotValue,jdbcType=INTEGER},
+      sort = #{sort,jdbcType=INTEGER},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      created_by = #{createdBy,jdbcType=VARCHAR},
+      updated_by = #{updatedBy,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectCircleByGameId" parameterType="java.lang.String" resultType="java.lang.String">
+    select id from t_cmm_circle where game_id = #{gameId} limit 1
+  </select>
+
+
+
+
+
 </mapper>

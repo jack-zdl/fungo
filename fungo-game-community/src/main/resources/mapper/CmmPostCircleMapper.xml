@@ -5,6 +5,8 @@
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="post_id" jdbcType="VARCHAR" property="postId" />
     <result column="circle_id" jdbcType="VARCHAR" property="circleId" />
+    <result column="default_link"  property="defaultLink" />
+
     <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
     <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
   </resultMap>

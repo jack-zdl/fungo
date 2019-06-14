@@ -8,12 +8,13 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.community.dao.mapper.CmmCircleMapper;
+import com.fungo.community.dao.mapper.CmmPostCircleMapper;
+import com.fungo.community.dao.mapper.CmmPostGameMapper;
 import com.fungo.community.dao.service.BasVideoJobDaoService;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
-import com.fungo.community.entity.BasVideoJob;
-import com.fungo.community.entity.CmmCommunity;
-import com.fungo.community.entity.CmmPost;
+import com.fungo.community.entity.*;
 import com.fungo.community.facede.GameFacedeService;
 import com.fungo.community.facede.SystemFacedeService;
 import com.fungo.community.facede.TSMQFacedeService;
@@ -96,6 +97,14 @@ public class PostServiceImpl implements IPostService {
     @Autowired
     private TSMQFacedeService tSMQFacedeService;
 
+    @Autowired
+    private CmmPostCircleMapper cmmPostCircleMapper;
+
+    @Autowired
+    private CmmPostGameMapper cmmPostGameMapper;
+
+    @Autowired
+    private CmmCircleMapper cmmCircleMapper;
 
 
     @Override
@@ -174,6 +183,7 @@ public class PostServiceImpl implements IPostService {
         CmmPost post = new CmmPost();
         post.setMemberId(user_id);
         post.setTitle(postInput.getTitle());
+        post.setTags(postInput.getTagId());
         //vedio
         if (!CommonUtil.isNull(postInput.getVideo()) || !CommonUtil.isNull(postInput.getVideoId())) {
             if (memberDto.getLevel() < 3) {
@@ -232,8 +242,55 @@ public class PostServiceImpl implements IPostService {
         //虚列
         Integer clusterIndex_i = Integer.parseInt(clusterIndex);
         post.setPostId(PKUtil.getInstance(clusterIndex_i).longPK());
-
+        post.setRecommend(0);
         boolean flag = postService.insert(post);
+
+        //插入关系 文章-圈子
+        if (StringUtil.isNotNull(postInput.getCircleId())) {
+            CmmPostCircle postCircle = new CmmPostCircle();
+            postCircle.setId(PrimaryKeyUtils.uniqueId());
+            postCircle.setCircleId(postInput.getCircleId());
+            postCircle.setPostId(post.getId());
+            postCircle.setCreatedAt(new Date());
+            postCircle.setUpdatedAt(new Date());
+            postCircle.setDefaultLink(1);
+            cmmPostCircleMapper.insert(postCircle);
+        }
+
+        //插入关系  文章-游戏  游戏归属圈子--文章
+        List<String> includeGameList = postInput.getIncludeGameList();
+        if (includeGameList != null && !includeGameList.isEmpty()) {
+            for (String gameId : includeGameList) {
+                CmmPostGame postGame = new CmmPostGame();
+                postGame.setId(PrimaryKeyUtils.uniqueId());
+                postGame.setGameId(gameId);
+                postGame.setPostId(post.getId());
+                postGame.setCreatedAt(new Date());
+                postGame.setUpdatedAt(new Date());
+                //查询出游戏对应的社区id 插入社区id
+                CmmCommunity community = communityService.selectOne(new EntityWrapper<CmmCommunity>().eq("game_id", gameId));
+                if(community!=null&&StringUtil.isNotNull(community.getId())){
+                    postGame.setCmmId(community.getId());
+                    cmmPostGameMapper.insert(postGame);
+                }
+
+                //查询游戏是否有圈子 有圈子-建立文章圈子关系
+                String circleId = cmmCircleMapper.selectCircleByGameId(gameId);
+                //已经保存过关系，不用重新保存
+                if(StringUtil.isNotNull(circleId)&&!circleId.equals(postInput.getCircleId())){
+                    CmmPostCircle postCircle = new CmmPostCircle();
+                    postCircle.setId(PrimaryKeyUtils.uniqueId());
+                    postCircle.setCircleId(circleId);
+                    postCircle.setPostId(post.getId());
+                    postCircle.setCreatedAt(new Date());
+                    postCircle.setUpdatedAt(new Date());
+                    postCircle.setDefaultLink(0);
+                    cmmPostCircleMapper.insert(postCircle);
+                }
+            }
+
+        }
+
 
         //视频处理
         if (!CommonUtil.isNull(postInput.getVideoId())) {
@@ -961,7 +1018,7 @@ public class PostServiceImpl implements IPostService {
         out.setTitle(CommonUtils.filterWord(cmmPost.getTitle()));
         String tags = cmmPost.getTags();
         if (!CommonUtil.isNull(tags)) {
-            out.setTags(Arrays.asList(cmmPost.getTags().replace("[", "").replace("]", "").replace("\"", "")));
+            out.setTags(tags);
         }
         if (cmmPost.getImages() != null) {
             out.setImages(Arrays.asList(cmmPost.getImages().replace("]", "").replace("[", "").replace("\"", "").split(",")));
@@ -1059,6 +1116,9 @@ public class PostServiceImpl implements IPostService {
 
 
 //		Member author = memberService.selectById(cmmPost.getMemberId());
+        //查询是否发布到圈子
+        //TODO
+        // CmmCircle circle =  cmmPostCircleMapper.getCmmCircle();
         CmmCommunity community = communityService.selectById(cmmPost.getCommunityId());
         if (!CommonUtil.isNull(cmmPost.getVideo()) && CommonUtil.isNull(cmmPost.getCoverImage())) {
             out.setCover_image(community.getCoverImage());
@@ -1222,7 +1282,7 @@ public class PostServiceImpl implements IPostService {
         AuthorBean authorBean = new AuthorBean();
         try {
             //out.setAuthor(IUserService.getUserCard(cmmPost.getMemberId(), userId));
-           // if (StringUtils.isNotBlank(userId) && StringUtils.isNotBlank(cmmPost.getMemberId())) {
+            // if (StringUtils.isNotBlank(userId) && StringUtils.isNotBlank(cmmPost.getMemberId())) {
             if (StringUtils.isNotBlank(cmmPost.getMemberId())) {
                 ResultDto<AuthorBean> userCardResult = systemFacedeService.getUserCard(cmmPost.getMemberId(), userId);
                 if (null != userCardResult) {
@@ -1321,8 +1381,8 @@ public class PostServiceImpl implements IPostService {
             if (StringUtils.isNotBlank(post.getContent())) {
                 String interactContent = FilterEmojiUtil.decodeEmoji(post.getContent());
 
-                    //bean.setContent(content.length() > 100 ? CommonUtils.filterWord(content.substring(0, 100)) : CommonUtils.filterWord(content));
-                interactContent =  interactContent.length()>40?Html2Text.removeHtmlTag(interactContent.substring(0, 40)):Html2Text.removeHtmlTag(interactContent);
+                //bean.setContent(content.length() > 100 ? CommonUtils.filterWord(content.substring(0, 100)) : CommonUtils.filterWord(content));
+                interactContent = interactContent.length() > 40 ? Html2Text.removeHtmlTag(interactContent.substring(0, 40)) : Html2Text.removeHtmlTag(interactContent);
 
                 post.setContent(interactContent);
             }
@@ -1543,6 +1603,7 @@ public class PostServiceImpl implements IPostService {
 
     /**
      * 查看用户在指定时间段内文章上推荐/置顶的文章数量
+     *
      * @param mb_id
      * @param startDate
      * @param endDate

@@ -9,9 +9,19 @@ public class CmmPostCircle {
 
     private String circleId;
 
+    private Integer defaultLink;
+
     private Date createdAt;
 
     private Date updatedAt;
+
+    public Integer getDefaultLink() {
+        return defaultLink;
+    }
+
+    public void setDefaultLink(Integer defaultLink) {
+        this.defaultLink = defaultLink;
+    }
 
     public String getId() {
         return id;

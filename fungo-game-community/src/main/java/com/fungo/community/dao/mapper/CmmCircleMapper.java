@@ -3,9 +3,10 @@ package com.fungo.community.dao.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
-import com.fungo.community.entity.BasVideoJob;
 import com.fungo.community.entity.CmmCircle;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
 
 import java.util.List;
 
@@ -22,4 +23,6 @@ public interface CmmCircleMapper  extends BaseMapper<CmmCircle> {
     int updateByPrimaryKeySelective(CmmCircle record);
 
     int updateByPrimaryKey(CmmCircle record);
+
+    String selectCircleByGameId(@Param("gameId") String gameId);
 }
