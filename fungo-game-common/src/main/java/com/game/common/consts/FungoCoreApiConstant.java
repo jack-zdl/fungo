@@ -403,15 +403,26 @@ public class FungoCoreApiConstant {
     public static final String GETMEMBERWITHMBIDSNS_CLOUD = "getMemberWithMbIdSNS_Cloud" + "_cloud";
 
     public static final String ISREGISTERED_CLOUD = "isRegistered_Cloud" + "_cloud";
+
+
     //**************************************************游戏**************************************************
     /**
      * PC2.0圈子首页列表
      */
     public static final String FUNGO_CORE_API_GETCOMMUNITYLISTPC2_0 = "/api/portal/community/content/communitysPCList";
+
     //    getRecentBrowseCommunity
     public static final String FUNGO_CORE_API_GETRECENTBROWSECOMMUNITY = "/api/portal/community/content/recentbrowsecommunity";
 
-    public static final String FUNGO_CORE_API_CIRCLE_EVENT_INDEX = "/api/system/circle/event/list"+"_cloud";
+    public static final String FUNGO_CORE_API_CIRCLE_EVENT_INDEX = "/api/system/circle/event/list" + "_cloud";
+
+
+    //-------------------------------------------游戏礼包----------------------------------------
+    /**
+     * 获取游戏礼包商品列表接口
+     */
+    public static final String  FUNGO_CORE_API_GAME_GOODS_LIST = "/api/mall/goods/game/list_Post" + "_cloud";
+
 
     //-------------
 }
