@@ -65,7 +65,6 @@ public class MallGoodsOutBean implements Serializable {
     private Integer goodsType;
 
 
-
     /**
      * 商品主图,存储图片url集合,json格式：
      [{
