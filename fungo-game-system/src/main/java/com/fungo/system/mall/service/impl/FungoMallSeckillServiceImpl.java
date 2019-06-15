@@ -16,6 +16,7 @@ import com.fungo.system.service.MemberService;
 import com.game.common.consts.FunGoGameConsts;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.mall.*;
+import com.game.common.repo.cache.facade.FungoCacheSystem;
 import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.FunGoEHCacheUtils;
 import com.game.common.util.FungoAESUtil;
@@ -67,8 +68,13 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     @Autowired
     private MemberService memberService;
+
     @Autowired
     private FungoCacheTask fungoCacheTask;
+
+    @Autowired
+    private FungoCacheSystem fungoCacheSystem;
+
 
     @Value("${fungo.mall.seckill.aesSecretKey}")
     private String aESSecretKey;
@@ -214,11 +220,22 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
         try {
 
-            //获取秒杀当天的商品
+            //从Redis获取
+            String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_GAME_GOODS_LIST;
+            String keySuffix = mb_id + "_" + JSON.toJSONString(mallGoodsInput);
+
+            goodsOutBeanList = (List<MallGoodsOutBean>) fungoCacheSystem.getIndexCache(keyPrefix, keySuffix);
+            if (null != goodsOutBeanList && !goodsOutBeanList.isEmpty()) {
+                return goodsOutBeanList;
+            }
+
+
             EntityWrapper<MallGoods> mallGoodsEntityWrapper = new EntityWrapper<MallGoods>();
 
             mallGoodsEntityWrapper.eq("game_id", mallGoodsInput.getGameId());
             mallGoodsEntityWrapper.eq("goods_type", mallGoodsInput.getGoodsType());
+            //查询已上架的商品
+            mallGoodsEntityWrapper.eq("goods_status", 2);
 
             mallGoodsEntityWrapper.orderBy("created_at", false);
 
@@ -269,6 +286,8 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
                 }
             }
+            //保存到Redis中
+            fungoCacheSystem.excIndexCache(true, keyPrefix, keySuffix, goodsOutBeanList);
 
         } catch (Exception ex) {
             logger.error("获取秒杀商品列表出现异常", ex);
@@ -1477,6 +1496,11 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         orderGoods.setGoodsType(goods.getGoodsType());
         orderGoods.setCreatedAt(currentDateTime);
         orderGoods.setUpdatedAt(currentDateTime);
+
+        //扩展字段1   保存用户名称
+        orderGoods.setExt1(member.getUserName());
+        //扩展字段2  保存用户手机号
+        orderGoods.setExt2(member.getMobilePhoneNum());
 
         boolean orderGoodsInsertOK = mallOrderGoodsDaoService.insert(orderGoods);
         logger.info("秒杀下单，订单商品关系表添加结果状态:{}--orderDetail:{}", orderGoodsInsertOK, JSON.toJSONString(orderGoods));
