@@ -14,7 +14,7 @@ import java.util.List;
 public interface CmmCircleMapper  extends BaseMapper<CmmCircle> {
     int deleteByPrimaryKey(String id);
 
-    List<CmmCircle> selectPageByKeyword(Pagination page,String keyword);
+    List<CmmCircle> selectPageByKeyword(Pagination page, @Param("keyword")  String keyword);
 
     int insertSelective(CmmCircle record);
 

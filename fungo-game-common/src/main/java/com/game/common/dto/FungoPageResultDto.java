@@ -1,7 +1,9 @@
 package com.game.common.dto;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.game.common.enums.CommonEnum;
 import com.game.common.enums.IEnum;
+import com.game.common.util.PageTools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,13 +94,16 @@ public class FungoPageResultDto<T> extends AbstractResultDto {
             return buildInfo(CommonEnum.ERROR.code(), code, msg, null,-1,-1);
         }
 
+
         /**
          * 成功返回请求结果和结果信息和数据
          * @param data 数据
          * @return  RespJson
          */
-        public static  FungoPageResultDto buildSuccess( Object data,int before,int after) {
-            return buildInfo(CommonEnum.SUCCESS.code(), CommonEnum.SUCCESS.code(), CommonEnum.SUCCESS.message(), data, before,after);
+        public static  FungoPageResultDto buildSuccess( Object data,int before,Page page) {
+            FungoPageResultDto re =  buildInfo(CommonEnum.SUCCESS.code(), CommonEnum.SUCCESS.code(), CommonEnum.SUCCESS.message(), data, before,-1);
+            PageTools.pageToResultDto(re,page);
+            return re;
         }
 
 

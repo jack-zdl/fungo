@@ -9,13 +9,17 @@ import com.fungo.community.service.CircleService;
 import com.fungo.community.service.CmmCircleService;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.community.CmmCircleDto;
+import com.game.common.util.CommonUtils;
+import com.game.common.util.PageTools;
 import com.game.common.vo.CmmCircleVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>圈子接口实现类</p>
@@ -38,20 +42,19 @@ public class CircleServiceImpl implements CircleService {
         FungoPageResultDto<CmmCircleDto> re ;
         try {
             Page<CmmCircle> page = new Page<>(cmmCircleVo.getPage(), cmmCircleVo.getLimit());
-            CmmCircle cmmCircle = new CmmCircle();
-            Wrapper wrapper = new EntityWrapper<CmmCircle>().orderBy("created_by", false);;
+            List<CmmCircle> list = new ArrayList<>();
             if(CmmCircleVo.SorttypeEnum.ALL.getKey().equals(cmmCircleVo.getSorttype())){
-                cmmCircleMapper.selectPageByKeyword(page,cmmCircleVo.getKeyword());
+                list = cmmCircleMapper.selectPageByKeyword(page,cmmCircleVo.getKeyword());
             }else if(CmmCircleVo.SorttypeEnum.BROWSE.getKey().equals(cmmCircleVo.getSorttype())){
 
             }else if(CmmCircleVo.SorttypeEnum.FOLLOW.getKey().equals(cmmCircleVo.getSorttype())){
 
             }
-
-            CmmCircleDto cmmCircleDto = new CmmCircleDto();
-            re = new FungoPageResultDto<>();
-            re.setData(Arrays.asList(cmmCircleDto));
-
+            List<CmmCircleDto> cmmCircleDtoList =  CommonUtils.deepCopy(list,CmmCircleDto.class);
+//            re = new FungoPageResultDto();
+//            re.setData(cmmCircleDtoList);
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(cmmCircleDtoList,cmmCircleVo.getPage()-1,page);
+//            PageTools.pageToResultDto(re,page);
         }catch (Exception e){
             e.printStackTrace();
             LOGGER.error("获取圈子集合",e);

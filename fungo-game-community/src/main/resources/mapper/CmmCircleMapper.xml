@@ -19,8 +19,8 @@
     <result column="updated_by" jdbcType="VARCHAR" property="updatedBy" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, circle_name, circle_icon, intro,game_id,cmm_id, type, state, member_num, hot_value, sort, created_at,
-    updated_at, created_by, updated_by
+    id, circle_name as circleName, circle_icon AS circleIcon , intro,game_id AS gameId ,cmm_id AS cmmId , type, state, member_num AS  memberNum,
+    hot_value AS hotValue , sort, created_at AS  createdAt,updated_at AS  updatedAt, created_by AS  createdBy, updated_by as updatedBy
   </sql>
 
   <select id="selectAll" resultType="com.fungo.community.entity.CmmCircle" >
@@ -30,13 +30,13 @@
     order  by type asc ,sort  desc ,hot_value desc;
   </select>
 
-  <select id="selectPageByKeyword" resultType="com.fungo.community.entity.CmmCircle" >
+  <select id="selectPageByKeyword" parameterType="java.lang.String" resultType="com.fungo.community.entity.CmmCircle" >
     select
     <include refid="Base_Column_List"></include>
     from t_cmm_circle
     <trim prefix="WHERE" prefixOverrides="AND |OR ">
-        <if test="keyword != null || keyword != '' ">
-          circle_name like '%keyword%'
+        <if test="keyword != null and keyword != '' ">
+          circle_name like CONCAT('%',#{keyword},'%')
         </if>
     </trim>
     order  by type asc ,sort  desc ,hot_value desc;

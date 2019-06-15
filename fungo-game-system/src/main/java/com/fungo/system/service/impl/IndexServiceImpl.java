@@ -29,6 +29,7 @@ import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.Html2Text;
+import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -240,7 +241,7 @@ public class IndexServiceImpl implements IIndexService {
             if (StringUtils.isNotBlank(app_channel)) {
                 keySuffix += app_channel;
             }
-            re =  (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+//            re =  (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
 
             if (null != re && null != re.getData() && re.getData().size() > 0) {
                 return re;
@@ -277,8 +278,7 @@ public class IndexServiceImpl implements IIndexService {
             if (indexBean != null) {
                 clist.add(indexBean);
             }
-            re = FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(list,input.getPage()-1,page.getPages()-input.getPage());
-//            re.setData(clist);
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(list,input.getPage()-1,page);
         }catch (Exception e){
             e.printStackTrace();
             LOGGER.error("获取圈子页面上广告位",e);

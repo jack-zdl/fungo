@@ -13,8 +13,8 @@ import java.util.Date;
  * @Author: dl.zhang
  * @Date: 2019/6/11
  */
-@Getter
-@Setter
+//@Getter
+//@Setter
 public class CmmCircleVo extends InputPageDto {
     
     /**
@@ -54,7 +54,96 @@ public class CmmCircleVo extends InputPageDto {
 
     private Integer sort;
 
-   public enum SorttypeEnum implements BaseEnum<SorttypeEnum,String> {
+    public String getSorttype() {
+        return sorttype;
+    }
+
+    public void setSorttype(String sorttype) {
+        this.sorttype = sorttype;
+    }
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getCircleName() {
+        return circleName;
+    }
+
+    public void setCircleName(String circleName) {
+        this.circleName = circleName;
+    }
+
+    public String getCircleIcon() {
+        return circleIcon;
+    }
+
+    public void setCircleIcon(String circleIcon) {
+        this.circleIcon = circleIcon;
+    }
+
+    public String getIntro() {
+        return intro;
+    }
+
+    public void setIntro(String intro) {
+        this.intro = intro;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
+    public Integer getMemberNum() {
+        return memberNum;
+    }
+
+    public void setMemberNum(Integer memberNum) {
+        this.memberNum = memberNum;
+    }
+
+    public Integer getHotValue() {
+        return hotValue;
+    }
+
+    public void setHotValue(Integer hotValue) {
+        this.hotValue = hotValue;
+    }
+
+    @Override
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
+    }
+
+    public enum SorttypeEnum implements BaseEnum<SorttypeEnum,String> {
         ALL("0","全部查询"),
         BROWSE("1","最近浏览的圈子"),
         FOLLOW("2","关注圈子");

@@ -4,12 +4,16 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Getter
 @Setter
 @ToString
-public class CmmCircleDto {
+public class CmmCircleDto implements Serializable {
+
+    private static final long serialVersionUID = 8286352368186073859L;
+
     private String id;
 
     private String circleName;
@@ -35,6 +39,8 @@ public class CmmCircleDto {
     private String createdBy;
 
     private String updatedBy;
+
+    private String test;
 
 
 }
