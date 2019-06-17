@@ -1,6 +1,10 @@
 package com.fungo.games;
 
 //import org.mybatis.spring.annotation.MapperScan;
+
+import com.game.common.util.pc20.BuriedPointUtils;
+import com.game.common.util.pc20.analysysjavasdk.AnalysysJavaSdk;
+import com.game.common.util.pc20.analysysjavasdk.SyncCollecter;
 import com.netflix.hystrix.contrib.metrics.eventstream.HystrixMetricsStreamServlet;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,32 +35,44 @@ import javax.servlet.MultipartConfigElement;
 @EnableRedisHttpSession
 public class FungoGamesApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(FungoGamesApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(FungoGamesApplication.class, args);
+    }
 
-	@Bean
-	public ServletRegistrationBean getServlet() {
-		HystrixMetricsStreamServlet streamServlet = new HystrixMetricsStreamServlet();
-		ServletRegistrationBean registrationBean = new ServletRegistrationBean(streamServlet);
-		registrationBean.setLoadOnStartup(1);
-		registrationBean.addUrlMappings("/hystrix.stream");
-		registrationBean.setName("HystrixMetricsStreamServlet");
-		return registrationBean;
-	}
+    @Bean
+    public ServletRegistrationBean getServlet() {
+        HystrixMetricsStreamServlet streamServlet = new HystrixMetricsStreamServlet();
+        ServletRegistrationBean registrationBean = new ServletRegistrationBean(streamServlet);
+        registrationBean.setLoadOnStartup(1);
+        registrationBean.addUrlMappings("/hystrix.stream");
+        registrationBean.setName("HystrixMetricsStreamServlet");
+        return registrationBean;
+    }
 
-	/**
-	 * 文件上传配置
-	 * @return
-	 */
-	@Bean
-	public MultipartConfigElement multipartConfigElement() {
-		MultipartConfigFactory factory = new MultipartConfigFactory();
-		//文件最大  KB,MB-1000MB
-		factory.setMaxFileSize("1024000KB");
-		/// 设置总上传数据总大小 100MB
-		factory.setMaxRequestSize("102400KB");
-		return factory.createMultipartConfig();
-	}
+    /**
+     * 文件上传配置
+     *
+     * @return
+     */
+    @Bean
+    public MultipartConfigElement multipartConfigElement() {
+        MultipartConfigFactory factory = new MultipartConfigFactory();
+        //文件最大  KB,MB-1000MB
+        factory.setMaxFileSize("1024000KB");
+        /// 设置总上传数据总大小 100MB
+        factory.setMaxRequestSize("102400KB");
+        return factory.createMultipartConfig();
+    }
+
+    /**
+     * 埋点初始化
+     *
+     * @return
+     */
+    @Bean
+    public AnalysysJavaSdk analysysJavaSdk() {
+        System.out.println("释放埋点连接..........................");
+        return new AnalysysJavaSdk(new SyncCollecter(BuriedPointUtils.ANALYSYS_SERVICE_URL), BuriedPointUtils.APP_KEY);
+    }
 
 }
