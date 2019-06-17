@@ -1,6 +1,7 @@
 package com.fungo.games.controller;
 
 
+import com.fungo.games.entity.BasTag;
 import com.fungo.games.service.BasTagService;
 import com.fungo.games.service.IGameService;
 import com.fungo.games.service.ITagService;
@@ -102,6 +103,12 @@ public class TagController {
 	@RequestMapping(value="/api/tag/taglist/selected", method= RequestMethod.POST)
 	public ResultDto<TagSelectOut> getSelectTagList(MemberUserProfile memberUserPrefile, @RequestBody TagInput tagInput) {
 		return iGameService.getSelectTagList(memberUserPrefile, tagInput);
+	}
+
+	@ApiOperation(value="获得文章分类标签", notes="")
+	@RequestMapping(value="/api/tag/listPostTag", method= RequestMethod.GET)
+	public ResultDto<List<BasTag>> listPostTag() {
+		return iTagService.listPostTag();
 	}
 	
 }

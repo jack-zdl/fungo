@@ -2,7 +2,9 @@ package systemmq;
 
 import com.alibaba.fastjson.JSON;
 import com.fungo.games.FungoGamesApplication;
+import com.fungo.games.entity.BasTag;
 import com.fungo.games.feign.MQFeignClient;
+import com.fungo.games.service.BasTagService;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.ts.mq.dto.MQResultDto;
@@ -14,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -26,6 +30,57 @@ import java.util.Date;
 public class SystemMqTest {
     @Autowired
     private MQFeignClient mqFeignClient;
+
+    @Autowired
+    private BasTagService basTagService;
+
+    @Test
+    public void addTag(){
+        List<BasTag> tags = getTags();
+        basTagService.insertBatch(tags);
+    }
+
+    private List<BasTag> getTags(){
+        List<BasTag> list = new ArrayList<>();
+        BasTag tag = new BasTag();
+        initTag(tag);
+        tag.setSort(0);
+        tag.setName("评测试玩");
+        list.add(tag);
+
+        BasTag tag1 = new BasTag();
+        initTag(tag1);
+        tag1.setSort(1);
+        tag1.setName("攻略心得");
+        list.add(tag1);
+
+        BasTag tag2 = new BasTag();
+        initTag(tag2);
+        tag2.setSort(2);
+        tag2.setName("同人/杂谈");
+        list.add(tag2);
+
+        BasTag tag3 = new BasTag();
+        initTag(tag3);
+        tag3.setSort(3);
+        tag3.setName("资讯/八卦");
+        list.add(tag3);
+
+        BasTag tag4 = new BasTag();
+        initTag(tag4);
+        tag4.setSort(4);
+        tag4.setName("其他");
+        list.add(tag4);
+
+        return list;
+    }
+
+    private void initTag(BasTag tag) {
+        tag.setGroupId("5b04e545a22b9d003239d4sa");
+        tag.setCreatedAt(new Date());
+        tag.setGameNum(0);
+        tag.setUpdatedAt(new Date());
+    }
 
 
     /**

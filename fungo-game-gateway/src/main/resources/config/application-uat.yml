@@ -369,6 +369,15 @@ spring:
         predicates:
         - Path=/api/content/game/**
 
+      - id:fungo-game-games-45:
+        uri: ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/tag/listPostTag
+
+      - id:fungo-game-games-46:
+        uri: ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/content/viewGames
 
         #      *****************游戏2019-05-20结束************************************
 

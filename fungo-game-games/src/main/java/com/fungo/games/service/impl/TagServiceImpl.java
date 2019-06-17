@@ -55,7 +55,7 @@ public class TagServiceImpl implements ITagService {
         if (null != totalList && !totalList.isEmpty()) {
             return ResultDto.success(totalList);
         }
-        List<BasTagGroup> basTagGroupList = basTagGroupService.selectList(new EntityWrapper<BasTagGroup>());
+        List<BasTagGroup> basTagGroupList = basTagGroupService.selectList(new EntityWrapper<BasTagGroup>().ne("type",2));
         if (basTagGroupList == null || basTagGroupList.isEmpty()) {
             return ResultDto.error("251", "找不到标签分类信息");
         }
@@ -95,6 +95,13 @@ public class TagServiceImpl implements ITagService {
         //redis cache
         fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_TAG_LIST, "", totalList);
         return ResultDto.success(totalList);
+    }
+
+    @Override
+    public ResultDto<List<BasTag>> listPostTag() {
+        BasTagGroup basTagGroup = basTagGroupService.selectOne(new EntityWrapper<BasTagGroup>().eq("type",2));
+        List<BasTag> basTags = basTagService.selectList(new EntityWrapper<BasTag>().eq("group_id", basTagGroup.getId()).orderBy("sort",true));
+        return ResultDto.success(basTags);
     }
 
 
