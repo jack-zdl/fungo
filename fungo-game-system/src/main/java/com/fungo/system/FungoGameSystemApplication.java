@@ -2,6 +2,9 @@ package com.fungo.system;
 
 import com.game.common.framework.MyProperties;
 import com.game.common.framework.runtime.SpringUtils;
+import com.game.common.util.pc20.BuriedPointUtils;
+import com.game.common.util.pc20.analysysjavasdk.AnalysysJavaSdk;
+import com.game.common.util.pc20.analysysjavasdk.SyncCollecter;
 import com.netflix.hystrix.contrib.metrics.eventstream.HystrixMetricsStreamServlet;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.Banner;
@@ -67,4 +70,16 @@ public class FungoGameSystemApplication {
 		factory.setMaxRequestSize("102400KB");
 		return factory.createMultipartConfig();
 	}
+
+	/**
+	 * 埋点初始化
+	 * @return
+	 */
+	@Bean
+	public AnalysysJavaSdk analysysJavaSdk() {
+		System.out.println("初识化埋点连接..........................");
+		return new AnalysysJavaSdk(new SyncCollecter(BuriedPointUtils.ANALYSYS_SERVICE_URL), BuriedPointUtils.APP_KEY);
+	}
+
+
 }
