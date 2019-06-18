@@ -150,6 +150,10 @@ public class CommunityFacedeHystrixService implements FallbackFactory<CommunityF
             }
 
 
+            public ResultDto<Integer> getPostBoomWatchNumByCardId(String cardId) {
+                logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "getPostBoomWatchNumByCardId");
+                return null;
+            }
         };
 
     }

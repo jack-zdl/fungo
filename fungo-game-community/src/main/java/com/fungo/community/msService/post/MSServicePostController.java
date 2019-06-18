@@ -98,6 +98,18 @@ public class MSServicePostController {
         resultDto.setData(cmmPostDtoList);
         return resultDto;
     }
+    /**
+     * PC2.0新增浏览量 根据跟用户ID获取文章的浏览量
+     * @param cardId
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/post/getPostBoomWatchNumByCardId")
+    public ResultDto<Integer> getPostBoomWatchNumByCardId(@RequestParam("cardId")String cardId) {
+        ResultDto<Integer> resultDto = new ResultDto<Integer>();
+        Integer integer = imsServicePostService.getPostBoomWatchNumByCardId(cardId);
+        resultDto.setData(integer);
+        return resultDto;
+    }
 
     //--------
 }
