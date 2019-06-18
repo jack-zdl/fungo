@@ -214,6 +214,12 @@ public class PostController {
         return bsPostService.getTopicPosts(communityId);
     }
 
+    @ApiOperation(value = "管控台推荐文章", notes = "")
+    @RequestMapping(value = "/api/content/post/topic", method = RequestMethod.GET)
+    public FungoPageResultDto<Map<String, String>> getTopicPosts(@Anonymous MemberUserProfile memberUserPrefile) {
+        return bsPostService.getTopicPosts();
+    }
+
 
     /**
      * 首页文章帖子列表

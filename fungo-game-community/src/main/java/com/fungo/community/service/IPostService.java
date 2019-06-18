@@ -68,6 +68,8 @@ public interface IPostService {
 
 	public FungoPageResultDto<Map<String, String>> getTopicPosts(String communityId);
 
+	public FungoPageResultDto<Map<String, String>> getTopicPosts();
+
 
 
 

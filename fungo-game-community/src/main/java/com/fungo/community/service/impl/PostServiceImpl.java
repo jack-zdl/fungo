@@ -1633,6 +1633,30 @@ public class PostServiceImpl implements IPostService {
         return re;
     }
 
+    /**
+     * 功能描述: @todo 没有加redis的key
+     * @param: []
+     * @return: com.game.common.dto.FungoPageResultDto<java.util.Map<java.lang.String,java.lang.String>>
+     * @auther: dl.zhang
+     * @date: 2019/6/18 18:21
+     */
+    @Override
+    public FungoPageResultDto<Map<String, String>> getTopicPosts() {
+        FungoPageResultDto<Map<String, String>> re = new FungoPageResultDto<Map<String, String>>();
+        List<Map<String, String>> mapList = null;
+        mapList = new ArrayList<>();
+        List<CmmPost> list = postService.selectList(new EntityWrapper<CmmPost>().eq("recommend", 1).orderBy("sort",false));
+        for (CmmPost p : list) {
+            Map<String, String> map = new HashMap<>();
+            map.put("titile", p.getTitle());
+            map.put("objectId", p.getId());
+            map.put("video", p.getVideo());
+            mapList.add(map);
+        }
+        re.setData(mapList);
+        return re;
+    }
+
 
     /**
      * 查看用户在指定时间段内文章上推荐/置顶的文章数量
