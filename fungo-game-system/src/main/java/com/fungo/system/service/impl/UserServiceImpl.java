@@ -22,13 +22,18 @@ import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.SecurityMD5;
+import com.game.common.util.pc20.BuriedPointUtils;
+import com.game.common.util.pc20.analysysjavasdk.AnalysysJavaSdk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -68,6 +73,9 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private FungoCacheMember fungoCacheMember;
+
+    @Autowired
+    private AnalysysJavaSdk analysysJavaSdk;
 
 
     //用户成长业务
@@ -229,9 +237,11 @@ public class UserServiceImpl implements IUserService {
                     //fix bug:修改会员编号出现的重复的情况 修改用户的member_no用户编号 [by mxf 2019-03-06]
                     //memberNoService.getMemberNoAndForUpdate(member);
                     //end
-
+                    buriedPointFun(member, "true");
                     LOGGER.info("用户注册-手机验证-初始化数据  memberId : {}, phoneNumber:{}", member.getId(), mobile);
                     this.initUserRank(member.getId());
+                }else{
+                    buriedPointFun(member, "false");
                 }
                 messageCodeService.updateCheckCodeSuccess(re.getData());//更新验证成功
             } else {
@@ -261,6 +271,17 @@ public class UserServiceImpl implements IUserService {
         //记录登录用户
         memberLoginedStatisticsService.addLoginToBucket(member.getId(), appVersion);
         return rest;
+    }
+
+    private void buriedPointFun(Member member, String s) {
+        Map<String, String> buriedpointmap = new HashMap<>();
+        buriedpointmap.put("distinctId", member.getId());
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        buriedpointmap.put("platForm", request.getHeader("os"));
+        buriedpointmap.put("login001", "手机号");
+        buriedpointmap.put("login002", s);
+//                  手机登录埋点事件ID:login005
+        BuriedPointUtils.login05(buriedpointmap, analysysJavaSdk);
     }
 
     @Override
