@@ -6,10 +6,14 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.dto.*;
 import com.fungo.system.service.IMemberService;
+import com.fungo.system.service.IUserService;
 import com.fungo.system.service.portal.PortalSystemIMemberService;
+import com.fungo.system.service.portal.PortalSystemIUserService;
 import com.game.common.api.InputPageDto;
+import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.MyCommentBean;
 import com.game.common.dto.community.MyPublishBean;
 import com.game.common.util.CommonUtil;
@@ -32,6 +36,9 @@ public class PortalSystemMemberController {
 
     @Autowired
     private IMemberService iMemberService;
+
+    @Autowired
+    private PortalSystemIUserService portalSystemIUserService;
 
     @ApiOperation(value = "获取点赞我的", notes = "获取点赞我的")
     @RequestMapping(value = "/api/portal/system/mine/like", method = RequestMethod.POST)
@@ -102,6 +109,52 @@ public class PortalSystemMemberController {
             return FungoPageResultDto.error("-1", "未指定用户");
         }
         return iMemberService.getMyComments(memberId, input);
+    }
+
+
+    @ApiOperation(value = "PC2.0其他会员信息", notes = "PC2.0其他会员信息")
+    @RequestMapping(value = "/api/portal/system/user/card/{cardId}", method = RequestMethod.GET)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "cardId", value = "用户id", paramType = "path", dataType = "number")
+    })
+    public ResultDto<AuthorBean> getUserCard(@Anonymous MemberUserProfile memberUserPrefile, @PathVariable("cardId") String cardId) {
+//		ResultDto<CardBean> re =new ResultDto<CardBean>();
+//		CardBean bean =new CardBean();
+//		re.setData(bean);
+//		Member m=this.imemberService.selectById(cardId);
+//		if(m==null) {return ResultDto.error("224","用户不存在");}
+//		bean.setAvatar(m.getAvatar());
+//		bean.setCreatedAt(DateTools.fmtDate(m.getCreatedAt()));
+//		bean.setEmail(m.getEmail());
+//		bean.setEmailVerified(false);
+//
+//		bean.setGender(m.getGender());
+//		bean.setMobilePhoneNumber(m.getMobilePhoneNum());
+//		bean.setIs_followed(false);
+//		if(memberUserPrefile!=null) {
+//			BasAction action=actionService.selectOne( new EntityWrapper<BasAction>().eq("type", "5").eq("member_id", memberUserPrefile.getLoginId()).eq("target_id", cardId).notIn("state", "-1"));
+//			if(action!=null) {
+//				bean.setIs_followed(true);
+//			}
+//		}
+//		int followed = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).notIn("state", "-1").eq("target_id",cardId));
+//		bean.setFollowee_num(followed);//粉丝
+//		int follower = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).notIn("state", "-1").eq("target_type",0).eq("member_id",  cardId));
+//		bean.setFollower_num(follower);//关注
+//		bean.setLevel(m.getLevel());
+//		bean.setMobilePhoneVerified(false);
+//		bean.setObjectId(m.getId());
+//		bean.setSign(m.getSign());
+//		bean.setUpdatedAt(DateTools.fmtDate(m.getUpdatedAt()));
+//		bean.setUsername(m.getUserName());
+        String memberId = "";
+        if (memberUserPrefile != null) {
+            memberId = memberUserPrefile.getLoginId();
+        }
+        ResultDto<AuthorBean> re = new ResultDto<AuthorBean>();
+        AuthorBean author = portalSystemIUserService.getUserCard(cardId, memberId);
+        re.setData(author);
+        return re;
     }
 
 }

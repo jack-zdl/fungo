@@ -26,6 +26,8 @@ import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
+import com.game.common.util.pc20.BuriedPointUtils;
+import com.game.common.util.pc20.analysysjavasdk.AnalysysJavaSdk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +90,8 @@ public class GameServiceImpl implements IGameService {
     private BasTagGroupService basTagGroupService;
 
 
+    @Autowired
+    private AnalysysJavaSdk analysysJavaSdk;
 
     @Override
     public FungoPageResultDto<GameOutPage> getGameList(GameInputPageDto gameInputDto, String memberId, String os) {
@@ -430,6 +434,14 @@ public class GameServiceImpl implements IGameService {
         }
         out.setDownload_num(downloadNum);
         //ends
+        Map<String, String> buriedpointmap = new HashMap<>();
+        buriedpointmap.put("distinctId",memberId);
+        buriedpointmap.put("platForm",ptype);
+        buriedpointmap.put("gamename",game.getName());
+        buriedpointmap.put("gameid",game.getId());
+        buriedpointmap.put("loadnum",game.getDownloadNum() == null ? 0 + "" : game.getDownloadNum() + "");
+//            首次第三方登录埋点事件ID:login005
+        BuriedPointUtils.gamepage(buriedpointmap, analysysJavaSdk);
 
         // 查询评论数量
         int evaCount = gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", gameId).and("state != -1"));

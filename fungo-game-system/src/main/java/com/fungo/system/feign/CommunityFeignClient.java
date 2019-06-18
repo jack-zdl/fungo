@@ -161,4 +161,11 @@ public interface CommunityFeignClient {
     @GetMapping("/ms/service/cmm/cty/listGameIds")
     ResultDto<List<String>> listGameIds(@RequestParam("communityIds") List<String> list);
 
+    /**
+     * PC2.0新增浏览量 根据跟用户ID获取文章的浏览量
+     * @param cardId
+     * @return
+     */
+    @PostMapping("/ms/service/cmm/post/getPostBoomWatchNumByCardId")
+    ResultDto<Integer> getPostBoomWatchNumByCardId(@RequestParam("cardId")String cardId);
 }

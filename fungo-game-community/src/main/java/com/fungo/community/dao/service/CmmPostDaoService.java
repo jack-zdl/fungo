@@ -41,4 +41,11 @@ public interface CmmPostDaoService extends IService<CmmPost> {
      * @return
      */
     public List<CollectionBean> getCollection(Page<CollectionBean> page,  List<String> postIds);
+
+    /**
+     * PC2.0新增浏览量 根据跟用户ID获取文章的浏览量
+     * @param cardId
+     * @return
+     */
+    Integer getPostBoomWatchNumByCardId(String cardId);
 }

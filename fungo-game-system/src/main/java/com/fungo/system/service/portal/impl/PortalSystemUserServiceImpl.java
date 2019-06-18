@@ -2,11 +2,13 @@ package com.fungo.system.service.portal.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.entity.MemberFollower;
+import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.service.IUserService;
 import com.fungo.system.service.MemberFollowerService;
 import com.fungo.system.service.portal.PortalSystemIUserService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.AuthorBean;
+import com.game.common.dto.ResultDto;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,8 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
     private MemberFollowerService followService;
     @Autowired
     private IUserService iUserService;
+    @Autowired
+    private CommunityFeignClient communityFeignClient;
 
     @Override
     public AuthorBean getUserCard(String cardId, String memberId) {
@@ -49,6 +53,11 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
                     author.setMutualFollowed("1");
                 }
             }
+        }
+//        PC2.0新增浏览量 根据跟用户ID获取文章的浏览量
+        ResultDto<Integer> resultDto = communityFeignClient.getPostBoomWatchNumByCardId(cardId);
+        if (resultDto != null){
+            author.setWatchNum(resultDto.getData() == null ? 0 : resultDto.getData());
         }
         //redis cache
         fungoCacheMember.excIndexCache(true, keyPrefix, memberId, author);
