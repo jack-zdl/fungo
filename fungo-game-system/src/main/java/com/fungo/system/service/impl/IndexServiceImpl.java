@@ -241,6 +241,7 @@ public class IndexServiceImpl implements IIndexService {
             if (StringUtils.isNotBlank(app_channel)) {
                 keySuffix += app_channel;
             }
+            //@todo
 //            re =  (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
 
             if (null != re && null != re.getData() && re.getData().size() > 0) {
@@ -257,7 +258,7 @@ public class IndexServiceImpl implements IIndexService {
 
             CardIndexBean indexBean = new CardIndexBean();
             if (bl.size() == 0) {
-                return null;
+                return FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(CommonEnum.HTTP_WARNING_EMPTY.code(),CommonEnum.HTTP_WARNING_EMPTY.message());
             }
             ArrayList<CardDataBean> list = new ArrayList<>();
             for (Banner b : bl) {

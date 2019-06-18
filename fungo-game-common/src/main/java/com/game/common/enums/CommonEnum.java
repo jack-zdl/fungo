@@ -30,6 +30,7 @@ public enum CommonEnum implements IEnum {
 	UNACCESSRULE(
 			"-1","权限不足"
 	),
+	HTTP_WARNING_EMPTY("11","请求数据为空"),
 	//////////////////////
 	LOGIN_TIMEOUT(
 			"24", "登录超时，请稍后再试"

@@ -10,10 +10,14 @@ import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.entity.*;
 import com.fungo.system.facede.ICommunityProxyService;
 import com.fungo.system.service.*;
+import com.game.common.consts.Setting;
+import com.game.common.dto.ActionInput;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.system.CircleFollow;
+import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.IncentRuleRankDto;
@@ -27,8 +31,10 @@ import com.game.common.vo.MemberFollowerVo;
 import com.sun.istack.NotNull;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,6 +105,11 @@ public class SystemServiceImpl implements SystemService {
     @Autowired
     private  BasActionDao actionDao;
 
+    @Autowired
+    private ActionServiceImpl actionServiceImpl;
+
+    @Autowired
+    private BasActionServiceImap basActionServiceImap;
 
 
     /**
@@ -847,6 +858,56 @@ public class SystemServiceImpl implements SystemService {
     public ResultDto<List<String>> getRecentBrowseCommunityByUserId(String userId) {
         List<String> list = actionDao.getRecentBrowseCommunityByUserId(userId);
         return ResultDto.success(list);
+    }
+
+    /**
+     * 功能描述: 根据传递的圈子集合查询是否关注
+     * @param: [circleFollowVo]
+     * @return: com.game.common.dto.ResultDto<com.game.common.dto.system.CircleFollowVo>
+     * @auther: dl.zhang
+     * @date: 2019/6/18 11:25
+     */
+    @Override
+    public ResultDto<CircleFollowVo> circleListFollow(CircleFollowVo circleFollowVo) {
+        ActionInput inputDto = new ActionInput();
+        if(circleFollowVo.getMemberId() == null || circleFollowVo.getCircleFollows() == null){
+            return  ResultDto.success(circleFollowVo);
+        }
+        try {
+            inputDto.setTarget_type(Integer.valueOf(ActionInput.ActionEnum.CIRCLE.getKey()));
+            for (CircleFollow circleFollow: circleFollowVo.getCircleFollows()) {
+                inputDto.setTarget_id(circleFollow.getCircleId());
+                BasAction action = actionServiceImpl.getAction(circleFollowVo.getMemberId(), Setting.ACTION_TYPE_FOLLOW, inputDto);
+                if(action != null){
+                    circleFollow.setFollow(true);
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("根据传递的圈子集合查询是否关注",e);
+        }
+        return ResultDto.success(circleFollowVo);
+    }
+
+    @Override
+    public FungoPageResultDto<String> circleListMineFollow(CircleFollowVo circleFollowVo) {
+        FungoPageResultDto re = new FungoPageResultDto();
+        if(circleFollowVo.getMemberId() == null ){
+            return  FungoPageResultDto.error("-1","用户id为空");
+        }
+        try {
+            List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+            Page p = new Page(circleFollowVo.getPage(), circleFollowVo.getLimit());
+            Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("type","5").eq("target_type","11").eq("state","0");
+            Page page = basActionServiceImap.selectPage(p,wrapper);
+            List<BasAction> basActions = page.getRecords();
+            re.setData(basActions.stream().map(BasAction::getTargetId).collect(Collectors.toList()));
+            PageTools.pageToResultDto(re, p);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("根据传递的圈子集合查询是否关注",e);
+        }
+        return re;
     }
 
 

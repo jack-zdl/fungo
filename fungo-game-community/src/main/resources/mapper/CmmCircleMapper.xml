@@ -30,7 +30,7 @@
     order  by type asc ,sort  desc ,hot_value desc;
   </select>
 
-  <select id="selectPageByKeyword" parameterType="java.lang.String" resultType="com.fungo.community.entity.CmmCircle" >
+  <select id="selectPageByKeyword" parameterType="com.game.common.vo.CmmCircleVo" resultType="com.fungo.community.entity.CmmCircle" >
     select
     <include refid="Base_Column_List"></include>
     from t_cmm_circle
@@ -38,6 +38,22 @@
         <if test="keyword != null and keyword != '' ">
           circle_name like CONCAT('%',#{keyword},'%')
         </if>
+        <if test="type != null and type != ''">
+          and type = #{type}
+        </if>
+    </trim>
+    order  by type asc ,sort  desc ,hot_value desc;
+  </select>
+
+  <select id="selectPageByIds" parameterType="com.game.common.vo.CmmCircleVo" resultType="com.fungo.community.entity.CmmCircle" >
+    select
+    <include refid="Base_Column_List"></include>
+    from t_cmm_circle
+    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+        id in
+        <foreach  item="item" collection="list" index="index"  open="(" separator="," close=")">
+          #{item}
+        </foreach>
     </trim>
     order  by type asc ,sort  desc ,hot_value desc;
   </select>

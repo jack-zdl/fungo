@@ -113,7 +113,7 @@ public class FungoPageResultDto<T> extends AbstractResultDto {
             respJson.setCode(code);
             respJson.setMessage(msg);
             respJson.setData((List) data);
-            respJson.setCount(((List) data).size());
+            respJson.setCount(data == null ? 0 : ((List) data).size());
             respJson.setBefore(before);
             respJson.setAfter(after);
             return respJson;
