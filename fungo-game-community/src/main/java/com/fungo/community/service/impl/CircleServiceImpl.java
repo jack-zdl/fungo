@@ -85,6 +85,8 @@ public class CircleServiceImpl implements CircleService {
                     });
                 }
             }else if(CmmCircleVo.SorttypeEnum.BROWSE.getKey().equals(cmmCircleVo.getSorttype())){
+
+            }else if(CmmCircleVo.SorttypeEnum.FOLLOW.getKey().equals(cmmCircleVo.getSorttype())){
                 CircleFollowVo param = new CircleFollowVo();
                 param.setMemberId(memberId);
                 FungoPageResultDto<String> circleFollowVos = systemFeignClient.circleListMineFollow(param);
@@ -104,14 +106,8 @@ public class CircleServiceImpl implements CircleService {
                         cmmCircleDtoList.add(s);
                     });
                 }
-            }else if(CmmCircleVo.SorttypeEnum.FOLLOW.getKey().equals(cmmCircleVo.getSorttype())){
-
             }
-
-//            re = new FungoPageResultDto();
-//            re.setData(cmmCircleDtoList);
             re = FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(cmmCircleDtoList,cmmCircleVo.getPage()-1,page);
-//            PageTools.pageToResultDto(re,page);
         }catch (Exception e){
             e.printStackTrace();
             LOGGER.error("获取圈子集合",e);

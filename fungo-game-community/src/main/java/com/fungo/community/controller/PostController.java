@@ -12,6 +12,7 @@ import com.fungo.community.entity.CmmPost;
 import com.fungo.community.feign.GameFeignClient;
 import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.service.IPostService;
+import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.*;
 import com.game.common.dto.action.BasActionDto;
@@ -215,9 +216,9 @@ public class PostController {
     }
 
     @ApiOperation(value = "管控台推荐文章", notes = "")
-    @RequestMapping(value = "/api/content/post/topic", method = RequestMethod.GET)
-    public FungoPageResultDto<Map<String, String>> getTopicPosts(@Anonymous MemberUserProfile memberUserPrefile) {
-        return bsPostService.getTopicPosts();
+    @RequestMapping(value = "/api/content/post/topic", method = RequestMethod.POST)
+    public FungoPageResultDto<Map<String, String>> getTopicPosts(@Anonymous MemberUserProfile memberUserPrefile, InputPageDto inputPageDto) {
+        return bsPostService.getTopicPosts(inputPageDto);
     }
 
 

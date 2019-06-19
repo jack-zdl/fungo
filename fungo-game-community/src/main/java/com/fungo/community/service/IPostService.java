@@ -1,6 +1,7 @@
 package com.fungo.community.service;
 
 
+import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ObjectId;
 import com.game.common.dto.ResultDto;
@@ -68,7 +69,7 @@ public interface IPostService {
 
 	public FungoPageResultDto<Map<String, String>> getTopicPosts(String communityId);
 
-	public FungoPageResultDto<Map<String, String>> getTopicPosts();
+	public FungoPageResultDto<Map<String, String>> getTopicPosts( InputPageDto inputPageDto);
 
 
 
