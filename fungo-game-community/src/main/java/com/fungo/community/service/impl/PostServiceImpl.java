@@ -270,7 +270,7 @@ public class PostServiceImpl implements IPostService {
                 postGame.setUpdatedAt(new Date());
                 //查询出游戏对应的社区id 插入社区id
                 CmmCommunity community = communityService.selectOne(new EntityWrapper<CmmCommunity>().eq("game_id", gameId));
-                if(community!=null&&StringUtil.isNotNull(community.getId())){
+                if (community != null && StringUtil.isNotNull(community.getId())) {
                     postGame.setCmmId(community.getId());
                     cmmPostGameMapper.insert(postGame);
                 }
@@ -278,7 +278,7 @@ public class PostServiceImpl implements IPostService {
                 //查询游戏是否有圈子 有圈子-建立文章圈子关系
                 String circleId = cmmCircleMapper.selectCircleByGameId(gameId);
                 //已经保存过关系，不用重新保存
-                if(StringUtil.isNotNull(circleId)&&!circleId.equals(postInput.getCircleId())){
+                if (StringUtil.isNotNull(circleId) && !circleId.equals(postInput.getCircleId())) {
                     CmmPostCircle postCircle = new CmmPostCircle();
                     postCircle.setId(PrimaryKeyUtils.uniqueId());
                     postCircle.setCircleId(circleId);
@@ -1122,31 +1122,31 @@ public class PostServiceImpl implements IPostService {
         //type 0 游戏社区 1：官方社区 2 圈子 3.什么都没有
         communityMap.put("type", 3);
         CmmCircle circle = null;
-         String circleId = cmmPostCircleMapper.getCmmCircleByPostId(cmmPost.getId());
-         if(StringUtil.isNotNull(circleId)){
-             circle = cmmCircleMapper.selectById(circleId);
-         }
-        if(circle!=null){
+        String circleId = cmmPostCircleMapper.getCmmCircleByPostId(cmmPost.getId());
+        if (StringUtil.isNotNull(circleId)) {
+            circle = cmmCircleMapper.selectById(circleId);
+        }
+        if (circle != null) {
             communityMap.put("objectId", circle.getId());
             communityMap.put("name", circle.getCircleName());
             communityMap.put("icon", circle.getCircleIcon());
             communityMap.put("intro", circle.getIntro());
             //3标识本次是圈子
             communityMap.put("type", 2);
-        }else{
+        } else {
             //分两种情况 是否关联了社区，关联社区走之前逻辑，否则走关联游戏逻辑
             CmmCommunity community = null;
-            if(StringUtil.isNotNull(cmmPost.getCommunityId())){
+            if (StringUtil.isNotNull(cmmPost.getCommunityId())) {
                 community = communityService.selectById(cmmPost.getCommunityId());
             }
-            if(community==null){
+            if (community == null) {
                 //找到文章关联的游戏，选择一个游戏社区
                 String communityId = cmmPostGameMapper.getCommunityIdByPostId(cmmPost.getId());
-                if(StringUtil.isNotNull(communityId)){
+                if (StringUtil.isNotNull(communityId)) {
                     community = communityService.selectById(communityId);
                 }
             }
-            if(community!=null){
+            if (community != null) {
                 if (!CommonUtil.isNull(cmmPost.getVideo()) && CommonUtil.isNull(cmmPost.getCoverImage())) {
                     out.setCover_image(community.getCoverImage());
                 }
@@ -1217,15 +1217,12 @@ public class PostServiceImpl implements IPostService {
         }
 
 
-
-
         //视频详情
         if (!CommonUtil.isNull(cmmPost.getVideoUrls())) {
             //ArrayList<StreamInfo> streams = mapper.readValue(cmmPost.getVideoUrls(), ArrayList.class);
             ArrayList<StreamInfo> streams = (ArrayList<StreamInfo>) JSON.parseArray(cmmPost.getVideoUrls(), StreamInfo.class);
             out.setVideoList(streams);
         }
-
 
 
         //查询是否关注、收藏、点赞
@@ -1637,7 +1634,7 @@ public class PostServiceImpl implements IPostService {
     /**
      * 功能描述: @todo 没有加redis的key
      * @param: []
-     * @return: com.game.common.dto.FungoPageResultDto<java.util.Map<java.lang.String,java.lang.String>>
+     * @return: com.game.common.dto.FungoPageResultDto<java.util.Map < java.lang.String , java.lang.String>>
      * @auther: dl.zhang
      * @date: 2019/6/18 18:21
      */
@@ -1646,19 +1643,19 @@ public class PostServiceImpl implements IPostService {
         FungoPageResultDto<Map<String, String>> re = new FungoPageResultDto<Map<String, String>>();
         List<Map<String, String>> mapList = null;
         mapList = new ArrayList<>();
-        Page page = new Page(inputPageDto.getPage(),inputPageDto.getLimit());
-        Page<CmmPost> postPage = postService.selectPage(page,new EntityWrapper<CmmPost>().eq("recommend", 1).orderBy("sort",false));
-       if(postPage != null ){
-           for (CmmPost p : postPage.getRecords()) {
-               Map<String, String> map = new HashMap<>();
-               map.put("titile", p.getTitle());
-               map.put("objectId", p.getId());
-               map.put("video", p.getVideo());
-               mapList.add(map);
-           }
-       }
+        Page page = new Page(inputPageDto.getPage(), inputPageDto.getLimit());
+        Page<CmmPost> postPage = postService.selectPage(page, new EntityWrapper<CmmPost>().eq("recommend", 1).orderBy("sort", false));
+        if (postPage != null) {
+            for (CmmPost p : postPage.getRecords()) {
+                Map<String, String> map = new HashMap<>();
+                map.put("titile", p.getTitle());
+                map.put("objectId", p.getId());
+                map.put("video", p.getVideo());
+                mapList.add(map);
+            }
+        }
         re.setData(mapList);
-        PageTools.pageToResultDto(re,page);
+        PageTools.pageToResultDto(re, page);
         return re;
     }
 
@@ -1709,24 +1706,35 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public FungoPageResultDto<Map<String, Object>> searchPosts(String keyword, int page, int limit) throws Exception {
+
+        if (StringUtils.isNotBlank(keyword)) {
+            keyword = keyword.trim();
+        }
+
         FungoPageResultDto<Map<String, Object>> re = new FungoPageResultDto<Map<String, Object>>();
         List<Map<String, Object>> resultData = new ArrayList<>();
         re.setData(resultData);
 
-//		if (keyword == null || "".equals(keyword.replace(" ", ""))) {
-//			return FungoPageResultDto.error("13", "请输入正确的查找格式");
-//		}
-        @SuppressWarnings("unchecked")
-        Page<CmmPost> postPage = postService.selectPage(new Page<>(page, limit),
-                Condition.create().setSqlSelect("id,title,content,cover_image as coverImage ,member_id as memberId ,video,created_at as createdAt,updated_at as updatedAt,video_cover_image as videoCoverImage")
-                        .where("state = {0}", 1).andNew("title like '%" + keyword + "%'").or("content like " + "'%" + keyword + "%'"));
-//						.or("content like "+ "'%" + keyword+ "%'"));
+        Page<CmmPost> pageCmPost = new Page<>(page, limit);
+
+        Wrapper<CmmPost> wrapperCmmPost = Condition.create().setSqlSelect("id,title,content,cover_image as coverImage ,member_id as memberId ,video,created_at as createdAt," +
+                "updated_at as updatedAt,video_cover_image as videoCoverImage,SUM( watch_num + comment_num + like_num + collect_num ) AS wclc ");
+
+        wrapperCmmPost.where("state = {0}", 1);
+        wrapperCmmPost.andNew("title like '%" + keyword + "%'");
+        wrapperCmmPost.or("content like " + "'%" + keyword + "%'");
+
+        //排序
+        StringBuffer orderByStr = new StringBuffer();
+        orderByStr.append("LOCATE( '"+  keyword +"', title ) DESC ,").append(" wclc DESC,");
+        orderByStr.append("LOCATE( '"+  keyword +"', content ) DESC,").append(" wclc DESC");
+
+        wrapperCmmPost.orderBy(orderByStr.toString());
+
+        Page<CmmPost> postPage = postService.selectPage(pageCmPost, wrapperCmmPost);
         List<CmmPost> postList = postPage.getRecords();
-//		if (postList == null || postList.isEmpty()) {
-//			return FungoPageResultDto.error("221", "找不到符合条件的帖子");
-//		}
-        //List<IncentRuleRank> rankList = IRuleRankService.getLevelRankList();
-        ObjectMapper mapper = new ObjectMapper();
+
+
         for (CmmPost post : postList) {
             Map<String, Object> postData = new HashMap<String, Object>();
 
@@ -1754,9 +1762,6 @@ public class PostServiceImpl implements IPostService {
             postData.put("createdAt", DateTools.fmtDate(post.getCreatedAt()));
             postData.put("updatedAt", DateTools.fmtDate(post.getUpdatedAt()));
 
-
-            //!fixme 获取用户信息
-            //AuthorBean author = iuserService.getAuthor(post.getMemberId());
 
             AuthorBean author = null;
             try {
