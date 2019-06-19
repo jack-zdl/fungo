@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: uat
+    active: dev
 management:
   security:
     enabled:  false
