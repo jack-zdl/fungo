@@ -23,6 +23,7 @@ import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.index.ActionBean;
 import com.game.common.dto.index.CardDataBean;
 import com.game.common.dto.index.CardIndexBean;
+import com.game.common.dto.index.CircleCardDataBean;
 import com.game.common.enums.BaseEnum;
 import com.game.common.enums.CommonEnum;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
@@ -256,29 +257,29 @@ public class IndexServiceImpl implements IIndexService {
             else if(BannnerEnum.past.getValue().equals(input.getFilter()))
                 bl = bannerDao.afterNewDateBanner(page);
 
-            CardIndexBean indexBean = new CardIndexBean();
+//            CardIndexBean indexBean = new CardIndexBean();
             if (bl.size() == 0) {
                 return FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(CommonEnum.HTTP_WARNING_EMPTY.code(),CommonEnum.HTTP_WARNING_EMPTY.message());
             }
-            ArrayList<CardDataBean> list = new ArrayList<>();
+            ArrayList<CircleCardDataBean> list = new ArrayList<>();
             for (Banner b : bl) {
-                CardDataBean b1 = new CardDataBean();
-                b1.setLowerLeftCorner("运营活动");
+                CircleCardDataBean b1 = new CircleCardDataBean();
+                b1.setMainTitle("运营活动");
                 b1.setImageUrl(b.getCoverImage());
-                b1.setMainTitle(b.getGeneralizeTitle());
+//                b1.setMainTitle(b.getGeneralizeTitle());
                 b1.setContent(b.getIntro());
-                b1.setActionType(String.valueOf(b.getActionType()));
-                b1.setHref(b.getHref());
+//                b1.setActionType(String.valueOf(b.getActionType()));
+//                b1.setHref(b.getHref());
                 b1.setTargetType(b.getTargetType());
                 b1.setTargetId(b.getTargetId());
-                b1.setLowerLeftCorner(DateTools.fmtDate(b.getBeginDate()));
-                b1.setLowerRightCorner(DateTools.fmtDate(b.getEndDate()));
+                b1.setStartDate(DateTools.fmtDate(b.getBeginDate()));
+                b1.setEndDate(DateTools.fmtDate(b.getEndDate()));
                 list.add(b1);
             }
             /***/
-            if (indexBean != null) {
-                clist.add(indexBean);
-            }
+//            if (indexBean != null) {
+//                clist.add(indexBean);
+//            }
             re = FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(list,input.getPage()-1,page);
         }catch (Exception e){
             e.printStackTrace();
