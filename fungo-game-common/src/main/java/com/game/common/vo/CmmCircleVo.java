@@ -4,6 +4,7 @@ import com.game.common.api.InputPageDto;
 import com.game.common.enums.BaseEnum;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
 
@@ -13,8 +14,9 @@ import java.util.Date;
  * @Author: dl.zhang
  * @Date: 2019/6/11
  */
-//@Getter
-//@Setter
+@Getter
+@Setter
+@ToString
 public class CmmCircleVo extends InputPageDto {
     
     /**
@@ -26,6 +28,17 @@ public class CmmCircleVo extends InputPageDto {
      * </p>
      * @auther: dl.zhang
      * @date: 2019/6/11 16:14
+     */
+    private String querytype;
+
+    /**
+     * 功能描述:  follow cirlce list sort type
+     * <p>
+     *     1  follow date sort
+     *     2  hotvalue sort
+     * </p>
+     * @auther: dl.zhang
+     * @date: 2019/6/19 16:45
      */
     private String sorttype;
 
@@ -53,95 +66,6 @@ public class CmmCircleVo extends InputPageDto {
     private Integer hotValue;
 
     private Integer sort;
-
-    public String getSorttype() {
-        return sorttype;
-    }
-
-    public void setSorttype(String sorttype) {
-        this.sorttype = sorttype;
-    }
-
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getCircleName() {
-        return circleName;
-    }
-
-    public void setCircleName(String circleName) {
-        this.circleName = circleName;
-    }
-
-    public String getCircleIcon() {
-        return circleIcon;
-    }
-
-    public void setCircleIcon(String circleIcon) {
-        this.circleIcon = circleIcon;
-    }
-
-    public String getIntro() {
-        return intro;
-    }
-
-    public void setIntro(String intro) {
-        this.intro = intro;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-    public Integer getState() {
-        return state;
-    }
-
-    public void setState(Integer state) {
-        this.state = state;
-    }
-
-    public Integer getMemberNum() {
-        return memberNum;
-    }
-
-    public void setMemberNum(Integer memberNum) {
-        this.memberNum = memberNum;
-    }
-
-    public Integer getHotValue() {
-        return hotValue;
-    }
-
-    public void setHotValue(Integer hotValue) {
-        this.hotValue = hotValue;
-    }
-
-    @Override
-    public Integer getSort() {
-        return sort;
-    }
-
-    public void setSort(Integer sort) {
-        this.sort = sort;
-    }
 
     public enum SorttypeEnum implements BaseEnum<SorttypeEnum,String> {
         ALL("0","全部查询"),

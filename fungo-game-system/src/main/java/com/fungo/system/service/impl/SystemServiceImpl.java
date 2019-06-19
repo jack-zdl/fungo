@@ -899,8 +899,8 @@ public class SystemServiceImpl implements SystemService {
             List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
             Page p = new Page(circleFollowVo.getPage(), circleFollowVo.getLimit());
             Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("type","5").eq("target_type","11").eq("state","0");
-            Page page = basActionServiceImap.selectPage(p,wrapper);
-            List<BasAction> basActions = page.getRecords();
+            List<BasAction> basActions  = basActionServiceImap.selectList(wrapper);
+//            List<BasAction> basActions = page.getRecords();
             re.setData(basActions.stream().map(BasAction::getTargetId).collect(Collectors.toList()));
             PageTools.pageToResultDto(re, p);
         }catch (Exception e){
