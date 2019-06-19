@@ -872,6 +872,11 @@ public class GameServiceImpl implements IGameService {
         if (keyword == null || "".equals(keyword.replace(" ", "")) || keyword.contains("%")) {
             return FungoPageResultDto.error("13", "请输入正确的关键字格式");
         }
+
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(keyword)) {
+            keyword = keyword.trim();
+        }
+
         @SuppressWarnings("rawtypes")
         Wrapper wrapper = Condition.create().setSqlSelect(
                 "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
