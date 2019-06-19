@@ -23,6 +23,7 @@ import com.fungo.community.function.SerUtils;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IPostService;
 import com.fungo.community.service.IVideoService;
+import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
@@ -1641,19 +1642,23 @@ public class PostServiceImpl implements IPostService {
      * @date: 2019/6/18 18:21
      */
     @Override
-    public FungoPageResultDto<Map<String, String>> getTopicPosts() {
+    public FungoPageResultDto<Map<String, String>> getTopicPosts(InputPageDto inputPageDto) {
         FungoPageResultDto<Map<String, String>> re = new FungoPageResultDto<Map<String, String>>();
         List<Map<String, String>> mapList = null;
         mapList = new ArrayList<>();
-        List<CmmPost> list = postService.selectList(new EntityWrapper<CmmPost>().eq("recommend", 1).orderBy("sort",false));
-        for (CmmPost p : list) {
-            Map<String, String> map = new HashMap<>();
-            map.put("titile", p.getTitle());
-            map.put("objectId", p.getId());
-            map.put("video", p.getVideo());
-            mapList.add(map);
-        }
+        Page page = new Page(inputPageDto.getPage(),inputPageDto.getLimit());
+        Page<CmmPost> postPage = postService.selectPage(page,new EntityWrapper<CmmPost>().eq("recommend", 1).orderBy("sort",false));
+       if(postPage != null ){
+           for (CmmPost p : postPage.getRecords()) {
+               Map<String, String> map = new HashMap<>();
+               map.put("titile", p.getTitle());
+               map.put("objectId", p.getId());
+               map.put("video", p.getVideo());
+               mapList.add(map);
+           }
+       }
         re.setData(mapList);
+        PageTools.pageToResultDto(re,page);
         return re;
     }
 
