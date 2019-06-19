@@ -435,11 +435,12 @@ public class GameServiceImpl implements IGameService {
         //ends
         Map<String, String> buriedpointmap = new HashMap<>();
         buriedpointmap.put("distinctId",memberId);
+        // 类型 ios、安卓
         buriedpointmap.put("platForm",ptype);
         buriedpointmap.put("gamename",game.getName());
         buriedpointmap.put("gameid",game.getId());
         buriedpointmap.put("loadnum",game.getDownloadNum() == null ? 0 + "" : game.getDownloadNum() + "");
-//            首次第三方登录埋点事件ID:login005
+//      首次第三方登录埋点事件ID:login005
         BuriedPointUtils.gamepage(buriedpointmap, analysysJavaSdk);
 
         // 查询评论数量
