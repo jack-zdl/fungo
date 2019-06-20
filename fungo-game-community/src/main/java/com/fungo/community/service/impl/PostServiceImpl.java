@@ -25,13 +25,14 @@ import com.fungo.community.function.SerUtils;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IPostService;
 import com.fungo.community.service.IVideoService;
-import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
 import com.game.common.dto.*;
 import com.game.common.dto.action.BasActionDto;
-import com.game.common.dto.community.*;
+import com.game.common.dto.community.PostInput;
+import com.game.common.dto.community.PostOut;
+import com.game.common.dto.community.PostOutBean;
 import com.game.common.dto.community.StreamInfo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
@@ -270,22 +271,32 @@ public class PostServiceImpl implements IPostService {
         //插入关系  文章-游戏  游戏归属圈子--文章
         List<String> includeGameList = postInput.getIncludeGameList();
         if (includeGameList != null && !includeGameList.isEmpty()) {
-            for (String gameId : includeGameList) {
+            for (String gameid : includeGameList) {
+                //gameFacedeService.
                 CmmPostGame postGame = new CmmPostGame();
                 postGame.setId(PrimaryKeyUtils.uniqueId());
-                postGame.setGameId(gameId);
+                postGame.setGameId(gameid);
                 postGame.setPostId(post.getId());
                 postGame.setCreatedAt(new Date());
                 postGame.setUpdatedAt(new Date());
+                postGame.setPostTitle(post.getTitle());
+                //暂时不设置游戏名
+                //postGame.setGameName(gameDto.getName());
                 //查询出游戏对应的社区id 插入社区id
+<<<<<<<HEAD
                 CmmCommunity community = communityService.selectOne(new EntityWrapper<CmmCommunity>().eq("game_id", gameId));
                 if (community != null && StringUtil.isNotNull(community.getId())) {
+=======
+                CmmCommunity community = communityService.selectOne(new EntityWrapper<CmmCommunity>().eq("game_id", gameid));
+                if(community!=null&&StringUtil.isNotNull(community.getId())){
+>>>>>>> origin/Branch_V2.5
                     postGame.setCmmId(community.getId());
+                    postGame.setCmmName(community.getName());
                     cmmPostGameMapper.insert(postGame);
                 }
 
                 //查询游戏是否有圈子 有圈子-建立文章圈子关系
-                String circleId = cmmCircleMapper.selectCircleByGameId(gameId);
+                String circleId = cmmCircleMapper.selectCircleByGameId(gameid);
                 //已经保存过关系，不用重新保存
                 if (StringUtil.isNotNull(circleId) && !circleId.equals(postInput.getCircleId())) {
                     CmmPostCircle postCircle = new CmmPostCircle();

@@ -11,9 +11,38 @@ public class CmmPostGame {
 
     private String cmmId;
 
+
     private Date createdAt;
 
     private Date updatedAt;
+
+    private String postTitle;
+    private String gameName;
+    private String cmmName;
+
+    public String getPostTitle() {
+        return postTitle;
+    }
+
+    public void setPostTitle(String postTitle) {
+        this.postTitle = postTitle;
+    }
+
+    public String getGameName() {
+        return gameName;
+    }
+
+    public void setGameName(String gameName) {
+        this.gameName = gameName;
+    }
+
+    public String getCmmName() {
+        return cmmName;
+    }
+
+    public void setCmmName(String cmmName) {
+        this.cmmName = cmmName;
+    }
 
     public String getId() {
         return id;

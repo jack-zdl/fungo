@@ -210,7 +210,6 @@ public class UserServiceImpl implements IUserService {
             ResultDto<String> re = messageCodeService.checkCode(GameConstant.MSG_TYPE_USER_LOGIN, mobile, code);//验证短信
             if (re.isSuccess()) {
                 member = memberService.selectOne(new EntityWrapper<Member>().eq("mobile_phone_num", mobile));
-                boolean flag = true;
                 if (member == null) {//如果第一次进行会员注册
                     member = new Member();
 
@@ -239,13 +238,12 @@ public class UserServiceImpl implements IUserService {
                     //memberNoService.getMemberNoAndForUpdate(member);
                     //end
                     buriedPointFun(member, "true");
-                    flag = false;
                     LOGGER.info("用户注册-手机验证-初始化数据  memberId : {}, phoneNumber:{}", member.getId(), mobile);
                     this.initUserRank(member.getId());
-                }
-                if (flag){
+                }else{
                     buriedPointFun(member, "false");
                 }
+
                 messageCodeService.updateCheckCodeSuccess(re.getData());//更新验证成功
             } else {
                 return ResultDto.error(re.getCode(), re.getMessage());

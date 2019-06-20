@@ -18,4 +18,6 @@ public interface GameService extends IService<Game> {
 
    Map<String,Game> listGame(List<String> ids);
 
+
+
 }

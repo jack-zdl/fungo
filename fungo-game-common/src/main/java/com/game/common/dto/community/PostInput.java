@@ -1,5 +1,7 @@
 package com.game.common.dto.community;
 
+import com.game.common.dto.GameDto;
+
 import java.io.Serializable;
 import java.util.List;
 
