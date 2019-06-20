@@ -18,6 +18,7 @@ import com.fungo.community.entity.*;
 import com.fungo.community.facede.GameFacedeService;
 import com.fungo.community.facede.SystemFacedeService;
 import com.fungo.community.facede.TSMQFacedeService;
+import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.function.FungoLivelyCalculateUtils;
 import com.fungo.community.function.SerUtils;
 import com.fungo.community.service.ICounterService;
@@ -106,6 +107,10 @@ public class PostServiceImpl implements IPostService {
 
     @Autowired
     private CmmCircleMapper cmmCircleMapper;
+
+    //依赖系统和用户微服务
+    @Autowired(required = false)
+    private SystemFeignClient systemFeignClient;
 
 
     @Override
@@ -1639,22 +1644,132 @@ public class PostServiceImpl implements IPostService {
      * @date: 2019/6/18 18:21
      */
     @Override
-    public FungoPageResultDto<Map<String, String>> getTopicPosts(InputPageDto inputPageDto) {
-        FungoPageResultDto<Map<String, String>> re = new FungoPageResultDto<Map<String, String>>();
+    public FungoPageResultDto<PostOutBean> getTopicPosts(MemberUserProfile memberUserPrefile , InputPageDto inputPageDto) {
+        FungoPageResultDto<PostOutBean> re = new FungoPageResultDto<>();
         List<Map<String, String>> mapList = null;
         mapList = new ArrayList<>();
-        Page page = new Page(inputPageDto.getPage(), inputPageDto.getLimit());
-        Page<CmmPost> postPage = postService.selectPage(page, new EntityWrapper<CmmPost>().eq("recommend", 1).orderBy("sort", false));
-        if (postPage != null) {
-            for (CmmPost p : postPage.getRecords()) {
-                Map<String, String> map = new HashMap<>();
-                map.put("titile", p.getTitle());
-                map.put("objectId", p.getId());
-                map.put("video", p.getVideo());
-                mapList.add(map);
-            }
-        }
-        re.setData(mapList);
+        Page page = new Page(inputPageDto.getPage(),inputPageDto.getLimit());
+        Page<CmmPost> postPage = postService.selectPage(page,new EntityWrapper<CmmPost>().eq("recommend", 1).orderBy("sort",false));
+        List<PostOutBean> list = new ArrayList<PostOutBean>();
+        if(postPage != null ){
+           ObjectMapper mapper = new ObjectMapper();
+           for (CmmPost cmmPost : postPage.getRecords()) {
+               //表情解码
+               if (StringUtils.isNotBlank(cmmPost.getTitle())) {
+                   String interactTitle = FilterEmojiUtil.decodeEmoji(cmmPost.getTitle());
+                   //String interactTitle = EmojiParser.parseToUnicode(cmmPost.getTitle() );
+                   cmmPost.setTitle(interactTitle);
+               }
+               if (StringUtils.isNotBlank(cmmPost.getContent())) {
+                   String interactContent = FilterEmojiUtil.decodeEmoji(cmmPost.getContent());
+                   //String interactContent = EmojiParser.parseToUnicode(cmmPost.getContent());
+                   cmmPost.setContent(interactContent);
+               }
+
+               PostOutBean bean = new PostOutBean();
+               CmmCommunity community = communityService.selectById(cmmPost.getCommunityId());
+//               if (community == null || community.getState() != 1) {
+//                   continue;
+//               }
+               AuthorBean authorBean = new AuthorBean();
+               try {
+                   ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(cmmPost.getMemberId());
+                   if (null != beanResultDto) {
+                       authorBean = beanResultDto.getData();
+                   }
+               } catch (Exception ex) {
+                   ex.printStackTrace();
+               }
+               bean.setAuthor(authorBean);
+               //
+               //systemFeignClient.list
+
+//               if (bean.getAuthor() == null) {
+//                   continue;
+//               }
+               String content = cmmPost.getContent();
+               if (!CommonUtil.isNull(content)) {
+                   //bean.setContent(content.length() > 100 ? CommonUtils.filterWord(content.substring(0, 100)) : CommonUtils.filterWord(content));
+                   bean.setContent(content.length()>40?Html2Text.removeHtmlTag(content.substring(0, 40)):Html2Text.removeHtmlTag(content));
+               }
+               bean.setUpdated_at(DateTools.fmtDate(cmmPost.getUpdatedAt()));
+               bean.setCreatedAt(DateTools.fmtDate(cmmPost.getCreatedAt()));
+               bean.setVideoUrl(cmmPost.getVideo());
+               bean.setImageUrl(cmmPost.getCoverImage());
+               bean.setLikeNum(cmmPost.getLikeNum());
+               bean.setPostId(cmmPost.getId());
+               bean.setReplyNum(cmmPost.getCommentNum());
+               bean.setTitle(CommonUtils.filterWord(cmmPost.getTitle()));
+               bean.setCommunityIcon(community.getIcon());
+               bean.setCommunityId(community.getId());
+               bean.setCommunityName(community.getName());
+
+               //文章 row_id
+               bean.setRowId(cmmPost.getPostId());
+
+               if (!CommonUtil.isNull(cmmPost.getVideo()) && CommonUtil.isNull(cmmPost.getCoverImage())) {
+                   bean.setImageUrl(community.getCoverImage());
+               }
+               try {
+                   if (!CommonUtil.isNull(cmmPost.getImages())) {
+                       ArrayList<String> readValue = new ArrayList<String>();
+                       readValue = mapper.readValue(cmmPost.getImages(), ArrayList.class);
+                       int readValueListSize = readValue.size();
+                       if (readValueListSize > 3) {
+                           List threeReadValueList = new ArrayList(readValue.subList(0, 3));
+                           bean.setImages(threeReadValueList);
+                       } else {
+                           bean.setImages(readValue);
+                       }
+                       //bean.setImages(readValue.size() > 3 ? readValue.subList(0, 3) : readValue);
+                   }
+               } catch (IOException e) {
+                   e.printStackTrace();
+               }
+
+               //是否点赞
+               if (memberUserPrefile == null) {
+
+                   bean.setLiked(false);
+
+               } else {
+
+                   //!fixme 获取点赞数
+                   //行为类型
+                   //点赞 | 0
+                   //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", cmmPost.getId()).eq("member_id", memberUserPrefile.getLoginId()));
+
+                   BasActionDto basActionDto = new BasActionDto();
+
+                   basActionDto.setMemberId(memberUserPrefile.getLoginId());
+                   basActionDto.setType(0);
+                   basActionDto.setState(0);
+                   basActionDto.setTargetId(cmmPost.getId());
+
+                   int liked = 0;
+
+                   try {
+                       ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                       if (null != resultDto) {
+                           liked = resultDto.getData();
+                       }
+                   } catch (Exception ex) {
+                       ex.printStackTrace();
+                   }
+
+
+                   bean.setLiked(liked > 0 ? true : false);
+               }
+
+               //
+               bean.setVideoCoverImage(cmmPost.getVideoCoverImage());
+               bean.setType(cmmPost.getType());
+
+               list.add(bean);
+           }
+       }
+        re.setData(list);
         PageTools.pageToResultDto(re, page);
         return re;
     }

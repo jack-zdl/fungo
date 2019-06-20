@@ -45,17 +45,33 @@
     order  by type asc ,sort  desc ,hot_value desc;
   </select>
 
-  <select id="selectPageByIds" parameterType="com.game.common.vo.CmmCircleVo" resultType="com.fungo.community.entity.CmmCircle" >
+  <select id="selectPageByIds" resultType="com.fungo.community.entity.CmmCircle" >
     select
     <include refid="Base_Column_List"></include>
     from t_cmm_circle
     <trim prefix="WHERE" prefixOverrides="AND |OR ">
-        id in
-        <foreach  item="item" collection="list" index="index"  open="(" separator="," close=")">
-          #{item}
-        </foreach>
+        <if test="ids != null ">
+          id in
+          <foreach  item="item" collection="ids" index="index"  open="(" separator="," close=")">
+            #{item}
+          </foreach>
+
+        </if >
     </trim>
-    order  by type asc ,sort  desc ,hot_value desc;
+
+    <if test='sortType == "1" '>
+      order by
+      field(
+      id,
+      <foreach collection="ids" index="index" item="item"   separator=","    >
+        #{item}
+      </foreach>
+      )
+    </if>
+    <if test='sortType == "2" '  >
+      order  by hot_value desc
+    </if>
+
   </select>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.fungo.community.entity.CmmCircle">

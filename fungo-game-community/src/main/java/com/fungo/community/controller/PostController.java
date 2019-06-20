@@ -217,8 +217,8 @@ public class PostController {
 
     @ApiOperation(value = "管控台推荐文章", notes = "")
     @RequestMapping(value = "/api/content/post/topic", method = RequestMethod.POST)
-    public FungoPageResultDto<Map<String, String>> getTopicPosts(@Anonymous MemberUserProfile memberUserPrefile, InputPageDto inputPageDto) {
-        return bsPostService.getTopicPosts(inputPageDto);
+    public FungoPageResultDto<PostOutBean> getTopicPosts(@Anonymous MemberUserProfile memberUserPrefile, InputPageDto inputPageDto) {
+        return bsPostService.getTopicPosts(memberUserPrefile , inputPageDto);
     }
 
 

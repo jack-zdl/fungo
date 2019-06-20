@@ -13,6 +13,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmCircleDto;
 import com.game.common.dto.system.CircleFollow;
 import com.game.common.dto.system.CircleFollowVo;
+import com.game.common.enums.circle.CircleTypeEnum;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
 import com.game.common.vo.CmmCircleVo;
@@ -50,11 +51,13 @@ public class CircleServiceImpl implements CircleService {
     @Override
     public FungoPageResultDto<CmmCircleDto> selectCircle(String memberId, CmmCircleVo cmmCircleVo) {
         FungoPageResultDto<CmmCircleDto> re ;
+        int pageNum = cmmCircleVo.getPage();
+        int limitNum  =cmmCircleVo.getLimit();
         try {
             List<CmmCircleDto> cmmCircleDtoList =  new ArrayList<>();
-            Page<CmmCircle> page = new Page<>(cmmCircleVo.getPage(), cmmCircleVo.getLimit());
+            Page<CmmCircle> page = new Page<>(pageNum, limitNum);
             List<CmmCircle> list = new ArrayList<>();
-            if(CmmCircleVo.SorttypeEnum.ALL.getKey().equals(cmmCircleVo.getSorttype())){
+            if(CmmCircleVo.SorttypeEnum.ALL.getKey().equals(cmmCircleVo.getQuerytype())){
                 list = cmmCircleMapper.selectPageByKeyword(page,cmmCircleVo);
                 list.stream().forEach(r -> {
                     CmmCircleDto s = new CmmCircleDto();
@@ -84,15 +87,18 @@ public class CircleServiceImpl implements CircleService {
                         s.setFollow((circleFollow == null || circleFollow.size() ==0 )? false:circleFollow.get(0).isFollow());
                     });
                 }
-            }else if(CmmCircleVo.SorttypeEnum.BROWSE.getKey().equals(cmmCircleVo.getSorttype())){
+            }else if(CmmCircleVo.SorttypeEnum.BROWSE.getKey().equals(cmmCircleVo.getQuerytype())){
 
-            }else if(CmmCircleVo.SorttypeEnum.FOLLOW.getKey().equals(cmmCircleVo.getSorttype())){
+            }else if(CmmCircleVo.SorttypeEnum.FOLLOW.getKey().equals(cmmCircleVo.getQuerytype())){
                 CircleFollowVo param = new CircleFollowVo();
                 param.setMemberId(memberId);
+//                param.setPage(pageNum);
+//                param.setLimit(limitNum); //
                 FungoPageResultDto<String> circleFollowVos = systemFeignClient.circleListMineFollow(param);
                 if(circleFollowVos.getData().size() > 0){
                     List<String> ids =circleFollowVos.getData();
-                    List<CmmCircle> cmmCircles = cmmCircleMapper.selectPageByIds(page,ids);
+                    String sortType = cmmCircleVo.getSorttype();
+                    List<CmmCircle> cmmCircles = cmmCircleMapper.selectPageByIds(page,sortType,ids);
                     cmmCircles.stream().forEach(r -> {
                         CmmCircleDto s = new CmmCircleDto();
                         try {
@@ -112,6 +118,22 @@ public class CircleServiceImpl implements CircleService {
             e.printStackTrace();
             LOGGER.error("获取圈子集合",e);
             re = FungoPageResultDto.error("-1","获取圈子集合异常");
+        }
+        return re;
+    }
+
+    @Override
+    public ResultDto<CmmCircleDto> selectCircleById(String memberId, String circleId) throws InvocationTargetException, IllegalAccessException {
+        ResultDto<CmmCircleDto> re = null;
+        CmmCircleDto cmmCircleDto = new CmmCircleDto();
+        try {
+            CmmCircle cmmCircle = cmmCircleServiceImap.selectById(circleId);
+            BeanUtils.copyProperties(cmmCircleDto,cmmCircle);
+            re  = ResultDto.success(cmmCircleDto);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("获取圈子详情",e);
+            re  = ResultDto.error("-1","获取圈子详情异常");
         }
         return re;
     }
