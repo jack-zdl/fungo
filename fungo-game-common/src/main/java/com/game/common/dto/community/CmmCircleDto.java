@@ -46,7 +46,6 @@ public class CmmCircleDto implements Serializable {
 
     private String updatedBy;
 
-    private String test;
 
     private boolean follow = false;
 
