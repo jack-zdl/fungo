@@ -165,19 +165,6 @@ public class CircleServiceImpl implements CircleService {
     public FungoPageResultDto<PostOutBean> selectCirclePost(String memberId, CmmCirclePostVo cmmCirclePostVo) {
 
         try {
-            if(CmmCirclePostVo.QueryTypeEnum.ALL.getKey().equals(cmmCirclePostVo.getQuerytype())){
-
-            }else if(CmmCirclePostVo.QueryTypeEnum.TESTPLAY.getKey().equals(cmmCirclePostVo.getQuerytype())){
-
-            }else if(CmmCirclePostVo.QueryTypeEnum.STRATEGY.getKey().equals(cmmCirclePostVo.getQuerytype())){
-
-            }else if(CmmCirclePostVo.QueryTypeEnum.TITTLETATTLE.getKey().equals(cmmCirclePostVo.getQuerytype())){
-
-            }else if(CmmCirclePostVo.QueryTypeEnum.GOSSIP.getKey().equals(cmmCirclePostVo.getQuerytype())){
-
-            }else if(CmmCirclePostVo.QueryTypeEnum.OTHER.getKey().equals(cmmCirclePostVo.getQuerytype())){
-
-            }
 
             if(CmmCirclePostVo.SortTypeEnum.PUBDATE.getKey().equals(cmmCirclePostVo.getSorttype())){
 

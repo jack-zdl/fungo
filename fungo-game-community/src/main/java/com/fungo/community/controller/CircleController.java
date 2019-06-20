@@ -5,6 +5,7 @@ import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.CirclePostSortDto;
 import com.game.common.dto.community.CircleTypeDto;
 import com.game.common.dto.community.CmmCircleDto;
 import com.game.common.dto.community.PostOutBean;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -131,5 +133,24 @@ public class CircleController {
             re = FungoPageResultDto.error(CommonEnum.ERROR.code(),"app端获取圈子下属的文章，请联系管理员");
         }
         return re;
+    }
+
+    /**
+     * 功能描述: app端获取圈子文章顺序类型
+     * @param: [memberUserPrefile, inputPageDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: dl.zhang
+     * @date: 2019/6/11 11:01
+     */
+    @ApiOperation(value = "v2.5", notes = "")
+    @RequestMapping(value = "/api/community/circle/post/sort", method = RequestMethod.GET)
+    @ApiImplicitParams({})
+    public ResultDto<List<CirclePostSortDto>> selectCirclePostSort(@Anonymous MemberUserProfile memberUserPrefile ) {
+        List<CirclePostSortDto>  circlePostSortDtos = new ArrayList<>();
+        circlePostSortDtos.add(new CirclePostSortDto(CmmCirclePostVo.SortTypeEnum.PUBDATE.getKey(), CmmCirclePostVo.SortTypeEnum.PUBDATE.getValue()));
+        circlePostSortDtos.add(new CirclePostSortDto(CmmCirclePostVo.SortTypeEnum.PUBREPLY.getKey(), CmmCirclePostVo.SortTypeEnum.PUBREPLY.getValue()));
+        circlePostSortDtos.add(new CirclePostSortDto(CmmCirclePostVo.SortTypeEnum.ESSENCE.getKey(), CmmCirclePostVo.SortTypeEnum.ESSENCE.getValue()));
+        circlePostSortDtos.add(new CirclePostSortDto(CmmCirclePostVo.SortTypeEnum.DISCUSS.getKey(), CmmCirclePostVo.SortTypeEnum.DISCUSS.getValue()));
+        return ResultDto.success(circlePostSortDtos);
     }
 }
