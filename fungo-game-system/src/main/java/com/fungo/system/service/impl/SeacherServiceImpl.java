@@ -107,7 +107,7 @@ public class SeacherServiceImpl implements ISeacherService {
         wrapperSearch.where("state = {0}", 0);
 
         wrapperSearch.like("member_no", keyword);
-        wrapperSearch.like("user_name", keyword);
+        wrapperSearch.orNew("user_name like '%" + keyword + "%'");
 
 
         String orderByStr = "";
