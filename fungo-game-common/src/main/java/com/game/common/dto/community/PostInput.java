@@ -43,7 +43,7 @@ public class PostInput implements Serializable{
 	/**
 	 * 文章关联游戏id(2.5)
 	 */
-	private List<GameDto> includeGameList;
+	private List<String> includeGameList;
 
 	/**
 	 * 圈子id
@@ -55,11 +55,11 @@ public class PostInput implements Serializable{
 	 */
 	private String tagId;
 
-	public List<GameDto> getIncludeGameList() {
+	public List<String> getIncludeGameList() {
 		return includeGameList;
 	}
 
-	public void setIncludeGameList(List<GameDto> includeGameList) {
+	public void setIncludeGameList(List<String> includeGameList) {
 		this.includeGameList = includeGameList;
 	}
 

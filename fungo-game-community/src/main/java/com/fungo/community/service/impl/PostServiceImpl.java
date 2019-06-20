@@ -258,20 +258,21 @@ public class PostServiceImpl implements IPostService {
         }
 
         //插入关系  文章-游戏  游戏归属圈子--文章
-        List<GameDto> includeGameList = postInput.getIncludeGameList();
+        List<String> includeGameList = postInput.getIncludeGameList();
         if (includeGameList != null && !includeGameList.isEmpty()) {
-            for (GameDto gameDto : includeGameList) {
+            for (String gameid : includeGameList) {
                 //gameFacedeService.
                 CmmPostGame postGame = new CmmPostGame();
                 postGame.setId(PrimaryKeyUtils.uniqueId());
-                postGame.setGameId(gameDto.getId());
+                postGame.setGameId(gameid);
                 postGame.setPostId(post.getId());
                 postGame.setCreatedAt(new Date());
                 postGame.setUpdatedAt(new Date());
                 postGame.setPostTitle(post.getTitle());
-                postGame.setGameName(gameDto.getName());
+                //暂时不设置游戏名
+                //postGame.setGameName(gameDto.getName());
                 //查询出游戏对应的社区id 插入社区id
-                CmmCommunity community = communityService.selectOne(new EntityWrapper<CmmCommunity>().eq("game_id", gameDto.getId()));
+                CmmCommunity community = communityService.selectOne(new EntityWrapper<CmmCommunity>().eq("game_id", gameid));
                 if(community!=null&&StringUtil.isNotNull(community.getId())){
                     postGame.setCmmId(community.getId());
                     postGame.setCmmName(community.getName());
@@ -279,7 +280,7 @@ public class PostServiceImpl implements IPostService {
                 }
 
                 //查询游戏是否有圈子 有圈子-建立文章圈子关系
-                String circleId = cmmCircleMapper.selectCircleByGameId(gameDto.getId());
+                String circleId = cmmCircleMapper.selectCircleByGameId(gameid);
                 //已经保存过关系，不用重新保存
                 if(StringUtil.isNotNull(circleId)&&!circleId.equals(postInput.getCircleId())){
                     CmmPostCircle postCircle = new CmmPostCircle();
