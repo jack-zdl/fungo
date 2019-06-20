@@ -1723,7 +1723,7 @@ public class PostServiceImpl implements IPostService {
         wrapperCmmPost.where("state = {0}", 1);
         wrapperCmmPost.andNew("title like '%" + keyword + "%'");
         wrapperCmmPost.or("content like " + "'%" + keyword + "%'");
-
+        wrapperCmmPost.groupBy("id");
         //排序
         StringBuffer orderByStr = new StringBuffer();
         orderByStr.append("LOCATE( '"+  keyword +"', title ) DESC ,").append(" wclc DESC,");
