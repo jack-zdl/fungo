@@ -25,14 +25,13 @@ import com.fungo.community.function.SerUtils;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IPostService;
 import com.fungo.community.service.IVideoService;
+import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
 import com.game.common.dto.*;
 import com.game.common.dto.action.BasActionDto;
-import com.game.common.dto.community.PostInput;
-import com.game.common.dto.community.PostOut;
-import com.game.common.dto.community.PostOutBean;
+import com.game.common.dto.community.*;
 import com.game.common.dto.community.StreamInfo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
@@ -1358,6 +1357,7 @@ public class PostServiceImpl implements IPostService {
         return ResultDto.success(out);
     }
 
+
     @Override
     public FungoPageResultDto<PostOutBean> getPostList(String userId, PostInputPageDto postInputPageDto) throws Exception {
 
@@ -1645,6 +1645,7 @@ public class PostServiceImpl implements IPostService {
         re.setData(mapList);
         return re;
     }
+
 
     /**
      * 功能描述: @todo 没有加redis的key
