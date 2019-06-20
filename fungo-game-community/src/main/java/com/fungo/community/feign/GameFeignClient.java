@@ -25,7 +25,7 @@ import java.util.List;
  * @author mxf
  * @since 2018-11-08
  */
-@FeignClient(name = "FUNGO-GAME-GAMES",fallbackFactory = GameFacedeHystrixService.class)
+@FeignClient(name = "FUNGO-GAME-GAMES", fallbackFactory = GameFacedeHystrixService.class)
 @RequestMapping("/ms/service/game")
 public interface GameFeignClient {
 
@@ -42,6 +42,16 @@ public interface GameFeignClient {
 
 
     /**
+     * 根据游戏ids查询游戏详情集合
+     * @param gameIds
+     * @return
+     */
+    @ApiOperation(value = "根据游戏ids查询游戏详情集合", notes = "")
+    @RequestMapping(value = "/api/game/detailsByIds", method = RequestMethod.POST)
+    public ResultDto<GameDto> selectGameDetailsByIds(@RequestParam("gameIds") String gameIds);
+
+
+    /**
      * 根据游戏id和状态查询游戏详情
      * @param gameId
      * @param state
@@ -50,7 +60,6 @@ public interface GameFeignClient {
     @ApiOperation(value = "根据游戏id和状态查询游戏详情", notes = "")
     @RequestMapping(value = "/api/game/details", method = RequestMethod.POST)
     public ResultDto<GameDto> selectGameDetails(@RequestParam("gameId") String gameId, @RequestParam("state") Integer state);
-
 
 
     /**
@@ -71,8 +80,7 @@ public interface GameFeignClient {
      */
     @ApiOperation(value = "根据游戏id查询参与评论的用户", notes = "")
     @RequestMapping(value = "/api/game/getMemberOrder", method = RequestMethod.POST)
-    public ResultDto<List<MemberPulishFromCommunity>> getMemberOrder(@RequestParam("gameId") String gameId,@RequestParam("state") Integer state);
-
+    public ResultDto<List<MemberPulishFromCommunity>> getMemberOrder(@RequestParam("gameId") String gameId, @RequestParam("state") Integer state);
 
 
     @ApiOperation(value = "gameEvaluationService.selectOne", notes = "")
@@ -80,12 +88,9 @@ public interface GameFeignClient {
     ResultDto<GameEvaluationDto> getGameEvaluationSelectOne(@RequestParam("memberId") String memberId, @RequestParam("targetId") String targetId);
 
 
-
-
     @ApiOperation(value = "gameEvaluationService.selectById", notes = "")
     @RequestMapping(value = "/api/game/getGameEvaluationSelectById", method = RequestMethod.POST)
     ResultDto<GameEvaluationDto> getGameEvaluationSelectById(@RequestParam("commentId") String commentId);
-
 
 
     @ApiOperation(value = "getEvaluationEntityWrapper", notes = "")
@@ -94,13 +99,9 @@ public interface GameFeignClient {
                                                                   @RequestParam("endDate") String endDate);
 
 
-
-
     @ApiOperation(value = "getPreGameEvaluation上一评论", notes = "")
     @RequestMapping(value = "/api/game/getPreGameEvaluation", method = RequestMethod.POST)
     ResultDto<GameEvaluationDto> getPreGameEvaluation(@RequestParam("createdAt") String createdAt, @RequestParam("id") String id);
-
-
 
 
     @ApiOperation(value = "getNextGameEvaluation下一评论", notes = "")
@@ -108,12 +109,9 @@ public interface GameFeignClient {
     ResultDto<GameEvaluationDto> getNextGameEvaluation(@RequestParam("createdAt") String createdAt, @RequestParam("id") String id);
 
 
-
     @ApiOperation(value = "getEvaluationEntityWrapperByPageDtoAndMemberId", notes = "")
     @RequestMapping(value = "/api/game/getEvaluationEntityWrapperByPageDtoAndMemberId", method = RequestMethod.POST)
     FungoPageResultDto<GameEvaluationDto> getEvaluationEntityWrapperByPageDtoAndMemberId(@RequestBody EvaluationInputPageDto pageDto, @RequestParam("memberId") String memberId);
-
-
 
 
     //----------
