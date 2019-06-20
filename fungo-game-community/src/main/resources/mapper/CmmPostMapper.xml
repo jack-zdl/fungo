@@ -211,6 +211,27 @@
 
   </select>
 
+
+    <select id="getCmmCircleListByCircleId" resultType="com.fungo.community.entity.CmmPost">
+    select  *  from  t_cmm_post cp where  id in
+    ( select cpc.post_id
+    from t_cmm_post_circle cpc where cpc.circle_id = #{circleId} AND cpc.default_link = 0 )
+    and cp.tags = #{tagId}
+    <if test='sortType == "1" ' >
+        order  by cp.created_at desc
+    </if>
+    <if test='sortType == "2"'>
+        order  by cp.last_reply_at desc
+    </if>
+    <if test='sortType == "3"'>
+        and cp.type = 2   order  by cp.created_at desc
+    </if>
+    <if test='sortType == "4"'>
+
+    </if>
+    </select>
+
+
     <select id="queryCmmPostRefGameIds" parameterType="map" resultType="java.util.HashMap">
         SELECT
             DISTINCT

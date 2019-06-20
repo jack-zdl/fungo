@@ -22,9 +22,7 @@ public class CmmCirclePostVo extends InputPageDto {
     /**
      * 功能描述: <p>查询类型</p>
      * <p>
-     *     0 全部查询
-     *     1 最近浏览的圈子
-     *     2 我关注的圈子
+     *
      * </p>
      * @auther: dl.zhang
      * @date: 2019/6/11 16:14
@@ -34,8 +32,10 @@ public class CmmCirclePostVo extends InputPageDto {
     /**
      * 功能描述:  follow cirlce list sort type
      * <p>
-     *     1  follow date sort
-     *     2  hotvalue sort
+     *      1","最新发布"
+     *      *       "2","最新评论"
+     *      *       "3","只看精选"
+     *      *       "4","最热讨论"
      * </p>
      * @auther: dl.zhang
      * @date: 2019/6/19 16:45

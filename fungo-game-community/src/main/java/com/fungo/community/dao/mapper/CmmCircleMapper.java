@@ -18,6 +18,8 @@ public interface CmmCircleMapper  extends BaseMapper<CmmCircle> {
     List<CmmCircle> selectPageByKeyword(Pagination page,  CmmCircleVo cmmCircleVo);
 
     List<CmmCircle> selectPageByIds(Pagination page,@Param("sortType") String sortType ,@Param("ids")  List<String> ids);
+
+    
     int insertSelective(CmmCircle record);
 
     int updateByPrimaryKeySelective(CmmCircle record);

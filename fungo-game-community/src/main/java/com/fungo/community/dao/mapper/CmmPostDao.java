@@ -98,4 +98,6 @@ public interface CmmPostDao extends BaseMapper<CmmPost> {
     public Map<String,Object> queryCmmPostRefGameIdsCount(Map<String,Object> paramMap);
 
     List<CmmPost> getCmmCircleListByPostId(String circleId);
+
+    List<CmmPost> getCmmCircleListByCircleId(Page page ,@Param("circleId") String circleId, @Param("tagId") String tagId,@Param("sortType") String sortType);
 }
