@@ -1,5 +1,7 @@
 package com.game.common.dto.community;
 
+import com.game.common.dto.GameDto;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -41,7 +43,7 @@ public class PostInput implements Serializable{
 	/**
 	 * 文章关联游戏id(2.5)
 	 */
-	private List<String> includeGameList;
+	private List<GameDto> includeGameList;
 
 	/**
 	 * 圈子id
@@ -53,11 +55,11 @@ public class PostInput implements Serializable{
 	 */
 	private String tagId;
 
-	public List<String> getIncludeGameList() {
+	public List<GameDto> getIncludeGameList() {
 		return includeGameList;
 	}
 
-	public void setIncludeGameList(List<String> includeGameList) {
+	public void setIncludeGameList(List<GameDto> includeGameList) {
 		this.includeGameList = includeGameList;
 	}
 

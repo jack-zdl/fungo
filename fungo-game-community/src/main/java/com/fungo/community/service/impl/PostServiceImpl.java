@@ -258,24 +258,28 @@ public class PostServiceImpl implements IPostService {
         }
 
         //插入关系  文章-游戏  游戏归属圈子--文章
-        List<String> includeGameList = postInput.getIncludeGameList();
+        List<GameDto> includeGameList = postInput.getIncludeGameList();
         if (includeGameList != null && !includeGameList.isEmpty()) {
-            for (String gameId : includeGameList) {
+            for (GameDto gameDto : includeGameList) {
+                //gameFacedeService.
                 CmmPostGame postGame = new CmmPostGame();
                 postGame.setId(PrimaryKeyUtils.uniqueId());
-                postGame.setGameId(gameId);
+                postGame.setGameId(gameDto.getId());
                 postGame.setPostId(post.getId());
                 postGame.setCreatedAt(new Date());
                 postGame.setUpdatedAt(new Date());
+                postGame.setPostTitle(post.getTitle());
+                postGame.setGameName(gameDto.getName());
                 //查询出游戏对应的社区id 插入社区id
-                CmmCommunity community = communityService.selectOne(new EntityWrapper<CmmCommunity>().eq("game_id", gameId));
+                CmmCommunity community = communityService.selectOne(new EntityWrapper<CmmCommunity>().eq("game_id", gameDto.getId()));
                 if(community!=null&&StringUtil.isNotNull(community.getId())){
                     postGame.setCmmId(community.getId());
+                    postGame.setCmmName(community.getName());
                     cmmPostGameMapper.insert(postGame);
                 }
 
                 //查询游戏是否有圈子 有圈子-建立文章圈子关系
-                String circleId = cmmCircleMapper.selectCircleByGameId(gameId);
+                String circleId = cmmCircleMapper.selectCircleByGameId(gameDto.getId());
                 //已经保存过关系，不用重新保存
                 if(StringUtil.isNotNull(circleId)&&!circleId.equals(postInput.getCircleId())){
                     CmmPostCircle postCircle = new CmmPostCircle();
