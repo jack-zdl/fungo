@@ -32,7 +32,7 @@ public class BuriedPointUtils {
     public static void login05(Map<String,String> map,AnalysysJavaSdk analysys){
         String distinctId = map.get("distinctId");
         String platForm = map.get("platForm"); //Android平台
-        analysys.setDebugMode(DEBUG.OPENANDSAVE); //设置debug模式
+        analysys.setDebugMode(DEBUG.CLOSE); //设置debug模式
         Map<String, Object> trackPropertie = new HashMap<String, Object>();
         trackPropertie.put("login001", map.get("login001")); //登录方式
         trackPropertie.put("login002", map.get("login002")); //IP地址
@@ -52,7 +52,7 @@ public class BuriedPointUtils {
     public static void gamepage(Map<String,String> map,AnalysysJavaSdk analysys){
         String distinctId = map.get("distinctId");
         String platForm = map.get("platForm"); //Android平台
-        analysys.setDebugMode(DEBUG.OPENANDSAVE); //设置debug模式
+        analysys.setDebugMode(DEBUG.CLOSE); //设置debug模式
         Map<String, Object> trackPropertie = new HashMap<String, Object>();
         trackPropertie.put("gamename", map.get("gamename")); //游戏名称
         trackPropertie.put("gameid", map.get("gameid")); //游戏ID

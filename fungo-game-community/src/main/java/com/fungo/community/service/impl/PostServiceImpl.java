@@ -286,11 +286,17 @@ public class PostServiceImpl implements IPostService {
 
                 //查询出游戏对应的社区id 插入社区id
 
+<<<<<<< HEAD
                 CmmCommunity community = communityService.selectOne(new EntityWrapper<CmmCommunity>().eq("game_id", gameId));
                 if (community != null && StringUtil.isNotNull(community.getId())) {
                 //CmmCommunity community = communityService.selectOne(new EntityWrapper<CmmCommunity>().eq("game_id", gameid));
 
                 if(community!=null&&StringUtil.isNotNull(community.getId())){
+=======
+                CmmCommunity community = communityService.selectOne(new EntityWrapper<CmmCommunity>().eq("game_id", gameid));
+                if(community!=null&&StringUtil.isNotNull(community.getId())){
+
+>>>>>>> 387b8d39625f69c0270a8d1dd5a490b59b72f738
                     postGame.setCmmId(community.getId());
                     postGame.setCmmName(community.getName());
                     cmmPostGameMapper.insert(postGame);

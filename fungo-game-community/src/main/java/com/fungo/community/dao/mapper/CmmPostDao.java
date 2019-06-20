@@ -81,6 +81,7 @@ public interface CmmPostDao extends BaseMapper<CmmPost> {
      */
     Integer getPostBoomWatchNumByCardId(@Param("cardId")String cardId);
 
+
     /**
      * 基于模糊查询文章数据对应的游戏ids
      * @param paramMap
@@ -96,4 +97,5 @@ public interface CmmPostDao extends BaseMapper<CmmPost> {
      */
     public Map<String,Object> queryCmmPostRefGameIdsCount(Map<String,Object> paramMap);
 
+    List<CmmPost> getCmmCircleListByPostId(String circleId);
 }

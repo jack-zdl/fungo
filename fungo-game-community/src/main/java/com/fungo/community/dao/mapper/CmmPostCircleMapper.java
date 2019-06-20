@@ -2,7 +2,9 @@ package com.fungo.community.dao.mapper;
 
 
 import com.fungo.community.entity.CmmPostCircle;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface CmmPostCircleMapper {
     int deleteByPrimaryKey(String id);
 
@@ -17,4 +19,6 @@ public interface CmmPostCircleMapper {
     int updateByPrimaryKey(CmmPostCircle record);
 
     String getCmmCircleByPostId(String postId);
+
+
 }
