@@ -40,6 +40,20 @@ public class GameFacedeService {
         return 0;
     }
 
+    /**
+     * 根据游戏ids查询游戏详情集合
+     * @param gameIds
+     * @return
+     */
+    public ResultDto<List<GameDto>> selectGameDetailsByIds(String gameIds) {
+        try {
+            return gameFeignClient.selectGameDetailsByIds(gameIds);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return new ResultDto<List<GameDto>>();
+    }
+
 
     /**
      * 根据游戏id和状态查询游戏详情

@@ -2,10 +2,7 @@ package com.fungo.community.service;
 
 
 import com.game.common.api.InputPageDto;
-import com.game.common.dto.FungoPageResultDto;
-import com.game.common.dto.MemberUserProfile;
-import com.game.common.dto.ObjectId;
-import com.game.common.dto.ResultDto;
+import com.game.common.dto.*;
 import com.game.common.dto.community.PostInput;
 import com.game.common.dto.community.PostInputPageDto;
 import com.game.common.dto.community.PostOutBean;
@@ -94,5 +91,19 @@ public interface IPostService {
 	 * @throws Exception
 	 */
 	public FungoPageResultDto<Map<String, Object>> searchPosts(String keyword,int page,int limit) throws Exception;
+
+
+
+
+
+
+	/**
+	 * 基于模糊查询文章数据对应的游戏ids
+	 * @param keyword
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	public FungoPageResultDto<GameDto> queryCmmPostRefGameIds(String keyword, int page, int limit);
 
 }

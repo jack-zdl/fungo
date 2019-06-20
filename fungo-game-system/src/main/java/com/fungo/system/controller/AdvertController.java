@@ -6,6 +6,7 @@ import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IndexProxyService;
 import com.fungo.system.service.BannerService;
 import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.dto.GameDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.advert.AdvertOutBean;
@@ -89,7 +90,13 @@ public class AdvertController {
 
             bean.setBizType(targetType);
 
-
+            if (3 == targetType) {
+                // @todo 游戏
+                GameDto param = new GameDto();
+                param.setId(banner.getTargetId());
+                GameDto game = iGameProxyService.selectGameById(param);
+                bean.setGameIconURL(game.getIcon());
+            }
 
             bean.setContent(CommonUtils.filterWord(banner.getIntro()));
             bean.setImageUrl(banner.getCoverImage());
