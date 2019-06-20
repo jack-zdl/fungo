@@ -50,4 +50,13 @@ public class CmmCircleDto implements Serializable {
 
     private boolean follow = false;
 
+    @Setter
+    @Getter
+    @ToString
+    public static class TagPost{
+        private String tag;
+
+        private PostOutBean postOutBean;
+    }
+
 }
