@@ -111,6 +111,28 @@ public class PostController {
     }
 
 
+    @ApiOperation(value = "搜索帖子关联的游戏数据", notes = "")
+    @RequestMapping(value = "/api/search/posts/games", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "key_word", value = "关键字", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "page", value = "页数号", paramType = "form", dataType = "int"),
+            @ApiImplicitParam(name = "limit", value = "每页显示数", paramType = "form", dataType = "int")
+    })
+    public FungoPageResultDto<GameDto> queryCmmPostRefGameIds(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto) throws Exception {
+        String keyword = searchInputDto.getKey_word();
+        int page = searchInputDto.getPage();
+        //fix: 页码 小于1 返回空 [by mxf 2019-01-30]
+        if (page < 1) {
+            return new FungoPageResultDto<GameDto>();
+        }
+
+        int limit = searchInputDto.getLimit();
+        return bsPostService.queryCmmPostRefGameIds(keyword, page, limit);
+    }
+
+
+
+
     @ApiOperation(value = "发帖", notes = "")
     @RequestMapping(value = "/api/content/post", method = RequestMethod.POST)
     @ApiImplicitParams({

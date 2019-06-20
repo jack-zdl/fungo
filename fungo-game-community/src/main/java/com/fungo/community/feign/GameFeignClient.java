@@ -48,7 +48,7 @@ public interface GameFeignClient {
      */
     @ApiOperation(value = "根据游戏ids查询游戏详情集合", notes = "")
     @RequestMapping(value = "/api/game/detailsByIds", method = RequestMethod.POST)
-    public ResultDto<GameDto> selectGameDetailsByIds(@RequestParam("gameIds") String gameIds);
+    public ResultDto<List<GameDto>> selectGameDetailsByIds(@RequestParam("gameIds") String gameIds);
 
 
     /**

@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.community.dao.mapper.CmmCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostCircleMapper;
+import com.fungo.community.dao.mapper.CmmPostDao;
 import com.fungo.community.dao.mapper.CmmPostGameMapper;
 import com.fungo.community.dao.service.BasVideoJobDaoService;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
@@ -66,6 +67,9 @@ public class PostServiceImpl implements IPostService {
 
     @Autowired
     private CmmPostDaoService postService;
+
+    @Autowired
+    private CmmPostDao cmmPostDao;
 
     @Autowired
     private CmmCommunityDaoService communityService;
@@ -1639,136 +1643,136 @@ public class PostServiceImpl implements IPostService {
     /**
      * 功能描述: @todo 没有加redis的key
      * @param: []
-     * @return: com.game.common.dto.FungoPageResultDto<java.util.Map < java.lang.String , java.lang.String>>
+     * @return: com.game.common.dto.FungoPageResultDto<java.util.Map                                                               <                                                               java.lang.String                                                               ,                                                               java.lang.String>>
      * @auther: dl.zhang
      * @date: 2019/6/18 18:21
      */
     @Override
-    public FungoPageResultDto<PostOutBean> getTopicPosts(MemberUserProfile memberUserPrefile , InputPageDto inputPageDto) {
+    public FungoPageResultDto<PostOutBean> getTopicPosts(MemberUserProfile memberUserPrefile, InputPageDto inputPageDto) {
         FungoPageResultDto<PostOutBean> re = new FungoPageResultDto<>();
         List<Map<String, String>> mapList = null;
         mapList = new ArrayList<>();
-        Page page = new Page(inputPageDto.getPage(),inputPageDto.getLimit());
-        Page<CmmPost> postPage = postService.selectPage(page,new EntityWrapper<CmmPost>().eq("recommend", 1).orderBy("sort",false));
+        Page page = new Page(inputPageDto.getPage(), inputPageDto.getLimit());
+        Page<CmmPost> postPage = postService.selectPage(page, new EntityWrapper<CmmPost>().eq("recommend", 1).orderBy("sort", false));
         List<PostOutBean> list = new ArrayList<PostOutBean>();
-        if(postPage != null ){
-           ObjectMapper mapper = new ObjectMapper();
-           for (CmmPost cmmPost : postPage.getRecords()) {
-               //表情解码
-               if (StringUtils.isNotBlank(cmmPost.getTitle())) {
-                   String interactTitle = FilterEmojiUtil.decodeEmoji(cmmPost.getTitle());
-                   //String interactTitle = EmojiParser.parseToUnicode(cmmPost.getTitle() );
-                   cmmPost.setTitle(interactTitle);
-               }
-               if (StringUtils.isNotBlank(cmmPost.getContent())) {
-                   String interactContent = FilterEmojiUtil.decodeEmoji(cmmPost.getContent());
-                   //String interactContent = EmojiParser.parseToUnicode(cmmPost.getContent());
-                   cmmPost.setContent(interactContent);
-               }
+        if (postPage != null) {
+            ObjectMapper mapper = new ObjectMapper();
+            for (CmmPost cmmPost : postPage.getRecords()) {
+                //表情解码
+                if (StringUtils.isNotBlank(cmmPost.getTitle())) {
+                    String interactTitle = FilterEmojiUtil.decodeEmoji(cmmPost.getTitle());
+                    //String interactTitle = EmojiParser.parseToUnicode(cmmPost.getTitle() );
+                    cmmPost.setTitle(interactTitle);
+                }
+                if (StringUtils.isNotBlank(cmmPost.getContent())) {
+                    String interactContent = FilterEmojiUtil.decodeEmoji(cmmPost.getContent());
+                    //String interactContent = EmojiParser.parseToUnicode(cmmPost.getContent());
+                    cmmPost.setContent(interactContent);
+                }
 
-               PostOutBean bean = new PostOutBean();
-               CmmCommunity community = communityService.selectById(cmmPost.getCommunityId());
+                PostOutBean bean = new PostOutBean();
+                CmmCommunity community = communityService.selectById(cmmPost.getCommunityId());
 //               if (community == null || community.getState() != 1) {
 //                   continue;
 //               }
-               AuthorBean authorBean = new AuthorBean();
-               try {
-                   ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(cmmPost.getMemberId());
-                   if (null != beanResultDto) {
-                       authorBean = beanResultDto.getData();
-                   }
-               } catch (Exception ex) {
-                   ex.printStackTrace();
-               }
-               bean.setAuthor(authorBean);
-               //
-               //systemFeignClient.list
+                AuthorBean authorBean = new AuthorBean();
+                try {
+                    ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(cmmPost.getMemberId());
+                    if (null != beanResultDto) {
+                        authorBean = beanResultDto.getData();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                bean.setAuthor(authorBean);
+                //
+                //systemFeignClient.list
 
 //               if (bean.getAuthor() == null) {
 //                   continue;
 //               }
-               String content = cmmPost.getContent();
-               if (!CommonUtil.isNull(content)) {
-                   //bean.setContent(content.length() > 100 ? CommonUtils.filterWord(content.substring(0, 100)) : CommonUtils.filterWord(content));
-                   bean.setContent(content.length()>40?Html2Text.removeHtmlTag(content.substring(0, 40)):Html2Text.removeHtmlTag(content));
-               }
-               bean.setUpdated_at(DateTools.fmtDate(cmmPost.getUpdatedAt()));
-               bean.setCreatedAt(DateTools.fmtDate(cmmPost.getCreatedAt()));
-               bean.setVideoUrl(cmmPost.getVideo());
-               bean.setImageUrl(cmmPost.getCoverImage());
-               bean.setLikeNum(cmmPost.getLikeNum());
-               bean.setPostId(cmmPost.getId());
-               bean.setReplyNum(cmmPost.getCommentNum());
-               bean.setTitle(CommonUtils.filterWord(cmmPost.getTitle()));
-               bean.setCommunityIcon(community.getIcon());
-               bean.setCommunityId(community.getId());
-               bean.setCommunityName(community.getName());
+                String content = cmmPost.getContent();
+                if (!CommonUtil.isNull(content)) {
+                    //bean.setContent(content.length() > 100 ? CommonUtils.filterWord(content.substring(0, 100)) : CommonUtils.filterWord(content));
+                    bean.setContent(content.length() > 40 ? Html2Text.removeHtmlTag(content.substring(0, 40)) : Html2Text.removeHtmlTag(content));
+                }
+                bean.setUpdated_at(DateTools.fmtDate(cmmPost.getUpdatedAt()));
+                bean.setCreatedAt(DateTools.fmtDate(cmmPost.getCreatedAt()));
+                bean.setVideoUrl(cmmPost.getVideo());
+                bean.setImageUrl(cmmPost.getCoverImage());
+                bean.setLikeNum(cmmPost.getLikeNum());
+                bean.setPostId(cmmPost.getId());
+                bean.setReplyNum(cmmPost.getCommentNum());
+                bean.setTitle(CommonUtils.filterWord(cmmPost.getTitle()));
+                bean.setCommunityIcon(community.getIcon());
+                bean.setCommunityId(community.getId());
+                bean.setCommunityName(community.getName());
 
-               //文章 row_id
-               bean.setRowId(cmmPost.getPostId());
+                //文章 row_id
+                bean.setRowId(cmmPost.getPostId());
 
-               if (!CommonUtil.isNull(cmmPost.getVideo()) && CommonUtil.isNull(cmmPost.getCoverImage())) {
-                   bean.setImageUrl(community.getCoverImage());
-               }
-               try {
-                   if (!CommonUtil.isNull(cmmPost.getImages())) {
-                       ArrayList<String> readValue = new ArrayList<String>();
-                       readValue = mapper.readValue(cmmPost.getImages(), ArrayList.class);
-                       int readValueListSize = readValue.size();
-                       if (readValueListSize > 3) {
-                           List threeReadValueList = new ArrayList(readValue.subList(0, 3));
-                           bean.setImages(threeReadValueList);
-                       } else {
-                           bean.setImages(readValue);
-                       }
-                       //bean.setImages(readValue.size() > 3 ? readValue.subList(0, 3) : readValue);
-                   }
-               } catch (IOException e) {
-                   e.printStackTrace();
-               }
+                if (!CommonUtil.isNull(cmmPost.getVideo()) && CommonUtil.isNull(cmmPost.getCoverImage())) {
+                    bean.setImageUrl(community.getCoverImage());
+                }
+                try {
+                    if (!CommonUtil.isNull(cmmPost.getImages())) {
+                        ArrayList<String> readValue = new ArrayList<String>();
+                        readValue = mapper.readValue(cmmPost.getImages(), ArrayList.class);
+                        int readValueListSize = readValue.size();
+                        if (readValueListSize > 3) {
+                            List threeReadValueList = new ArrayList(readValue.subList(0, 3));
+                            bean.setImages(threeReadValueList);
+                        } else {
+                            bean.setImages(readValue);
+                        }
+                        //bean.setImages(readValue.size() > 3 ? readValue.subList(0, 3) : readValue);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-               //是否点赞
-               if (memberUserPrefile == null) {
+                //是否点赞
+                if (memberUserPrefile == null) {
 
-                   bean.setLiked(false);
+                    bean.setLiked(false);
 
-               } else {
+                } else {
 
-                   //!fixme 获取点赞数
-                   //行为类型
-                   //点赞 | 0
-                   //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", cmmPost.getId()).eq("member_id", memberUserPrefile.getLoginId()));
+                    //!fixme 获取点赞数
+                    //行为类型
+                    //点赞 | 0
+                    //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", cmmPost.getId()).eq("member_id", memberUserPrefile.getLoginId()));
 
-                   BasActionDto basActionDto = new BasActionDto();
+                    BasActionDto basActionDto = new BasActionDto();
 
-                   basActionDto.setMemberId(memberUserPrefile.getLoginId());
-                   basActionDto.setType(0);
-                   basActionDto.setState(0);
-                   basActionDto.setTargetId(cmmPost.getId());
+                    basActionDto.setMemberId(memberUserPrefile.getLoginId());
+                    basActionDto.setType(0);
+                    basActionDto.setState(0);
+                    basActionDto.setTargetId(cmmPost.getId());
 
-                   int liked = 0;
+                    int liked = 0;
 
-                   try {
-                       ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+                    try {
+                        ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
 
-                       if (null != resultDto) {
-                           liked = resultDto.getData();
-                       }
-                   } catch (Exception ex) {
-                       ex.printStackTrace();
-                   }
+                        if (null != resultDto) {
+                            liked = resultDto.getData();
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
 
 
-                   bean.setLiked(liked > 0 ? true : false);
-               }
+                    bean.setLiked(liked > 0 ? true : false);
+                }
 
-               //
-               bean.setVideoCoverImage(cmmPost.getVideoCoverImage());
-               bean.setType(cmmPost.getType());
+                //
+                bean.setVideoCoverImage(cmmPost.getVideoCoverImage());
+                bean.setType(cmmPost.getType());
 
-               list.add(bean);
-           }
-       }
+                list.add(bean);
+            }
+        }
         re.setData(list);
         PageTools.pageToResultDto(re, page);
         return re;
@@ -1841,8 +1845,8 @@ public class PostServiceImpl implements IPostService {
         wrapperCmmPost.groupBy("id");
         //排序
         StringBuffer orderByStr = new StringBuffer();
-        orderByStr.append("LOCATE( '"+  keyword +"', title ) DESC ,").append(" wclc DESC,");
-        orderByStr.append("LOCATE( '"+  keyword +"', content ) DESC,").append(" wclc DESC");
+        orderByStr.append("LOCATE( '" + keyword + "', title ) DESC ,").append(" wclc DESC,");
+        orderByStr.append("LOCATE( '" + keyword + "', content ) DESC,").append(" wclc DESC");
 
         wrapperCmmPost.orderBy(orderByStr.toString());
 
@@ -1895,6 +1899,69 @@ public class PostServiceImpl implements IPostService {
         PageTools.pageToResultDto(re, postPage);
 
         return re;
+    }
+
+
+    @Override
+    public FungoPageResultDto<GameDto> queryCmmPostRefGameIds(String keyword, int page, int limit) {
+
+        if (StringUtils.isNotBlank(keyword)) {
+            keyword = keyword.trim();
+        }
+        FungoPageResultDto<GameDto> resultDto = new FungoPageResultDto<GameDto>();
+        try {
+
+            Map<String, Object> paramMap = new HashMap<String, Object>();
+            paramMap.put("keyword", keyword);
+            paramMap.put("pageSize", limit);
+
+            //查询分页列表startOffset
+            int startOffset = (page - 1) * limit;
+            paramMap.put("startOffset", startOffset);
+
+
+            List<Map<String, Object>> postRefGameIds = cmmPostDao.queryCmmPostRefGameIds(paramMap);
+
+            if (null != postRefGameIds && !postRefGameIds.isEmpty()) {
+
+                Set<String> gameIdsSet = new HashSet<>();
+                //获取gameId
+                for (Map<String, Object> postRefGameIdMap : postRefGameIds) {
+                    String game_id = (String) postRefGameIdMap.get("game_id");
+                    gameIdsSet.add(game_id);
+                }
+
+                //调用游戏微服务查询游戏数据
+                String gameIds = StringUtils.join(gameIdsSet, ",");
+                ResultDto<List<GameDto>> gameDetailsRsDto = gameFacedeService.selectGameDetailsByIds(gameIds);
+                if (null != gameDetailsRsDto) {
+                    List<GameDto> gameDtoList = gameDetailsRsDto.getData();
+                    resultDto.setData(gameDtoList);
+
+                    //设置分页数据
+                    //查询总数
+                    Map<String, Object> countMap = cmmPostDao.queryCmmPostRefGameIdsCount(paramMap);
+                    Integer count = 0;
+                    if (null != countMap && !countMap.isEmpty()) {
+                        count = (Integer) countMap.get("ct");
+                    }
+
+                    Page<CmmPost> mallOrderGoodsPage = new Page();
+                    mallOrderGoodsPage.setTotal(count);
+                    mallOrderGoodsPage.setSize(limit);
+                    mallOrderGoodsPage.setCurrent(page);
+
+                    PageTools.pageToResultDto(resultDto, mallOrderGoodsPage);
+
+                }
+
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return resultDto;
     }
 
     //-----------

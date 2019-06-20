@@ -33,7 +33,7 @@ public class GameFacedeHystrixService implements FallbackFactory<GameFeignClient
 
 
             @Override
-            public ResultDto<GameDto> selectGameDetailsByIds(@RequestParam("gameIds") String gameIds) {
+            public ResultDto<List<GameDto>> selectGameDetailsByIds(@RequestParam("gameIds") String gameIds) {
                 logger.error("--------------------GameFeignClient--启动熔断:{}", "selectGameDetails");
                 return null;
             }
