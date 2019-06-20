@@ -1,8 +1,14 @@
 package com.fungo.community.service;
 
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.CircleTypeDto;
 import com.game.common.dto.community.CmmCircleDto;
+import com.game.common.dto.community.PostOutBean;
+import com.game.common.vo.CmmCirclePostVo;
 import com.game.common.vo.CmmCircleVo;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 /**
  * <p>圈子接口</p>
@@ -14,5 +20,9 @@ public interface CircleService {
 
     FungoPageResultDto<CmmCircleDto> selectCircle(String memberId, CmmCircleVo cmmCircleVo);
 
+    ResultDto<CmmCircleDto> selectCircleById(String memberId, String circleId) throws InvocationTargetException, IllegalAccessException;
 
+    FungoPageResultDto<PostOutBean> selectCirclePost(String memberId, CmmCirclePostVo cmmCirclePostVo);
+
+    ResultDto<List<CircleTypeDto>> selectCirclePostType(String memberId, CmmCirclePostVo cmmCirclePostVo);
 }

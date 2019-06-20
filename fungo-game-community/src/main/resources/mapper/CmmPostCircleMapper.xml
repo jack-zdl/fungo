@@ -10,7 +10,7 @@
     <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, post_id, circle_id, default_link, created_at, updated_at
+    id, post_id AS postId, circle_id AS circleId , default_link AS defaultLink, created_at AS createdAt, updated_at AS updatedAt
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
@@ -107,4 +107,6 @@
   <select id="getCmmCircleByPostId" parameterType="java.lang.String" resultType="java.lang.String">
     select circle_id from t_cmm_post_circle where post_id = #{postId} order by default_link desc limit 1
   </select>
+
+
 </mapper>

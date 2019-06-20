@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.community.dao.mapper.CmmCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostCircleMapper;
+import com.fungo.community.dao.mapper.CmmPostDao;
 import com.fungo.community.dao.mapper.CmmPostGameMapper;
 import com.fungo.community.dao.service.BasVideoJobDaoService;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
@@ -18,11 +19,13 @@ import com.fungo.community.entity.*;
 import com.fungo.community.facede.GameFacedeService;
 import com.fungo.community.facede.SystemFacedeService;
 import com.fungo.community.facede.TSMQFacedeService;
+import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.function.FungoLivelyCalculateUtils;
 import com.fungo.community.function.SerUtils;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IPostService;
 import com.fungo.community.service.IVideoService;
+import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
@@ -66,6 +69,9 @@ public class PostServiceImpl implements IPostService {
     private CmmPostDaoService postService;
 
     @Autowired
+    private CmmPostDao cmmPostDao;
+
+    @Autowired
     private CmmCommunityDaoService communityService;
 
     @Autowired
@@ -105,6 +111,10 @@ public class PostServiceImpl implements IPostService {
 
     @Autowired
     private CmmCircleMapper cmmCircleMapper;
+
+    //依赖系统和用户微服务
+    @Autowired(required = false)
+    private SystemFeignClient systemFeignClient;
 
 
     @Override
@@ -272,8 +282,10 @@ public class PostServiceImpl implements IPostService {
                 //暂时不设置游戏名
                 //postGame.setGameName(gameDto.getName());
                 //查询出游戏对应的社区id 插入社区id
+
                 CmmCommunity community = communityService.selectOne(new EntityWrapper<CmmCommunity>().eq("game_id", gameid));
                 if(community!=null&&StringUtil.isNotNull(community.getId())){
+
                     postGame.setCmmId(community.getId());
                     postGame.setCmmName(community.getName());
                     cmmPostGameMapper.insert(postGame);
@@ -282,7 +294,7 @@ public class PostServiceImpl implements IPostService {
                 //查询游戏是否有圈子 有圈子-建立文章圈子关系
                 String circleId = cmmCircleMapper.selectCircleByGameId(gameid);
                 //已经保存过关系，不用重新保存
-                if(StringUtil.isNotNull(circleId)&&!circleId.equals(postInput.getCircleId())){
+                if (StringUtil.isNotNull(circleId) && !circleId.equals(postInput.getCircleId())) {
                     CmmPostCircle postCircle = new CmmPostCircle();
                     postCircle.setId(PrimaryKeyUtils.uniqueId());
                     postCircle.setCircleId(circleId);
@@ -1126,31 +1138,31 @@ public class PostServiceImpl implements IPostService {
         //type 0 游戏社区 1：官方社区 2 圈子 3.什么都没有
         communityMap.put("type", 3);
         CmmCircle circle = null;
-         String circleId = cmmPostCircleMapper.getCmmCircleByPostId(cmmPost.getId());
-         if(StringUtil.isNotNull(circleId)){
-             circle = cmmCircleMapper.selectById(circleId);
-         }
-        if(circle!=null){
+        String circleId = cmmPostCircleMapper.getCmmCircleByPostId(cmmPost.getId());
+        if (StringUtil.isNotNull(circleId)) {
+            circle = cmmCircleMapper.selectById(circleId);
+        }
+        if (circle != null) {
             communityMap.put("objectId", circle.getId());
             communityMap.put("name", circle.getCircleName());
             communityMap.put("icon", circle.getCircleIcon());
             communityMap.put("intro", circle.getIntro());
             //3标识本次是圈子
             communityMap.put("type", 2);
-        }else{
+        } else {
             //分两种情况 是否关联了社区，关联社区走之前逻辑，否则走关联游戏逻辑
             CmmCommunity community = null;
-            if(StringUtil.isNotNull(cmmPost.getCommunityId())){
+            if (StringUtil.isNotNull(cmmPost.getCommunityId())) {
                 community = communityService.selectById(cmmPost.getCommunityId());
             }
-            if(community==null){
+            if (community == null) {
                 //找到文章关联的游戏，选择一个游戏社区
                 String communityId = cmmPostGameMapper.getCommunityIdByPostId(cmmPost.getId());
-                if(StringUtil.isNotNull(communityId)){
+                if (StringUtil.isNotNull(communityId)) {
                     community = communityService.selectById(communityId);
                 }
             }
-            if(community!=null){
+            if (community != null) {
                 if (!CommonUtil.isNull(cmmPost.getVideo()) && CommonUtil.isNull(cmmPost.getCoverImage())) {
                     out.setCover_image(community.getCoverImage());
                 }
@@ -1221,15 +1233,12 @@ public class PostServiceImpl implements IPostService {
         }
 
 
-
-
         //视频详情
         if (!CommonUtil.isNull(cmmPost.getVideoUrls())) {
             //ArrayList<StreamInfo> streams = mapper.readValue(cmmPost.getVideoUrls(), ArrayList.class);
             ArrayList<StreamInfo> streams = (ArrayList<StreamInfo>) JSON.parseArray(cmmPost.getVideoUrls(), StreamInfo.class);
             out.setVideoList(streams);
         }
-
 
 
         //查询是否关注、收藏、点赞
@@ -1641,24 +1650,138 @@ public class PostServiceImpl implements IPostService {
     /**
      * 功能描述: @todo 没有加redis的key
      * @param: []
-     * @return: com.game.common.dto.FungoPageResultDto<java.util.Map<java.lang.String,java.lang.String>>
+     * @return: com.game.common.dto.FungoPageResultDto<java.util.Map                                                               <                                                               java.lang.String                                                               ,                                                               java.lang.String>>
      * @auther: dl.zhang
      * @date: 2019/6/18 18:21
      */
     @Override
-    public FungoPageResultDto<Map<String, String>> getTopicPosts() {
-        FungoPageResultDto<Map<String, String>> re = new FungoPageResultDto<Map<String, String>>();
+    public FungoPageResultDto<PostOutBean> getTopicPosts(MemberUserProfile memberUserPrefile, InputPageDto inputPageDto) {
+        FungoPageResultDto<PostOutBean> re = new FungoPageResultDto<>();
         List<Map<String, String>> mapList = null;
         mapList = new ArrayList<>();
-        List<CmmPost> list = postService.selectList(new EntityWrapper<CmmPost>().eq("recommend", 1).orderBy("sort",false));
-        for (CmmPost p : list) {
-            Map<String, String> map = new HashMap<>();
-            map.put("titile", p.getTitle());
-            map.put("objectId", p.getId());
-            map.put("video", p.getVideo());
-            mapList.add(map);
+        Page page = new Page(inputPageDto.getPage(), inputPageDto.getLimit());
+        Page<CmmPost> postPage = postService.selectPage(page, new EntityWrapper<CmmPost>().eq("recommend", 1).orderBy("sort", false));
+        List<PostOutBean> list = new ArrayList<PostOutBean>();
+        if (postPage != null) {
+            ObjectMapper mapper = new ObjectMapper();
+            for (CmmPost cmmPost : postPage.getRecords()) {
+                //表情解码
+                if (StringUtils.isNotBlank(cmmPost.getTitle())) {
+                    String interactTitle = FilterEmojiUtil.decodeEmoji(cmmPost.getTitle());
+                    //String interactTitle = EmojiParser.parseToUnicode(cmmPost.getTitle() );
+                    cmmPost.setTitle(interactTitle);
+                }
+                if (StringUtils.isNotBlank(cmmPost.getContent())) {
+                    String interactContent = FilterEmojiUtil.decodeEmoji(cmmPost.getContent());
+                    //String interactContent = EmojiParser.parseToUnicode(cmmPost.getContent());
+                    cmmPost.setContent(interactContent);
+                }
+
+                PostOutBean bean = new PostOutBean();
+                CmmCommunity community = communityService.selectById(cmmPost.getCommunityId());
+//               if (community == null || community.getState() != 1) {
+//                   continue;
+//               }
+                AuthorBean authorBean = new AuthorBean();
+                try {
+                    ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(cmmPost.getMemberId());
+                    if (null != beanResultDto) {
+                        authorBean = beanResultDto.getData();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                bean.setAuthor(authorBean);
+                //
+                //systemFeignClient.list
+
+//               if (bean.getAuthor() == null) {
+//                   continue;
+//               }
+                String content = cmmPost.getContent();
+                if (!CommonUtil.isNull(content)) {
+                    //bean.setContent(content.length() > 100 ? CommonUtils.filterWord(content.substring(0, 100)) : CommonUtils.filterWord(content));
+                    bean.setContent(content.length() > 40 ? Html2Text.removeHtmlTag(content.substring(0, 40)) : Html2Text.removeHtmlTag(content));
+                }
+                bean.setUpdated_at(DateTools.fmtDate(cmmPost.getUpdatedAt()));
+                bean.setCreatedAt(DateTools.fmtDate(cmmPost.getCreatedAt()));
+                bean.setVideoUrl(cmmPost.getVideo());
+                bean.setImageUrl(cmmPost.getCoverImage());
+                bean.setLikeNum(cmmPost.getLikeNum());
+                bean.setPostId(cmmPost.getId());
+                bean.setReplyNum(cmmPost.getCommentNum());
+                bean.setTitle(CommonUtils.filterWord(cmmPost.getTitle()));
+                bean.setCommunityIcon(community.getIcon());
+                bean.setCommunityId(community.getId());
+                bean.setCommunityName(community.getName());
+
+                //文章 row_id
+                bean.setRowId(cmmPost.getPostId());
+
+                if (!CommonUtil.isNull(cmmPost.getVideo()) && CommonUtil.isNull(cmmPost.getCoverImage())) {
+                    bean.setImageUrl(community.getCoverImage());
+                }
+                try {
+                    if (!CommonUtil.isNull(cmmPost.getImages())) {
+                        ArrayList<String> readValue = new ArrayList<String>();
+                        readValue = mapper.readValue(cmmPost.getImages(), ArrayList.class);
+                        int readValueListSize = readValue.size();
+                        if (readValueListSize > 3) {
+                            List threeReadValueList = new ArrayList(readValue.subList(0, 3));
+                            bean.setImages(threeReadValueList);
+                        } else {
+                            bean.setImages(readValue);
+                        }
+                        //bean.setImages(readValue.size() > 3 ? readValue.subList(0, 3) : readValue);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                //是否点赞
+                if (memberUserPrefile == null) {
+
+                    bean.setLiked(false);
+
+                } else {
+
+                    //!fixme 获取点赞数
+                    //行为类型
+                    //点赞 | 0
+                    //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", cmmPost.getId()).eq("member_id", memberUserPrefile.getLoginId()));
+
+                    BasActionDto basActionDto = new BasActionDto();
+
+                    basActionDto.setMemberId(memberUserPrefile.getLoginId());
+                    basActionDto.setType(0);
+                    basActionDto.setState(0);
+                    basActionDto.setTargetId(cmmPost.getId());
+
+                    int liked = 0;
+
+                    try {
+                        ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+
+                        if (null != resultDto) {
+                            liked = resultDto.getData();
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+
+                    bean.setLiked(liked > 0 ? true : false);
+                }
+
+                //
+                bean.setVideoCoverImage(cmmPost.getVideoCoverImage());
+                bean.setType(cmmPost.getType());
+
+                list.add(bean);
+            }
         }
-        re.setData(mapList);
+        re.setData(list);
+        PageTools.pageToResultDto(re, page);
         return re;
     }
 
@@ -1709,24 +1832,35 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public FungoPageResultDto<Map<String, Object>> searchPosts(String keyword, int page, int limit) throws Exception {
+
+        if (StringUtils.isNotBlank(keyword)) {
+            keyword = keyword.trim();
+        }
+
         FungoPageResultDto<Map<String, Object>> re = new FungoPageResultDto<Map<String, Object>>();
         List<Map<String, Object>> resultData = new ArrayList<>();
         re.setData(resultData);
 
-//		if (keyword == null || "".equals(keyword.replace(" ", ""))) {
-//			return FungoPageResultDto.error("13", "请输入正确的查找格式");
-//		}
-        @SuppressWarnings("unchecked")
-        Page<CmmPost> postPage = postService.selectPage(new Page<>(page, limit),
-                Condition.create().setSqlSelect("id,title,content,cover_image as coverImage ,member_id as memberId ,video,created_at as createdAt,updated_at as updatedAt,video_cover_image as videoCoverImage")
-                        .where("state = {0}", 1).andNew("title like '%" + keyword + "%'").or("content like " + "'%" + keyword + "%'"));
-//						.or("content like "+ "'%" + keyword+ "%'"));
+        Page<CmmPost> pageCmPost = new Page<>(page, limit);
+
+        Wrapper<CmmPost> wrapperCmmPost = Condition.create().setSqlSelect("id,title,content,cover_image as coverImage ,member_id as memberId ,video,created_at as createdAt," +
+                "updated_at as updatedAt,video_cover_image as videoCoverImage,SUM( watch_num + comment_num + like_num + collect_num ) AS wclc ");
+
+        wrapperCmmPost.where("state = {0}", 1);
+        wrapperCmmPost.andNew("title like '%" + keyword + "%'");
+        wrapperCmmPost.or("content like " + "'%" + keyword + "%'");
+        wrapperCmmPost.groupBy("id");
+        //排序
+        StringBuffer orderByStr = new StringBuffer();
+        orderByStr.append("LOCATE( '" + keyword + "', title ) DESC ,").append(" wclc DESC,");
+        orderByStr.append("LOCATE( '" + keyword + "', content ) DESC,").append(" wclc DESC");
+
+        wrapperCmmPost.orderBy(orderByStr.toString());
+
+        Page<CmmPost> postPage = postService.selectPage(pageCmPost, wrapperCmmPost);
         List<CmmPost> postList = postPage.getRecords();
-//		if (postList == null || postList.isEmpty()) {
-//			return FungoPageResultDto.error("221", "找不到符合条件的帖子");
-//		}
-        //List<IncentRuleRank> rankList = IRuleRankService.getLevelRankList();
-        ObjectMapper mapper = new ObjectMapper();
+
+
         for (CmmPost post : postList) {
             Map<String, Object> postData = new HashMap<String, Object>();
 
@@ -1755,9 +1889,6 @@ public class PostServiceImpl implements IPostService {
             postData.put("updatedAt", DateTools.fmtDate(post.getUpdatedAt()));
 
 
-            //!fixme 获取用户信息
-            //AuthorBean author = iuserService.getAuthor(post.getMemberId());
-
             AuthorBean author = null;
             try {
                 ResultDto<AuthorBean> authorBeanResultDto = systemFacedeService.getAuthor(post.getMemberId());
@@ -1775,6 +1906,69 @@ public class PostServiceImpl implements IPostService {
         PageTools.pageToResultDto(re, postPage);
 
         return re;
+    }
+
+
+    @Override
+    public FungoPageResultDto<GameDto> queryCmmPostRefGameIds(String keyword, int page, int limit) {
+
+        if (StringUtils.isNotBlank(keyword)) {
+            keyword = keyword.trim();
+        }
+        FungoPageResultDto<GameDto> resultDto = new FungoPageResultDto<GameDto>();
+        try {
+
+            Map<String, Object> paramMap = new HashMap<String, Object>();
+            paramMap.put("keyword", keyword);
+            paramMap.put("pageSize", limit);
+
+            //查询分页列表startOffset
+            int startOffset = (page - 1) * limit;
+            paramMap.put("startOffset", startOffset);
+
+
+            List<Map<String, Object>> postRefGameIds = cmmPostDao.queryCmmPostRefGameIds(paramMap);
+
+            if (null != postRefGameIds && !postRefGameIds.isEmpty()) {
+
+                Set<String> gameIdsSet = new HashSet<>();
+                //获取gameId
+                for (Map<String, Object> postRefGameIdMap : postRefGameIds) {
+                    String game_id = (String) postRefGameIdMap.get("game_id");
+                    gameIdsSet.add(game_id);
+                }
+
+                //调用游戏微服务查询游戏数据
+                String gameIds = StringUtils.join(gameIdsSet, ",");
+                ResultDto<List<GameDto>> gameDetailsRsDto = gameFacedeService.selectGameDetailsByIds(gameIds);
+                if (null != gameDetailsRsDto) {
+                    List<GameDto> gameDtoList = gameDetailsRsDto.getData();
+                    resultDto.setData(gameDtoList);
+
+                    //设置分页数据
+                    //查询总数
+                    Map<String, Object> countMap = cmmPostDao.queryCmmPostRefGameIdsCount(paramMap);
+                    Integer count = 0;
+                    if (null != countMap && !countMap.isEmpty()) {
+                        count = (Integer) countMap.get("ct");
+                    }
+
+                    Page<CmmPost> mallOrderGoodsPage = new Page();
+                    mallOrderGoodsPage.setTotal(count);
+                    mallOrderGoodsPage.setSize(limit);
+                    mallOrderGoodsPage.setCurrent(page);
+
+                    PageTools.pageToResultDto(resultDto, mallOrderGoodsPage);
+
+                }
+
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return resultDto;
     }
 
     //-----------

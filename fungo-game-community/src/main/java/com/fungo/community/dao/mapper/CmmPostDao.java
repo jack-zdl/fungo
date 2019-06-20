@@ -79,4 +79,6 @@ public interface CmmPostDao extends BaseMapper<CmmPost> {
      * @return
      */
     Integer getPostBoomWatchNumByCardId(@Param("cardId")String cardId);
+
+    List<CmmPost> getCmmCircleListByPostId(String circleId);
 }

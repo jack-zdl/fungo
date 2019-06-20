@@ -2,6 +2,7 @@ package com.fungo.community.entity;
 
 import java.util.Date;
 
+
 public class CmmPostCircle {
     private String id;
 

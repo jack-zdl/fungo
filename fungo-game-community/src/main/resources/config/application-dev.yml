@@ -245,10 +245,10 @@ fgoTransfAuth: adfe35cf834349b0b98b549292c1d65b
 #sql控制台输出
 logging:
   level:
+    com.fungo.community.dao.mapper: DEBUG
     com.fungo.game.market.mapper: DEBUG
     com.fungo.game.mall.mapper: DEBUG
     com.fungo.game.mapper: DEBUG
-
 #---------------------------------------------------------------------------------------------------------------------------
   #热部署
   devtools:

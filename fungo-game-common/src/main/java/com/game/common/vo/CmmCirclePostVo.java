@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Date;
-
 /**
  * <p></p>
  *
@@ -17,8 +15,10 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class CmmCircleVo extends InputPageDto {
-    
+public class CmmCirclePostVo extends InputPageDto {
+
+    private String circleId;
+
     /**
      * 功能描述: <p>查询类型</p>
      * <p>
@@ -42,39 +42,18 @@ public class CmmCircleVo extends InputPageDto {
      */
     private String sorttype;
 
-    /**
-     * 功能描述:关键字查询
-     * @auther: dl.zhang
-     * @date: 2019/6/11 16:16
-     */
-    private String keyword;
 
-    private String id;
 
-    private String circleName;
+    public enum SortTypeEnum implements BaseEnum<SortTypeEnum,String> {
 
-    private String circleIcon;
-
-    private String intro;
-
-    private Integer type;
-
-    private Integer state;
-
-    private Integer memberNum;
-
-    private Integer hotValue;
-
-    private Integer sort;
-
-    public enum SorttypeEnum implements BaseEnum<SorttypeEnum,String> {
-        ALL("0","全部查询"),
-        BROWSE("1","最近浏览的圈子"),
-        FOLLOW("2","关注圈子");
+        PUBDATE("1","最新发布"),
+        PUBREPLY("2","最新评论"),
+        ESSENCE("3","只看精选"),
+        DISCUSS("4","最热讨论");
         String key;
         String value;
 
-        SorttypeEnum(String s, String s1) {
+        SortTypeEnum(String s, String s1) {
             this.key = s;
             this.value = s1;
         }
@@ -87,6 +66,34 @@ public class CmmCircleVo extends InputPageDto {
         public String getValue() {
             return value;
         }
+    }
+
+    public enum QueryTypeEnum implements BaseEnum<QueryTypeEnum,String> {
+
+        ALL("1","全部查询"),
+        TESTPLAY("2","评测试玩"),
+        STRATEGY("3","攻略心得"),
+        TITTLETATTLE("4","同人杂谈"),
+        GOSSIP("5","咨询八卦"),
+        OTHER("6","其他");
+
+        String key;
+        String value;
+
+        QueryTypeEnum(String s, String s1) {
+            this.key = s;
+            this.value = s1;
+        }
+        @Override
+        public String getKey() {
+            return key;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+
     }
 
 }

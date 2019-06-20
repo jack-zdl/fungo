@@ -12,6 +12,7 @@ import com.fungo.community.entity.CmmPost;
 import com.fungo.community.feign.GameFeignClient;
 import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.service.IPostService;
+import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.*;
 import com.game.common.dto.action.BasActionDto;
@@ -108,6 +109,28 @@ public class PostController {
         int limit = searchInputDto.getLimit();
         return bsPostService.searchPosts(keyword, page, limit);
     }
+
+
+    @ApiOperation(value = "搜索帖子关联的游戏数据", notes = "")
+    @RequestMapping(value = "/api/search/posts/games", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "key_word", value = "关键字", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "page", value = "页数号", paramType = "form", dataType = "int"),
+            @ApiImplicitParam(name = "limit", value = "每页显示数", paramType = "form", dataType = "int")
+    })
+    public FungoPageResultDto<GameDto> queryCmmPostRefGameIds(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto) throws Exception {
+        String keyword = searchInputDto.getKey_word();
+        int page = searchInputDto.getPage();
+        //fix: 页码 小于1 返回空 [by mxf 2019-01-30]
+        if (page < 1) {
+            return new FungoPageResultDto<GameDto>();
+        }
+
+        int limit = searchInputDto.getLimit();
+        return bsPostService.queryCmmPostRefGameIds(keyword, page, limit);
+    }
+
+
 
 
     @ApiOperation(value = "发帖", notes = "")
@@ -215,9 +238,9 @@ public class PostController {
     }
 
     @ApiOperation(value = "管控台推荐文章", notes = "")
-    @RequestMapping(value = "/api/content/post/topic", method = RequestMethod.GET)
-    public FungoPageResultDto<Map<String, String>> getTopicPosts(@Anonymous MemberUserProfile memberUserPrefile) {
-        return bsPostService.getTopicPosts();
+    @RequestMapping(value = "/api/content/post/topic", method = RequestMethod.POST)
+    public FungoPageResultDto<PostOutBean> getTopicPosts(@Anonymous MemberUserProfile memberUserPrefile, InputPageDto inputPageDto) {
+        return bsPostService.getTopicPosts(memberUserPrefile , inputPageDto);
     }
 
 

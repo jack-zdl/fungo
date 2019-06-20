@@ -1,5 +1,7 @@
 package com.game.common.dto.community;
 
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.game.common.dto.GameDto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -21,6 +23,10 @@ public class CmmCircleDto implements Serializable {
     private String circleIcon;
 
     private String intro;
+
+    private String gameId;
+
+    private String cmmId;
 
     private Integer type;
 
@@ -44,5 +50,13 @@ public class CmmCircleDto implements Serializable {
 
     private boolean follow = false;
 
+    @Setter
+    @Getter
+    @ToString
+    public static class TagPost{
+        private String tag;
+
+        private PostOutBean postOutBean;
+    }
 
 }

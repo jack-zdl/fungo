@@ -17,6 +17,12 @@ public class AdvertOutBean {
 	private String content;
     @ApiModelProperty(value="图片",example="")
 	private String imageUrl;
+
+	/**
+	 * 游戏icon URL
+	 */
+	private String gameIconURL;
+
     
 	public int getBizType() {
 		return bizType;
@@ -54,5 +60,12 @@ public class AdvertOutBean {
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
-	
+
+	public String getGameIconURL() {
+		return gameIconURL;
+	}
+
+	public void setGameIconURL(String gameIconURL) {
+		this.gameIconURL = gameIconURL;
+	}
 }
