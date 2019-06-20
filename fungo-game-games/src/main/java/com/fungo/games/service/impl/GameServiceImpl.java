@@ -435,21 +435,14 @@ public class GameServiceImpl implements IGameService {
         out.setDownload_num(downloadNum);
         //ends
         Map<String, String> buriedpointmap = new HashMap<>();
-<<<<<<< HEAD
-=======
-
->>>>>>> 387b8d39625f69c0270a8d1dd5a490b59b72f738
         buriedpointmap.put("distinctId",memberId);
         buriedpointmap.put("platForm",ptype);
         buriedpointmap.put("gamename",game.getName());
         buriedpointmap.put("gameid",game.getId());
         buriedpointmap.put("loadnum",game.getDownloadNum() == null ? 0 + "" : game.getDownloadNum() + "");
-<<<<<<< HEAD
 //            首次第三方登录埋点事件ID:login005
-=======
 //      首次第三方登录埋点事件ID:login005
 
->>>>>>> 387b8d39625f69c0270a8d1dd5a490b59b72f738
         BuriedPointUtils.gamepage(buriedpointmap, analysysJavaSdk);
 
         // 查询评论数量
