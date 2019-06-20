@@ -20,6 +20,7 @@ import java.util.Map;
  */
 public interface CmmPostDao extends BaseMapper<CmmPost> {
 
+
     /**
      * 获取关注用户和社区的帖子 分页数据
      */
