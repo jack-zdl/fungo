@@ -79,4 +79,20 @@ public interface CmmPostDao extends BaseMapper<CmmPost> {
      * @return
      */
     Integer getPostBoomWatchNumByCardId(@Param("cardId")String cardId);
+
+    /**
+     * 基于模糊查询文章数据对应的游戏ids
+     * @param paramMap
+     * @return
+     */
+    public List<Map<String,Object>>  queryCmmPostRefGameIds(Map<String,Object> paramMap);
+
+
+    /**
+     * 基于模糊查询文章数据对应的游戏总数
+     * @param paramMap
+     * @return
+     */
+    public Map<String,Object> queryCmmPostRefGameIdsCount(Map<String,Object> paramMap);
+
 }
