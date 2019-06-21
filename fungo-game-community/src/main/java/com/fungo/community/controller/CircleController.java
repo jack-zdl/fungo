@@ -5,10 +5,7 @@ import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
-import com.game.common.dto.community.CirclePostSortDto;
-import com.game.common.dto.community.CircleTypeDto;
-import com.game.common.dto.community.CmmCircleDto;
-import com.game.common.dto.community.PostOutBean;
+import com.game.common.dto.community.*;
 import com.game.common.dto.index.CardIndexBean;
 import com.game.common.enums.CommonEnum;
 import com.game.common.util.annotation.Anonymous;
@@ -87,6 +84,29 @@ public class CircleController {
         return re;
     }
 
+    /**
+     * 功能描述: app端获取圈子文章是否分类
+     * @param: [memberUserPrefile, inputPageDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: dl.zhang
+     * @date: 2019/6/11 11:01
+     */
+    @ApiOperation(value = "v2.5", notes = "")
+    @RequestMapping(value = "/api/community/circle/type", method = RequestMethod.POST)
+    @ApiImplicitParams({})
+    public ResultDto<List<CircleTypeDto>> selectCircleType(@Anonymous MemberUserProfile memberUserPrefile , @RequestBody CmmCirclePostVo cmmCirclePostVo) {
+        ResultDto<List<CircleTypeDto>> re = null;
+        String memberId = memberUserPrefile == null ? "" : memberUserPrefile.getLoginId();
+        try {
+            re = circleServiceImpl.selectCircleType(memberId);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("app端获取圈子下属的文章",e);
+            re = ResultDto.error(CommonEnum.ERROR.code(),"app端获取圈子下属的文章，请联系管理员");
+        }
+        return re;
+    }
+
 
     /**
      * 功能描述: app端获取圈子文章是否分类
@@ -98,8 +118,8 @@ public class CircleController {
     @ApiOperation(value = "v2.5", notes = "")
     @RequestMapping(value = "/api/community/circle/post/type", method = RequestMethod.POST)
     @ApiImplicitParams({})
-    public ResultDto<List<CircleTypeDto>> selectCirclePostType(@Anonymous MemberUserProfile memberUserPrefile , @RequestBody CmmCirclePostVo cmmCirclePostVo) {
-        ResultDto<List<CircleTypeDto>> re = null;
+    public ResultDto<List<CirclePostTypeDto>> selectCirclePostType(@Anonymous MemberUserProfile memberUserPrefile , @RequestBody CmmCirclePostVo cmmCirclePostVo) {
+        ResultDto<List<CirclePostTypeDto>> re = null;
         String memberId = memberUserPrefile == null ? "" : memberUserPrefile.getLoginId();
         try {
             re = circleServiceImpl.selectCirclePostType(memberId,cmmCirclePostVo);

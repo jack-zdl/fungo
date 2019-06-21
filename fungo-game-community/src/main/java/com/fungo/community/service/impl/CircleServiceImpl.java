@@ -1,5 +1,6 @@
 package com.fungo.community.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.community.config.FungoCircleParameter;
@@ -18,10 +19,7 @@ import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
-import com.game.common.dto.community.CircleTypeDto;
-import com.game.common.dto.community.CmmCircleDto;
-import com.game.common.dto.community.CmmPostDto;
-import com.game.common.dto.community.PostOutBean;
+import com.game.common.dto.community.*;
 import com.game.common.dto.system.CircleFollow;
 import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.util.CommonUtil;
@@ -32,6 +30,7 @@ import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import com.game.common.vo.CmmCirclePostVo;
 import com.game.common.vo.CmmCircleVo;
+import io.swagger.models.auth.In;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -334,9 +333,9 @@ public class CircleServiceImpl implements CircleService {
      * @date: 2019/6/20 15:38
      */
     @Override
-    public ResultDto<List<CircleTypeDto>> selectCirclePostType(String memberId, CmmCirclePostVo cmmCirclePostVo) {
-        List<CircleTypeDto> circleTypeDtos = new ArrayList<>();
-        ResultDto<List<CircleTypeDto>> re = new ResultDto<>();
+    public ResultDto<List<CirclePostTypeDto>> selectCirclePostType(String memberId, CmmCirclePostVo cmmCirclePostVo) {
+        List<CirclePostTypeDto> circleTypeDtos = new ArrayList<>();
+        ResultDto<List<CirclePostTypeDto>> re = new ResultDto<>();
         try {
             List<CmmPost> cmmPosts = cmmPostDao.getCmmCircleListByPostId(cmmCirclePostVo.getCircleId());
             List<TagBean> tagBeans = basTagDao.getPostTags();
@@ -349,11 +348,31 @@ public class CircleServiceImpl implements CircleService {
                     cmmPostMap.remove(key);
             }
             for (String key : cmmPostMap.keySet()) {
-                CircleTypeDto circleTypeDto = new CircleTypeDto();
+                CirclePostTypeDto circleTypeDto = new CirclePostTypeDto();
                 Optional<TagBean> cmmPost = tagBeans.stream().filter(r -> r.getId().equals(key)).findFirst();
                 circleTypeDto.setCirclePostType(cmmPost.get().getId());
                 circleTypeDto.setCirclePostName(cmmPost.get().getName());
                 circleTypeDtos.add(circleTypeDto);
+            }
+            re.setData(circleTypeDtos);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("查询圈子的文章类型",e);
+        }
+        return re;
+    }
+
+    @Override
+    public ResultDto<List<CircleTypeDto>> selectCircleType(String memberId) {
+        List<CircleTypeDto> circleTypeDtos = new ArrayList<>();
+        ResultDto<List<CircleTypeDto>> re = new ResultDto<>();
+        try {
+            List<CmmCircle> cmmCircleList = cmmCircleServiceImap.selectList(new EntityWrapper<CmmCircle>().eq("state","1"));
+            Map<Integer, List<CmmCircle>> cmmCircleMap = cmmCircleList.stream().collect(groupingBy(CmmCircle::getType));
+            for(Integer key : cmmCircleMap.keySet()){
+                CircleTypeDto cmmCircle = new CircleTypeDto();
+                cmmCircle.setCirclePostType(key.toString());
+                circleTypeDtos.add(cmmCircle);
             }
             re.setData(circleTypeDtos);
         }catch (Exception e){

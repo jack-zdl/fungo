@@ -2,6 +2,7 @@ package com.fungo.community.service;
 
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.CirclePostTypeDto;
 import com.game.common.dto.community.CircleTypeDto;
 import com.game.common.dto.community.CmmCircleDto;
 import com.game.common.dto.community.PostOutBean;
@@ -24,5 +25,7 @@ public interface CircleService {
 
     FungoPageResultDto<PostOutBean> selectCirclePost(String memberId, CmmCirclePostVo cmmCirclePostVo);
 
-    ResultDto<List<CircleTypeDto>> selectCirclePostType(String memberId, CmmCirclePostVo cmmCirclePostVo);
+    ResultDto<List<CirclePostTypeDto>> selectCirclePostType(String memberId, CmmCirclePostVo cmmCirclePostVo);
+
+    ResultDto<List<CircleTypeDto>> selectCircleType(String memberId);
 }
