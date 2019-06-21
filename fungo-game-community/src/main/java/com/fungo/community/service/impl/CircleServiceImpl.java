@@ -24,6 +24,7 @@ import com.game.common.dto.community.*;
 import com.game.common.dto.system.CircleFollow;
 import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.enums.AbstractResultEnum;
+import com.game.common.enums.ActionTypeEnum;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.Html2Text;
@@ -105,6 +106,7 @@ public class CircleServiceImpl implements CircleService {
                 CircleFollowVo circleFollowVo = new CircleFollowVo();
                 circleFollowVo.setMemberId(memberId);
                 circleFollowVo.setCircleFollows(circleFollows);
+                circleFollowVo.setActionType(ActionTypeEnum.FOLLOW.getKey());
                 ResultDto<CircleFollowVo> resultDto = systemFeignClient.circleListFollow(circleFollowVo);
                 if(resultDto.isSuccess()){
                     cmmCircleDtoList.stream().forEach(s -> {
@@ -113,10 +115,32 @@ public class CircleServiceImpl implements CircleService {
                     });
                 }
             }else if(CmmCircleVo.SorttypeEnum.BROWSE.getKey().equals(cmmCircleVo.getQuerytype())){
+                CircleFollowVo param = new CircleFollowVo();
+                param.setMemberId(memberId);
+                param.setActionType(ActionTypeEnum.BROWSE.getKey());
+                FungoPageResultDto<String> circleFollowVos = systemFeignClient.circleListMineFollow(param);
+                if(circleFollowVos.getData().size() > 0){
+                    List<String> ids =circleFollowVos.getData();
+                    String sortType = cmmCircleVo.getSorttype();
+                    List<CmmCircle> cmmCircles = cmmCircleMapper.selectPageByIds(page,sortType,ids);
+                    cmmCircles.stream().forEach(r -> {
+                        CmmCircleDto s = new CmmCircleDto();
+                        try {
+                            BeanUtils.copyProperties(s, r);
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
+                        s.setFollow(true);
+                        cmmCircleDtoList.add(s);
+                    });
+                }
 
             }else if(CmmCircleVo.SorttypeEnum.FOLLOW.getKey().equals(cmmCircleVo.getQuerytype())){
                 CircleFollowVo param = new CircleFollowVo();
                 param.setMemberId(memberId);
+
 //                param.setPage(pageNum);
 //                param.setLimit(limitNum); //
                 FungoPageResultDto<String> circleFollowVos = systemFeignClient.circleListMineFollow(param);
