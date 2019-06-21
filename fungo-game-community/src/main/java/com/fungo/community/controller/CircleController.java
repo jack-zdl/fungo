@@ -92,9 +92,9 @@ public class CircleController {
      * @date: 2019/6/11 11:01
      */
     @ApiOperation(value = "v2.5", notes = "")
-    @RequestMapping(value = "/api/community/circle/type", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/community/circle/type", method = RequestMethod.GET)
     @ApiImplicitParams({})
-    public ResultDto<List<CircleTypeDto>> selectCircleType(@Anonymous MemberUserProfile memberUserPrefile , @RequestBody CmmCirclePostVo cmmCirclePostVo) {
+    public ResultDto<List<CircleTypeDto>> selectCircleType(@Anonymous MemberUserProfile memberUserPrefile ) {
         ResultDto<List<CircleTypeDto>> re = null;
         String memberId = memberUserPrefile == null ? "" : memberUserPrefile.getLoginId();
         try {

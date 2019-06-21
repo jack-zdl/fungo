@@ -372,6 +372,7 @@ public class CircleServiceImpl implements CircleService {
             for(Integer key : cmmCircleMap.keySet()){
                 CircleTypeDto cmmCircle = new CircleTypeDto();
                 cmmCircle.setCirclePostType(key.toString());
+                cmmCircle.setCirclePostName(CmmCircleVo.TypeEnum.getValueByKey(key.toString()));
                 circleTypeDtos.add(cmmCircle);
             }
             re.setData(circleTypeDtos);
