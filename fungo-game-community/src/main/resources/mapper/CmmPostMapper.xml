@@ -213,7 +213,7 @@
 
 
     <select id="getCmmCircleListByCircleId" resultType="com.fungo.community.entity.CmmPost">
-    select  *  from  t_cmm_post cp where  id in
+    select  cp.* ,sum(cp.comment_num+cp.like_num+cp.collect_num+cp.watch_num) as total  from  t_cmm_post cp where  id in
     ( select cpc.post_id
     from t_cmm_post_circle cpc where cpc.circle_id = #{circleId} AND cpc.default_link = 0 )
     and cp.tags = #{tagId}
@@ -227,7 +227,7 @@
         and cp.type = 2   order  by cp.created_at desc
     </if>
     <if test='sortType == "4"'>
-
+        GROUP BY cp.id ORDER BY total desc
     </if>
     </select>
 
