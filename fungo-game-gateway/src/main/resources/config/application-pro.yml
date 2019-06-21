@@ -153,7 +153,10 @@ spring:
         uri: ${fungoServer.commmunity.uri}
         predicates:
         - Path=/api/search/posts
-
+      - id:fungo-game-community-20:
+        uri: ${fungoServer.commmunity.uri}
+        predicates:
+        - Path=/api/search/posts/games
 
       #-------------系统------------------------
       - id:fungo-game-system-1:
