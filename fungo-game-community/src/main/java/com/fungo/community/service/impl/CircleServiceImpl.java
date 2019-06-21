@@ -1,6 +1,7 @@
 package com.fungo.community.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.community.config.FungoCircleParameter;
@@ -22,12 +23,14 @@ import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.*;
 import com.game.common.dto.system.CircleFollow;
 import com.game.common.dto.system.CircleFollowVo;
+import com.game.common.enums.AbstractResultEnum;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.Html2Text;
 import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
+import com.game.common.vo.CircleGamePostVo;
 import com.game.common.vo.CmmCirclePostVo;
 import com.game.common.vo.CmmCircleVo;
 import io.swagger.models.auth.In;
@@ -43,6 +46,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.partitioningBy;
 
 /**
  * <p>圈子接口实现类</p>
@@ -379,6 +383,207 @@ public class CircleServiceImpl implements CircleService {
         }catch (Exception e){
             e.printStackTrace();
             LOGGER.error("查询圈子的文章类型",e);
+        }
+        return re;
+    }
+
+    @Override
+    public ResultDto<CmmCircleDto> selectCircleGame(String memberId, String gameId) {
+        ResultDto<CmmCircleDto> resultDto = new ResultDto<>();
+        try {
+            Wrapper wrapper = new EntityWrapper<CmmCircle>().eq("game_id",gameId);
+            List<CmmCircle> cmmCircleDtoList = cmmCircleServiceImap.selectList(wrapper);
+            if(cmmCircleDtoList.size() > 0){
+                CmmCircle cmmCircle = cmmCircleDtoList.get(0);
+                CmmCircleDto cmmCircleDto = new CmmCircleDto();
+                BeanUtils.copyProperties(cmmCircleDto,cmmCircle);
+                resultDto.setData(cmmCircleDto);
+                resultDto.setCode(AbstractResultEnum.CODE_ONE.getKey());
+                resultDto.setMessage(AbstractResultEnum.CODE_ONE.getSuccessValue());
+            }else {
+                resultDto.setCode(AbstractResultEnum.CODE_TWO.getKey());
+                resultDto.setMessage(AbstractResultEnum.CODE_TWO.getSuccessValue());// 代表没有圈子
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("查询该游戏是否是游戏圈",e);
+        }
+        return resultDto;
+    }
+
+    /**
+     * 功能描述:  根据传递的游戏id查询社区的文章和游戏关联的文章（不在社区内）
+     * @param: [memberId, circleGamePostVo]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.community.PostOutBean>
+     * @auther: dl.zhang
+     * @date: 2019/6/21 14:28
+     */
+    @Override
+    public FungoPageResultDto<PostOutBean> selectCircleGamePost(String userId, CircleGamePostVo circleGamePostVo) {
+        FungoPageResultDto<PostOutBean> re = null;
+        List<PostOutBean> relist = new ArrayList<>();
+        String gameId = circleGamePostVo.getGameId();
+        try {
+            Page page = new Page(circleGamePostVo.getPage(),circleGamePostVo.getLimit());
+            List<CmmPost>  cmmPosts = cmmPostDao.getCmmPostByGameId(page,gameId);
+            for (CmmPost post : cmmPosts) {
+                //表情解码
+                if (StringUtils.isNotBlank(post.getTitle())) {
+                    String interactTitle = FilterEmojiUtil.decodeEmoji(post.getTitle());
+                    post.setTitle(interactTitle);
+                }
+                if (StringUtils.isNotBlank(post.getContent())) {
+                    String interactContent = FilterEmojiUtil.decodeEmoji(post.getContent());
+
+                    //bean.setContent(content.length() > 100 ? CommonUtils.filterWord(content.substring(0, 100)) : CommonUtils.filterWord(content));
+                    interactContent = interactContent.length() > 40 ? Html2Text.removeHtmlTag(interactContent.substring(0, 40)) : Html2Text.removeHtmlTag(interactContent);
+
+                    post.setContent(interactContent);
+                }
+
+//	        if (StringUtils.isNotBlank(post.getHtmlOrigin())) {
+//	            String interactHtmlOrigin = FilterEmojiUtil.resolveToEmojiFromByte(post.getHtmlOrigin());
+//	            post.setHtmlOrigin(interactHtmlOrigin);
+//	        }
+
+
+                PostOutBean bean = new PostOutBean();
+
+                //!fixme 查询用户数据
+                //bean.setAuthor(iUserService.getAuthor(post.getMemberId()));
+                try {
+                    ResultDto<AuthorBean> authorBeanResultDto = systemFacedeService.getAuthor(post.getMemberId());
+                    if (null != authorBeanResultDto) {
+                        AuthorBean authorBean = authorBeanResultDto.getData();
+                        bean.setAuthor(authorBean);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+//                if (bean.getAuthor() == null) {
+//                    continue;
+//                }
+                String content = post.getContent();
+                if (!CommonUtil.isNull(content)) {
+                    // bean.setContent(content.length() > 100 ? CommonUtils.filterWord(content.substring(0, 100)) : CommonUtils.filterWord(content));
+                    bean.setContent(CommonUtils.filterWord(content));
+                }
+
+                bean.setUpdated_at(DateTools.fmtDate(post.getUpdatedAt()));
+
+                //fix bug:把V2.4.2存在的createdAt字段，恢复回来 [by mxf 2019-01-08]
+                bean.setCreatedAt(DateTools.fmtDate(post.getCreatedAt()));
+                //end
+
+                bean.setVideoUrl(post.getVideo() == null ? "":post.getVideo());
+                bean.setImageUrl(post.getCoverImage()== null ? "":post.getCoverImage());
+                bean.setLikeNum(post.getLikeNum() == null?0 : post.getLikeNum());
+                bean.setPostId(post.getId());
+                bean.setReplyNum(post.getCommentNum() == null?0 : post.getCommentNum());
+                bean.setTitle(CommonUtils.filterWord(post.getTitle()));
+//			bean.setCommunityIcon(community.getIcon());
+//			bean.setCommunityId(community.getId());
+//			bean.setCommunityName(community.getName());
+//			if(!CommonUtil.isNull(post.getVideo()) && CommonUtil.isNull(post.getCoverImage())) {
+//				bean.setImageUrl(community.getCoverImage());
+//			}
+                try {
+                    if (!CommonUtil.isNull(post.getImages())) {
+                        ArrayList<String> readValue = new ArrayList<String>();
+                        ObjectMapper mapper = new ObjectMapper();
+                        readValue = mapper.readValue(post.getImages(), ArrayList.class);
+
+                        //fix bug: Could not read JSON: Cannot construct instance of `java.util.ArrayList$SubList` [by mxf 2019-03-20]
+                        int readValueSize = readValue.size();
+                        List readValueList = new ArrayList();
+                        if (readValueSize > 3) {
+                            readValueList.addAll(readValue.subList(0, 3));
+                            bean.setImages(readValueList);
+                        } else {
+                            bean.setImages(readValue);
+                        }
+                        //老代码
+                        //bean.setImages(readValue.size() > 3 ? readValue.subList(0, 3) : readValue);
+                        //end
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (CommonUtil.isNull(userId)) {
+                    bean.setLiked(false);
+                } else {
+
+                    //!fixme 查询用户点赞数
+                    //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", post.getId()).eq("member_id", userId));
+
+
+                    BasActionDto basActionDto = new BasActionDto();
+                    basActionDto.setMemberId(userId);
+                    basActionDto.setType(0);
+                    basActionDto.setState(0);
+                    basActionDto.setTargetId(post.getId());
+
+                    int liked = 0;
+                    try {
+                        ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
+
+                        if (null != resultDto) {
+                            liked = resultDto.getData();
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+
+                    bean.setLiked(liked > 0 ? true : false);
+                }
+
+                //
+                bean.setVideoCoverImage(post.getVideoCoverImage());
+                bean.setType(post.getType());
+
+                relist.add(bean);
+            }
+            re = new FungoPageResultDto<>();
+            re.setData(relist);
+            PageTools.pageToResultDto(re,page);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("根据游戏id获取文章",e);
+            re = FungoPageResultDto.error("-1","根据游戏id获取文章异常");
+        }
+        return re;
+    }
+
+    @Override
+    public FungoPageResultDto<CmmCircleDto> selectGameCircle(String memberId, CircleGamePostVo circleGamePostVo) {
+        FungoPageResultDto<CmmCircleDto> re = null;
+        List<CmmCircleDto> cmmCircleDtoList = new ArrayList<>();
+        try {
+            String gameId = circleGamePostVo.getGameId();
+            Page page = new Page(circleGamePostVo.getPage(),circleGamePostVo.getLimit());
+            Wrapper wrapper = new EntityWrapper<CmmCircle>().eq("game_id",gameId);
+            Page<CmmCircle> cmmCirclePage = cmmCircleServiceImap.selectPage(page,wrapper);
+            List<CmmCircle> cmmCircles = cmmCirclePage.getRecords();
+            if(cmmCirclePage != null && cmmCircles.size() > 0){
+                cmmCircles.stream().forEach(s -> {
+                    CmmCircleDto cmmCircleDto = new CmmCircleDto();
+                    try {
+                        BeanUtils.copyProperties(cmmCircleDto,s);
+                        cmmCircleDtoList.add(cmmCircleDto);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+            re = new FungoPageResultDto<>();
+            re.setData(cmmCircleDtoList);
+            PageTools.pageToResultDto(re,page);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("-1","");
+            re = FungoPageResultDto.error("-1","根据游戏查询相关圈子异常");
         }
         return re;
     }

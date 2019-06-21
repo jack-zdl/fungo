@@ -6,6 +6,7 @@ import com.game.common.dto.community.CirclePostTypeDto;
 import com.game.common.dto.community.CircleTypeDto;
 import com.game.common.dto.community.CmmCircleDto;
 import com.game.common.dto.community.PostOutBean;
+import com.game.common.vo.CircleGamePostVo;
 import com.game.common.vo.CmmCirclePostVo;
 import com.game.common.vo.CmmCircleVo;
 import java.lang.reflect.InvocationTargetException;
@@ -28,4 +29,10 @@ public interface CircleService {
     ResultDto<List<CirclePostTypeDto>> selectCirclePostType(String memberId, CmmCirclePostVo cmmCirclePostVo);
 
     ResultDto<List<CircleTypeDto>> selectCircleType(String memberId);
+
+    ResultDto<CmmCircleDto> selectCircleGame(String memberId,String gameId);
+
+    FungoPageResultDto<PostOutBean>  selectCircleGamePost(String memberId, CircleGamePostVo circleGamePostVo);
+
+    FungoPageResultDto<CmmCircleDto> selectGameCircle(String memberId,CircleGamePostVo circleGamePostVo);
 }
