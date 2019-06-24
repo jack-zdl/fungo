@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -43,63 +44,31 @@ import java.util.*;
 @Api(value = "", description = "首页")
 public class IndexController {
 
-
     private static final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
 
-
-//    @Autowired
-//    private CmmPostService postService;
-//
-//
-//    @Autowired
-//    private IUserService userService;
-//
-//
-//    @Autowired
-//    private CmmCommunityService communityService;
-//
-//
     @Autowired
     GameEvaluationService gameEvaluationService;
-//
-//
-//    @Autowired
-//    private BasActionDao actionDao;
-//
-//
+
     @Autowired
     private GameCollectionGroupService gameCollectionGroupService;
-//
-//
+
     @Autowired
     private GameCollectionItemService gameCollectionItemService;
-//
-//
+
     @Autowired
     GameService gameService;
-//
-//
+
     @Autowired
     private IIndexService indexService;
-//
-//
+
     @Autowired
     private GameDao gameDao;
-//
-//
-//    @Autowired
-//    private CmmPostDao postDao;
-//
-//
-//    @Autowired
-//    BasActionService actionService;
-//
+
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
 
     @Autowired
     private IEvaluateProxyService iEvaluateProxyService;
-
 
     @ApiOperation(value = "发现页游戏合集数据列表(2.4.3)", notes = "")
     @RequestMapping(value = "/api/recommend/topic", method = RequestMethod.POST)

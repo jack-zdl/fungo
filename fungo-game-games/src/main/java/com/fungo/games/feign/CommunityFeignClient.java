@@ -9,6 +9,7 @@ import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.community.ReplyInputPageDto;
 import com.game.common.dto.game.ReplyDto;
+import com.game.common.vo.CircleGamePostVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,4 +45,8 @@ public interface CommunityFeignClient {
 
     @RequestMapping(value = "/api/search/listCommunityFolloweeNum", method = RequestMethod.POST)
     public ResultDto<Map<String,Integer>> listCommunityFolloweeNum(@RequestBody List<String> communityIds);
+
+
+    @RequestMapping(value = "/ms/service/cmm/circle", method = RequestMethod.POST)
+    ResultDto<String> getCircleByGame( @RequestBody CircleGamePostVo circleGamePostVo);
 }

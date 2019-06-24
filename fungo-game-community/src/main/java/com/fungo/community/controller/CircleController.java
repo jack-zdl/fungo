@@ -224,7 +224,7 @@ public class CircleController {
     }
 
     /**
-     * 功能描述: app端获取游戏圈子的文章
+     * 功能描述: /api/search/games
      * @param: [memberUserPrefile, inputPageDto]
      * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
      * @auther: dl.zhang

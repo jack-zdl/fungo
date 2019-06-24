@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.*;
 import com.fungo.games.facede.IEvaluateProxyService;
+import com.fungo.games.feign.CommunityFeignClient;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
@@ -20,6 +21,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.*;
 import com.game.common.dto.search.GameSearchOut;
 import com.game.common.dto.user.MemberDto;
+import com.game.common.enums.CommonEnum;
 import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.CommonUtil;
@@ -28,6 +30,7 @@ import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
 import com.game.common.util.pc20.BuriedPointUtils;
 import com.game.common.util.pc20.analysysjavasdk.AnalysysJavaSdk;
+import com.game.common.vo.CircleGamePostVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +46,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("all")
-@Service
+@Service("gameService")
 public class GameServiceImpl implements IGameService {
 
     private static Logger logger = LoggerFactory.getLogger(GameServiceImpl.class);
@@ -92,6 +95,9 @@ public class GameServiceImpl implements IGameService {
 
     @Autowired
     private AnalysysJavaSdk analysysJavaSdk;
+
+    @Autowired
+    private CommunityFeignClient communityFeignClient;
 
     @Override
     public FungoPageResultDto<GameOutPage> getGameList(GameInputPageDto gameInputDto, String memberId, String os) {
@@ -972,7 +978,22 @@ public class GameServiceImpl implements IGameService {
             out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
 
             out.setCategory(game.getTags());
-
+            /**
+             * 功能描述: 添加游戏关联圈子
+             * @auther: dl.zhang
+             * @date: 2019/6/24 13:50
+             */
+            try {
+                CircleGamePostVo circleGamePostVo = new CircleGamePostVo();
+                circleGamePostVo.setGameId(game.getId());
+                ResultDto<String> re =  communityFeignClient.getCircleByGame(circleGamePostVo);
+                if(CommonEnum.SUCCESS.code().equals(String.valueOf(re.getStatus())) && !re.getData().equals("")){
+                    out.setLink_circle(re.getData());
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+                logger.error("根据游戏id询圈子id异常,游戏id："+game.getId(),e);
+            }
 //			if(m) {
 //				GameSurveyRel srel=this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", game.getId()).eq("phone_model", os));
 //				if(srel!=null) {
