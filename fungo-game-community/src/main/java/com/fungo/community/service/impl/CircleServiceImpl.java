@@ -78,7 +78,7 @@ public class CircleServiceImpl implements CircleService {
 
     @Override
     public FungoPageResultDto<CmmCircleDto> selectCircle(String memberId, CmmCircleVo cmmCircleVo) {
-        FungoPageResultDto<CmmCircleDto> re ;
+        FungoPageResultDto<CmmCircleDto> re = null;
         int pageNum = cmmCircleVo.getPage();
         int limitNum  =cmmCircleVo.getLimit();
         try {
@@ -162,7 +162,9 @@ public class CircleServiceImpl implements CircleService {
                     });
                 }
             }
-            re = FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(cmmCircleDtoList,cmmCircleVo.getPage()-1,page);
+            re = new FungoPageResultDto();
+            re.setData(cmmCircleDtoList);
+            PageTools.pageToResultDto(re,page);
         }catch (Exception e){
             e.printStackTrace();
             LOGGER.error("获取圈子集合",e);
@@ -345,7 +347,6 @@ public class CircleServiceImpl implements CircleService {
             }
             re.setData(relist);
             PageTools.pageToResultDto(re,page);
-
         }catch (Exception e){
             e.printStackTrace();
             LOGGER.error("圈子获取下属文章",e);
