@@ -2,7 +2,9 @@ package com.fungo.community.aop;
 
 
 import com.alibaba.fastjson.JSON;
+import com.fungo.community.dao.mapper.CmmCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
+import com.fungo.community.entity.CmmCircle;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.feign.TSFeignClient;
 import com.game.common.dto.MemberUserProfile;
@@ -38,6 +40,8 @@ public class BrowseActionCircleAspect {
     private TSFeignClient tsFeignClient;
     @Autowired
     private CmmPostDao cmmPostDao;
+    @Autowired
+    private CmmCircleMapper cmmCircleMapper;
 
 
 
@@ -53,29 +57,29 @@ public class BrowseActionCircleAspect {
             HttpServletRequest request = attributes.getRequest();
 //        获取圈子ID
             String[] split = request.getRequestURI().split("/");
-            String communityId = split[split.length-1];
+            String circleId = split[split.length-1];
             //            post
             if (split[split.length-2].equals("post")){
-                CmmPost cmmPost = new CmmPost();
-                cmmPost.setId(communityId);
-                communityId = null;
-                CmmPost cmmPost1 = cmmPostDao.selectOne(cmmPost);
-                if (cmmPost1 != null){
-                    communityId = cmmPost1.getCommunityId();
+                CmmCircle cmmCircle = new CmmCircle();
+                cmmCircle.setId(circleId);
+                circleId = null;
+                CmmCircle cmmCircle1 = cmmCircleMapper.selectOne(cmmCircle);
+                if (cmmCircle1 != null){
+                    circleId = cmmCircle1.getId();
                 }
             }
 //        获取用户id
             MemberUserProfile member = (MemberUserProfile)request.getAttribute("member");
-            if (member != null && StringUtils.isNotBlank(communityId)){
+            if (member != null && StringUtils.isNotBlank(circleId)){
                 //MQ 业务数据发送给系统用户业务处理
                 BasActionDto basActionDtoAdd = new BasActionDto();
                 basActionDtoAdd.setCreatedAt(new Date());
                 basActionDtoAdd.setUpdatedAt(new Date());
                 basActionDtoAdd.setMemberId(member.getLoginId());
-                basActionDtoAdd.setType(12);
-                basActionDtoAdd.setTargetType(4);
-                basActionDtoAdd.setTargetId(communityId);
-                basActionDtoAdd.setState(0);
+                basActionDtoAdd.setType(12); // 浏览
+                basActionDtoAdd.setTargetType(11);   //圈子
+                basActionDtoAdd.setTargetId(circleId);
+                basActionDtoAdd.setState(0);  //正常
                 TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
                 //消息类型
                 transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
