@@ -1951,13 +1951,13 @@ public class PostServiceImpl implements IPostService {
                     //设置分页数据
                     //查询总数
                     Map<String, Object> countMap = cmmPostDao.queryCmmPostRefGameIdsCount(paramMap);
-                    Integer count = 0;
+                    Long count = 0L;
                     if (null != countMap && !countMap.isEmpty()) {
-                        count = (Integer) countMap.get("ct");
+                        count = (Long) countMap.get("ct");
                     }
 
                     Page<CmmPost> mallOrderGoodsPage = new Page();
-                    mallOrderGoodsPage.setTotal(count);
+                    mallOrderGoodsPage.setTotal(count.intValue());
                     mallOrderGoodsPage.setSize(limit);
                     mallOrderGoodsPage.setCurrent(page);
 

@@ -89,4 +89,37 @@ public class CmmCircleVo extends InputPageDto {
         }
     }
 
+    public enum TypeEnum implements BaseEnum<SorttypeEnum,String> {
+        OFFICIAL("1","官方"),
+        GAMES("2","游戏"),
+        INTEREST("3","兴趣");
+
+        String key;
+        String value;
+
+        TypeEnum(String s, String s1) {
+            this.key = s;
+            this.value = s1;
+        }
+        @Override
+        public String getKey() {
+            return key;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+
+        public static String getValueByKey(String key){
+            if(key.equals(TypeEnum.OFFICIAL.getKey())){
+                return TypeEnum.OFFICIAL.getValue();
+            }else if(key.equals(TypeEnum.GAMES.getKey())){
+                return TypeEnum.GAMES.getValue();
+            }else if(key.equals(TypeEnum.INTEREST.getKey())){
+                return TypeEnum.INTEREST.getValue();
+            }
+            return "";
+        }
+    }
 }

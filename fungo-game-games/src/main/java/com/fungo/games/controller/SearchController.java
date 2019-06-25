@@ -14,6 +14,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+import javax.annotation.Resources;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
@@ -27,7 +29,7 @@ import java.util.Map;
 public class SearchController {
 
     @Autowired
-    private IGameService iGameService;
+    private IGameService gameService;
 
 
 
@@ -60,7 +62,7 @@ public class SearchController {
             memberId = memberUserPrefile.getLoginId();
         }
         try {
-            return iGameService.searchGames(page, limit, keyword, tag, sort, os, memberId);
+            return gameService.searchGames(page, limit, keyword, tag, sort, os, memberId);
         } catch (Exception e) {
             e.printStackTrace();
             return FungoPageResultDto.error("-1", "操作失败");

@@ -27,7 +27,7 @@
     SELECT
     <include refid="Base_Column_List"></include>
     from t_cmm_circle
-    order  by type asc ,sort  desc ,hot_value desc;
+    order  by type asc ,sort  desc ,hot_value desc 
   </select>
 
   <select id="selectPageByKeyword" parameterType="com.game.common.vo.CmmCircleVo" resultType="com.fungo.community.entity.CmmCircle" >
@@ -42,7 +42,7 @@
           and type = #{type}
         </if>
     </trim>
-    order  by type asc ,sort  desc ,hot_value desc;
+    order  by type asc ,sort  desc ,hot_value desc
   </select>
 
   <select id="selectPageByIds" resultType="com.fungo.community.entity.CmmCircle" >
@@ -135,6 +135,11 @@
 
   <select id="selectCircleByGameId" parameterType="java.lang.String" resultType="java.lang.String">
     select id from t_cmm_circle where game_id = #{gameId} limit 1
+  </select>
+
+  <select id="selectCircleByGame" resultType="com.fungo.community.entity.CmmCircle">
+        SELECT cc.* FROM t_cmm_circle cc WHERE cc.id  in
+        (SELECT ccg.circle_id  FROM t_cmm_circle_game ccg WHERE ccg.game_id = #{gameId} )  ORDER BY  cc.hot_value desc
   </select>
 
 

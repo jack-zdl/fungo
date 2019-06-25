@@ -23,6 +23,7 @@ import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
+import com.game.common.enums.ActionTypeEnum;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
 import com.game.common.util.StringUtil;
@@ -31,10 +32,8 @@ import com.game.common.vo.MemberFollowerVo;
 import com.sun.istack.NotNull;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -874,6 +873,7 @@ public class SystemServiceImpl implements SystemService {
             return  ResultDto.success(circleFollowVo);
         }
         try {
+
             inputDto.setTarget_type(Integer.valueOf(ActionInput.ActionEnum.CIRCLE.getKey()));
             for (CircleFollow circleFollow: circleFollowVo.getCircleFollows()) {
                 inputDto.setTarget_id(circleFollow.getCircleId());
@@ -896,13 +896,23 @@ public class SystemServiceImpl implements SystemService {
             return  FungoPageResultDto.error("-1","用户id为空");
         }
         try {
-            List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-            Page p = new Page(circleFollowVo.getPage(), circleFollowVo.getLimit());
-            Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("type","5").eq("target_type","11").eq("state","0");
-            List<BasAction> basActions  = basActionServiceImap.selectList(wrapper);
+            if(ActionTypeEnum.FOLLOW.getKey().equals(circleFollowVo.getActionType())){
+                List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+                Page p = new Page(circleFollowVo.getPage(), circleFollowVo.getLimit());
+                Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("type",ActionTypeEnum.FOLLOW.getKey()).eq("target_type",ActionTypeEnum.ActionTargetTypeEnum.CIRCLE.getKey()).eq("state","0");
+                List<BasAction> basActions  = basActionServiceImap.selectList(wrapper);
 //            List<BasAction> basActions = page.getRecords();
-            re.setData(basActions.stream().map(BasAction::getTargetId).collect(Collectors.toList()));
-            PageTools.pageToResultDto(re, p);
+                re.setData(basActions.stream().map(BasAction::getTargetId).collect(Collectors.toList()));
+                PageTools.pageToResultDto(re, p);
+            }else if(ActionTypeEnum.BROWSE.getKey().equals(circleFollowVo.getActionType())){
+                List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+                Page p = new Page(circleFollowVo.getPage(), circleFollowVo.getLimit());
+                Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("type",ActionTypeEnum.BROWSE.getKey()).eq("target_type", ActionTypeEnum.ActionTargetTypeEnum.CIRCLE.getKey()).eq("state","0");
+                List<BasAction> basActions  = basActionServiceImap.selectList(wrapper);
+//            List<BasAction> basActions = page.getRecords();
+                re.setData(basActions.stream().map(BasAction::getTargetId).collect(Collectors.toList()));
+                PageTools.pageToResultDto(re, p);
+            }
         }catch (Exception e){
             e.printStackTrace();
             LOGGER.error("根据传递的圈子集合查询是否关注",e);

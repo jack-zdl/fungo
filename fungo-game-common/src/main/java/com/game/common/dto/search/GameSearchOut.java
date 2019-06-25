@@ -32,6 +32,8 @@ public class GameSearchOut {
 	private String apkUrl;
 	
 	private String category;
+	@ApiModelProperty(value="游戏关联的圈子",example="")
+	private String link_circle;
 	
 //	@ApiModelProperty(value="是否同意条款",example="")
 //	private boolean isClause=false;
@@ -175,7 +177,11 @@ public class GameSearchOut {
 		this.category = category;
 	}
 
-	
-	
-	
+	public String getLink_circle() {
+		return link_circle;
+	}
+
+	public void setLink_circle(String link_circle) {
+		this.link_circle = link_circle;
+	}
 }

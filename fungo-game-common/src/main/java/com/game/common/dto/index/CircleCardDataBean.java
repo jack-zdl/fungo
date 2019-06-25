@@ -29,8 +29,8 @@ public class CircleCardDataBean {
 	@ApiModelProperty(value="右下角内容",example="")
 	private String EndDate;
 	
-//	@ApiModelProperty(value="行为类型   (1:内部跳转;2:外连接)",example="")
-//	private String actionType="1";
+	@ApiModelProperty(value="行为类型   (1:内部跳转;2:外连接)",example="")
+	private String actionType="1";
 //	@ApiModelProperty(value="网页地址     需要前台App端在url后追加?token=token",example="")
 //	private String href;
 	@ApiModelProperty(value="业务id",example="")

@@ -37,10 +37,12 @@ public enum ActionTypeEnum implements BaseEnum<ActionTypeEnum, String> {
     RECOMMEND("8","推荐"),
     UNRECOMMEND("9","不推荐"),
     IGNORE("10","忽略"),
-    POST("10","发帖"),
-    BROWSE("11","浏览"),
-    LOGIN("12","登陆"),
-    MOOD("13","心情");
+    POST("11","发帖"),
+    BROWSE("12","浏览"),
+    LOGIN("13","登陆"),
+    MOOD("14","心情");
+
+
 
     String key;
     String value;
@@ -59,25 +61,39 @@ public enum ActionTypeEnum implements BaseEnum<ActionTypeEnum, String> {
     public String getValue() {
         return value;
     }
+
+    public enum ActionTargetTypeEnum implements BaseEnum<ActionTargetTypeEnum, String> {
+        USER("0","用户"),
+        POST("1","帖子"),
+        MOOD("2","心情"),
+        GAME("3","游戏"),
+        COMMUNITY("4","社区"),
+        POSTCOMMENT("5","帖子评论"),
+        GAMECOMMENT("6","游戏评论"),
+        REPLY("7","回复"),
+        MOODCOMMENT("8","回复"),
+        SUGGESTION("9","意见反馈"),
+        GAMETAG("10","游戏标签"),
+        CIRCLE("11","圈子"),
+        OTHER("-1","其他");
+
+        String key;
+        String value;
+
+        ActionTargetTypeEnum(String k, String v){
+            this.key = k;
+            this.value = v;
+        }
+        @Override
+        public String getKey() {
+            return key;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+    }
 }
 
-enum ActionTargetTypeEnum implements BaseEnum<ActionTargetTypeEnum, String> {
-    REPLY("0","回复");
 
-    String key;
-    String value;
-
-    ActionTargetTypeEnum(String k, String v){
-        this.key = k;
-        this.value = v;
-    }
-    @Override
-    public String getKey() {
-        return null;
-    }
-
-    @Override
-    public String getValue() {
-        return null;
-    }
-}
