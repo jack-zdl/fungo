@@ -497,12 +497,13 @@ public class PostServiceImpl implements IPostService {
         ActionInput actioninput = new ActionInput();
         actioninput.setTarget_type(4);
         actioninput.setTarget_id(postInput.getCommunity_id());
-        boolean addCounter = iCountService.addCounter(user_id, 7, actioninput);
+        if(StringUtil.isNotNull(postInput.getCommunity_id())){
+            boolean addCounter = iCountService.addCounter(user_id, 7, actioninput);
+        }
 
         ResultDto<ObjectId> resultDto = new ResultDto<ObjectId>();
 
-        if (flag == true && addCounter) {
-
+        if (flag) {
             ObjectId o = new ObjectId();
             o.setId(post.getId());
             resultDto.setData(o);
@@ -519,8 +520,10 @@ public class PostServiceImpl implements IPostService {
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
         //帖子列表
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
-        //社区置顶文章(2.4.3)
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, postInput.getCommunity_id(), null);
+        if(StringUtil.isNotNull(postInput.getCommunity_id())){
+            //社区置顶文章(2.4.3)
+            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, postInput.getCommunity_id(), null);
+        }
         //我的文章(2.4.3)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
 

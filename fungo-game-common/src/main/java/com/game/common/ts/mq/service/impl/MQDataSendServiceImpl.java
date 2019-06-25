@@ -73,6 +73,8 @@ public class MQDataSendServiceImpl implements RabbitTemplate.ConfirmCallback, MQ
                 public Message postProcessMessage(Message message) throws AmqpException {
                     //设置消息持久化
                     message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+                    //设置消息过期时间 30秒没被消费会丢弃
+                   // message.getMessageProperties().setExpiration("30000");
                     return message;
                 }
             });
