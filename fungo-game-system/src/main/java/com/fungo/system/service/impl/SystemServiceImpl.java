@@ -32,10 +32,8 @@ import com.game.common.vo.MemberFollowerVo;
 import com.sun.istack.NotNull;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -901,7 +899,7 @@ public class SystemServiceImpl implements SystemService {
             if(ActionTypeEnum.FOLLOW.getKey().equals(circleFollowVo.getActionType())){
                 List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
                 Page p = new Page(circleFollowVo.getPage(), circleFollowVo.getLimit());
-                Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("type","5").eq("target_type","11").eq("state","0");
+                Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("type",ActionTypeEnum.FOLLOW.getKey()).eq("target_type",ActionTypeEnum.ActionTargetTypeEnum.CIRCLE.getKey()).eq("state","0");
                 List<BasAction> basActions  = basActionServiceImap.selectList(wrapper);
 //            List<BasAction> basActions = page.getRecords();
                 re.setData(basActions.stream().map(BasAction::getTargetId).collect(Collectors.toList()));
@@ -909,7 +907,7 @@ public class SystemServiceImpl implements SystemService {
             }else if(ActionTypeEnum.BROWSE.getKey().equals(circleFollowVo.getActionType())){
                 List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
                 Page p = new Page(circleFollowVo.getPage(), circleFollowVo.getLimit());
-                Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("type","11").eq("target_type","11").eq("state","0");
+                Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("type",ActionTypeEnum.BROWSE.getKey()).eq("target_type", ActionTypeEnum.ActionTargetTypeEnum.CIRCLE.getKey()).eq("state","0");
                 List<BasAction> basActions  = basActionServiceImap.selectList(wrapper);
 //            List<BasAction> basActions = page.getRecords();
                 re.setData(basActions.stream().map(BasAction::getTargetId).collect(Collectors.toList()));

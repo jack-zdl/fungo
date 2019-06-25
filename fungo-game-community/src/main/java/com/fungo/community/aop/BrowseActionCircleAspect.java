@@ -59,7 +59,7 @@ public class BrowseActionCircleAspect {
             String[] split = request.getRequestURI().split("/");
             String circleId = split[split.length-1];
             //            post
-            if (split[split.length-2].equals("post")){
+            if (split[split.length-2].equals("circle")){
                 CmmCircle cmmCircle = new CmmCircle();
                 cmmCircle.setId(circleId);
                 circleId = null;
