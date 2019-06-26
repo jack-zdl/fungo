@@ -10,7 +10,7 @@ import java.util.Map;
 public class PostOut {
 
 	private String objectId;
-	private String tags;
+    private List<String> tags = new ArrayList<>();
 	private List<String> images = new ArrayList<>();
 	private String cover_image;
 	private String title;
@@ -60,21 +60,28 @@ public class PostOut {
 	private String videoCoverImage;
 
 
-	
-	public String getObjectId() {
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
+    public String getObjectId() {
 		return objectId;
 	}
 	public void setObjectId(String objectId) {
 		this.objectId = objectId;
 	}
 
-	public String getTags() {
+/*	public String getTags() {
 		return tags;
 	}
 
 	public void setTags(String tags) {
 		this.tags = tags;
-	}
+	}*/
 
 	public String getLink_url() {
 		return link_url;
