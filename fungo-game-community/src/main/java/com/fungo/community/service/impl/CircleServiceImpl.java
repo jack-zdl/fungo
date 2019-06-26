@@ -32,6 +32,7 @@ import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.ActionTypeEnum;
+import com.game.common.enums.circle.CircleRecommendEnum;
 import com.game.common.enums.circle.CircleTypeEnum;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
@@ -231,15 +232,22 @@ public class CircleServiceImpl implements CircleService {
             String tagId = cmmCirclePostVo.getQuerytype();
             String sortType = cmmCirclePostVo.getSorttype();
             Page page = new Page(cmmCirclePostVo.getPage(),cmmCirclePostVo.getLimit());
-            if(CmmCirclePostVo.SortTypeEnum.PUBDATE.getKey().equals(cmmCirclePostVo.getSorttype())){
-                cmmPosts =  cmmPostDao.getCmmCircleListByCircleId(page,circleId,tagId,sortType);
-            }else if(CmmCirclePostVo.SortTypeEnum.PUBREPLY.getKey().equals(cmmCirclePostVo.getSorttype())){
-                cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page,circleId,tagId,sortType);
-            }else if(CmmCirclePostVo.SortTypeEnum.ESSENCE.getKey().equals(cmmCirclePostVo.getSorttype())){
-                cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page,circleId,tagId,sortType);
-            }else if(CmmCirclePostVo.SortTypeEnum.DISCUSS.getKey().equals(cmmCirclePostVo.getSorttype())){
-                cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page,circleId,tagId,sortType);
+            if(CmmCirclePostVo.QueryTypeEnum.ALL.getKey().equals(cmmCirclePostVo.getQuerytype())){  // 全部查询
+                cmmPosts =  cmmPostDao.getCmmCircleListByCircleId(page,circleId,null,null,sortType);
+            }else if(CmmCirclePostVo.QueryTypeEnum.ESSENCE.getKey().equals(cmmCirclePostVo.getQuerytype())){ // 精华查询
+                cmmPosts =  cmmPostDao.getCmmCircleListByCircleId(page,circleId, null,CircleRecommendEnum.RECOMMEND.getKey(),sortType);
+            }else {
+                if(CmmCirclePostVo.SortTypeEnum.PUBDATE.getKey().equals(cmmCirclePostVo.getSorttype())){
+                    cmmPosts =  cmmPostDao.getCmmCircleListByCircleId(page,circleId,tagId,null,sortType);
+                }else if(CmmCirclePostVo.SortTypeEnum.PUBREPLY.getKey().equals(cmmCirclePostVo.getSorttype())){
+                    cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page,circleId,tagId,null,sortType);
+                }else if(CmmCirclePostVo.SortTypeEnum.ESSENCE.getKey().equals(cmmCirclePostVo.getSorttype())){
+                    cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page,circleId,tagId,null,sortType);
+                }else if(CmmCirclePostVo.SortTypeEnum.DISCUSS.getKey().equals(cmmCirclePostVo.getSorttype())){
+                    cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page,circleId,tagId,null,sortType);
+                }
             }
+
 
             for (CmmPost post : cmmPosts) {
                 //表情解码
@@ -357,6 +365,7 @@ public class CircleServiceImpl implements CircleService {
                 //
                 bean.setVideoCoverImage(post.getVideoCoverImage());
                 bean.setType(post.getType());
+                relist.add(bean);
 
             }
             re.setData(relist);

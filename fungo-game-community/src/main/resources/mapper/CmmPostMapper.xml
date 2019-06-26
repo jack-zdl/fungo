@@ -216,7 +216,12 @@
     select  cp.* ,sum(cp.comment_num+cp.like_num+cp.collect_num+cp.watch_num) as total  from  t_cmm_post cp where  id in
     ( select cpc.post_id
     from t_cmm_post_circle cpc where cpc.circle_id = #{circleId} AND cpc.default_link = 0 )
-    and cp.tags = #{tagId}
+    <if test="tagId != null and tagId != ''">
+        and cp.tags = #{tagId}
+    </if>
+    <if test="recommend != null and recommend != ''">
+        and cp.recommend = #{recommend}
+    </if>
     <if test='sortType == "1" ' >
         order  by cp.created_at desc
     </if>

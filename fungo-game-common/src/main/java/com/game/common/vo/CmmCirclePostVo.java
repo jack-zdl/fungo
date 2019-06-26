@@ -50,6 +50,8 @@ public class CmmCirclePostVo extends InputPageDto {
         PUBREPLY("2","最新评论"),
         ESSENCE("3","只看精选"),
         DISCUSS("4","最热讨论");
+
+
         String key;
         String value;
 
@@ -75,7 +77,8 @@ public class CmmCirclePostVo extends InputPageDto {
         STRATEGY("3","攻略心得"),
         TITTLETATTLE("4","同人杂谈"),
         GOSSIP("5","咨询八卦"),
-        OTHER("6","其他");
+        OTHER("6","其他"),
+        ESSENCE("7","精华");
 
         String key;
         String value;

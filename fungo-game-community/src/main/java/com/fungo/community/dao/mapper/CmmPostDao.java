@@ -99,7 +99,7 @@ public interface CmmPostDao extends BaseMapper<CmmPost> {
 
     List<CmmPost> getCmmCircleListByPostId(String circleId);
 
-    List<CmmPost> getCmmCircleListByCircleId(Page page ,@Param("circleId") String circleId, @Param("tagId") String tagId,@Param("sortType") String sortType);
+    List<CmmPost> getCmmCircleListByCircleId(Page page ,@Param("circleId") String circleId, @Param("tagId") String tagId,@Param("recommend") String recommend , @Param("sortType") String sortType);
 
     List<CmmPost> getCmmPostByGameId(Page page,@Param("gameId")String gameId );
 }
