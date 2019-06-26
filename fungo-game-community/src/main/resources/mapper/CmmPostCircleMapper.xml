@@ -105,8 +105,34 @@
   </update>
 
   <select id="getCmmCircleByPostId" parameterType="java.lang.String" resultType="java.lang.String">
-    select circle_id from t_cmm_post_circle where post_id = #{postId} order by default_link desc limit 1
+    select circle_id from t_cmm_post_circle where post_id = #{postId} and default_link =  1  order by created_at desc limit 1
   </select>
 
+  <select id="getCmmPostCircleByCircleId" parameterType="java.lang.String" resultType="com.game.common.dto.circle.CircleMemberPulishDto">
+    SELECT sum(f.c) as postNum,sum(f.d) as commentNum,sum(f.f) as evaNum, f.member_id as memberId , sum(f.comment_num) as post_comment_num ,   sum(f.like_num) as post_like_num
+ FROM (
+		( SELECT COUNT(*) as c , 0   as   d  , 0 as f, cp.member_id , cp.comment_num  , cp.like_num  FROM t_cmm_post cp WHERE
+			cp.id in ( SELECT cm1.post_id FROM t_cmm_post_circle cm1 WHERE cm1.circle_id = #{circleId} ) and cp.state = 1 GROUP BY cp.member_id  )
+	  UNION ALL
+	  ( SELECT 0      as   c , COUNT(*) as d,0 as f, cc.member_id , 0  as  comment_num, 0  as like_num   FROM t_cmm_comment cc WHERE
+			cc.post_id in (  SELECT cm2.post_id FROM t_cmm_post_circle cm2 WHERE cm2.circle_id = #{circleId} ) and cc.state = 0 GROUP BY cc.member_id )
+
+	  )
+		f GROUP BY f.member_id ORDER BY SUM(f.c+f.d+f.f+f.comment_num+f.like_num) DESC,f.member_id DESC
+  </select>
+
+
+  <select id="getCmmPostCircleOfGameByCircleId" parameterType="java.lang.String" resultType="com.game.common.dto.circle.CircleMemberPulishDto">
+    SELECT sum(f.c) as postNum,sum(f.d) as commentNum,sum(f.f) as evaNum, f.member_id as memberId , sum(f.comment_num) as post_comment_num ,   sum(f.like_num) as post_like_num
+ FROM (
+		( SELECT COUNT(*) as c , 0   as   d  , 0 as f, cp.member_id , cp.comment_num  , cp.like_num  FROM t_cmm_post cp WHERE
+			cp.id in ( SELECT cm1.post_id FROM t_cmm_post_circle cm1 WHERE cm1.circle_id = #{circleId} ) and cp.state = 1 GROUP BY cp.member_id  )
+	  UNION ALL
+	  ( SELECT 0      as   c , COUNT(*) as d,0 as f, cc.member_id , 0  as  comment_num, 0  as like_num   FROM t_cmm_comment cc WHERE
+			cc.post_id in (  SELECT cm2.post_id FROM t_cmm_post_circle cm2 WHERE cm2.circle_id = #{circleId} ) and cc.state = 0 GROUP BY cc.member_id )
+
+	  )
+		f GROUP BY f.member_id ORDER BY SUM(f.c+f.d+f.f+f.comment_num+f.like_num) DESC,f.member_id DESC
+  </select>
 
 </mapper>

@@ -7,7 +7,10 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -48,6 +51,11 @@ public class CmmCircleDto implements Serializable {
 
 
     private boolean follow = false;
+
+    /**
+     * 玩家排行(2.4.3) objectId avatar
+     */
+    private List<Map<String,Object>> eliteMembers = new ArrayList<>();
 
     @Setter
     @Getter

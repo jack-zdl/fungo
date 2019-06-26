@@ -70,7 +70,7 @@ public class CircleController {
      * @date: 2019/6/11 11:01
      */
     @ApiOperation(value = "v2.5", notes = "")
-    @RequestMapping(value = "/api/community/circle/{circleId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/community/circle/{circleId}", method = RequestMethod.GET)
     @ApiImplicitParams({})
     public ResultDto<CmmCircleDto> selectCircle(@Anonymous MemberUserProfile memberUserPrefile, @PathVariable("circleId") String circleId) {
         ResultDto<CmmCircleDto> re = null;
