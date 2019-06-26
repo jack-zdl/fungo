@@ -1035,9 +1035,9 @@ public class PostServiceImpl implements IPostService {
         out.setObjectId(cmmPost.getId());
         out.setTitle(CommonUtils.filterWord(cmmPost.getTitle()));
         String tags = cmmPost.getTags();
-        if (!CommonUtil.isNull(tags)) {
+     /*   if (!CommonUtil.isNull(tags)) {
             out.setTags(tags);
-        }
+        }*/
         if (cmmPost.getImages() != null) {
             out.setImages(Arrays.asList(cmmPost.getImages().replace("]", "").replace("[", "").replace("\"", "").split(",")));
         }
