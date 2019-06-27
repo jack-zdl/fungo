@@ -3,6 +3,7 @@ package com.game.common.dto.system;
 import com.game.common.api.InputPageDto;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
  */
 @Setter
 @Getter
+@ToString
 public class CircleFollowVo extends InputPageDto {
 
     private String memberId;

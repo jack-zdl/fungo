@@ -162,9 +162,7 @@ public class CircleServiceImpl implements CircleService {
                         CmmCircleDto s = new CmmCircleDto();
                         try {
                             BeanUtils.copyProperties(s, r);
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        } catch (InvocationTargetException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                         s.setFollow(true);
@@ -189,9 +187,16 @@ public class CircleServiceImpl implements CircleService {
         CmmCircleDto cmmCircleDto = new CmmCircleDto();
         try {
             CmmCircle cmmCircle = cmmCircleServiceImap.selectById(circleId);
+            if(cmmCircle == null){
+                return ResultDto.error("-1","该圈子不存在");
+            }
             BeanUtils.copyProperties(cmmCircleDto,cmmCircle);
             CircleFollowVo circleFollowVo = new CircleFollowVo();
             circleFollowVo.setMemberId(memberId);
+            circleFollowVo.setActionType(ActionTypeEnum.FOLLOW.getKey());
+            CircleFollow circleFollow = new CircleFollow();
+            circleFollow.setCircleId(circleId);
+            circleFollowVo.setCircleFollows(Arrays.asList(circleFollow));
             ResultDto<CircleFollowVo> resultDto = systemFeignClient.circleListFollow(circleFollowVo);
             if(resultDto != null && resultDto.getData() != null && resultDto.getData().getCircleFollows() != null){
                 List<CircleFollow> circleFollows = resultDto.getData().getCircleFollows().stream().filter( r -> r.getCircleId().equals(circleId)).collect(Collectors.toList());
