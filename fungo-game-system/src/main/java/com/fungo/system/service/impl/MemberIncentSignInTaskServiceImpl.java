@@ -12,9 +12,9 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.user.MemberOutBean;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.repo.cache.facade.FungoCacheTask;
+import com.game.common.util.PKUtil;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
-import com.game.common.util.PKUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.game.common.consts.FungoCoreApiConstant.FUNGO_CORE_API_GETSIGNINTASKGROUPANDTASKRULEDATA;
 
@@ -638,18 +635,33 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
             return;
         }
 
-        //获取用户的fungo账号
-        IncentAccountCoin accountCoin = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", member.getId()).eq("account_group_id", 3));
+        //获取用户的fungo账号 .eq("account_group_id", 3)
+        IncentAccountCoin accountCoin = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", member.getId()));
 
         //若用户没有fungo币账户，则创建
         if (null == accountCoin) {
             accountCoin = memberAccountDaoService.createAccountCoin(member.getId());
         }
 
+        Long lastCasVersion = accountCoin.getCasVersion();
+        //初始化
+        if (null == lastCasVersion) {
+            lastCasVersion = 0L;
+        }
+
+        accountCoin.setCasVersion(lastCasVersion + 1);
         accountCoin.setCoinUsable(accountCoin.getCoinUsable().add(new BigDecimal(funCoin)));
         accountCoin.setUpdatedAt(new Date());
 
-        boolean isUpdate = accountCoin.updateById();
+
+        Map<String, Object> criteriaMap = new HashMap<String, Object>();
+        criteriaMap.put("mb_id", member.getId());
+        criteriaMap.put("cas_version", lastCasVersion);
+        EntityWrapper<IncentAccountCoin> coinAccountEntityWrapper = new EntityWrapper<IncentAccountCoin>();
+
+        coinAccountEntityWrapper.allEq(criteriaMap);
+
+        boolean isUpdate = accountCoinService.update(accountCoin, coinAccountEntityWrapper);
 
         logger.info("=======用户id:{}----第一次签到-----获取fungo币数量:{}--isUpdate:{}", member.getId(), JSON.toJSONString(accountCoin), isUpdate);
 
