@@ -12,6 +12,11 @@
   <sql id="Base_Column_List">
     id, post_id AS postId, circle_id AS circleId , default_link AS defaultLink, created_at AS createdAt, updated_at AS updatedAt
   </sql>
+
+  <sql id="Base_Circle_List">
+    id, circle_name as circleName, circle_icon AS circleIcon , intro,game_id AS gameId ,cmm_id AS cmmId , type, state, member_num AS  memberNum,
+    hot_value AS hotValue , sort, created_at AS  createdAt,updated_at AS  updatedAt, created_by AS  createdBy, updated_by as updatedBy
+  </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
@@ -105,7 +110,7 @@
   </update>
 
   <select id="getCmmCircleByPostId" parameterType="java.lang.String" resultType="java.lang.String">
-    select circle_id from t_cmm_post_circle where post_id = #{postId} and default_link =  1  order by created_at desc limit 1
+    select circle_id from t_cmm_post_circle where post_id = #{postId}  order by default_link desc limit 1
   </select>
 
   <select id="getCmmPostCircleByCircleId" parameterType="java.lang.String" resultType="com.game.common.dto.circle.CircleMemberPulishDto">
@@ -133,6 +138,11 @@
 
 	  )
 		f GROUP BY f.member_id ORDER BY SUM(f.c+f.d+f.f+f.comment_num+f.like_num) DESC,f.member_id DESC
+  </select>
+
+  <select id="getCircleEntityByPostId" resultType="com.fungo.community.entity.CmmCircle">
+
+ SELECT  <include refid="Base_Circle_List" />  FROM t_cmm_circle WHERE id = ( select circle_id from t_cmm_post_circle where post_id =  #{postId} order by default_link desc limit 1 )
   </select>
 
 </mapper>

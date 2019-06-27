@@ -1663,7 +1663,7 @@ public class PostServiceImpl implements IPostService {
         mapList = new ArrayList<>();
         Page page = new Page(inputPageDto.getPage(), inputPageDto.getLimit());
         Page<CmmPost> postPage = postService.selectPage(page, new EntityWrapper<CmmPost>().eq("recommend", 1).orderBy("sort", false));
-        List<PostOutBean> list = new ArrayList<PostOutBean>();
+        List<PostOutBean> list = new ArrayList<>();
         if (postPage != null) {
             ObjectMapper mapper = new ObjectMapper();
             for (CmmPost cmmPost : postPage.getRecords()) {
@@ -1778,7 +1778,17 @@ public class PostServiceImpl implements IPostService {
                 //
                 bean.setVideoCoverImage(cmmPost.getVideoCoverImage());
                 bean.setType(cmmPost.getType());
-
+                /**
+                 * 功能描述: 根据文章查询是否有圈子
+                 * @auther: dl.zhang
+                 * @date: 2019/6/27 15:40
+                 */
+                CmmCircle cmmCircle = cmmPostCircleMapper.getCircleEntityByPostId(bean.getPostId());
+                if(cmmCircle != null){
+                    bean.setCircleId(cmmCircle.getId());
+                    bean.setCircleName(cmmCircle.getCircleName());
+                    bean.setCircleIcon(cmmCircle.getCircleIcon());
+                }
                 list.add(bean);
             }
         }

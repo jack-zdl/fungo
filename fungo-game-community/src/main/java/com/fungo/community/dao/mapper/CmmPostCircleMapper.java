@@ -1,6 +1,7 @@
 package com.fungo.community.dao.mapper;
 
 
+import com.fungo.community.entity.CmmCircle;
 import com.fungo.community.entity.CmmPostCircle;
 import com.game.common.dto.circle.CircleMemberPulishDto;
 import org.apache.ibatis.annotations.Param;
@@ -23,6 +24,8 @@ public interface CmmPostCircleMapper {
     int updateByPrimaryKey(CmmPostCircle record);
 
     String getCmmCircleByPostId(String postId);
+
+    CmmCircle getCircleEntityByPostId(String postId);
 
     /**
      * 功能描述:  根据非游戏圈子查询玩家榜

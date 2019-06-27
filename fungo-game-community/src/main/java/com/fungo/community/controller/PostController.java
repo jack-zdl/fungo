@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.community.dao.mapper.CmmPostCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
+import com.fungo.community.entity.CmmCircle;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.feign.GameFeignClient;
@@ -85,6 +87,8 @@ public class PostController {
     @Autowired(required = false)
     private GameFeignClient gameFeignClient;
 
+    @Autowired
+    private CmmPostCircleMapper cmmPostCircleMapper;
 
    /* @Autowired
     private IGameService iGameService;
@@ -232,7 +236,6 @@ public class PostController {
 
     @ApiOperation(value = "社区置顶文章(2.4.3)", notes = "")
     @RequestMapping(value = "/api/content/post/topic/{communityId}", method = RequestMethod.GET)
-
     public FungoPageResultDto<Map<String, String>> getTopicPosts(@Anonymous MemberUserProfile memberUserPrefile, @PathVariable("communityId") String communityId) {
         return bsPostService.getTopicPosts(communityId);
     }
@@ -679,6 +682,17 @@ public class PostController {
             bean.setVideoCoverImage(cmmPost.getVideoCoverImage());
             bean.setType(cmmPost.getType());
 
+            /**
+             * 功能描述: 根据文章查询是否有圈子
+             * @auther: dl.zhang
+             * @date: 2019/6/27 15:40
+             */
+            CmmCircle cmmCircle = cmmPostCircleMapper.getCircleEntityByPostId(bean.getPostId());
+            if(cmmCircle != null){
+                bean.setCircleId(cmmCircle.getId());
+                bean.setCircleName(cmmCircle.getCircleName());
+                bean.setCircleIcon(cmmCircle.getCircleIcon());
+            }
             list.add(bean);
         }
 
