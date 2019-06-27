@@ -286,9 +286,8 @@ public class PostServiceImpl implements IPostService {
                 if(community!=null&&StringUtil.isNotNull(community.getId())){
                     postGame.setCmmId(community.getId());
                     postGame.setCmmName(community.getName());
-                    cmmPostGameMapper.insert(postGame);
                 }
-
+                cmmPostGameMapper.insert(postGame);
                 //查询游戏是否有圈子 有圈子-建立文章圈子关系
                 String circleId = cmmCircleMapper.selectCircleByGameId(gameid);
                 //已经保存过关系，不用重新保存
