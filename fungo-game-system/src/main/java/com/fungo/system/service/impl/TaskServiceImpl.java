@@ -315,8 +315,8 @@ public class TaskServiceImpl implements ITaskService {
         }
 
 
-        //fun币
-        IncentAccountCoin accountCoin = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", userId).eq("account_group_id", 3));
+        //fun币 .eq("account_group_id", 3)
+        IncentAccountCoin accountCoin = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", userId));
         if (accountCoin == null) {
             accountCoin = IAccountDaoService.createAccountCoin(userId);
         }

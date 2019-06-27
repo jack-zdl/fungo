@@ -276,10 +276,10 @@ public class MemberIncentNewbieTaskServiceImpl implements IMemberIncentNewbieTas
 
         Integer coinCount = scoreRule.getScore();
         //更新账户
-        IncentAccountCoin coinAccount = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", mb_id).
-                eq("account_group_id", FunGoGameConsts.INCENT_ACCOUNT_TYPE_COIN_ID));
+        IncentAccountCoin coinAccount = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", mb_id));
+        //.eq("account_group_id", FunGoGameConsts.INCENT_ACCOUNT_TYPE_COIN_ID));
         if (coinAccount == null) {
-            Member member = memberService.selectById(mb_id);
+            //Member member = memberService.selectById(mb_id);
             coinAccount = accountScoreDaoService.createAccountCoin(mb_id);
         }
 

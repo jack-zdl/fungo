@@ -701,7 +701,8 @@ public class UserServiceImpl implements IUserService {
         bean.setMemberNo(member.getMemberNo());
         bean.setMb_id(member.getId());
 
-        IncentAccountCoin accountCoin = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", memberId).eq("account_group_id", 3));
+        IncentAccountCoin accountCoin = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", memberId));
+        //.eq("account_group_id", 3));
         if (accountCoin == null) {
             bean.setFunCoin(0);
         } else {

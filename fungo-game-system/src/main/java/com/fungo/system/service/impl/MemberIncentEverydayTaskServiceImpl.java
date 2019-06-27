@@ -356,9 +356,9 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
         logger.info("执行新手任务---经验值任务--开始修改用户fungo币账户-scoreRule:{}", JSON.toJSONString(scoreRule));
 
         Integer coinCount = scoreRule.getScore();
-        //更新账户
-        IncentAccountCoin coinAccount = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", mb_id).
-                eq("account_group_id", FunGoGameConsts.INCENT_ACCOUNT_TYPE_COIN_ID));
+        //更新账户.
+        // eq("account_group_id", FunGoGameConsts.INCENT_ACCOUNT_TYPE_COIN_ID)
+        IncentAccountCoin coinAccount = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", mb_id));
         if (coinAccount == null) {
             Member member = memberService.selectById(mb_id);
             coinAccount = accountScoreDaoService.createAccountCoin(mb_id);

@@ -443,8 +443,8 @@ public class ScoreLogServiceImap extends ServiceImpl<ScoreLogDao, ScoreLog> impl
                                              ScoreRule coinRule, Member user) throws JsonProcessingException, Exception {
         //加积分，添加日志,更新等级
         Integer score = coinRule.getScore();
-        //更新账户
-        IncentAccountCoin coinAccount = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", userId).eq("account_group_id", 3));
+        //更新账户 .eq("account_group_id", 3)
+        IncentAccountCoin coinAccount = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", userId));
         if (coinAccount == null) {
             coinAccount = IAccountDaoService.createAccountCoin(userId);
         }
