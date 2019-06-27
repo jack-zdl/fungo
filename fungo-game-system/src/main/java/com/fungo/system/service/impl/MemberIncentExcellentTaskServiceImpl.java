@@ -260,9 +260,9 @@ public class MemberIncentExcellentTaskServiceImpl implements IMemberIncentExcell
         logger.info("执行精品任务---经验值任务--开始修改用户fungo币账户-scoreRule:{}", JSON.toJSONString(scoreRule));
 
         Integer coinCount = scoreRule.getScore();
-        //更新账户
-        IncentAccountCoin coinAccount = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", mb_id).
-                eq("account_group_id", FunGoGameConsts.INCENT_ACCOUNT_TYPE_COIN_ID));
+        //更新账户.
+        // eq("account_group_id", FunGoGameConsts.INCENT_ACCOUNT_TYPE_COIN_ID)
+        IncentAccountCoin coinAccount = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", mb_id));
         if (coinAccount == null) {
             Member member = memberService.selectById(mb_id);
             coinAccount = accountScoreDaoService.createAccountCoin(mb_id);
@@ -308,9 +308,9 @@ public class MemberIncentExcellentTaskServiceImpl implements IMemberIncentExcell
 
         //加积分
         Integer score = scoreRule.getScore();
-        //更新账户
-        IncentAccountScore scoreAccount = accountScoreDaoService.selectOne(new EntityWrapper<IncentAccountScore>().eq("mb_id", mb_id).eq("account_group_id",
-                FunGoGameConsts.INCENT_ACCOUNT_TYPE_SCORE_ID));
+        //更新账户.eq("account_group_id",
+        //                FunGoGameConsts.INCENT_ACCOUNT_TYPE_SCORE_ID)
+        IncentAccountScore scoreAccount = accountScoreDaoService.selectOne(new EntityWrapper<IncentAccountScore>().eq("mb_id", mb_id));
         if (scoreAccount == null) {
             Member member = memberService.selectById(mb_id);
             scoreAccount = accountScoreDaoService.createAccountScore(member, FunGoGameConsts.INCENT_ACCOUNT_TYPE_SCORE);
