@@ -66,7 +66,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                     //同时把DB中的消息状态置为已读
                     String[] keys = key.split("_");
                     if (keys.length >= 2) {
-                        String noticeId = keys[1];
+                        String noticeId = keys[keys.length-1];
                         noticeIdList.add(noticeId);
                     }
                 }
