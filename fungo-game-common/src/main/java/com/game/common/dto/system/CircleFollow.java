@@ -1,11 +1,18 @@
 package com.game.common.dto.system;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * <p></p>
  *
  * @Author: dl.zhang
  * @Date: 2019/6/18
  */
+@Setter
+@Getter
+@ToString
 public class CircleFollow {
     private String circleId;
 
@@ -17,21 +24,5 @@ public class CircleFollow {
     }
 
     public CircleFollow() {
-    }
-
-    public String getCircleId() {
-        return circleId;
-    }
-
-    public void setCircleId(String circleId) {
-        this.circleId = circleId;
-    }
-
-    public boolean isFollow() {
-        return follow;
-    }
-
-    public void setFollow(boolean follow) {
-        this.follow = follow;
     }
 }

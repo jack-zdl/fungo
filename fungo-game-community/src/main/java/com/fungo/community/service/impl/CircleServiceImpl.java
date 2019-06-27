@@ -200,7 +200,7 @@ public class CircleServiceImpl implements CircleService {
             ResultDto<CircleFollowVo> resultDto = systemFeignClient.circleListFollow(circleFollowVo);
             if(resultDto != null && resultDto.getData() != null && resultDto.getData().getCircleFollows() != null){
                 List<CircleFollow> circleFollows = resultDto.getData().getCircleFollows().stream().filter( r -> r.getCircleId().equals(circleId)).collect(Collectors.toList());
-                cmmCircleDto.setFollow(circleFollows.size()>0 ? true:false );
+                cmmCircleDto.setFollow((circleFollows == null || circleFollows.size() == 0) ? false: circleFollows.get(0).isFollow());
             }
             List<Map<String,Object>>  map =  getCirclePayer(cmmCircle);
             cmmCircleDto.setEliteMembers(map);
