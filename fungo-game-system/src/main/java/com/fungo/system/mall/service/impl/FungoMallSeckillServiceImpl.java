@@ -272,6 +272,23 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                     goodsOutBean.setValidPeriodIntro(validPeriodIntro);
                     goodsOutBean.setUsageDesc(usageDesc);
 
+                    //当前礼包是否过期
+                    if (StringUtils.isNoneBlank(validPeriodIntro)) {
+                        String[] startAndEndDate = validPeriodIntro.split("~");
+                        if (null != startAndEndDate && startAndEndDate.length >= 2) {
+                            String endDateStr = startAndEndDate[1];
+
+                            String beginDateStr = DateTools.fmtDate(new Date());
+
+                            long interval = DateTools.getDaySub(beginDateStr, endDateStr);
+
+                            if (interval < 0) {
+                                goodsOutBean.setIs_expire(true);
+                            }
+                        }
+
+                    }
+
                     goodsOutBeanList.add(goodsOutBean);
 
 
@@ -287,7 +304,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                 }
             }
             //保存到Redis中
-            fungoCacheSystem.excIndexCache(true, keyPrefix, keySuffix, goodsOutBeanList,3);
+            fungoCacheSystem.excIndexCache(true, keyPrefix, keySuffix, goodsOutBeanList, 3);
 
         } catch (Exception ex) {
             logger.error("获取秒杀商品列表出现异常", ex);
