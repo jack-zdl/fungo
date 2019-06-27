@@ -648,7 +648,7 @@ public class SystemController {
     }
 
     /**
-     * 功能描述: 根据圈子id查询是否关注
+     * 功能描述: 根据用户id查询关注的圈子
      * @param: [memberUserPrefile, request, inputPageDto]
      * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
      * @auther: dl.zhang
