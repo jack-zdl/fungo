@@ -78,5 +78,19 @@ public class PostOutBean {
 	 */
 	private Long rowId;
 
+	/**
+	 * 功能描述: 增加圈子相关的属性
+	 * @auther: dl.zhang
+	 * @date: 2019/6/27 15:59
+	 */
+	@ApiModelProperty(value="圈子id",example="")
+	private String circleId;
+
+	@ApiModelProperty(value="圈子图标",example="")
+	private String circleIcon;
+
+	@ApiModelProperty(value="圈子名称",example="")
+	private String circleName;
+
 
 }
