@@ -97,7 +97,7 @@ public class CircleServiceImpl implements CircleService {
             List<CmmCircleDto> cmmCircleDtoList =  new ArrayList<>();
             Page<CmmCircle> page = new Page<>(pageNum, limitNum);
             List<CmmCircle> list = new ArrayList<>();
-            if(CmmCircleVo.SorttypeEnum.ALL.getKey().equals(cmmCircleVo.getQuerytype())){
+            if(CmmCircleVo.SorttypeEnum.ALL.getKey().equals(cmmCircleVo.getQueryType())){
                 list = cmmCircleMapper.selectPageByKeyword(page,cmmCircleVo);
                 list.stream().forEach(r -> {
                     CmmCircleDto s = new CmmCircleDto();
@@ -126,14 +126,14 @@ public class CircleServiceImpl implements CircleService {
                         s.setFollow((circleFollow == null || circleFollow.size() ==0 )? false:circleFollow.get(0).isFollow());
                     });
                 }
-            }else if(CmmCircleVo.SorttypeEnum.BROWSE.getKey().equals(cmmCircleVo.getQuerytype())){
+            }else if(CmmCircleVo.SorttypeEnum.BROWSE.getKey().equals(cmmCircleVo.getQueryType())){
                 CircleFollowVo param = new CircleFollowVo();
                 param.setMemberId(memberId);
                 param.setActionType(ActionTypeEnum.BROWSE.getKey());
                 FungoPageResultDto<String> circleFollowVos = systemFeignClient.circleListMineFollow(param);
                 if(circleFollowVos.getData().size() > 0){
                     List<String> ids =circleFollowVos.getData();
-                    String sortType = cmmCircleVo.getSorttype();
+                    String sortType = cmmCircleVo.getSortType();
                     List<CmmCircle> cmmCircles = cmmCircleMapper.selectPageByIds(page,sortType,ids);
                     cmmCircles.stream().forEach(r -> {
                         CmmCircleDto s = new CmmCircleDto();
@@ -149,16 +149,14 @@ public class CircleServiceImpl implements CircleService {
                     });
                 }
 
-            }else if(CmmCircleVo.SorttypeEnum.FOLLOW.getKey().equals(cmmCircleVo.getQuerytype())){
+            }else if(CmmCircleVo.SorttypeEnum.FOLLOW.getKey().equals(cmmCircleVo.getQueryType())){
                 CircleFollowVo param = new CircleFollowVo();
                 param.setMemberId(memberId);
-
-//                param.setPage(pageNum);
-//                param.setLimit(limitNum); //
+                param.setActionType(ActionTypeEnum.FOLLOW.getKey());
                 FungoPageResultDto<String> circleFollowVos = systemFeignClient.circleListMineFollow(param);
-                if(circleFollowVos.getData().size() > 0){
+                if(circleFollowVos != null && circleFollowVos.getData().size() > 0){
                     List<String> ids =circleFollowVos.getData();
-                    String sortType = cmmCircleVo.getSorttype();
+                    String sortType = cmmCircleVo.getSortType();
                     List<CmmCircle> cmmCircles = cmmCircleMapper.selectPageByIds(page,sortType,ids);
                     cmmCircles.stream().forEach(r -> {
                         CmmCircleDto s = new CmmCircleDto();
@@ -229,21 +227,21 @@ public class CircleServiceImpl implements CircleService {
         List<PostOutBean> relist = new ArrayList<>();
         try {
             String circleId = cmmCirclePostVo.getCircleId();
-            String tagId = cmmCirclePostVo.getQuerytype();
-            String sortType = cmmCirclePostVo.getSorttype();
+            String tagId = cmmCirclePostVo.getQueryType();
+            String sortType = cmmCirclePostVo.getSortType();
             Page page = new Page(cmmCirclePostVo.getPage(),cmmCirclePostVo.getLimit());
-            if(CmmCirclePostVo.QueryTypeEnum.ALL.getKey().equals(cmmCirclePostVo.getQuerytype())){  // 全部查询
+            if(CmmCirclePostVo.QueryTypeEnum.ALL.getKey().equals(cmmCirclePostVo.getQueryType())){  // 全部查询
                 cmmPosts =  cmmPostDao.getCmmCircleListByCircleId(page,circleId,null,null,sortType);
-            }else if(CmmCirclePostVo.QueryTypeEnum.ESSENCE.getKey().equals(cmmCirclePostVo.getQuerytype())){ // 精华查询
+            }else if(CmmCirclePostVo.QueryTypeEnum.ESSENCE.getKey().equals(cmmCirclePostVo.getQueryType())){ // 精华查询
                 cmmPosts =  cmmPostDao.getCmmCircleListByCircleId(page,circleId, null,CircleRecommendEnum.RECOMMEND.getKey(),sortType);
             }else {
-                if(CmmCirclePostVo.SortTypeEnum.PUBDATE.getKey().equals(cmmCirclePostVo.getSorttype())){
+                if(CmmCirclePostVo.SortTypeEnum.PUBDATE.getKey().equals(cmmCirclePostVo.getSortType())){
                     cmmPosts =  cmmPostDao.getCmmCircleListByCircleId(page,circleId,tagId,null,sortType);
-                }else if(CmmCirclePostVo.SortTypeEnum.PUBREPLY.getKey().equals(cmmCirclePostVo.getSorttype())){
+                }else if(CmmCirclePostVo.SortTypeEnum.PUBREPLY.getKey().equals(cmmCirclePostVo.getSortType())){
                     cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page,circleId,tagId,null,sortType);
-                }else if(CmmCirclePostVo.SortTypeEnum.ESSENCE.getKey().equals(cmmCirclePostVo.getSorttype())){
+                }else if(CmmCirclePostVo.SortTypeEnum.ESSENCE.getKey().equals(cmmCirclePostVo.getSortType())){
                     cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page,circleId,tagId,null,sortType);
-                }else if(CmmCirclePostVo.SortTypeEnum.DISCUSS.getKey().equals(cmmCirclePostVo.getSorttype())){
+                }else if(CmmCirclePostVo.SortTypeEnum.DISCUSS.getKey().equals(cmmCirclePostVo.getSortType())){
                     cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page,circleId,tagId,null,sortType);
                 }
             }

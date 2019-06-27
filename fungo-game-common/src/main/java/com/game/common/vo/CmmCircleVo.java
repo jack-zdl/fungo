@@ -29,7 +29,7 @@ public class CmmCircleVo extends InputPageDto {
      * @auther: dl.zhang
      * @date: 2019/6/11 16:14
      */
-    private String querytype;
+    private String queryType;
 
     /**
      * 功能描述:  follow cirlce list sort type
@@ -40,7 +40,7 @@ public class CmmCircleVo extends InputPageDto {
      * @auther: dl.zhang
      * @date: 2019/6/19 16:45
      */
-    private String sorttype;
+    private String sortType;
 
     /**
      * 功能描述:关键字查询
