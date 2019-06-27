@@ -150,10 +150,11 @@ public class FungoMallSeckillController {
         ResultDto<Map> resultDto = null;
         try {
 
+            /*
             String code = mallOrderInput.getCode();
             if (null == code || StringUtils.isBlank(code)) {
                 return ResultDto.success("未被授权的操作，请联系系统管理员!");
-            }
+            }*/
 
             String goodsId = mallOrderInput.getGoodsId();
             if (null == mallOrderInput || StringUtils.isBlank(goodsId)) {
