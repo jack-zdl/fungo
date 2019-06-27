@@ -50,7 +50,7 @@ public class MallGoodsOutBean implements Serializable {
 
     /**
      * 产品状态 :
-     -1 已删除 ，1 已 下架  ，  2 已 上架
+        -1 已删除 ，1 已 下架  ，  2 已 上架 ,3 未上架
      */
     private Integer goodsStatus;
 
