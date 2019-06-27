@@ -1713,14 +1713,17 @@ public class PostServiceImpl implements IPostService {
                 bean.setPostId(cmmPost.getId());
                 bean.setReplyNum(cmmPost.getCommentNum());
                 bean.setTitle(CommonUtils.filterWord(cmmPost.getTitle()));
-                bean.setCommunityIcon(community.getIcon());
-                bean.setCommunityId(community.getId());
-                bean.setCommunityName(community.getName());
+                if (community != null ) {
+                    bean.setCommunityIcon(community.getIcon());
+                    bean.setCommunityId(community.getId());
+                    bean.setCommunityName(community.getName());
+                }
+
 
                 //文章 row_id
                 bean.setRowId(cmmPost.getPostId());
 
-                if (!CommonUtil.isNull(cmmPost.getVideo()) && CommonUtil.isNull(cmmPost.getCoverImage())) {
+                if (community != null && !CommonUtil.isNull(cmmPost.getVideo()) && CommonUtil.isNull(cmmPost.getCoverImage())) {
                     bean.setImageUrl(community.getCoverImage());
                 }
                 try {
