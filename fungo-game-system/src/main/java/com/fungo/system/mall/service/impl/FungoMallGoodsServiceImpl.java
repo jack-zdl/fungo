@@ -243,6 +243,9 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
              */
             mallGoodsEntityWrapper.eq("goods_type", 3);
 
+            //查询已上架的商品
+            mallGoodsEntityWrapper.eq("goods_status", 2);
+
             int count = mallGoodsDaoService.selectCount(mallGoodsEntityWrapper);
 
             ResultDto<Map<String, Object>> resultDto = new ResultDto<Map<String, Object>>();
