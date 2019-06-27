@@ -558,6 +558,23 @@ public class GameServiceImpl implements IGameService {
         Integer goodsCountWithGame = iEvaluateProxyService.queryGoodsCountWithGame(mallGoodsInput);
         out.setGoodsCount(goodsCountWithGame);
 
+        /**
+         * 功能描述: 添加游戏关联圈子
+         * @auther: dl.zhang
+         * @date: 2019/6/24 13:50
+         */
+        try {
+            CircleGamePostVo circleGamePostVo = new CircleGamePostVo();
+            circleGamePostVo.setGameId(game.getId());
+            ResultDto<String> re = communityFeignClient.getCircleByGame(circleGamePostVo);
+            if (CommonEnum.SUCCESS.code().equals(String.valueOf(re.getStatus())) && !re.getData().equals("")) {
+                out.setLink_circle(re.getData());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("根据游戏id询圈子id异常,游戏id：" + game.getId(), e);
+        }
+
         //redis cache
         fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, memberId + ptype, out);
         return ResultDto.success(out);
