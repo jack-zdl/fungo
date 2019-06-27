@@ -2,6 +2,7 @@ package com.fungo.system.mall.service.impl;
 
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.mall.daoService.MallGoodsCatesDaoService;
 import com.fungo.system.mall.daoService.MallGoodsDaoService;
 import com.fungo.system.mall.daoService.MallSeckillDaoService;
@@ -10,8 +11,11 @@ import com.fungo.system.mall.entity.MallGoodsCates;
 import com.fungo.system.mall.entity.MallSeckill;
 import com.fungo.system.mall.service.IFungoMallGoodsService;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
+import com.game.common.dto.ResultDto;
+import com.game.common.dto.mall.MallGoodsInput;
 import com.game.common.util.FungoAESUtil;
 import com.game.common.util.PKUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,6 +106,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
         }
         return true;
     }
+
 
     //添加秒杀的商品
     public void addGoodsSeckill(MallSeckill seckillParm) {
@@ -211,4 +216,49 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
     }
 
 
+    @Override
+    public ResultDto<Map<String, Object>> queryGoodsCountWithGame(MallGoodsInput mallGoodsInput) {
+
+        if (null == mallGoodsInput) {
+            return null;
+        }
+
+        String gameId = mallGoodsInput.getGameId();
+        if (StringUtils.isBlank(gameId)) {
+            return null;
+        }
+
+        try {
+
+            EntityWrapper<MallGoods> mallGoodsEntityWrapper = new EntityWrapper<MallGoods>();
+            mallGoodsEntityWrapper.eq("game_id", gameId);
+            /**
+             * 商品类型
+             * 1 实物
+             * 2 虚拟物品
+             *    21 零卡
+             *    22 京东卡
+             *    23 QB卡
+             * 3 游戏礼包
+             */
+            mallGoodsEntityWrapper.eq("goods_type", 3);
+
+            int count = mallGoodsDaoService.selectCount(mallGoodsEntityWrapper);
+
+            ResultDto<Map<String, Object>> resultDto = new ResultDto<Map<String, Object>>();
+            Map<String, Object> dataMap = new HashMap<String, Object>();
+            resultDto.setData(dataMap);
+
+            dataMap.put("goodsCount", count);
+
+            return resultDto;
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+
+    //---------
 }

@@ -52,7 +52,22 @@ public class GameOut {
     private int iosState;
     private int androidState;
     private String video;
+    /**
+     * appV2.5 | PCV2.0新增字段
+     * 小fun说数据
+     */
     private String fungoTalk;
+
+    /**
+     * 游戏礼包数量
+     */
+    private Integer goodsCount;
+
+    /**
+     * 游戏关联的圈子id
+     */
+    private String link_circle;
+
 
     @ApiModelProperty(value = "游戏评分(v2.4)", example = "")
     private double rating;
@@ -466,4 +481,23 @@ public class GameOut {
     public void setFungoTalk(String fungoTalk) {
         this.fungoTalk = fungoTalk;
     }
+
+
+    public Integer getGoodsCount() {
+        return goodsCount;
+    }
+
+    public void setGoodsCount(Integer goodsCount) {
+        this.goodsCount = goodsCount;
+    }
+
+    public String getLink_circle() {
+        return link_circle;
+    }
+
+    public void setLink_circle(String link_circle) {
+        this.link_circle = link_circle;
+    }
+
+    //------------
 }
