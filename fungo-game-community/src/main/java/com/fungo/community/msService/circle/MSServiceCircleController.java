@@ -2,13 +2,22 @@ package com.fungo.community.msService.circle;
 
 import com.fungo.community.service.CircleService;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.CirclePostTypeDto;
 import com.game.common.dto.community.CmmCircleDto;
+import com.game.common.enums.CommonEnum;
+import com.game.common.util.annotation.Anonymous;
 import com.game.common.vo.CircleGamePostVo;
+import com.game.common.vo.CmmCirclePostVo;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>圈子的接口</p>
@@ -41,4 +50,5 @@ public class MSServiceCircleController {
         }
         return re;
     }
+
 }
