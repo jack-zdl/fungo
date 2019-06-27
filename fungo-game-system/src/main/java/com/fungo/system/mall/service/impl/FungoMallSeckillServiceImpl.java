@@ -287,7 +287,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                 }
             }
             //保存到Redis中
-            fungoCacheSystem.excIndexCache(true, keyPrefix, keySuffix, goodsOutBeanList);
+            fungoCacheSystem.excIndexCache(true, keyPrefix, keySuffix, goodsOutBeanList,3);
 
         } catch (Exception ex) {
             logger.error("获取秒杀商品列表出现异常", ex);
