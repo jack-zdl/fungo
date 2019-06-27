@@ -115,11 +115,12 @@ public class IndexServiceImpl implements IIndexService {
 //			clist.add(topic);
 
             //position 2. 活动位 (position_code 0005)
-            CardIndexBean activities = this.activities();
-
-            if (activities != null) {
-                clist.add(activities);
-            }
+            //新版本2.5 不需要广告位
+//            CardIndexBean activities = this.activities();
+//
+//            if (activities != null) {
+//                clist.add(activities);
+//            }
 
             //ios 当前版本是否 隐藏
             if (!isCloseIndexSection) {
