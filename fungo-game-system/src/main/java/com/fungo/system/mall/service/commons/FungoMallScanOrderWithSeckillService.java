@@ -15,10 +15,13 @@ import com.fungo.system.mall.entity.MallOrder;
 import com.fungo.system.mall.entity.MallOrderGoods;
 import com.fungo.system.mall.entity.MallSeckill;
 import com.fungo.system.mall.entity.MallVirtualCard;
+import com.fungo.system.mall.service.IFungoMallGoodsService;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
 import com.fungo.system.service.IncentAccountCoinDaoService;
 import com.game.common.consts.FunGoGameConsts;
 import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.dto.ResultDto;
+import com.game.common.dto.mall.MallGoodsInput;
 import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.FunGoEHCacheUtils;
 import com.game.common.util.FungoAESUtil;
@@ -76,11 +79,15 @@ public class FungoMallScanOrderWithSeckillService {
     @Autowired
     private FungoMallSeckillLogService fungoMallSeckillLogService;
 
+    @Autowired
+    private IFungoMallGoodsService iFungoMallGoodsService;
+
     @Value("${fungo.mall.seckill.aesSecretKey}")
     private String aESSecretKey;
 
     @Autowired
     private FungoCacheTask fungoCacheTask;
+
     /**
      * 扫描订单表
      * 把 订单状态 order_status 为1 已确认
@@ -125,6 +132,9 @@ public class FungoMallScanOrderWithSeckillService {
                             String mb_id = mallOrder.getMbId();
                             Long orderId = mallOrder.getId();
 
+                            //游戏id
+                            String gameId = mallOrder.getExt1();
+
                             boolean isPushMsg = false;
 
                             List<MallOrderGoods> orderGoodsList = queryOrderGoodsWithMember(mb_id, String.valueOf(orderId));
@@ -137,10 +147,26 @@ public class FungoMallScanOrderWithSeckillService {
                                     Long goodsPriceVcy = goods.getGoodsPriceVcy();
 
                                     //3. 验证该种商品库存是否充足
+                                    MallSeckill mallSeckill = null;
                                     boolean isFullGoodsStock = false;
-                                    MallSeckill mallSeckill = isFullGoodsStock(String.valueOf(goods.getGoodsId()));
-                                    isFullGoodsStock = isFullGoodsStockForScanOrder(mallSeckill, goodsNumber, goods.getGoodsId());
+                                    //游戏礼包订单
+                                    if (3 == goods.getGoodsType().intValue()) {
 
+                                        MallGoodsInput mallGoodsInput = new MallGoodsInput();
+                                        mallGoodsInput.setGameId(gameId);
+                                        ResultDto<Map<String, Object>> mapResultDto = iFungoMallGoodsService.queryGoodsCountWithGame(mallGoodsInput);
+                                        if (null != mapResultDto) {
+                                            Map<String, Object> dataMap = mapResultDto.getData();
+                                            Integer goodsCount = (Integer) dataMap.get("goodsCount");
+                                            if (null != goodsCount && goodsCount.intValue() > 0) {
+                                                isFullGoodsStock = true;
+                                            }
+                                        }
+
+                                    } else {
+                                        mallSeckill = isFullGoodsStock(String.valueOf(goods.getGoodsId()));
+                                        isFullGoodsStock = isFullGoodsStockForScanOrder(mallSeckill, goodsNumber, goods.getGoodsId());
+                                    }
                                     //3.1 若库存不足，把冻结余额 加回到 可用余额中，同时标记订单为 8 商品库存不足，继续处理下一个商品
                                     if (!isFullGoodsStock) {
                                         logger.info("mb_id:{}--order_id:{}--goods_id:{}--商品库存不足，解冻用户fungo币账户,修改订单状态: 8 商品库存不足,4 被冻结额已解冻, -1 未发货",
@@ -165,18 +191,20 @@ public class FungoMallScanOrderWithSeckillService {
                                     }
 
                                     //5.扣减库存
-                                    boolean goodsStockUpdateResult = deductionGoodsStock(mallSeckill, goodsNumber);
-                                    if (!goodsStockUpdateResult) {
-                                        logger.info("mb_id:{}--order_id:{}--goods_id:{}--扣减库存失败，解冻用户fungo币账户,修改订单状态: 8 商品库存不足,4 被冻结额已解冻 ,-1 未发货",
-                                                mb_id, orderId, goods.getGoodsId());
-                                        //扣减库存失败
-                                        //解冻用户fungo币账户
-                                        this.unfreezeAccountCoinWithMember(mb_id, goodsPriceVcy);
-                                        //修改订单状态  8 商品库存不足  4 被冻结额已解冻  -1 未发货
-                                        updateOrderStatusWithScan(mb_id, orderId, 8, 4, -1);
-                                        continue;
+                                    //不是游戏礼包订单
+                                    if (3 != goods.getGoodsType().intValue()) {
+                                        boolean goodsStockUpdateResult = deductionGoodsStock(mallSeckill, goodsNumber);
+                                        if (!goodsStockUpdateResult) {
+                                            logger.info("mb_id:{}--order_id:{}--goods_id:{}--扣减库存失败，解冻用户fungo币账户,修改订单状态: 8 商品库存不足,4 被冻结额已解冻 ,-1 未发货",
+                                                    mb_id, orderId, goods.getGoodsId());
+                                            //扣减库存失败
+                                            //解冻用户fungo币账户
+                                            this.unfreezeAccountCoinWithMember(mb_id, goodsPriceVcy);
+                                            //修改订单状态  8 商品库存不足  4 被冻结额已解冻  -1 未发货
+                                            updateOrderStatusWithScan(mb_id, orderId, 8, 4, -1);
+                                            continue;
+                                        }
                                     }
-
 
                                     lock.lock();
                                     try {
@@ -208,7 +236,7 @@ public class FungoMallScanOrderWithSeckillService {
                                         }
 
                                         //7. 记录用户fungo币消费明细
-                                        if(isUpdateSucc){
+                                        if (isUpdateSucc) {
                                             addFungoPayLogs(mb_id, mallOrder.getMbMobile(), mallOrder.getMbName(), String.valueOf(goods.getGoodsPriceVcy()),
                                                     goods.getGoodsName());
                                         }
@@ -216,10 +244,10 @@ public class FungoMallScanOrderWithSeckillService {
                                         if (isUpdateSucc && 3 != goods.getGoodsType().intValue()) {
                                             pushMsgToMember(mb_id, goods.getGoodsName(), goods.getGoodsType(), vCardNewWithOrderGoods);
                                         }
-                                    }catch (Exception e){
+                                    } catch (Exception e) {
                                         e.printStackTrace();
                                         logger.error("lock锁执行失败");
-                                    }finally {
+                                    } finally {
                                         lock.unlock();
                                     }
                                 }
