@@ -131,6 +131,21 @@ public class Banner extends Model<Banner> {
 	@TableField("end_date")
 	private Date endDate;
 
+
+	/**
+	 * 游戏id
+	 */
+	@TableField("game_id")
+	private String gameId;
+
+
+	/**
+	 * 游戏名称
+	 */
+	@TableField("game_name")
+	private String gameName;
+
+
 	public String getId() {
 		return id;
 	}
@@ -305,6 +320,22 @@ public class Banner extends Model<Banner> {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+
+	public String getGameId() {
+		return gameId;
+	}
+
+	public void setGameId(String gameId) {
+		this.gameId = gameId;
+	}
+
+	public String getGameName() {
+		return gameName;
+	}
+
+	public void setGameName(String gameName) {
+		this.gameName = gameName;
 	}
 
 	@Override
