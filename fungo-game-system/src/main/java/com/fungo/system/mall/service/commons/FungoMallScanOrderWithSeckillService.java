@@ -349,11 +349,12 @@ public class FungoMallScanOrderWithSeckillService {
         long cardCrc32 = virtualCard.getCardCrc32();
 
         //若卡号和密码，验证通过，继续处理
+        /*
         if (cardCrc32Validate != cardCrc32) {
             logger.info("更新用户订单商品信息,把虚拟卡号，转移给用户对应的虚拟商品失败,卡号和密码有效性验证失败。mb_Id:{}--orderId:{}---goodsId:{}----DBCardCrc32:{}---cardCrc32Validate:{}",
                     mb_Id, orderId, orderGoods.getGoodsId(), cardCrc32, cardCrc32Validate);
             return null;
-        }
+        }*/
 
         //截至使用日期
         Date cardEndDate = virtualCard.getCardEndDate();
