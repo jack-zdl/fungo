@@ -195,7 +195,7 @@ public class CircleController {
         ResultDto<CmmCircleDto> re = null;
         String memberId = memberUserPrefile == null ? "" : memberUserPrefile.getLoginId();
         try {
-            re = circleServiceImpl.selectCircleGame(memberId,gameId);
+            re = circleServiceImpl.selectCircleByGame(memberId,gameId);
         }catch (Exception e){
             e.printStackTrace();
             LOGGER.error("该游戏是否开通圈子",e);

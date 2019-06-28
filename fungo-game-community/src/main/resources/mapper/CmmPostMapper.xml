@@ -39,7 +39,10 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, collect_num AS collectNum, tags, html_origin AS htmlOrigin, content, images, cover_image AS coverImage, comment_num AS commentNum, state, like_num AS likeNum, editedAt, community_id AS communityId, title, member_id AS memberId, origin, watch_num AS watchNum, report_num AS reportNum, created_at AS createdAt, updated_at AS updatedAt
+        id, collect_num AS collectNum, tags, html_origin AS htmlOrigin, content, images, cover_image AS coverImage, comment_num AS commentNum, state, like_num AS likeNum,
+        edited_at as editedAt, community_id AS communityId, title, member_id AS memberId, origin, watch_num AS watchNum, report_num AS reportNum, created_at AS createdAt,
+        updated_at AS updatedAt ,recommend ,type ,sort ,video , game_list as gameList , topic ,video_urls as videoUrls, last_reply_at as lastReplyAt,video_cover_image as videoCoverImage,
+        boom_watch_num as boomWatchNum
     </sql>
 
     <!-- 获取关注用户和社区的帖子分页数据 -->
@@ -291,7 +294,9 @@
 
     <select id="getCmmPostByGameId" resultType="com.fungo.community.entity.CmmPost">
 
-	SELECT cp.* FROM t_cmm_post cp  WHERE cp.community_id in  (SELECT cc.id  FROM t_cmm_community cc WHERE cc.game_id = #{gameId} )
+	SELECT 
+	 <include refid="Base_Column_List"></include>
+	 FROM t_cmm_post cp  WHERE cp.community_id in  (SELECT cc.id  FROM t_cmm_community cc WHERE cc.game_id = #{gameId} )
 	or cp.id in (SELECT cpg.post_id FROM t_cmm_post_game cpg WHERE cpg.game_id = #{gameId} )
 	order  by cp.created_at desc
     </select>
