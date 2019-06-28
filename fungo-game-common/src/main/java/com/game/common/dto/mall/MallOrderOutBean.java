@@ -43,6 +43,11 @@ public class MallOrderOutBean implements Serializable {
     private Map<String,Object> cardInfo = new HashMap<String,Object>();
 
     /**
+     * 购买成功提示信息
+     */
+    private String sucMsg;
+
+    /**
      * 用户名称
      */
     private String mbName;
@@ -278,6 +283,14 @@ public class MallOrderOutBean implements Serializable {
         this.cardInfo = cardInfo;
     }
 
+    public String getSucMsg() {
+        return sucMsg;
+    }
+
+    public void setSucMsg(String sucMsg) {
+        this.sucMsg = sucMsg;
+    }
+
     @Override
     public String toString() {
         return "MallOrderOutBean{" +
@@ -285,6 +298,8 @@ public class MallOrderOutBean implements Serializable {
                 ", orderSn='" + orderSn + '\'' +
                 ", mbId='" + mbId + '\'' +
                 ", goodsList=" + goodsList +
+                ", cardInfo=" + cardInfo +
+                ", sucMsg='" + sucMsg + '\'' +
                 ", mbName='" + mbName + '\'' +
                 ", mbMobile='" + mbMobile + '\'' +
                 ", orderStatus=" + orderStatus +

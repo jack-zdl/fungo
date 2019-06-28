@@ -998,6 +998,12 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                         JSONObject cardInfoJson = jsonObject.getJSONObject("cardInfo");
                         if (null != cardInfoJson) {
                             orderOutBean.setCardInfo(cardInfoJson);
+
+                            //获取卡号，组织成功提示信息
+                            String cardSn = cardInfoJson.getString("cardSn");
+
+                            orderOutBean.setSucMsg(FungoMallSeckillConsts.MSG_GAME_GOODS_SUCCESS.replace("$", cardSn));
+
                         }
                     }
                 }
@@ -1488,6 +1494,9 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
         Date currentDateTime = new Date();
         order.setCreateTime(currentDateTime);
+
+        //ex1保存游戏id
+        order.setExt1(goods.getGameId());
 
         boolean orderInsertOk = mallOrderDaoService.insert(order);
         logger.info("秒杀下单，订单添加结果状态:{}--orderDetail:{}", orderInsertOk, JSON.toJSONString(order));
