@@ -2,7 +2,6 @@ package com.fungo.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.dao.BannerDao;
 import com.fungo.system.entity.Banner;
@@ -30,7 +29,6 @@ import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.Html2Text;
-import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +38,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class IndexServiceImpl implements IIndexService {
@@ -253,14 +254,14 @@ public class IndexServiceImpl implements IIndexService {
             /****/
             List<Banner> bl = new ArrayList<>();
             Page<Banner> page = new Page<>(input.getPage(), input.getLimit());
-            if(BannnerEnum.lving.getValue().equals(input.getFilter()))
+            if (BannnerEnum.lving.getValue().equals(input.getFilter()))
                 bl = bannerDao.beforeNewDateBanner(page);
-            else if(BannnerEnum.past.getValue().equals(input.getFilter()))
+            else if (BannnerEnum.past.getValue().equals(input.getFilter()))
                 bl = bannerDao.afterNewDateBanner(page);
 
 //            CardIndexBean indexBean = new CardIndexBean();
             if (bl.size() == 0) {
-                return FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(CommonEnum.HTTP_WARNING_EMPTY.code(),CommonEnum.HTTP_WARNING_EMPTY.message());
+                return FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(CommonEnum.HTTP_WARNING_EMPTY.code(), CommonEnum.HTTP_WARNING_EMPTY.message());
             }
             ArrayList<CircleCardDataBean> list = new ArrayList<>();
             for (Banner b : bl) {
@@ -281,11 +282,11 @@ public class IndexServiceImpl implements IIndexService {
 //            if (indexBean != null) {
 //                clist.add(indexBean);
 //            }
-            re = FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(list,input.getPage()-1,page);
-        }catch (Exception e){
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(list, input.getPage() - 1, page);
+        } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.error("获取圈子页面上广告位",e);
-            re = FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(CommonEnum.ERROR.code(),"获取圈子页面上广告位失败,请联系管理员");
+            LOGGER.error("获取圈子页面上广告位", e);
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(CommonEnum.ERROR.code(), "获取圈子页面上广告位失败,请联系管理员");
         }
         return re;
     }
@@ -598,42 +599,57 @@ public class IndexServiceImpl implements IIndexService {
 
     //精选文章
     public CardIndexBean selectPosts(String type) {
+
         //2 6(视频) 7
         Banner videoBanner = bannerService.selectOne(new EntityWrapper<Banner>().eq("position_code", type).eq("target_type", 1).eq("state", "0").orderBy("sort", false).last("limit 1"));
         CardIndexBean cb = new CardIndexBean();
+
         if (videoBanner == null) {
+
             return null;
+
         } else {
+
             CmmPostDto cmmPostParam = new CmmPostDto();
             cmmPostParam.setId(videoBanner.getTargetId());
             cmmPostParam.setState(1);
-            CmmPostDto post = indexProxyService.selctCmmPostOne(cmmPostParam);   //  postService.selectOne(new EntityWrapper<CmmPost>().eq("id", videoBanner.getTargetId()).eq("state", 1));
+
+            //postService.selectOne(new EntityWrapper<CmmPost>().eq("id", videoBanner.getTargetId()).eq("state", 1));
+            CmmPostDto post = indexProxyService.selctCmmPostOne(cmmPostParam);
             if (post == null) {
                 return null;
             }
+
             CardDataBean dataBean = new CardDataBean();
             dataBean.setMainTitle(videoBanner.getTitle());
             dataBean.setImageUrl(videoBanner.getCoverImage());
             dataBean.setSubtitle(videoBanner.getIntro());
             dataBean.setUserinfo(userService.getAuthor(post.getMemberId()));
             dataBean.setVideoUrl(post.getVideo());
+
             if (!CommonUtil.isNull(post.getContent())) {
 
                 dataBean.setContent(post.getContent().length() > 40 ? Html2Text.removeHtmlTag(post.getContent().substring(0, 40)) : Html2Text.removeHtmlTag(post.getContent()));
                 //dataBean.setContent(post.getContent());
             } else {
+
                 dataBean.setContent(post.getContent());
+
             }
+
             dataBean.setUpperLeftCorner(videoBanner.getTag());
-//			dataBean.setLowerRightCorner(post.getReportNum()+"");
+            //dataBean.setLowerRightCorner(post.getReportNum()+"");
 
             dataBean.setReplyNum(post.getReportNum());
             CmmCommunityDto communityParam = new CmmCommunityDto();
             communityParam.setId(post.getCommunityId());
-            CmmCommunityDto community = iMemeberProxyService.selectCmmCommunityById(communityParam); //  communityService.selectById(post.getCommunityId());
+            //communityService.selectById(post.getCommunityId());
+            CmmCommunityDto community = iMemeberProxyService.selectCmmCommunityById(communityParam);
+
             if (community != null) {
                 dataBean.setLowerRightCorner(community.getName());
             }
+
             if (!CommonUtil.isNull(post.getVideo()) && CommonUtil.isNull(videoBanner.getCoverImage())) {
                 if (community != null) {
                     dataBean.setImageUrl(community.getCoverImage());
@@ -656,6 +672,13 @@ public class IndexServiceImpl implements IIndexService {
             }
             cb.setOrder(6);
             cb.setSize(1);
+
+            // app2.5功能
+            // 1.查询出文章关联的游戏数据
+
+
+
+
         }
         return cb;
     }
@@ -702,16 +725,17 @@ public class IndexServiceImpl implements IIndexService {
     }
 
     enum BannnerEnum implements BaseEnum<BannnerEnum, String> {
-        lving("1","living"),
-        past("1","past");
+        lving("1", "living"),
+        past("1", "past");
 
         String key;
         String value;
 
-        BannnerEnum(String key,String value){
+        BannnerEnum(String key, String value) {
             this.key = key;
             this.value = value;
         }
+
         @Override
         public String getKey() {
             return key;
