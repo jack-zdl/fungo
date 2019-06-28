@@ -1612,7 +1612,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         //查询虚拟卡验证用户是否购买过
         EntityWrapper<MallVirtualCard> virtualCardEntityWrapper = new EntityWrapper<MallVirtualCard>();
         virtualCardEntityWrapper.eq("goods_id", goods_id);
-        virtualCardEntityWrapper.eq("card_type", 3);
+        virtualCardEntityWrapper.eq("card_type", 31);
         virtualCardEntityWrapper.eq("is_saled", -1);
 
         int count = mallVirtualCardDaoService.selectCount(virtualCardEntityWrapper);
