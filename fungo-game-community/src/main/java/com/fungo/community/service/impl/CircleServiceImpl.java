@@ -635,10 +635,8 @@ public class CircleServiceImpl implements CircleService {
         try {
             String gameId = circleGamePostVo.getGameId();
             Page page = new Page(circleGamePostVo.getPage(),circleGamePostVo.getLimit());
-            Wrapper wrapper = new EntityWrapper<CmmCircle>().eq("game_id",gameId);
-            Page<CmmCircle> cmmCirclePage = cmmCircleServiceImap.selectPage(page,wrapper);
-            List<CmmCircle> cmmCircles = cmmCirclePage.getRecords();
-            if(cmmCirclePage != null && cmmCircles.size() > 0){
+            List<CmmCircle> cmmCircles = cmmCircleMapper.selectCircleByGame(page,gameId);
+            if(cmmCircles != null && cmmCircles.size() > 0){
                 cmmCircles.stream().forEach(s -> {
                     CmmCircleDto cmmCircleDto = new CmmCircleDto();
                     try {
