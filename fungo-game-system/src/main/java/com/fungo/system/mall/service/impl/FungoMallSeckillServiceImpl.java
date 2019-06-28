@@ -1495,6 +1495,9 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         Date currentDateTime = new Date();
         order.setCreateTime(currentDateTime);
 
+        //ex1保存游戏id
+        order.setExt1(goods.getGameId());
+
         boolean orderInsertOk = mallOrderDaoService.insert(order);
         logger.info("秒杀下单，订单添加结果状态:{}--orderDetail:{}", orderInsertOk, JSON.toJSONString(order));
 
