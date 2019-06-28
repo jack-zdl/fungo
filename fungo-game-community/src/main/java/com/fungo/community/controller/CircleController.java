@@ -21,8 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p></p>
@@ -123,7 +122,13 @@ public class CircleController {
         ResultDto<List<CirclePostTypeDto>> re = null;
         String memberId = memberUserPrefile == null ? "" : memberUserPrefile.getLoginId();
         try {
-            re = circleServiceImpl.selectCirclePostType(memberId,cmmCirclePostVo);
+            re =  circleServiceImpl.selectCirclePostType(memberId,cmmCirclePostVo);
+            if(re != null && re.getData() != null && !re.getData().isEmpty()){
+                return re;
+            }
+            re = ResultDto.success("暂无分类");
+            re.setData(Collections.emptyList());
+            return re;
         }catch (Exception e){
             e.printStackTrace();
             LOGGER.error("app端获取圈子下属的文章",e);
@@ -177,7 +182,7 @@ public class CircleController {
 
 
     /**
-     * 功能描述: app端获取游戏圈子的文章
+     * 功能描述: app端该游戏是否开通圈子
      * @param: [memberUserPrefile, inputPageDto]
      * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
      * @auther: dl.zhang
@@ -193,8 +198,8 @@ public class CircleController {
             re = circleServiceImpl.selectCircleGame(memberId,gameId);
         }catch (Exception e){
             e.printStackTrace();
-            LOGGER.error("该游戏是否开通文章",e);
-            re = ResultDto.error("-1","该游戏是否开通文章");
+            LOGGER.error("该游戏是否开通圈子",e);
+            re = ResultDto.error("-1","该游戏是否开通圈子");
         }
         return re;
     }

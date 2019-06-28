@@ -368,6 +368,17 @@ public class CircleServiceImpl implements CircleService {
                 //
                 bean.setVideoCoverImage(post.getVideoCoverImage());
                 bean.setType(post.getType());
+                /**
+                 * 功能描述: 根据文章查询是否有圈子
+                 * @auther: dl.zhang
+                 * @date: 2019/6/27 15:40
+                 */
+                CmmCircle cmmCircle = cmmPostCircleMapper.getCircleEntityByPostId(bean.getPostId());
+                if(cmmCircle != null){
+                    bean.setCircleId(cmmCircle.getId());
+                    bean.setCircleName(cmmCircle.getCircleName());
+                    bean.setCircleIcon(cmmCircle.getCircleIcon());
+                }
                 relist.add(bean);
 
             }
@@ -593,7 +604,17 @@ public class CircleServiceImpl implements CircleService {
                 //
                 bean.setVideoCoverImage(post.getVideoCoverImage());
                 bean.setType(post.getType());
-
+                /**
+                 * 功能描述: 根据文章查询是否有圈子
+                 * @auther: dl.zhang
+                 * @date: 2019/6/27 15:40
+                 */
+                CmmCircle cmmCircle = cmmPostCircleMapper.getCircleEntityByPostId(bean.getPostId());
+                if(cmmCircle != null){
+                    bean.setCircleId(cmmCircle.getId());
+                    bean.setCircleName(cmmCircle.getCircleName());
+                    bean.setCircleIcon(cmmCircle.getCircleIcon());
+                }
                 relist.add(bean);
             }
             re = new FungoPageResultDto<>();
