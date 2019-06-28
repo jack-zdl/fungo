@@ -998,6 +998,12 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                         JSONObject cardInfoJson = jsonObject.getJSONObject("cardInfo");
                         if (null != cardInfoJson) {
                             orderOutBean.setCardInfo(cardInfoJson);
+
+                            //获取卡号，组织成功提示信息
+                            String cardSn = cardInfoJson.getString("cardSn");
+
+                            orderOutBean.setSucMsg(FungoMallSeckillConsts.MSG_GAME_GOODS_SUCCESS.replace("$", cardSn));
+
                         }
                     }
                 }
