@@ -450,7 +450,7 @@ public class CircleServiceImpl implements CircleService {
     }
 
     @Override
-    public ResultDto<CmmCircleDto> selectCircleGame(String memberId, String gameId) {
+    public ResultDto<CmmCircleDto> selectCircleByGame(String memberId, String gameId) {
         ResultDto<CmmCircleDto> resultDto = new ResultDto<>();
         try {
             Wrapper wrapper = new EntityWrapper<CmmCircle>().eq("game_id",gameId);

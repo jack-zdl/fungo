@@ -30,7 +30,7 @@ public interface CircleService {
 
     ResultDto<List<CircleTypeDto>> selectCircleType(String memberId);
 
-    ResultDto<CmmCircleDto> selectCircleGame(String memberId,String gameId);
+    ResultDto<CmmCircleDto> selectCircleByGame(String memberId,String gameId);
 
     FungoPageResultDto<PostOutBean>  selectCircleGamePost(String memberId, CircleGamePostVo circleGamePostVo);
 

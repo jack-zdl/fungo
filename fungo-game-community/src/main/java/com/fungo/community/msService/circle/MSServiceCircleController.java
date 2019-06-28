@@ -37,9 +37,9 @@ public class MSServiceCircleController {
         ResultDto<String> re = null;
         try {
             CmmCircleDto  cmmCircleDto = new CmmCircleDto();
-            FungoPageResultDto<CmmCircleDto> resultDto = circleServiceImpl.selectGameCircle ("",circleGamePostVo);
-            if(resultDto.getData().size()>0){
-                cmmCircleDto =resultDto.getData().get(0);
+            ResultDto<CmmCircleDto> resultDto = circleServiceImpl.selectCircleByGame ("",circleGamePostVo.getGameId());
+            if(resultDto.getData() != null){
+                cmmCircleDto =resultDto.getData();
             }
             re =new ResultDto();
             re.setData(cmmCircleDto.getId());
