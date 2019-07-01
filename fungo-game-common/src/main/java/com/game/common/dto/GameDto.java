@@ -1,8 +1,5 @@
 package com.game.common.dto;
 
-import com.baomidou.mybatisplus.activerecord.Model;
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableName;
 import com.game.common.api.InputPageDto;
 
 import java.io.Serializable;
@@ -114,9 +111,8 @@ public class GameDto extends InputPageDto  implements Serializable{
     /**
      * 主版本号
      */
-	@TableField("version_main")
 	private String versionMain;
-	@TableField("isbn_id")
+
 	private String isbnId;
     /**
      * 详情
@@ -125,62 +121,50 @@ public class GameDto extends InputPageDto  implements Serializable{
     /**
      * 创建时间
      */
-	@TableField("created_at")
 	private Date createdAt;
     /**
      * 更新时间
      */
-	@TableField("updated_at")
 	private Date updatedAt;
     /**
      * 创建人
      */
-	@TableField("created_by")
 	private String createdBy;
     /**
      * 更新人
      */
-	@TableField("updated_by")
 	private String updatedBy;
     /**
      * IOS状态 0:待开启，1预约。2.测试，3已上线,4：可下载
      */
-	@TableField("ios_state")
 	private Integer iosState;
     /**
      * 安卓状态 0:待开启，1预约。2.测试，3已上线
      */
-	@TableField("android_state")
 	private Integer androidState;
     /**
      * 开发者ID
      */
-	@TableField("developer_id")
 	private String developerId;
     /**
      * 测试数量
      */
-	@TableField("test_number")
 	private Integer testNumber;
     /**
      * 测试日期
      */
-	@TableField("tset_date")
 	private Date tsetDate;
     /**
      * 核发单图片
      */
-	@TableField("isbn_image")
 	private String isbnImage;
     /**
      * 软件著作权登记号
      */
-	@TableField("copyright_id")
 	private String copyrightId;
     /**
      * 软件著作权照片
      */
-	@TableField("copyright_image")
 	private String copyrightImage;
     /**
      * 其他证明文件
@@ -189,18 +173,16 @@ public class GameDto extends InputPageDto  implements Serializable{
     /**
      * 游戏备案通知单号
      */
-	@TableField("issue_id")
 	private String issueId;
     /**
      * 安卓 包名称
      */
-	@TableField("android_package_name")
 	private String androidPackageName;
     /**
      * 游戏评论数
      */
-	@TableField("comment_num")
 	private Integer commentNum;
+
 
 
 	public String getId() {
