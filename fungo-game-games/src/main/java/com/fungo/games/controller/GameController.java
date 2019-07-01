@@ -21,6 +21,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +41,7 @@ import java.util.*;
 public class GameController {
 
     @Autowired
-    private  IGameService gameService;
+    private IGameService gameService;
 
     @Autowired
     private GameService gameServicer;
@@ -60,6 +61,9 @@ public class GameController {
             memberId = memberUserPrefile.getLoginId();
         }
         os = (String) request.getAttribute("os");
+        if (StringUtils.isBlank(os)) {
+            os = request.getHeader("os");
+        }
         try {
             return gameService.getGameDetail(gameId, memberId, os);
         } catch (Exception e) {
@@ -176,10 +180,10 @@ public class GameController {
      * @return
      */
     @ApiOperation(value = "根据id集合查询游戏合集项列表", notes = "")
-        @RequestMapping(value = "/api/content/gameList", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/content/gameList", method = RequestMethod.POST)
     @ApiImplicitParams({
     })
-    public FungoPageResultDto<GameOutBean> getGameList(HttpServletRequest request, HttpServletResponse response ,@Anonymous MemberUserProfile memberUserPrefile, @RequestBody GameListVO input) {
+    public FungoPageResultDto<GameOutBean> getGameList(HttpServletRequest request, HttpServletResponse response, @Anonymous MemberUserProfile memberUserPrefile, @RequestBody GameListVO input) {
         try {
 //            Map map = new HashMap();
 //            map.put("sessionId", request.getSession().getId());
@@ -189,10 +193,10 @@ public class GameController {
 //            ResultDto<String>  test = systemFeignClient.test();
 //            ResultDto<MemberOutBean> memberOutBeanResultDto = systemFeignClient.getUserInfo();
 
-            FungoPageResultDto<GameOutBean>  re = gameService.getGameList(input, memberUserPrefile.getLoginId());
-            return  re;
-        }catch (Exception e){
-           return FungoPageResultDto.error("-1", "未指定用户");
+            FungoPageResultDto<GameOutBean> re = gameService.getGameList(input, memberUserPrefile.getLoginId());
+            return re;
+        } catch (Exception e) {
+            return FungoPageResultDto.error("-1", "未指定用户");
         }
     }
 
@@ -205,7 +209,7 @@ public class GameController {
     @RequestMapping(value = "/api/gamereleaselog", method = RequestMethod.POST)
     @ApiImplicitParams({
     })
-    public FungoPageResultDto<GameReleaseLogDto> selectOne(GameReleaseLogDto GameReleaseLog){
+    public FungoPageResultDto<GameReleaseLogDto> selectOne(GameReleaseLogDto GameReleaseLog) {
         return new FungoPageResultDto<GameReleaseLogDto>();
     }
 
@@ -214,8 +218,8 @@ public class GameController {
      * @return
      */
     @RequestMapping(value = "/api/game/{gameId}", method = RequestMethod.POST)
-    public Game selectOne( @PathVariable("gameId") String gameId){
-         Game game =  gameServicer.selectById(gameId);
+    public Game selectOne(@PathVariable("gameId") String gameId) {
+        Game game = gameServicer.selectById(gameId);
         return game;
     }
 
@@ -224,7 +228,7 @@ public class GameController {
      * @return
      */
     @RequestMapping(value = "/api/gameSurveyRel", method = RequestMethod.POST)
-    public int selectCount(  GameSurveyRelDto gameSurveyRel){
+    public int selectCount(GameSurveyRelDto gameSurveyRel) {
 //        new EntityWrapper<GameSurveyRel>().eq("game_id", gameId).eq("phone_model", "Android");
 //        gameSurveyRelService.selectCount();
         return 1;
@@ -235,11 +239,12 @@ public class GameController {
      * @return
      */
     @RequestMapping(value = "/api/gameEvaluation", method = RequestMethod.POST)
-    public int selectGameEvaluationCount(  GameEvaluationDto gameEvaluation){
+    public int selectGameEvaluationCount(GameEvaluationDto gameEvaluation) {
 //        new EntityWrapper<GameSurveyRel>().eq("game_id", gameId).eq("phone_model", "Android");
 //        gameSurveyRelService.selectCount();
         return 1;
     }
+
     @Autowired
     private MQProduct mqProduct;
     @Autowired
@@ -256,7 +261,7 @@ public class GameController {
      * @return
      */
     @RequestMapping(value = "/api/feignMQDemo", method = RequestMethod.GET)
-    public int feignMQDemo(){
+    public int feignMQDemo() {
 //        测试
         /*List<GameTag> gameTags = gameTagService.selectList(new EntityWrapper<GameTag>().setSqlSelect("tag_id as tagId").eq("game_id", "b3aba058982940159c8f938d143e1b34"));
         List<String> strings = new ArrayList<>();
