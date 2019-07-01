@@ -158,6 +158,10 @@ public class GameServiceImpl implements IGameService {
             out.setObjectId(game.getId());
             out.setName(game.getName());
             out.setIcon(game.getIcon());
+
+            //游戏编号
+            out.setGameIdtSn(game.getGameIdtSn());
+
             //2.4.3
             out.setAndroidState(game.getAndroidState());
             out.setIosState(game.getIosState());
@@ -329,6 +333,8 @@ public class GameServiceImpl implements IGameService {
         out.setVersion(game.getVersionMain() + "." + game.getVersionChild());
         out.setFungoTalk(game.getFungoTalk());
 
+        //游戏编号
+        out.setGameIdtSn(game.getGameIdtSn());
 
         //根据当前运行环境生成链接
         String env = Setting.RUN_ENVIRONMENT;
