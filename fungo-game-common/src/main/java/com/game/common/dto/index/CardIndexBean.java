@@ -41,8 +41,18 @@ public class CardIndexBean {
     @ApiModelProperty(value = "右侧按钮事件", example = "")
     private ActionBean uprightAction = new ActionBean();
 
+    /**
+     * 文章关联的游戏 或 圈子信息
+     */
+    private Map postLinkGameOrCircle;
 
+    public Map getPostLinkGameOrCircle() {
+        return postLinkGameOrCircle;
+    }
 
+    public void setPostLinkGameOrCircle(Map postLinkGameOrCircle) {
+        this.postLinkGameOrCircle = postLinkGameOrCircle;
+    }
 
     public String getCardName() {
         return cardName;

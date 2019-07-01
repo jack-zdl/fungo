@@ -338,9 +338,10 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
         }
         // 若有游戏社区且有对应的游戏id 则
         if (community != null && community.getType() != 1 && !CommonUtil.isNull(community.getGameId())) {
-            ResultDto<GameDto> resultDto = gameFacedeService.selectGameDetails(community.getGameId(), 1);
+            ResultDto<GameDto> resultDto = gameFacedeService.selectGameDetails(community.getGameId(), 0);
             if(resultDto.isSuccess()){
                 GameDto gameDto = resultDto.getData();
+                communityMap.put("type", 0);
                 communityMap.put("objectId", community.getId());
                 communityMap.put("name", gameDto.getName());
                 communityMap.put("icon", gameDto.getIcon());

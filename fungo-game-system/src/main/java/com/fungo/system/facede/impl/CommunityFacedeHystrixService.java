@@ -154,6 +154,12 @@ public class CommunityFacedeHystrixService implements FallbackFactory<CommunityF
                 logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "getPostBoomWatchNumByCardId");
                 return null;
             }
+
+            @Override
+            public ResultDto<Map> getGameMsgByPost(CmmPostDto cmmPost) {
+                logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "getGameMsgByPost");
+                return null;
+            }
         };
 
     }

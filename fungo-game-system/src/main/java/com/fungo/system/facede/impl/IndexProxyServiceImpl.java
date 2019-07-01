@@ -97,6 +97,17 @@ public class IndexProxyServiceImpl implements IndexProxyService {
         return cardIndexBeanResultDto.getData();
     }
 
+    @Override
+    public Map getGameMsgByPost(CmmPostDto cmmPost) {
+        ResultDto<Map> gameMsgByPost = communityFeignClient.getGameMsgByPost(cmmPost);
+        if (gameMsgByPost!=null&&gameMsgByPost.isSuccess()){
+            return gameMsgByPost.getData();
+        }
+        HashMap<Object, Object> map = new HashMap<>();
+        map.put("type",3);
+        return map;
+    }
+
     public CmmPostDto hystrixSelctCmmPostOne(CmmPostDto cmmPostDto) {
         logger.warn("IndexProxyServiceImpl.hystrixSelctCmmPostOne ");
         return new CmmPostDto();

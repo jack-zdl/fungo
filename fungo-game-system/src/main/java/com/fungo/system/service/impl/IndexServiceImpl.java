@@ -450,6 +450,10 @@ public class IndexServiceImpl implements IIndexService {
             ArrayList<CardDataBean> gameDateList = new ArrayList<>();
             CardDataBean bean = new CardDataBean();
             CardIndexBean index = new CardIndexBean();
+            //封装 文章-游戏/圈子信息
+            Map map = indexProxyService.getGameMsgByPost(post);
+            index.setPostLinkGameOrCircle(map);
+
             // 图片/标题/用户名/头像/评论数
             CmmCommunityDto communityDto = new CmmCommunityDto();
             communityDto.setId(post.getCommunityId());

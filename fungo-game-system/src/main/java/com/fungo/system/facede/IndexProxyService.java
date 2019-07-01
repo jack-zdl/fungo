@@ -26,4 +26,6 @@ public interface IndexProxyService {
 
     CardIndexBean selectedGames();
 
+
+    Map getGameMsgByPost(CmmPostDto cmmPost);
 }

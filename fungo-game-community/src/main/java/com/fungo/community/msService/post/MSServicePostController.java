@@ -112,7 +112,7 @@ public class MSServicePostController {
     }
 
     @PostMapping("/ms/service/cmm/post/getGameMsgByPost")
-   public  ResultDto<Map> getGameMsgByPost(CmmPostDto cmmPost){
+   public  ResultDto<Map> getGameMsgByPost(@RequestBody CmmPostDto cmmPost){
        Map gameMsgByPost = imsServicePostService.getGameMsgByPost(cmmPost);
        return  ResultDto.success(gameMsgByPost);
    }

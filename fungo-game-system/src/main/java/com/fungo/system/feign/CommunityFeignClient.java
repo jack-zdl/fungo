@@ -168,4 +168,7 @@ public interface CommunityFeignClient {
      */
     @PostMapping("/ms/service/cmm/post/getPostBoomWatchNumByCardId")
     ResultDto<Integer> getPostBoomWatchNumByCardId(@RequestParam("cardId")String cardId);
+
+    @PostMapping("/ms/service/cmm/post/getGameMsgByPost")
+    ResultDto<Map> getGameMsgByPost(@RequestBody CmmPostDto cmmPost);
 }
