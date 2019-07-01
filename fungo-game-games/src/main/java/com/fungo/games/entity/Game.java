@@ -230,6 +230,13 @@ public class Game extends Model<Game> {
 	private Long boomDownloadNum;
 
 
+	/**
+	 * 游戏编号
+	 */
+	@TableField("game_idt_sn")
+	private Long gameIdtSn;
+
+
 	public String getId() {
 		return id;
 	}
@@ -598,6 +605,14 @@ public class Game extends Model<Game> {
 		this.fungoTalk = fungoTalk;
 	}
 
+
+	public Long getGameIdtSn() {
+		return gameIdtSn;
+	}
+
+	public void setGameIdtSn(Long gameIdtSn) {
+		this.gameIdtSn = gameIdtSn;
+	}
 
 	@Override
 	protected Serializable pkVal() {
