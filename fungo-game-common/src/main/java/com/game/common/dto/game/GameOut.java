@@ -102,6 +102,9 @@ public class GameOut {
     @ApiModelProperty(value = "是否预约", example = "")
     private boolean isMake;
 
+    private Long gameIdtSn;
+
+
     public boolean isMake() {
         return isMake;
     }
@@ -497,6 +500,14 @@ public class GameOut {
 
     public void setLink_circle(String link_circle) {
         this.link_circle = link_circle;
+    }
+
+    public Long getGameIdtSn() {
+        return gameIdtSn;
+    }
+
+    public void setGameIdtSn(Long gameIdtSn) {
+        this.gameIdtSn = gameIdtSn;
     }
 
     //------------
