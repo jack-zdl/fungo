@@ -543,7 +543,8 @@ public class GameServiceImpl implements IGameService {
             out.setIosState(game.getIosState());
         }
 
-        if (!"".equals(memberId) && !"".equals(ptype)) {//游戏预约测试信息
+        if (org.apache.commons.lang3.StringUtils.isNoneBlank(memberId) &&
+                org.apache.commons.lang3.StringUtils.isNoneBlank(ptype)) {//游戏预约测试信息
             GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", game.getId()).eq("phone_model", ptype).eq("state", 0));
             if (srel != null) {
                 out.setBinding(!StringUtils.isNullOrEmpty(srel.getAppleId()));
