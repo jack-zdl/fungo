@@ -65,4 +65,6 @@ public interface IMSServicePostService {
      * @return
      */
     Integer getPostBoomWatchNumByCardId(String cardId);
+
+    Map getGameMsgByPost(CmmPostDto cmmPost);
 }
