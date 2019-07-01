@@ -661,6 +661,20 @@ public class IndexServiceImpl implements IIndexService {
             dataBean.setTargetType(videoBanner.getTargetType());
             dataBean.setTargetId(videoBanner.getTargetId());
 
+            // app2.5功能
+            // 查询出关联的游戏数据
+            String gameId = videoBanner.getGameId();
+            if (StringUtils.isNoneBlank(gameId)) {
+                GameDto gameDtoParam = new GameDto();
+                gameDtoParam.setId(gameId);
+                GameDto gameDtoResult = iGameProxyService.selectGameById(gameDtoParam);
+                if (null != gameDtoResult) {
+                    ArrayList<GameDto> gameDatas = new ArrayList<GameDto>();
+                    gameDatas.add(gameDtoResult);
+                    dataBean.setGameDatas(gameDatas);
+                }
+            }
+
             ArrayList<CardDataBean> cl = new ArrayList<CardDataBean>();
             cl.add(dataBean);
             cb.setDataList(cl);
@@ -672,11 +686,6 @@ public class IndexServiceImpl implements IIndexService {
             }
             cb.setOrder(6);
             cb.setSize(1);
-
-            // app2.5功能
-            // 1.查询出文章关联的游戏数据
-
-
 
 
         }
