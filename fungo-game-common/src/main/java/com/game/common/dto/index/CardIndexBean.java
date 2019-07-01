@@ -1,7 +1,6 @@
 package com.game.common.dto.index;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.game.common.dto.game.GameOut;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -43,15 +42,6 @@ public class CardIndexBean {
     private ActionBean uprightAction = new ActionBean();
 
 
-    /**
-     * 首页
-     *  安利墙
-     *  游戏攻略
-     *  精华文章区
-     *  关联的游戏数据
-     * @return
-     */
-    private ArrayList<GameOut> gameDatas = new ArrayList<GameOut>();
 
 
     public String getCardName() {
