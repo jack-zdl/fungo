@@ -191,6 +191,7 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
         FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(cmmPostDto);
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmPostDtoFungoPageResultDto.getStatus()) && cmmPostDtoFungoPageResultDto.getData().size() > 0){
             page.setRecords(cmmPostDtoFungoPageResultDto.getData());
+            page.setTotal(cmmPostDtoFungoPageResultDto.getCount());
         }else
             logger.warn("MemeberProxyServiceImpl.selectCmmPostpage 异常");
         return page;

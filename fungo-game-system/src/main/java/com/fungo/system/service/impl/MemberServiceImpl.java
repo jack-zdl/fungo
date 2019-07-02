@@ -14,6 +14,7 @@ import com.fungo.system.facede.ICommunityProxyService;
 import com.fungo.system.facede.IDeveloperProxyService;
 import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IMemeberProxyService;
+import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.bean.CollectionBean;
@@ -47,85 +48,52 @@ import java.util.Map;
 @Service
 public class MemberServiceImpl implements IMemberService {
 
-
     private static final Logger logger = LoggerFactory.getLogger(MemberServiceImpl.class);
+
     @Autowired
     private BasNoticeService noticeService;
     @Autowired
     private BasActionService actionService;
     @Autowired
     private BasActionDao actionDao;
-    //    @Autowired
-//    private CmmPostService postService;
     @Autowired
     private IUserService userService;
     @Autowired
     private MemberService memberService;
-    //    @Autowired
-//    private GameSurveyRelService gameSurveyRelService;
-//    @Autowired
-//    private GameService gameService;
     @Autowired
     private DeveloperService developerService;
     @Autowired
     private DeveloperGameRelService dgrService;
-    //    @Autowired
-//    private MooMoodService moodService;
-//    @Autowired
-//    private ReplyService replyService;
-//    @Autowired
-//    private GameEvaluationService evaluationService;
     @Autowired
     private MemberDao memberDao;
-
     @Autowired
     private IMemeberProxyService iMemeberProxyService;
-
     @Autowired
     private IGameProxyService iGameProxyService;
-
     @Autowired
     private IDeveloperProxyService iDeveloperProxyService;
-    //    @Autowired
-//    private CmmCommentService commentService;
-//    @Autowired
-//    private MooMessageService mooMessageService;
-//    @Autowired
-//    private CmmCommunityService communityService;
     @Autowired
     private IMemberIncentRuleRankService IRuleRankService;
-    //    //	@Autowired
-////	private IncentRankedService incentRankedService;
-//    @Autowired
-//    private IncentRuleRankService rankRuleService;
-//    @Autowired
-//    private IncentRankedService rankedService;
-//    @Autowired
-//    private IncentAccountScoreService accountScoreService;
     @Autowired
     private BasNoticeDao noticeDao;
-
     @Autowired
     private IncentRuleRankService rankRuleService;
     @Autowired
     private IncentRankedService rankedService;
     @Autowired
     private ScoreLogService scoreLogService;
-
     @Autowired
     private FungoCacheMember fungoCacheMember;
-
     @Autowired
     private FungoCacheGame fungoCacheGame;
-
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
-
     @Autowired
     private FungoCacheMood fungoCacheMood;
-
     @Autowired
     private ICommunityProxyService communityProxyService;
+    @Autowired(required = false)
+    private CommunityFeignClient communityFeignClient;
 
 
     //
@@ -145,11 +113,14 @@ public class MemberServiceImpl implements IMemberService {
 
         re = new FungoPageResultDto<CollectionOutBean>();
         List<CollectionOutBean> list = new ArrayList<CollectionOutBean>();
-        re.setData(list);
+
         Page<CollectionBean> p = new Page<CollectionBean>(inputPage.getPage(), inputPage.getLimit());
         //@todo 5.22
         List<String> ids = actionDao.listArticleIds(memberId);
-        List<CollectionBean> plist = communityProxyService.getCollection(p, ids); //actionDao.getCollection(p, ids);
+        FungoPageResultDto<CollectionBean>  cmmPostUsercollect = communityFeignClient.listCmmPostUsercollect(p.getPages(),p.getLimit(),ids);
+
+       // List<CollectionBean> plist = communityProxyService.getCollection(p, ids); //actionDao.getCollection(p, ids);
+        List<CollectionBean> plist = cmmPostUsercollect.getData();
         for (CollectionBean collectionBean : plist) {
             CollectionOutBean bean = new CollectionOutBean();
             bean.setAuthor(userService.getAuthor(collectionBean.getMemberId()));
@@ -170,7 +141,8 @@ public class MemberServiceImpl implements IMemberService {
             bean.setUpdatedAt(collectionBean.getUpdatedAt());
             list.add(bean);
         }
-        PageTools.pageToResultDto(re, p);
+        re.setData(list);
+        PageTools.newPageToResultDto(re, cmmPostUsercollect.getCount(),cmmPostUsercollect.getPages(),inputPage.getPage());
 
         //redis cache
         fungoCacheMember.excIndexCache(true, keyPrefix, keySuffix, re);
@@ -224,11 +196,14 @@ public class MemberServiceImpl implements IMemberService {
                     map.put("statusImg", new ArrayList<>());
                 }
             }
-
+            re.setData(list);
+            PageTools.pageToResultDto(re, p);
         } else if (4 == inputPage.getType()) {//关注的社区
             // @todo 5.22
             List<String> idlist = actionDao.getFollowerCommunity(memberId);
-            list = communityProxyService.getFollowerCommunity(p, idlist);    //actionDao.getFollowerCommunity(p, memberId);
+            FungoPageResultDto<Map<String, Object>> resultDto = communityFeignClient.getFollowerCommunity(p.getPages(),p.getLimit(),idlist);
+            list = resultDto.getData();
+//            list = communityProxyService.getFollowerCommunity(p, idlist);    //actionDao.getFollowerCommunity(p, memberId);
             for (Map<String, Object> map : list) {
                 map.put("is_followed", false);
                 BasAction action = actionService.selectOne(new EntityWrapper<BasAction>().eq("type", "5").eq("member_id", myId).eq("target_id", (String) map.get("objectId")).ne("state", "-1"));
@@ -236,10 +211,9 @@ public class MemberServiceImpl implements IMemberService {
                     map.put("is_followed", true);
                 }
             }
+            re.setData(list);
+            PageTools.newPageToResultDto(re, resultDto.getCount(),resultDto.getPages(),inputPage.getPage());
         }
-        re.setData(list);
-        PageTools.pageToResultDto(re, p);
-
         //redis cache
         fungoCacheMember.excIndexCache(true, keyPrefix, keySuffix, re);
         return re;
@@ -907,14 +881,23 @@ public class MemberServiceImpl implements IMemberService {
 
             olist.add(bean);
         }
-        PageTools.pageToResultDto(re, p);
         re.setData(olist);
-
+        PageTools.pageToResultDto(re, p);
         //redis cache
         fungoCacheGame.excIndexCache(true, keyPrefix, keySuffix, re);
         return re;
     }
 
+    /**
+     * 功能描述: 查询自己的文章，
+     * <p>2019/7/2
+     *  自定义分页
+     * </p>
+     * @param: [loginId, input]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.community.MyPublishBean>
+     * @auther: dl.zhang
+     * @date: 2019/7/2 10:35
+     */
     @Override
     public FungoPageResultDto<MyPublishBean> getMyPosts(String loginId, InputPageDto input) throws Exception {
         FungoPageResultDto<MyPublishBean> re = null;
@@ -933,8 +916,10 @@ public class MemberServiceImpl implements IMemberService {
         param.setLimit(input.getLimit());
         param.setMemberId(loginId);
         param.setState(-1);
-        Page<CmmPostDto> page = iMemeberProxyService.selectCmmPostpage(param); // postService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<CmmPost>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
-        List<CmmPostDto> plist = page.getRecords();
+        FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(param);
+      //  Page<CmmPostDto> page =   iMemeberProxyService.selectCmmPostpage(param); // postService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<CmmPost>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
+//        List<CmmPostDto> plist = page.getRecords();
+        List<CmmPostDto> plist = cmmPostDtoFungoPageResultDto.getData();
         List<MyPublishBean> blist = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         for (CmmPostDto post : plist) {
@@ -987,7 +972,7 @@ public class MemberServiceImpl implements IMemberService {
 
             blist.add(bean);
         }
-        PageTools.pageToResultDto(re, page);
+        PageTools.newPageToResultDto(re, cmmPostDtoFungoPageResultDto.getCount(),cmmPostDtoFungoPageResultDto.getPages(),input.getPage());
         re.setData(blist);
 
         //redis cache
@@ -996,6 +981,16 @@ public class MemberServiceImpl implements IMemberService {
         return re;
     }
 
+    /**
+     * 功能描述:  查询我的心情
+     * <p>2019/7/2
+     *  增加第三方分页
+     * </p>
+     * @param:
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.community.MyPublishBean>
+     * @auther: dl.zhang
+     * @date: 2019/7/2 10:38
+     */
     @Override
     public FungoPageResultDto<MyPublishBean> getMyMoods(String loginId, InputPageDto input) throws Exception {
 
@@ -1015,8 +1010,10 @@ public class MemberServiceImpl implements IMemberService {
         moomoodParam.setLimit(input.getLimit());
         moomoodParam.setMemberId(loginId);
         moomoodParam.setState(0);
-        Page<MooMoodDto> page = iMemeberProxyService.selectMooMoodPage(moomoodParam); //moodService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<MooMood>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
-        List<MooMoodDto> mlist = page.getRecords();
+        FungoPageResultDto<MooMoodDto> resultDto = communityFeignClient.queryCmmMoodList(moomoodParam);
+     //   Page<MooMoodDto> page = iMemeberProxyService.selectMooMoodPage(moomoodParam); //moodService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<MooMood>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
+    //     List<MooMoodDto> mlist = page.getRecords();
+        List<MooMoodDto> mlist = resultDto.getData();
         List<MyPublishBean> blist = new ArrayList<>();
         // TODO Auto-generated method stub
         ObjectMapper mapper = new ObjectMapper();
@@ -1076,7 +1073,7 @@ public class MemberServiceImpl implements IMemberService {
 
             blist.add(bean);
         }
-        PageTools.pageToResultDto(re, page);
+        PageTools.newPageToResultDto(re, resultDto.getCount(),resultDto.getPages(),input.getPage());
         re.setData(blist);
 
         //redis cache
@@ -1200,7 +1197,9 @@ public class MemberServiceImpl implements IMemberService {
         re = new FungoPageResultDto<MyCommentBean>();
         Page<CommentBean> page = new Page<>(input.getPage(), input.getLimit());
         // @todo 5.22
-        List<CommentBean> all = communityProxyService.getAllComments(page, loginId); //memberDao.getAllComments(page, loginId);
+        FungoPageResultDto<CommentBean>  comments = communityFeignClient.getAllComments(page.getPages(),page.getLimit(),loginId);
+      //  List<CommentBean> all = communityProxyService.getAllComments(page, loginId); //memberDao.getAllComments(page, loginId);
+        List<CommentBean> all = comments.getData();
         List<MyCommentBean> blist = new ArrayList<>();
         for (CommentBean c : all) {
             //文章评论 心情评论 二级评论
@@ -1337,9 +1336,8 @@ public class MemberServiceImpl implements IMemberService {
             blist.add(bean);
 
         }
-
-        PageTools.pageToResultDto(re, page);
         re.setData(blist);
+        PageTools.newPageToResultDto(re,comments.getCount(),comments.getPages(),input.getPage());
 
         //redis cache
         fungoCacheArticle.excIndexCache(true, keyPrefix, keySuffix, re);
