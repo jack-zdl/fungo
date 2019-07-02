@@ -808,6 +808,8 @@ public class ActionServiceImpl implements IActionService {
             return "t_moo_message";
         } else if (type == 9) {
             return "t_bas_feedback";
+        } else if(type == 11){
+            return "t_cmm_circle";
         }
         return null;
     }
@@ -826,6 +828,8 @@ public class ActionServiceImpl implements IActionService {
             return "follower_num";
         } else if (type == 7) {
             return "post_num";
+        } else if(type == 11 ){
+            return "member_num";
         }
         return null;
     }

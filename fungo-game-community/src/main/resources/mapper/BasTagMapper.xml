@@ -40,7 +40,7 @@
 	</select>
 
 	<!-- 获取文章后台分类标签 -->
-	<select id="getPostTags" resultType="com.fungo.community.entity.BasTag" parameterType="String">
+	<select id="getPostTags" resultType="com.game.common.bean.TagBean" parameterType="String">
 		<!-- <![CDATA[ -->
 		select t.id, t.name
 		from t_bas_tag_group gt,t_bas_tag t
