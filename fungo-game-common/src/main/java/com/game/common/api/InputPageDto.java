@@ -27,7 +27,7 @@ public class InputPageDto extends InputDto implements Serializable {
 	private int sort;//排序
 
 	private String filter = "";//过滤查询条件
-	
+
 	public int getPageNum() {
 		return pageNum;
 	}
