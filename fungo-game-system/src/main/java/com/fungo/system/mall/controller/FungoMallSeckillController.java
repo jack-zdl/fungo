@@ -88,7 +88,7 @@ public class FungoMallSeckillController {
      * @return 返回 以json对象方式返回商品数据
      */
     @PostMapping("/api/mall/goods/game/list")
-    public ResultDto<List<MallGoodsOutBean>> getGoodsListForSeckill(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request,
+    public ResultDto<List<MallGoodsOutBean>> getGoodsListForSeckill(MemberUserProfile memberUserPrefile, HttpServletRequest request,
                                                                     @RequestBody MallGoodsInput mallGoodsInput) {
 
 
