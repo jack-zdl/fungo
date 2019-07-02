@@ -18,7 +18,7 @@ public class DateTools {
     }
 
     public static String fmtDate(Date date) {
-        if(date==null){
+        if (date == null) {
             return "";
         }
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -31,6 +31,15 @@ public class DateTools {
         String time = formatter.format(date);
         return time;
     }
+
+
+    public static String fmtSimpleDateToStringZhCn(Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
+        String time = formatter.format(date);
+        return time;
+    }
+
+
 
     public static String fmtSimpleDate(Date date) throws Exception {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
