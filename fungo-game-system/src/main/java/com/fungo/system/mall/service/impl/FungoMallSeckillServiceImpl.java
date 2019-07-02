@@ -269,7 +269,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                     goodsOutBean.setSort(sort);
                     goodsOutBean.setGoodsIntro(goods_intro);
 
-                    goodsOutBean.setValidPeriodIntro(validPeriodIntro);
+
                     goodsOutBean.setUsageDesc(usageDesc);
 
                     //当前礼包是否过期
@@ -285,10 +285,14 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                             if (interval < 0) {
                                 goodsOutBean.setIs_expire(true);
                             }
+
+                            String startDateZhCn = DateTools.fmtSimpleDateToStringZhCn(DateTools.str2Date(startAndEndDate[0], null));
+                            String endDateZhCn = DateTools.fmtSimpleDateToStringZhCn(DateTools.str2Date(startAndEndDate[1], null));
+                            validPeriodIntro = startDateZhCn + "-" + endDateZhCn;
                         }
 
                     }
-
+                    goodsOutBean.setValidPeriodIntro(validPeriodIntro);
                     goodsOutBeanList.add(goodsOutBean);
 
 
