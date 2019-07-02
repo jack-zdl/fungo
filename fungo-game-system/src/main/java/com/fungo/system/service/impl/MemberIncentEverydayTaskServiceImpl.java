@@ -10,6 +10,7 @@ import com.fungo.system.service.*;
 import com.game.common.common.MemberIncentCommonUtils;
 import com.game.common.consts.FunGoGameConsts;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
+import com.game.common.util.StringUtil;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.PKUtil;
 import org.apache.commons.lang.StringUtils;
@@ -352,9 +353,11 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
      * @param scoreRule
      */
     private int updateAccountCoin(String mb_id, ScoreRule scoreRule) throws IOException {
-
         logger.info("执行新手任务---经验值任务--开始修改用户fungo币账户-scoreRule:{}", JSON.toJSONString(scoreRule));
-
+        if(StringUtil.isNull(mb_id)){
+            logger.error("修改fungo币失败 用户id为空");
+            return -1;
+        }
         Integer coinCount = scoreRule.getScore();
         //更新账户.
         // eq("account_group_id", FunGoGameConsts.INCENT_ACCOUNT_TYPE_COIN_ID)
@@ -401,7 +404,10 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
      */
     private int updateAccountScore(String mb_id, ScoreRule scoreRule) throws IOException {
         logger.info("执行每日任务---经验值任务--开始修改用户经验值账户-scoreRule:{}", JSON.toJSONString(scoreRule));
-
+        if(StringUtil.isNull(mb_id)){
+            logger.error("修改经验值失败 用户id为空");
+            return -1;
+        }
         //加积分
         Integer score = scoreRule.getScore();
         //更新账户
