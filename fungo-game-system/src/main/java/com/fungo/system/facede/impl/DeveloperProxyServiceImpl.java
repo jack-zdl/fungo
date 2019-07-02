@@ -44,8 +44,6 @@ public class DeveloperProxyServiceImpl implements IDeveloperProxyService {
         gameInputPageDto.setPage(page);
         gameInputPageDto.setId_list(collect.toArray(new String[collect.size()]));
         try {
-            FungoPageResultDto<Map> re = communityFeignClient.queryCmmPostEssenceList();
-
             FungoPageResultDto<GameOutBean> gameOutBeans = gamesFeignClient.getGameList(gameItemInput);
             return gameOutBeans;
         } catch (Exception e) {

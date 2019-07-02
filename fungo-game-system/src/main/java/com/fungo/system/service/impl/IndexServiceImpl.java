@@ -8,6 +8,7 @@ import com.fungo.system.entity.Banner;
 import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IMemeberProxyService;
 import com.fungo.system.facede.IndexProxyService;
+import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.service.BannerService;
 import com.fungo.system.service.IIndexService;
 import com.fungo.system.service.IUserService;
@@ -50,27 +51,22 @@ public class IndexServiceImpl implements IIndexService {
 
     @Autowired
     private IUserService userService;
-
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
-
     @Autowired
     private SysVersionService sysVersionService;
-
     @Autowired
     private IMemeberProxyService iMemeberProxyService;
-
     @Autowired
     private IGameProxyService iGameProxyService;
-
     @Autowired
     private IndexProxyService indexProxyService;
-
     @Autowired
     private BannerService bannerService;
-
     @Autowired
     private BannerDao bannerDao;
+    @Autowired
+    private CommunityFeignClient communityFeignClient;
 
 
     @Override
@@ -261,7 +257,7 @@ public class IndexServiceImpl implements IIndexService {
 
 //            CardIndexBean indexBean = new CardIndexBean();
             if (bl.size() == 0) {
-                return FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(CommonEnum.HTTP_WARNING_EMPTY.code(), CommonEnum.HTTP_WARNING_EMPTY.message());
+                return FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(CommonEnum.HTTP_WARNING_EMPTY.code(), CommonEnum.HTTP_WARNING_EMPTY.message());
             }
             ArrayList<CircleCardDataBean> list = new ArrayList<>();
             for (Banner b : bl) {
@@ -441,12 +437,14 @@ public class IndexServiceImpl implements IIndexService {
         cmmPostDto.setLimit(limit);
         cmmPostDto.setType(3);
         cmmPostDto.setState(1);
-        Page<CmmPostDto> pageList = indexProxyService.selectCmmPostPage(cmmPostDto);
+        FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.listCmmPostTopicPost(cmmPostDto);
+      // Page<CmmPostDto> pageList = indexProxyService.selectCmmPostPage(cmmPostDto);
         //  postService.selectPage(new Page<CmmPost>(page, limit), new EntityWrapper<CmmPost>().eq("type", 3).eq("state", 1).last("ORDER BY sort DESC,updated_at DESC"));
 //		List<CmmPost> list = postService.selectList(new EntityWrapper<CmmPost>().eq("type", 3).orderBy("created_at", false).last("limit " + start+","+limit));
 //		List<CmmPost> list = p.getRecords();
+        List<CmmPostDto> cmmPostDtos = cmmPostDtoFungoPageResultDto.getData();
         ArrayList<CardIndexBean> indexList = new ArrayList<>();
-        for (CmmPostDto post : pageList.getRecords()) {
+        for (CmmPostDto post : cmmPostDtos ) {
             ArrayList<CardDataBean> gameDateList = new ArrayList<>();
             CardDataBean bean = new CardDataBean();
             CardIndexBean index = new CardIndexBean();
