@@ -1,5 +1,6 @@
 package com.fungo.community.controller;
 
+import com.fungo.community.config.NacosFungoCircleConfig;
 import com.fungo.community.service.CircleService;
 import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
@@ -38,6 +39,8 @@ public class CircleController {
     @Autowired
     private CircleService circleServiceImpl;
 
+    @Autowired
+    private NacosFungoCircleConfig circleConfig;
     /**
      * 功能描述: app端获取圈子列表列表及详情
      * @param: [memberUserPrefile, inputPageDto]
@@ -51,6 +54,7 @@ public class CircleController {
     public FungoPageResultDto<CmmCircleDto> circleEventList(@Anonymous MemberUserProfile memberUserPrefile,  @RequestBody CmmCircleVo cmmCircleVo) {
         FungoPageResultDto<CmmCircleDto> re = null;
         String memberId = memberUserPrefile == null ? "" : memberUserPrefile.getLoginId();
+        System.out.println("----------------"+circleConfig.circle);
        try {
            re = circleServiceImpl.selectCircle(memberId,cmmCircleVo);
        }catch (Exception e){

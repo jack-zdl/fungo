@@ -82,6 +82,8 @@ public class CircleServiceImpl implements CircleService {
     private BasTagDao basTagDao;
     @Autowired
     private FungoCircleParameter fungoCircleParameter;
+
+
     @Autowired
     private SystemFacedeService systemFacedeService;
     //依赖游戏微服务
