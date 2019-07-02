@@ -13,6 +13,11 @@ public class FungoPageResultDto<T> extends AbstractResultDto {
     private int count = 0;
     private int after = -1;
     private int before = -1;
+    /**
+     * 总页数
+     */
+    private int pages;
+
     private List<T> data = new ArrayList<>();
 
     public FungoPageResultDto() {
@@ -75,6 +80,14 @@ public class FungoPageResultDto<T> extends AbstractResultDto {
         if (null != data) {
             this.data = data;
         }
+    }
+
+    public int getPages() {
+        return pages;
+    }
+
+    public void setPages(int pages) {
+        this.pages = pages;
     }
 
     public static long getSerialversionuid() {
