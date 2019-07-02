@@ -229,7 +229,7 @@ public class FungoMallScanOrderWithSeckillService {
                                                 vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
                                                 break;
                                             case 3:
-                                                vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
+                                                vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods,31);
                                                 break;
                                             default:
                                                 break;
@@ -334,6 +334,93 @@ public class FungoMallScanOrderWithSeckillService {
                 goodsType, cardSn, cardPwd, validPeriodIntro);
 
     }
+
+
+
+
+
+
+    /**
+     * 更新用户订单商品信息
+     * 把虚拟卡号，转移给用户对应的虚拟商品
+     * @param mb_Id 用户ID
+     * @param orderId 订单ID
+     * @param orderGoods 订单商品关系表实体
+     * @return
+     */
+    private MallVirtualCard updateOrderGoodsInfoWithVCard(String mb_Id, Long orderId, MallOrderGoods orderGoods,Integer card_type) {
+
+        MallVirtualCard virtualCard = this.queryMallVirtualCard(orderGoods.getGoodsId(), card_type);
+
+        logger.info("更新用户订单商品信息--把虚拟卡号，转移给用户对应的虚拟商品---orderGoods:{}---virtualCard:{}",
+                orderGoods, virtualCard);
+
+        if (null == orderGoods || null == virtualCard) {
+            return null;
+        }
+
+
+        //卡号-加密的
+        String cardSnEncrypt = virtualCard.getCardSn();
+        String cardSnDecrypt = "";
+        if (StringUtils.isNoneBlank(cardSnEncrypt)) {
+            //解密
+            cardSnDecrypt = FungoAESUtil.decrypt(cardSnEncrypt, aESSecretKey + FungoMallSeckillConsts.AES_SALT);
+        }
+
+        //卡密-加密的
+        String cardPwdEncrypt = virtualCard.getCardPwd();
+        String cardPwdDecrypt = "";
+        if (StringUtils.isNoneBlank(cardPwdEncrypt)) {
+            cardPwdDecrypt = FungoAESUtil.decrypt(cardPwdEncrypt, aESSecretKey + FungoMallSeckillConsts.AES_SALT);
+        }
+        //获取解密之后的crc32值
+       // long cardCrc32Validate = FungoCRC32Util.getInstance().encrypt(cardSnDecrypt + cardPwdDecrypt);
+
+        //数据库中保存的数据有效性验证 卡号明码 + 密码明码的 crc32取值
+       // long cardCrc32 = virtualCard.getCardCrc32();
+
+        //若卡号和密码，验证通过，继续处理
+        /*
+        if (cardCrc32Validate != cardCrc32) {
+            logger.info("更新用户订单商品信息,把虚拟卡号，转移给用户对应的虚拟商品失败,卡号和密码有效性验证失败。mb_Id:{}--orderId:{}---goodsId:{}----DBCardCrc32:{}---cardCrc32Validate:{}",
+                    mb_Id, orderId, orderGoods.getGoodsId(), cardCrc32, cardCrc32Validate);
+            return null;
+        }*/
+
+        //截至使用日期
+        Date cardEndDate = virtualCard.getCardEndDate();
+        //有效期描述
+        String validPeriodIntro = virtualCard.getValidPeriodIntro();
+        //价值RMB面额
+        Integer valueRmb = virtualCard.getValueRmb();
+
+        //卡的类型
+        Integer cardType = virtualCard.getCardType();
+
+
+        //更新订单商品表
+        MallVirtualCard vCardNewWithOrderGoods = new MallVirtualCard();
+        vCardNewWithOrderGoods.setId(virtualCard.getId());
+        vCardNewWithOrderGoods.setCardSn(cardSnDecrypt);
+        vCardNewWithOrderGoods.setCardPwd(cardPwdDecrypt);
+        vCardNewWithOrderGoods.setCardEndDate(cardEndDate);
+        vCardNewWithOrderGoods.setValidPeriodIntro(validPeriodIntro);
+        vCardNewWithOrderGoods.setValueRmb(valueRmb);
+        vCardNewWithOrderGoods.setCardType(cardType);
+
+        boolean updateOrderGoodsResult = updateOrderGoodsInfoWithScan(orderGoods, vCardNewWithOrderGoods);
+        logger.info("更新用户订单商品信息--结果:{}", updateOrderGoodsResult);
+
+        //更新虚拟卡号信息表
+        boolean updateVCardResult = updateVCardInfoWithScan(mb_Id, orderId, virtualCard);
+        logger.info("更新虚拟卡号信息表--结果:{}", updateVCardResult);
+
+        return vCardNewWithOrderGoods;
+    }
+
+
+
 
 
     /**
@@ -675,6 +762,10 @@ public class FungoMallScanOrderWithSeckillService {
         }
         return false;
     }
+
+
+
+
 
 
     /**
