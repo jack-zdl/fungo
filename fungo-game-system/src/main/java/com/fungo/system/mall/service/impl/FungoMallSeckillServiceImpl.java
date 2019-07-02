@@ -257,7 +257,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                     Long seckill_price_vcy = mallGoods.getMarketPriceVcy();
 
                     //有效期描述信息
-                    String validPeriodIntro = mallGoods.getExt1();
+                    String validPeriodIntro = mallGoods.getExt2();
 
                     //使用方法说明
                     String usageDesc = mallGoods.getUsageDesc();
@@ -1596,7 +1596,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         EntityWrapper<MallVirtualCard> virtualCardEntityWrapper = new EntityWrapper<MallVirtualCard>();
         virtualCardEntityWrapper.eq("goods_id", goods_id);
         virtualCardEntityWrapper.eq("mb_id", mb_id);
-        virtualCardEntityWrapper.eq("card_type", 3);
+        virtualCardEntityWrapper.eq("card_type", 31);
         virtualCardEntityWrapper.eq("is_saled", 1);
 
         int count = mallVirtualCardDaoService.selectCount(virtualCardEntityWrapper);
