@@ -222,8 +222,8 @@
     <if test="tagId != null and tagId != ''">
         and cp.tags = #{tagId}
     </if>
-    <if test="recommend != null and recommend != ''">
-        and cp.recommend = #{recommend}
+    <if test="cream != null and cream != ''">
+        and cp.type = #{cream}
     </if>
     <if test='sortType == "1" ' >
         GROUP BY cp.id   order  by cp.created_at desc

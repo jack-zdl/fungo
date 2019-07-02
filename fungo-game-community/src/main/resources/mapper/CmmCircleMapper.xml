@@ -41,6 +41,7 @@
         <if test="type != null and type != ''">
           and type = #{type}
         </if>
+        and state = 1
     </trim>
     order  by type asc ,sort  desc ,hot_value desc
   </select>

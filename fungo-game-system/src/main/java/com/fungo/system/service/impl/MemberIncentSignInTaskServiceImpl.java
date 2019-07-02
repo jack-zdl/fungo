@@ -631,7 +631,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
     private void addCoinWithMbSignIn(Member member, int funCoin) {
 
         //安全性校验
-        if (funCoin <= 0) {
+        if (funCoin <= 0||member==null||member.getId()==null) {
             return;
         }
 

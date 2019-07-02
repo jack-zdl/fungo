@@ -11,7 +11,6 @@ import com.fungo.community.dao.mapper.CmmPostCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
 import com.fungo.community.entity.CmmCircle;
 import com.fungo.community.entity.CmmPost;
-import com.fungo.community.entity.CmmPostCircle;
 import com.fungo.community.facede.GameFacedeService;
 import com.fungo.community.facede.SystemFacedeService;
 import com.fungo.community.feign.SystemFeignClient;
@@ -32,6 +31,7 @@ import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.ActionTypeEnum;
+import com.game.common.enums.PostTypeEnum;
 import com.game.common.enums.circle.CircleRecommendEnum;
 import com.game.common.enums.circle.CircleTypeEnum;
 import com.game.common.util.CommonUtil;
@@ -43,20 +43,17 @@ import com.game.common.util.emoji.FilterEmojiUtil;
 import com.game.common.vo.CircleGamePostVo;
 import com.game.common.vo.CmmCirclePostVo;
 import com.game.common.vo.CmmCircleVo;
-import io.swagger.models.auth.In;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.partitioningBy;
 
 /**
  * <p>圈子接口实现类</p>
@@ -82,8 +79,6 @@ public class CircleServiceImpl implements CircleService {
     private BasTagDao basTagDao;
     @Autowired
     private FungoCircleParameter fungoCircleParameter;
-
-
     @Autowired
     private SystemFacedeService systemFacedeService;
     //依赖游戏微服务
@@ -240,7 +235,7 @@ public class CircleServiceImpl implements CircleService {
             if(CmmCirclePostVo.QueryTypeEnum.ALL.getKey().equals(cmmCirclePostVo.getQueryType())){  // 全部查询
                 cmmPosts =  cmmPostDao.getCmmCircleListByCircleId(page,circleId,null,null,sortType);
             }else if(CmmCirclePostVo.QueryTypeEnum.ESSENCE.getKey().equals(cmmCirclePostVo.getQueryType())){ // 精华查询
-                cmmPosts =  cmmPostDao.getCmmCircleListByCircleId(page,circleId, null,CircleRecommendEnum.RECOMMEND.getKey(),sortType);
+                cmmPosts =  cmmPostDao.getCmmCircleListByCircleId(page,circleId, null, PostTypeEnum.CREAM.getKey(),sortType);
             }else {
                 if(CmmCirclePostVo.SortTypeEnum.PUBDATE.getKey().equals(cmmCirclePostVo.getSortType())){
                     cmmPosts =  cmmPostDao.getCmmCircleListByCircleId(page,circleId,tagId,null,sortType);
@@ -417,9 +412,9 @@ public class CircleServiceImpl implements CircleService {
             }
             for (String key : cmmPostMap.keySet()) {
                 CirclePostTypeDto circleTypeDto = new CirclePostTypeDto();
-                Optional<TagBean> cmmPost = tagBeans.stream().filter(r -> r.getId().equals(key)).findFirst();
-                circleTypeDto.setCirclePostType(cmmPost.get().getId());
-                circleTypeDto.setCirclePostName(cmmPost.get().getName());
+                TagBean cmmPost = tagBeans.stream().filter(r -> r.getId().equals(key)).findFirst().orElse(new TagBean());
+                circleTypeDto.setCirclePostType(cmmPost.getId());
+                circleTypeDto.setCirclePostName(cmmPost.getName());
                 circleTypeDtos.add(circleTypeDto);
             }
             re.setData(circleTypeDtos);
@@ -660,7 +655,28 @@ public class CircleServiceImpl implements CircleService {
         return re;
     }
 
-    
+    @Override
+    public void updateCircleHotValue() {
+        try {
+            Wrapper wrapper = new EntityWrapper<CmmCircle>();
+            List<CmmCircle> cmmCircleList =    cmmCircleMapper.selectList(wrapper);
+            cmmCircleList.stream().forEach(s ->{
+                try {
+                    int hotValueTotalNumber = cmmPostCircleMapper.getSumByCircleId(s.getId());
+                    s.setHotValue(hotValueTotalNumber);
+                    cmmCircleMapper.updateByPrimaryKey(s);
+                }catch (Exception e){
+                    LOGGER.error("更新圈子热度失败,圈子id="+s.getId(),e);
+                }
+                System.out.println("更新圈子热度成功,圈子id="+s.getId());
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("更新圈子热度失败",e);
+        }
+    }
+
+
     /**
      * 功能描述: 
      * @param: []

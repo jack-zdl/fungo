@@ -967,38 +967,27 @@ public class PostServiceImpl implements IPostService {
     @Override
     public ResultDto<PostOut> getPostDetails(String postId, String userId, String os) throws Exception {
         PostOut out = null;
-
         //from redis cache
         out = (PostOut) fungoCacheArticle.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, postId);
         if (null != out) {
-
             //更新文章浏览量数据
             Object postWatchNumCache = fungoCacheArticle.getIndexCache(FungoCacheArticle.FUNGO_CORE_API_POST_CONTENT_DETAIL_WATCHNUM, postId);
-
             if (null != postWatchNumCache) {
-
                 Integer postWatchNum_i = (Integer) postWatchNumCache;
                 postWatchNum_i += 1;
-
                 //浏览量随机增加
                 Long viewNewCount = FungoLivelyCalculateUtils.calcViewAndDownloadCount(postWatchNum_i);
                 postWatchNum_i = viewNewCount.intValue();
-
                 out.setWatch_num(postWatchNum_i);
-
                 //记录浏览量 同时保存到Redis中
                 fungoCacheArticle.excIndexCache(true, FungoCacheArticle.FUNGO_CORE_API_POST_CONTENT_DETAIL_WATCHNUM, postId, postWatchNum_i);
-
                 //更新文章浏览数DB
                 iCountService.addCounter("t_cmm_post", "watch_num", postId);
-
                 CmmPost cmmPost = new CmmPost();
                 cmmPost.setId(postId);
                 cmmPost.setBoomWatchNum(viewNewCount);
                 cmmPost.updateById();
-
             }
-
             return ResultDto.success(out);
         }
 
@@ -1009,7 +998,6 @@ public class PostServiceImpl implements IPostService {
         if (cmmPost == null) {
             return ResultDto.error("223", "找不到帖子");
         }
-
         //表情解码
         if (StringUtils.isNotBlank(cmmPost.getTitle())) {
             String interactTitle = FilterEmojiUtil.decodeEmoji(cmmPost.getTitle());
@@ -1019,18 +1007,14 @@ public class PostServiceImpl implements IPostService {
             String interactContent = FilterEmojiUtil.decodeEmoji(cmmPost.getContent());
             cmmPost.setContent(interactContent);
         }
-
         if (StringUtils.isNotBlank(cmmPost.getHtmlOrigin())) {
             String interactHtmlOrigin = FilterEmojiUtil.decodeEmoji(cmmPost.getHtmlOrigin());
             cmmPost.setHtmlOrigin(interactHtmlOrigin);
         }
-
-
         out = new PostOut();
         //video
         out.setVideo(cmmPost.getVideo());
         out.setVideoCoverImage(cmmPost.getVideoCoverImage());
-
         out.setObjectId(cmmPost.getId());
         out.setTitle(CommonUtils.filterWord(cmmPost.getTitle()));
         String tags = cmmPost.getTags();
@@ -1044,9 +1028,7 @@ public class PostServiceImpl implements IPostService {
         out.setComment_num(cmmPost.getCommentNum());
         out.setCover_image(cmmPost.getCoverImage());
         String origin = cmmPost.getHtmlOrigin();
-
         ObjectMapper mapper = new ObjectMapper();
-
         List<Map<String, Object>> gameMapList = new ArrayList<>();
         if (cmmPost.getGameList() != null) {
             gameMapList = mapper.readValue(cmmPost.getGameList(), ArrayList.class);
@@ -1054,7 +1036,6 @@ public class PostServiceImpl implements IPostService {
 
                 //!fixme 获取游戏平均分
                 //m.put("rating", iGameService.getGameRating((String) m.get("objectId")) + "");
-
                 //获取游戏平均分
                 String gameId = (String) m.get("objectId");
                 double gameAverage = 0;
@@ -1064,26 +1045,20 @@ public class PostServiceImpl implements IPostService {
                     ex.printStackTrace();
                 }
                 m.put("gameRating", gameAverage);
-
             }
         }
-
         String gameList = mapper.writeValueAsString(gameMapList);
-
         if (StringUtils.equalsIgnoreCase("iOS", os) || StringUtils.equalsIgnoreCase("Android", os)) {
             if (origin != null && !"".equals(origin)) {
-
                 out.setHtml(SerUtils.returnOriginHrml(SerUtils.getOriginImageContent(CommonUtils.filterWord(origin), out.getImages(), gameList)));
             }
             String content = cmmPost.getContent();
             if (!CommonUtil.isNull(content)) {
-
                 //out.setContent(content.length() > 25 ? CommonUtils.filterWord(content.substring(0, 25)) : CommonUtils.filterWord(content));
                 out.setContent(content);
             }
             //!fixme
             out.setHtml_origin(origin);
-//
 //          String html_origin = CommonUtils.filter(cmmPost.getHtmlOrigin());
 //			out.setHtml_origin(html_origin);
         } else {
@@ -1094,9 +1069,7 @@ public class PostServiceImpl implements IPostService {
         out.setOrigin(cmmPost.getOrigin());
         out.setCreatedAt(DateTools.fmtDate(cmmPost.getCreatedAt()));
         out.setUpdatedAt(DateTools.fmtDate(cmmPost.getUpdatedAt()));
-
         out.setState(cmmPost.getState());
-
         //浏览量
         Integer cmmPostWatchNum = 0;
         if (null == cmmPost.getBoomWatchNum() || 0 == cmmPost.getBoomWatchNum()) {
@@ -1105,16 +1078,12 @@ public class PostServiceImpl implements IPostService {
             cmmPostWatchNum = cmmPost.getBoomWatchNum().intValue();
         }
         cmmPostWatchNum += 1;
-
         //浏览量随机增加
         Long viewCountNew = FungoLivelyCalculateUtils.calcViewAndDownloadCount(cmmPostWatchNum);
         cmmPostWatchNum = viewCountNew.intValue();
-
         out.setWatch_num(cmmPostWatchNum);
-
         out.setLike_num(cmmPost.getLikeNum());
         out.setReport_num(cmmPost.getReportNum());
-
         //根据运行环境,不同的链接
         String env = Setting.RUN_ENVIRONMENT;
         if (env.equals("dev")) {
@@ -1130,7 +1099,6 @@ public class PostServiceImpl implements IPostService {
 //			out.setHtml_url("http://test.mingbonetwork.com/api/content/post/html/"+cmmPost.getId());
             out.setHtml_url(Setting.DEFAULT_SHARE_URL_DEV + "/api/content/post/html/" + cmmPost.getId());
         }
-
 
 //		Member author = memberService.selectById(cmmPost.getMemberId());
         //查询是否发布到圈子
@@ -1175,21 +1143,6 @@ public class PostServiceImpl implements IPostService {
                     //游戏社区的评分 标签
                     if (community.getType() == 0) {
                         communityMap.put("gameId", community.getGameId());
-
-                        //!fixme 游戏平均分
-              /*
-                HashMap<String, BigDecimal> rateData = gameDao.getRateData(community.getGameId());
-                if (rateData != null) {
-                    if (rateData.get("avgRating") != null) {
-                        communityMap.put("gameRating", (Double.parseDouble(rateData.get("avgRating").toString())));
-                    } else {
-                        communityMap.put("gameRating", 0.0);
-                    }
-                } else {
-                    communityMap.put("gameRating", 0.0);
-                }
-                */
-
                         //获取游戏平均分
                         double gameAverage = 0;
                         try {
@@ -1198,14 +1151,8 @@ public class PostServiceImpl implements IPostService {
                             ex.printStackTrace();
                         }
                         communityMap.put("gameRating", gameAverage);
-
-
                     }
                     if (!CommonUtil.isNull(community.getGameId())) {
-
-                        //!fixme 查询游戏详情
-                        //Game game = gameService.selectOne(Condition.create().setSqlSelect("id,tags").eq("id", community.getGameId()).eq("state", 0));
-
                         GameDto gameDto = null;
                         try {
                             ResultDto<GameDto> gameDtoResultDto = gameFacedeService.selectGameDetails(community.getGameId(), 0);
@@ -1215,38 +1162,24 @@ public class PostServiceImpl implements IPostService {
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
-
                         if (gameDto != null) {
                             communityMap.put("gameTags", gameDto.getTags() == null ? new String[0] : gameDto.getTags().split(","));
                         } else {
                             communityMap.put("gameTags", new ArrayList<String>());
                         }
-
-
                     } else {
                         communityMap.put("gameTags", new ArrayList<String>());
                     }
                 }
             }
-
-
         }
-
-
         //视频详情
         if (!CommonUtil.isNull(cmmPost.getVideoUrls())) {
-            //ArrayList<StreamInfo> streams = mapper.readValue(cmmPost.getVideoUrls(), ArrayList.class);
             ArrayList<StreamInfo> streams = (ArrayList<StreamInfo>) JSON.parseArray(cmmPost.getVideoUrls(), StreamInfo.class);
             out.setVideoList(streams);
         }
-
-
         //查询是否关注、收藏、点赞
         if (userId != null) {
-
-            //!fixme 查询用户数据
-            //Member user = memberService.selectById(userId);
-
             List<String> idsList = new ArrayList<String>();
             idsList.add(userId);
             ResultDto<List<MemberDto>> listMembersByids = null;
@@ -1262,18 +1195,7 @@ public class PostServiceImpl implements IPostService {
                     memberDto = memberDtoList.get(0);
                 }
             }
-
             if (memberDto != null) {
-
-                //!fixme 查询点赞数和收藏数
-                // 	int followed = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).eq("target_id", author.getId()).eq("state", 0).eq("member_id", userId));
-               /*
-                int like =
-                        actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).eq("target_id", cmmPost.getId()).eq("state", 0).eq("member_id", userId));
-                int collected =
-                        actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 4).eq("target_id", cmmPost.getId()).eq("state", 0).eq("member_id", userId));
-                 */
-
                 //---like 点赞 | 0
                 BasActionDto basActionDtoLike = new BasActionDto();
 
@@ -1281,28 +1203,22 @@ public class PostServiceImpl implements IPostService {
                 basActionDtoLike.setType(0);
                 basActionDtoLike.setState(0);
                 basActionDtoLike.setTargetId(cmmPost.getId());
-
                 int like = 0;
-
                 try {
                     ResultDto<Integer> resultDtoLike = systemFacedeService.countActionNum(basActionDtoLike);
-
                     if (null != resultDtoLike) {
                         like = resultDtoLike.getData();
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-
                 //--收藏 | 4
                 BasActionDto basActionDtoCollected = new BasActionDto();
-
                 basActionDtoCollected.setMemberId(userId);
                 basActionDtoCollected.setType(4);
                 basActionDtoCollected.setState(0);
                 basActionDtoCollected.setTargetId(cmmPost.getId());
                 int collected = 0;
-
                 try {
                     ResultDto<Integer> resultDtoCollected = systemFacedeService.countActionNum(basActionDtoCollected);
 
@@ -1312,8 +1228,6 @@ public class PostServiceImpl implements IPostService {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-
-                //boolean is_followed = followed >0 ? true:false;
                 boolean is_liked = like > 0 ? true : false;
                 boolean is_collected = collected > 0 ? true : false;
                 out.setIs_liked(is_liked);
@@ -1321,15 +1235,11 @@ public class PostServiceImpl implements IPostService {
                 //authorMap.put("is_followed", is_followed);
             }
         }
-
-
         out.setLink_community(communityMap);
 
         //!fixme 获取用户数据
         AuthorBean authorBean = new AuthorBean();
         try {
-            //out.setAuthor(IUserService.getUserCard(cmmPost.getMemberId(), userId));
-            // if (StringUtils.isNotBlank(userId) && StringUtils.isNotBlank(cmmPost.getMemberId())) {
             if (StringUtils.isNotBlank(cmmPost.getMemberId())) {
                 ResultDto<AuthorBean> userCardResult = systemFacedeService.getUserCard(cmmPost.getMemberId(), userId);
                 if (null != userCardResult) {
@@ -1342,9 +1252,6 @@ public class PostServiceImpl implements IPostService {
         out.setAuthor(authorBean);
         out.setType(cmmPost.getType());
 
-        //更新文件浏览量
-        //iCountService.addCounter("t_cmm_post", "watch_num", postId);
-
         CmmPost cmmPostUpdate = new CmmPost();
         cmmPostUpdate.setId(postId);
         cmmPostUpdate.setWatchNum(cmmPost.getWatchNum() + 1);
@@ -1355,7 +1262,6 @@ public class PostServiceImpl implements IPostService {
         fungoCacheArticle.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, postId, out);
         //记录浏览量 同时保存到Redis中
         fungoCacheArticle.excIndexCache(true, FungoCacheArticle.FUNGO_CORE_API_POST_CONTENT_DETAIL_WATCHNUM, postId, cmmPostWatchNum);
-
         return ResultDto.success(out);
     }
 

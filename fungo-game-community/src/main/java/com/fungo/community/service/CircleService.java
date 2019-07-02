@@ -35,4 +35,6 @@ public interface CircleService {
     FungoPageResultDto<PostOutBean>  selectCircleGamePost(String memberId, CircleGamePostVo circleGamePostVo);
 
     FungoPageResultDto<CmmCircleDto> selectGameCircle(String memberId,CircleGamePostVo circleGamePostVo);
+
+    void updateCircleHotValue();
 }

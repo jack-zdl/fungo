@@ -1,6 +1,7 @@
 package com.fungo.community.controller;
 
 import com.fungo.community.config.NacosFungoCircleConfig;
+import com.fungo.community.job.CircleHotValueJob;
 import com.fungo.community.service.CircleService;
 import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
@@ -41,6 +42,9 @@ public class CircleController {
 
     @Autowired
     private NacosFungoCircleConfig circleConfig;
+
+    @Autowired
+    private CircleHotValueJob circleHotValueJob;
     /**
      * 功能描述: app端获取圈子列表列表及详情
      * @param: [memberUserPrefile, inputPageDto]
@@ -255,6 +259,18 @@ public class CircleController {
         return re;
     }
 
-
+    /**
+     * 功能描述: app端获取圈子文章顺序类型
+     * @param: [memberUserPrefile, inputPageDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: dl.zhang
+     * @date: 2019/6/11 11:01
+     */
+    @ApiOperation(value = "v2.5", notes = "")
+    @RequestMapping(value = "/api/community/circle/hotvalue/job", method = RequestMethod.GET)
+    @ApiImplicitParams({})
+    public void updateCircleHotValueJob( ) {
+        circleHotValueJob.execute();
+    }
 
 }

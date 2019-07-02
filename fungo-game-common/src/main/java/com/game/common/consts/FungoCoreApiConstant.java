@@ -296,7 +296,6 @@ public class FungoCoreApiConstant {
      */
     public static final String FUNGO_CORE_API_POST_CONTENT_COMMENTS = "/api/content/comments" + "_cloud";
 
-
     /**
      * 帖子/心情评论列表
      * POST

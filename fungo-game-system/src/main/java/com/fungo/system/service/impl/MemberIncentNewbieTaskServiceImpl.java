@@ -11,6 +11,7 @@ import com.game.common.common.MemberIncentCommonUtils;
 import com.game.common.consts.FunGoGameConsts;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheTask;
+import com.game.common.util.StringUtil;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.PKUtil;
 import org.apache.commons.lang.StringUtils;
@@ -215,7 +216,10 @@ public class MemberIncentNewbieTaskServiceImpl implements IMemberIncentNewbieTas
      * @return 1 首次成功   -1 任务失败  2 任务重复完成
      */
     private int exCoinTask(String mb_id, int task_group_flag, int task_type, int task_code_idt) throws Exception {
-
+        if(StringUtil.isNull(mb_id)){
+            logger.error("修改fungo币失败 用户id为空");
+            return -1;
+        }
 
         //1.获取任务规则数据
         ScoreRule scoreRule = iMemberIncentTaskRuleService.getScoreRule(task_code_idt);
@@ -265,6 +269,10 @@ public class MemberIncentNewbieTaskServiceImpl implements IMemberIncentNewbieTas
     private int updateAccountCoin(String mb_id, ScoreRule scoreRule) throws IOException {
 
         logger.info("执行新手任务---经验值任务--开始修改用户fungo币账户-scoreRule:{}", JSON.toJSONString(scoreRule));
+        if(StringUtil.isNull(mb_id)){
+            logger.error("修改fungo币失败 用户id为空");
+            return -1;
+        }
         //当前任务是 关注3位Fun友 |  5:count的值必须是3 才能加经验值
         if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_USER_COIN.code()) {
             int count_i = isWatchThreeUserTask(mb_id, scoreRule);
@@ -320,7 +328,10 @@ public class MemberIncentNewbieTaskServiceImpl implements IMemberIncentNewbieTas
      */
     private int updateAccountScore(String mb_id, ScoreRule scoreRule) throws IOException {
         logger.info("执行新手任务---经验值任务--开始修改用户经验值账户-scoreRule:{}", JSON.toJSONString(scoreRule));
-
+        if(StringUtil.isNull(mb_id)){
+            logger.error("修改经验值任务失败 用户id为空");
+            return -1;
+        }
         //当前任务是 关注3位Fun友 |  5:count的值必须是3 才能加经验值
         if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_USER_EXP.code()) {
             int count_i = isWatchThreeUserTask(mb_id, scoreRule);
