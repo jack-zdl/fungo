@@ -610,7 +610,9 @@ public class FungoMallScanOrderWithSeckillService {
      * @param goodsPriceVcy
      */
     private boolean deductionAccountCoinWithMember(String mb_id, Long goodsPriceVcy) {
-
+        if (org.apache.commons.lang3.StringUtils.isBlank(mb_id)){
+            return false;
+        }
         EntityWrapper<IncentAccountCoin> mbAccountCoinEntityWrapper = new EntityWrapper<IncentAccountCoin>();
         Map<String, Object> criteriaMap = new HashMap<String, Object>();
         criteriaMap.put("mb_id", mb_id);
