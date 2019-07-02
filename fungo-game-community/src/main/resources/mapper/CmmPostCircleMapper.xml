@@ -145,4 +145,14 @@
  SELECT  <include refid="Base_Circle_List" />  FROM t_cmm_circle WHERE id = ( select circle_id from t_cmm_post_circle where post_id =  #{postId} order by default_link desc limit 1 )
   </select>
 
+  <select id="getSumByCircleId" resultType="java.lang.Integer" >
+ SELECT sum(t.total) FROM
+ (
+	select count(1) as total , cpc.circle_id as circle_id  FROM t_cmm_post_circle cpc WHERE cpc.circle_id = #{circleId}
+ union  ALL
+ SELECT count(1) as total , cpc.circle_id as circle_id  FROM t_cmm_comment cc LEFT JOIN t_cmm_post_circle  cpc ON cc.post_id  = cpc.id     WHERE  cpc.circle_id =  #{circleId}
+ union  ALL
+ SELECT count(1) as total , ba.target_id as circle_id FROM t_bas_action ba WHERE ba.target_id =  #{circleId} and type = 5 and target_type = 11 and state = 0
+ ) t
+  </select>
 </mapper>

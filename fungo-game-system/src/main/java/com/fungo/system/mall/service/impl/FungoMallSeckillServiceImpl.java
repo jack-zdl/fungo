@@ -640,6 +640,16 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
         try {
 
+            //同一个游戏礼包不能重复兑换
+            EntityWrapper<MallOrderGoods> orderGoodsEntityWrapper = new EntityWrapper<MallOrderGoods>();
+            orderGoodsEntityWrapper.eq("goods_id", orderInput.getGoodsId());
+            orderGoodsEntityWrapper.eq("mb_id", orderInput.getMbId());
+            int orderGoodsCount = mallOrderGoodsDaoService.selectCount(orderGoodsEntityWrapper);
+            if (orderGoodsCount > 0){
+                resultMap.put("seckillStatus", 5);
+                return resultMap;
+            }
+
             //查询出游戏礼包商品详情
             EntityWrapper<MallGoods> goodsEntityWrapper = new EntityWrapper<MallGoods>();
             goodsEntityWrapper.eq("id", orderInput.getGoodsId());
