@@ -19,6 +19,7 @@ import com.game.common.dto.ActionInput;
 import com.game.common.dto.ResultDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.*;
+import freemarker.template.utility.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -116,7 +117,6 @@ public class ActionServiceImpl implements IActionService {
 
             //被点赞用户的id
             String targetMemberId = gameProxy.getMemberID(inputDto.getTarget_id(), inputDto.getTarget_type());
-
 
 
             //V2.4.6版本之前任务 废弃
@@ -318,6 +318,7 @@ public class ActionServiceImpl implements IActionService {
 
     /**
      * 更新用户我的收藏Redis cache 2019-05-06 抽取冗余代码
+     *
      * @param memberId
      * @param inputDto
      */
@@ -621,7 +622,7 @@ public class ActionServiceImpl implements IActionService {
         }*/
 //        游戏下载量变化
         Map<String, String> ssmap = new HashMap<>();
-        ssmap.put("gameId",inputDto.getTarget_id());
+        ssmap.put("gameId", inputDto.getTarget_id());
         mqProduct.updateGameDownNumAndBoomDownloadNum(ssmap);
 
 
@@ -629,38 +630,40 @@ public class ActionServiceImpl implements IActionService {
         // times = gameProxy.addTaskCore(Setting.ACTION_TYPE_DOWNLOAD, memberId, inputDto.getTarget_id(), inputDto.getTarget_type());
 
         //V2.4.6版本任务
-        //新手任务
-        //1 经验值
-        iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
-                MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_FIRST_DOWN_EXP.code());
-        //2 fungo币
-        iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
-                MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_FIRST_DOWN_COIN.code());
-        //end
+        //登录用户执行下载游戏任务
+        if (StringUtils.isNoneBlank(memberId)) {
+            //新手任务
+            //1 经验值
+            iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
+                    MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_FIRST_DOWN_EXP.code());
+            //2 fungo币
+            iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
+                    MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_FIRST_DOWN_COIN.code());
+            //end
 
-        // 每周任务
-        //1 fungo币
-        Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
-                MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_DOWN_GAME_COIN.code());
+            // 每周任务
+            //1 fungo币
+            Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
+                    MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_DOWN_GAME_COIN.code());
 
-        //2 经验值
-        Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
-                MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_DOWN_GAME_EXP.code());
+            //2 经验值
+            Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
+                    MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_DOWN_GAME_EXP.code());
 
-        if (null != resMapCoin && !resMapCoin.isEmpty()) {
-            if (null != resMapExp && !resMapExp.isEmpty()) {
-                boolean coinsSuccess = (boolean) resMapCoin.get("success");
-                boolean expSuccess = (boolean) resMapExp.get("success");
-                if (coinsSuccess && expSuccess) {
-                    tips = (String) resMapCoin.get("msg");
-                    tips += (String) resMapExp.get("msg");
-                } else {
-                    tips = (String) resMapCoin.get("msg");
+            if (null != resMapCoin && !resMapCoin.isEmpty()) {
+                if (null != resMapExp && !resMapExp.isEmpty()) {
+                    boolean coinsSuccess = (boolean) resMapCoin.get("success");
+                    boolean expSuccess = (boolean) resMapExp.get("success");
+                    if (coinsSuccess && expSuccess) {
+                        tips = (String) resMapCoin.get("msg");
+                        tips += (String) resMapExp.get("msg");
+                    } else {
+                        tips = (String) resMapCoin.get("msg");
+                    }
                 }
             }
+            //end
         }
-        //end
-
 
         ResultDto<String> re = new ResultDto<String>();
         if (StringUtils.isNotBlank(tips)) {
@@ -677,7 +680,8 @@ public class ActionServiceImpl implements IActionService {
 
         return re;
     }
-//  切换feign客户端 调用游戏服务
+
+    //  切换feign客户端 调用游戏服务
     //@todo  mq  调用游戏服务
     private void gameFeignClientUpdateCounterByDownLoad(ActionInput inputDto) {
         Map<String, String> map = new HashMap<>();
@@ -758,19 +762,19 @@ public class ActionServiceImpl implements IActionService {
     }
 
     private boolean getCounterBoolean(ActionInput inputDto, Map<String, String> map) {
-        if (CommonlyConst.getCommunityList().contains(inputDto.getTarget_type())){
+        if (CommonlyConst.getCommunityList().contains(inputDto.getTarget_type())) {
 //            社区服务空缺 19-05-07
-                //@todo mq 消息
-                mqProduct.communityUpdate(map); //communityFeignClient.updateCounter(map);
-                return true;
+            //@todo mq 消息
+            mqProduct.communityUpdate(map); //communityFeignClient.updateCounter(map);
+            return true;
         }
-        if (CommonlyConst.getGameList().contains(inputDto.getTarget_type())){
+        if (CommonlyConst.getGameList().contains(inputDto.getTarget_type())) {
 //            feign客户端调用游戏服务
             //@todo mq 消息
             mqProduct.updateCounter(map);//iDeveloperProxyService.updateCounter(map);
             return true;
         }
-        if (CommonlyConst.getSystemList().contains(inputDto.getTarget_type())){
+        if (CommonlyConst.getSystemList().contains(inputDto.getTarget_type())) {
             return actionDao.updateCountor(map);
         }
         return false;
