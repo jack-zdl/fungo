@@ -621,7 +621,7 @@ public class ActionServiceImpl implements IActionService {
         }*/
 //        游戏下载量变化
         Map<String, String> ssmap = new HashMap<>();
-        ssmap.put("gameId",inputDto.getTarget_id());
+        ssmap.put("gameId", inputDto.getTarget_id());
         mqProduct.updateGameDownNumAndBoomDownloadNum(ssmap);
 
 
@@ -629,10 +629,11 @@ public class ActionServiceImpl implements IActionService {
         // times = gameProxy.addTaskCore(Setting.ACTION_TYPE_DOWNLOAD, memberId, inputDto.getTarget_id(), inputDto.getTarget_type());
 
         //V2.4.6版本任务
-        //新手任务
-        //1 经验值
-        iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
-                MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_FIRST_DOWN_EXP.code());
+        if (StringUtils.isNoneBlank(memberId)){
+            //新手任务
+            //1 经验值
+            iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
+                    MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_FIRST_DOWN_EXP.code());
         //2 fungo币
         iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
                 MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_FIRST_DOWN_COIN.code());
@@ -660,7 +661,7 @@ public class ActionServiceImpl implements IActionService {
             }
         }
         //end
-
+    }
 
         ResultDto<String> re = new ResultDto<String>();
         if (StringUtils.isNotBlank(tips)) {

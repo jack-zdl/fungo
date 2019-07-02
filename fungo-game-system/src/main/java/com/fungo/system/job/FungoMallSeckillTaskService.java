@@ -66,7 +66,7 @@ public class FungoMallSeckillTaskService {
      * 处理 秒杀失败的订单(创建订单超过4小时)，把用户已冻结的fungo币账户解冻，同时设置订单为 3 无效订单
      *
      */
-    @Scheduled(cron = "0 0 0/4 * * ? ")
+//    @Scheduled(cron = "0 0 0/4 * * ? ")
     public void excuteSeckillOrderScanWithFailure() {
         try {
             LOGGER.info("处理秒杀失败的订单定时器启动...");
