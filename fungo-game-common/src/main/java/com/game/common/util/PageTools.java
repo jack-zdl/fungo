@@ -39,7 +39,7 @@ public class PageTools {
                 fpage.setAfter(-1);
             }
         }
-
+        fpage.setPages(pages);
         fpage.setCount(count);
     }
 
