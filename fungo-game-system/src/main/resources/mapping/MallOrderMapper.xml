@@ -135,8 +135,6 @@
             AND morder.order_status = 5
             AND morder.pay_status = 2
             AND morder.mb_id = #{mbId}
-        ORDER BY
-            create_time DESC
-            LIMIT  #{startOffset} ,#{pageSize}
+
 	</select>
 </mapper>
