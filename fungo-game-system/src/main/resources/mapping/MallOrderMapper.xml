@@ -96,7 +96,7 @@
 
 
     <!-- 用户兑换的游戏礼包查询 -->
-    <select id="queryMbGameOrderList" resultMap="java.util.HashMap">
+    <select id="queryMbGameOrderList" resultType="java.util.HashMap">
 		SELECT
                 goods.game_id AS game_id,
                 goods.game_name AS game_name,
@@ -123,7 +123,7 @@
 
 
     <!-- 用户兑换的游戏礼包查询总数 -->
-    <select id="queryMbGameOrderListCount" resultMap="java.util.HashMap">
+    <select id="queryMbGameOrderListCount" resultType="java.util.HashMap">
 		SELECT
                  count(1) as ct
         FROM
