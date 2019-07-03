@@ -10,7 +10,7 @@
     <result column="cmm_id" jdbcType="VARCHAR" property="cmmId" />
     <result column="type" jdbcType="INTEGER" property="type" />
     <result column="state" jdbcType="INTEGER" property="state" />
-    <result column="member_num" jdbcType="INTEGER" property="memberNum" />
+    <result column="followee_num" jdbcType="INTEGER" property="followeeNum" />
     <result column="hot_value" jdbcType="INTEGER" property="hotValue" />
     <result column="sort" jdbcType="INTEGER" property="sort" />
     <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
@@ -19,7 +19,7 @@
     <result column="updated_by" jdbcType="VARCHAR" property="updatedBy" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, circle_name as circleName, circle_icon AS circleIcon , intro,game_id AS gameId ,cmm_id AS cmmId , type, state, member_num AS  memberNum,
+    id, circle_name as circleName, circle_icon AS circleIcon , intro,game_id AS gameId ,cmm_id AS cmmId , type, state, followee_num AS  followeeNum,
     hot_value AS hotValue , sort, created_at AS  createdAt,updated_at AS  updatedAt, created_by AS  createdBy, updated_by as updatedBy
   </sql>
 
@@ -94,7 +94,7 @@
         state = #{state,jdbcType=INTEGER},
       </if>
       <if test="memberNum != null">
-        member_num = #{memberNum,jdbcType=INTEGER},
+        followee_num = #{followeeNum,jdbcType=INTEGER},
       </if>
       <if test="hotValue != null">
         hot_value = #{hotValue,jdbcType=INTEGER},
@@ -124,7 +124,7 @@
       intro = #{intro,jdbcType=VARCHAR},
       type = #{type,jdbcType=INTEGER},
       state = #{state,jdbcType=INTEGER},
-      member_num = #{memberNum,jdbcType=INTEGER},
+      followee_num = #{followeeNum,jdbcType=INTEGER},
       hot_value = #{hotValue,jdbcType=INTEGER},
       sort = #{sort,jdbcType=INTEGER},
       created_at = #{createdAt,jdbcType=TIMESTAMP},

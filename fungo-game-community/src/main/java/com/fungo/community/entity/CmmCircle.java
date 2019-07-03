@@ -30,8 +30,8 @@ public class CmmCircle extends Model<CmmCircle> {
 
     private Integer state;
 
-    @TableField("member_num")
-    private Integer memberNum;
+    @TableField("followee_num")
+    private Integer followeeNum;
 
     @TableField("hot_value")
     private Integer hotValue;
@@ -126,12 +126,12 @@ public class CmmCircle extends Model<CmmCircle> {
         this.state = state;
     }
 
-    public Integer getMemberNum() {
-        return memberNum;
+    public Integer getFolloweeNum() {
+        return followeeNum;
     }
 
-    public void setMemberNum(Integer memberNum) {
-        this.memberNum = memberNum;
+    public void setFolloweeNum(Integer followeeNum) {
+        this.followeeNum = followeeNum;
     }
 
     public Integer getHotValue() {

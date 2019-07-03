@@ -14,7 +14,7 @@
   </sql>
 
   <sql id="Base_Circle_List">
-    id, circle_name as circleName, circle_icon AS circleIcon , intro,game_id AS gameId ,cmm_id AS cmmId , type, state, member_num AS  memberNum,
+    id, circle_name as circleName, circle_icon AS circleIcon , intro,game_id AS gameId ,cmm_id AS cmmId , type, state, followee_num AS  followeeNum,
     hot_value AS hotValue , sort, created_at AS  createdAt,updated_at AS  updatedAt, created_by AS  createdBy, updated_by as updatedBy
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
