@@ -26,7 +26,7 @@ public class NacosFungoCircleConfig   { //implements CommandLineRunner
 //    /**
 //     * ${name:hello}:key=name,默认值=hello
 //     */
-    @Value(value = "${cirlce.number:3}")
+//    @Value(value = "${cirlce.number}")
     public String circle;
 
 //    @Override

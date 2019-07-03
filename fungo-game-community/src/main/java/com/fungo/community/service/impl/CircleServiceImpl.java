@@ -29,6 +29,7 @@ import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
+import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.ActionTypeEnum;
 import com.game.common.enums.PostTypeEnum;
@@ -201,17 +202,6 @@ public class CircleServiceImpl implements CircleService {
             }
             List<Map<String,Object>>  map =  getCirclePayer(cmmCircle);
             cmmCircleDto.setEliteMembers(map);
-
-            // @TODO PAYER TOP 6 OF circle
-            //获取文章
-//            List<CmmPost> cmmPosts = cmmPostCircleMapper.getCmmCircleListByPostId(cmmCircleDto.getId());
-//            List<TagBean> tagBeans = basTagDao.getPostTags();
-//            cmmPosts.stream().forEach(s -> {
-//                CmmCircleDto.TagPost tagPost = new CmmCircleDto.TagPost();
-//                List<TagBean> tag =  tagBeans.stream().filter(x -> x.getId().equals(s.getTags())).collect(Collectors.toList());
-//                tagPost.setTag(tag.get(0).getName());
-
-//            });
             re  = ResultDto.success(cmmCircleDto);
         }catch (Exception e){
             e.printStackTrace();
@@ -676,6 +666,94 @@ public class CircleServiceImpl implements CircleService {
         }
     }
 
+    @Override
+    public FungoPageResultDto<CommunityMember> selectCirclePlayer(String memberId, CmmCirclePostVo cmmCirclePostVo) {
+        FungoPageResultDto<CommunityMember> re = null;
+        try {
+            List<CommunityMember> userList = new ArrayList<>();
+            List<CircleMemberPulishDto> cmmPostCircles = cmmPostCircleMapper.getCmmPostCircleByCircleId(cmmCirclePostVo.getCircleId());
+            CmmCircle cmmCircle = cmmCircleMapper.selectById(cmmCirclePostVo.getCircleId());
+                //从游戏评论表获取用户数量
+                ResultDto<List<MemberPulishFromCommunity>> gameMemberCtmRs  = gameFacedeService.getMemberOrder(cmmCircle.getGameId(), null);
+                if (null != gameMemberCtmRs) {
+                    List<MemberPulishFromCommunity> pulishFromCmtList = gameMemberCtmRs.getData();
+                    if (null != pulishFromCmtList && !pulishFromCmtList.isEmpty()) {
+                        if (null != cmmPostCircles && !cmmPostCircles.isEmpty()) {
+                            cmmPostCircles.stream().forEach(s ->{
+                                List<MemberPulishFromCommunity> list=  pulishFromCmtList.stream().filter( r -> r.getMemberId().equals(s.getMemberId())).collect(Collectors.toList());
+                                if(list != null && list.size() > 0){
+                                    MemberPulishFromCommunity entity = list.get(0);
+                                    s.setGamecommentNum(entity.getCommentNum());
+                                    s.setLikeNum(entity.getLikeNum());
+                                }
+                            });
+                        }
+                    }
+                }
+
+            cmmPostCircles =  cmmPostCircles.stream().sorted((u1,u2) -> {
+                Integer u1sum = (u1.getCommentNum()+u1.getEvaNum()+u1.getGamecommentNum()+u1.getLikeNum()+u1.getPostCommentNum()+u1.getPostLikeNum());
+                Integer u2sum = (u1.getCommentNum()+u1.getEvaNum()+u1.getGamecommentNum()+u1.getLikeNum()+u1.getPostCommentNum()+u1.getPostLikeNum());
+                return  u1sum.compareTo(u2sum);
+            }).collect(Collectors.toList());
+
+            for (CircleMemberPulishDto m : cmmPostCircles) {
+                CommunityMember c = new CommunityMember();
+
+                //!fixme 获取用户数据
+                // c.setAuthorBean(userService.getAuthor(m.getMemberId()));
+                try {
+                    ResultDto<AuthorBean> authorBeanResultDto = systemFacedeService.getAuthor(m.getMemberId());
+                    if (null != authorBeanResultDto) {
+                        AuthorBean authorBean = authorBeanResultDto.getData();
+                        c.setAuthorBean(authorBean);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+
+                c.setMerits(m.getEvaNum() + m.getCommentNum() + m.getPostNum());
+                if (memberId.equals(m.getMemberId())) {
+                    c.setYourself(true);
+                } else {
+
+                    //!fixme 获取用户的粉丝
+                    //MemberFollower follower = followService.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", userId).eq("follower_id", m.getMemberId()).andNew("state = {0}", 1).or("state = {0}", 2));
+
+                    MemberFollowerDto memberFollowerDtoParam = new MemberFollowerDto();
+                    memberFollowerDtoParam.setMemberId(memberId);
+                    memberFollowerDtoParam.setFollowerId(m.getMemberId());
+
+                    MemberFollowerDto memberFollowerDtoData = null;
+
+                    try {
+                        ResultDto<MemberFollowerDto> followerDtoResultDto = systemFacedeService.getMemberFollower1(memberFollowerDtoParam);
+                        if (null != followerDtoResultDto) {
+                            memberFollowerDtoData = followerDtoResultDto.getData();
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                    if (memberFollowerDtoData != null) {
+                        c.setFollowed(true);
+                    }
+                }
+
+                userList.add(c);
+            }
+            re = new FungoPageResultDto();
+            re.setData(userList);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("",e);
+            re = FungoPageResultDto.error("-1","获取玩家榜异常");
+        }
+        return re;
+    }
+
 
     /**
      * 功能描述: 
@@ -685,7 +763,6 @@ public class CircleServiceImpl implements CircleService {
      * @date: 2019/6/26 15:19
      */
     private List<Map<String,Object>> getCirclePayer(CmmCircle cmmCircle){
-        // @todo 根据圈子id查询 圈子文章表查询出文章，所有的人
         List<Map<String, Object>> userList = new ArrayList<>();
         List<CircleMemberPulishDto> cmmPostCircles = cmmPostCircleMapper.getCmmPostCircleByCircleId(cmmCircle.getId());
         if(CircleTypeEnum.GAME.getKey().equals(cmmCircle.getType().toString())){
