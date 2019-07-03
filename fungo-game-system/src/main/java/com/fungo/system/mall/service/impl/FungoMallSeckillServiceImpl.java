@@ -924,8 +924,8 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             mallOrderGoodsPage.setSize(limit);
             mallOrderGoodsPage.setCurrent(page);
 
+            fungoPageResultDto.getData().addAll(mbGameOrderList);
             PageTools.pageToResultDto(fungoPageResultDto, mallOrderGoodsPage);
-            fungoPageResultDto.setData(mbGameOrderList);
 
         } catch (Exception ex) {
             ex.printStackTrace();
