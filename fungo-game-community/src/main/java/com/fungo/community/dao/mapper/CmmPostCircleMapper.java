@@ -1,6 +1,7 @@
 package com.fungo.community.dao.mapper;
 
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.community.entity.CmmCircle;
 import com.fungo.community.entity.CmmPostCircle;
 import com.game.common.dto.circle.CircleMemberPulishDto;
@@ -34,7 +35,7 @@ public interface CmmPostCircleMapper {
      * @auther: dl.zhang
      * @date: 2019/6/26 17:29
      */
-    List<CircleMemberPulishDto> getCmmPostCircleByCircleId(@Param("circleId") String circleId);
+    List<CircleMemberPulishDto> getCmmPostCircleByCircleId(Page page, @Param("circleId") String circleId);
 
     /**
      * 功能描述: 根据游戏圈子查询玩家榜

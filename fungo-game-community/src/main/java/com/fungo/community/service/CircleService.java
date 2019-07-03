@@ -2,10 +2,7 @@ package com.fungo.community.service;
 
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
-import com.game.common.dto.community.CirclePostTypeDto;
-import com.game.common.dto.community.CircleTypeDto;
-import com.game.common.dto.community.CmmCircleDto;
-import com.game.common.dto.community.PostOutBean;
+import com.game.common.dto.community.*;
 import com.game.common.vo.CircleGamePostVo;
 import com.game.common.vo.CmmCirclePostVo;
 import com.game.common.vo.CmmCircleVo;
@@ -37,4 +34,6 @@ public interface CircleService {
     FungoPageResultDto<CmmCircleDto> selectGameCircle(String memberId,CircleGamePostVo circleGamePostVo);
 
     void updateCircleHotValue();
+
+    FungoPageResultDto<CommunityMember> selectCirclePlayer(String memberId, CmmCirclePostVo cmmCirclePostVo);
 }
