@@ -2,6 +2,7 @@ package com.fungo.community.service.msService;
 
 
 import com.game.common.bean.CollectionBean;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.community.CmmPostDto;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -23,7 +24,7 @@ public interface IMSServicePostService {
      * 查询社区帖子|文章数据列表
      * @return
      */
-    public List<CmmPostDto> queryCmmPostList(@RequestBody CmmPostDto postDto);
+    public FungoPageResultDto<CmmPostDto> queryCmmPostList(@RequestBody CmmPostDto postDto);
 
 
 
@@ -47,7 +48,7 @@ public interface IMSServicePostService {
      * @param cmmPostDto
      * @return
      */
-    List<CmmPostDto> listCmmPostTopicPost(CmmPostDto cmmPostDto);
+    FungoPageResultDto<CmmPostDto> listCmmPostTopicPost(CmmPostDto cmmPostDto);
 
 
     /**

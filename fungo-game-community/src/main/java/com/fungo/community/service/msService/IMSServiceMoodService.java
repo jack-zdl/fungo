@@ -1,11 +1,10 @@
 package com.fungo.community.service.msService;
 
 
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.community.MooMessageDto;
 import com.game.common.dto.community.MooMoodDto;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import java.util.List;
 
 /**
  * <p>
@@ -22,14 +21,14 @@ public interface IMSServiceMoodService {
      * 查询 社区心情数据列表
      * @return
      */
-    public List<MooMoodDto> queryCmmMoodList(@RequestBody MooMoodDto mooMoodDto);
+    public FungoPageResultDto<MooMoodDto> queryCmmMoodList(@RequestBody MooMoodDto mooMoodDto);
 
 
     /**
      *  心情评论的 分页查询
      * @return
      */
-    public List<MooMessageDto> queryCmmMoodCommentList(@RequestBody MooMessageDto mooMessageDto);
+    public  FungoPageResultDto<MooMessageDto> queryCmmMoodCommentList(@RequestBody MooMessageDto mooMessageDto);
 
 
 

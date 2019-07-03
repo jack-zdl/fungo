@@ -13,6 +13,7 @@ import com.fungo.community.entity.CmmPost;
 import com.fungo.community.facede.GameFacedeService;
 import com.fungo.community.service.msService.IMSServicePostService;
 import com.game.common.bean.CollectionBean;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmPostDto;
@@ -57,8 +58,9 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
     private GameFacedeService gameFacedeService;
 
     @Override
-    public List<CmmPostDto> queryCmmPostList(CmmPostDto postDto) {
+    public FungoPageResultDto<CmmPostDto> queryCmmPostList(CmmPostDto postDto) {
 
+        FungoPageResultDto<CmmPostDto> resultDto = new FungoPageResultDto<CmmPostDto>();
         List<CmmPostDto> cmmPostList = null;
 
         try {
@@ -136,6 +138,9 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
 
                 if (null != cmmPostPageSelect) {
                     selectRecords = cmmPostPageSelect.getRecords();
+
+                    resultDto.setCount(cmmPostPageSelect.getTotal());
+                    resultDto.setPages(cmmPostPageSelect.getPages());
                 }
 
             } else {
@@ -159,7 +164,9 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
         } catch (Exception ex) {
             LOGGER.error("/ms/service/cmm/post/lists--queryCmmPostList-出现异常:", ex);
         }
-        return cmmPostList;
+
+        resultDto.setData(cmmPostList);
+        return resultDto;
     }
 
 
@@ -246,13 +253,14 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
     }
 
     @Override
-    public List<CmmPostDto> listCmmPostTopicPost(CmmPostDto cmmPostDto) {
+    public  FungoPageResultDto<CmmPostDto>  listCmmPostTopicPost(CmmPostDto cmmPostDto) {
 
+        FungoPageResultDto<CmmPostDto> resultDto = new  FungoPageResultDto<CmmPostDto>();
         List<CmmPostDto> cmmPostDtoList = null;
         try {
 
             if (null == cmmPostDto) {
-                return cmmPostDtoList;
+                return resultDto;
             }
             int page = cmmPostDto.getPage();
             int limit = cmmPostDto.getLimit();
@@ -280,11 +288,15 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
 
                     cmmPostDtoList.add(cmmPostDtoRs);
                 }
+
+                resultDto.setCount(pageList.getTotal());
+                resultDto.setPages(pageList.getPages());
             }
         } catch (Exception ex) {
             LOGGER.error("ms/service/cmm/post/topicPosts--listCmmPostTopicPost-出现异常:", ex);
         }
-        return cmmPostDtoList;
+        resultDto.setData(cmmPostDtoList);
+        return resultDto;
     }
 
     @Override
@@ -320,8 +332,8 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
         Map<String, Object> communityMap = new HashMap<String, Object>();
         //type 0 游戏社区 1：官方社区 2 圈子 3.什么都没有
         communityMap.put("type", 3);
-        if(cmmPost==null||StringUtil.isNull(cmmPost.getId())){
-            return  communityMap;
+        if (cmmPost == null || StringUtil.isNull(cmmPost.getId())) {
+            return communityMap;
         }
         // 获取文章是否有游戏社区 有游戏社区 优先取游戏社区对应游戏
         CmmCommunity community = null;
@@ -339,7 +351,7 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
         // 若有游戏社区且有对应的游戏id 则
         if (community != null && community.getType() != 1 && !CommonUtil.isNull(community.getGameId())) {
             ResultDto<GameDto> resultDto = gameFacedeService.selectGameDetails(community.getGameId(), 0);
-            if(resultDto.isSuccess()){
+            if (resultDto.isSuccess()) {
                 GameDto gameDto = resultDto.getData();
                 communityMap.put("type", 0);
                 communityMap.put("objectId", community.getId());

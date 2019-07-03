@@ -139,6 +139,7 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
 
                     //设置分页数据
                     fungoPageResultDto.setCount(cmmPostPageSelect.getTotal());
+                    fungoPageResultDto.setPages(cmmPostPageSelect.getPages());
                 }
 
             } else {
@@ -165,7 +166,8 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
         fungoPageResultDto.setData(cmmCmtReplyDtoList);
         return fungoPageResultDto;
     }
-//    getReplyDtoBysSelectPageOrderByCreatedAt
+
+    //    getReplyDtoBysSelectPageOrderByCreatedAt
     @Override
     public FungoPageResultDto<CmmCmtReplyDto> getReplyDtoBysSelectPageOrderByCreatedAt(CmmCmtReplyDto postDto) {
 
@@ -258,12 +260,12 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
 
                 Page<Reply> cmmPostPageSelect = this.replyDaoService.selectPage(replyPage, replyEntityWrapper);
 
-    //                需要总数修改
-    //                2019-05-28
-    //                lyc
-    //                if (null != cmmPostPageSelect) {
-    //                    selectRecords = cmmPostPageSelect.getRecords();
-    //                }
+                //                需要总数修改
+                //                2019-05-28
+                //                lyc
+                //                if (null != cmmPostPageSelect) {
+                //                    selectRecords = cmmPostPageSelect.getRecords();
+                //                }
                 if (null != cmmPostPageSelect) {
                     PageTools.pageToResultDto(fungoPageResultDto, cmmPostPageSelect);
                     selectRecords = cmmPostPageSelect.getRecords();
@@ -298,8 +300,9 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
     }
 
     @Override
-    public List<CmmCommentDto> queryFirstLevelCmtList(CmmCommentDto cmmCommentDto) {
+    public FungoPageResultDto<CmmCommentDto> queryFirstLevelCmtList(CmmCommentDto cmmCommentDto) {
 
+        FungoPageResultDto<CmmCommentDto> fungoPageResultDto = new FungoPageResultDto<CmmCommentDto>();
         List<CmmCommentDto> cmmCommentDtoList = null;
 
         try {
@@ -374,7 +377,12 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
 
                 if (null != cmmCommentPageList) {
                     selectRecords = cmmCommentPageList.getRecords();
+
+                    //设置分页数据
+                    fungoPageResultDto.setCount(cmmCommentPageList.getTotal());
+                    fungoPageResultDto.setPages(cmmCommentPageList.getPages());
                 }
+
 
             } else {
                 selectRecords = this.cmmCommentDaoService.selectList(cmmCommentEntityWrapper);
@@ -399,7 +407,9 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
             LOGGER.error("/ms/service/cmm/cmt/f/lists--queryFirstLevelCmtList-出现异常:", ex);
         }
 
-        return cmmCommentDtoList;
+        fungoPageResultDto.setData(cmmCommentDtoList);
+
+        return fungoPageResultDto;
     }
 
 

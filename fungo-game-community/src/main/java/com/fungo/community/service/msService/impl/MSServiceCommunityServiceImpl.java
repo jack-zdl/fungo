@@ -9,6 +9,7 @@ import com.fungo.community.dao.service.impl.CmmPostDaoServiceImap;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.service.msService.IMSServiceCommunityService;
 import com.game.common.bean.CommentBean;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -36,10 +37,10 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
     private CmmCommunityDao cmmCommunityDao;
 
 
-
     @Override
-    public List<CmmCommunityDto> queryCmmCommunityList(CmmCommunityDto communityDto) {
+    public FungoPageResultDto<CmmCommunityDto> queryCmmCommunityList(CmmCommunityDto communityDto) {
 
+        FungoPageResultDto<CmmCommunityDto> resultDto = new FungoPageResultDto<CmmCommunityDto>();
         List<CmmCommunityDto> cmmCommunityDtoList = null;
 
         try {
@@ -110,6 +111,9 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
 
                 if (null != cmmCommunityPageResult) {
                     selectRecords = cmmCommunityPage.getRecords();
+
+                    resultDto.setCount(cmmCommunityPageResult.getTotal());
+                    resultDto.setPages(cmmCommunityPageResult.getPages());
                 }
 
             } else {
@@ -134,7 +138,8 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
         } catch (Exception ex) {
             LOGGER.error("/ms/service/cmm/cty/lists--queryCmmCommunityList-出现异常:", ex);
         }
-        return cmmCommunityDtoList;
+        resultDto.setData(cmmCommunityDtoList);
+        return resultDto;
     }
 
     @Override
@@ -161,20 +166,23 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
 
 
     @Override
-    public List<CommentBean> getAllComments(int pageNum, int limit, String userId) {
+    public FungoPageResultDto<CommentBean> getAllComments(int pageNum, int limit, String userId) {
 
+        FungoPageResultDto<CommentBean> resultDto = new FungoPageResultDto<CommentBean>();
         List<CommentBean> commentBeanList = null;
         try {
             if (StringUtils.isBlank(userId)) {
-                return commentBeanList;
+                return resultDto;
             }
-            Page<CommentBean> page = new Page<CommentBean>(pageNum, limit);
 
+            Page<CommentBean> page = new Page<CommentBean>(pageNum, limit);
             commentBeanList = cmmCommunityDaoService.getAllComments(page, userId);
+
         } catch (Exception ex) {
             LOGGER.error("/ms/service/cmm/user/comments--getAllComments-出现异常:", ex);
         }
-        return commentBeanList;
+        resultDto.setData(commentBeanList);
+        return resultDto;
     }
 
 
@@ -209,17 +217,17 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
 
     @Override
     public List<String> listOfficialCommunityIds() {
-       return  cmmCommunityDao.listOfficialCommunityIds();
+        return cmmCommunityDao.listOfficialCommunityIds();
     }
 
     @Override
     public List<String> listGameIds(List<String> list) {
         ArrayList<String> list1 = new ArrayList<>();
         //不用in 保证顺序
-        if(list!=null&&!list.isEmpty()){
+        if (list != null && !list.isEmpty()) {
             for (String s : list) {
                 CmmCommunity community = cmmCommunityDao.selectById(s);
-                if(community!=null){
+                if (community != null) {
                     list1.add(community.getGameId());
                 }
             }

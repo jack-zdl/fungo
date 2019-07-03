@@ -2,6 +2,7 @@ package com.fungo.community.service.msService;
 
 
 import com.game.common.bean.CommentBean;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -23,7 +24,7 @@ public interface IMSServiceCommunityService {
      * 查询社区数据列表
      * @return
      */
-    public List<CmmCommunityDto> queryCmmCommunityList(@RequestBody CmmCommunityDto communityDto);
+    public FungoPageResultDto<CmmCommunityDto> queryCmmCommunityList(@RequestBody CmmCommunityDto communityDto);
 
     /**
      * 查询单个社区详情数据
@@ -40,7 +41,7 @@ public interface IMSServiceCommunityService {
      * @param userId
      * @return
      */
-    public List<CommentBean> getAllComments(int pageNum, int limit, String userId) ;
+    public FungoPageResultDto<CommentBean>  getAllComments(int pageNum, int limit, String userId) ;
 
 
     /**
