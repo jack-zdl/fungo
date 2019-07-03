@@ -2,85 +2,87 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fungo.system.mall.mapper.MallOrderDao">
 
-	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.fungo.system.mall.entity.MallOrder">
-		<id column="id" property="id" />
-		<result column="order_sn" property="orderSn" />
-		<result column="mb_id" property="mbId" />
-		<result column="mb_name" property="mbName" />
-		<result column="mb_mobile" property="mbMobile" />
-		<result column="order_status" property="orderStatus" />
-		<result column="pay_status" property="payStatus" />
-		<result column="shipping_status" property="shippingStatus" />
-		<result column="goods_amount_cy" property="goodsAmountCy" />
-		<result column="goods_amount_vcy" property="goodsAmountVcy" />
-		<result column="consignee_name" property="consigneeName" />
-		<result column="csg_address" property="csgAddress" />
-		<result column="csg_mobile" property="csgMobile" />
-		<result column="create_time" property="createTime" />
-		<result column="confirm_time" property="confirmTime" />
-		<result column="pay_time" property="payTime" />
-		<result column="shipping_time" property="shippingTime" />
-		<result column="updated_time" property="updatedTime" />
-		<result column="ext1" property="ext1" />
-		<result column="ext2" property="ext2" />
-		<result column="ext3" property="ext3" />
-	</resultMap>
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.fungo.system.mall.entity.MallOrder">
+        <id column="id" property="id"/>
+        <result column="order_sn" property="orderSn"/>
+        <result column="mb_id" property="mbId"/>
+        <result column="mb_name" property="mbName"/>
+        <result column="mb_mobile" property="mbMobile"/>
+        <result column="order_status" property="orderStatus"/>
+        <result column="pay_status" property="payStatus"/>
+        <result column="shipping_status" property="shippingStatus"/>
+        <result column="goods_amount_cy" property="goodsAmountCy"/>
+        <result column="goods_amount_vcy" property="goodsAmountVcy"/>
+        <result column="consignee_name" property="consigneeName"/>
+        <result column="csg_address" property="csgAddress"/>
+        <result column="csg_mobile" property="csgMobile"/>
+        <result column="create_time" property="createTime"/>
+        <result column="confirm_time" property="confirmTime"/>
+        <result column="pay_time" property="payTime"/>
+        <result column="shipping_time" property="shippingTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="ext1" property="ext1"/>
+        <result column="ext2" property="ext2"/>
+        <result column="ext3" property="ext3"/>
+    </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, order_sn AS orderSn, mb_id AS mbId, mb_name AS mbName, mb_mobile AS mbMobile, order_status AS orderStatus, pay_status AS payStatus, shipping_status AS shippingStatus, goods_amount_cy AS goodsAmountCy, goods_amount_vcy AS goodsAmountVcy, consignee_name AS consigneeName, csg_address AS csgAddress, csg_mobile AS csgMobile, create_time AS createTime, confirm_time AS confirmTime, pay_time AS payTime, shipping_time AS shippingTime, updated_time AS updatedTime, ext1, ext2, ext3
     </sql>
 
-	<select id="search" parameterType="com.fungo.system.mall.dto.GoodsValiDto" resultType="com.fungo.system.mall.dto.GoodsDto">
-		SELECT mo.id as orderId ,mo.order_sn,mo.create_time,mo.mb_name as mbNickName,mo.consignee_name as mbName ,mo.csg_mobile as mbMobile,
-		mo.csg_address as csgAddress, mo.id ,mog.goods_id ,
-		mg.goods_name, mg.market_price_vcy as price, mg.goods_type as type,mo.shipping_status
-		FROM  t_mall_order  mo
- 		left join t_mall_order_goods mog on mo.id = mog.order_id
-		left join t_mall_goods mg  on mog.goods_id = mg.id
-		<trim prefix="where" prefixOverrides="AND">
-			<if test="goodsId != null and goodsId != 0">
-				mog.goods_id =#{goodsId}
-			</if>
-			<if test="type != null  and type == 1">
-				AND mg.goods_type = #{type}
-			</if >
-			<if test="type != null and type != 0 and type != 1">
-				AND mg.goods_type != 1
-			</if >
-			<if test="mbNickName != null and mbNickName != ''" >
-				AND mo.mb_name = #{mbNickName}
-			</if>
-			<if test="mbId != null and mbId != ''" >
-				AND mo.mb_id = #{mbId}
-			</if>
-			<if test="exchangeDateStart != null    and  exchangeDateEnd != null  ">
-				<![CDATA[
+    <select id="search" parameterType="com.fungo.system.mall.dto.GoodsValiDto"
+            resultType="com.fungo.system.mall.dto.GoodsDto">
+        SELECT mo.id as orderId ,mo.order_sn,mo.create_time,mo.mb_name as mbNickName,mo.consignee_name as mbName
+        ,mo.csg_mobile as mbMobile,
+        mo.csg_address as csgAddress, mo.id ,mog.goods_id ,
+        mg.goods_name, mg.market_price_vcy as price, mg.goods_type as type,mo.shipping_status
+        FROM t_mall_order mo
+        left join t_mall_order_goods mog on mo.id = mog.order_id
+        left join t_mall_goods mg on mog.goods_id = mg.id
+        <trim prefix="where" prefixOverrides="AND">
+            <if test="goodsId != null and goodsId != 0">
+                mog.goods_id =#{goodsId}
+            </if>
+            <if test="type != null  and type == 1">
+                AND mg.goods_type = #{type}
+            </if>
+            <if test="type != null and type != 0 and type != 1">
+                AND mg.goods_type != 1
+            </if>
+            <if test="mbNickName != null and mbNickName != ''">
+                AND mo.mb_name = #{mbNickName}
+            </if>
+            <if test="mbId != null and mbId != ''">
+                AND mo.mb_id = #{mbId}
+            </if>
+            <if test="exchangeDateStart != null    and  exchangeDateEnd != null  ">
+                <![CDATA[
 				 and  UNIX_TIMESTAMP(#{exchangeDateStartStr}) < UNIX_TIMESTAMP(mo.create_time)
 			    ]]>
-			</if>
-			<if test="exchangeDateStart != null    and  exchangeDateEnd != null" >
-				<![CDATA[
+            </if>
+            <if test="exchangeDateStart != null    and  exchangeDateEnd != null">
+                <![CDATA[
 					and UNIX_TIMESTAMP(mo.create_time) < UNIX_TIMESTAMP(#{exchangeDateEndStr})
 				]]>
-			</if>
+            </if>
 
-		</trim>
-		<if test="orderType == 0">
-			ORDER BY mo.create_time desc
-		</if>
-		<if test="orderType ==1">
-			ORDER BY mo.create_time ASC
-		</if>
-		limit #{startLimit},#{endLimit}
-	</select>
+        </trim>
+        <if test="orderType == 0">
+            ORDER BY mo.create_time desc
+        </if>
+        <if test="orderType ==1">
+            ORDER BY mo.create_time ASC
+        </if>
+        limit #{startLimit},#{endLimit}
+    </select>
 
-	<select id="selectGoodsName"  resultType="java.util.HashMap">
+    <select id="selectGoodsName" resultType="java.util.HashMap">
 		SELECT concat(id , '' ) as goodsId , goods_name FROM t_mall_goods
 	</select>
 
-	<select id="selectTotal"  resultType="java.util.HashMap">
+    <select id="selectTotal" resultType="java.util.HashMap">
 		SELECT mo.order_sn, mg.goods_type  as type , CAST(sum(mog.goods_number) as SIGNED  ) as numbers
 		FROM  t_mall_order  mo
  		left join t_mall_order_goods mog on mo.id = mog.order_id
@@ -88,7 +90,51 @@
 		where mo.order_status in (2,5,7)   group by mg.goods_type
 	</select>
 
-	<select id="selectVirtualTotal" resultType="java.util.HashMap">
+    <select id="selectVirtualTotal" resultType="java.util.HashMap">
 		 SELECT card_type,count(id) as ct  FROM t_mall_virtual_card WHERE is_saled = -1 GROUP BY card_type;
+	</select>
+
+
+    <!-- 用户兑换的游戏礼包查询 -->
+    <select id="queryMbGameOrderList" resultType="java.util.HashMap">
+		SELECT
+                goods.game_id AS game_id,
+                goods.game_name AS game_name,
+                goods.goods_name AS goods_name,
+                goods.goods_intro AS goods_intro,
+                goods.ext2 AS expire,
+                goods.usage_desc AS usage_desc,
+                orderGoods.goods_att AS goods_att,
+                morder.create_time AS create_time
+        FROM
+            t_mall_order_goods orderGoods
+            JOIN t_mall_goods goods
+            JOIN t_mall_order morder ON orderGoods.goods_id = goods.id
+            AND morder.id = orderGoods.order_id
+            AND goods.goods_type = 3
+            AND morder.order_status = 5
+            AND morder.pay_status = 2
+            AND morder.mb_id = #{mbId}
+        ORDER BY
+            create_time DESC
+            LIMIT  #{startOffset} ,#{pageSize}
+
+	</select>
+
+
+    <!-- 用户兑换的游戏礼包查询总数 -->
+    <select id="queryMbGameOrderListCount" resultType="java.util.HashMap">
+		SELECT
+                 count(1) as ct
+        FROM
+            t_mall_order_goods orderGoods
+            JOIN t_mall_goods goods
+            JOIN t_mall_order morder ON orderGoods.goods_id = goods.id
+            AND morder.id = orderGoods.order_id
+            AND goods.goods_type = 3
+            AND morder.order_status = 5
+            AND morder.pay_status = 2
+            AND morder.mb_id = #{mbId}
+
 	</select>
 </mapper>

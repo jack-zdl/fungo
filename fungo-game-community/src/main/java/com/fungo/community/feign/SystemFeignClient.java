@@ -4,22 +4,18 @@ package com.fungo.community.feign;
 import com.fungo.community.facede.SystemFacedeHystrixService;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
-import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
-import com.game.common.dto.system.CircleFollow;
 import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
-import com.game.common.util.annotation.Anonymous;
 import com.game.common.vo.MemberFollowerVo;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -216,5 +212,15 @@ public interface SystemFeignClient {
     @RequestMapping(value = "/circle/mine/follow", method = RequestMethod.POST)
     @ApiImplicitParams({})
     FungoPageResultDto<String> circleListMineFollow( @RequestBody CircleFollowVo circleFollowVo);
+
+
+
+
+    /**
+     *  扣减用户积分
+     * @return
+     */
+    @PostMapping("/user/account/score/sub")
+    public ResultDto<Boolean> subtractMemberScoreAccount(@RequestBody Map<String, Object> accountParamMap);
         //-------------
 }

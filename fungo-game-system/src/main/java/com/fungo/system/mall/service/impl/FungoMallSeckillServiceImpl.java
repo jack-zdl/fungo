@@ -3,6 +3,7 @@ package com.fungo.system.mall.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.entity.IncentAccountCoin;
 import com.fungo.system.entity.Member;
 import com.fungo.system.mall.daoService.*;
@@ -15,13 +16,11 @@ import com.fungo.system.service.IncentAccountCoinDaoService;
 import com.fungo.system.service.MemberService;
 import com.game.common.consts.FunGoGameConsts;
 import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.mall.*;
 import com.game.common.repo.cache.facade.FungoCacheSystem;
 import com.game.common.repo.cache.facade.FungoCacheTask;
-import com.game.common.util.FunGoEHCacheUtils;
-import com.game.common.util.FungoAESUtil;
-import com.game.common.util.PKUtil;
-import com.game.common.util.UUIDUtils;
+import com.game.common.util.*;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
 import org.apache.commons.lang3.StringUtils;
@@ -645,7 +644,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             orderGoodsEntityWrapper.eq("goods_id", orderInput.getGoodsId());
             orderGoodsEntityWrapper.eq("mb_id", orderInput.getMbId());
             int orderGoodsCount = mallOrderGoodsDaoService.selectCount(orderGoodsEntityWrapper);
-            if (orderGoodsCount > 0){
+            if (orderGoodsCount > 0) {
                 resultMap.put("seckillStatus", 5);
                 return resultMap;
             }
@@ -863,6 +862,75 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
         return orderDataJson;
 
+    }
+
+    @Override
+    public FungoPageResultDto<Map<String, Object>> queryMemberGameOrderList(String mb_id, Map<String, Object> param) {
+
+        FungoPageResultDto<Map<String, Object>> fungoPageResultDto = new FungoPageResultDto<Map<String, Object>>();
+        try {
+
+            Integer page = (Integer) param.get("page");
+            Integer limit = (Integer) param.get("limit");
+
+            //查询分页列表startOffset 当前页的起始数据下标
+            int startOffset = (page - 1) * limit;
+
+
+            List<Map<String, Object>> mbGameOrderList = mallOrderDaoService.queryMbGameOrderList(mb_id, startOffset, limit);
+
+            if (null != mbGameOrderList && !mbGameOrderList.isEmpty()) {
+
+                for (Map<String, Object> objectMap : mbGameOrderList) {
+                    //格式化日期
+                    String expire = (String) objectMap.get("expire");
+                    if (StringUtils.isNoneBlank(expire)) {
+                        String[] startAndEndDate = expire.split("~");
+                        if (null != startAndEndDate && startAndEndDate.length >= 2) {
+
+                            String startDateZhCn = DateTools.fmtSimpleDateToStringZhCn(DateTools.str2Date(startAndEndDate[0], null));
+                            String endDateZhCn = DateTools.fmtSimpleDateToStringZhCn(DateTools.str2Date(startAndEndDate[1], null));
+                            expire = startDateZhCn + "-" + endDateZhCn;
+                            objectMap.put("expire", expire);
+                        }
+                    }
+                    //解析兑换码
+                    String goodsAttJson = (String) objectMap.get("goods_att");
+                    if (StringUtils.isNoneBlank(goodsAttJson)) {
+                        JSONObject jsonObject = JSONObject.parseObject(goodsAttJson);
+                        if (null != jsonObject) {
+                            //获取cardInfo
+                            JSONObject cardInfoJson = jsonObject.getJSONObject("cardInfo");
+                            if (null != cardInfoJson) {
+                                //获取卡号，组织成功提示信息
+                                String cardSn = cardInfoJson.getString("cardSn");
+                                objectMap.put("card_sn", cardSn);
+                            }
+                        }
+                    }
+                    objectMap.put("goods_att", "");
+                }
+            }
+
+            //查询总数
+            Map<String, Object> orderListCount = mallOrderDaoService.queryMbGameOrderListCount(mb_id, startOffset, limit);
+            Long count = 0L;
+            if (null != orderListCount && !orderListCount.isEmpty()) {
+                count = (Long) orderListCount.get("ct");
+            }
+
+            Page<MallOrderGoods> mallOrderGoodsPage = new Page();
+            mallOrderGoodsPage.setTotal(count.intValue());
+            mallOrderGoodsPage.setSize(limit);
+            mallOrderGoodsPage.setCurrent(page);
+
+            fungoPageResultDto.getData().addAll(mbGameOrderList);
+            PageTools.pageToResultDto(fungoPageResultDto, mallOrderGoodsPage);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return fungoPageResultDto;
     }
 
 

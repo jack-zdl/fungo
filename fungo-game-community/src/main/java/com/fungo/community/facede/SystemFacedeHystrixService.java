@@ -151,6 +151,12 @@ public class SystemFacedeHystrixService implements FallbackFactory<SystemFeignCl
                 logger.error("--------------------SystemFeignClient--启动熔断:{}" , "circleListMineFollow");
                 return null;
             }
+
+            @Override
+            public ResultDto<Boolean> subtractMemberScoreAccount(Map<String, Object> accountParamMap) {
+                logger.error("--------------------SystemFeignClient--启动熔断:{}" , "circleListMineFollow");
+                return null;
+            }
         };
     }
 }

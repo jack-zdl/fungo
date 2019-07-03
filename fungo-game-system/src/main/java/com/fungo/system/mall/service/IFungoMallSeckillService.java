@@ -1,6 +1,7 @@
 package com.fungo.system.mall.service;
 
 
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.mall.MallGoodsInput;
 import com.game.common.dto.mall.MallGoodsOutBean;
 import com.game.common.dto.mall.MallOrderInput;
@@ -98,5 +99,16 @@ public interface IFungoMallSeckillService {
      * @return 返回订单数据json字符串
      */
     public String getOrdersWithSeckillWithJsonStr(String mb_id, String orderId, String orderSn);
+
+
+    /**
+     * 查询用户游戏礼包订单接口
+     * @param mb_id
+     * @param param
+     * @return
+     */
+    public FungoPageResultDto<Map<String, Object>> queryMemberGameOrderList(String mb_id , Map<String, Object> param);
+
+
 
 }
