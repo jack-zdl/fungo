@@ -19,6 +19,7 @@ public class CommonlyConst {
         communityList.add(5);
         communityList.add(7);
         communityList.add(8);
+        communityList.add(11);
 
 //        游戏
         gameList.add(3);
