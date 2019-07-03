@@ -832,8 +832,6 @@ public class ActionServiceImpl implements IActionService {
             return "follower_num";
         } else if (type == 7) {
             return "post_num";
-        } else if(type == 11 ){
-            return "member_num";
         }
         return null;
     }
