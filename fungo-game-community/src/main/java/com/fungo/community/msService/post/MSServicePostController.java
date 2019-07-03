@@ -37,9 +37,8 @@ public class MSServicePostController {
     @PostMapping("/ms/service/cmm/post/lists")
     public FungoPageResultDto<CmmPostDto> queryCmmPostList(@RequestBody CmmPostDto cmmPostDto) {
 
-        FungoPageResultDto<CmmPostDto> resultDto = new FungoPageResultDto<CmmPostDto>();
-        List<CmmPostDto> cmmPostDtoList = imsServicePostService.queryCmmPostList(cmmPostDto);
-        resultDto.setData(cmmPostDtoList);
+        FungoPageResultDto<CmmPostDto> resultDto = imsServicePostService.queryCmmPostList(cmmPostDto);
+
         return resultDto;
     }
 
@@ -71,19 +70,15 @@ public class MSServicePostController {
     }
 
 
-
     /**
      * 查询 社区置顶文章集合
      * @return
      */
     @PostMapping("/ms/service/cmm/post/topicPosts")
     public FungoPageResultDto<CmmPostDto> listCmmPostTopicPost(@RequestBody CmmPostDto cmmPostDto) {
-        FungoPageResultDto<CmmPostDto> resultDto = new  FungoPageResultDto<CmmPostDto>();
-        List<CmmPostDto> cmmPostDtoList = imsServicePostService.listCmmPostTopicPost(cmmPostDto);
-        resultDto.setData(cmmPostDtoList);
+        FungoPageResultDto<CmmPostDto> resultDto  = imsServicePostService.listCmmPostTopicPost(cmmPostDto);
         return resultDto;
     }
-
 
 
     /**
@@ -93,18 +88,19 @@ public class MSServicePostController {
     @PostMapping("/ms/service/cmm/post/user/collect")
     public FungoPageResultDto<CollectionBean> listCmmPostUsercollect(@RequestParam("pageNum") int pageNum,
                                                                      @RequestParam("limit") int limit, @RequestParam("postIds") List<String> postIds) {
-        FungoPageResultDto<CollectionBean> resultDto = new  FungoPageResultDto<CollectionBean>();
-        List<CollectionBean> cmmPostDtoList = imsServicePostService.getCollection(pageNum,limit,postIds);
+        FungoPageResultDto<CollectionBean> resultDto = new FungoPageResultDto<CollectionBean>();
+        List<CollectionBean> cmmPostDtoList = imsServicePostService.getCollection(pageNum, limit, postIds);
         resultDto.setData(cmmPostDtoList);
         return resultDto;
     }
+
     /**
      * PC2.0新增浏览量 根据跟用户ID获取文章的浏览量
      * @param cardId
      * @return
      */
     @PostMapping("/ms/service/cmm/post/getPostBoomWatchNumByCardId")
-    public ResultDto<Integer> getPostBoomWatchNumByCardId(@RequestParam("cardId")String cardId) {
+    public ResultDto<Integer> getPostBoomWatchNumByCardId(@RequestParam("cardId") String cardId) {
         ResultDto<Integer> resultDto = new ResultDto<Integer>();
         Integer integer = imsServicePostService.getPostBoomWatchNumByCardId(cardId);
         resultDto.setData(integer);
@@ -112,10 +108,10 @@ public class MSServicePostController {
     }
 
     @PostMapping("/ms/service/cmm/post/getGameMsgByPost")
-   public  ResultDto<Map> getGameMsgByPost(@RequestBody CmmPostDto cmmPost){
-       Map gameMsgByPost = imsServicePostService.getGameMsgByPost(cmmPost);
-       return  ResultDto.success(gameMsgByPost);
-   }
+    public ResultDto<Map> getGameMsgByPost(@RequestBody CmmPostDto cmmPost) {
+        Map gameMsgByPost = imsServicePostService.getGameMsgByPost(cmmPost);
+        return ResultDto.success(gameMsgByPost);
+    }
 
     //--------
 }

@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 /**
  * <p>
  *      社区-评论微服务接口
@@ -37,15 +35,10 @@ public class MSServiceCommentController {
      */
     @PostMapping("/ms/service/cmm/cmt/s/lists")
     public FungoPageResultDto<CmmCmtReplyDto> querySecondLevelCmtList(@RequestBody CmmCmtReplyDto replyDto) {
-
-//        FungoPageResultDto<CmmCmtReplyDto> resultDto = new FungoPageResultDto<CmmCmtReplyDto>();
-
         FungoPageResultDto<CmmCmtReplyDto> cmmPostDtoList = imsServiceCommentService.querySecondLevelCmtList(replyDto);
-
-//        resultDto.setData(cmmPostDtoList);
-
         return cmmPostDtoList;
     }
+    
 
     /**
      * 根据创建时间排序 上游游戏业务需求
@@ -66,11 +59,7 @@ public class MSServiceCommentController {
     @PostMapping("/ms/service/cmm/cmt/f/lists")
     public FungoPageResultDto<CmmCommentDto> queryFirstLevelCmtList(@RequestBody CmmCommentDto cmmCommentDto) {
 
-        FungoPageResultDto<CmmCommentDto> resultDto = new FungoPageResultDto<CmmCommentDto>();
-
-        List<CmmCommentDto> cmmPostDtoList = imsServiceCommentService.queryFirstLevelCmtList(cmmCommentDto);
-
-        resultDto.setData(cmmPostDtoList);
+        FungoPageResultDto<CmmCommentDto> resultDto = imsServiceCommentService.queryFirstLevelCmtList(cmmCommentDto);
 
         return resultDto;
     }
@@ -87,7 +76,6 @@ public class MSServiceCommentController {
         resultDto.setData(cmtCount);
         return resultDto;
     }
-
 
 
     //--------

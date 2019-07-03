@@ -37,12 +37,7 @@ public class MSServiceCommunityController {
     @PostMapping("/ms/service/cmm/cty/lists")
     public FungoPageResultDto<CmmCommunityDto> queryCmmPostList(@RequestBody CmmCommunityDto cmmCommunityDto) {
 
-        FungoPageResultDto<CmmCommunityDto> resultDto = new FungoPageResultDto<CmmCommunityDto>();
-
-        List<CmmCommunityDto> cmmPostDtoList = imsServiceCommunityService.queryCmmCommunityList(cmmCommunityDto);
-
-        resultDto.setData(cmmPostDtoList);
-
+        FungoPageResultDto<CmmCommunityDto> resultDto = imsServiceCommunityService.queryCmmCommunityList(cmmCommunityDto);
         return resultDto;
     }
 
@@ -51,7 +46,7 @@ public class MSServiceCommunityController {
      * @return
      */
     @GetMapping("/ms/service/cmm/cty/listOfficialCommunityIds")
-    ResultDto<List<String>>listOfficialCommunityIds(){
+    ResultDto<List<String>> listOfficialCommunityIds() {
         List<String> cmmPostDtoList = imsServiceCommunityService.listOfficialCommunityIds();
         return ResultDto.success(cmmPostDtoList);
     }
@@ -62,7 +57,7 @@ public class MSServiceCommunityController {
      * @return
      */
     @GetMapping("/ms/service/cmm/cty/listGameIds")
-    ResultDto<List<String>> listGameIds(@RequestParam("communityIds") List<String> list){
+    ResultDto<List<String>> listGameIds(@RequestParam("communityIds") List<String> list) {
         List<String> cmmPostDtoList = imsServiceCommunityService.listGameIds(list);
         return ResultDto.success(cmmPostDtoList);
     }
@@ -81,7 +76,6 @@ public class MSServiceCommunityController {
     }
 
 
-
     /**
      * 分页查询 我的动态 - 我的评论 数据
      * @param pageNum 当前页码
@@ -93,11 +87,8 @@ public class MSServiceCommunityController {
     public FungoPageResultDto<CommentBean> getAllComments(@RequestParam("pageNum") int pageNum,
                                                           @RequestParam("limit") int limit, @RequestParam("userId") String userId) {
 
-        FungoPageResultDto<CommentBean> resultDto = new FungoPageResultDto<CommentBean>();
+        FungoPageResultDto<CommentBean> resultDto = imsServiceCommunityService.getAllComments(pageNum, limit, userId);
 
-        List<CommentBean> commentBeanList = imsServiceCommunityService.getAllComments(pageNum, limit, userId);
-
-        resultDto.setData(commentBeanList);
 
         return resultDto;
     }
@@ -118,7 +109,6 @@ public class MSServiceCommunityController {
         resultDto.setData(membersIdsList);
         return resultDto;
     }
-
 
 
     /**

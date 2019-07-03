@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 /**
  * <p>
  *      社区-心情微服务接口
@@ -38,12 +36,7 @@ public class MSServiceMoodController {
     @PostMapping("/ms/service/cmm/mood/lists")
     public FungoPageResultDto<MooMoodDto> queryCmmMoodList(@RequestBody MooMoodDto mooMoodDto) {
 
-        FungoPageResultDto<MooMoodDto> resultDto = new FungoPageResultDto<MooMoodDto>();
-
-        List<MooMoodDto> cmmPostDtoList = imsServiceMoodService.queryCmmMoodList(mooMoodDto);
-
-        resultDto.setData(cmmPostDtoList);
-
+        FungoPageResultDto<MooMoodDto> resultDto = imsServiceMoodService.queryCmmMoodList(mooMoodDto);
         return resultDto;
     }
 
@@ -54,13 +47,7 @@ public class MSServiceMoodController {
      */
     @PostMapping("/ms/service/cmm/mood/cmt/lists")
     public FungoPageResultDto<MooMessageDto> queryCmmMoodCommentList(@RequestBody MooMessageDto mooMessageDto) {
-
-        FungoPageResultDto<MooMessageDto> resultDto = new FungoPageResultDto<MooMessageDto>();
-
-        List<MooMessageDto> cmmMoodCommentList = imsServiceMoodService.queryCmmMoodCommentList(mooMessageDto);
-
-        resultDto.setData(cmmMoodCommentList);
-
+        FungoPageResultDto<MooMessageDto> resultDto = imsServiceMoodService.queryCmmMoodCommentList(mooMessageDto);
         return resultDto;
     }
 
