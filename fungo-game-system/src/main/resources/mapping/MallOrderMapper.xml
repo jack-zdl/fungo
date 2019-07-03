@@ -105,15 +105,15 @@
                 goods.ext2 AS expire,
                 goods.usage_desc AS usage_desc,
                 orderGoods.goods_att AS goods_att,
-                morder.create_time AS create_time
+                morder.create_time AS create_time,
+                morder.order_status AS order_status,
+                morder.pay_status as pay_status
         FROM
             t_mall_order_goods orderGoods
             JOIN t_mall_goods goods
             JOIN t_mall_order morder ON orderGoods.goods_id = goods.id
             AND morder.id = orderGoods.order_id
             AND goods.goods_type = 3
-            AND morder.order_status = 5
-            AND morder.pay_status = 2
             AND morder.mb_id = #{mbId}
         ORDER BY
             create_time DESC
@@ -132,8 +132,6 @@
             JOIN t_mall_order morder ON orderGoods.goods_id = goods.id
             AND morder.id = orderGoods.order_id
             AND goods.goods_type = 3
-            AND morder.order_status = 5
-            AND morder.pay_status = 2
             AND morder.mb_id = #{mbId}
 
 	</select>
