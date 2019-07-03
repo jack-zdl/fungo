@@ -671,7 +671,8 @@ public class CircleServiceImpl implements CircleService {
         FungoPageResultDto<CommunityMember> re = null;
         try {
             List<CommunityMember> userList = new ArrayList<>();
-            List<CircleMemberPulishDto> cmmPostCircles = cmmPostCircleMapper.getCmmPostCircleByCircleId(cmmCirclePostVo.getCircleId());
+            Page<CircleMemberPulishDto> page = new Page<>(cmmCirclePostVo.getPage(),cmmCirclePostVo.getLimit());
+            List<CircleMemberPulishDto> cmmPostCircles = cmmPostCircleMapper.getCmmPostCircleByCircleId(page,cmmCirclePostVo.getCircleId());
             CmmCircle cmmCircle = cmmCircleMapper.selectById(cmmCirclePostVo.getCircleId());
                 //从游戏评论表获取用户数量
                 ResultDto<List<MemberPulishFromCommunity>> gameMemberCtmRs  = gameFacedeService.getMemberOrder(cmmCircle.getGameId(), null);
@@ -690,18 +691,13 @@ public class CircleServiceImpl implements CircleService {
                         }
                     }
                 }
-
             cmmPostCircles =  cmmPostCircles.stream().sorted((u1,u2) -> {
                 Integer u1sum = (u1.getCommentNum()+u1.getEvaNum()+u1.getGamecommentNum()+u1.getLikeNum()+u1.getPostCommentNum()+u1.getPostLikeNum());
                 Integer u2sum = (u1.getCommentNum()+u1.getEvaNum()+u1.getGamecommentNum()+u1.getLikeNum()+u1.getPostCommentNum()+u1.getPostLikeNum());
                 return  u1sum.compareTo(u2sum);
             }).collect(Collectors.toList());
-
             for (CircleMemberPulishDto m : cmmPostCircles) {
                 CommunityMember c = new CommunityMember();
-
-                //!fixme 获取用户数据
-                // c.setAuthorBean(userService.getAuthor(m.getMemberId()));
                 try {
                     ResultDto<AuthorBean> authorBeanResultDto = systemFacedeService.getAuthor(m.getMemberId());
                     if (null != authorBeanResultDto) {
@@ -711,22 +707,14 @@ public class CircleServiceImpl implements CircleService {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-
-
                 c.setMerits(m.getEvaNum() + m.getCommentNum() + m.getPostNum());
                 if (memberId.equals(m.getMemberId())) {
                     c.setYourself(true);
                 } else {
-
-                    //!fixme 获取用户的粉丝
-                    //MemberFollower follower = followService.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", userId).eq("follower_id", m.getMemberId()).andNew("state = {0}", 1).or("state = {0}", 2));
-
                     MemberFollowerDto memberFollowerDtoParam = new MemberFollowerDto();
                     memberFollowerDtoParam.setMemberId(memberId);
                     memberFollowerDtoParam.setFollowerId(m.getMemberId());
-
                     MemberFollowerDto memberFollowerDtoData = null;
-
                     try {
                         ResultDto<MemberFollowerDto> followerDtoResultDto = systemFacedeService.getMemberFollower1(memberFollowerDtoParam);
                         if (null != followerDtoResultDto) {
@@ -735,17 +723,14 @@ public class CircleServiceImpl implements CircleService {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-
                     if (memberFollowerDtoData != null) {
                         c.setFollowed(true);
                     }
                 }
-
                 userList.add(c);
             }
             re = new FungoPageResultDto();
             re.setData(userList);
-
         }catch (Exception e){
             e.printStackTrace();
             LOGGER.error("",e);
@@ -764,7 +749,8 @@ public class CircleServiceImpl implements CircleService {
      */
     private List<Map<String,Object>> getCirclePayer(CmmCircle cmmCircle){
         List<Map<String, Object>> userList = new ArrayList<>();
-        List<CircleMemberPulishDto> cmmPostCircles = cmmPostCircleMapper.getCmmPostCircleByCircleId(cmmCircle.getId());
+        Page<CircleMemberPulishDto> page = new Page<>(1,10);
+        List<CircleMemberPulishDto> cmmPostCircles = cmmPostCircleMapper.getCmmPostCircleByCircleId(page,cmmCircle.getId());
         if(CircleTypeEnum.GAME.getKey().equals(cmmCircle.getType().toString())){
             //从游戏评论表获取用户数量
             ResultDto<List<MemberPulishFromCommunity>> gameMemberCtmRs  = gameFacedeService.getMemberOrder(cmmCircle.getGameId(), null);
