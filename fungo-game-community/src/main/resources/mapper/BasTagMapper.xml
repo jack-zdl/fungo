@@ -42,7 +42,7 @@
 	<!-- 获取文章后台分类标签 -->
 	<select id="getPostTags" resultType="com.game.common.bean.TagBean" parameterType="String">
 		<!-- <![CDATA[ -->
-		select t.id, t.name
+		select t.id, t.name,t.sort
 		from t_bas_tag_group gt,t_bas_tag t
 		where  gt.id = t.group_id and gt.type = 2
 		<!-- ]]> -->

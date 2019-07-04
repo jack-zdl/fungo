@@ -93,7 +93,7 @@ public class CircleController {
     }
 
     /**
-     * 功能描述: app端获取圈子文章是否分类
+     * 功能描述: app端获取圈子分类
      * @param: [memberUserPrefile, inputPageDto]
      * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
      * @auther: dl.zhang
