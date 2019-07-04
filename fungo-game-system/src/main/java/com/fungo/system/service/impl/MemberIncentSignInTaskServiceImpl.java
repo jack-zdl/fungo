@@ -277,7 +277,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
 
         //3.记录用户签到日志
         if (null != scoreRuleCurrent) {
-            this.addLog(member.getId(), "1", score, taskGroupId, scoreRuleCurrent.getTaskType(),
+            this.addLog(member.getId(), 1, score, taskGroupId, scoreRuleCurrent.getTaskType(),
                     scoreRuleCurrent.getId(), scoreRuleCurrent.getName(), scoreRuleCurrent.getCodeIdt());
         }
     }
@@ -383,7 +383,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
 
         //3.记录用户签到日志
         if (null != scoreRuleCurrent) {
-            this.addLog(member.getId(), "1", score, taskGroupId, scoreRuleCurrent.getTaskType(),
+            this.addLog(member.getId(), signInCountDays_i, score, taskGroupId, scoreRuleCurrent.getTaskType(),
                     scoreRuleCurrent.getId(), scoreRuleCurrent.getName(), scoreRuleCurrent.getCodeIdt());
         }
 
@@ -682,7 +682,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
      * @param taskRuleName 签到规则名称
      * @param taskRuleCodeIdt 签到规则码
      */
-    private void addLog(String mb_id, String days, Integer funCoin, String taskGroupId, Integer taskType, String taskRuleId, String taskRuleName, Integer taskRuleCodeIdt) {
+    private void addLog(String mb_id, int days, Integer funCoin, String taskGroupId, Integer taskType, String taskRuleId, String taskRuleName, Integer taskRuleCodeIdt) {
 
         // 日志记录
         ScoreLog newLog = new ScoreLog();
@@ -691,7 +691,14 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
 
         newLog.setGroupId(taskGroupId);
         newLog.setRuleId(taskRuleId);
-        newLog.setRuleName(taskRuleName);
+
+        String taskedName = taskRuleName;
+        if (days > 1) {
+            taskedName = "连续签到" + days + "天";
+        } else {
+            taskedName = "签到1天";
+        }
+        newLog.setRuleName(taskedName);
 
         //签到动态类型 LOGIN,从V2.4.6修改为 signIn
         newLog.setType(MemberActionTypeConsts.MEMBER_ACTIOIN_TYPE_CEHCKIN);
@@ -707,7 +714,6 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
 
         scoreLogService.insert(newLog);
     }
-
 
     /**
      * 基于当前签到天数，获取签到等级编码
