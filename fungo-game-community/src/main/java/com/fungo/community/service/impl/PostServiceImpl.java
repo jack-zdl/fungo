@@ -1563,7 +1563,7 @@ public class PostServiceImpl implements IPostService {
      * @date: 2019/6/18 18:21
      */
     @Override
-    public FungoPageResultDto<PostOutBean> getTopicPosts(MemberUserProfile memberUserPrefile, InputPageDto inputPageDto) {
+    public FungoPageResultDto<PostOutBean> getTopicPosts(MemberUserProfile memberUserPrefile, PostInputPageDto inputPageDto) {
         FungoPageResultDto<PostOutBean> re = new FungoPageResultDto<>();
         List<Map<String, String>> mapList = null;
         mapList = new ArrayList<>();

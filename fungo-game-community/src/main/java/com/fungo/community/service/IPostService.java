@@ -67,7 +67,7 @@ public interface IPostService {
 
 	public FungoPageResultDto<Map<String, String>> getTopicPosts(String communityId);
 
-	public FungoPageResultDto<PostOutBean> getTopicPosts(MemberUserProfile memberUserPrefile,  InputPageDto inputPageDto);
+	public FungoPageResultDto<PostOutBean> getTopicPosts(MemberUserProfile memberUserPrefile,  PostInputPageDto inputPageDto);
 
 
 
