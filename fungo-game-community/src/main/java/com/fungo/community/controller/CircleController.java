@@ -44,12 +44,6 @@ public class CircleController {
     private CircleService circleServiceImpl;
 
     @Autowired
-    private NacosFungoCircleConfig circleConfig;
-
-    @Value(value = "${cirlce.number:3}")
-    public String circle ;
-
-    @Autowired
     private CircleHotValueJob circleHotValueJob;
     /**
      * 功能描述: app端获取圈子列表列表及详情
@@ -64,7 +58,6 @@ public class CircleController {
     public FungoPageResultDto<CmmCircleDto> circleEventList(@Anonymous MemberUserProfile memberUserPrefile,  @RequestBody CmmCircleVo cmmCircleVo) {
         FungoPageResultDto<CmmCircleDto> re = null;
         String memberId = memberUserPrefile == null ? "" : memberUserPrefile.getLoginId();
-        System.out.println("----------------"+circleConfig.getValue());
        try {
            re = circleServiceImpl.selectCircle(memberId,cmmCircleVo);
        }catch (Exception e){
