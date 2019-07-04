@@ -108,7 +108,7 @@ public class ActionServiceImpl implements IActionService {
                 if (Setting.RES_TYPE_POST == inputDto.getTarget_type()) {
 
                     //帖子详情
-                    fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, inputDto.getTarget_id(), null);
+                    //fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, inputDto.getTarget_id(), null);
                     //帖子/心情评论列表 + inputDto.getTarget_id()
                     fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
 
@@ -160,6 +160,8 @@ public class ActionServiceImpl implements IActionService {
         iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                 MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_LIKE_COIN.code());
 
+        //redis cache
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, null, null);
 
         //首页文章帖子列表(v2.4)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
@@ -190,7 +192,8 @@ public class ActionServiceImpl implements IActionService {
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOODS_LIST, "", null);
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOOD_CONTENT_GET, "", null);
         //帖子详情
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, inputDto.getTarget_id(), null);
+        //fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, inputDto.getTarget_id(), null);
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, null, null);
         return ResultDto.success("取消成功");
     }
 
