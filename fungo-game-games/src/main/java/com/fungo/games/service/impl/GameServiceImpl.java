@@ -1672,6 +1672,7 @@ public class GameServiceImpl implements IGameService {
         return re;
     }
 
+
     @Override
     public ResultDto<List<GameOutPage>> viewGames(String memberId) {
         List<String> ids = iEvaluateProxyService.listGameHisIds(memberId);
@@ -1733,6 +1734,22 @@ public class GameServiceImpl implements IGameService {
             }
         }
         return ResultDto.success(gameOutPages);
+    }
+
+    @Override
+    public ResultDto<List<GameOut>> listGameByids(String gameIds) {
+        Wrapper<Game> wrapper = new EntityWrapper<Game>();
+        wrapper.in("id",gameIds);
+        List<Game> games = gameService.selectList(wrapper);
+        List<GameOut> gameOuts = new ArrayList<>();
+        for (Game game : games) {
+            GameOut out = new GameOut();
+            out.setName(game.getName());
+            out.setIcon(game.getIcon());
+            out.setObjectId(game.getId());
+            gameOuts.add(out);
+        }
+        return ResultDto.success(gameOuts);
     }
 
     //可修改
