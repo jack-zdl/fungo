@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fungo.community.config.FungoCircleParameter;
+import com.fungo.community.config.NacosFungoCircleConfig;
 import com.fungo.community.dao.mapper.BasTagDao;
 import com.fungo.community.dao.mapper.CmmCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostCircleMapper;
@@ -33,7 +33,6 @@ import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.ActionTypeEnum;
 import com.game.common.enums.PostTypeEnum;
-import com.game.common.enums.circle.CircleRecommendEnum;
 import com.game.common.enums.circle.CircleTypeEnum;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
@@ -79,7 +78,7 @@ public class CircleServiceImpl implements CircleService {
     @Autowired
     private BasTagDao basTagDao;
     @Autowired
-    private FungoCircleParameter fungoCircleParameter;
+    private NacosFungoCircleConfig nacosFungoCircleConfig;
     @Autowired
     private SystemFacedeService systemFacedeService;
     //依赖游戏微服务
@@ -397,16 +396,18 @@ public class CircleServiceImpl implements CircleService {
             while (iter.hasNext()) {
                 String key = iter.next();
                 List<CmmPost> valueList = cmmPostMap.get(key);
-                if (valueList.size() < fungoCircleParameter.getPostnumber())
-                    cmmPostMap.remove(key);
+                if (valueList.size() < nacosFungoCircleConfig.getValue())
+                    iter.remove();
             }
             for (String key : cmmPostMap.keySet()) {
                 CirclePostTypeDto circleTypeDto = new CirclePostTypeDto();
                 TagBean cmmPost = tagBeans.stream().filter(r -> r.getId().equals(key)).findFirst().orElse(new TagBean());
                 circleTypeDto.setCirclePostType(cmmPost.getId());
                 circleTypeDto.setCirclePostName(cmmPost.getName());
+                circleTypeDto.setSort(cmmPost.getSort());
                 circleTypeDtos.add(circleTypeDto);
             }
+            circleTypeDtos = circleTypeDtos.stream().sorted(Comparator.comparing(CirclePostTypeDto::getSort)).collect(Collectors.toList());
             re.setData(circleTypeDtos);
         }catch (Exception e){
             e.printStackTrace();

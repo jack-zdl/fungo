@@ -1,54 +1,48 @@
 package com.fungo.community.config;
 
-
-import com.alibaba.nacos.api.annotation.NacosProperties;
-import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
-import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
-import com.alibaba.nacos.api.config.annotation.NacosProperty;
-import com.alibaba.nacos.api.config.annotation.NacosValue;
-import jdk.nashorn.internal.objects.annotations.Property;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-
-import java.util.Properties;
-
 
 /**
- * <p></p>
- *
- * @Author: dl.zhang
+ * <p>nacos的config配置
+ * dl.zhang
  * @Date: 2019/7/1
  */
 @Component
 @Slf4j
 @RefreshScope
-public class NacosFungoCircleConfig   { //implements CommandLineRunner
-
+public class NacosFungoCircleConfig   {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NacosFungoCircleConfig.class);
 
-    @Value(value = "${cirlce.number:3}")
-    public int value ;
-
+    /**
+     * 功能描述: 圈子文章限制分类文章的数目
+     * @auther: dl.zhang
+     * @date: 2019/7/4 13:58
+     */
+    @Value(value = "${cirlce.postnumber:3}")
+    private int value ;
 
     @Value(value = "${nacos.config:1}")
-    public int config;
+    private int config;
 
-    public int getValue(){
-        System.out.println("-----------------"+value);
-        System.out.println("-----------------"+config);
+    public int getValue() {
         return value;
     }
 
+    public void setValue(int value) {
+        this.value = value;
+    }
 
+    public int getConfig() {
+        return config;
+    }
 
+    public void setConfig(int config) {
+        this.config = config;
+    }
 }

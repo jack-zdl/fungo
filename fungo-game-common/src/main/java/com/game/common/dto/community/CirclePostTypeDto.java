@@ -29,5 +29,7 @@ public class CirclePostTypeDto {
      */
     private String circlePostName;
 
+    private int sort;
+
 
 }
