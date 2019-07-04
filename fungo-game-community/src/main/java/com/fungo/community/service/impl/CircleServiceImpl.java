@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fungo.community.config.FungoCircleParameter;
 import com.fungo.community.config.NacosFungoCircleConfig;
 import com.fungo.community.dao.mapper.BasTagDao;
 import com.fungo.community.dao.mapper.CmmCircleMapper;
@@ -34,7 +33,6 @@ import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.ActionTypeEnum;
 import com.game.common.enums.PostTypeEnum;
-import com.game.common.enums.circle.CircleRecommendEnum;
 import com.game.common.enums.circle.CircleTypeEnum;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
@@ -79,8 +77,6 @@ public class CircleServiceImpl implements CircleService {
     private CmmPostDao cmmPostDao;
     @Autowired
     private BasTagDao basTagDao;
-    @Autowired
-    private FungoCircleParameter fungoCircleParameter;
     @Autowired
     private NacosFungoCircleConfig nacosFungoCircleConfig;
     @Autowired
