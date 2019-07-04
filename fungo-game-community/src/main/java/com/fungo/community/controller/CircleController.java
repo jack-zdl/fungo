@@ -45,6 +45,7 @@ public class CircleController {
 
     @Autowired
     private CircleHotValueJob circleHotValueJob;
+
     /**
      * 功能描述: app端获取圈子列表列表及详情
      * @param: [memberUserPrefile, inputPageDto]
