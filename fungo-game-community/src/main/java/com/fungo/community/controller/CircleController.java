@@ -20,6 +20,8 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +34,7 @@ import java.util.*;
  * @Date: 2019/6/11
  */
 @RestController
+@RefreshScope
 @Api(value = "", description = "圈子首页")
 public class CircleController {
 
@@ -42,6 +45,9 @@ public class CircleController {
 
     @Autowired
     private NacosFungoCircleConfig circleConfig;
+
+    @Value(value = "${cirlce.number:3}")
+    public String circle ;
 
     @Autowired
     private CircleHotValueJob circleHotValueJob;
@@ -58,7 +64,7 @@ public class CircleController {
     public FungoPageResultDto<CmmCircleDto> circleEventList(@Anonymous MemberUserProfile memberUserPrefile,  @RequestBody CmmCircleVo cmmCircleVo) {
         FungoPageResultDto<CmmCircleDto> re = null;
         String memberId = memberUserPrefile == null ? "" : memberUserPrefile.getLoginId();
-        System.out.println("----------------"+circleConfig.circle);
+        System.out.println("----------------"+circleConfig.getValue());
        try {
            re = circleServiceImpl.selectCircle(memberId,cmmCircleVo);
        }catch (Exception e){

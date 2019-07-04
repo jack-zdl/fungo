@@ -1,13 +1,25 @@
 package com.fungo.community.config;
 
 
+import com.alibaba.nacos.api.annotation.NacosProperties;
+import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
+import com.alibaba.nacos.api.config.annotation.NacosConfigurationProperties;
+import com.alibaba.nacos.api.config.annotation.NacosProperty;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
+import jdk.nashorn.internal.objects.annotations.Property;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+
+import java.util.Properties;
 
 
 /**
@@ -16,24 +28,27 @@ import org.springframework.stereotype.Service;
  * @Author: dl.zhang
  * @Date: 2019/7/1
  */
-@Service
+@Component
+@Slf4j
 @RefreshScope
 public class NacosFungoCircleConfig   { //implements CommandLineRunner
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NacosFungoCircleConfig.class);
 
-//    /**
-//     * ${name:hello}:key=name,默认值=hello
-//     */
-//    @Value(value = "${cirlce.number}")
-    public String circle;
+    @Value(value = "${cirlce.number:3}")
+    public int value ;
 
-//    @Override
-    public void run(String... args) throws Exception {
-        while (true) {
-            Thread.sleep(4000);
-            LOGGER.info("[NacosConfigAnnoatationService]注解方式获取到的配置项目,circle={}");
-        }
+
+    @Value(value = "${nacos.config:1}")
+    public int config;
+
+    public int getValue(){
+        System.out.println("-----------------"+value);
+        System.out.println("-----------------"+config);
+        return value;
     }
+
+
+
 }
