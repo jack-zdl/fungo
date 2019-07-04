@@ -72,6 +72,24 @@ public class GameController {
         }
     }
 
+    @ApiOperation(value = "根据id集合获取游戏列表", notes = "")
+    @RequestMapping(value = "/api/content/game/listGameByids", method = RequestMethod.GET)
+    public ResultDto<List<GameOut>> listGameByids(@RequestParam("gameIds") String gameIds) {
+        if(CommonUtil.isNull(gameIds)){
+            ArrayList<GameOut> games = new ArrayList<>();
+            return ResultDto.success(games);
+        }
+        try {
+            return gameService.listGameByids(gameIds);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultDto.error("-1", "操作失败");
+        }
+
+    }
+
+
+
     @ApiOperation(value = "游戏列表", notes = "")
     @RequestMapping(value = "/api/content/games", method = RequestMethod.POST)
     @ApiImplicitParams({

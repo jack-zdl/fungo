@@ -155,4 +155,6 @@ public interface IGameService {
     FungoPageResultDto<GameOutBean> getGameList1(GameItemInput input);
 
     ResultDto<List<GameOutPage>> viewGames(String memberId);
+
+    ResultDto<List<GameOut>> listGameByids(String gameIds);
 }
