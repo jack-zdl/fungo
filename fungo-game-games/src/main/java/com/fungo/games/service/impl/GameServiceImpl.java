@@ -583,7 +583,8 @@ public class GameServiceImpl implements IGameService {
         }
 
         //redis cache
-        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, memberId + ptype, out);
+        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId,
+                memberId + ptype, out,60 * 5);
         return ResultDto.success(out);
     }
 
