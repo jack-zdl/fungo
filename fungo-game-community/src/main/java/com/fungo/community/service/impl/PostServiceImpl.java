@@ -981,7 +981,7 @@ public class PostServiceImpl implements IPostService {
                 postWatchNum_i = viewNewCount.intValue();
                 out.setWatch_num(postWatchNum_i);
                 //记录浏览量 同时保存到Redis中
-                fungoCacheArticle.excIndexCache(true, FungoCacheArticle.FUNGO_CORE_API_POST_CONTENT_DETAIL_WATCHNUM, postId, postWatchNum_i);
+                fungoCacheArticle.excIndexCache(true, FungoCacheArticle.FUNGO_CORE_API_POST_CONTENT_DETAIL_WATCHNUM, postId, postWatchNum_i,5);
                 //更新文章浏览数DB
                 iCountService.addCounter("t_cmm_post", "watch_num", postId);
                 CmmPost cmmPost = new CmmPost();
@@ -1260,9 +1260,9 @@ public class PostServiceImpl implements IPostService {
         cmmPostUpdate.updateById();
 
         //redis cache
-        fungoCacheArticle.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, postId, out);
+        fungoCacheArticle.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, postId, out,30);
         //记录浏览量 同时保存到Redis中
-        fungoCacheArticle.excIndexCache(true, FungoCacheArticle.FUNGO_CORE_API_POST_CONTENT_DETAIL_WATCHNUM, postId, cmmPostWatchNum);
+        fungoCacheArticle.excIndexCache(true, FungoCacheArticle.FUNGO_CORE_API_POST_CONTENT_DETAIL_WATCHNUM, postId, cmmPostWatchNum,5);
         return ResultDto.success(out);
     }
 
