@@ -54,7 +54,7 @@ public class CircleController {
      * @date: 2019/6/11 11:01
      */
     @ApiOperation(value = "v2.5", notes = "")
-    @RequestMapping(value = "/api/community/circle", method = RequestMethod.POST)
+    @PostMapping(value = "/api/community/circle")
     @ApiImplicitParams({})
     public FungoPageResultDto<CmmCircleDto> circleEventList(@Anonymous MemberUserProfile memberUserPrefile,  @RequestBody CmmCircleVo cmmCircleVo) {
         FungoPageResultDto<CmmCircleDto> re = null;
@@ -77,7 +77,7 @@ public class CircleController {
      * @date: 2019/6/11 11:01
      */
     @ApiOperation(value = "v2.5", notes = "")
-    @RequestMapping(value = "/api/community/circle/{circleId}", method = RequestMethod.GET)
+    @GetMapping(value = "/api/community/circle/{circleId}")
     @ApiImplicitParams({})
     public ResultDto<CmmCircleDto> selectCircle(@Anonymous MemberUserProfile memberUserPrefile, @PathVariable("circleId") String circleId) {
         ResultDto<CmmCircleDto> re = null;
@@ -100,7 +100,7 @@ public class CircleController {
      * @date: 2019/6/11 11:01
      */
     @ApiOperation(value = "v2.5", notes = "")
-    @RequestMapping(value = "/api/community/circle/type", method = RequestMethod.GET)
+    @GetMapping(value = "/api/community/circle/type")
     @ApiImplicitParams({})
     public ResultDto<List<CircleTypeDto>> selectCircleType(@Anonymous MemberUserProfile memberUserPrefile ) {
         ResultDto<List<CircleTypeDto>> re = null;
@@ -124,7 +124,7 @@ public class CircleController {
      * @date: 2019/6/11 11:01
      */
     @ApiOperation(value = "v2.5", notes = "")
-    @RequestMapping(value = "/api/community/circle/post/type", method = RequestMethod.POST)
+    @PostMapping(value = "/api/community/circle/post/type")
     @ApiImplicitParams({})
     public ResultDto<List<CirclePostTypeDto>> selectCirclePostType(@Anonymous MemberUserProfile memberUserPrefile , @RequestBody CmmCirclePostVo cmmCirclePostVo) {
         ResultDto<List<CirclePostTypeDto>> re = null;
@@ -154,7 +154,7 @@ public class CircleController {
      * @date: 2019/6/11 11:01
      */
     @ApiOperation(value = "v2.5", notes = "")
-    @RequestMapping(value = "/api/community/circle/post", method = RequestMethod.POST)
+    @PostMapping(value = "/api/community/circle/post")
     @ApiImplicitParams({})
     public FungoPageResultDto<PostOutBean> selectCirclePost(@Anonymous MemberUserProfile memberUserPrefile , @RequestBody CmmCirclePostVo cmmCirclePostVo) {
         FungoPageResultDto<PostOutBean> re = null;
@@ -177,7 +177,7 @@ public class CircleController {
      * @date: 2019/6/11 11:01
      */
     @ApiOperation(value = "v2.5", notes = "")
-    @RequestMapping(value = "/api/community/circle/post/sort", method = RequestMethod.GET)
+    @GetMapping(value = "/api/community/circle/post/sort")
     @ApiImplicitParams({})
     public ResultDto<List<CirclePostSortDto>> selectCirclePostSort(@Anonymous MemberUserProfile memberUserPrefile ) {
         List<CirclePostSortDto>  circlePostSortDtos = new ArrayList<>();
@@ -197,7 +197,7 @@ public class CircleController {
      * @date: 2019/6/11 11:01
      */
     @ApiOperation(value = "v2.5", notes = "")
-    @RequestMapping(value = "/api/community/circle/game/{gameId}", method = RequestMethod.GET)
+    @GetMapping(value = "/api/community/circle/game/{gameId}")
     @ApiImplicitParams({})
     public ResultDto<CmmCircleDto> selectCircleGame(@Anonymous MemberUserProfile memberUserPrefile,@PathVariable("gameId") String gameId ) {
         ResultDto<CmmCircleDto> re = null;
@@ -221,7 +221,7 @@ public class CircleController {
      * @date: 2019/6/11 11:01
      */
     @ApiOperation(value = "v2.5", notes = "")
-    @RequestMapping(value = "/api/community/circle/game/post", method = RequestMethod.POST)
+    @PostMapping(value = "/api/community/circle/game/post")
     @ApiImplicitParams({})
     public FungoPageResultDto<PostOutBean>  selectCircleGamePost(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody CircleGamePostVo circleGamePostVo) {
         FungoPageResultDto<PostOutBean>  re = null;
@@ -244,7 +244,7 @@ public class CircleController {
      * @date: 2019/6/11 11:01
      */
     @ApiOperation(value = "v2.5", notes = "")
-    @RequestMapping(value = "/api/community/game/circle",method = RequestMethod.POST)
+    @PostMapping(value = "/api/community/game/circle")
     @ApiImplicitParams({})
     public FungoPageResultDto<CmmCircleDto>  selectGameCircle(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody CircleGamePostVo circleGamePostVo) {
         FungoPageResultDto<CmmCircleDto>  re = null;
@@ -269,7 +269,7 @@ public class CircleController {
      * @date: 2019/6/11 11:01
      */
     @ApiOperation(value = "v2.5", notes = "")
-    @RequestMapping(value = "/api/community/circle/player",method = RequestMethod.POST)
+    @PostMapping(value = "/api/community/circle/player")
     @ApiImplicitParams({})
     public FungoPageResultDto<CommunityMember>  selectCirclePlayer(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody CmmCirclePostVo cmmCirclePostVo) {
         FungoPageResultDto<CommunityMember>  re = null;
@@ -293,7 +293,7 @@ public class CircleController {
      * @date: 2019/6/11 11:01
      */
     @ApiOperation(value = "v2.5", notes = "")
-    @RequestMapping(value = "/api/community/circle/hotvalue/job", method = RequestMethod.GET)
+    @GetMapping(value = "/api/community/circle/hotvalue/job")
     @ApiImplicitParams({})
     public void updateCircleHotValueJob( ) {
         circleHotValueJob.execute();
