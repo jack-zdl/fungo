@@ -63,7 +63,7 @@ public class CircleController {
            re = circleServiceImpl.selectCircle(memberId,cmmCircleVo);
        }catch (Exception e){
            e.printStackTrace();
-           LOGGER.error("获取活动列表异常",e);
+           LOGGER.error("获取圈子列表列表及详情",e);
             re = FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(CommonEnum.ERROR.code(),"获取圈子列表异常，请联系管理员");
        }
         return re;
