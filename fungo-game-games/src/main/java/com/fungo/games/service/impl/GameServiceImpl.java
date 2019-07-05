@@ -502,7 +502,9 @@ public class GameServiceImpl implements IGameService {
             perMap = percentFormat(perMap);
 
             out.setRatingList(rateFormat(perMap));
+            //无评分时，返回默认值数据
         } else {
+
             List<TraitBean> traitList = new ArrayList<>();
             for (int i = 1; i <= 5; i++) {
                 TraitBean tb = new TraitBean();
@@ -512,6 +514,17 @@ public class GameServiceImpl implements IGameService {
                 traitList.add(tb);
             }
             out.setTraitList(traitList);
+
+
+            HashMap<String, Double> perMap = new HashMap<>();
+            perMap.put("1", 0.0);
+            perMap.put("2", 0.0);
+            perMap.put("3", 0.0);
+            perMap.put("4", 0.0);
+            perMap.put("5", 0.0);
+            perMap = percentFormat(perMap);
+            out.setRatingList(rateFormat(perMap));
+
         }
 
         // 查询游戏标签
@@ -584,7 +597,7 @@ public class GameServiceImpl implements IGameService {
 
         //redis cache
         fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId,
-                memberId + ptype, out,60 * 5);
+                memberId + ptype, out, 60 * 5);
         return ResultDto.success(out);
     }
 
@@ -1740,7 +1753,7 @@ public class GameServiceImpl implements IGameService {
     @Override
     public ResultDto<List<GameOut>> listGameByids(String gameIds) {
         Wrapper<Game> wrapper = new EntityWrapper<Game>();
-        wrapper.in("id",gameIds);
+        wrapper.in("id", gameIds);
         List<Game> games = gameService.selectList(wrapper);
         List<GameOut> gameOuts = new ArrayList<>();
         for (Game game : games) {
