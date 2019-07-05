@@ -25,9 +25,9 @@ public class FungoCacheGame {
 
     /**
      * Redis 默认缓存时间: 秒
-     * 30分钟
+     * 5分钟
      */
-    public static final Integer REDIS_EXPIRE_DEFAULT = 60 * 10;
+    public static final Integer REDIS_EXPIRE_DEFAULT = 60 * 5;
 
     @Autowired
     private RedisHandler redisHandler;
@@ -49,6 +49,29 @@ public class FungoCacheGame {
         }
         if (isCache) {
             redisHandler.set(redisKey, value, REDIS_EXPIRE_DEFAULT);
+        } else {
+            redisHandler.batchDelete(redisKey);
+        }
+    }
+
+
+    /**
+     * 添加缓存和删除
+     * @param isCache true 缓存，false清除缓存
+     * @param keyPrefix 缓存key的前缀（对象是json字符串，非对象是字符串）
+     * @param keySuffix 缓存key的后缀（对象是json字符串，非对象是字符串）
+     * @param expire 缓存过期时间
+     * @param value
+     */
+    public void excIndexCache(boolean isCache, String keyPrefix, String keySuffix, Object value,Integer expire) {
+
+        //从redis获取
+        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_join_";
+        if (StringUtils.isNotBlank(keySuffix)){
+            redisKey += SecurityMD5.encrypt16(keySuffix);
+        }
+        if (isCache) {
+            redisHandler.set(redisKey, value,expire);
         } else {
             redisHandler.batchDelete(redisKey);
         }
