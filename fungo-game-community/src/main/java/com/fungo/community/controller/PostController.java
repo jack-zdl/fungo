@@ -59,44 +59,24 @@ import java.util.Map;
 public class PostController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostController.class);
-
     @Autowired
     private CmmPostDaoService daoPostService;
-
     @Autowired
     private IPostService bsPostService;
-
     @Autowired
     private CmmPostDao cmmPostDao;
-
     @Autowired
     private CmmCommunityDaoService communityService;
-
-    @Autowired
-    private FungoCacheArticle fungoCacheArticle;
-
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
-
-
     //依赖系统和用户微服务
     @Autowired(required = false)
     private SystemFeignClient systemFeignClient;
-
-    //依赖游戏微服务
-    @Autowired(required = false)
-    private GameFeignClient gameFeignClient;
-
     @Autowired
     private CmmPostCircleMapper cmmPostCircleMapper;
 
-   /* @Autowired
-    private IGameService iGameService;
-    */
-
-
     @ApiOperation(value = "搜索帖子", notes = "")
-    @RequestMapping(value = "/api/search/posts", method = RequestMethod.POST)
+    @PostMapping(value = "/api/search/posts")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "key_word", value = "关键字", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "page", value = "页数号", paramType = "form", dataType = "int"),
@@ -116,13 +96,13 @@ public class PostController {
 
 
     @ApiOperation(value = "搜索帖子关联的游戏数据", notes = "")
-    @RequestMapping(value = "/api/search/posts/games", method = RequestMethod.POST)
+    @PostMapping(value = "/api/search/posts/games")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "key_word", value = "关键字", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "page", value = "页数号", paramType = "form", dataType = "int"),
             @ApiImplicitParam(name = "limit", value = "每页显示数", paramType = "form", dataType = "int")
     })
-    public FungoPageResultDto<GameDto> queryCmmPostRefGameIds(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto) throws Exception {
+    public FungoPageResultDto<GameDto> queryCmmPostRefGameIds(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto) {
         String keyword = searchInputDto.getKey_word();
         int page = searchInputDto.getPage();
         //fix: 页码 小于1 返回空 [by mxf 2019-01-30]
@@ -138,7 +118,7 @@ public class PostController {
 
 
     @ApiOperation(value = "发帖", notes = "")
-    @RequestMapping(value = "/api/content/post", method = RequestMethod.POST)
+    @PostMapping(value = "/api/content/post")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "html", value = "html内容", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "community_id", value = "社区id", paramType = "form", dataType = "string"),
@@ -158,7 +138,7 @@ public class PostController {
 
 
     @ApiOperation(value = "删帖", notes = "")
-    @RequestMapping(value = "/api/content/post/{postId}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/api/content/post/{postId}")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "postId", value = "帖子id", paramType = "form", dataType = "string"),
     })
@@ -169,7 +149,7 @@ public class PostController {
 
 
     @ApiOperation(value = "修改帖子", notes = "")
-    @RequestMapping(value = "/api/content/post", method = RequestMethod.PUT)
+    @PutMapping(value = "/api/content/post")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "html", value = "html内容", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "postId", value = "帖子id", paramType = "form", dataType = "string"),
@@ -181,16 +161,14 @@ public class PostController {
     public ResultDto<String> editPost(MemberUserProfile memberUserPrefile, HttpServletRequest request,
                                       @RequestBody PostInput postInput) throws Exception {
         String userId = memberUserPrefile.getLoginId();
-        System.out.println(userId);
         String os = "";
         os = (String) request.getAttribute("os");
         return bsPostService.editPost(postInput, userId, os);
-//		return ResultDto.success();
     }
 
 
     @ApiOperation(value = "帖子详情", notes = "")
-    @RequestMapping(value = "/api/content/post/{postId}", method = RequestMethod.GET)
+    @GetMapping(value = "/api/content/post/{postId}")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "postId", value = "帖子id", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "userId", value = "用户id", paramType = "form", dataType = "string")
@@ -212,7 +190,7 @@ public class PostController {
 
 
     @ApiOperation(value = "帖子列表", notes = "")
-    @RequestMapping(value = "/api/content/posts", method = RequestMethod.POST)
+    @PostMapping(value = "/api/content/posts")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "int"),
             @ApiImplicitParam(name = "sort", value = "排序字段", paramType = "form", dataType = "int"),
@@ -235,13 +213,13 @@ public class PostController {
 
 
     @ApiOperation(value = "社区置顶文章(2.4.3)", notes = "")
-    @RequestMapping(value = "/api/content/post/topic/{communityId}", method = RequestMethod.GET)
+    @GetMapping(value = "/api/content/post/topic/{communityId}")
     public FungoPageResultDto<Map<String, String>> getTopicPosts(@Anonymous MemberUserProfile memberUserPrefile, @PathVariable("communityId") String communityId) {
         return bsPostService.getTopicPosts(communityId);
     }
 
     @ApiOperation(value = "管控台推荐文章", notes = "")
-    @RequestMapping(value = "/api/content/post/topic", method = RequestMethod.POST)
+    @PostMapping(value = "/api/content/post/topic")
     public FungoPageResultDto<PostOutBean> getTopicPosts(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody PostInputPageDto inputPageDto) {
         return bsPostService.getTopicPosts(memberUserPrefile , inputPageDto);
     }
@@ -255,7 +233,7 @@ public class PostController {
      * @return
      */
     @ApiOperation(value = "首页文章帖子列表(v2.4)   filter(1:关注游戏社区,2:关注用户，4:全部关注, 0:推荐，3:最新)", notes = "")
-    @RequestMapping(value = "/api/amwaywall/postlist", method = RequestMethod.POST)
+    @PostMapping(value = "/api/amwaywall/postlist")
     @ApiImplicitParams({})
     public FungoPageResultDto<PostOutBean> getPostList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody PostInputPageDto inputPageDto) {
 
@@ -291,7 +269,6 @@ public class PostController {
         if (null == rowId || rowId.longValue() == 0 || StringUtils.isBlank(lastUpdateDate)) {
             isHaveRowIDAndLastUpdateDate = false;
         }
-
         //filter(1:关注游戏社区,2:关注用户，4:全部关注, 0:推荐，3:最新)
         if ("0".equals(filter)) {
 
@@ -306,13 +283,9 @@ public class PostController {
                 total = pageRecommend.getTotal();
             }
 
-
         } else if ("1".equals(filter)) {
 
             if (memberUserPrefile != null) {
-
-                //!fixme 获取关注社区id集合
-                //List<String> olist = actionDao.getFollowerCommunityId(memberUserPrefile.getLoginId());
 
                 // 获取关注社区ID集合
                 List<String> olist = new ArrayList<String>();
@@ -326,7 +299,6 @@ public class PostController {
                     ex.printStackTrace();
                 }
 
-
                 if (olist.size() > 0) {
 
                     EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<CmmPost>();
@@ -336,13 +308,10 @@ public class PostController {
                     queryPagePostWithRowIdUpdate(rowId, lastUpdateDate, postEntityWrapper);
 
                     postEntityWrapper.orderBy("updated_at", false);
-
-
                     //fix bug: 修改查询小于id和updated_at分页数据 [by mxf 2019-05-05]
                     if (!isHaveRowIDAndLastUpdateDate) {
 
                         page = this.daoPostService.selectPage(new Page<CmmPost>(inputPageDto.getPage(), inputPageDto.getLimit()), postEntityWrapper);
-
                         plist = page.getRecords();
                         total = page.getTotal();
 
@@ -363,9 +332,6 @@ public class PostController {
         } else if ("2".equals(filter)) {
             if (memberUserPrefile != null) {
 
-                //!fixme 获取关注用户id集合
-                //List<String> olist = actionDao.getFollowerUserId(memberUserPrefile.getLoginId());
-
                 //获取关注用户id集合
                 List<String> olist = new ArrayList<String>();
 
@@ -374,16 +340,13 @@ public class PostController {
 
                 FungoPageResultDto<String> followerUserIdResult = null;
                 try {
-
                     followerUserIdResult = systemFeignClient.getFollowerUserId(memberFollowerVo);
-
                     if (null != followerUserIdResult) {
                         olist.addAll(followerUserIdResult.getData());
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-
                 if (olist.size() > 0) {
 
                     EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<CmmPost>();
@@ -403,12 +366,9 @@ public class PostController {
                         total = page.getTotal();
 
                     } else {
-
                         //设置分页
                         postEntityWrapper.last("limit " + inputPageDto.getLimit());
                         plist = daoPostService.selectList(postEntityWrapper);
-
-
                         //查询总记录数
                         EntityWrapper<CmmPost> postEntityWrapperCount = new EntityWrapper<CmmPost>();
                         postEntityWrapperCount.in("member_id", olist).eq("state", 1);
@@ -436,7 +396,6 @@ public class PostController {
                 total = page.getTotal();
 
             } else {
-
                 //设置分页
                 postEntityWrapper.last("limit " + inputPageDto.getLimit());
                 plist = daoPostService.selectList(postEntityWrapper);
@@ -445,24 +404,17 @@ public class PostController {
                 EntityWrapper<CmmPost> postEntityWrapperCount = new EntityWrapper<CmmPost>();
                 postEntityWrapperCount.eq("state", 1);
                 total = daoPostService.selectCount(postEntityWrapperCount);
-
             }
-
         } else if ("4".equals(filter)) {
 
             if (memberUserPrefile != null) {
-                //!fixme 获取关注用户id集合 和 社区ID集合
-                //List<String> memberIdList = actionDao.getFollowerUserId(memberUserPrefile.getLoginId());
-                //List<String> communityIdList = actionDao.getFollowerCommunityId(memberUserPrefile.getLoginId());
-
                 //获取关注用户id集合
-                List<String> memberIdList = new ArrayList<String>();
+                List<String> memberIdList = new ArrayList<>();
 
                 MemberFollowerVo memberFollowerVo = new MemberFollowerVo();
                 memberFollowerVo.setMemberId(memberUserPrefile.getLoginId());
 
                 try {
-
                     FungoPageResultDto<String> followerUserIdResult = systemFeignClient.getFollowerUserId(memberFollowerVo);
                     if (null != followerUserIdResult) {
                         memberIdList.addAll(followerUserIdResult.getData());
@@ -512,9 +464,7 @@ public class PostController {
                     }
                 }
             }
-
         } else {
-
             EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<CmmPost>();
             postEntityWrapper.eq("state", 1);
 
@@ -562,7 +512,6 @@ public class PostController {
             //表情解码
             if (StringUtils.isNotBlank(cmmPost.getTitle())) {
                 String interactTitle = FilterEmojiUtil.decodeEmoji(cmmPost.getTitle());
-                //String interactTitle = EmojiParser.parseToUnicode(cmmPost.getTitle() );
                 cmmPost.setTitle(interactTitle);
             }
             if (StringUtils.isNotBlank(cmmPost.getContent())) {
@@ -580,12 +529,8 @@ public class PostController {
             PostOutBean bean = new PostOutBean();
             CmmCommunity community = communityService.selectById(cmmPost.getCommunityId());
             if (community == null || community.getState() != 1) {
-//				page.setTotal(page.getTotal() - 1);
                 continue;
             }
-
-            //!fixme 根据用户id查询用户详情
-            //bean.setAuthor(userService.getAuthor(cmmPost.getMemberId()));
 
             AuthorBean authorBean = new AuthorBean();
             try {
@@ -605,7 +550,6 @@ public class PostController {
             }
             String content = cmmPost.getContent();
             if (!CommonUtil.isNull(content)) {
-                //bean.setContent(content.length() > 100 ? CommonUtils.filterWord(content.substring(0, 100)) : CommonUtils.filterWord(content));
                 bean.setContent(content.length()>40?Html2Text.removeHtmlTag(content.substring(0, 40)):Html2Text.removeHtmlTag(content));
             }
             bean.setUpdated_at(DateTools.fmtDate(cmmPost.getUpdatedAt()));
@@ -628,7 +572,7 @@ public class PostController {
             }
             try {
                 if (!CommonUtil.isNull(cmmPost.getImages())) {
-                    ArrayList<String> readValue = new ArrayList<String>();
+                    ArrayList<String> readValue = new ArrayList<>();
                     readValue = mapper.readValue(cmmPost.getImages(), ArrayList.class);
                     int readValueListSize = readValue.size();
                     if (readValueListSize > 3) {
@@ -637,7 +581,6 @@ public class PostController {
                     } else {
                         bean.setImages(readValue);
                     }
-                    //bean.setImages(readValue.size() > 3 ? readValue.subList(0, 3) : readValue);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -649,11 +592,6 @@ public class PostController {
                 bean.setLiked(false);
 
             } else {
-
-                //!fixme 获取点赞数
-                //行为类型
-                //点赞 | 0
-                //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", cmmPost.getId()).eq("member_id", memberUserPrefile.getLoginId()));
 
                 BasActionDto basActionDto = new BasActionDto();
 
@@ -695,9 +633,6 @@ public class PostController {
             }
             list.add(bean);
         }
-
-        //PageTools.pageToResultDto(re, page);
-
         //设置分页参数
         PageTools.pageToResultDto(re, total, inputPageDto.getLimit(), inputPageDto.getPage());
 

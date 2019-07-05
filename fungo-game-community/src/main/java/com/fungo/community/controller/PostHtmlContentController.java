@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -55,7 +56,7 @@ public class PostHtmlContentController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/api/content/post/html/{postId}", method = RequestMethod.GET)
+    @GetMapping(value = "/api/content/post/html/{postId}")
     public ModelAndView getPostContentHtml(@PathVariable("postId") String postId) throws Exception {
 
         LOGGER.info("------/api/content/post/html/{postId}:{}", postId);
@@ -79,7 +80,7 @@ public class PostHtmlContentController {
 
         CmmPost post = daoPostService.selectById(postId);
         if (post == null) {
-            throw new RuntimeException("帖子不存在");
+            throw new Exception("帖子不存在");
         } else {
             List<String> asList = new ArrayList<>();
 
@@ -96,8 +97,6 @@ public class PostHtmlContentController {
                 ObjectMapper mapper = new ObjectMapper();
                 gameMapList = mapper.readValue(gameList, ArrayList.class);
                 for (Map<String, Object> m : gameMapList) {
-
-                    //m.put("rating", iGameService.getGameRating((String) m.get("objectId")) + "");
 
                     //获取游戏平均分
                     String gameId = (String) m.get("objectId");

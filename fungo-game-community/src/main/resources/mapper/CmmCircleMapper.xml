@@ -135,14 +135,14 @@
   </update>
 
   <select id="selectCircleByGameId" parameterType="java.lang.String" resultType="java.lang.String">
-    select id from t_cmm_circle where game_id = #{gameId} limit 1
+    select id from t_cmm_circle where game_id = #{gameId}  limit 1
   </select>
 
   <select id="selectCircleByGame" resultType="com.fungo.community.entity.CmmCircle">
         SELECT 
          <include refid="Base_Column_List"></include>
-         FROM t_cmm_circle cc WHERE cc.id  in
-        (SELECT ccg.circle_id  FROM t_cmm_circle_game ccg WHERE ccg.game_id = #{gameId} )  ORDER BY  cc.hot_value desc
+         FROM t_cmm_circle cc WHERE state = 1  and cc.id  in
+        (SELECT ccg.circle_id  FROM t_cmm_circle_game ccg WHERE ccg.game_id = #{gameId} )   ORDER BY  cc.hot_value desc
   </select>
 
 

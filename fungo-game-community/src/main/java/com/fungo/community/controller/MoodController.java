@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.DELETE;
+
 /**
  * 心情
  * @author sam
@@ -36,7 +38,7 @@ public class MoodController {
 
 
 	@ApiOperation(value="发布心情", notes="")
-	@RequestMapping(value="/api/content/mood", method= RequestMethod.POST)
+	@PostMapping(value="/api/content/mood")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "cover_image",value = "图片列表",paramType = "form",dataType = "string"),
 	        @ApiImplicitParam(name = "content",value = "内容",paramType = "form",dataType = "string"),
@@ -53,7 +55,7 @@ public class MoodController {
 
 	
 	@ApiOperation(value="删心情", notes="")
-	@RequestMapping(value="/api/content/mood/{moodId}", method= RequestMethod.DELETE)
+	@DeleteMapping(value="/api/content/mood/{moodId}")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "moodId",value = "心情id",paramType = "path",dataType = "string")
 	})
@@ -65,7 +67,7 @@ public class MoodController {
 
 	
 	@ApiOperation(value="获取心情", notes="")
-	@RequestMapping(value="/api/content/mood/{moodId}", method= RequestMethod.GET)
+	@GetMapping(value="/api/content/mood/{moodId}")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "moodId",value = "心情id",paramType = "path",dataType = "string")
 	})

@@ -17,10 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -45,7 +42,7 @@ public class RelyController {
 
 
     @ApiOperation(value = "发表回复", notes = "")
-    @RequestMapping(value = "/api/content/reply", method = RequestMethod.POST)
+    @PostMapping(value = "/api/content/reply")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "content", value = "评论内容", paramType = "path", dataType = "string"),
             @ApiImplicitParam(name = "target_id", value = "目标对象id", paramType = "path", dataType = "string"),
@@ -59,15 +56,12 @@ public class RelyController {
         reply.setOs(os);
         String appVersion = "";
         appVersion = request.getHeader("appversion");
-
-//		System.out.println("addComment-appversion:"+appVersion);
-
         return this.evaluateService.addReply(memberUserPrefile.getLoginId(), reply, appVersion);
     }
 
 
     @ApiOperation(value = "回复列表", notes = "")
-    @RequestMapping(value = "/api/content/replys", method = RequestMethod.POST)
+    @PostMapping(value = "/api/content/replys")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "target_id", value = "对象id", paramType = "path", dataType = "string"),
             @ApiImplicitParam(name = "user_id", value = "用户id", paramType = "path", dataType = "string")
@@ -79,6 +73,4 @@ public class RelyController {
         }
         return this.evaluateService.getReplyList(memberId, commentPage);
     }
-
-    //-------
 }
