@@ -451,15 +451,15 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
 
     /**
-     响应数据：
-     mbId           用户ID
-     orderSn        订单号
-     seckillStatus  订单状态
-     1 秒杀成功
-     2 未到秒杀时间
-     3 fungo币不足
-     4 商品已被秒光
-     5同件商品重复秒杀
+     * 响应数据：
+     * mbId           用户ID
+     * orderSn        订单号
+     * seckillStatus  订单状态
+     * 1 秒杀成功
+     * 2 未到秒杀时间
+     * 3 fungo币不足
+     * 4 商品已被秒光
+     * 5同件商品重复秒杀
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -634,8 +634,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
         logger.info("秒杀游戏礼包商品--用户id:{}--游戏礼包商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "开始了...");
 
-        Map<String, Object> resultMap = null;
-
+        Map<String, Object> resultMap = new HashMap<String, Object>();
 
         try {
 
@@ -659,10 +658,8 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                 return resultMap;
             }
 
-            resultMap = new HashMap<String, Object>();
             resultMap.put("mbId", orderInput.getMbId());
-
-
+            
             //2.验证秒杀的游戏礼包商品库存是否充足
             //2.1  若是游戏礼包
             int unSaledVMCardCount = this.getUnSaledVMCardWithGame(null, Long.parseLong(orderInput.getGoodsId()));
@@ -982,6 +979,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     /**
      * 组建用户订单和订单关联的商品数据
+     *
      * @param mallOrder
      * @param orderGoodsList
      * @return
@@ -1103,6 +1101,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     /**
      * 查询用户订单关联的商品数据
+     *
      * @param mb_id
      * @param orderId
      * @return
@@ -1116,6 +1115,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     /**
      * 查询用户订单关联的商品数据
+     *
      * @param mb_id
      * @param orderId
      * @return
@@ -1131,8 +1131,9 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     /**
      * 查询用户已经成功交易的订单数据
-     *  订单状态：5 成功交易
-     *  支付状态：2 已经付款
+     * 订单状态：5 成功交易
+     * 支付状态：2 已经付款
+     *
      * @param mb_id
      * @return
      */
@@ -1144,9 +1145,10 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     /**
      * 查询用户已经成功交易的一条订单数据
-     *  订单状态：5 成功交易
-     *  支付状态：2 已经付款
-     *  最后一个成功的订单数据
+     * 订单状态：5 成功交易
+     * 支付状态：2 已经付款
+     * 最后一个成功的订单数据
+     *
      * @param mb_id
      * @return
      */
@@ -1160,6 +1162,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     /**
      * 验证当前日期 是否是秒杀活动的日期
+     *
      * @param currentDate
      * @return
      */
@@ -1179,7 +1182,8 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
 
     /**
-     *  验证是否到秒杀时间段
+     * 验证是否到秒杀时间段
+     *
      * @param grantCode 秒杀授权码
      * @return
      */
@@ -1204,6 +1208,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     /**
      * 验证秒杀的商品库存是否充足
+     *
      * @param goodsId
      * @return
      */
@@ -1228,6 +1233,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     /**
      * 验证用户是否有足够的fungo币可用余额
+     *
      * @param mb_id
      * @return
      */
@@ -1249,6 +1255,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
      * 冻结用户账户对应的商品价格额
      * -1 可用fungo币不足
      * 1 冻结成功
+     *
      * @param mb_id
      * @param incentAccountCoin
      * @param goodsPriceVcyBD
@@ -1316,6 +1323,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     /**
      * 验证当前用户在当天，是否重复秒杀了同一件商品
+     *
      * @param mb_id
      * @param goods_id
      * @return 未购买 false ，已购买true
@@ -1382,7 +1390,8 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
 
     /**
-     *  添加订单和订单商品表
+     * 添加订单和订单商品表
+     *
      * @param mb_id
      * @param goods_id
      * @param mallSeckill
@@ -1505,7 +1514,8 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
 
     /**
-     *  添加订单和订单商品表
+     * 添加订单和订单商品表
+     *
      * @param mb_id
      * @param goods
      */
@@ -1668,6 +1678,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     /**
      * 验证用户是否购买过游戏礼包
+     *
      * @param mb_id
      * @param goods_id
      * @return
@@ -1688,6 +1699,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     /**
      * 查询某个游戏礼包未卖出剩余的虚拟卡数量
+     *
      * @param mb_id
      * @param goods_id
      * @return
