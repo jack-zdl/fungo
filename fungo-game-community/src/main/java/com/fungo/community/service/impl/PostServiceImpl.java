@@ -25,7 +25,6 @@ import com.fungo.community.function.SerUtils;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IPostService;
 import com.fungo.community.service.IVideoService;
-import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
@@ -283,7 +282,7 @@ public class PostServiceImpl implements IPostService {
                 //postGame.setGameName(gameDto.getName());
                 //查询出游戏对应的社区id 插入社区id
                 CmmCommunity community = communityService.selectOne(new EntityWrapper<CmmCommunity>().eq("game_id", gameid));
-                if(community!=null&&StringUtil.isNotNull(community.getId())){
+                if (community != null && StringUtil.isNotNull(community.getId())) {
                     postGame.setCmmId(community.getId());
                     postGame.setCmmName(community.getName());
                 }
@@ -496,7 +495,7 @@ public class PostServiceImpl implements IPostService {
         ActionInput actioninput = new ActionInput();
         actioninput.setTarget_type(4);
         actioninput.setTarget_id(postInput.getCommunity_id());
-        if(StringUtil.isNotNull(postInput.getCommunity_id())){
+        if (StringUtil.isNotNull(postInput.getCommunity_id())) {
             boolean addCounter = iCountService.addCounter(user_id, 7, actioninput);
         }
 
@@ -519,7 +518,7 @@ public class PostServiceImpl implements IPostService {
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
         //帖子列表
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
-        if(StringUtil.isNotNull(postInput.getCommunity_id())){
+        if (StringUtil.isNotNull(postInput.getCommunity_id())) {
             //社区置顶文章(2.4.3)
             fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, postInput.getCommunity_id(), null);
         }
@@ -735,6 +734,8 @@ public class PostServiceImpl implements IPostService {
         //社区置顶文章(2.4.3)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, "", null);
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
+
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX, "", null);
         return ResultDto.success("删除成功");
 
     }
@@ -1558,7 +1559,7 @@ public class PostServiceImpl implements IPostService {
     /**
      * 功能描述:
      * @param: []
-     * @return: com.game.common.dto.FungoPageResultDto<java.util.Map                                                               <                                                               java.lang.String                                                               ,                                                               java.lang.String>>
+     * @return: com.game.common.dto.FungoPageResultDto<java.util.Map                                                                                                                               <                                                                                                                               java.lang.String                                                                                                                               ,                                                                                                                               java.lang.String>>
      * @auther: dl.zhang
      * @date: 2019/6/18 18:21
      */
@@ -1619,7 +1620,7 @@ public class PostServiceImpl implements IPostService {
                 bean.setPostId(cmmPost.getId());
                 bean.setReplyNum(cmmPost.getCommentNum());
                 bean.setTitle(CommonUtils.filterWord(cmmPost.getTitle()));
-                if (community != null ) {
+                if (community != null) {
                     bean.setCommunityIcon(community.getIcon());
                     bean.setCommunityId(community.getId());
                     bean.setCommunityName(community.getName());
@@ -1693,7 +1694,7 @@ public class PostServiceImpl implements IPostService {
                  * @date: 2019/6/27 15:40
                  */
                 CmmCircle cmmCircle = cmmPostCircleMapper.getCircleEntityByPostId(bean.getPostId());
-                if(cmmCircle != null){
+                if (cmmCircle != null) {
                     bean.setCircleId(cmmCircle.getId());
                     bean.setCircleName(cmmCircle.getCircleName());
                     bean.setCircleIcon(cmmCircle.getCircleIcon());
