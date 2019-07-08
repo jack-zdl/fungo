@@ -1,7 +1,14 @@
 package com.game.common.bean;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.io.Serializable;
 
+@Setter
+@Getter
+@ToString
 public class MemberPulishFromCommunity implements Serializable{
 
 	/**
@@ -13,34 +20,8 @@ public class MemberPulishFromCommunity implements Serializable{
 	private int commentNum;
 	private int evaNum;
 	private String memberId;
+	private int likeNum;
 	
-	public int getPostNum() {
-		return postNum;
-	}
-	public void setPostNum(int postNum) {
-		this.postNum = postNum;
-	}
-	public int getCommentNum() {
-		return commentNum;
-	}
-	public void setCommentNum(int commentNum) {
-		this.commentNum = commentNum;
-	}
-	public int getEvaNum() {
-		return evaNum;
-	}
-	public void setEvaNum(int evaNum) {
-		this.evaNum = evaNum;
-	}
-	public String getMemberId() {
-		return memberId;
-	}
-	public void setMemberId(String memberId) {
-		this.memberId = memberId;
-	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
 
 	
 	

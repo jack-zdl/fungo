@@ -35,10 +35,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,52 +49,18 @@ public class RecommendController {
 
     @Autowired
     private MooMoodDaoService mooMoodService;
-
     @Autowired
     private CmmCommunityDaoService cmmCommunityService;
-
     @Autowired
     private ICommunityService iCommunityService;
-
-
     @Autowired
     private FungoCacheMood fungoCacheMood;
-
-
     //依赖系统和用户微服务
     @Autowired(required = false)
     private SystemFeignClient systemFeignClient;
-
-
     //依赖游戏微服务
     @Autowired(required = false)
     private GameFeignClient gameFeignClient;
-
- /*
-  @Autowired
-    private IUserService userService;
-
-    @Autowired
-    private MemberService memberService;
-
-    @Autowired
-    private BasActionDao actionDao;
-
-    @Autowired
-    private BasActionService actionService;
-
-    @Autowired
-    private GameService gameService;
-    @Autowired
-    private GameDao gameDao;
-
-    @Autowired
-    private IncentRankedService incentRankedService;
-
-    @Autowired
-    private MemberDao memberDao;
-    */
-
 
     /**
      * InputPageDto
@@ -107,10 +70,9 @@ public class RecommendController {
      * @throws Exception
      */
     @ApiOperation(value = "获取心情动态列表(v2.4)   filter(1:关注，0:广场)", notes = "")
-    @RequestMapping(value = "/api/recommend/moods", method = RequestMethod.POST)
+    @PostMapping(value = "/api/recommend/moods")
     @ApiImplicitParams({})
     public FungoPageResultDto<MoodOutBean> getDynamicsMoodList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody MoodInputPageDto inputPageDto) throws Exception {
-
 
         FungoPageResultDto<MoodOutBean> re = null;
 
@@ -128,8 +90,7 @@ public class RecommendController {
             return re;
         }
 
-        //------------------
-        re = new FungoPageResultDto<MoodOutBean>();
+        re = new FungoPageResultDto<>();
 
         List<MoodOutBean> list = new ArrayList<MoodOutBean>();
         re.setData(list);
@@ -154,8 +115,6 @@ public class RecommendController {
             if (memberUserPrefile == null) {
                 return re;
             }
-            //!fixme 获取关注用户id集合
-            //List<String> olist = actionDao.getFollowerUserId(memberUserPrefile.getLoginId());
 
             //获取关注用户id集合
             List<String> olist = new ArrayList<String>();
@@ -248,9 +207,6 @@ public class RecommendController {
         for (MooMood mooMood : plist) {
             MoodOutBean bean = new MoodOutBean();
 
-            //!fixme 根据用户id查询用户详情
-            //bean.setAuthor(userService.getAuthor(mooMood.getMemberId()));
-
             AuthorBean authorBean = new AuthorBean();
             try {
                 ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(mooMood.getMemberId());
@@ -325,7 +281,6 @@ public class RecommendController {
             //视频详情
             if (!CommonUtil.isNull(mooMood.getVideoUrls())) {
                 ArrayList streams = objectMapper.readValue(mooMood.getVideoUrls(), ArrayList.class);
-//                ArrayList<StreamInfo> streamInfos = (ArrayList<StreamInfo>)streams;
                 bean.setVideoList(streams);
             }
 
@@ -335,16 +290,13 @@ public class RecommendController {
                 List<HashMap<String, Object>> gameList = new ArrayList<>();
                 for (String gameId : gameIdList) {
 
-                    //!fixme 根据游戏id和状态查询游戏详情
-                    //Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", 0));
-
                     GameDto gameDto = null;
                     ResultDto<GameDto> gameDtoResultDto = null;
 
                     try {
                         gameDtoResultDto = gameFeignClient.selectGameDetails(gameId, 0);
                         if (null != gameDtoResultDto) {
-                            gameDtoResultDto.getData();
+                            gameDto = gameDtoResultDto.getData();
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -356,22 +308,6 @@ public class RecommendController {
                         map.put("gameId", gameDto.getId());
                         map.put("gameName", gameDto.getName());
                         map.put("gameIcon", gameDto.getIcon());
-
-
-                        //!fixme 获取游戏平均分
-                        /*
-                        HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
-
-                        if (rateData != null) {
-                            if (rateData.get("avgRating") != null) {
-                                map.put("gameRating", (Double.parseDouble(rateData.get("avgRating").toString())));
-                            } else {
-                                map.put("gameRating", 0.0);
-                            }
-                        } else {
-                            map.put("gameRating", 0.0);
-                        }
-                        */
 
                         //获取游戏平均分
                         double gameAverage = gameFeignClient.selectGameAverage(gameDto.getId(), 0);
@@ -409,7 +345,7 @@ public class RecommendController {
      *
      */
     @ApiOperation(value = "推荐用户列表(v2.3)", notes = "")
-    @RequestMapping(value = "/api/recommend/users", method = RequestMethod.POST)
+    @PostMapping(value = "/api/recommend/users")
     @ApiImplicitParams({
     })
     public FungoPageResultDto<FollowUserOutBean> getDynamicsUsersList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto) {
@@ -465,28 +401,22 @@ public class RecommendController {
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("推荐用户列表",e);
             }
-
-
             if (!CommonUtil.isNull(member.getSign())) {
                 bean.setSign(member.getSign());
             } else {
                 bean.setSign("活跃达人");
             }
-
             list.add(bean);
         }
-
         PageTools.pageToResultDto(re, pageFormat);
-
-
         return re;
     }
 
 
     @ApiOperation(value = "社区推荐列表(v2.3)", notes = "")
-    @RequestMapping(value = "/api/recommend/communitys", method = RequestMethod.POST)
+    @PostMapping(value = "/api/recommend/communitys")
     @ApiImplicitParams({
     })
     public FungoPageResultDto<CommunityOutBean> getcommunityList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto) {
@@ -503,11 +433,6 @@ public class RecommendController {
             bean.setIntro(cmmCommunity.getIntro());
             if (memberUserPrefile != null) {
 
-                //!fixme 根据社区id，状态，类型，用户id获取 粉丝数量
-                //行为类型
-                //关注 | 5
-                //int followed = actionService.selectCount(new EntityWrapper<BasAction>().eq("state", 0).eq("type", 5).eq("target_id", cmmCommunity.getId()).eq("member_id", memberUserPrefile.getLoginId()));
-
                 BasActionDto basActionDto = new BasActionDto();
 
                 basActionDto.setMemberId(memberUserPrefile.getLoginId());
@@ -517,16 +442,13 @@ public class RecommendController {
 
                 int followed = 0;
                 try {
-
                     ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
-
                     if (null != resultDto) {
                         followed = resultDto.getData();
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-
                 bean.setFollowed(followed > 0 ? true : false);
             }
             bean.setHotNun(cmmCommunity.getFolloweeNum() + cmmCommunity.getPostNum());
@@ -551,7 +473,6 @@ public class RecommendController {
         } else {
             members = members.subList(limit * (page - 1), limit * page);
         }
-
         Page<MemberDto> memberPage = new Page<MemberDto>(page, limit);
         memberPage.setRecords(members);
         memberPage.setCurrent(page);

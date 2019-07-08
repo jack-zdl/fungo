@@ -75,7 +75,7 @@ public class DataTransForV243Controller {
 
         if (isAuthOk(authMap)) {
 
-            iMemberIncentRuleRankService.transfMemberThird(authMap);
+           // iMemberIncentRuleRankService.transfMemberThird(authMap);
 
             return ResultDto.success();
         }

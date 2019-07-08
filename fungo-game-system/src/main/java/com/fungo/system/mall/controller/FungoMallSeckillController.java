@@ -5,9 +5,13 @@ import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import com.fungo.system.mall.service.IFungoMallGoodsService;
 import com.fungo.system.mall.service.IFungoMallSeckillService;
 import com.fungo.system.mall.service.commons.FungoMallSeckillTaskStateCommand;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.mall.MallGoodsInput;
+import com.game.common.dto.mall.MallGoodsOutBean;
 import com.game.common.dto.mall.MallOrderInput;
+import com.game.common.dto.mall.MallOrderOutBean;
 import com.game.common.util.date.DateTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,10 +53,10 @@ public class FungoMallSeckillController {
 
     /**
      * 获取每日秒杀商品列表接口
-     * @return
+     * @return 返回 以json字符串方式返回商品数据
      */
     @PostMapping("/api/mall/goods/seckill/list")
-    public ResultDto<String> getGoodsListForSeckill(MemberUserProfile memberUserPrefile, HttpServletRequest request) {
+    public ResultDto<String> getGoodsListForSeckillJson(MemberUserProfile memberUserPrefile, HttpServletRequest request) {
 
         String loginId = null;
         if (null != memberUserPrefile) {
@@ -70,6 +75,45 @@ public class FungoMallSeckillController {
             ResultDto<String> resultDto = new ResultDto<String>();
 
             resultDto.setData(goodsListForSeckill);
+            resultDto.setMessage(DateTools.fmtDate(new Date()));
+
+            return resultDto;
+        }
+        return ResultDto.success(DateTools.fmtDate(new Date()));
+    }
+
+
+    /**
+     * 获取每日秒杀和游戏礼包商品列表接口
+     * @return 返回 以json对象方式返回商品数据
+     */
+    @PostMapping("/api/mall/goods/game/list")
+    public ResultDto<List<MallGoodsOutBean>> getGoodsListForSeckill(MemberUserProfile memberUserPrefile, HttpServletRequest request,
+                                                                    @RequestBody MallGoodsInput mallGoodsInput) {
+
+
+        if (null == mallGoodsInput || mallGoodsInput.getGoodsType() <= 0 || StringUtils.isBlank(mallGoodsInput.getGameId())) {
+            return ResultDto.error("-1", "请输入正确的商品类型参数");
+        }
+
+        String loginId = null;
+        if (null != memberUserPrefile) {
+            loginId = memberUserPrefile.getLoginId();
+        }
+
+
+        String realIp = "";
+        if (null != request) {
+            realIp = request.getHeader("x-forwarded-for");
+        }
+
+        List<MallGoodsOutBean> goodsListForSeckillList = iFungoMallSeckillService.getGoodsListForGame(loginId, realIp, mallGoodsInput);
+
+        if (null != goodsListForSeckillList && !goodsListForSeckillList.isEmpty()) {
+
+            ResultDto<List<MallGoodsOutBean>> resultDto = new ResultDto<List<MallGoodsOutBean>>();
+
+            resultDto.setData(goodsListForSeckillList);
             resultDto.setMessage(DateTools.fmtDate(new Date()));
 
             return resultDto;
@@ -107,11 +151,12 @@ public class FungoMallSeckillController {
         ResultDto<Map> resultDto = null;
         try {
 
+            /*
             String code = mallOrderInput.getCode();
             if (null == code || StringUtils.isBlank(code)) {
                 return ResultDto.success("未被授权的操作，请联系系统管理员!");
-            }
-            
+            }*/
+
             String goodsId = mallOrderInput.getGoodsId();
             if (null == mallOrderInput || StringUtils.isBlank(goodsId)) {
                 return ResultDto.success("请选择要秒杀的商品");
@@ -124,7 +169,17 @@ public class FungoMallSeckillController {
             }
 
             //执行下单
-            Map<String, Object> orderMap = iFungoMallSeckillService.createOrderWithSeckill(mallOrderInput, realIp);
+            Map<String, Object> orderMap = null;
+            if (3 == mallOrderInput.getGoodsType()) {
+
+                orderMap = iFungoMallSeckillService.createOrderWithSeckillWithGame(mallOrderInput, realIp);
+
+            } else {
+
+                orderMap = iFungoMallSeckillService.createOrderWithSeckill(mallOrderInput, realIp);
+
+            }
+
             if (null == orderMap) {
                 return ResultDto.success("秒杀通道非常拥挤，本次秒杀失败，请继续秒杀");
             }
@@ -203,6 +258,64 @@ public class FungoMallSeckillController {
         resultDto.setData(ordersWithSeckill);
 
         return resultDto;
+    }
+
+
+    /**
+     * 我的秒杀订单列表和查询某个订单详情接口
+     *
+     * @return
+     */
+    @PostMapping("/api/mall/user/order/seckill/game/list")
+    public ResultDto<List<MallOrderOutBean>> getOrdersWithSeckillGame(MemberUserProfile memberUserPrefile, @RequestBody Map<String, String> param) {
+
+
+        String orderId = "";
+        String orderSn = "";
+        String orderType = null;
+        if (null != param && !param.isEmpty()) {
+            if (param.containsKey("orderId")) {
+                orderId = param.get("orderId");
+            }
+            if (param.containsKey("orderSn")) {
+                orderSn = param.get("orderSn");
+            }
+            if (param.containsKey("orderType")) {
+                orderType = param.get("orderType");
+            }
+        }
+        List<MallOrderOutBean> ordersWithSeckill = iFungoMallSeckillService.getOrdersWithSeckillGame(memberUserPrefile.getLoginId(), orderId, orderSn, orderType);
+
+        if (null == ordersWithSeckill || ordersWithSeckill.isEmpty()) {
+            return ResultDto.success("暂无订单，请去秒杀商品吧");
+        }
+
+        ResultDto<List<MallOrderOutBean>> resultDto = new ResultDto<List<MallOrderOutBean>>();
+        resultDto.setData(ordersWithSeckill);
+
+        return resultDto;
+    }
+
+
+    /**
+     * 查询用户游戏礼包订单接口
+     *
+     * @return
+     */
+    @PostMapping("/api/mall/user/order/game/lists")
+    public FungoPageResultDto<Map<String, Object>> queryMemberGameOrderList(MemberUserProfile memberUserPrefile, @RequestBody Map<String, Object> param) {
+
+        if (null == memberUserPrefile) {
+            return FungoPageResultDto.error("-1", "请登录后查询....");
+        }
+        if (null == param || param.size() <= 0) {
+            return FungoPageResultDto.error("-1", "请输入查询参数");
+        }
+
+        String loginId = memberUserPrefile.getLoginId();
+
+        FungoPageResultDto<Map<String, Object>> gameOrderResult = iFungoMallSeckillService.queryMemberGameOrderList(loginId, param);
+        return gameOrderResult;
     }
 
 

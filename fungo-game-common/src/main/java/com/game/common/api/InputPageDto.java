@@ -25,8 +25,9 @@ public class InputPageDto extends InputDto implements Serializable {
 	private int limit=10;//等同pageSize
 	private int page=1;//pageNum
 	private int sort;//排序
+
 	private String filter = "";//过滤查询条件
-	
+
 	public int getPageNum() {
 		return pageNum;
 	}
@@ -63,7 +64,5 @@ public class InputPageDto extends InputDto implements Serializable {
 	public void setFilter(String filter) {
 		this.filter = filter;
 	}
-	
-	
-	
+
 }

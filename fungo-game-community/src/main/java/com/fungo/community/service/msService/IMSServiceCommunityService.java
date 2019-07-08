@@ -41,7 +41,7 @@ public interface IMSServiceCommunityService {
      * @param userId
      * @return
      */
-    public List<CommentBean> getAllComments(int pageNum, int limit, String userId) ;
+    public FungoPageResultDto<CommentBean>  getAllComments(int pageNum, int limit, String userId) ;
 
 
     /**
@@ -70,4 +70,8 @@ public interface IMSServiceCommunityService {
      * @return
      */
     public List<Map<String,Object>> getFollowerCommunity(int pageNum,int limit, List<String> communityIds);
+
+    List<String> listOfficialCommunityIds();
+
+    List<String> listGameIds(List<String> list);
 }

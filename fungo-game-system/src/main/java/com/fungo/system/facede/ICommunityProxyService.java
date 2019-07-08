@@ -39,4 +39,8 @@ public interface ICommunityProxyService {
     List<String> getRecommendMembersFromCmmPost(@Param("ccnt") long ccnt, @Param("limitSize") long limitSize, @Param("wathMbsSet") List<String> wathMbsSet);
 
     List<Map> getHonorQualificationOfEssencePost();
+
+    List<String> listOfficialCommunityIds();
+
+    List<String> listGameIds(List<String> list);
 }

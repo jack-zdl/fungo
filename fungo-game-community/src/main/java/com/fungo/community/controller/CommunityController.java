@@ -39,7 +39,7 @@ public class CommunityController {
             @ApiImplicitParam(name = "userid", value = "社区id", paramType = "form", dataType = "String"),
             @ApiImplicitParam(name = "filter", value = "过滤字段", paramType = "form", dataType = "String"),
     })
-    @RequestMapping(value = "/api/content/communitys", method = RequestMethod.POST)
+    @PostMapping(value = "/api/content/communitys")
     public FungoPageResultDto<CommunityOutPageDto> getCommunityList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody CommunityInputPageDto communityInputPageDto) {
         String userId = "";
         if (memberUserPrefile != null) {
@@ -55,7 +55,7 @@ public class CommunityController {
             @ApiImplicitParam(name = "communityId", value = "社区id", paramType = "path", dataType = "string"),
             @ApiImplicitParam(name = "userId", value = "用户id", paramType = "form", dataType = "string")
     })
-    @RequestMapping(value = "/api/content/community/{communityId}", method = RequestMethod.GET)
+    @GetMapping(value = "/api/content/community/{communityId}")
     public ResultDto<CommunityOut> getCommunityDetail(@Anonymous MemberUserProfile memberUserPrefile,
                                                       @PathVariable("communityId") String communityId) {
         String userId = "";
@@ -75,7 +75,7 @@ public class CommunityController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "communityId", value = "社区id", paramType = "path", dataType = "string"),
     })
-    @RequestMapping(value = "/api/content/community/memberlist", method = RequestMethod.POST)
+    @PostMapping(value = "/api/content/community/memberlist")
     public FungoPageResultDto<CommunityMember> memberList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody CommunityInputPageDto input) {
         String userId = "";
         if (memberUserPrefile != null) {
@@ -85,7 +85,7 @@ public class CommunityController {
 
     }
 
-    @RequestMapping(value = "/api/content/community/post", method = RequestMethod.POST)
+    @PostMapping(value = "/api/content/community/post")
     public int selectPostCount(CmmPostDto cmmPost) {
         return 1;
     }
@@ -94,7 +94,7 @@ public class CommunityController {
 
 
     @ApiOperation(value = "搜索社区", notes = "")
-    @RequestMapping(value = "/api/search/communitys", method = RequestMethod.POST)
+    @PostMapping(value = "/api/search/communitys")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "页数号", paramType = "form", dataType = "int"),
             @ApiImplicitParam(name = "limit", value = "每页显示数", paramType = "form", dataType = "int"),
@@ -114,7 +114,7 @@ public class CommunityController {
     }
 
     @ApiOperation(value = "根据社区id集合查找社区推荐度", notes = "")
-    @RequestMapping(value = "/api/search/listCommunityFolloweeNum", method = RequestMethod.POST)
+    @PostMapping(value = "/api/search/listCommunityFolloweeNum")
     public ResultDto<Map<String,Integer>> listCommunityFolloweeNum(@RequestBody List<String> communityIds){
         return communityService.listCommunityFolloweeNum(communityIds);
     }

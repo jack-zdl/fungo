@@ -1,16 +1,22 @@
 package com.fungo.system.controller;
 
 import com.fungo.system.service.SystemService;
+import com.game.common.api.InputPageDto;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.index.CardIndexBean;
+import com.game.common.dto.system.CircleFollow;
+import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.util.StringUtil;
+import com.game.common.util.annotation.Anonymous;
 import com.game.common.vo.MemberFollowerVo;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -47,7 +53,7 @@ public class SystemController {
      * @auther: dl.zhang
      * @date: 2019/5/10 11:34
      */
-    @RequestMapping(value = "/followerids")
+    @RequestMapping(value = "/followerids", method = RequestMethod.POST)
     public FungoPageResultDto<String> getFollowerUserId(@RequestBody MemberFollowerVo memberFollowerVo){
         FungoPageResultDto<String> re = null;
         try {
@@ -90,6 +96,24 @@ public class SystemController {
             re =  systemService.getMemberFollower1(memberFollowerDto);
         }catch (Exception e){
             LOGGER.error("SystemController.getMemberFollower1",e);
+            re = ResultDto.error("-1", "SystemController.getMemberFollower1执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
+    /**
+     * 功能描述: 根据用户Id获取最近浏览圈子行为 8个
+     * @param userId
+     * @return
+     */
+    @RequestMapping(value = "/getRecentBrowseCommunityByUserId")
+    public ResultDto<List<String>> getRecentBrowseCommunityByUserId(@RequestParam("userId") String userId){
+        ResultDto<List<String>> re = null;
+        try {
+            re =  systemService.getRecentBrowseCommunityByUserId(userId);
+        }catch (Exception e){
+            LOGGER.error("SystemController.getRecentBrowseCommunityByUserId",e);
             re = ResultDto.error("-1", "SystemController.getMemberFollower1执行service出现异常");
         }finally {
             return re;
@@ -366,6 +390,21 @@ public class SystemController {
         }
     }
 
+    @GetMapping(value = "/listGameHisIds")
+    @ApiOperation(value="获取历史浏览游戏社区id集合")
+    public ResultDto<List<String>> listGameHisIds(@RequestParam("memberid") String memberid){
+        ResultDto<List<String>> re = null;
+        try {
+            re =  systemService.listCommunityHisIds(memberid);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("SystemController.listCommunityHisIds",e);
+            re = ResultDto.error("-1", "SystemController.listCommunityHisIds执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
 
 
     @RequestMapping(value = "/listtargetId")
@@ -584,6 +623,50 @@ public class SystemController {
         }finally {
             return re;
         }
+    }
+
+    /**
+     * 功能描述: 根据圈子id查询是否关注
+     * @param: [memberUserPrefile, request, inputPageDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: dl.zhang
+     * @date: 2019/6/11 11:01
+     */
+    @ApiOperation(value = "v2.5", notes = "")
+    @RequestMapping(value = "/circle/follow", method = RequestMethod.POST)
+    @ApiImplicitParams({})
+    public ResultDto<CircleFollowVo> circleListFollow(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody CircleFollowVo circleFollowVo) {
+        ResultDto<CircleFollowVo> re = null;
+        try {
+            re = systemService.circleListFollow(circleFollowVo);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("获取活动列表异常",e);
+            re = ResultDto.error("-1","获取活动列表异常，请联系管理员");
+        }
+        return re;
+    }
+
+    /**
+     * 功能描述: 根据用户id查询关注的圈子
+     * @param: [memberUserPrefile, request, inputPageDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: dl.zhang
+     * @date: 2019/6/11 11:01
+     */
+    @ApiOperation(value = "v2.5", notes = "")
+    @RequestMapping(value = "/circle/mine/follow", method = RequestMethod.POST)
+    @ApiImplicitParams({})
+    public FungoPageResultDto<String> circleListMineFollow(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody CircleFollowVo circleFollowVo) {
+        FungoPageResultDto<String> re = null;
+        try {
+            re = systemService.circleListMineFollow(circleFollowVo);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("根据圈子id查询是否关注",e);
+            re = FungoPageResultDto.error("-1","根据圈子id查询是否关注，请联系管理员");
+        }
+        return re;
     }
 
 

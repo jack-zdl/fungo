@@ -1,5 +1,6 @@
 package com.fungo.system;
 
+
 import com.game.common.framework.MyProperties;
 import com.game.common.framework.runtime.SpringUtils;
 import com.game.common.util.pc20.BuriedPointUtils;
@@ -77,9 +78,7 @@ public class FungoGameSystemApplication {
 	 */
 	@Bean
 	public AnalysysJavaSdk analysysJavaSdk() {
-		System.out.println("初识化埋点连接..........................");
+		System.out.println("释放埋点连接..........................");
 		return new AnalysysJavaSdk(new SyncCollecter(BuriedPointUtils.ANALYSYS_SERVICE_URL), BuriedPointUtils.APP_KEY);
 	}
-
-
 }

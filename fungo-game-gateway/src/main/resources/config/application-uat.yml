@@ -150,7 +150,10 @@ spring:
         uri: ${fungoServer.commmunity.uri}
         predicates:
         - Path=/api/search/posts
-
+      - id:fungo-game-community-20:
+        uri: ${fungoServer.commmunity.uri}
+        predicates:
+        - Path=/api/search/posts/games
 
         #*****************游戏开始************************************
       - id:fungo-game-games-0:
@@ -369,6 +372,15 @@ spring:
         predicates:
         - Path=/api/content/game/**
 
+      - id:fungo-game-games-45:
+        uri: ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/tag/listPostTag
+
+      - id:fungo-game-games-46:
+        uri: ${fungoServer.game.uri}
+        predicates:
+        - Path=/api/content/viewGames
 
         #      *****************游戏2019-05-20结束************************************
 

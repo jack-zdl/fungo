@@ -5,6 +5,7 @@ import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.IncentRuleRankDto;
@@ -130,6 +131,30 @@ public class SystemFacedeHystrixService implements FallbackFactory<SystemFeignCl
             @Override
             public ResultDto<MemberFollowerDto> getMemberFollower1(MemberFollowerDto memberFollowerDto) {
                 logger.error("--------------------SystemFeignClient--启动熔断:{}" , "getMemberFollower1");
+                return null;
+            }
+
+            @Override
+            public ResultDto<List<String>> getRecentBrowseCommunityByUserId(String userId) {
+                logger.error("--------------------SystemFeignClient--启动熔断:{}" , "getRecentBrowseCommunityByUserId");
+                return null;
+            }
+
+            @Override
+            public ResultDto<CircleFollowVo> circleListFollow(CircleFollowVo circleFollowVo) {
+                logger.error("--------------------SystemFeignClient--启动熔断:{}" , "circleListFollow");
+                return null;
+            }
+
+            @Override
+            public FungoPageResultDto<String> circleListMineFollow(CircleFollowVo circleFollowVo) {
+                logger.error("--------------------SystemFeignClient--启动熔断:{}" , "circleListMineFollow");
+                return null;
+            }
+
+            @Override
+            public ResultDto<Boolean> subtractMemberScoreAccount(Map<String, Object> accountParamMap) {
+                logger.error("--------------------SystemFeignClient--启动熔断:{}" , "circleListMineFollow");
                 return null;
             }
         };

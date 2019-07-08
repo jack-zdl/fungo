@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.community.dao.mapper.CmmPostGameMapper">
+  <resultMap id="BaseResultMap" type="com.fungo.community.entity.CmmPostGame">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="post_id" jdbcType="VARCHAR" property="postId" />
+    <result column="game_id" jdbcType="VARCHAR" property="gameId" />
+    <result column="cmm_id" jdbcType="VARCHAR" property="cmmId" />
+    <result column="post_title" jdbcType="VARCHAR" property="postTitle" />
+    <result column="game_name" jdbcType="VARCHAR" property="gameName" />
+    <result column="cmm_name" jdbcType="VARCHAR" property="cmmName" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, post_id, game_id, cmm_id, post_title, game_name, cmm_name, created_at, updated_at
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_cmm_post_game
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_cmm_post_game
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.fungo.community.entity.CmmPostGame">
+    insert into t_cmm_post_game (id, post_id, game_id, 
+      cmm_id, post_title, game_name, 
+      cmm_name, created_at, updated_at
+      )
+    values (#{id,jdbcType=VARCHAR}, #{postId,jdbcType=VARCHAR}, #{gameId,jdbcType=VARCHAR}, 
+      #{cmmId,jdbcType=VARCHAR}, #{postTitle,jdbcType=VARCHAR}, #{gameName,jdbcType=VARCHAR}, 
+      #{cmmName,jdbcType=VARCHAR}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.fungo.community.entity.CmmPostGame">
+    insert into t_cmm_post_game
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="postId != null">
+        post_id,
+      </if>
+      <if test="gameId != null">
+        game_id,
+      </if>
+      <if test="cmmId != null">
+        cmm_id,
+      </if>
+      <if test="postTitle != null">
+        post_title,
+      </if>
+      <if test="gameName != null">
+        game_name,
+      </if>
+      <if test="cmmName != null">
+        cmm_name,
+      </if>
+      <if test="createdAt != null">
+        created_at,
+      </if>
+      <if test="updatedAt != null">
+        updated_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="postId != null">
+        #{postId,jdbcType=VARCHAR},
+      </if>
+      <if test="gameId != null">
+        #{gameId,jdbcType=VARCHAR},
+      </if>
+      <if test="cmmId != null">
+        #{cmmId,jdbcType=VARCHAR},
+      </if>
+      <if test="postTitle != null">
+        #{postTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="gameName != null">
+        #{gameName,jdbcType=VARCHAR},
+      </if>
+      <if test="cmmName != null">
+        #{cmmName,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null">
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fungo.community.entity.CmmPostGame">
+    update t_cmm_post_game
+    <set>
+      <if test="postId != null">
+        post_id = #{postId,jdbcType=VARCHAR},
+      </if>
+      <if test="gameId != null">
+        game_id = #{gameId,jdbcType=VARCHAR},
+      </if>
+      <if test="cmmId != null">
+        cmm_id = #{cmmId,jdbcType=VARCHAR},
+      </if>
+      <if test="postTitle != null">
+        post_title = #{postTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="gameName != null">
+        game_name = #{gameName,jdbcType=VARCHAR},
+      </if>
+      <if test="cmmName != null">
+        cmm_name = #{cmmName,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fungo.community.entity.CmmPostGame">
+    update t_cmm_post_game
+    set post_id = #{postId,jdbcType=VARCHAR},
+      game_id = #{gameId,jdbcType=VARCHAR},
+      cmm_id = #{cmmId,jdbcType=VARCHAR},
+      post_title = #{postTitle,jdbcType=VARCHAR},
+      game_name = #{gameName,jdbcType=VARCHAR},
+      cmm_name = #{cmmName,jdbcType=VARCHAR},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <select id="getCommunityIdByPostId" parameterType="java.lang.String" resultType="java.lang.String">
+    select cmm_id from t_cmm_post_game where post_id = #{postId} limit 1
+  </select>
+</mapper>

@@ -5,8 +5,6 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.CmmCommentDto;
 
-import java.util.List;
-
 /**
  * <p>
  *      社区-评论微服务业务层
@@ -35,7 +33,7 @@ public interface IMSServiceCommentService {
      * 分页查询 一级评论数据列表
      * @return
      */
-    public List<CmmCommentDto> queryFirstLevelCmtList(CmmCommentDto cmmCommentDto);
+    public FungoPageResultDto<CmmCommentDto> queryFirstLevelCmtList(CmmCommentDto cmmCommentDto);
 
 
 

@@ -2,6 +2,7 @@ package com.fungo.games.controller.portal;
 
 import com.fungo.games.service.GameService;
 import com.fungo.games.service.IGameService;
+import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
@@ -62,6 +63,17 @@ public class PortalGamesGameController {
     })
     public ResultDto<List<TagOutPage>> getGameTags(@Anonymous MemberUserProfile memberUserPrefile) {
         return gameService.getGameTags();
+    }
+
+
+    @ApiOperation(value = "获取最近评论的游戏(2.4.3)", notes = "")
+    @RequestMapping(value = "/api/portal/games/content/game/recenteva", method = RequestMethod.POST)
+    @ApiImplicitParams({
+    })
+    public FungoPageResultDto<GameOutPage> recentEvaluatedGamesByMember(MemberUserProfile memberUserPrefile, @RequestBody InputPageDto input) {
+
+        String userId = memberUserPrefile.getLoginId();
+        return gameService.recentEvaluatedGamesByMember(userId, input);
     }
 
     @ApiOperation(value = "PC2.0游戏列表", notes = "")

@@ -29,6 +29,20 @@ public class MallGoods extends Model<MallGoods> {
      * 分类ID, 关联product_cates表ID
      */
 	private Long cid;
+
+
+	/**
+	 * 游戏ID
+	 */
+	@TableField("game_id")
+	private String gameId;
+
+	/**
+	 * 游戏名称
+	 */
+	@TableField("game_name")
+	private String gameName;
+
     /**
      * 商品名称
      */
@@ -57,11 +71,12 @@ public class MallGoods extends Model<MallGoods> {
 	private Integer goodsStatus;
     /**
      * 商品类型
-				1 实物
-				2 虚拟物品
-				   21 零卡
-				   22 京东卡
-				   23 QB卡
+	 * 1 实物
+	 * 2 虚拟物品
+	 *    21 零卡
+	 *    22 京东卡
+	 *    23 QB卡
+	 * 3 游戏礼包
      */
 	@TableField("goods_type")
 	private Integer goodsType;
@@ -89,6 +104,13 @@ public class MallGoods extends Model<MallGoods> {
      * 排序
      */
 	private Integer sort;
+
+	/**
+	 * 使用方法描述
+	 */
+	@TableField("usage_desc")
+	private String usageDesc;
+
     /**
      * 创建人ID
      */
@@ -273,6 +295,30 @@ public class MallGoods extends Model<MallGoods> {
 
 	public void setExt3(String ext3) {
 		this.ext3 = ext3;
+	}
+
+	public String getGameId() {
+		return gameId;
+	}
+
+	public void setGameId(String gameId) {
+		this.gameId = gameId;
+	}
+
+	public String getUsageDesc() {
+		return usageDesc;
+	}
+
+	public void setUsageDesc(String usageDesc) {
+		this.usageDesc = usageDesc;
+	}
+
+	public String getGameName() {
+		return gameName;
+	}
+
+	public void setGameName(String gameName) {
+		this.gameName = gameName;
 	}
 
 	@Override

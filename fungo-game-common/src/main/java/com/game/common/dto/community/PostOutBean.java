@@ -3,11 +3,18 @@ package com.game.common.dto.community;
 import com.game.common.dto.AuthorBean;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
+@Setter
+@Getter
+@ToString
 @ApiModel(value="帖子对象",description="帖子对象")
 public class PostOutBean {
 
@@ -66,165 +73,24 @@ public class PostOutBean {
 
 	private String videoCoverImage;
 
-
 	/**
 	 * 文章数据行ID
 	 */
 	private Long rowId;
 
+	/**
+	 * 功能描述: 增加圈子相关的属性
+	 * @auther: dl.zhang
+	 * @date: 2019/6/27 15:59
+	 */
+	@ApiModelProperty(value="圈子id",example="")
+	private String circleId;
 
+	@ApiModelProperty(value="圈子图标",example="")
+	private String circleIcon;
 
+	@ApiModelProperty(value="圈子名称",example="")
+	private String circleName;
 
-	public AuthorBean getAuthor() {
-		return author;
-	}
-
-	public void setAuthor(AuthorBean author) {
-		this.author = author;
-	}
-
-	public String getPostId() {
-		return postId;
-	}
-
-	public void setPostId(String postId) {
-		this.postId = postId;
-	}
-
-	public String getImageUrl() {
-		return imageUrl;
-	}
-
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
-
-	public String getVideoUrl() {
-		return videoUrl;
-	}
-
-	public void setVideoUrl(String videoUrl) {
-		this.videoUrl = videoUrl;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getContent() {
-		return content;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
-
-	public int getLikeNum() {
-		return likeNum;
-	}
-
-	public void setLikeNum(int likeNum) {
-		this.likeNum = likeNum;
-	}
-
-	public boolean isLiked() {
-		return isLiked;
-	}
-
-	public void setLiked(boolean liked) {
-		isLiked = liked;
-	}
-
-	public int getReplyNum() {
-		return replyNum;
-	}
-
-	public void setReplyNum(int replyNum) {
-		this.replyNum = replyNum;
-	}
-
-	public String getCommunityId() {
-		return communityId;
-	}
-
-	public void setCommunityId(String communityId) {
-		this.communityId = communityId;
-	}
-
-	public String getCommunityIcon() {
-		return communityIcon;
-	}
-
-	public void setCommunityIcon(String communityIcon) {
-		this.communityIcon = communityIcon;
-	}
-
-	public String getCommunityName() {
-		return communityName;
-	}
-
-	public void setCommunityName(String communityName) {
-		this.communityName = communityName;
-	}
-
-	public boolean isIs_liked() {
-		return is_liked;
-	}
-
-	public void setIs_liked(boolean is_liked) {
-		this.is_liked = is_liked;
-	}
-
-	public List<String> getImages() {
-		return images;
-	}
-
-	public void setImages(List<String> images) {
-		this.images = images;
-	}
-
-	public String getUpdated_at() {
-		return updated_at;
-	}
-
-	public void setUpdated_at(String updated_at) {
-		this.updated_at = updated_at;
-	}
-
-	public String getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(String createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public int getType() {
-		return type;
-	}
-
-	public void setType(int type) {
-		this.type = type;
-	}
-
-	public String getVideoCoverImage() {
-		return videoCoverImage;
-	}
-
-	public void setVideoCoverImage(String videoCoverImage) {
-		this.videoCoverImage = videoCoverImage;
-	}
-
-	public Long getRowId() {
-		return rowId;
-	}
-
-	public void setRowId(Long rowId) {
-		this.rowId = rowId;
-	}
 
 }

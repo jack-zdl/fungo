@@ -136,6 +136,30 @@ public class CommunityFacedeHystrixService implements FallbackFactory<CommunityF
                 logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "queryCmmPostEssenceList");
                 return null;
             }
+
+            @Override
+            public ResultDto<List<String>> listOfficialCommunityIds() {
+                logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "listOfficialCommunityIds");
+                return null;
+            }
+
+            @Override
+            public ResultDto<List<String>> listGameIds(List<String> list) {
+                logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "listGameIds");
+                return null;
+            }
+
+
+            public ResultDto<Integer> getPostBoomWatchNumByCardId(String cardId) {
+                logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "getPostBoomWatchNumByCardId");
+                return null;
+            }
+
+            @Override
+            public ResultDto<Map> getGameMsgByPost(CmmPostDto cmmPost) {
+                logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "getGameMsgByPost");
+                return null;
+            }
         };
 
     }

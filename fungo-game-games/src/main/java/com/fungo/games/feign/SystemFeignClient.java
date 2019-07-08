@@ -1,28 +1,24 @@
 package com.fungo.games.feign;
 
 
-import com.fungo.games.facede.CommunityFacedeHystrixService;
 import com.fungo.games.facede.SystemFacedeHystrixService;
 import com.game.common.bean.TagBean;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
-import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.game.BasTagDto;
 import com.game.common.dto.game.BasTagGroupDto;
+import com.game.common.dto.mall.MallGoodsInput;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberOutBean;
-import com.game.common.ts.mq.dto.TransactionMessageDto;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -153,6 +149,17 @@ public interface SystemFeignClient {
      */
     @RequestMapping(value = "/listMemberDtoPag")
     FungoPageResultDto<MemberDto> listMemberDtoPag(@RequestBody MemberDto memberDto);
+
+    @GetMapping(value = "/listGameHisIds")
+    ResultDto<List<String>> listGameHisIds(@RequestParam("memberid") String memberid);
+
+
+    /**
+     *  获取某个游戏的游戏礼包数量
+     * @return {goodsCount: 游戏礼包数量key}
+     */
+    @PostMapping("/mall/game/goods")
+    public ResultDto<Map<String, Object>> queryGoodsCountWithGame(@RequestBody MallGoodsInput mallGoodsInput);
 
 
     /**

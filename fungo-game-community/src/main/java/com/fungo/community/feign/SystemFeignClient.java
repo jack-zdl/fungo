@@ -6,6 +6,7 @@ import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.IncentRuleRankDto;
@@ -34,7 +35,6 @@ import java.util.Map;
 @RequestMapping("/ms/service/system")
 public interface SystemFeignClient {
 
-
     /**
      * 功能描述: 根据用户id查询被关注人的id集合
      * @param:
@@ -43,16 +43,13 @@ public interface SystemFeignClient {
      * @date: 2019/5/10 11:34
      */
     @RequestMapping(value = "/followerids", method = RequestMethod.POST)
-    public FungoPageResultDto<String> getFollowerUserId(@RequestBody MemberFollowerVo memberFollowerVo);
-
-
+    FungoPageResultDto<String> getFollowerUserId(@RequestBody MemberFollowerVo memberFollowerVo);
 
     /**
      * 功能描述: 根据用户id集合查询用户详情 state为null就不根据状态查询
      */
     @GetMapping(value = "/listMembersByids")
-    public ResultDto<List<MemberDto>> listMembersByids(@RequestBody List<String> ids,@RequestParam(value = "state",required = false) Integer state);
-
+    ResultDto<List<MemberDto>> listMembersByids(@RequestBody List<String> ids,@RequestParam(value = "state",required = false) Integer state);
 
     /**
      * 功能描述: 根据会员关注粉丝表对象来分页查询集合
@@ -62,10 +59,7 @@ public interface SystemFeignClient {
      * @date: 2019/5/10 17:15
      */
     @GetMapping(value = "/memberFollowers")
-    public FungoPageResultDto<MemberFollowerDto> getMemberFollowerList(@RequestBody MemberFollowerVo memberFollowerVo);
-
-
-
+    FungoPageResultDto<MemberFollowerDto> getMemberFollowerList(@RequestBody MemberFollowerVo memberFollowerVo);
 
     /**
      * 功能描述: 根据用户会员DTO对象分页查询用户会员
@@ -75,8 +69,7 @@ public interface SystemFeignClient {
      * @date: 2019/5/10 17:41
      */
     @GetMapping(value = "/members")
-    public FungoPageResultDto<MemberDto> getMemberDtoList(@RequestBody MemberDto memberDto);
-
+    FungoPageResultDto<MemberDto> getMemberDtoList(@RequestBody MemberDto memberDto);
 
     /**
      * 根据用户id和用户权益(等级、身份、荣誉)类型，获取用户权益数据
@@ -84,24 +77,14 @@ public interface SystemFeignClient {
      * @return
      */
     @GetMapping(value = "/incentrankes")
-    public FungoPageResultDto<IncentRankedDto> getIncentRankedList(@RequestBody IncentRankedDto incentRankedDto);
-
-
-
-
-
+    FungoPageResultDto<IncentRankedDto> getIncentRankedList(@RequestBody IncentRankedDto incentRankedDto);
 
     @GetMapping(value = "/listFollowerCommunityId")
     @ApiOperation(value="获取关注社区id集合")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "memberId",value = "用户id",paramType = "form",dataType = "string")
     })
-    public ResultDto<List<String>> listFollowerCommunityId(@RequestParam("memberId") String memberId);
-
-
-
-
-
+    ResultDto<List<String>> listFollowerCommunityId(@RequestParam("memberId") String memberId);
 
     @GetMapping(value = "/countActionNum")
     @ApiOperation(value="获取动作数量(比如点赞)")
@@ -112,10 +95,7 @@ public interface SystemFeignClient {
             @ApiImplicitParam(name = "memberId",value = "会员id",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "state",value = "状态",paramType = "form",dataType = "integer")
     })
-    public ResultDto<Integer> countActionNum(@RequestBody BasActionDto basActionDto);
-
-
-
+    ResultDto<Integer> countActionNum(@RequestBody BasActionDto basActionDto);
 
     @GetMapping(value = "/listtargetId")
     @ApiOperation(value=" 根据用户id，动作类型，目前类型，状态获取目前id集合")
@@ -125,77 +105,74 @@ public interface SystemFeignClient {
             @ApiImplicitParam(name = "memberId",value = "会员id",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "state",value = "状态",paramType = "form",dataType = "integer")
     })
-    public ResultDto<List<String>> listtargetId(@RequestBody BasActionDto basActionDto);
-
-
-
+    ResultDto<List<String>> listtargetId(@RequestBody BasActionDto basActionDto);
 
     @GetMapping("/getAuthor")
     @ApiOperation(value="获取会员信息")
-    public ResultDto<AuthorBean> getAuthor(@RequestParam("memberId") String memberId);
-
-
+    ResultDto<AuthorBean> getAuthor(@RequestParam("memberId") String memberId);
 
     @PostMapping(value = "/exTask")
     @ApiOperation(value="执行任务")
-    public ResultDto<Map<String, Object>> exTask(@RequestBody TaskDto taskDto);
-
-
-
+    ResultDto<Map<String, Object>> exTask(@RequestBody TaskDto taskDto);
 
     @GetMapping("/getUserCard")
     @ApiOperation(value="获取会员信息")
-    public ResultDto<AuthorBean> getUserCard(@RequestParam("cardId") String cardId, @RequestParam("memberId") String memberId);
-
-
+    ResultDto<AuthorBean> getUserCard(@RequestParam("cardId") String cardId, @RequestParam("memberId") String memberId);
 
     @GetMapping("/getStatusImage")
     @ApiOperation(value="根据用户id获取用户身份图标")
-    public ResultDto<List<HashMap<String, Object>>> getStatusImage(@RequestParam("memberId") String memberId);
-
-
+    ResultDto<List<HashMap<String, Object>>> getStatusImage(@RequestParam("memberId") String memberId);
 
     /**
      * 查询指定用户所关注的其他用户列表
      */
     @GetMapping("/listWatchMebmber")
     @ApiOperation(value="查询指定用户所关注的其他用户列表")
-    public ResultDto<List<MemberDto>> listWatchMebmber(@RequestParam("limit") Integer limit, @RequestParam("currentMbId") String currentMbId);
-
-
-
+    ResultDto<List<MemberDto>> listWatchMebmber(@RequestParam("limit") Integer limit, @RequestParam("currentMbId") String currentMbId);
 
     /**
      * 功能描述: .找出官方推荐玩家
      */
     @GetMapping(value = "/listRecommendedMebmber")
-    public ResultDto<List<MemberDto>> listRecommendedMebmber(@RequestParam("limit") Integer limit,@RequestParam("currentMbId") String currentMbId,
+    ResultDto<List<MemberDto>> listRecommendedMebmber(@RequestParam("limit") Integer limit,@RequestParam("currentMbId") String currentMbId,
                                                              @RequestBody List<String> wathMbsSet);
-
-
-
-
     @GetMapping("/getIncentRuleRankById")
     @ApiOperation(value="获取用户级别、身份、荣誉规则")
-    public ResultDto<IncentRuleRankDto> getIncentRuleRankById(@RequestParam("id") String id);
-
-
-
+    ResultDto<IncentRuleRankDto> getIncentRuleRankById(@RequestParam("id") String id);
 
     @GetMapping(value = "/listActionByCondition")
     @ApiOperation(value="根据条件获取动作")
-    public ResultDto<List<BasActionDto>> listActionByCondition(@RequestBody BasActionDto basActionDto);
-
+    ResultDto<List<BasActionDto>> listActionByCondition(@RequestBody BasActionDto basActionDto);
 
     /**
      * 社区使用
      */
     @GetMapping(value = "/getMemberFollower1")
-    public ResultDto<MemberFollowerDto> getMemberFollower1( @RequestBody MemberFollowerDto memberFollowerDto);
+    ResultDto<MemberFollowerDto> getMemberFollower1( @RequestBody MemberFollowerDto memberFollowerDto);
+
+    /**
+     * 根据用户Id获取最近浏览圈子行为 8个
+     * @param userId
+     * @return
+     */
+    @GetMapping(value = "/getRecentBrowseCommunityByUserId")
+    ResultDto<List<String>> getRecentBrowseCommunityByUserId(@RequestParam("userId") String userId);
 
 
+    @ApiOperation(value = "v2.5", notes = "")
+    @RequestMapping(value = "/circle/follow", method = RequestMethod.POST)
+    @ApiImplicitParams({})
+    ResultDto<CircleFollowVo> circleListFollow( @RequestBody CircleFollowVo circleFollowVo);
 
-  
+    @ApiOperation(value = "v2.5", notes = "")
+    @RequestMapping(value = "/circle/mine/follow", method = RequestMethod.POST)
+    @ApiImplicitParams({})
+    FungoPageResultDto<String> circleListMineFollow( @RequestBody CircleFollowVo circleFollowVo);
 
-    //-------------
+    /**
+     *  扣减用户积分
+     * @return
+     */
+    @PostMapping("/user/account/score/sub")
+    ResultDto<Boolean> subtractMemberScoreAccount(@RequestBody Map<String, Object> accountParamMap);
 }

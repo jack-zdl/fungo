@@ -50,7 +50,7 @@ public class MallGoodsOutBean implements Serializable {
 
     /**
      * 产品状态 :
-     -1 已删除 ，1 已 下架  ，  2 已 上架
+     -1 已删除 ，1 已 下架  ，  2 已 上架 ,3 未上架
      */
     private Integer goodsStatus;
 
@@ -63,7 +63,6 @@ public class MallGoodsOutBean implements Serializable {
      23 QB卡
      */
     private Integer goodsType;
-
 
 
     /**
@@ -93,6 +92,54 @@ public class MallGoodsOutBean implements Serializable {
      * 秒杀结束时间
      */
     private String endTime;
+
+    /**
+     * 游戏礼包中，登录用户是否已经购买
+     * true 已经购买
+     * false 未购买
+     */
+    private boolean is_buy;
+
+    /**
+     * 游戏中的礼包商品是否过期
+     * true 已经过期
+     * false 未过期
+     */
+    private boolean is_expire;
+
+
+    /**
+     * 游戏ID
+     */
+    private String gameId;
+
+    /**
+     * 有效期信息描述
+     */
+    private String validPeriodIntro;
+
+
+    /**
+     * 使用方法描述
+     */
+    private String usageDesc;
+
+
+    public String getValidPeriodIntro() {
+        return validPeriodIntro;
+    }
+
+    public void setValidPeriodIntro(String validPeriodIntro) {
+        this.validPeriodIntro = validPeriodIntro;
+    }
+
+    public String getUsageDesc() {
+        return usageDesc;
+    }
+
+    public void setUsageDesc(String usageDesc) {
+        this.usageDesc = usageDesc;
+    }
 
     public String getId() {
         return id;
@@ -206,6 +253,31 @@ public class MallGoodsOutBean implements Serializable {
         this.goodsType = goodsType;
     }
 
+    public boolean isIs_buy() {
+        return is_buy;
+    }
+
+    public void setIs_buy(boolean is_buy) {
+        this.is_buy = is_buy;
+    }
+
+
+    public String getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
+    }
+
+    public boolean isIs_expire() {
+        return is_expire;
+    }
+
+    public void setIs_expire(boolean is_expire) {
+        this.is_expire = is_expire;
+    }
+
     @Override
     public String toString() {
         return "MallGoodsOutBean{" +
@@ -223,6 +295,14 @@ public class MallGoodsOutBean implements Serializable {
                 ", sort=" + sort +
                 ", startTime='" + startTime + '\'' +
                 ", endTime='" + endTime + '\'' +
+                ", is_buy=" + is_buy +
+                ", is_expire=" + is_expire +
+                ", gameId='" + gameId + '\'' +
+                ", validPeriodIntro='" + validPeriodIntro + '\'' +
+                ", usageDesc='" + usageDesc + '\'' +
                 '}';
     }
+
+
+//----------
 }

@@ -122,7 +122,12 @@ public class Game extends Model<Game> {
      * 介绍
      */
 	private String intro;
-    /**
+	/**
+	 * 小fun说
+	 */
+	@TableField("fungo_talk")
+	private String fungoTalk;
+	/**
      * 开发者
      */
 	private String developer;
@@ -223,6 +228,13 @@ public class Game extends Model<Game> {
 	 */
 	@TableField("boom_download_num")
 	private Long boomDownloadNum;
+
+
+	/**
+	 * 游戏编号
+	 */
+	@TableField("game_idt_sn")
+	private Long gameIdtSn;
 
 
 	public String getId() {
@@ -583,6 +595,23 @@ public class Game extends Model<Game> {
 
 	public void setBoomDownloadNum(Long boomDownloadNum) {
 		this.boomDownloadNum = boomDownloadNum;
+	}
+
+	public String getFungoTalk() {
+		return fungoTalk;
+	}
+
+	public void setFungoTalk(String fungoTalk) {
+		this.fungoTalk = fungoTalk;
+	}
+
+
+	public Long getGameIdtSn() {
+		return gameIdtSn;
+	}
+
+	public void setGameIdtSn(Long gameIdtSn) {
+		this.gameIdtSn = gameIdtSn;
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 server:
   port: 8182
-  #port: 8183
+  # port: 8183
   #port: 8184
 
 #-----------------------------------------------------------------------------------------------------
@@ -147,6 +147,19 @@ spring:
         uri: ${fungoServer.commmunity.uri}
         predicates:
         - Path=/api/search/posts
+
+      - id:fungo-game-community-20:
+        uri: ${fungoServer.commmunity.uri}
+        predicates:
+          - Path=/api/portal/community/**
+      - id:fungo-game-community-21:
+        uri: ${fungoServer.commmunity.uri}
+        predicates:
+          - Path=/api/community/**
+      - id:fungo-game-community-22:
+        uri: ${fungoServer.commmunity.uri}
+        predicates:
+          - Path=/api/search/posts/games
 
         #*****************游戏开始************************************
       - id:fungo-game-games-0:
@@ -365,6 +378,25 @@ spring:
         predicates:
           - Path=/api/content/game/**
 
+      - id:fungo-game-games-45:
+        uri: ${fungoServer.game.uri}
+        predicates:
+          - Path=/api/portal/games/**
+
+      - id:fungo-game-games-45:
+        uri: ${fungoServer.game.uri}
+        predicates:
+          - Path=/api/tag/listPostTag
+
+      - id:fungo-game-games-46:
+        uri: ${fungoServer.game.uri}
+        predicates:
+          - Path=/api/content/viewGames
+
+      - id:fungo-game-games-47:
+        uri: ${fungoServer.game.uri}
+        predicates:
+          - Path=/api/games/**
 
         #      *****************游戏2019-05-20结束************************************
 
@@ -498,6 +530,14 @@ spring:
         predicates:
         - Path=/api/invite/users
 
+      - id:fungo-game-system-28:
+        uri:  ${fungoServer.system.uri}
+        predicates:
+          - Path=/api/portal/system/**
+      - id:fungo-game-system-29:
+        uri:  ${fungoServer.system.uri}
+        predicates:
+          - Path=/api/system/**
 
 
       - id:fungo-game-commmunity-14:

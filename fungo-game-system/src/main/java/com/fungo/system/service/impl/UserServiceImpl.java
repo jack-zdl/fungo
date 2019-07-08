@@ -243,6 +243,7 @@ public class UserServiceImpl implements IUserService {
                 }else{
                     buriedPointFun(member, "false");
                 }
+
                 messageCodeService.updateCheckCodeSuccess(re.getData());//更新验证成功
             } else {
                 return ResultDto.error(re.getCode(), re.getMessage());
@@ -267,6 +268,7 @@ public class UserServiceImpl implements IUserService {
         bean.setHas_password(member.getHasPassword().equals("1") ? true : false);
         bean.setObjectId(member.getId());
         rest.setData(bean);
+
 
         //记录登录用户
         memberLoginedStatisticsService.addLoginToBucket(member.getId(), appVersion);
@@ -699,7 +701,8 @@ public class UserServiceImpl implements IUserService {
         bean.setMemberNo(member.getMemberNo());
         bean.setMb_id(member.getId());
 
-        IncentAccountCoin accountCoin = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", memberId).eq("account_group_id", 3));
+        IncentAccountCoin accountCoin = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", memberId));
+        //.eq("account_group_id", 3));
         if (accountCoin == null) {
             bean.setFunCoin(0);
         } else {

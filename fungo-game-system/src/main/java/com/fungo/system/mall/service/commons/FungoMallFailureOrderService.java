@@ -10,6 +10,7 @@ import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
 import com.fungo.system.service.IncentAccountCoinDaoService;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +26,11 @@ import java.util.Map;
 
 /**
  * <p>
- *    fungo商城-失败订单处理
- *    产生订单后，超过4个小时未支付的订单视为交易失败订单
- *    处理：
- *         1.把订单状态置为:  3 无效
- *         2.把冻结的用户货款，解冻
+ * fungo商城-失败订单处理
+ * 产生订单后，超过4个小时未支付的订单视为交易失败订单
+ * 处理：
+ * 1.把订单状态置为:  3 无效
+ * 2.把冻结的用户货款，解冻
  * </p>
  *
  * @author mxf
@@ -119,7 +120,8 @@ public class FungoMallFailureOrderService {
 
     /**
      * 验证两个时间的差值
-     *  当前时间 - 订单创建时间
+     * 当前时间 - 订单创建时间
+     *
      * @param orderCreateTime
      * @return true 订单超过4小时  false 订单未超过4小时
      */
@@ -152,12 +154,16 @@ public class FungoMallFailureOrderService {
 
 
     /**
-     *  解冻用户fungo币账户被冻结商品价格
+     * 解冻用户fungo币账户被冻结商品价格
+     *
      * @param mb_id
      * @param goodsPriceVcy
      */
     private void unfreezeAccountCoinWithMember(String mb_id, Long goodsPriceVcy) {
-
+        if (StringUtils.isBlank(mb_id)) {
+            logger.error("-----解冻用户fungo币账户被冻结商品价格失败：mb_id{}", mb_id);
+            return;
+        }
         EntityWrapper<IncentAccountCoin> mbAccountCoinEntityWrapper = new EntityWrapper<IncentAccountCoin>();
         Map<String, Object> criteriaMap = new HashMap<String, Object>();
         criteriaMap.put("mb_id", mb_id);
@@ -200,11 +206,12 @@ public class FungoMallFailureOrderService {
 
     /**
      * 更新订单状态
-     * @param mb_id 用户id
-     * @param orderId 订单id
+     *
+     * @param mb_id       用户id
+     * @param orderId     订单id
      * @param orderStatus 订单状态
-     * @param payStatus 支付状态
-     * @param payStatus 发货状态
+     * @param payStatus   支付状态
+     * @param payStatus   发货状态
      */
     public boolean updateOrderStatusWithScan(String mb_id, Long orderId, Integer orderStatus, Integer payStatus, Integer shipping_status) {
 

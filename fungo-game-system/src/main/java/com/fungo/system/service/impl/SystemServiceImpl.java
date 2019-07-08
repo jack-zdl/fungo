@@ -6,19 +6,24 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.entity.*;
+import com.fungo.system.facede.ICommunityProxyService;
 import com.fungo.system.service.*;
+import com.game.common.consts.Setting;
+import com.game.common.dto.ActionInput;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.system.CircleFollow;
+import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
+import com.game.common.enums.ActionTypeEnum;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
 import com.game.common.util.StringUtil;
@@ -92,6 +97,18 @@ public class SystemServiceImpl implements SystemService {
 
     @Autowired
     private IncentRuleRankService rankRuleService;
+
+    @Autowired
+    private ICommunityProxyService communityProxyService;
+
+    @Autowired
+    private  BasActionDao actionDao;
+
+    @Autowired
+    private ActionServiceImpl actionServiceImpl;
+
+    @Autowired
+    private BasActionServiceImap basActionServiceImap;
 
 
     /**
@@ -813,6 +830,99 @@ public class SystemServiceImpl implements SystemService {
         return ResultDto.success();
     }
 
+
+    /**
+     * 获取最近浏览的游戏 取最近8条
+     */
+    @Override
+    public ResultDto<List<String>> listCommunityHisIds(String memberId) {
+
+        List<String> officialCommunityIds = communityProxyService.listOfficialCommunityIds();
+        //获取7天前时间
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DATE, -7);
+        List<String> list = basActionDao.getRecentViewGame(memberId, officialCommunityIds, c.getTime());
+        //根据社区id获取游戏
+        if (list != null && !list.isEmpty()) {
+            list = communityProxyService.listGameIds(list);
+        }
+        return ResultDto.success(list);
+    }
+    /*
+     * 根据用户Id获取最近浏览圈子行为 8个
+     * @param userId
+     * @return
+     */
+    @Override
+    public ResultDto<List<String>> getRecentBrowseCommunityByUserId(String userId) {
+        List<String> list = actionDao.getRecentBrowseCommunityByUserId(userId);
+        return ResultDto.success(list);
+    }
+
+    /**
+     * 功能描述: 根据传递的圈子集合查询是否关注
+     * @param: [circleFollowVo]
+     * @return: com.game.common.dto.ResultDto<com.game.common.dto.system.CircleFollowVo>
+     * @auther: dl.zhang
+     * @date: 2019/6/18 11:25
+     */
+    @Override
+    public ResultDto<CircleFollowVo> circleListFollow(CircleFollowVo circleFollowVo) {
+        ActionInput inputDto = new ActionInput();
+        if(circleFollowVo.getMemberId() == null || circleFollowVo.getCircleFollows() == null){
+            return  ResultDto.success(circleFollowVo);
+        }
+        try {
+            inputDto.setTarget_type(Integer.valueOf(ActionInput.ActionEnum.CIRCLE.getKey()));
+            for (CircleFollow circleFollow: circleFollowVo.getCircleFollows()) {
+                inputDto.setTarget_id(circleFollow.getCircleId());
+                BasAction action = actionServiceImpl.getAction(circleFollowVo.getMemberId(), Setting.ACTION_TYPE_FOLLOW, inputDto);
+                if(action != null){
+                    circleFollow.setFollow(true);
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("根据传递的圈子集合查询是否关注",e);
+        }
+        return ResultDto.success(circleFollowVo);
+    }
+
+    @Override
+    public FungoPageResultDto<String> circleListMineFollow(CircleFollowVo circleFollowVo) {
+        FungoPageResultDto re = new FungoPageResultDto();
+        if(circleFollowVo.getMemberId() == null ){
+            return  FungoPageResultDto.error("-1","用户id为空");
+        }
+        try {
+            if(ActionTypeEnum.FOLLOW.getKey().equals(circleFollowVo.getActionType())){
+                List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+                Page p = new Page(circleFollowVo.getPage(), circleFollowVo.getLimit());
+                Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("member_id",circleFollowVo.getMemberId())
+                        .eq("type",ActionTypeEnum.FOLLOW.getKey()).eq("target_type",ActionTypeEnum.ActionTargetTypeEnum.CIRCLE.getKey()).eq("state","0").orderBy("created_at",false);
+                List<BasAction> basActions  = basActionServiceImap.selectList(wrapper);
+//            List<BasAction> basActions = page.getRecords();
+                re.setData(basActions.stream().map(BasAction::getTargetId).collect(Collectors.toList()));
+                PageTools.pageToResultDto(re, p);
+            }else if(ActionTypeEnum.BROWSE.getKey().equals(circleFollowVo.getActionType())){
+                List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+                Page p = new Page(circleFollowVo.getPage(), circleFollowVo.getLimit());
+                Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("member_id",circleFollowVo.getMemberId())
+                        .eq("type",ActionTypeEnum.BROWSE.getKey()).eq("target_type", ActionTypeEnum.ActionTargetTypeEnum.CIRCLE.getKey()).eq("state","0").orderBy("created_at",false);;
+                List<BasAction> basActions  = basActionServiceImap.selectList(wrapper);
+//            List<BasAction> basActions = page.getRecords();
+                re.setData(basActions.stream().map(BasAction::getTargetId).collect(Collectors.toList()));
+                PageTools.pageToResultDto(re, p);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("根据传递的圈子集合查询是否关注",e);
+        }
+        return re;
+    }
+
+
+    @Override
     public ResultDto<List<MemberDto>> listRecommendedMebmber(Integer limit, String currentMbId, List<String> wathMbsSet) {
         List<MemberDto> memberDtoList;
         EntityWrapper memberSqlWrapper = new EntityWrapper<Member>();
@@ -833,4 +943,6 @@ public class SystemServiceImpl implements SystemService {
         }
         return ResultDto.success(memberDtoList);
     }
+
+    //-----------
 }

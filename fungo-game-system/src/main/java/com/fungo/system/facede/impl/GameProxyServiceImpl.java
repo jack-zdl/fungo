@@ -42,7 +42,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
     private GamesFeignClient gamesFeignClient;
 
     /**
-     * 功能描述:  根据主键获取社区帖子
+     * 功能描述:  根据主键获取社区帖子  不需要分页
      * @param: [id] 主键id
      * @return: com.game.common.dto.community.CmmPostDto
      * @auther: dl.zhang
@@ -61,7 +61,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
     }
 
     /**
-     * 功能描述: 根据主键查询社区一级评论
+     * 功能描述: 根据主键查询社区一级评论  不需要分页
      * @param: [id] 社区一级评论主键id
      * @return: com.game.common.dto.community.CmmCommentDto
      * @auther: dl.zhang
@@ -80,7 +80,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
     }
 
     /**
-     * 功能描述: 根据主键查询游戏评价
+     * 功能描述: 根据主键查询游戏评价  不需要分页
      * @param: [id] 游戏评价主键
      * @return: com.game.common.dto.game.GameEvaluationDto
      * @auther: dl.zhang
@@ -101,7 +101,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
     }
 
     /**
-     * 功能描述: 根据游戏主键查询游戏
+     * 功能描述: 根据游戏主键查询游戏  不需要分页
      * @param: [id] 游戏主键
      * @return: com.game.common.dto.GameDto
      * @auther: dl.zhang
@@ -123,7 +123,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
     }
 
     /**
-     * 功能描述: 根据心情主键查询心情
+     * 功能描述: 根据心情主键查询心情  不需要分页
      * @param: [id] 心情主键
      * @return: com.game.common.dto.community.MooMoodDto
      * @auther: dl.zhang
@@ -143,7 +143,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
 
     /**
      *
-     * 功能描述: 根据心情评论主键查询心情评论
+     * 功能描述: 根据心情评论主键查询心情评论   不需要分页
      * @param: [id] 心情评论主键
      * @return: com.game.common.dto.community.MooMessageDto
      * @auther: dl.zhang

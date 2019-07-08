@@ -154,6 +154,24 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
         return new ArrayList<>();
     }
 
+    @Override
+    public List<String> listOfficialCommunityIds() {
+        ResultDto<List<String>> resultDto = communityFeignClient.listOfficialCommunityIds();
+        if(!resultDto.isSuccess()||resultDto.getData()==null){
+            return  new ArrayList<>();
+        }
+        return resultDto.getData();
+    }
+
+    @Override
+    public List<String> listGameIds(List<String> list) {
+        ResultDto<List<String>> resultDto = communityFeignClient.listGameIds(list);
+        if(!resultDto.isSuccess()||resultDto.getData()==null){
+            return  new ArrayList<>();
+        }
+        return resultDto.getData();
+    }
+
     public List<Map> hystrixGetHonorQualificationOfEssencePost() {
         LOGGER.warn("CommunityProxyServiceImpl.hystrixGetHonorQualificationOfEssencePost 熔断器打开");
         return new ArrayList<>();

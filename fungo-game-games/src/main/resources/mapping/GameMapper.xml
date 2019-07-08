@@ -79,6 +79,7 @@
         <result column="unrecommend_num" property="unrecommendNum"/>
         <result column="state" property="state"/>
         <result column="intro" property="intro"/>
+        <result column="fungo_talk" property="fungoTalk"/>
         <result column="developer" property="developer"/>
         <result column="version_main" property="versionMain"/>
         <result column="isbn_id" property="isbnId"/>
@@ -201,6 +202,13 @@
 		from t_game g,t_game_evaluation e 
 		WHERE e.game_id = g.id AND e.member_id = #{memberId} 
 		ORDER BY e.updated_at DESC
+	</select>
+
+    <!--获取上周下载数+评论数 排名前10位的游戏 -->
+    <select id="getGamesByDownload" resultType="java.util.HashMap" parameterType="String">
+		select  SUM(g.download_num+g.comment_num) as number, g.id as game_id,g.name,g.icon,g.tags,g.community_id,g.comment_num
+		from t_game g
+		GROUP BY id  ORDER BY number desc;
 	</select>
 
 

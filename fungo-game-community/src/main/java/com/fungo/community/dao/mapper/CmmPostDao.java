@@ -20,6 +20,7 @@ import java.util.Map;
  */
 public interface CmmPostDao extends BaseMapper<CmmPost> {
 
+
     /**
      * 获取关注用户和社区的帖子 分页数据
      */
@@ -72,4 +73,33 @@ public interface CmmPostDao extends BaseMapper<CmmPost> {
      * @return
      */
     public List<CollectionBean> getCollection(Page<CollectionBean> page, @Param("postIds") List<String>  postIds);
+
+    /**
+     * PC2.0新增浏览量 根据跟用户ID获取文章的浏览量
+     * @param cardId
+     * @return
+     */
+    Integer getPostBoomWatchNumByCardId(@Param("cardId")String cardId);
+
+
+    /**
+     * 基于模糊查询文章数据对应的游戏ids
+     * @param paramMap
+     * @return
+     */
+    public List<Map<String,Object>>  queryCmmPostRefGameIds(Map<String,Object> paramMap);
+
+
+    /**
+     * 基于模糊查询文章数据对应的游戏总数
+     * @param paramMap
+     * @return
+     */
+    public Map<String,Object> queryCmmPostRefGameIdsCount(Map<String,Object> paramMap);
+
+    List<CmmPost> getCmmCircleListByPostId(String circleId);
+
+    List<CmmPost> getCmmCircleListByCircleId(Page page ,@Param("circleId") String circleId, @Param("tagId") String tagId,@Param("cream") String cream , @Param("sortType") String sortType);
+
+    List<CmmPost> getCmmPostByGameId(Page page,@Param("gameId")String gameId );
 }

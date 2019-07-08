@@ -49,5 +49,15 @@ public class CmmPostDaoServiceImap extends ServiceImpl<CmmPostDao, CmmPost> impl
     public List<CollectionBean> getCollection(Page<CollectionBean> page, List<String> postIds) {
         return cmmPostDao.getCollection(page, postIds);
     }
+
+    /**
+     * PC2.0新增浏览量 根据跟用户ID获取文章的浏览量
+     * @param cardId
+     * @return
+     */
+    @Override
+    public Integer getPostBoomWatchNumByCardId(String cardId) {
+        return cmmPostDao.getPostBoomWatchNumByCardId(cardId);
+    }
     //------
 }

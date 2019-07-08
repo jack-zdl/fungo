@@ -111,5 +111,9 @@ public class FungoMallSeckillConsts {
     public static final String MSG_SECKILL_SUCCESS_physical = "恭喜您兑换得 “<span style='color:#242529'>$</span>” ！我们将在3个工作日内为您邮寄！\n" +
             "请耐心等待，同时您可在我的-礼包乐园-我的礼品查看您的兑换记录。感谢支持小Fun，要天天开心哦～";
 
+    /**
+     *  游戏礼包购买成功消息
+     */
+    public static final String MSG_GAME_GOODS_SUCCESS = "领取成功!\n" + "兑换码为 “$”，点击复制可直接前往游戏兑换。";
 
 }

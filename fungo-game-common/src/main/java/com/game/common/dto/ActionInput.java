@@ -1,5 +1,7 @@
 package com.game.common.dto;
 
+import com.game.common.enums.BaseEnum;
+
 public class ActionInput {
     /**
      * 关注目标id
@@ -19,6 +21,7 @@ public class ActionInput {
      *  心情评论 | 8
      *  意见反馈 | 9
      *  游戏标签 | 10
+     *  圈子  / 11   @zdl 2019/6/18
      */
     private int target_type;
 
@@ -64,6 +67,27 @@ public class ActionInput {
         this.user_id = user_id;
     }
 
+    public enum ActionEnum implements BaseEnum<ActionEnum,String> {
+        CIRCLE("11","circle");
+
+        String key;
+        String value;
+
+        ActionEnum(String s, String s1) {
+            this.key = s;
+            this.value = s1;
+        }
+
+        @Override
+        public String getKey() {
+            return key;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+    }
 }
 
 

@@ -15,6 +15,7 @@ import com.game.common.dto.game.BasTagGroupDto;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberOutBean;
+import com.game.common.vo.CircleGamePostVo;
 import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,12 @@ public class CommunityFacedeHystrixService implements FallbackFactory<CommunityF
             public ResultDto<Map<String, Integer>> listCommunityFolloweeNum(List<String> communityIds) {
                 logger.error("--------------------SystemFeignClient--启动熔断:{}" , "listCommunityFolloweeNum");
                 return new ResultDto<Map<String, Integer>>();
+            }
+
+            @Override
+            public ResultDto<String> getCircleByGame(CircleGamePostVo circleGamePostVo) {
+                logger.error("--------------------SystemFeignClient--启动熔断:{}" , "getCircleByGame");
+                return null;
             }
         };
     }

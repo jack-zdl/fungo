@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.fungo.system.mall.dto.GoodsDto;
 import com.fungo.system.mall.dto.GoodsValiDto;
 import com.fungo.system.mall.entity.MallOrder;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -30,4 +31,24 @@ public interface MallOrderDao extends BaseMapper<MallOrder> {
     List<Map<String, Object>> selectTotal();
 
     List<Map<String,Object>> selectVirtualTotal();
+
+    /**
+     * 用户兑换的游戏礼包查询
+     * @param mbId
+     * @param startOffset
+     * @param pageSize
+     * @return
+     */
+    public List<Map<String, Object>> queryMbGameOrderList(@Param("mbId") String mbId, @Param("startOffset") Integer startOffset,
+                                                          @Param("pageSize") Integer pageSize);
+
+    /**
+     * 用户兑换的游戏礼包总数查询
+     * @param mbId
+     * @param startOffset
+     * @param pageSize
+     * @return
+     */
+    public Map<String,Object> queryMbGameOrderListCount(@Param("mbId") String mbId, @Param("startOffset") Integer startOffset,
+                                                          @Param("pageSize") Integer pageSize);
 }

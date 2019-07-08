@@ -1,7 +1,5 @@
 package com.fungo.games.facede;
 
-import com.baomidou.mybatisplus.plugins.Page;
-import com.game.common.bean.TagBean;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.action.BasActionDto;
@@ -9,8 +7,7 @@ import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.ReplyInputPageDto;
 import com.game.common.dto.game.BasTagDto;
-import com.game.common.dto.game.BasTagGroupDto;
-import com.game.common.dto.game.ReplyDto;
+import com.game.common.dto.mall.MallGoodsInput;
 import com.game.common.dto.user.MemberDto;
 
 import java.util.HashMap;
@@ -131,4 +128,14 @@ public interface IEvaluateProxyService {
      * @param memberDto
      */
     FungoPageResultDto<MemberDto> listMemberDtoPag(MemberDto memberDto);
+
+    List<String> listGameHisIds(String memberId);
+
+
+    /**
+     * 获取某个游戏的游戏礼包数量
+     * @param mallGoodsInput
+     * @return
+     */
+    public Integer queryGoodsCountWithGame(MallGoodsInput mallGoodsInput);
 }

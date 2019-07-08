@@ -923,6 +923,37 @@ public class FeignServiceController {
         return ResultDto.success(gameDto);
     }
 
+
+    /**
+     * 根据游戏ids查询游戏详情集合
+     *
+     * @param gameId 1,2,3,4
+     * @return
+     */
+    @ApiOperation(value = "根据游戏ids查询游戏详情集合", notes = "")
+    @RequestMapping(value = "/api/game/detailsByIds", method = RequestMethod.POST)
+    ResultDto<List<GameDto>> selectGameDetailsByIds(String gameIds) {
+        if (org.apache.commons.lang3.StringUtils.isBlank(gameIds)) {
+            return ResultDto.success();
+        }
+
+        List<GameDto> gameDtoList = new ArrayList<>();
+
+        List<Game> gameList = gameService.selectList(new EntityWrapper<Game>().in("id", gameIds));
+
+        if (null != gameList && !gameList.isEmpty()) {
+
+            for (Game game : gameList) {
+                GameDto gameDto = new GameDto();
+                BeanUtils.copyProperties(game, gameDto);
+                gameDtoList.add(gameDto);
+            }
+
+        }
+        return ResultDto.success(gameDtoList);
+    }
+
+
     /**
      * 查询游戏评论表中发表评论大于X条，前Y名的用户
      *
@@ -1065,7 +1096,7 @@ public class FeignServiceController {
     }
 
     @GetMapping("/api/game/selectGameEvaluationPage")
-    public FungoPageResultDto<GameEvaluationDto> selectGameEvaluationPage(){
+    public FungoPageResultDto<GameEvaluationDto> selectGameEvaluationPage() {
         Page<GameEvaluation> page = gameEvaluationService.selectPage(new Page<GameEvaluation>(1, 6), new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy("RAND()"));
         FungoPageResultDto<GameEvaluationDto> re = new FungoPageResultDto<GameEvaluationDto>();
 //        PageTools.pageToResultDto(re, page);
@@ -1083,5 +1114,6 @@ public class FeignServiceController {
         return re;
     }
 
+    //---------
 
 }

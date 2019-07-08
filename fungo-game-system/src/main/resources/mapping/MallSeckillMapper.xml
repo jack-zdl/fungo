@@ -47,9 +47,18 @@
 			t_mall_seckill sk
 			JOIN t_mall_goods gds
 			ON sk.goods_id = gds.id
-			AND
-			( sk.start_time BETWEEN #{startTime} AND #{endTime} )
-
+				<if test="startTime != null  and endTime != null">
+					AND
+					   ( sk.start_time BETWEEN #{startTime} AND #{endTime}  )
+				</if>
+				<if test="goods_type != null">
+					AND
+					 gds.goods_type in( #{goods_type} )
+				</if>
+				<if test="goods_status > 0">
+					AND
+					gds.goods_status = #{goods_status}
+				</if>
 	</select>
 
 

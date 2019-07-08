@@ -48,7 +48,7 @@ public interface IMSServicePostService {
      * @param cmmPostDto
      * @return
      */
-    List<CmmPostDto> listCmmPostTopicPost(CmmPostDto cmmPostDto);
+    FungoPageResultDto<CmmPostDto> listCmmPostTopicPost(CmmPostDto cmmPostDto);
 
 
     /**
@@ -59,4 +59,13 @@ public interface IMSServicePostService {
      * @return
      */
     public List<CollectionBean> getCollection(int pageNum,int limit, List<String> postIds);
+
+    /**
+     * PC2.0新增浏览量 根据跟用户ID获取文章的浏览量
+     * @param cardId
+     * @return
+     */
+    Integer getPostBoomWatchNumByCardId(String cardId);
+
+    Map getGameMsgByPost(CmmPostDto cmmPost);
 }

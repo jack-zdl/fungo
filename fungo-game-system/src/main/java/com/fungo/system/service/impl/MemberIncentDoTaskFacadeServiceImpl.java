@@ -7,6 +7,7 @@ import com.fungo.system.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.repo.cache.facade.FungoCacheTask;
+import com.game.common.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,18 @@ public class MemberIncentDoTaskFacadeServiceImpl implements IMemberIncentDoTaskF
     public Map<String, Object> exTask(String mb_id, int task_group_flag, int task_type, int type_code_idt) {
 
         Map<String, Object> resMap = new IdentityHashMap<String, Object>();
+        if(StringUtil.isNull(mb_id)){
+            logger.error("用户id为null，任务执行失败");
+            resMap.put("-1", "服务器非常繁忙，请耐心等一下");
+            resMap.put("success", false);
+            return resMap;
+        }
+        if(StringUtil.isNull(mb_id)){
+            logger.error("用户id为null，任务执行失败");
+            resMap.put("-1", "服务器非常繁忙，请耐心等一下");
+            resMap.put("success", false);
+            return resMap;
+        }
 
         try {
             logger.info("执行任务-member:{}---task_group_flag:{}---task_type:{}---type_code_idt:{}", mb_id, task_group_flag, task_type, type_code_idt);

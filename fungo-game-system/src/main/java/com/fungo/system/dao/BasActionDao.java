@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.entity.BasAction;
 import com.game.common.bean.CollectionBean;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -54,5 +56,10 @@ public interface BasActionDao extends BaseMapper<BasAction> {
 	public boolean batchSubCountor(Map<String, Object> map);
 
 	List<String> listArticleIds(String memberId);
+
+    List<String> getRecentViewGame(@Param("memberId") String memberId, @Param("officialCommunityIds") List<String> officialCommunityIds, @Param("date") Date date);
+
+//	根据用户Id获取最近浏览圈子行为 8个
+    List<String> getRecentBrowseCommunityByUserId(@Param("userId") String userId);
 
 }

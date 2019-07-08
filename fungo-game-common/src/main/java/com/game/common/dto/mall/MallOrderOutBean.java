@@ -3,7 +3,9 @@ package com.game.common.dto.mall;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -34,6 +36,16 @@ public class MallOrderOutBean implements Serializable {
      * 订单对应的商品列表
      */
     private List<MallGoodsOutBean> goodsList;
+
+    /**
+     * 购买到的虚拟卡信息
+     */
+    private Map<String,Object> cardInfo = new HashMap<String,Object>();
+
+    /**
+     * 购买成功提示信息
+     */
+    private String sucMsg;
 
     /**
      * 用户名称
@@ -263,6 +275,22 @@ public class MallOrderOutBean implements Serializable {
         this.updatedTime = updatedTime;
     }
 
+    public Map<String, Object> getCardInfo() {
+        return cardInfo;
+    }
+
+    public void setCardInfo(Map<String, Object> cardInfo) {
+        this.cardInfo = cardInfo;
+    }
+
+    public String getSucMsg() {
+        return sucMsg;
+    }
+
+    public void setSucMsg(String sucMsg) {
+        this.sucMsg = sucMsg;
+    }
+
     @Override
     public String toString() {
         return "MallOrderOutBean{" +
@@ -270,6 +298,8 @@ public class MallOrderOutBean implements Serializable {
                 ", orderSn='" + orderSn + '\'' +
                 ", mbId='" + mbId + '\'' +
                 ", goodsList=" + goodsList +
+                ", cardInfo=" + cardInfo +
+                ", sucMsg='" + sucMsg + '\'' +
                 ", mbName='" + mbName + '\'' +
                 ", mbMobile='" + mbMobile + '\'' +
                 ", orderStatus=" + orderStatus +

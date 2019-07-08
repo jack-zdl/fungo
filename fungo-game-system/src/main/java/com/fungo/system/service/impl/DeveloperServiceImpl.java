@@ -608,7 +608,6 @@ public class DeveloperServiceImpl implements IDeveloperService {
         FungoPageResultDto<GameHistoryOut> re = new FungoPageResultDto<>();
         re.setData(olist);
         PageTools.pageToResultDto(re, page);
-
         return re;
     }
 

@@ -30,7 +30,7 @@ public class EvaluateController {
 
 
     @ApiOperation(value = "评论帖子/心情", notes = "")
-    @RequestMapping(value = "/api/content/comment", method = RequestMethod.POST)
+    @PostMapping(value = "/api/content/comment")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "content", value = "内容", paramType = "path", dataType = "string"),
             @ApiImplicitParam(name = "target_id", value = "帖子id", paramType = "path", dataType = "string"),
@@ -46,7 +46,7 @@ public class EvaluateController {
 
 
     @ApiOperation(value = "评论详情", notes = "")
-    @RequestMapping(value = "/api/content/comment/{commentId}", method = RequestMethod.GET)
+    @GetMapping(value = "/api/content/comment/{commentId}")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "comment_id", value = "帖子id", paramType = "path", dataType = "string"),
             @ApiImplicitParam(name = "user_id", value = "用户id", paramType = "path", dataType = "string")
@@ -62,7 +62,7 @@ public class EvaluateController {
 
 
     @ApiOperation(value = "心情评论详情", notes = "")
-    @RequestMapping(value = "/api/content/message/{messageId}", method = RequestMethod.GET)
+    @GetMapping(value = "/api/content/message/{messageId}")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "messageId", value = "心情id", paramType = "path", dataType = "string"),
     })
@@ -78,7 +78,7 @@ public class EvaluateController {
 
 
     @ApiOperation(value = "帖子/心情评论列表", notes = "")
-    @RequestMapping(value = "/api/content/comments", method = RequestMethod.POST)
+    @PostMapping(value = "/api/content/comments")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "comment_id", value = "心情id", paramType = "path", dataType = "string"),
             @ApiImplicitParam(name = "user_id", value = "用户id", paramType = "path", dataType = "string")

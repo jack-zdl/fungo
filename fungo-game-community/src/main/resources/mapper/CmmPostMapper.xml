@@ -24,7 +24,7 @@
         <result column="created_at" property="createdAt"/>
         <result column="updated_at" property="updatedAt"/>
         <result column="post_id" property="postId"/>
-
+        <result column="recommend" property="recommend"/>
         <result column="type" property="type"/>
         <result column="sort" property="sort"/>
         <result column="video" property="video"/>
@@ -39,7 +39,10 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, collect_num AS collectNum, tags, html_origin AS htmlOrigin, content, images, cover_image AS coverImage, comment_num AS commentNum, state, like_num AS likeNum, editedAt, community_id AS communityId, title, member_id AS memberId, origin, watch_num AS watchNum, report_num AS reportNum, created_at AS createdAt, updated_at AS updatedAt
+        id, collect_num AS collectNum, tags, html_origin AS htmlOrigin, content, images, cover_image AS coverImage, comment_num AS commentNum, state, like_num AS likeNum,
+        edited_at as editedAt, community_id AS communityId, title, member_id AS memberId, origin, watch_num AS watchNum, report_num AS reportNum, created_at AS createdAt,
+        updated_at AS updatedAt ,recommend ,type ,sort ,video , game_list as gameList , topic ,video_urls as videoUrls, last_reply_at as lastReplyAt,video_cover_image as videoCoverImage,
+        boom_watch_num as boomWatchNum
     </sql>
 
     <!-- 获取关注用户和社区的帖子分页数据 -->
@@ -189,5 +192,114 @@
 
     </select>
 
+    <!--getPostBoomWatchNumByCardId  PC2.0新增浏览量 根据跟用户ID获取文章的浏览量-->
+    <select id="getPostBoomWatchNumByCardId" resultType="java.lang.Integer">
+    SELECT
+        SUM(
+            greatest(
+                IFNULL(watch_num, 0),
+                IFNULL(boom_watch_num, 0)
+            )
+        )
+    FROM
+        t_cmm_post
+    WHERE
+        member_id = #{cardId}
+    </select>
 
+    <select id="getCmmCircleListByPostId" parameterType="java.lang.String" resultType="com.fungo.community.entity.CmmPost">
+    select  *  from  t_cmm_post where  id in
+    ( select cpc.post_id
+    from t_cmm_post_circle cpc where cpc.circle_id = #{circleId} AND cpc.default_link = 1 )
+
+  </select>
+
+
+    <select id="getCmmCircleListByCircleId" resultType="com.fungo.community.entity.CmmPost">
+        select  
+         <include refid="Base_Column_List"></include>
+         ,sum(cp.comment_num+cp.like_num+cp.collect_num+cp.watch_num) as total  from  t_cmm_post cp where  cp.state != -1 and id in
+        ( select cpc.post_id
+        from t_cmm_post_circle cpc where cpc.circle_id = #{circleId}   )
+        <if test="tagId != null and tagId != ''">
+            and cp.tags = #{tagId}
+        </if>
+        <if test="cream != null and cream != ''">
+            and cp.type = #{cream}
+        </if>
+        <if test='sortType == "1" ' >
+            GROUP BY cp.id   order  by cp.created_at desc
+        </if>
+        <if test='sortType == "2"'>
+            GROUP BY cp.id   order  by cp.last_reply_at desc
+        </if>
+        <if test='sortType == "3"'>
+            GROUP BY cp.id  and cp.type = 2   order  by cp.created_at desc
+        </if>
+        <if test='sortType == "4"'>
+            GROUP BY cp.id ORDER BY total desc
+        </if>
+    </select>
+
+
+    <select id="queryCmmPostRefGameIds" parameterType="map" resultType="java.util.HashMap">
+        SELECT
+            DISTINCT
+            mpost.id AS id,
+            postGame.post_id AS post_id,
+            postGame.game_id AS game_id,
+            SUM( watch_num + comment_num + like_num + collect_num ) AS wclc
+        FROM
+
+        t_cmm_post mpost
+
+        JOIN t_cmm_post_game postGame ON mpost.id = postGame.post_id
+
+        AND state = 1
+
+        <if test="keyword != null and keyword !=''">
+            AND ( title LIKE concat(concat('%',#{keyword}),'%')
+                 OR content LIKE concat(concat('%',#{keyword}),'%')
+            )
+        </if>
+        GROUP BY
+             mpost.id
+        ORDER BY
+        <if test="keyword != null and keyword !=''">
+            LOCATE( #{keyword}, title ) DESC,
+        </if>
+        wclc DESC,
+        <if test="keyword != null and keyword !=''">
+            LOCATE( #{keyword}, content ) DESC,
+        </if>
+        wclc DESC
+        LIMIT #{startOffset} ,#{pageSize}
+    </select>
+
+
+
+
+    <select id="queryCmmPostRefGameIdsCount" parameterType="map" resultType="java.util.HashMap">
+        SELECT
+            count(DISTINCT mpost.id) as ct
+        FROM
+        t_cmm_post mpost
+        JOIN t_cmm_post_game postGame ON mpost.id = postGame.post_id
+        AND state = 1
+
+        <if test="keyword != null and keyword !=''">
+            AND ( title LIKE concat(concat('%',#{keyword}),'%')
+            OR content LIKE concat(concat('%',#{keyword}),'%')
+            )
+        </if>
+    </select>
+
+    <select id="getCmmPostByGameId" resultType="com.fungo.community.entity.CmmPost">
+
+	SELECT 
+	 <include refid="Base_Column_List"></include>
+	 FROM t_cmm_post cp  WHERE cp.community_id in  (SELECT cc.id  FROM t_cmm_community cc WHERE cc.game_id = #{gameId} )
+	or cp.id in (SELECT cpg.post_id FROM t_cmm_post_game cpg WHERE cpg.game_id = #{gameId} )
+	order  by cp.created_at desc
+    </select>
 </mapper>

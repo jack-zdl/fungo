@@ -38,6 +38,8 @@ public class GameOutPage {
 	private boolean isBinding=false;
 	@ApiModelProperty(value="是否预约",example="")
 	private boolean isMake;
+
+	private Long gameIdtSn;
 	
 	public String getObjectId() {
 		return objectId;
@@ -161,7 +163,12 @@ public class GameOutPage {
 		this.isMake = isMake;
 	}
 
-	
-	
-	
+
+	public Long getGameIdtSn() {
+		return gameIdtSn;
+	}
+
+	public void setGameIdtSn(Long gameIdtSn) {
+		this.gameIdtSn = gameIdtSn;
+	}
 }

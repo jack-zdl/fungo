@@ -3,6 +3,7 @@ package com.fungo.community.service.msService.impl;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.community.dao.mapper.CmmCommunityDao;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.impl.CmmPostDaoServiceImap;
 import com.fungo.community.entity.CmmCommunity;
@@ -34,12 +35,16 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
 
     @Autowired
     private CmmPostDaoServiceImap cmmPostDaoServiceImap;
+    @Autowired
+    private CmmCommunityDao cmmCommunityDao;
 
 
     @Override
     public FungoPageResultDto<CmmCommunityDto> queryCmmCommunityList(CmmCommunityDto communityDto) {
-        FungoPageResultDto<CmmCommunityDto> fungoPageResultDto = new FungoPageResultDto<>();
+
+        FungoPageResultDto<CmmCommunityDto> resultDto = new FungoPageResultDto<CmmCommunityDto>();
         List<CmmCommunityDto> cmmCommunityDtoList = null;
+
         Page<CmmCommunity> cmmCommunityPageResult = null;
         try {
 
@@ -109,10 +114,11 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
 
                 if (null != cmmCommunityPageResult) {
 //                    selectRecords = cmmCommunityPage.getRecords();
-                    PageTools.pageToResultDto(fungoPageResultDto, cmmCommunityPageResult);
+                    PageTools.pageToResultDto(resultDto, cmmCommunityPageResult);
                     selectRecords = cmmCommunityPage.getRecords();
-                    //设置分页数据
-                    fungoPageResultDto.setCount(cmmCommunityPageResult.getTotal());
+
+                    resultDto.setCount(cmmCommunityPageResult.getTotal());
+                    resultDto.setPages(cmmCommunityPageResult.getPages());
                 }
 
             } else {
@@ -137,9 +143,9 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
         } catch (Exception ex) {
             LOGGER.error("/ms/service/cmm/cty/lists--queryCmmCommunityList-出现异常:", ex);
         }
-        fungoPageResultDto.setData(cmmCommunityDtoList);
-        PageTools.pageToResultDto(fungoPageResultDto, cmmCommunityPageResult);
-        return fungoPageResultDto;
+        resultDto.setData(cmmCommunityDtoList);
+        PageTools.pageToResultDto(resultDto, cmmCommunityPageResult);
+        return resultDto;
     }
 
     @Override
@@ -166,20 +172,23 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
 
 
     @Override
-    public List<CommentBean> getAllComments(int pageNum, int limit, String userId) {
+    public FungoPageResultDto<CommentBean> getAllComments(int pageNum, int limit, String userId) {
 
+        FungoPageResultDto<CommentBean> resultDto = new FungoPageResultDto<CommentBean>();
         List<CommentBean> commentBeanList = null;
         try {
             if (StringUtils.isBlank(userId)) {
-                return commentBeanList;
+                return resultDto;
             }
-            Page<CommentBean> page = new Page<CommentBean>(pageNum, limit);
 
+            Page<CommentBean> page = new Page<CommentBean>(pageNum, limit);
             commentBeanList = cmmCommunityDaoService.getAllComments(page, userId);
+
         } catch (Exception ex) {
             LOGGER.error("/ms/service/cmm/user/comments--getAllComments-出现异常:", ex);
         }
-        return commentBeanList;
+        resultDto.setData(commentBeanList);
+        return resultDto;
     }
 
 
@@ -210,6 +219,26 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
             LOGGER.error("//ms/service/cmm/user/flw/cmtlists--getFollowerCommunity-出现异常:", ex);
         }
         return null;
+    }
+
+    @Override
+    public List<String> listOfficialCommunityIds() {
+        return cmmCommunityDao.listOfficialCommunityIds();
+    }
+
+    @Override
+    public List<String> listGameIds(List<String> list) {
+        ArrayList<String> list1 = new ArrayList<>();
+        //不用in 保证顺序
+        if (list != null && !list.isEmpty()) {
+            for (String s : list) {
+                CmmCommunity community = cmmCommunityDao.selectById(s);
+                if (community != null) {
+                    list1.add(community.getGameId());
+                }
+            }
+        }
+        return list1;
     }
 
 

@@ -3,10 +3,12 @@ package com.fungo.system.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.system.dao.BannerDao;
 import com.fungo.system.entity.Banner;
 import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IMemeberProxyService;
 import com.fungo.system.facede.IndexProxyService;
+import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.service.BannerService;
 import com.fungo.system.service.IIndexService;
 import com.fungo.system.service.IUserService;
@@ -21,6 +23,9 @@ import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.index.ActionBean;
 import com.game.common.dto.index.CardDataBean;
 import com.game.common.dto.index.CardIndexBean;
+import com.game.common.dto.index.CircleCardDataBean;
+import com.game.common.enums.BaseEnum;
+import com.game.common.enums.CommonEnum;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
@@ -34,7 +39,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class IndexServiceImpl implements IIndexService {
@@ -43,25 +51,22 @@ public class IndexServiceImpl implements IIndexService {
 
     @Autowired
     private IUserService userService;
-
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
-
     @Autowired
     private SysVersionService sysVersionService;
-
     @Autowired
     private IMemeberProxyService iMemeberProxyService;
-
     @Autowired
     private IGameProxyService iGameProxyService;
-
     @Autowired
     private IndexProxyService indexProxyService;
-
     @Autowired
     private BannerService bannerService;
-
+    @Autowired
+    private BannerDao bannerDao;
+    @Autowired
+    private CommunityFeignClient communityFeignClient;
 
 
     @Override
@@ -75,7 +80,7 @@ public class IndexServiceImpl implements IIndexService {
             keySuffix += app_channel;
         }
 
-        re =  null;//(FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+        re = (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
 
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
@@ -99,17 +104,20 @@ public class IndexServiceImpl implements IIndexService {
         //int count = postService.selectCount(new EntityWrapper<CmmPost>().eq("type", 3));
         Page<CardIndexBean> pageBean = null;
 
+        //第一页
         if (1 == page) {
 
-            //轮播
+            //position 1 轮播(position_code 0001)
 //			CardIndexBean topic = this.topic();
 //			clist.add(topic);
-            //活动位
-            CardIndexBean activities = this.activities();
 
-            if (activities != null) {
-                clist.add(activities);
-            }
+            //position 2. 活动位 (position_code 0005)
+            //新版本2.5 不需要广告位
+//            CardIndexBean activities = this.activities();
+//
+//            if (activities != null) {
+//                clist.add(activities);
+//            }
 
             //ios 当前版本是否 隐藏
             if (!isCloseIndexSection) {
@@ -124,14 +132,15 @@ public class IndexServiceImpl implements IIndexService {
 
 //			ActionBean a = new ActionBean();
 //			indexBean.setUprightAction(a);
-
-            //精选文章
+            //position 3 游戏攻略(精选文章)
+            //精选文章  position 3 (position_code 0006)
             CardIndexBean postHost = this.selectPosts("0006");
 
             if (postHost != null) {
                 clist.add(postHost);
             }
 
+            //position 4 安利墙
             //安利墙 ios 当前版本是否 隐藏
             if (!isCloseIndexSection) {
 
@@ -142,7 +151,7 @@ public class IndexServiceImpl implements IIndexService {
                 }
 
             } else {
-
+                ///position 5 精选文章 视频(position_code 0007)
                 CardIndexBean postVidoe = this.selectPosts("0007");
 
                 if (postVidoe != null) {
@@ -155,8 +164,10 @@ public class IndexServiceImpl implements IIndexService {
 
             re.setBefore(1);
 
+            //第二页
         } else if (page == 2) {
 
+            //安利墙
             //安利墙 ios 当前版本是否 隐藏
             if (!isCloseIndexSection) {
                 CardIndexBean postVidoe = this.selectPosts("0007");
@@ -165,12 +176,13 @@ public class IndexServiceImpl implements IIndexService {
                 }
             }
 
-
+            //精选文章 (视频)
             CardIndexBean postFine = this.selectPosts("0008");
             if (postFine != null) {
                 clist.add(postFine);
             }
 
+            //大家都在玩
             //大家都在玩 ios 当前版本是否 隐藏
             if (!isCloseIndexSection) {
                 CardIndexBean selectedGames = this.selectedGames();
@@ -208,6 +220,66 @@ public class IndexServiceImpl implements IIndexService {
         //redis cache
         fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
 
+        return re;
+    }
+
+    /**
+     * 功能描述: 获取圈子页面上广告位
+     * @param: [input, os, iosChannel, app_channel, appVersion]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: dl.zhang
+     * @date: 2019/6/11 11:05
+     */
+    @Override
+    public FungoPageResultDto<CardIndexBean> circleEventList(InputPageDto input, String os, String iosChannel, String app_channel, String appVersion) {
+        FungoPageResultDto<CardIndexBean> re = new FungoPageResultDto<>();
+        //先从Redis获取
+        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_EVENT_INDEX;
+        String keySuffix = JSON.toJSONString(input) + os + iosChannel;
+        try {
+            if (StringUtils.isNotBlank(app_channel)) {
+                keySuffix += app_channel;
+            }
+            //@todo
+//            re =  (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+
+            if (null != re && null != re.getData() && re.getData().size() > 0) {
+                return re;
+            }
+            List<CardIndexBean> clist = new ArrayList<>();
+            /****/
+            List<Banner> bl = new ArrayList<>();
+            Page<Banner> page = new Page<>(input.getPage(), input.getLimit());
+            if (BannnerEnum.lving.getValue().equals(input.getFilter()))
+                bl = bannerDao.beforeNewDateBanner(page);
+            else if (BannnerEnum.past.getValue().equals(input.getFilter()))
+                bl = bannerDao.afterNewDateBanner(page);
+
+//            CardIndexBean indexBean = new CardIndexBean();
+            if (bl.size() == 0) {
+                return FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(CommonEnum.HTTP_WARNING_EMPTY.code(), CommonEnum.HTTP_WARNING_EMPTY.message());
+            }
+            ArrayList<CircleCardDataBean> list = new ArrayList<>();
+            for (Banner b : bl) {
+                CircleCardDataBean b1 = new CircleCardDataBean();
+                b1.setBannerId(b.getId());
+                b1.setMainTitle(b.getGeneralizeTitle());
+                b1.setImageUrl(b.getCoverImage());
+                b1.setContent(b.getIntro());
+                b1.setHref(b.getHref());
+                b1.setActionType(String.valueOf(b.getActionType()));
+                b1.setTargetType(b.getTargetType());
+                b1.setTargetId(b.getTargetId());
+                b1.setStartDate(DateTools.fmtDate(b.getBeginDate()));
+                b1.setEndDate(DateTools.fmtDate(b.getEndDate()));
+                list.add(b1);
+            }
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(list, input.getPage() - 1, page);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("获取圈子页面上广告位", e);
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(CommonEnum.ERROR.code(), "获取圈子页面上广告位失败,请联系管理员");
+        }
         return re;
     }
 
@@ -361,22 +433,30 @@ public class IndexServiceImpl implements IIndexService {
         cmmPostDto.setLimit(limit);
         cmmPostDto.setType(3);
         cmmPostDto.setState(1);
-        Page<CmmPostDto> pageList = indexProxyService.selectCmmPostPage(cmmPostDto);    //  postService.selectPage(new Page<CmmPost>(page, limit), new EntityWrapper<CmmPost>().eq("type", 3).eq("state", 1).last("ORDER BY sort DESC,updated_at DESC"));
+        FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.listCmmPostTopicPost(cmmPostDto);
+      // Page<CmmPostDto> pageList = indexProxyService.selectCmmPostPage(cmmPostDto);
+        //  postService.selectPage(new Page<CmmPost>(page, limit), new EntityWrapper<CmmPost>().eq("type", 3).eq("state", 1).last("ORDER BY sort DESC,updated_at DESC"));
 //		List<CmmPost> list = postService.selectList(new EntityWrapper<CmmPost>().eq("type", 3).orderBy("created_at", false).last("limit " + start+","+limit));
 //		List<CmmPost> list = p.getRecords();
+        List<CmmPostDto> cmmPostDtos = cmmPostDtoFungoPageResultDto.getData();
         ArrayList<CardIndexBean> indexList = new ArrayList<>();
-        for (CmmPostDto post : pageList.getRecords()) {
+        for (CmmPostDto post : cmmPostDtos ) {
             ArrayList<CardDataBean> gameDateList = new ArrayList<>();
             CardDataBean bean = new CardDataBean();
             CardIndexBean index = new CardIndexBean();
+            //封装 文章-游戏/圈子信息
+            Map map = indexProxyService.getGameMsgByPost(post);
+            index.setPostLinkGameOrCircle(map);
+
             // 图片/标题/用户名/头像/评论数
             CmmCommunityDto communityDto = new CmmCommunityDto();
             communityDto.setId(post.getCommunityId());
             communityDto.setState(-1);
             @SuppressWarnings("unchecked")
-                    //@todo
+            //@todo
 
-            CmmCommunityDto c = indexProxyService.selectCmmCommuntityDetail(communityDto);  new CmmCommunityDto();  //communityService.selectOne(Condition.create().setSqlSelect("id,name,icon,cover_image").eq("id", post.getCommunityId()).ne("state", -1));
+                    CmmCommunityDto c = indexProxyService.selectCmmCommuntityDetail(communityDto);
+            new CmmCommunityDto();  //communityService.selectOne(Condition.create().setSqlSelect("id,name,icon,cover_image").eq("id", post.getCommunityId()).ne("state", -1));
             bean.setImageUrl(post.getCoverImage());
 //			if(!CommonUtil.isNull(post.getCoverImage())) {
 //				bean.setImageUrl(post.getCoverImage());
@@ -434,10 +514,10 @@ public class IndexServiceImpl implements IIndexService {
         return indexList;
     }
 
-    //活动
     public CardIndexBean activities() {
         //banner
-        List<Banner> bl = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0005").eq("state", "0").orderBy("sort", false).last("limit 1"));
+        List<Banner> bl = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0005")
+                .eq("state", "0").orderBy("sort", false).last("limit 1"));
         CardIndexBean indexBean = new CardIndexBean();
         if (bl.size() == 0) {
             return null;
@@ -463,6 +543,18 @@ public class IndexServiceImpl implements IIndexService {
         return indexBean;
     }
 
+    //活动
+//    public CardIndexBean activities(InputPageDto input) {
+////banner
+////        List<Banner> bl = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0005")
+////                .eq("state", "0").orderBy("sort", false));  // .last("limit "+(page-1)*limit +" , "+(limit)));
+////        Wrapper wrapper = new EntityWrapper<Banner>().eq("position_code", "0005")
+////                .eq("state", "0").orderBy("sort", false);
+////        Page<Banner> bannerPage = bannerService.selectPage(page,wrapper );
+////        List<Banner> bl = page.getRecords();
+//
+//    }
+
     //本周精选(游戏)
     public CardIndexBean hotGames() {
         List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0001").eq("target_type", 3).eq("state", 2).orderBy("release_time", false).last("limit 6"));
@@ -476,7 +568,7 @@ public class IndexServiceImpl implements IIndexService {
             //
             GameDto gameParam = new GameDto();
             gameParam.setId(banner.getTargetId());
-            GameDto game =  iGameProxyService.selectGameById(gameParam);   //gameService.selectById(banner.getTargetId());
+            GameDto game = iGameProxyService.selectGameById(gameParam);   //gameService.selectById(banner.getTargetId());
             CardDataBean b = new CardDataBean();
             b.setImageUrl(game.getIcon());
             b.setMainTitle(banner.getTitle());//游戏名称
@@ -505,42 +597,57 @@ public class IndexServiceImpl implements IIndexService {
 
     //精选文章
     public CardIndexBean selectPosts(String type) {
+
         //2 6(视频) 7
         Banner videoBanner = bannerService.selectOne(new EntityWrapper<Banner>().eq("position_code", type).eq("target_type", 1).eq("state", "0").orderBy("sort", false).last("limit 1"));
         CardIndexBean cb = new CardIndexBean();
+
         if (videoBanner == null) {
+
             return null;
+
         } else {
+
             CmmPostDto cmmPostParam = new CmmPostDto();
             cmmPostParam.setId(videoBanner.getTargetId());
             cmmPostParam.setState(1);
-            CmmPostDto post =  indexProxyService.selctCmmPostOne(cmmPostParam);   //  postService.selectOne(new EntityWrapper<CmmPost>().eq("id", videoBanner.getTargetId()).eq("state", 1));
+
+            //postService.selectOne(new EntityWrapper<CmmPost>().eq("id", videoBanner.getTargetId()).eq("state", 1));
+            CmmPostDto post = indexProxyService.selctCmmPostOne(cmmPostParam);
             if (post == null) {
                 return null;
             }
+
             CardDataBean dataBean = new CardDataBean();
             dataBean.setMainTitle(videoBanner.getTitle());
             dataBean.setImageUrl(videoBanner.getCoverImage());
             dataBean.setSubtitle(videoBanner.getIntro());
             dataBean.setUserinfo(userService.getAuthor(post.getMemberId()));
             dataBean.setVideoUrl(post.getVideo());
+
             if (!CommonUtil.isNull(post.getContent())) {
 
-                dataBean.setContent(post.getContent().length()>40?Html2Text.removeHtmlTag(post.getContent().substring(0, 40)):Html2Text.removeHtmlTag(post.getContent()));
+                dataBean.setContent(post.getContent().length() > 40 ? Html2Text.removeHtmlTag(post.getContent().substring(0, 40)) : Html2Text.removeHtmlTag(post.getContent()));
                 //dataBean.setContent(post.getContent());
             } else {
+
                 dataBean.setContent(post.getContent());
+
             }
+
             dataBean.setUpperLeftCorner(videoBanner.getTag());
-//			dataBean.setLowerRightCorner(post.getReportNum()+"");
+            //dataBean.setLowerRightCorner(post.getReportNum()+"");
 
             dataBean.setReplyNum(post.getReportNum());
             CmmCommunityDto communityParam = new CmmCommunityDto();
             communityParam.setId(post.getCommunityId());
-            CmmCommunityDto community = iMemeberProxyService.selectCmmCommunityById(communityParam); //  communityService.selectById(post.getCommunityId());
+            //communityService.selectById(post.getCommunityId());
+            CmmCommunityDto community = iMemeberProxyService.selectCmmCommunityById(communityParam);
+
             if (community != null) {
                 dataBean.setLowerRightCorner(community.getName());
             }
+
             if (!CommonUtil.isNull(post.getVideo()) && CommonUtil.isNull(videoBanner.getCoverImage())) {
                 if (community != null) {
                     dataBean.setImageUrl(community.getCoverImage());
@@ -551,6 +658,20 @@ public class IndexServiceImpl implements IIndexService {
             dataBean.setHref(videoBanner.getHref());
             dataBean.setTargetType(videoBanner.getTargetType());
             dataBean.setTargetId(videoBanner.getTargetId());
+
+            // app2.5功能
+            // 查询出关联的游戏数据
+            String gameId = videoBanner.getGameId();
+            if (StringUtils.isNoneBlank(gameId)) {
+                GameDto gameDtoParam = new GameDto();
+                gameDtoParam.setId(gameId);
+                GameDto gameDtoResult = iGameProxyService.selectGameById(gameDtoParam);
+                if (null != gameDtoResult) {
+                    ArrayList<GameDto> gameDatas = new ArrayList<GameDto>();
+                    gameDatas.add(gameDtoResult);
+                    dataBean.setGameDatas(gameDatas);
+                }
+            }
 
             ArrayList<CardDataBean> cl = new ArrayList<CardDataBean>();
             cl.add(dataBean);
@@ -563,10 +684,11 @@ public class IndexServiceImpl implements IIndexService {
             }
             cb.setOrder(6);
             cb.setSize(1);
+
+
         }
         return cb;
     }
-
 
 
     /**
@@ -607,6 +729,29 @@ public class IndexServiceImpl implements IIndexService {
             }
         }
         return false;
+    }
+
+    enum BannnerEnum implements BaseEnum<BannnerEnum, String> {
+        lving("1", "living"),
+        past("1", "past");
+
+        String key;
+        String value;
+
+        BannnerEnum(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        @Override
+        public String getKey() {
+            return key;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
     }
 
     //----------

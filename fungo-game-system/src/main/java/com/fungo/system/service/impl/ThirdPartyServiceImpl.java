@@ -113,6 +113,7 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
             List<Member> memberList = memberService
                     .selectList(new EntityWrapper<Member>().eq("weibo_open_id", unionid).and("state != {0}", -1));
             member = getMemberWithSNSLogin(memberList);
+
             buriedpointmap.put("login001","微博");
             //微信
         } else if (platform == 1) {
@@ -204,6 +205,12 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
                 buriedpointmap.put("login002","false");
 //              第三方登录埋点事件ID:login005
                 BuriedPointUtils.login05(buriedpointmap, analysysJavaSdk);
+                buriedpointmap.put("distinctId",member.getId());
+                buriedpointmap.put("platForm",channel);
+                buriedpointmap.put("login002","false");
+//              第三方登录埋点事件ID:login005
+                BuriedPointUtils.login05(buriedpointmap, analysysJavaSdk);
+
                 return rest;
             } else {
                 LoginMemberBean bean = new LoginMemberBean();
@@ -304,7 +311,6 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
             rest.setData(bean);
             rest.setMessage(token);
             rest.setStatus(2);
-
             buriedpointmap.put("distinctId",user.getId());
             buriedpointmap.put("platForm",channel);
             buriedpointmap.put("login002","true");

@@ -7,6 +7,7 @@ import com.fungo.community.dao.service.MooMoodDaoService;
 import com.fungo.community.entity.MooMessage;
 import com.fungo.community.entity.MooMood;
 import com.fungo.community.service.msService.IMSServiceMoodService;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.community.MooMessageDto;
 import com.game.common.dto.community.MooMoodDto;
 import org.apache.commons.lang3.StringUtils;
@@ -35,12 +36,12 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
 
 
     @Override
-    public List<MooMoodDto> queryCmmMoodList(MooMoodDto mooMoodDto) {
+    public FungoPageResultDto<MooMoodDto> queryCmmMoodList(MooMoodDto mooMoodDto) {
 
+        FungoPageResultDto<MooMoodDto> resultDto = new FungoPageResultDto<MooMoodDto>();
         List<MooMoodDto> cmmPostList = null;
 
         try {
-
 
             int page = mooMoodDto.getPage();
             int limit = mooMoodDto.getLimit();
@@ -98,6 +99,9 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
 
                 if (null != cmmMoodPageResult) {
                     selectRecords = cmmMoodPageResult.getRecords();
+
+                    resultDto.setCount(cmmMoodPageResult.getTotal());
+                    resultDto.setPages(cmmMoodPageResult.getPages());
                 }
 
             } else {
@@ -121,12 +125,15 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
         } catch (Exception ex) {
             LOGGER.error("/ms/service/cmm/mood/lists----queryCmmPostList-出现异常:", ex);
         }
-        return cmmPostList;
+
+        resultDto.setData(cmmPostList);
+        return resultDto;
     }
 
     @Override
-    public List<MooMessageDto> queryCmmMoodCommentList(MooMessageDto mooMessageDto) {
+    public FungoPageResultDto<MooMessageDto> queryCmmMoodCommentList(MooMessageDto mooMessageDto) {
 
+        FungoPageResultDto<MooMessageDto> resultDto = new FungoPageResultDto<MooMessageDto>();
         List<MooMessageDto> mooMessageDtoList = null;
         try {
 
@@ -198,6 +205,9 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
 
                 if (null != cmmMoodPageResult) {
                     selectRecords = cmmMoodPageResult.getRecords();
+
+                    resultDto.setCount(cmmMoodPageResult.getTotal());
+                    resultDto.setPages(cmmMoodPageResult.getPages());
                 }
 
             } else {
@@ -222,8 +232,8 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
         } catch (Exception ex) {
             LOGGER.error("/ms/service/cmm/mood/cmt/lists----queryCmmMoodCommentList-出现异常:", ex);
         }
-
-        return mooMessageDtoList;
+        resultDto.setData(mooMessageDtoList);
+        return resultDto;
     }
 
     @Override

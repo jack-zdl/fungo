@@ -6,6 +6,8 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 
+import com.game.common.dto.system.CircleFollow;
+import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.IncentRankedDto;
 import com.game.common.dto.user.IncentRuleRankDto;
@@ -103,4 +105,19 @@ public interface SystemService {
      * @return 结果
      */
     public ResultDto<String> updateNoticeDate(String id,String data);
+
+
+    ResultDto<List<String>> listCommunityHisIds(String basActionDto);
+
+    /**
+     * 根据用户Id获取最近浏览圈子行为 8个
+     * @param userId
+     * @return
+     */
+    ResultDto<List<String>> getRecentBrowseCommunityByUserId(String userId);
+
+    ResultDto<CircleFollowVo> circleListFollow(CircleFollowVo circleFollowVo);
+
+    FungoPageResultDto<String> circleListMineFollow(CircleFollowVo circleFollowVo);
+
 }

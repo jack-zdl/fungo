@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.community.dao.mapper.CmmCircleMapper">
+  <resultMap id="BaseResultMap" type="com.fungo.community.entity.CmmCircle">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="circle_name" jdbcType="VARCHAR" property="circleName" />
+    <result column="circle_icon" jdbcType="VARCHAR" property="circleIcon" />
+    <result column="intro" jdbcType="VARCHAR" property="intro" />
+    <result column="game_id" jdbcType="VARCHAR" property="gameId" />
+    <result column="cmm_id" jdbcType="VARCHAR" property="cmmId" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="followee_num" jdbcType="INTEGER" property="followeeNum" />
+    <result column="hot_value" jdbcType="INTEGER" property="hotValue" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="created_by" jdbcType="VARCHAR" property="createdBy" />
+    <result column="updated_by" jdbcType="VARCHAR" property="updatedBy" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, circle_name as circleName, circle_icon AS circleIcon , intro,game_id AS gameId ,cmm_id AS cmmId , type, state, followee_num AS  followeeNum,
+    hot_value AS hotValue , sort, created_at AS  createdAt,updated_at AS  updatedAt, created_by AS  createdBy, updated_by as updatedBy
+  </sql>
+
+  <select id="selectAll" resultType="com.fungo.community.entity.CmmCircle" >
+    SELECT
+    <include refid="Base_Column_List"></include>
+    from t_cmm_circle
+    order  by type asc ,sort  desc ,hot_value desc 
+  </select>
+
+  <select id="selectPageByKeyword" parameterType="com.game.common.vo.CmmCircleVo" resultType="com.fungo.community.entity.CmmCircle" >
+    select
+    <include refid="Base_Column_List"></include>
+    from t_cmm_circle
+    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+        <if test="keyword != null and keyword != '' ">
+          circle_name like CONCAT('%',#{keyword},'%')
+        </if>
+        <if test="type != null and type != ''">
+          and type = #{type}
+        </if>
+        and state = 1
+    </trim>
+    order  by type asc ,sort  desc ,hot_value desc
+  </select>
+
+  <select id="selectPageByIds" resultType="com.fungo.community.entity.CmmCircle" >
+    select
+    <include refid="Base_Column_List"></include>
+    from t_cmm_circle
+    <trim prefix="WHERE" prefixOverrides="AND |OR ">
+        <if test="ids != null ">
+          id in
+          <foreach  item="item" collection="ids" index="index"  open="(" separator="," close=")">
+            #{item}
+          </foreach>
+
+        </if >
+    </trim>
+
+    <if test='sortType == "1" '>
+      order by
+      field(
+      id,
+      <foreach collection="ids" index="index" item="item"   separator=","    >
+        #{item}
+      </foreach>
+      )
+    </if>
+    <if test='sortType == "2" '  >
+      order  by hot_value desc
+    </if>
+
+  </select>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.fungo.community.entity.CmmCircle">
+    update t_cmm_circle
+    <set>
+      <if test="circleName != null">
+        circle_name = #{circleName,jdbcType=VARCHAR},
+      </if>
+      <if test="circleIcon != null">
+        circle_icon = #{circleIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="intro != null">
+        intro = #{intro,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="memberNum != null">
+        followee_num = #{followeeNum,jdbcType=INTEGER},
+      </if>
+      <if test="hotValue != null">
+        hot_value = #{hotValue,jdbcType=INTEGER},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null">
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdBy != null">
+        created_by = #{createdBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updatedBy != null">
+        updated_by = #{updatedBy,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fungo.community.entity.CmmCircle">
+    update t_cmm_circle
+    set circle_name = #{circleName,jdbcType=VARCHAR},
+      circle_icon = #{circleIcon,jdbcType=VARCHAR},
+      intro = #{intro,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER},
+      state = #{state,jdbcType=INTEGER},
+      followee_num = #{followeeNum,jdbcType=INTEGER},
+      hot_value = #{hotValue,jdbcType=INTEGER},
+      sort = #{sort,jdbcType=INTEGER},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      created_by = #{createdBy,jdbcType=VARCHAR},
+      updated_by = #{updatedBy,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectCircleByGameId" parameterType="java.lang.String" resultType="java.lang.String">
+    select id from t_cmm_circle where game_id = #{gameId}  limit 1
+  </select>
+
+  <select id="selectCircleByGame" resultType="com.fungo.community.entity.CmmCircle">
+        SELECT 
+         <include refid="Base_Column_List"></include>
+         FROM t_cmm_circle cc WHERE state = 1  and cc.id  in
+        (SELECT ccg.circle_id  FROM t_cmm_circle_game ccg WHERE ccg.game_id = #{gameId} )   ORDER BY  cc.hot_value desc
+  </select>
+
+
+
+
+
+</mapper>
