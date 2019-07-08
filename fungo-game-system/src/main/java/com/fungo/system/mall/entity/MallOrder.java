@@ -125,7 +125,7 @@ public class MallOrder extends Model<MallOrder> {
 
 
 	/**
-	 * 订单类型： 1 商城 , 2 游戏礼包
+	 * 订单类型： 1 商城(默认) , 2 游戏礼包
 	 */
 	@TableField("order_type")
 	private Integer orderType;
