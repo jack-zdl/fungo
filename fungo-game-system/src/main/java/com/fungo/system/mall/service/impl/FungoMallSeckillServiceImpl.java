@@ -585,7 +585,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                 logger.info("秒杀商品--用户id:{}--商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "冻结用户的可用fungo币量成功，开始创建订单");
 
                 //创建订单
-                MallOrder mallOrder = addSeckillOrder(orderInput.getMbId(), orderInput.getGoodsId(), mallSeckill);
+                MallOrder mallOrder = addSeckillOrder(orderInput.getMbId(), orderInput.getGoodsId(), mallSeckill,1);
 
                 if (null != mallOrder && StringUtils.isNoneBlank(mallOrder.getOrderSn())) {
 
@@ -728,7 +728,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                 logger.info("秒杀游戏礼包商品--用户id:{}--游戏礼包商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "冻结用户的可用fungo币量成功，开始创建订单");
 
                 //创建订单
-                MallOrder mallOrder = addSeckillOrderWithGame(orderInput.getMbId(), goods);
+                MallOrder mallOrder = addSeckillOrderWithGame(orderInput.getMbId(), goods,2);
 
                 if (null != mallOrder && StringUtils.isNoneBlank(mallOrder.getOrderSn())) {
 
@@ -833,7 +833,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
                 //查询该用户所有交易成功的订单
             } else {
-                List<MallOrder> mallOrders = queryTradeSuccessOrderrWithMember(mb_id);
+                List<MallOrder> mallOrders = queryTradeSuccessOrderrWithMember(mb_id,1);
                 if (null != mallOrders && !mallOrders.isEmpty()) {
 
                     for (MallOrder mallOrder : mallOrders) {
@@ -953,7 +953,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
                 //查询该用户所有交易成功的订单
             } else {
-                List<MallOrder> mallOrders = queryTradeSuccessOrderrWithMember(mb_id);
+                List<MallOrder> mallOrders = queryTradeSuccessOrderrWithMember(mb_id,2);
                 if (null != mallOrders && !mallOrders.isEmpty()) {
 
                     for (MallOrder mallOrder : mallOrders) {
@@ -1137,11 +1137,19 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
      * @param mb_id
      * @return
      */
-    private List<MallOrder> queryTradeSuccessOrderrWithMember(String mb_id) {
+    private List<MallOrder> queryTradeSuccessOrderrWithMember(String mb_id, int orderType) {
         EntityWrapper<MallOrder> orderEntityWrapper = new EntityWrapper<MallOrder>();
-        orderEntityWrapper.eq("mb_id", mb_id).eq("order_status", 5).eq("pay_status", 2).orderBy("create_time", false);
+        orderEntityWrapper.eq("mb_id", mb_id)
+                .eq("order_status", 5)
+                .eq("pay_status", 2)
+                .eq("order_type", orderType)
+                .orderBy("create_time", false);
         return mallOrderDaoService.selectList(orderEntityWrapper);
     }
+
+
+
+
 
     /**
      * 查询用户已经成功交易的一条订单数据
@@ -1396,7 +1404,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
      * @param goods_id
      * @param mallSeckill
      */
-    public MallOrder addSeckillOrder(String mb_id, String goods_id, MallSeckill mallSeckill) {
+    public MallOrder addSeckillOrder(String mb_id, String goods_id, MallSeckill mallSeckill,int order_type) {
 
         //1 查询出商品详情
         EntityWrapper<MallGoods> goodsEntityWrapper = new EntityWrapper<MallGoods>();
@@ -1481,6 +1489,8 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         Date currentDateTime = new Date();
         order.setCreateTime(currentDateTime);
 
+        order.setOrderType(order_type);
+
         boolean orderInsertOk = mallOrderDaoService.insert(order);
         logger.info("秒杀下单，订单添加结果状态:{}--orderDetail:{}", orderInsertOk, JSON.toJSONString(order));
 
@@ -1519,7 +1529,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
      * @param mb_id
      * @param goods
      */
-    public MallOrder addSeckillOrderWithGame(String mb_id, MallGoods goods) {
+    public MallOrder addSeckillOrderWithGame(String mb_id, MallGoods goods,int order_type) {
 
 
         //查询出当前登录会员详情
@@ -1586,6 +1596,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
         Date currentDateTime = new Date();
         order.setCreateTime(currentDateTime);
+        order.setOrderType(order_type);
 
         //ex1保存游戏id
         order.setExt1(goods.getGameId());

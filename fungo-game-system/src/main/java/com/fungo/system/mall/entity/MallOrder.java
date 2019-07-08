@@ -124,6 +124,14 @@ public class MallOrder extends Model<MallOrder> {
 	private String ext3;
 
 
+	/**
+	 * 订单类型： 1 商城(默认) , 2 游戏礼包
+	 */
+	@TableField("order_type")
+	private Integer orderType;
+
+
+
 	public Long getId() {
 		return id;
 	}
@@ -297,4 +305,11 @@ public class MallOrder extends Model<MallOrder> {
 		return this.id;
 	}
 
+	public Integer getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(Integer orderType) {
+		this.orderType = orderType;
+	}
 }
