@@ -415,6 +415,8 @@ public class MoodServiceImpl implements IMoodService {
             fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOODS_LIST, "", null);
             //我的心情(2.4.3)
             fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_MOODS, "", null);
+            //
+
             return ResultDto.success();
         } else {
             return ResultDto.error("-1", "心情不存在");
