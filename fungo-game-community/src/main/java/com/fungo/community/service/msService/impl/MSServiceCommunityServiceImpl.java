@@ -114,7 +114,7 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
 
                 if (null != cmmCommunityPageResult) {
 //                    selectRecords = cmmCommunityPage.getRecords();
-                    PageTools.pageToResultDto(fungoPageResultDto, cmmCommunityPageResult);
+                    PageTools.pageToResultDto(resultDto, cmmCommunityPageResult);
                     selectRecords = cmmCommunityPage.getRecords();
 
                     resultDto.setCount(cmmCommunityPageResult.getTotal());
@@ -143,9 +143,9 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
         } catch (Exception ex) {
             LOGGER.error("/ms/service/cmm/cty/lists--queryCmmCommunityList-出现异常:", ex);
         }
-        fungoPageResultDto.setData(cmmCommunityDtoList);
-        PageTools.pageToResultDto(fungoPageResultDto, cmmCommunityPageResult);
-        return fungoPageResultDto;
+        resultDto.setData(cmmCommunityDtoList);
+        PageTools.pageToResultDto(resultDto, cmmCommunityPageResult);
+        return resultDto;
     }
 
     @Override

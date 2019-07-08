@@ -19,7 +19,6 @@ import com.game.common.dto.ActionInput;
 import com.game.common.dto.ResultDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.*;
-import freemarker.template.utility.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -667,7 +666,6 @@ public class ActionServiceImpl implements IActionService {
             }
             //end
         }
-    }
 
         ResultDto<String> re = new ResultDto<String>();
         if (StringUtils.isNotBlank(tips)) {
