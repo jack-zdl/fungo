@@ -18,6 +18,7 @@ import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.util.CommonUtil;
+import com.game.common.util.PageTools;
 import com.game.common.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -62,7 +63,7 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
 
         FungoPageResultDto<CmmPostDto> resultDto = new FungoPageResultDto<CmmPostDto>();
         List<CmmPostDto> cmmPostList = null;
-
+        Page<CmmPost> cmmPostPageSelect = null;
         try {
 
 
@@ -128,15 +129,17 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
             }
 
             //根据修改时间倒叙
-            postEntityWrapper.orderBy("updated_at", false);
+            postEntityWrapper.ne("state", -1).orderBy("updated_at", false);
 
             List<CmmPost> selectRecords = null;
 
             if (null != cmmPostPage) {
 
-                Page<CmmPost> cmmPostPageSelect = this.postDaoService.selectPage(cmmPostPage, postEntityWrapper);
+                cmmPostPageSelect = this.postDaoService.selectPage(cmmPostPage, postEntityWrapper);
 
                 if (null != cmmPostPageSelect) {
+//                    selectRecords = cmmPostPageSelect.getRecords();
+                    PageTools.pageToResultDto(resultDto, cmmPostPageSelect);
                     selectRecords = cmmPostPageSelect.getRecords();
 
                     resultDto.setCount(cmmPostPageSelect.getTotal());
@@ -164,8 +167,8 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
         } catch (Exception ex) {
             LOGGER.error("/ms/service/cmm/post/lists--queryCmmPostList-出现异常:", ex);
         }
-
         resultDto.setData(cmmPostList);
+        PageTools.pageToResultDto(resultDto, cmmPostPageSelect);
         return resultDto;
     }
 

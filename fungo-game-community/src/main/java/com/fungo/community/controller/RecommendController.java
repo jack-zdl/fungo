@@ -74,7 +74,6 @@ public class RecommendController {
     @ApiImplicitParams({})
     public FungoPageResultDto<MoodOutBean> getDynamicsMoodList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody MoodInputPageDto inputPageDto) throws Exception {
 
-
         FungoPageResultDto<MoodOutBean> re = null;
 
         //from redis
@@ -91,8 +90,7 @@ public class RecommendController {
             return re;
         }
 
-        //------------------
-        re = new FungoPageResultDto<MoodOutBean>();
+        re = new FungoPageResultDto<>();
 
         List<MoodOutBean> list = new ArrayList<MoodOutBean>();
         re.setData(list);
@@ -298,7 +296,7 @@ public class RecommendController {
                     try {
                         gameDtoResultDto = gameFeignClient.selectGameDetails(gameId, 0);
                         if (null != gameDtoResultDto) {
-                            gameDtoResultDto.getData();
+                            gameDto = gameDtoResultDto.getData();
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();

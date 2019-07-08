@@ -1270,7 +1270,9 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
      * @return
      */
     private int freezeMemberFungo(String mb_id, IncentAccountCoin incentAccountCoin, BigDecimal goodsPriceVcyBD) {
-
+        if(StringUtils.isBlank(mb_id)){
+            return -1;
+        }
         logger.info("冻结用户账户对应的商品价格额-冻结前账户详情:{}", JSON.toJSONString(incentAccountCoin));
         //可用币量
         BigDecimal lastCoinUsable = incentAccountCoin.getCoinUsable();

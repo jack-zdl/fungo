@@ -4,10 +4,16 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.dto.VideoBean;
 import com.fungo.system.entity.BasVideoJob;
+import com.fungo.system.facede.impl.GameProxyServiceImpl;
+import com.fungo.system.feign.CommunityFeignClient;
+import com.fungo.system.helper.RabbitMQProduct;
+import com.fungo.system.helper.mq.MQProduct;
 import com.fungo.system.service.BasVideoJobService;
 import com.fungo.system.service.IVdService;
 import com.fungo.system.service.IVideoService;
 import com.game.common.dto.StreamInfo;
+import com.game.common.dto.community.CmmPostDto;
+import com.game.common.dto.community.MooMoodDto;
 import com.game.common.util.CommonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +33,12 @@ public class VdServiceImpl implements IVdService {
 
     @Autowired
     private BasVideoJobService videoJobService;
+
+    @Autowired
+    private GameProxyServiceImpl gameProxyServiceImpl;
+
+    @Autowired
+    private MQProduct mqProduct;
 
 //    @Autowired
 //    private MooMoodService moodService;
@@ -155,34 +167,44 @@ public class VdServiceImpl implements IVdService {
      * @param streamInfos
      * @throws Exception
      */
-    private void updateUrlAndState(BasVideoJob videoJob, String video,List<StreamInfo> streamInfos) throws Exception {
-//        ObjectMapper mapper = new ObjectMapper();
-//    	if (videoJob.getBizType() == 1) {
+    public void updateUrlAndState(BasVideoJob videoJob, String video,List<StreamInfo> streamInfos) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+    	if (videoJob.getBizType() == 1) {
+            CmmPostDto postParam = new CmmPostDto();
+            postParam.setId(videoJob.getBizId());
+            CmmPostDto post = gameProxyServiceImpl.selectCmmPostById(postParam);
+//            communityFeignClient.queryCmmPostList(postParam);
 //            CmmPost post = postService.selectById(videoJob.getBizId());
-//            if (post != null) {
-////            	List<Map<String, Object>> ml = getVideoUrls(streamInfos);
-//            	post.setVideoCoverImage(videoJob.getVideoCoverImage());
-//                post.setVideo(video);
-//                post.setState(1);
-//                post.setUpdatedAt(new Date());
-//                post.setVideoUrls(mapper.writeValueAsString(streamInfos));
-//                postService.updateById(post);
-//                videoJobService.updateById(videoJob);
-////              videoJobService.deleteById(videoJob);
-//            }
-//        } else if (videoJob.getBizType() == 2) {
+            if (post != null) {
+//            	List<Map<String, Object>> ml = getVideoUrls(streamInfos);
+            	post.setVideoCoverImage(videoJob.getVideoCoverImage());
+                post.setVideo(video);
+                post.setState(1);
+                post.setUpdatedAt(new Date());
+                post.setVideoUrls(mapper.writeValueAsString(streamInfos));
+                // @todo
+                //                postService.updateById(post);
+                mqProduct.postUpdate(post);
+                videoJobService.updateById(videoJob);
+//              videoJobService.deleteById(videoJob);
+            }
+        } else if (videoJob.getBizType() == 2) {
+            MooMoodDto moodParam = new MooMoodDto();
+            MooMoodDto mood = gameProxyServiceImpl.selectMooMoodById(videoJob.getBizId());
 //            MooMood mood = moodService.selectById(videoJob.getBizId());
-//            if (mood != null) {
-//            	mood.setVideoCoverImage(videoJob.getVideoCoverImage());
-//                mood.setVideo(video);
-//                mood.setState(0);
-//                mood.setVideoUrls(mapper.writeValueAsString(streamInfos));
-//                mood.setUpdatedAt(new Date());
-//                moodService.updateById(mood);
-//                videoJobService.updateById(videoJob);
-////              videoJobService.deleteById(videoJob);
-//            }
-//        }
+            if (mood != null) {
+            	mood.setVideoCoverImage(videoJob.getVideoCoverImage());
+                mood.setVideo(video);
+                mood.setState(0);
+                mood.setVideoUrls(mapper.writeValueAsString(streamInfos));
+                mood.setUpdatedAt(new Date());
+                // @todo
+                //moodService.updateById(mood);
+                mqProduct.moodUpdate(mood);
+                videoJobService.updateById(videoJob);
+//              videoJobService.deleteById(videoJob);
+            }
+        }
     }
 
 	private List<Map<String, Object>> getVideoUrls(List<StreamInfo> streamInfos) {

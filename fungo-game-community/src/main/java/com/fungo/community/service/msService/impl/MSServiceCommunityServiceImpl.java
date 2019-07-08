@@ -11,6 +11,8 @@ import com.fungo.community.service.msService.IMSServiceCommunityService;
 import com.game.common.bean.CommentBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.community.CmmCommunityDto;
+import com.game.common.dto.community.CmmPostDto;
+import com.game.common.util.PageTools;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +45,7 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
         FungoPageResultDto<CmmCommunityDto> resultDto = new FungoPageResultDto<CmmCommunityDto>();
         List<CmmCommunityDto> cmmCommunityDtoList = null;
 
+        Page<CmmCommunity> cmmCommunityPageResult = null;
         try {
 
             int page = communityDto.getPage();
@@ -107,9 +110,11 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
 
             if (null != cmmCommunityPage) {
 
-                Page<CmmCommunity> cmmCommunityPageResult = this.cmmCommunityDaoService.selectPage(cmmCommunityPage, cmmCommunityEntityWrapper);
+                cmmCommunityPageResult = this.cmmCommunityDaoService.selectPage(cmmCommunityPage, cmmCommunityEntityWrapper);
 
                 if (null != cmmCommunityPageResult) {
+//                    selectRecords = cmmCommunityPage.getRecords();
+                    PageTools.pageToResultDto(resultDto, cmmCommunityPageResult);
                     selectRecords = cmmCommunityPage.getRecords();
 
                     resultDto.setCount(cmmCommunityPageResult.getTotal());
@@ -139,6 +144,7 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
             LOGGER.error("/ms/service/cmm/cty/lists--queryCmmCommunityList-出现异常:", ex);
         }
         resultDto.setData(cmmCommunityDtoList);
+        PageTools.pageToResultDto(resultDto, cmmCommunityPageResult);
         return resultDto;
     }
 

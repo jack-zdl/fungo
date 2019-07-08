@@ -37,6 +37,7 @@ import com.game.common.util.emoji.FilterEmojiUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -974,6 +975,8 @@ public class MemberServiceImpl implements IMemberService {
         }
         PageTools.newPageToResultDto(re, cmmPostDtoFungoPageResultDto.getCount(),cmmPostDtoFungoPageResultDto.getPages(),input.getPage());
         re.setData(blist);
+//        PageTools.pageToResultDto(re, page);
+
 
         //redis cache
         fungoCacheArticle.excIndexCache(true, keyPrefix, keySuffix, re);
@@ -1075,6 +1078,7 @@ public class MemberServiceImpl implements IMemberService {
         }
         PageTools.newPageToResultDto(re, resultDto.getCount(),resultDto.getPages(),input.getPage());
         re.setData(blist);
+
 
         //redis cache
         fungoCacheArticle.excIndexCache(true, keyPrefix, keySuffix, re);
@@ -1336,8 +1340,8 @@ public class MemberServiceImpl implements IMemberService {
             blist.add(bean);
 
         }
-        re.setData(blist);
         PageTools.newPageToResultDto(re,comments.getCount(),comments.getPages(),input.getPage());
+
 
         //redis cache
         fungoCacheArticle.excIndexCache(true, keyPrefix, keySuffix, re);

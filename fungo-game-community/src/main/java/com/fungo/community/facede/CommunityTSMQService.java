@@ -2,7 +2,12 @@ package com.fungo.community.facede;
 
 
 import com.alibaba.fastjson.JSON;
+import com.fungo.community.dao.service.MooMoodDaoService;
+import com.fungo.community.dao.service.impl.CmmPostDaoServiceImap;
+import com.fungo.community.entity.CmmPost;
+import com.fungo.community.entity.MooMood;
 import com.fungo.community.service.ICounterService;
+import com.game.common.dto.community.CmmPostDto;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
 import com.game.common.util.UniqueIdCkeckUtil;
@@ -34,6 +39,11 @@ public class CommunityTSMQService {
     @Autowired
     private TSMQFacedeService tSMQFacedeService;
 
+    @Autowired
+    private CmmPostDaoServiceImap cmmPostDaoServiceImap;
+
+    @Autowired
+    private MooMoodDaoService mooMoodDaoServiceImpl;
 
     /**
      * 处理MQ消息
@@ -126,6 +136,14 @@ public class CommunityTSMQService {
                         }
                     }
 
+                }else if(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_POST_UPDATE.getCode() == mqResultDto.getType()){
+                    String bodyStr = mqResultDto.getBody().toString();
+                    CmmPost cmmPostDto  = JSON.parseObject(bodyStr, CmmPost.class);
+                    cmmPostDaoServiceImap.updateById(cmmPostDto);
+                }else if(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_MOOD_UPDATE.getCode() == mqResultDto.getType()){
+                    String bodyStr = mqResultDto.getBody().toString();
+                    MooMood mooMood  = JSON.parseObject(bodyStr, MooMood.class);
+                    mooMoodDaoServiceImpl.updateById(mooMood);
                 }
             }
         return false;
