@@ -540,7 +540,7 @@ public class MoodServiceImpl implements IMoodService {
                 try {
                     ResultDto<GameDto> gameDtoResultDto = gameFacedeService.selectGameDetails(gameId, 0);
                     if (null != gameDtoResultDto) {
-                        gameDtoResultDto.getData();
+                        gameDto = gameDtoResultDto.getData();
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
