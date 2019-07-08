@@ -262,9 +262,11 @@ public class IndexServiceImpl implements IIndexService {
             ArrayList<CircleCardDataBean> list = new ArrayList<>();
             for (Banner b : bl) {
                 CircleCardDataBean b1 = new CircleCardDataBean();
+                b1.setBannerId(b.getId());
                 b1.setMainTitle(b.getGeneralizeTitle());
                 b1.setImageUrl(b.getCoverImage());
                 b1.setContent(b.getIntro());
+                b1.setHref(b.getHref());
                 b1.setActionType(String.valueOf(b.getActionType()));
                 b1.setTargetType(b.getTargetType());
                 b1.setTargetId(b.getTargetId());

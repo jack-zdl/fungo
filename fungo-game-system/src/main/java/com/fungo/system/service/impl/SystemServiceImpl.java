@@ -898,7 +898,8 @@ public class SystemServiceImpl implements SystemService {
             if(ActionTypeEnum.FOLLOW.getKey().equals(circleFollowVo.getActionType())){
                 List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
                 Page p = new Page(circleFollowVo.getPage(), circleFollowVo.getLimit());
-                Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("member_id",circleFollowVo.getMemberId()).eq("type",ActionTypeEnum.FOLLOW.getKey()).eq("target_type",ActionTypeEnum.ActionTargetTypeEnum.CIRCLE.getKey()).eq("state","0");
+                Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("member_id",circleFollowVo.getMemberId())
+                        .eq("type",ActionTypeEnum.FOLLOW.getKey()).eq("target_type",ActionTypeEnum.ActionTargetTypeEnum.CIRCLE.getKey()).eq("state","0").orderBy("created_at",false);
                 List<BasAction> basActions  = basActionServiceImap.selectList(wrapper);
 //            List<BasAction> basActions = page.getRecords();
                 re.setData(basActions.stream().map(BasAction::getTargetId).collect(Collectors.toList()));
@@ -906,7 +907,8 @@ public class SystemServiceImpl implements SystemService {
             }else if(ActionTypeEnum.BROWSE.getKey().equals(circleFollowVo.getActionType())){
                 List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
                 Page p = new Page(circleFollowVo.getPage(), circleFollowVo.getLimit());
-                Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("member_id",circleFollowVo.getMemberId()).eq("type",ActionTypeEnum.BROWSE.getKey()).eq("target_type", ActionTypeEnum.ActionTargetTypeEnum.CIRCLE.getKey()).eq("state","0");
+                Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("member_id",circleFollowVo.getMemberId())
+                        .eq("type",ActionTypeEnum.BROWSE.getKey()).eq("target_type", ActionTypeEnum.ActionTargetTypeEnum.CIRCLE.getKey()).eq("state","0").orderBy("created_at",false);;
                 List<BasAction> basActions  = basActionServiceImap.selectList(wrapper);
 //            List<BasAction> basActions = page.getRecords();
                 re.setData(basActions.stream().map(BasAction::getTargetId).collect(Collectors.toList()));

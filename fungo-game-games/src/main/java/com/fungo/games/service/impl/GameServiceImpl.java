@@ -455,8 +455,11 @@ public class GameServiceImpl implements IGameService {
 //            首次第三方登录埋点事件ID:login005
 //      首次第三方登录埋点事件ID:login005
 
-        BuriedPointUtils.gamepage(buriedpointmap, analysysJavaSdk);
-
+        try {
+            BuriedPointUtils.gamepage(buriedpointmap, analysysJavaSdk);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         // 查询评论数量
         int evaCount = gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", gameId).and("state != -1"));
         out.setEvaluation_num(evaCount);
@@ -859,6 +862,7 @@ public class GameServiceImpl implements IGameService {
 
     /**
      * 我的游戏列表
+     *
      * @param memberId
      * @param inputPage
      * @param os
@@ -908,6 +912,7 @@ public class GameServiceImpl implements IGameService {
 
     /**
      * 搜索游戏
+     *
      * @param page
      * @param limit
      * @param keyword
@@ -1057,6 +1062,7 @@ public class GameServiceImpl implements IGameService {
 
     /**
      * 根据游戏ID获取游戏标签列表
+     *
      * @param gameId
      * @param userId
      * @return
@@ -1188,6 +1194,7 @@ public class GameServiceImpl implements IGameService {
 
     /**
      * 新增游戏标签
+     *
      * @param idList
      * @param userId
      * @param gameId
@@ -1555,8 +1562,8 @@ public class GameServiceImpl implements IGameService {
     }
 
     /**
-     *
      * 获取热门游戏标签
+     *
      * @return
      */
     @Override
@@ -1585,6 +1592,7 @@ public class GameServiceImpl implements IGameService {
 
     /**
      * 获取游戏预选标签
+     *
      * @param memberUserPrefile
      * @param tagInput
      * @return
@@ -1646,6 +1654,7 @@ public class GameServiceImpl implements IGameService {
 
     /**
      * 根据游戏id集合获取FungoPageResultDto<GameOutBean>
+     *
      * @param input
      * @return
      */

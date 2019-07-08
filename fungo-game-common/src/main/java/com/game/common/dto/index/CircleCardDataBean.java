@@ -10,6 +10,8 @@ import lombok.ToString;
 @Getter
 @ToString
 public class CircleCardDataBean {
+	@ApiModelProperty(value="活动id",example="")
+	private String bannerId;
 	@ApiModelProperty(value="主标题",example="")
 	private String	mainTitle;
 //	@ApiModelProperty(value="子标题",example="")
@@ -31,8 +33,8 @@ public class CircleCardDataBean {
 	
 	@ApiModelProperty(value="行为类型   (1:内部跳转;2:外连接)",example="")
 	private String actionType="1";
-//	@ApiModelProperty(value="网页地址     需要前台App端在url后追加?token=token",example="")
-//	private String href;
+	@ApiModelProperty(value="网页地址     需要前台App端在url后追加?token=token",example="")
+	private String href;
 	@ApiModelProperty(value="业务id",example="")
 	private String targetId;
 	@ApiModelProperty(value="业务类型",example="")
