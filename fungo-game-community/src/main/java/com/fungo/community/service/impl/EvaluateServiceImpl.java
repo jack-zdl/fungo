@@ -98,9 +98,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
     private TSMQFacedeService tSMQFacedeService;
 
 
-
-
-
     @Override
     public ResultDto<CommentOut> addComment(String memberId, CommentInput commentInput, String appVersion) throws Exception {
         ResultDto<CommentOut> re = new ResultDto<CommentOut>();
@@ -133,13 +130,20 @@ public class EvaluateServiceImpl implements IEvaluateService {
             comment.setCreatedAt(new Date());
             comment.setUpdatedAt(new Date());
             comment.setState(0);
+
             CmmPost post = postService.selectById(commentInput.getTarget_id());
+
             targetMemberId = post.getMemberId();
+
             if (post.getMemberId().equals(memberId)) {
                 t.setIs_host(true);
             } else {
                 t.setIs_host(false);
             }
+
+            //设置评论数
+            post.setCommentNum(comment.getFloor());
+
             //最后回复时间
             post.setLastReplyAt(new Date());
             post.updateById();
@@ -147,7 +151,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
             commentService.insert(comment);
 
             id = comment.getId();
-            counterService.addCounter("t_cmm_post", "comment_num", commentInput.getTarget_id());//增加评论数
+
+
+            //counterService.addCounter("t_cmm_post", "comment_num", commentInput.getTarget_id());//增加评论数
 
 
             //!fixme 推送通知
@@ -337,6 +343,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOODS_LIST, "", null);
         //获取心情内容
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOOD_CONTENT_GET, "", null);
+
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, commentInput.getTarget_id(), null);
         return re;
     }
 
