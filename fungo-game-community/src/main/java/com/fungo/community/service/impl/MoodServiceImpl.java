@@ -401,11 +401,12 @@ public class MoodServiceImpl implements IMoodService {
             mood.setState(-1);
             mood.updateById();
 
-            //同步扣减用户积分账户
+            //同步扣减用户积分账户| 更新用户等级
             Map<String, Object> accountParamMap = new HashMap<String, Object>();
             accountParamMap.put("mb_id", memberId);
             accountParamMap.put("score", 3);
             ResultDto<Boolean> subtractMemberScoreAccountResult = systemFacedeService.subtractMemberScoreAccount(accountParamMap);
+
 
             //clear cache
             //帖子/心情评论列表 + moodId
