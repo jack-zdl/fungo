@@ -13,7 +13,6 @@ import com.fungo.system.entity.IncentAccountScore;
 import com.fungo.system.entity.Member;
 import com.fungo.system.entity.ScoreLog;
 import com.fungo.system.service.*;
-import com.game.common.consts.FunGoGameConsts;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.repo.cache.facade.FungoCacheTask;
@@ -26,8 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -131,7 +130,7 @@ public class MemberIncentAccountServiceImpl implements IMemberIncentAccountServi
     }
 
 
-    @Cacheable(cacheNames = {FunGoGameConsts.CACHE_EH_NAME}, key = "'" + FunGoGameConsts.CACHE_EH_KEY_PRE_MEMBER + "_ExpAccount' + #memberId")
+    //@Cacheable(cacheNames = {FunGoGameConsts.CACHE_EH_NAME}, key = "'" + FunGoGameConsts.CACHE_EH_KEY_PRE_MEMBER + "_ExpAccount' + #memberId")
     @Override
     public AccountScoreOutBean getExpAccountOfMember(String memberId) throws BusinessException {
         try {
@@ -166,7 +165,7 @@ public class MemberIncentAccountServiceImpl implements IMemberIncentAccountServi
     }
 
 
-    @Cacheable(cacheNames = {FunGoGameConsts.CACHE_EH_NAME}, key = "'" + FunGoGameConsts.CACHE_EH_KEY_PRE_MEMBER + "_CoinAccount' + #memberId")
+    //@Cacheable(cacheNames = {FunGoGameConsts.CACHE_EH_NAME}, key = "'" + FunGoGameConsts.CACHE_EH_KEY_PRE_MEMBER + "_CoinAccount' + #memberId")
     @Override
     public AccountCoinOutBean getCoinAccountOfMember(String memberId) throws BusinessException {
 
