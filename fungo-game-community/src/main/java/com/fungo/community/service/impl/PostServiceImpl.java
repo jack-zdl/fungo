@@ -1026,7 +1026,7 @@ public class PostServiceImpl implements IPostService {
             out.setImages(Arrays.asList(cmmPost.getImages().replace("]", "").replace("[", "").replace("\"", "").split(",")));
         }
         out.setCollect_num(cmmPost.getCollectNum());
-        out.setComment_num(cmmPost.getCommentNum());
+            out.setComment_num(cmmPost.getCommentNum());
         out.setCover_image(cmmPost.getCoverImage());
         String origin = cmmPost.getHtmlOrigin();
         ObjectMapper mapper = new ObjectMapper();
