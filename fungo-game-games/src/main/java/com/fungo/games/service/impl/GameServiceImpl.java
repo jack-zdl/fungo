@@ -121,7 +121,8 @@ public class GameServiceImpl implements IGameService {
         @SuppressWarnings("unchecked")
 //		Page<Game> gamePage = gameService.selectPage(new Page<>(page, limit),wrapper);
 //		List<Game> gameList = gamePage.getRecords();
-                List<Game> gameList = gameService.selectList(wrapper);
+//         Page page1 = new Page(page,limit);
+        List<Game> gameList  =  gameService.selectList(wrapper);
         if (gameList.size() == 0) {
             return new FungoPageResultDto<>();
         }

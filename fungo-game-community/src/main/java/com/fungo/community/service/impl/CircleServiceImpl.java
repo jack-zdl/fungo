@@ -236,7 +236,7 @@ public class CircleServiceImpl implements CircleService {
                     cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page,circleId,tagId,null,sortType);
                 }
             }
-
+            cmmPosts = cmmPosts.stream().sorted(Comparator.comparing(CmmPost::getRecommend).reversed()).collect(Collectors.toList());
 
             for (CmmPost post : cmmPosts) {
                 //表情解码
