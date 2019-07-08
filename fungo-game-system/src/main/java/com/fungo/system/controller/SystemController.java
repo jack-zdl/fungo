@@ -53,7 +53,7 @@ public class SystemController {
      * @auther: dl.zhang
      * @date: 2019/5/10 11:34
      */
-    @RequestMapping(value = "/followerids")
+    @RequestMapping(value = "/followerids", method = RequestMethod.POST)
     public FungoPageResultDto<String> getFollowerUserId(@RequestBody MemberFollowerVo memberFollowerVo){
         FungoPageResultDto<String> re = null;
         try {
