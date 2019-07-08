@@ -2,17 +2,26 @@ package com.fungo.system;
 
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.fungo.system.controller.MemberDataController;
+import com.fungo.system.dao.BasVideoJobDao;
+import com.fungo.system.entity.BasVideoJob;
+import com.fungo.system.service.IVdService;
+import com.fungo.system.service.impl.VdServiceImpl;
+import com.game.common.dto.StreamInfo;
 import org.junit.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -28,9 +37,9 @@ import static org.junit.Assert.*;
  * @Author: dl.zhang
  * @Date: 2019/5/7
  */
-////Junit4运行环境
+//////Junit4运行环境
 //@RunWith(SpringJUnit4ClassRunner.class)
-////单元测试时需要执行的SpringBoot启动类
+//////单元测试时需要执行的SpringBoot启动类
 //@SpringBootTest(classes = FungoGameSystemApplication.class)
 // junit 5 运行
 //@ExtendWith(SpringExtension.class) //导入spring测试框架[2]
@@ -154,17 +163,25 @@ public class TestMemberData {
 //    private MemberDataController memberDataController;
 
 //    @Ignore //忽略的测试方法
-//    @Test
-//    public void testExportExcel(){
-//        //List<Map<String,Object>> infoList
-//        List<Map<String,Object>> mockList = Mockito.mock(List.class);
+
+//    @Autowired
+//    private VdServiceImpl iVdServiceImpl;
 //
+//    @Autowired
+//    private BasVideoJobDao basVideoJobDao;
+
+//    @Test
+    public void testExportExcel(){
+//        BasVideoJob job = new BasVideoJob();
+//        job.setId("b82f6050597b4a6b826d4292afb4c4e9");
+//        job = basVideoJobDao.selectById(job);
 //        try {
-//            memberDataController.exportExcel(mockList);
+//            iVdServiceImpl.updateUrlAndState(job,"http://outin-d8556079df3311e89ef400163e1c8a9c.oss-cn-beijing.aliyuncs.com/d08ebf1e9132480582eb96ff8dfcee27/10d746f128b24c4ab2e68ced7acbef4f-c8418229b79e9942748b767fae8dcef3-sd.mp4",
+//                    Arrays.asList(new StreamInfo()));
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-//    }
+    }
 
 }
 

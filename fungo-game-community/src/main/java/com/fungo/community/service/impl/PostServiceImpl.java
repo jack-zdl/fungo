@@ -1063,6 +1063,9 @@ public class PostServiceImpl implements IPostService {
 //          String html_origin = CommonUtils.filter(cmmPost.getHtmlOrigin());
 //			out.setHtml_origin(html_origin);
         } else {
+            if (origin != null && !"".equals(origin)) {
+                out.setHtml(SerUtils.returnOriginHrml(SerUtils.getOriginImageContent(CommonUtils.filterWord(origin), out.getImages(), gameList)));
+            }
             out.setHtml_origin(SerUtils.returnOriginHrml(SerUtils.getOriginImageContent(CommonUtils.filterWord(origin), out.getImages(), gameList)));
             out.setContent(origin);
             out.setTxt(CommonUtils.filterWord(cmmPost.getContent()));

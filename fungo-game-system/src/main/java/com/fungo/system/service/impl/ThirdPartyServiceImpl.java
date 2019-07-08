@@ -200,7 +200,11 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
                     //记录登录用户
                     memberLoginedStatisticsService.addLoginToBucket(member.getId(), appVersion);
                 }
-
+                buriedpointmap.put("distinctId",member.getId());
+                buriedpointmap.put("platForm",channel);
+                buriedpointmap.put("login002","false");
+//              第三方登录埋点事件ID:login005
+                BuriedPointUtils.login05(buriedpointmap, analysysJavaSdk);
                 buriedpointmap.put("distinctId",member.getId());
                 buriedpointmap.put("platForm",channel);
                 buriedpointmap.put("login002","false");

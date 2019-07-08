@@ -3,11 +3,9 @@ package com.game.common.util.pc20;
 import com.game.common.util.pc20.analysysjavasdk.AnalysysException;
 import com.game.common.util.pc20.analysysjavasdk.AnalysysJavaSdk;
 import com.game.common.util.pc20.analysysjavasdk.DEBUG;
-import com.game.common.util.pc20.analysysjavasdk.SyncCollecter;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,6 +18,10 @@ import java.util.Map;
  * @create 2019/6/13 13:08
  */
 public class BuriedPointUtils {
+
+    @Autowired
+    private AnalysysJavaSdk analysysJavaSdk;
+
     public final static String APP_KEY = "571cf37a38870ec7";
     public final static String ANALYSYS_SERVICE_URL = "https://arkcloud-0529.analysys.cn:4089";
 //    private final static AnalysysJavaSdk analysys = new AnalysysJavaSdk(new SyncCollecter(ANALYSYS_SERVICE_URL), APP_KEY);
