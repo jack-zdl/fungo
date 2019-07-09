@@ -55,5 +55,12 @@ public interface CmmPostCircleMapper {
      */
     int getSumByCircleId(@Param("circleId") String circleId);
 
+    /**
+     * 功能描述: 根据传入的文章id 集合删除文章-圈子记录
+     * @auther: dl.zhang
+     * @date: 2019/7/9 17:32
+     */
+    int deletePostCircleByPostIds(@Param("ids")  List<String> ids);
+
 
 }

@@ -90,9 +90,9 @@ public class CmmCircleVo extends InputPageDto {
     }
 
     public enum TypeEnum implements BaseEnum<SorttypeEnum,String> {
-        OFFICIAL("1","官方"),
-        GAMES("2","游戏"),
-        INTEREST("3","兴趣");
+        OFFICIAL("1","官方圈"),
+        GAMES("2","游戏圈"),
+        INTEREST("3","兴趣圈");
 
         String key;
         String value;

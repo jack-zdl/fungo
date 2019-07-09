@@ -610,6 +610,12 @@ public class PostServiceImpl implements IPostService {
         cmmPost.setState(-1);
         postService.updateById(cmmPost);
 
+        /**
+         * 功能描述: 删除文章，需要删除文章-圈子表相关记录
+         * @auther: dl.zhang
+         * @date: 2019/7/9 17:24
+         */
+        cmmPostCircleMapper.deletePostCircleByPostIds(Arrays.asList(cmmPost.getId()));
         //扣除经验
         int score = 3;
 
