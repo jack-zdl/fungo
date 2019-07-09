@@ -643,6 +643,7 @@ public class IndexServiceImpl implements IIndexService {
 
             }
 
+            //推荐理由
             dataBean.setUpperLeftCorner(videoBanner.getTag());
             //dataBean.setLowerRightCorner(post.getReportNum()+"");
 
@@ -666,6 +667,8 @@ public class IndexServiceImpl implements IIndexService {
             dataBean.setHref(videoBanner.getHref());
             dataBean.setTargetType(videoBanner.getTargetType());
             dataBean.setTargetId(videoBanner.getTargetId());
+
+
 
             // app2.5功能
             // 查询出关联的游戏数据
