@@ -298,7 +298,7 @@
 
 	SELECT 
 	 <include refid="Base_Column_List"></include>
-	 FROM t_cmm_post cp  WHERE cp.community_id in  (SELECT cc.id  FROM t_cmm_community cc WHERE cc.game_id = #{gameId} )
+	 FROM t_cmm_post cp  WHERE cp.state=1 AND cp.community_id in  (SELECT cc.id  FROM t_cmm_community cc WHERE cc.game_id = #{gameId} )
 	or cp.id in (SELECT cpg.post_id FROM t_cmm_post_game cpg WHERE cpg.game_id = #{gameId} )
 	order  by cp.created_at desc
     </select>
