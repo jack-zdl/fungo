@@ -116,8 +116,8 @@ public class FungoMallSeckillController {
             return resultDto;
         }
 
-        goodsListForSeckillList = new ArrayList<>();
-        resultDto.setData(goodsListForSeckillList);
+        resultDto = ResultDto.success("暂无消息");
+        resultDto.setData(Collections.emptyList());
         resultDto.setMessage(DateTools.fmtDate(new Date()));
         return resultDto;
     }
