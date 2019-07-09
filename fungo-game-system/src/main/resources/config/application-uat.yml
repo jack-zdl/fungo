@@ -14,7 +14,7 @@ eureka:
     #默认30s
     registryFetchIntervalSeconds: 5
     serviceUrl:
-      defaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@172.17.18.228:8762/eureka/,http://fungoEurekaAdmin:9140f6ad68d1e@172.17.18.227:8761/eureka/
+      defaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@192.168.10.178:8762/eureka/,http://fungoEurekaAdmin:9140f6ad68d1e@192.168.10.178:8761/eureka/
 
 
 #--------------------------------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url:  jdbc:mysql://rm-bp145sizta1yg4585xo.mysql.rds.aliyuncs.com:3306/fungo_cloud_uat?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url:  jdbc:mysql://rm-bp145sizta1yg4585xo.mysql.rds.aliyuncs.com:3306/fungo_games_uat?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: fungo_uat
     password: b1dcfae36fa84Db88479efbd36b16e
     hikari:
