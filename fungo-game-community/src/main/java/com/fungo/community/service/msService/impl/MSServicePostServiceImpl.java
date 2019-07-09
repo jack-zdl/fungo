@@ -129,7 +129,12 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
             }
 
             //根据修改时间倒叙 状态 -1:已删除 0:压缩转码中 1:正常
-            postEntityWrapper.eq("state", 1).orderBy("updated_at", false);
+            postEntityWrapper.eq("state", 1);
+
+            //排序
+            postEntityWrapper.orderBy("sort,updated_at", false);
+
+            //postEntityWrapper .orderBy("updated_at", false);
 
             List<CmmPost> selectRecords = null;
 
@@ -256,9 +261,9 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
     }
 
     @Override
-    public  FungoPageResultDto<CmmPostDto>  listCmmPostTopicPost(CmmPostDto cmmPostDto) {
+    public FungoPageResultDto<CmmPostDto> listCmmPostTopicPost(CmmPostDto cmmPostDto) {
 
-        FungoPageResultDto<CmmPostDto> resultDto = new  FungoPageResultDto<CmmPostDto>();
+        FungoPageResultDto<CmmPostDto> resultDto = new FungoPageResultDto<CmmPostDto>();
         List<CmmPostDto> cmmPostDtoList = null;
         try {
 
