@@ -20,10 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -91,7 +88,6 @@ public class FungoMallSeckillController {
     public ResultDto<List<MallGoodsOutBean>> getGoodsListForSeckill(MemberUserProfile memberUserPrefile, HttpServletRequest request,
                                                                     @RequestBody MallGoodsInput mallGoodsInput) {
 
-
         if (null == mallGoodsInput || mallGoodsInput.getGoodsType() <= 0 || StringUtils.isBlank(mallGoodsInput.getGameId())) {
             return ResultDto.error("-1", "请输入正确的商品类型参数");
         }
@@ -107,18 +103,23 @@ public class FungoMallSeckillController {
             realIp = request.getHeader("x-forwarded-for");
         }
 
+        ResultDto<List<MallGoodsOutBean>> resultDto = new ResultDto<List<MallGoodsOutBean>>();
+
         List<MallGoodsOutBean> goodsListForSeckillList = iFungoMallSeckillService.getGoodsListForGame(loginId, realIp, mallGoodsInput);
 
         if (null != goodsListForSeckillList && !goodsListForSeckillList.isEmpty()) {
 
-            ResultDto<List<MallGoodsOutBean>> resultDto = new ResultDto<List<MallGoodsOutBean>>();
 
             resultDto.setData(goodsListForSeckillList);
             resultDto.setMessage(DateTools.fmtDate(new Date()));
 
             return resultDto;
         }
-        return ResultDto.success(DateTools.fmtDate(new Date()));
+
+        goodsListForSeckillList = new ArrayList<>();
+        resultDto.setData(goodsListForSeckillList);
+        resultDto.setMessage(DateTools.fmtDate(new Date()));
+        return resultDto;
     }
 
 
