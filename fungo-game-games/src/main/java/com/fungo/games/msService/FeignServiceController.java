@@ -563,20 +563,34 @@ public class FeignServiceController {
     @ApiOperation(value = "根据游戏对象查询集合", notes = "")
     @RequestMapping(value = "/api/geme/getGamePage", method = RequestMethod.POST)
     FungoPageResultDto<GameDto> getGamePage(@RequestBody GameDto gameDto) {
+
         List<GameDto> gameList = null;
+
         FungoPageResultDto<GameDto> fungoPageResultDto = new FungoPageResultDto<>();
+
         Page<Game> gamePageSelect = new Page<>();
+
         try {
+
             int page = gameDto.getPage();
             int limit = gameDto.getLimit();
+
             EntityWrapper<Game> gameWrapper = new EntityWrapper<Game>();
+
             HashMap<String, Object> param = new HashMap<String, Object>();
             Page<Game> gamePage = null;
             if (page > 0 && limit > 0) {
                 gamePage = new Page<>(page, limit);
             }
+
             gameFun(gameDto, param);
             gameWrapper.allEq(param);
+
+            Integer state = gameDto.getState();
+            if (null != state) {
+                gameWrapper.eq("state", state);
+            }
+
             //根据修改时间倒叙
             gameWrapper.orderBy("updated_at", false);
 
