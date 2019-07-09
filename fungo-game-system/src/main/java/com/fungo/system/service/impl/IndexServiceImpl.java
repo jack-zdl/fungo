@@ -571,6 +571,10 @@ public class IndexServiceImpl implements IIndexService {
             //
             GameDto gameParam = new GameDto();
             gameParam.setId(banner.getTargetId());
+
+            //state 状态 0：上线，1：下架，-1：删除，3待审核
+            gameParam.setState(0);
+
             GameDto game = iGameProxyService.selectGameById(gameParam);   //gameService.selectById(banner.getTargetId());
             CardDataBean b = new CardDataBean();
             b.setImageUrl(game.getIcon());
