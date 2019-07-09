@@ -40,7 +40,7 @@ public class IndexProxyServiceImpl implements IndexProxyService {
 //            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
     @Override
     public CmmPostDto selctCmmPostOne(CmmPostDto cmmPostDto) {
-        CmmPostDto re = new CmmPostDto();
+        CmmPostDto re = null;
             FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(cmmPostDto);
         if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmPostDtoFungoPageResultDto.getStatus()) && cmmPostDtoFungoPageResultDto.getData().size() > 0){
             re = cmmPostDtoFungoPageResultDto.getData().get(0);
