@@ -122,7 +122,7 @@ public class GameServiceImpl implements IGameService {
 //		Page<Game> gamePage = gameService.selectPage(new Page<>(page, limit),wrapper);
 //		List<Game> gameList = gamePage.getRecords();
 //         Page page1 = new Page(page,limit);
-        List<Game> gameList  =  gameService.selectList(wrapper);
+                List<Game> gameList = gameService.selectList(wrapper);
         if (gameList.size() == 0) {
             return new FungoPageResultDto<>();
         }
@@ -1866,13 +1866,17 @@ class HotFun implements Comparator<Game> {
     }
 
     public long hotFun(Game g) throws ParseException {
-        Integer Rn = g.getRecommendNum() + g.getUnrecommendNum();
-        Integer R = Rn == 0 ? 0 : g.getRecommendNum() / Rn * 100;
+        //游戏热度 = 评论数commentNum + 下载数DownloadNum
+        Integer Rn = g.getCommentNum() + g.getDownloadNum();
+        /*
+        Integer R = Rn == 0 ? 0 : g.getCommentNum() / Rn * 100;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Long t = format.parse("2017-01-01").getTime();
         Long T = g.getCreatedAt().getTime();
         Integer A = 180000;
         return R * Rn + (T - t) / A;
+        */
+        return Rn;
     }
 }
 
