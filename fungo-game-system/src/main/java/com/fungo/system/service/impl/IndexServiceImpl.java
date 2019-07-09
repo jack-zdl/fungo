@@ -557,7 +557,10 @@ public class IndexServiceImpl implements IIndexService {
 
     //本周精选(游戏)
     public CardIndexBean hotGames() {
-        List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0001").eq("target_type", 3).eq("state", 2).orderBy("release_time", false).last("limit 6"));
+
+        //state 状态 -1:删除,  0：上线，1：草稿，  2：下线
+        List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0001").eq("target_type", 3)
+                .eq("state", 0).orderBy("release_time", false).last("limit 6"));
         if (blist.size() == 0) {
             return null;
         }
