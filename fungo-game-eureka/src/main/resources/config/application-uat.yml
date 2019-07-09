@@ -1,10 +1,17 @@
+#spring:
+#  application:
+#    name: eureka-server
+
+
+---
 server:
-  #port: 8761
-  port: 8762
+  port: 8761
+  #port: 8762
 
 spring:
   application:
     name: eureka-server
+  profiles: peer1
   #登录安全配置
   security:
     user:
@@ -13,7 +20,7 @@ spring:
 
 eureka:
   instance:
-    hostname: ${spring.cloud.client.ip-address}
+    hostname: peer1 #${spring.cloud.client.ip-address}
     # #指定通过IP注册,一般服务集群时配置,需要ip-address参数一起设置(保证hostName和ip-address一样)，以免eureka管理页面出现不可用分片提示信息(unavailable-replicas),服务的注册默认是通过hostName注册的，当判断注册的hostName和服务
     prefer-ip-address: true
     instance-id: ${eureka.instance.hostname}:${server.port}
@@ -37,8 +44,8 @@ eureka:
       enabled: true
 
     serviceUrl:
-     # defaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@192.168.10.178:8762/eureka/
-      efaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@192.168.10.178:8761/eureka/
+     # defaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@192.168.10.178:8762/
+      efaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@peer2:8762/eureka/
       #defaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@172.17.18.228:8762/eureka/
       #defaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@172.17.18.227:8761/eureka/
 
@@ -49,5 +56,56 @@ eureka:
     #默认60s
     eviction-interval-timer-in-ms: 30000
 
+---
+server:
+  #port: 8761
+  port: 8762
 
+spring:
+  application:
+    name: eureka-server
+  profiles: peer2
+  #登录安全配置
+  security:
+    user:
+      name: fungoEurekaAdmin
+      password: 9140f6ad68d1e
+
+eureka:
+  instance:
+    hostname: peer2  #${spring.cloud.client.ip-address}
+    # #指定通过IP注册,一般服务集群时配置,需要ip-address参数一起设置(保证hostName和ip-address一样)，以免eureka管理页面出现不可用分片提示信息(unavailable-replicas),服务的注册默认是通过hostName注册的，当判断注册的hostName和服务
+    prefer-ip-address: true
+    instance-id: ${eureka.instance.hostname}:${server.port}
+    #强制指定eureka的ip地址
+    ip-address: ${EUREKA_IP:${eureka.instance.hostname}}
+    #服务刷新时间配置，每隔这个时间会主动心跳一次
+    #默认30s
+    lease-renewal-interval-in-seconds: 5
+    # Eureka服务器在接收到实例的最后一次发出的心跳后，需要等待多久才可以将此实例删除，默认为90秒
+    leaseExpirationDurationInSeconds: 10
+
+  client:
+    # 集群时需要强制手动指定，fetch-registry、register-with-eureka都需要设置为true
+    fetch-registry: true
+    #集群时需要强制手动指定，fetch-registry、register-with-eureka都需要设置为true
+    register-with-eureka: true
+    #eureka client刷新本地缓存时间
+    #默认30s
+    registryFetchIntervalSeconds: 5
+    healthcheck:
+      enabled: true
+
+    serviceUrl:
+      # defaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@192.168.10.178:8762/
+      efaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@peer1:8761/eureka/
+      #defaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@172.17.18.228:8762/eureka/
+      #defaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@172.17.18.227:8761/eureka/
+
+  server:
+    #测试时关闭自我保护机制，保证不可用服务及时剔除，生产环境要开启自我保护机制
+    enable-self-preservation: false
+    #启用主动失效，并且每次主动失效检测间隔为3s
+    #默认60s
+    eviction-interval-timer-in-ms: 30000
 

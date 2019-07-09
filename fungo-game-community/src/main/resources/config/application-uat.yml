@@ -16,7 +16,7 @@ eureka:
     #默认30s
     registryFetchIntervalSeconds: 5
     serviceUrl:
-      defaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@192.168.10.178:8762/eureka/,http://fungoEurekaAdmin:9140f6ad68d1e@192.168.10.178:8761/eureka/
+      defaultZone: http://fungoEurekaAdmin:9140f6ad68d1e@192.168.10.196:8762/eureka/,http://fungoEurekaAdmin:9140f6ad68d1e@192.168.10.196:8761/eureka/
 
 #--------------------------------------------------------------------------------------------------------
 #----------------熔断配置
@@ -74,7 +74,8 @@ spring:
   cloud:
     client:
       #ipAddress: 172.17.18.227
-      ipAddress: 172.17.18.228
+#      ipAddress: 172.17.18.228
+      ipAddress: 192.168.10.196
   application:
     name: fungo-game-community
 
