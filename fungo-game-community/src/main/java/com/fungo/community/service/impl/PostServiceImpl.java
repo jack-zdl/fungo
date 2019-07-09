@@ -981,7 +981,7 @@ public class PostServiceImpl implements IPostService {
                 postWatchNum_i = viewNewCount.intValue();
                 out.setWatch_num(postWatchNum_i);
                 //记录浏览量 同时保存到Redis中
-                fungoCacheArticle.excIndexCache(true, FungoCacheArticle.FUNGO_CORE_API_POST_CONTENT_DETAIL_WATCHNUM, postId, postWatchNum_i,5);
+                fungoCacheArticle.excIndexCache(true, FungoCacheArticle.FUNGO_CORE_API_POST_CONTENT_DETAIL_WATCHNUM, postId, postWatchNum_i, 5);
                 //更新文章浏览数DB
                 iCountService.addCounter("t_cmm_post", "watch_num", postId);
                 CmmPost cmmPost = new CmmPost();
@@ -1026,7 +1026,7 @@ public class PostServiceImpl implements IPostService {
             out.setImages(Arrays.asList(cmmPost.getImages().replace("]", "").replace("[", "").replace("\"", "").split(",")));
         }
         out.setCollect_num(cmmPost.getCollectNum());
-            out.setComment_num(cmmPost.getCommentNum());
+        out.setComment_num(cmmPost.getCommentNum());
         out.setCover_image(cmmPost.getCoverImage());
         String origin = cmmPost.getHtmlOrigin();
         ObjectMapper mapper = new ObjectMapper();
@@ -1263,9 +1263,9 @@ public class PostServiceImpl implements IPostService {
         cmmPostUpdate.updateById();
 
         //redis cache
-        fungoCacheArticle.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, postId, out,30);
+        fungoCacheArticle.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, postId, out, 30);
         //记录浏览量 同时保存到Redis中
-        fungoCacheArticle.excIndexCache(true, FungoCacheArticle.FUNGO_CORE_API_POST_CONTENT_DETAIL_WATCHNUM, postId, cmmPostWatchNum,5);
+        fungoCacheArticle.excIndexCache(true, FungoCacheArticle.FUNGO_CORE_API_POST_CONTENT_DETAIL_WATCHNUM, postId, cmmPostWatchNum, 5);
         return ResultDto.success(out);
     }
 
@@ -1562,17 +1562,29 @@ public class PostServiceImpl implements IPostService {
     /**
      * 功能描述:
      * @param: []
-     * @return: com.game.common.dto.FungoPageResultDto<java.util.Map                                                                                                                               <                                                                                                                               java.lang.String                                                                                                                               ,                                                                                                                               java.lang.String>>
+     * @return: com.game.common.dto.FungoPageResultDto<java.util.Map                                                                                                                                                                                                                                                               <                                                                                                                                                                                                                                                               java.lang.String                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                               java.lang.String>>
      * @auther: dl.zhang
      * @date: 2019/6/18 18:21
      */
     @Override
     public FungoPageResultDto<PostOutBean> getTopicPosts(MemberUserProfile memberUserPrefile, PostInputPageDto inputPageDto) {
+
         FungoPageResultDto<PostOutBean> re = new FungoPageResultDto<>();
+
         List<Map<String, String>> mapList = null;
+
         mapList = new ArrayList<>();
+
         Page page = new Page(inputPageDto.getPage(), inputPageDto.getLimit());
-        Page<CmmPost> postPage = postService.selectPage(page, new EntityWrapper<CmmPost>().eq("recommend", 1).orderBy("sort", false));
+
+        EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<>();
+        postEntityWrapper.eq("recommend", 1);
+        postEntityWrapper.eq("state", 1);
+        postEntityWrapper.orderBy("sort", false);
+
+
+        Page<CmmPost> postPage = postService.selectPage(page,postEntityWrapper );
+
         List<PostOutBean> list = new ArrayList<>();
         if (postPage != null) {
             ObjectMapper mapper = new ObjectMapper();
