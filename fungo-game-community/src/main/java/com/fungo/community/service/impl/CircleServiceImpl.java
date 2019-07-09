@@ -100,6 +100,7 @@ public class CircleServiceImpl implements CircleService {
                     CmmCircleDto s = new CmmCircleDto();
                     try {
                         BeanUtils.copyProperties(s, r);
+                        s.setMemberNum(r.getFolloweeNum());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -136,6 +137,7 @@ public class CircleServiceImpl implements CircleService {
                         CmmCircleDto s = new CmmCircleDto();
                         try {
                             BeanUtils.copyProperties(s, r);
+                            s.setMemberNum(r.getFolloweeNum());
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();
                         } catch (InvocationTargetException e) {
@@ -159,6 +161,7 @@ public class CircleServiceImpl implements CircleService {
                         CmmCircleDto s = new CmmCircleDto();
                         try {
                             BeanUtils.copyProperties(s, r);
+                            s.setMemberNum(r.getFolloweeNum());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -188,6 +191,7 @@ public class CircleServiceImpl implements CircleService {
                 return ResultDto.error("-1","该圈子不存在");
             }
             BeanUtils.copyProperties(cmmCircleDto,cmmCircle);
+            cmmCircleDto.setMemberNum(cmmCircle.getFolloweeNum());
             CircleFollowVo circleFollowVo = new CircleFollowVo();
             circleFollowVo.setMemberId(memberId);
             circleFollowVo.setActionType(ActionTypeEnum.FOLLOW.getKey());
@@ -447,6 +451,8 @@ public class CircleServiceImpl implements CircleService {
                 CmmCircle cmmCircle = cmmCircleDtoList.get(0);
                 CmmCircleDto cmmCircleDto = new CmmCircleDto();
                 BeanUtils.copyProperties(cmmCircleDto,cmmCircle);
+                cmmCircleDto.setMemberNum(cmmCircle.getFolloweeNum());
+                cmmCircleDto.setMemberNum(cmmCircle.getFolloweeNum());
                 resultDto.setData(cmmCircleDto);
                 resultDto.setCode(AbstractResultEnum.CODE_ONE.getKey());
                 resultDto.setMessage(AbstractResultEnum.CODE_ONE.getSuccessValue());
@@ -629,6 +635,7 @@ public class CircleServiceImpl implements CircleService {
                     CmmCircleDto cmmCircleDto = new CmmCircleDto();
                     try {
                         BeanUtils.copyProperties(cmmCircleDto,s);
+                        cmmCircleDto.setMemberNum(s.getFolloweeNum());
                         cmmCircleDtoList.add(cmmCircleDto);
                     } catch (Exception e) {
                         e.printStackTrace();
