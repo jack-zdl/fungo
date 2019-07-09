@@ -12,6 +12,7 @@ import com.game.common.dto.mall.MallGoodsInput;
 import com.game.common.dto.mall.MallGoodsOutBean;
 import com.game.common.dto.mall.MallOrderInput;
 import com.game.common.dto.mall.MallOrderOutBean;
+import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.date.DateTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +86,7 @@ public class FungoMallSeckillController {
      * @return 返回 以json对象方式返回商品数据
      */
     @PostMapping("/api/mall/goods/game/list")
-    public ResultDto<List<MallGoodsOutBean>> getGoodsListForSeckill(MemberUserProfile memberUserPrefile, HttpServletRequest request,
+    public ResultDto<List<MallGoodsOutBean>> getGoodsListForSeckill(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request,
                                                                     @RequestBody MallGoodsInput mallGoodsInput) {
 
         if (null == mallGoodsInput || mallGoodsInput.getGoodsType() <= 0 || StringUtils.isBlank(mallGoodsInput.getGameId())) {
