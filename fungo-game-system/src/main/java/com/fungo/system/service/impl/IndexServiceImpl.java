@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class IndexServiceImpl implements IIndexService {
@@ -250,10 +251,12 @@ public class IndexServiceImpl implements IIndexService {
             /****/
             List<Banner> bl = new ArrayList<>();
             Page<Banner> page = new Page<>(input.getPage(), input.getLimit());
-            if (BannnerEnum.lving.getValue().equals(input.getFilter()))
+
+            if (BannnerEnum.lving.getValue().equals(input.getFilter())) {
                 bl = bannerDao.beforeNewDateBanner(page);
-            else if (BannnerEnum.past.getValue().equals(input.getFilter()))
+            } else if (BannnerEnum.past.getValue().equals(input.getFilter())) {
                 bl = bannerDao.afterNewDateBanner(page);
+            }
 
 //            CardIndexBean indexBean = new CardIndexBean();
             if (bl.size() == 0) {
@@ -434,13 +437,13 @@ public class IndexServiceImpl implements IIndexService {
         cmmPostDto.setType(3);
         cmmPostDto.setState(1);
         FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.listCmmPostTopicPost(cmmPostDto);
-      // Page<CmmPostDto> pageList = indexProxyService.selectCmmPostPage(cmmPostDto);
+        // Page<CmmPostDto> pageList = indexProxyService.selectCmmPostPage(cmmPostDto);
         //  postService.selectPage(new Page<CmmPost>(page, limit), new EntityWrapper<CmmPost>().eq("type", 3).eq("state", 1).last("ORDER BY sort DESC,updated_at DESC"));
 //		List<CmmPost> list = postService.selectList(new EntityWrapper<CmmPost>().eq("type", 3).orderBy("created_at", false).last("limit " + start+","+limit));
 //		List<CmmPost> list = p.getRecords();
         List<CmmPostDto> cmmPostDtos = cmmPostDtoFungoPageResultDto.getData();
         ArrayList<CardIndexBean> indexList = new ArrayList<>();
-        for (CmmPostDto post : cmmPostDtos ) {
+        for (CmmPostDto post : cmmPostDtos) {
             ArrayList<CardDataBean> gameDateList = new ArrayList<>();
             CardDataBean bean = new CardDataBean();
             CardIndexBean index = new CardIndexBean();
@@ -564,22 +567,35 @@ public class IndexServiceImpl implements IIndexService {
         if (blist.size() == 0) {
             return null;
         }
+
+
+        CopyOnWriteArrayList<Banner> bannerRWList = new CopyOnWriteArrayList<Banner>(blist);
+
         ArrayList<CardDataBean> gameDateList = new ArrayList<>();
         CardIndexBean indexBean = new CardIndexBean();
-        for (Banner banner : blist) {
+
+        for (Banner banner : bannerRWList) {
+
             Map<String, BigDecimal> rateData = indexProxyService.getRateData(banner.getTargetId());  //gameDao.getRateData(banner.getTargetId());
-            //
+
+
             GameDto gameParam = new GameDto();
             gameParam.setId(banner.getTargetId());
-
             //state 状态 0：上线，1：下架，-1：删除，3待审核
             gameParam.setState(0);
 
             GameDto game = iGameProxyService.selectGameById(gameParam);   //gameService.selectById(banner.getTargetId());
+            if (null == game) {
+                gameDateList.remove(banner);
+                continue;
+            }
+
             CardDataBean b = new CardDataBean();
+
             b.setImageUrl(game.getIcon());
             b.setMainTitle(banner.getTitle());//游戏名称
             b.setContent(banner.getIntro());//游戏简介
+
             if (rateData != null && rateData.get("avgRating") != null) {
                 b.setLowerLeftCorner(rateData.get("avgRating").toString());//评分
             } else {
@@ -667,7 +683,6 @@ public class IndexServiceImpl implements IIndexService {
             dataBean.setHref(videoBanner.getHref());
             dataBean.setTargetType(videoBanner.getTargetType());
             dataBean.setTargetId(videoBanner.getTargetId());
-
 
 
             // app2.5功能

@@ -402,10 +402,48 @@ public class MoodServiceImpl implements IMoodService {
             mood.updateById();
 
             //同步扣减用户积分账户| 更新用户等级
+            /*
             Map<String, Object> accountParamMap = new HashMap<String, Object>();
             accountParamMap.put("mb_id", memberId);
             accountParamMap.put("score", 3);
             ResultDto<Boolean> subtractMemberScoreAccountResult = systemFacedeService.subtractMemberScoreAccount(accountParamMap);
+            */
+
+            //-----------------------------------start------------------------
+            //扣除经验
+            int score = 3;
+
+            //MQ 业务数据发送给系统用户业务处理
+            TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+
+            //消息类型
+            transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
+
+            //发送的队列
+            transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+
+            //路由key
+            StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+            routinKey.deleteCharAt(routinKey.length() - 1);
+            routinKey.append("deletePostSubtractExpLevel");
+
+            transactionMessageDto.setRoutingKey(routinKey.toString());
+
+            MQResultDto mqResultDto = new MQResultDto();
+            mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MQ_TYPE_DELETE_POST_SUBTRACT_EXP_LEVEL.getCode());
+
+            HashMap<String, Object> hashMap = new HashMap<String, Object>();
+            hashMap.put("mb_id", memberId);
+            hashMap.put("score", score);
+
+            mqResultDto.setBody(hashMap);
+
+            transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+            //执行MQ发送
+            ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
+            LOGGER.info("--删除心情执行扣减用户经验值和等级--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
+            //-----------------------------------end------------------------
+
 
 
             //clear cache
