@@ -606,8 +606,8 @@ public class IndexServiceImpl implements IIndexService {
     public CardIndexBean selectPosts(String type) {
 
         //2 6(视频) 7
-        //state  状态 -1:已删除 0:压缩转码中 1:正常
-        Banner videoBanner = bannerService.selectOne(new EntityWrapper<Banner>().eq("position_code", type).eq("target_type", 1).eq("state", "1").orderBy("sort", false).last("limit 1"));
+        //state  状态 -1:删除,  0：上线，1：草稿，2：下线
+        Banner videoBanner = bannerService.selectOne(new EntityWrapper<Banner>().eq("position_code", type).eq("target_type", 1).eq("state", "0").orderBy("sort", false).last("limit 1"));
         CardIndexBean cb = new CardIndexBean();
 
         if (videoBanner == null) {
