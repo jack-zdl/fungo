@@ -51,8 +51,12 @@
     <include refid="Base_Column_List"></include>
     from t_cmm_circle
     <trim prefix="WHERE" prefixOverrides="AND |OR ">
+        <if test="ids != null">
+          state = 1
+        </if>
+
         <if test="ids != null ">
-          id in
+          and  id in
           <foreach  item="item" collection="ids" index="index"  open="(" separator="," close=")">
             #{item}
           </foreach>
