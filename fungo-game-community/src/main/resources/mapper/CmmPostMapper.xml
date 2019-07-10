@@ -208,7 +208,7 @@
     </select>
 
     <select id="getCmmCircleListByPostId" parameterType="java.lang.String" resultType="com.fungo.community.entity.CmmPost">
-    select  *  from  t_cmm_post where  id in
+    select  *  from  t_cmm_post where state = 1 and id in
     ( select cpc.post_id
     from t_cmm_post_circle cpc where cpc.circle_id = #{circleId} AND cpc.default_link = 1 )
 
@@ -221,6 +221,7 @@
          ,sum(cp.comment_num+cp.like_num+cp.collect_num+cp.watch_num) as total  from  t_cmm_post cp where  cp.state=1 and id in
         ( select cpc.post_id
         from t_cmm_post_circle cpc where cpc.circle_id = #{circleId}   )
+
         <if test="tagId != null and tagId != ''">
             and cp.tags = #{tagId}
         </if>
@@ -228,7 +229,7 @@
             and cp.type = #{cream}
         </if>
         <if test='sortType == "1" ' >
-            GROUP BY cp.id   order  by cp.created_at desc
+            GROUP BY cp.id   order  by  cp.type desc,  cp.created_at desc
         </if>
         <if test='sortType == "2"'>
             GROUP BY cp.id   order  by cp.last_reply_at desc

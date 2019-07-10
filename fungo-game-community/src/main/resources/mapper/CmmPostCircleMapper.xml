@@ -155,4 +155,11 @@
  SELECT count(1) as total , ba.target_id as circle_id FROM t_bas_action ba WHERE ba.target_id =  #{circleId} and type = 5 and target_type = 11 and state = 0
  ) t
   </select>
+  
+  <delete id="deletePostCircleByPostIds">
+    update  t_cmm_post_circle set default_link = 0  WHERE post_id in
+    <foreach  item="item" collection="ids" index="index"  open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
 </mapper>

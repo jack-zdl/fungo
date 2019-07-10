@@ -61,7 +61,8 @@
 	<select id="afterNewDateBanner" resultType="com.fungo.system.entity.Banner" >
   		select
 		<include refid="Base_Column_List"></include>
-  		 from t_banner where position_code = '0005' and state = '0' and now() > end_date order by sort desc
+  		 from t_banner where position_code = '0005' and state = '0' and
+		(  now() > end_date   and  date_type  = 2 ) order by sort desc
    </select>
 
 
