@@ -318,7 +318,7 @@ public class GameServiceImpl implements IGameService {
 
         Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", "0"));
         if (game == null) {
-            return ResultDto.error("211", "找不到目标游戏");
+            return ResultDto.error("-1", "找不到目标游戏");
         }
         // 根据图片比例数据生成相应的返回字段
         int width = 16, height = 9;
