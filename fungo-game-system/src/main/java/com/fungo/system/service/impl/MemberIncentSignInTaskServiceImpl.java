@@ -2,6 +2,10 @@ package com.fungo.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.entity.*;
 import com.fungo.system.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
@@ -23,7 +27,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.game.common.consts.FungoCoreApiConstant.FUNGO_CORE_API_GETSIGNINTASKGROUPANDTASKRULEDATA;
@@ -56,6 +62,12 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
 
     @Autowired
     private IncentAccountCoinDaoService accountCoinService;
+
+    @Autowired
+    private IncentRankedService rankedService;
+
+    @Autowired
+    private IncentRuleRankService ruleRankService;
 
     @Autowired
     private FungoCacheMember fungoCacheMember;
@@ -100,7 +112,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
                     if (0 == interval) {
                         isChecked = true;
                         days = signInCountDays_i % 30;
-                     //连续签到
+                        //连续签到
                     } else if (1 == interval) {
                         days = signInCountDays_i % 30;
                     }
@@ -341,8 +353,20 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
             signInCountDays_i = 1;
         }
 
-        //记录连续签到数据
+        //1.记录连续签到数据
         this.exSuccessionSignIn(member, incentTasked, signInCountDays_i);
+
+        //2.获取荣誉
+        ObjectMapper mapper = new ObjectMapper();
+        String mb_id = member.getId();
+        if (signInCountDays_i == 7) {
+
+            updateRanked(mb_id, mapper, 34);
+        } else if (signInCountDays_i == 30) {
+            updateRanked(mb_id, mapper, 35);
+        } else if (signInCountDays_i == 100) {
+            updateRanked(mb_id, mapper, 36);
+        }
 
         return ResultDto.success("签到成功");
     }
@@ -405,7 +429,6 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
         if (null == scoreRule) {
             return;
         }
-
 
         //获取签到任务规则数据
         Date currentDate = new Date();
@@ -558,7 +581,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
         ScoreGroup scoreGroup = null;
 
         //from redis
-        String keyPrefix =  FUNGO_CORE_API_GETSIGNINTASKGROUPANDTASKRULEDATA; //"getSignInTaskGroupAndTaskRuleData";
+        String keyPrefix = FUNGO_CORE_API_GETSIGNINTASKGROUPANDTASKRULEDATA; //"getSignInTaskGroupAndTaskRuleData";
         String keySuffix = "scoreGroup";
 
         scoreGroup = (ScoreGroup) fungoCacheTask.getIndexCache(keyPrefix, keySuffix);
@@ -631,7 +654,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
     private void addCoinWithMbSignIn(Member member, int funCoin) {
 
         //安全性校验
-        if (funCoin <= 0||member==null||member.getId()==null) {
+        if (funCoin <= 0 || member == null || member.getId() == null) {
             return;
         }
 
@@ -667,7 +690,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
 
         fungoCacheTask.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + member.getId(), "", null);
         //刷新fun总数
-        fungoCacheTask.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + member.getId(), "",null);
+        fungoCacheTask.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + member.getId(), "", null);
     }
 
 
@@ -811,5 +834,101 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
         return null;
     }
 
+
+    /**
+     * 更新荣誉汇总
+     * @param userId
+     * @param mapper
+     * @param idt
+     * @throws JsonProcessingException
+     * @throws IOException
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     */
+    private void updateRanked(String userId, ObjectMapper mapper, int idt)
+            throws JsonProcessingException, IOException, JsonParseException, JsonMappingException {
+        IncentRuleRank rankRule = ruleRankService.selectOne(new EntityWrapper<IncentRuleRank>().eq("rank_idt", idt));
+        IncentRanked incentRanked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", userId).eq("rank_type", rankRule.getRankType()));
+
+
+        SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        String datos = format.format(new Date());
+        if (incentRanked == null) {
+            incentRanked = new IncentRanked();
+            incentRanked.setMbId(userId);
+            List<Map<String, Object>> mapList = new ArrayList<>();
+            Map<String, Object> map = new HashMap<>();
+            map.put("1", rankRule.getId());
+            map.put("2", rankRule.getRankName());
+            map.put("3", rankRule.getRankType());
+            map.put("4", datos);
+            mapList.add(map);
+            incentRanked.setRankIdtIds(mapper.writeValueAsString(mapList));
+            incentRanked.setCurrentRankId(rankRule.getId());
+            incentRanked.setCurrentRankName(rankRule.getRankName());
+
+            incentRanked.setRankType(rankRule.getRankType());
+
+            incentRanked.setCreatedAt(new Date());
+            incentRanked.setUpdatedAt(new Date());
+            incentRanked.setId(PKUtil.getInstance().longPK());
+            incentRanked.insert();
+
+            addRankLog(userId, rankRule);
+
+        } else {
+            String rankIdtIds = incentRanked.getRankIdtIds();
+            if (rankIdtIds != null) {
+                ArrayList<Map<String, Object>> mapList = mapper.readValue(rankIdtIds, ArrayList.class);
+                boolean add = true;
+                for (Map<String, Object> m : mapList) {
+                    if (Long.parseLong(m.get("1") + "") == rankRule.getId()) {
+                        add = false;
+                        break;
+                    }
+                }
+                if (add) {
+                    Map<String, Object> m = new HashMap<>();
+                    m.put("1", rankRule.getId());
+                    m.put("2", rankRule.getRankName());
+                    m.put("3", rankRule.getRankType());
+                    m.put("4", datos);
+                    mapList.add(m);
+                    incentRanked.setRankIdtIds(mapper.writeValueAsString(mapList));
+                    incentRanked.setCurrentRankId(rankRule.getId());
+                    incentRanked.setCurrentRankName(rankRule.getRankName());
+
+                    //fix bug:在具体荣誉规则数据不维护荣誉的flag数据，通过荣誉分类表维护 [by mxf 2018-12-22]
+                    //incentRanked.setRankType(rankRule.getRankFlag());
+
+                    incentRanked.setRankType(rankRule.getRankType());
+                    incentRanked.setUpdatedAt(new Date());
+                    incentRanked.updateById();
+
+                    addRankLog(userId, rankRule);
+
+                }
+            }
+
+        }
+    }
+
+    /**
+     * 添加获取荣誉日志
+     * @param userId
+     * @param rankRule
+     */
+    private void addRankLog(String userId, IncentRuleRank rankRule) {
+        IncentRankedLog rankLog = new IncentRankedLog();
+        rankLog.setMbId(userId);
+        rankLog.setGainTime(new Date());
+        rankLog.setProduceType(1);
+        rankLog.setRankCode(rankRule.getRankCode());
+        rankLog.setRankGroupId(Long.parseLong(rankRule.getRankGroupId()));
+        rankLog.setRankIdt(rankRule.getRankIdt());
+        rankLog.setRankRuleId(rankRule.getId());
+        rankLog.setId(PKUtil.getInstance().longPK());
+        rankLog.insert();
+    }
     //----------
 }
