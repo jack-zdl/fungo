@@ -145,7 +145,7 @@
   <select id="selectCircleByGame" resultType="com.fungo.community.entity.CmmCircle">
         SELECT 
          <include refid="Base_Column_List"></include>
-         FROM t_cmm_circle cc WHERE state = 1  and cc.id  in
+         FROM t_cmm_circle cc WHERE cc.state = 1  and cc.id  in
         (SELECT ccg.circle_id  FROM t_cmm_circle_game ccg WHERE ccg.game_id = #{gameId} )   ORDER BY  cc.hot_value desc
   </select>
 
