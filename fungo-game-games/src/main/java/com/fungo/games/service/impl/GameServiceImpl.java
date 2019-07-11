@@ -203,7 +203,7 @@ public class GameServiceImpl implements IGameService {
         PageTools.pageToResultDto(re, p);
 
         //redis cache
-        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_LIST + memberId, keySuffix, re);
+        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_LIST + memberId, keySuffix, re,60);
         return re;
     }
 
