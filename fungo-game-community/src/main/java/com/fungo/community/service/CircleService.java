@@ -33,7 +33,7 @@ public interface CircleService {
 
     FungoPageResultDto<CmmCircleDto> selectGameCircle(String memberId,CircleGamePostVo circleGamePostVo);
 
-    void updateCircleHotValue();
+    void updateCircleHotValue() throws Exception;
 
     FungoPageResultDto<CommunityMember> selectCirclePlayer(String memberId, CmmCirclePostVo cmmCirclePostVo);
 }

@@ -295,8 +295,13 @@ public class CircleController {
     @ApiOperation(value = "v2.5", notes = "")
     @GetMapping(value = "/api/community/circle/hotvalue/job")
     @ApiImplicitParams({})
-    public void updateCircleHotValueJob( ) {
-        circleHotValueJob.execute();
+    public ResultDto<String> updateCircleHotValueJob( ) {
+        try {
+            circleHotValueJob.execute();
+        } catch (Exception e) {
+            return ResultDto.error("-1","圈子热度失败");
+        }
+        return ResultDto.success();
     }
 
 }

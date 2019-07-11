@@ -652,7 +652,7 @@ public class CircleServiceImpl implements CircleService {
     }
 
     @Override
-    public void updateCircleHotValue() {
+    public void updateCircleHotValue() throws Exception {
         try {
             Wrapper wrapper = new EntityWrapper<CmmCircle>();
             List<CmmCircle> cmmCircleList =    cmmCircleMapper.selectList(wrapper);
@@ -669,6 +669,7 @@ public class CircleServiceImpl implements CircleService {
         }catch (Exception e){
             e.printStackTrace();
             LOGGER.error("更新圈子热度失败",e);
+            throw new Exception("更新圈子热度失败");
         }
     }
 

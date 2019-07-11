@@ -25,18 +25,11 @@ public class CircleHotValueJob {
 
     //每60秒 执行任务
 //    @Scheduled(cron = "0/60 * * * * ?")
-    public void execute() {
-
+    public void execute() throws Exception {
         LOGGER.info(".......CircleHotValueJob-execute-start...." );
-        try {
-            LOGGER.info("执行CircleHotValueJob任务开始");
-            circleService.updateCircleHotValue();
-            LOGGER.info("执行CircleHotValueJob任务结束");
-            LOGGER.info("........睡眠1秒......");
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        LOGGER.info("执行CircleHotValueJob任务开始");
+        circleService.updateCircleHotValue();
+        LOGGER.info("执行CircleHotValueJob任务结束");
     }
 
 }
