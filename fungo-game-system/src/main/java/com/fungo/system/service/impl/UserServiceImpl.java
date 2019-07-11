@@ -822,7 +822,7 @@ public class UserServiceImpl implements IUserService {
         }
 
         //redis cache
-        fungoCacheMember.excIndexCache(true, keyPrefix, memberId, author);
+        fungoCacheMember.excIndexCache(true, keyPrefix, memberId, author,30);
 
         return author;
     }
