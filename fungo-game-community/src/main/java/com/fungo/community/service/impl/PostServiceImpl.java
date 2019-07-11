@@ -1577,24 +1577,25 @@ public class PostServiceImpl implements IPostService {
 
         FungoPageResultDto<PostOutBean> re = new FungoPageResultDto<>();
 
-        List<Map<String, String>> mapList = null;
+//        List<Map<String, String>> mapList = null;
 
-        mapList = new ArrayList<>();
+//        mapList = new ArrayList<>();
 
         Page page = new Page(inputPageDto.getPage(), inputPageDto.getLimit());
 
-        EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<>();
-        postEntityWrapper.eq("recommend", 1);
-        postEntityWrapper.eq("state", 1);
-        postEntityWrapper.orderBy("sort", false);
+//        EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<>();
+//        postEntityWrapper.eq("recommend", 1);
+//        postEntityWrapper.eq("state", 1);
+//        postEntityWrapper.orderBy("sort", false);
 
 
-        Page<CmmPost> postPage = postService.selectPage(page,postEntityWrapper );
+        //Page<CmmPost> postPage = postService.selectPage(page,postEntityWrapper );
+        List<CmmPost> cmmPostList = cmmPostDao.getCmmPostByRecommend(page);
 
         List<PostOutBean> list = new ArrayList<>();
-        if (postPage != null) {
+        if (cmmPostList != null) {
             ObjectMapper mapper = new ObjectMapper();
-            for (CmmPost cmmPost : postPage.getRecords()) {
+            for (CmmPost cmmPost : cmmPostList) {
                 //表情解码
                 if (StringUtils.isNotBlank(cmmPost.getTitle())) {
                     String interactTitle = FilterEmojiUtil.decodeEmoji(cmmPost.getTitle());
@@ -1706,7 +1707,6 @@ public class PostServiceImpl implements IPostService {
                     bean.setLiked(liked > 0 ? true : false);
                 }
 
-                //
                 bean.setVideoCoverImage(cmmPost.getVideoCoverImage());
                 bean.setType(cmmPost.getType());
                 /**
