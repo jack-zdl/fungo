@@ -976,10 +976,10 @@ public class MemberServiceImpl implements IMemberService {
 
             blist.add(bean);
         }
-        PageTools.newPageToResultDto(re, cmmPostDtoFungoPageResultDto.getCount(),cmmPostDtoFungoPageResultDto.getPages(),input.getPage());
-        re.setData(blist);
-//        PageTools.pageToResultDto(re, page);
 
+        re.setData(blist);
+        PageTools.newPageToResultDto(re, cmmPostDtoFungoPageResultDto.getCount(),cmmPostDtoFungoPageResultDto.getPages(),input.getPage());
+        //PageTools.pageToResultDto(re, page);
 
         //redis cache
         fungoCacheArticle.excIndexCache(true, keyPrefix, keySuffix, re);
