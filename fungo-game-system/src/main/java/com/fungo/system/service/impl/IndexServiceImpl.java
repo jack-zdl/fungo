@@ -383,14 +383,27 @@ public class IndexServiceImpl implements IIndexService {
         // @todo
         List<GameEvaluationDto> plist = iGameProxyService.selectGameEvaluationPage();
         //gameEvaluationService.selectPage(new Page<GameEvaluation>(1, 6), new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy("RAND()"));
+        if (null == plist || plist.isEmpty()) {
+            return null;
+        }
+
         ArrayList<CardDataBean> evaDateList = new ArrayList<>();
         CardIndexBean cb = new CardIndexBean();
         for (GameEvaluationDto gameEvaluation : plist) {
-            CardDataBean bean = new CardDataBean();
-            bean.setUserinfo(this.userService.getAuthor(gameEvaluation.getMemberId()));
+
             GameDto gameParam = new GameDto();
             gameParam.setId(gameEvaluation.getGameId());
+            //state 状态 0：上线，1：下架，-1：删除，3待审核
+            gameParam.setState(0);
+
             GameDto game = iGameProxyService.selectGameById(gameParam);    //this.gameService.selectById(gameEvaluation.getGameId());
+            if (null == game) {
+                continue;
+            }
+
+            CardDataBean bean = new CardDataBean();
+            bean.setUserinfo(this.userService.getAuthor(gameEvaluation.getMemberId()));
+
 
             bean.setMainTitle(game.getName());
             if (gameEvaluation.getRating() != null) {
@@ -564,20 +577,14 @@ public class IndexServiceImpl implements IIndexService {
         //state 状态 -1:删除,  0：上线，1：草稿，  2：下线
         List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0001").eq("target_type", 3)
                 .eq("state", 0).orderBy("release_time", false).last("limit 6"));
-        if (blist.size() == 0) {
+        if (null == blist || blist.size() == 0) {
             return null;
         }
-
-
-        CopyOnWriteArrayList<Banner> bannerRWList = new CopyOnWriteArrayList<Banner>(blist);
 
         ArrayList<CardDataBean> gameDateList = new ArrayList<>();
         CardIndexBean indexBean = new CardIndexBean();
 
-        for (Banner banner : bannerRWList) {
-
-            Map<String, BigDecimal> rateData = indexProxyService.getRateData(banner.getTargetId());  //gameDao.getRateData(banner.getTargetId());
-
+        for (Banner banner : blist) {
 
             GameDto gameParam = new GameDto();
             gameParam.setId(banner.getTargetId());
@@ -586,9 +593,10 @@ public class IndexServiceImpl implements IIndexService {
 
             GameDto game = iGameProxyService.selectGameById(gameParam);   //gameService.selectById(banner.getTargetId());
             if (null == game) {
-                gameDateList.remove(banner);
                 continue;
             }
+
+            Map<String, BigDecimal> rateData = indexProxyService.getRateData(banner.getTargetId());  //gameDao.getRateData(banner.getTargetId());
 
             CardDataBean b = new CardDataBean();
 
@@ -691,6 +699,9 @@ public class IndexServiceImpl implements IIndexService {
             if (StringUtils.isNoneBlank(gameId)) {
                 GameDto gameDtoParam = new GameDto();
                 gameDtoParam.setId(gameId);
+                //state 状态 0：上线，1：下架，-1：删除，3待审核
+                gameDtoParam.setState(0);
+
                 GameDto gameDtoResult = iGameProxyService.selectGameById(gameDtoParam);
                 if (null != gameDtoResult) {
                     ArrayList<GameDto> gameDatas = new ArrayList<GameDto>();
