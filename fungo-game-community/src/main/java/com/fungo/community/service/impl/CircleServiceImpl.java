@@ -188,7 +188,15 @@ public class CircleServiceImpl implements CircleService {
         ResultDto<CmmCircleDto> re = null;
         CmmCircleDto cmmCircleDto = new CmmCircleDto();
         try {
-            CmmCircle cmmCircle = cmmCircleServiceImap.selectById(circleId);
+
+            //fix bug:管控台 下架游戏圈 进入对应的游戏内 不显示圈子选项 [by mxf 2019-7-11]
+            EntityWrapper<CmmCircle> cmmCircleEntityWrapper = new EntityWrapper<CmmCircle>();
+            cmmCircleEntityWrapper.eq("id", circleId);
+            cmmCircleEntityWrapper.eq("state", 1);
+
+            CmmCircle cmmCircle = cmmCircleServiceImap.selectOne(cmmCircleEntityWrapper);
+            //end
+
             if (cmmCircle == null) {
                 return ResultDto.error("-1", "该圈子不存在");
             }
