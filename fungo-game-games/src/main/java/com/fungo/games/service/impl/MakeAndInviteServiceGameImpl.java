@@ -39,7 +39,7 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
 //    private MemberService memberService;
 
 
-//    @Autowired
+    //    @Autowired
 //    private GameInviteService gameInviteService;
 //
 //
@@ -141,7 +141,7 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
             EntityWrapper<GameSurveyRel> gameSurveyRelEntityWrapper = new EntityWrapper<>();
             GameSurveyRel gameSurveyRel = new GameSurveyRel();
             gameSurveyRel.setState(0);
-            surveyRelService.update(gameSurveyRel,gameSurveyRelEntityWrapper.eq("member_id", memberId).eq("phone_model", phoneModel).eq("game_id", gameId));
+            surveyRelService.update(gameSurveyRel, gameSurveyRelEntityWrapper.eq("member_id", memberId).eq("phone_model", phoneModel).eq("game_id", gameId));
         }
         ResultDto<String> re = new ResultDto<String>();
         if (StringUtils.isNotBlank(tips)) {
@@ -157,9 +157,9 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
         //我的游戏列表
         fungoCacheMember.excIndexCache(false, keyPrefix, "", null);
         //游戏详情
-        fungoCacheMember.excIndexCache(false,  FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, "", null);
+        fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, "", null);
         //游戏合集项列表,
-        fungoCacheMember.excIndexCache(false,  FungoCoreApiConstant.FUNGO_CORE_API_GAME_ITEMS , "", null);
+        fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_ITEMS, "", null);
         //游戏列表
         fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_LIST + memberId, "", null);
         return re;
@@ -169,7 +169,7 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
 
         GameSurveyRel rel = surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("phone_model", phoneModel).eq("game_id", gameId));
 
-        if (rel == null){
+        if (rel == null) {
             return ResultDto.error("-1", "您还未预约成功!!!");
         }
 //            针对数据多并发产生的多条数据
@@ -180,15 +180,15 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
         EntityWrapper<GameSurveyRel> gameSurveyRelEntityWrapper = new EntityWrapper<>();
         GameSurveyRel gameSurveyRel = new GameSurveyRel();
         gameSurveyRel.setState(-1);
-        surveyRelService.update(gameSurveyRel,gameSurveyRelEntityWrapper.eq("member_id", memberId).eq("phone_model", phoneModel).eq("game_id", gameId));
+        surveyRelService.update(gameSurveyRel, gameSurveyRelEntityWrapper.eq("member_id", memberId).eq("phone_model", phoneModel).eq("game_id", gameId));
 
         //clear redis cache
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_GAMELIST + memberId;
         fungoCacheMember.excIndexCache(false, keyPrefix, "", null);
         //游戏详情
-        fungoCacheMember.excIndexCache(false,  FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, "", null);
+        fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, "", null);
         //游戏合集项列表
-        fungoCacheMember.excIndexCache(false,  FungoCoreApiConstant.FUNGO_CORE_API_GAME_ITEMS, "", null);
+        fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_ITEMS, "", null);
         //游戏列表
         fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_LIST + memberId, "", null);
         return ResultDto.success("取消成功");
@@ -236,11 +236,28 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
         if (sur != null) {
             sur.setAgree(1);
             sur.updateById();
+        } else {
+
+            GameSurveyRel survey = new GameSurveyRel();
+
+            survey.setGameId(gameId);
+            survey.setMemberId(memberId);
+            survey.setPhoneModel(phoneModel);
+            survey.setAgree(1);
+
+            survey.setNotice(0);
+            survey.setState(0);
+
+            survey.setCreatedAt(new Date());
+            survey.setUpdatedAt(new Date());
+
+            surveyRelService.insert(survey);
+
         }
         return ResultDto.success("同意成功");
     }
 
-//    @Autowired
+    //    @Autowired
 //    private BasActionService actionService;
     @Override
     public FungoPageResultDto<FollowUserOutBean> getInviteUserList(String memberId, MakeInputPageDto inputPageDto) throws Exception {
@@ -290,7 +307,6 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
         PageTools.pageToResultDto(re, page);*/
         return re;
     }
-
 
 
 }
