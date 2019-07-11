@@ -55,7 +55,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
         FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(param);
         if (Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmPostDtoFungoPageResultDto.getStatus()) && cmmPostDtoFungoPageResultDto.getData().size() > 0) {
             re = cmmPostDtoFungoPageResultDto.getData().get(0);
-        }else
+        } else
             logger.warn("GameProxyServiceImpl selectCmmPostById");
         return re;
     }
@@ -75,7 +75,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
         FungoPageResultDto<CmmCommentDto> cmmCommentDtoFungoPageResultDto = communityFeignClient.queryFirstLevelCmtList(param);
         if (Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmCommentDtoFungoPageResultDto.getStatus()) && cmmCommentDtoFungoPageResultDto.getData().size() > 0) {
             param = cmmCommentDtoFungoPageResultDto.getData().get(0);
-        }else logger.warn("GameProxyServiceImpl selectCmmCommentById");
+        } else logger.warn("GameProxyServiceImpl selectCmmCommentById");
         return param;
     }
 
@@ -110,7 +110,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
 //    @HystrixCommand(fallbackMethod = "hystrixSelectGameById", ignoreExceptions = {Exception.class})
     @Override
     public GameDto selectGameById(GameDto param) {
-        GameDto re = new GameDto();
+        GameDto re = null;
         FungoPageResultDto<GameDto> gamePage = gamesFeignClient.getGamePage(param);
         if (null != gamePage) {
             List<GameDto> gameDtoList = gamePage.getData();
@@ -137,7 +137,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
         FungoPageResultDto<MooMoodDto> re = communityFeignClient.queryCmmMoodList(param);
         if (Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0) {
             return re.getData().get(0);
-        }else logger.warn("GameProxyServiceImpl selectMooMoodById");
+        } else logger.warn("GameProxyServiceImpl selectMooMoodById");
         return null;
     }
 
@@ -157,7 +157,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
         FungoPageResultDto<MooMessageDto> re = communityFeignClient.queryCmmMoodCommentList(mooMessageDto);
         if (Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0) {
             return re.getData().get(0);
-        }else  logger.warn("GameProxyServiceImpl selectMooMessageById");
+        } else logger.warn("GameProxyServiceImpl selectMooMessageById");
         return mooMessageDto;
     }
 
@@ -175,14 +175,14 @@ public class GameProxyServiceImpl implements IGameProxyService {
         return evaluationEntityWrapper.getData();
     }
 
-//    @HystrixCommand(fallbackMethod = "hystrixSelectGameInvite", ignoreExceptions = {Exception.class})
+    //    @HystrixCommand(fallbackMethod = "hystrixSelectGameInvite", ignoreExceptions = {Exception.class})
     @Override
     public GameInviteDto selectGameInvite(GameInviteDto gameInviteDto) {
         GameInviteDto result = new GameInviteDto();
         FungoPageResultDto<GameInviteDto> re = gamesFeignClient.getGameInvitePage(gameInviteDto);
         if (Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0) {
             result = re.getData().get(0);
-        }else  logger.warn("GameProxyServiceImpl selectGameInvite");
+        } else logger.warn("GameProxyServiceImpl selectGameInvite");
         return result;
     }
 
@@ -211,7 +211,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
         FungoPageResultDto<GameEvaluationDto> re = gamesFeignClient.selectGameEvaluationPage();
         if (Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0) {
             return re.getData();
-        }else logger.warn("GameProxyServiceImpl selectGameEvaluationPage");
+        } else logger.warn("GameProxyServiceImpl selectGameEvaluationPage");
         return new ArrayList<>();
     }
 

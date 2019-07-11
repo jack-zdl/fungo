@@ -37,7 +37,6 @@ import com.game.common.util.emoji.FilterEmojiUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -916,10 +915,12 @@ public class MemberServiceImpl implements IMemberService {
         param.setPage(input.getPage());
         param.setLimit(input.getLimit());
         param.setMemberId(loginId);
-        param.setState(-1);
+        param.setState(1);
+
         FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(param);
-      //  Page<CmmPostDto> page =   iMemeberProxyService.selectCmmPostpage(param); // postService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<CmmPost>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
-//        List<CmmPostDto> plist = page.getRecords();
+
+        //  Page<CmmPostDto> page =   iMemeberProxyService.selectCmmPostpage(param); // postService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<CmmPost>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
+        // List<CmmPostDto> plist = page.getRecords();
         List<CmmPostDto> plist = cmmPostDtoFungoPageResultDto.getData();
         List<MyPublishBean> blist = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
@@ -954,10 +955,12 @@ public class MemberServiceImpl implements IMemberService {
             bean.setTitle(post.getTitle());
             bean.setVideo(post.getVideo());
             bean.setUpdatedAt(DateTools.fmtDate(post.getUpdatedAt()));
+
             //@todo  社区主键查询
             CmmCommunityDto cmmParam = new CmmCommunityDto();
             cmmParam.setId(post.getCommunityId());
             CmmCommunityDto community = iMemeberProxyService.selectCmmCommunityById(cmmParam); //communityService.selectById(post.getCommunityId());
+
             if (community != null) {
                 Map<String, Object> communityMap = new HashMap<>();
                 communityMap.put("objectId", community.getId());
@@ -973,10 +976,10 @@ public class MemberServiceImpl implements IMemberService {
 
             blist.add(bean);
         }
-        PageTools.newPageToResultDto(re, cmmPostDtoFungoPageResultDto.getCount(),cmmPostDtoFungoPageResultDto.getPages(),input.getPage());
-        re.setData(blist);
-//        PageTools.pageToResultDto(re, page);
 
+        re.setData(blist);
+        PageTools.newPageToResultDto(re, cmmPostDtoFungoPageResultDto.getCount(),cmmPostDtoFungoPageResultDto.getPages(),input.getPage());
+        //PageTools.pageToResultDto(re, page);
 
         //redis cache
         fungoCacheArticle.excIndexCache(true, keyPrefix, keySuffix, re);

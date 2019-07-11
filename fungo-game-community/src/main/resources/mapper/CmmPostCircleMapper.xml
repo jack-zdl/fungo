@@ -110,7 +110,8 @@
   </update>
 
     <select id="getCmmCircleByPostId" parameterType="java.lang.String" resultType="java.lang.String">
-    select circle_id from t_cmm_post_circle where post_id = #{postId}  order by default_link desc limit 1
+     select circle_id from t_cmm_post_circle cpc INNER JOIN t_cmm_circle cc on cpc.circle_id = cc.id
+	 where cpc.post_id = #{postId} and cc.state = 1 order by cpc.default_link desc limit 1
   </select>
 
     <select id="getCmmPostCircleByCircleId" parameterType="java.lang.String"
