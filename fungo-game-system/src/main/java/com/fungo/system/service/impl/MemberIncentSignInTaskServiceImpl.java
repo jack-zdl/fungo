@@ -370,24 +370,18 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
 
             updateRanked(mb_id, mapper, 35);
 
-        } else if (signInCountDays_i >= 31) {
+        } else {
 
             int signInCount = 0;
 
-            if (null != checkCount) {
+            //查询log日志 获取用户签到累计天数
+            EntityWrapper<ScoreLog> scoreLogEntityWrapper = new EntityWrapper<ScoreLog>();
 
-                signInCount = checkCount.intValue();
+            scoreLogEntityWrapper.eq("member_id", mb_id);
+            scoreLogEntityWrapper.in("task_type", "22,220");
 
-            } else {
+            signInCount = scoreLogService.selectCount(scoreLogEntityWrapper);
 
-                //查询log日志 获取用户签到累计天数
-                EntityWrapper<ScoreLog> scoreLogEntityWrapper = new EntityWrapper<ScoreLog>();
-
-                scoreLogEntityWrapper.eq("member_id", mb_id);
-                scoreLogEntityWrapper.in("task_type", "22,220");
-
-                signInCount = scoreLogService.selectCount(scoreLogEntityWrapper);
-            }
             if (signInCount >= 100) {
                 updateRanked(mb_id, mapper, 36);
             }
