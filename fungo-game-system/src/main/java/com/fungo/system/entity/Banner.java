@@ -49,7 +49,7 @@ public class Banner extends Model<Banner> {
      * 业务类型，3：游戏，1：帖子
      */
 	@TableField("target_type")
-	private Integer targetType;
+	private int targetType;
     /**
      * 业务id，（游戏id或帖子id）
      */
