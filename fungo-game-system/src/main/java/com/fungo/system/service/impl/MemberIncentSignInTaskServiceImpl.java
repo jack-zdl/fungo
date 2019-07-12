@@ -319,6 +319,8 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
         Long interval = -1L;
         int signInCountDays_i = 0;
 
+        //已签到天数
+        Integer checkCount = (Integer) signMap.get("5");
         //最后一次签到时间
         String lastSignInDateStr = (String) signMap.get("6");
         if (StringUtils.isNotBlank(lastSignInDateStr)) {
@@ -370,16 +372,22 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
 
         } else if (signInCountDays_i >= 31) {
 
-            //查询log日志 获取用户签到累计天数
             int signInCount = 0;
 
-            EntityWrapper<ScoreLog> scoreLogEntityWrapper = new EntityWrapper<ScoreLog>();
+            if (null != checkCount) {
 
-            scoreLogEntityWrapper.eq("member_id", mb_id);
-            scoreLogEntityWrapper.in("task_type", "22,220");
+                signInCount = checkCount.intValue();
 
-            signInCount = scoreLogService.selectCount(scoreLogEntityWrapper);
+            } else {
 
+                //查询log日志 获取用户签到累计天数
+                EntityWrapper<ScoreLog> scoreLogEntityWrapper = new EntityWrapper<ScoreLog>();
+
+                scoreLogEntityWrapper.eq("member_id", mb_id);
+                scoreLogEntityWrapper.in("task_type", "22,220");
+
+                signInCount = scoreLogService.selectCount(scoreLogEntityWrapper);
+            }
             if (signInCount >= 100) {
                 updateRanked(mb_id, mapper, 36);
             }
