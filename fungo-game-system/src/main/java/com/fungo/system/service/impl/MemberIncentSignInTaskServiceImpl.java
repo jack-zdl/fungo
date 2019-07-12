@@ -359,13 +359,30 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
         //2.获取荣誉
         ObjectMapper mapper = new ObjectMapper();
         String mb_id = member.getId();
+
         if (signInCountDays_i == 7) {
 
             updateRanked(mb_id, mapper, 34);
+
         } else if (signInCountDays_i == 30) {
+
             updateRanked(mb_id, mapper, 35);
-        } else if (signInCountDays_i == 100) {
-            updateRanked(mb_id, mapper, 36);
+
+        } else if (signInCountDays_i >= 31) {
+
+            //查询log日志 获取用户签到累计天数
+            int signInCount = 0;
+
+            EntityWrapper<ScoreLog> scoreLogEntityWrapper = new EntityWrapper<ScoreLog>();
+
+            scoreLogEntityWrapper.eq("member_id", mb_id);
+            scoreLogEntityWrapper.in("task_type", "22,220");
+
+            signInCount = scoreLogService.selectCount(scoreLogEntityWrapper);
+
+            if (signInCount >= 100) {
+                updateRanked(mb_id, mapper, 36);
+            }
         }
 
         return ResultDto.success("签到成功");
