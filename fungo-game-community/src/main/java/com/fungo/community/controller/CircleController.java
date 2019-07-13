@@ -203,7 +203,8 @@ public class CircleController {
         ResultDto<CmmCircleDto> re = null;
         String memberId = memberUserPrefile == null ? "" : memberUserPrefile.getLoginId();
         try {
-            re = circleServiceImpl.selectCircleByGame(memberId,gameId);
+            CircleGamePostVo circleGamePostVo = new CircleGamePostVo(CircleGamePostVo.CircleGamePostTypeEnum.GAMESID.getKey(),gameId,"");
+            re = circleServiceImpl.selectCircleByGame(memberId,circleGamePostVo);
         }catch (Exception e){
             e.printStackTrace();
             LOGGER.error("该游戏是否开通圈子",e);

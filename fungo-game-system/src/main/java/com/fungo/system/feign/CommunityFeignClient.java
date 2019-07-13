@@ -5,6 +5,8 @@ import com.game.common.bean.CollectionBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.*;
+import com.game.common.vo.CircleGamePostVo;
+import com.game.common.vo.CmmCircleVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -171,4 +173,8 @@ public interface CommunityFeignClient {
 
     @PostMapping("/ms/service/cmm/post/getGameMsgByPost")
     ResultDto<Map> getGameMsgByPost(@RequestBody CmmPostDto cmmPost);
+
+
+    @PostMapping("/ms/service/cmm/post/getCircleByPost")
+    ResultDto<CmmCircleDto> getCircleByPost(@RequestBody CircleGamePostVo circleGamePostVo);
 }

@@ -17,6 +17,8 @@ import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
+import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.CmmCircleDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.game.GameEvaluationDto;
@@ -32,6 +34,7 @@ import com.game.common.util.CommonUtils;
 import com.game.common.util.Html2Text;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
+import com.game.common.vo.CircleGamePostVo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +71,7 @@ public class IndexServiceImpl implements IIndexService {
     private BannerDao bannerDao;
     @Autowired
     private CommunityFeignClient communityFeignClient;
+
 
 
     @Override
@@ -675,15 +679,17 @@ public class IndexServiceImpl implements IIndexService {
             CmmCommunityDto communityParam = new CmmCommunityDto();
             communityParam.setId(post.getCommunityId());
             //communityService.selectById(post.getCommunityId());
-            CmmCommunityDto community = iMemeberProxyService.selectCmmCommunityById(communityParam);
+            CircleGamePostVo circleGamePostVo = new CircleGamePostVo(CircleGamePostVo.CircleGamePostTypeEnum.POSTID.getKey(),"",post.getId());
+            ResultDto<CmmCircleDto> resultDto =  communityFeignClient.getCircleByPost(circleGamePostVo);
+//            CmmCommunityDto community = iMemeberProxyService.selectCmmCommunityById(communityParam);
 
-            if (community != null) {
-                dataBean.setLowerRightCorner(community.getName());
+            if (resultDto != null && resultDto.getData() != null) {
+                dataBean.setLowerRightCorner( resultDto.getData().getCircleName());
             }
 
             if (!CommonUtil.isNull(post.getVideo()) && CommonUtil.isNull(videoBanner.getCoverImage())) {
-                if (community != null) {
-                    dataBean.setImageUrl(community.getCoverImage());
+                if ( resultDto.getData() != null) {
+                    dataBean.setImageUrl(resultDto.getData().getCircleIcon());
                 }
             }
 

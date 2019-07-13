@@ -6,6 +6,7 @@ import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CirclePostTypeDto;
 import com.game.common.dto.community.CmmCircleDto;
+import com.game.common.dto.community.CmmPostDto;
 import com.game.common.enums.CommonEnum;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.vo.CircleGamePostVo;
@@ -37,12 +38,25 @@ public class MSServiceCircleController {
         ResultDto<String> re = null;
         try {
             CmmCircleDto  cmmCircleDto = new CmmCircleDto();
-            ResultDto<CmmCircleDto> resultDto = circleServiceImpl.selectCircleByGame ("",circleGamePostVo.getGameId());
+            ResultDto<CmmCircleDto> resultDto = circleServiceImpl.selectCircleByGame ("",circleGamePostVo);
             if(resultDto.getData() != null){
                 cmmCircleDto =resultDto.getData();
             }
             re =new ResultDto();
             re.setData(cmmCircleDto.getId());
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("根据游戏id查询圈子id");
+            re = ResultDto.error("-1","根据游戏id查询圈子id异常");
+        }
+        return re;
+    }
+
+    @PostMapping(value = "/ms/service/cmm/post/getCircleByPost")
+    public ResultDto<CmmCircleDto> getCircleByPost( @RequestBody CircleGamePostVo circleGamePostVo){
+        ResultDto<CmmCircleDto> re = null;
+        try {
+            re = circleServiceImpl.selectCircleByGame ("",circleGamePostVo);
         }catch (Exception e){
             e.printStackTrace();
             logger.error("根据游戏id查询圈子id");
