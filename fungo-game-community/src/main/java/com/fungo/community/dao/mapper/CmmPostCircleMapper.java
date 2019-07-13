@@ -29,6 +29,13 @@ public interface CmmPostCircleMapper {
     CmmCircle getCircleEntityByPostId(String postId);
 
     /**
+     * 功能描述: 根据文章id查询当前默认关联的圈子
+     * @auther: dl.zhang
+     * @date: 2019/7/13 15:16
+     */
+    CmmCircle getCircleByPostId(String postId);
+
+    /**
      * 功能描述:  根据非游戏圈子查询玩家榜
      * @param: [circleId] 圈子id
      * @return: java.util.List<com.game.common.dto.circle.CircleMemberPulishDto>

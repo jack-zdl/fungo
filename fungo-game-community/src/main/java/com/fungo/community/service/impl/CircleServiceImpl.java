@@ -450,16 +450,24 @@ public class CircleServiceImpl implements CircleService {
     }
 
     @Override
-    public ResultDto<CmmCircleDto> selectCircleByGame(String memberId, String gameId) {
+    public ResultDto<CmmCircleDto> selectCircleByGame(String memberId, CircleGamePostVo circleGamePostVo) {
         ResultDto<CmmCircleDto> resultDto = new ResultDto<>();
         try {
-            Wrapper wrapper = new EntityWrapper<CmmCircle>().eq("game_id", gameId);
+            List<CmmCircle> cmmCircleDtoList = new ArrayList<>();
+            Wrapper wrapper = new EntityWrapper<CmmCircle>();
 
             //fix bug:圈子状态 状态  -1:已删除,0:待上架,1:运营中  [by mxf 2019-07-11]
-            wrapper.eq("state", 1);
-            //end
 
-            List<CmmCircle> cmmCircleDtoList = cmmCircleServiceImap.selectList(wrapper);
+
+            //end
+            if(CircleGamePostVo.CircleGamePostTypeEnum.GAMESID.getKey() == circleGamePostVo.getType()){
+                wrapper.eq("state", 1);
+                wrapper.eq("game_id", circleGamePostVo.getGameId());
+                cmmCircleDtoList = cmmCircleServiceImap.selectList(wrapper);
+            }else if(CircleGamePostVo.CircleGamePostTypeEnum.POSTID.getKey() == circleGamePostVo.getType()) {
+                CmmCircle cmmCircle = cmmPostCircleMapper.getCircleByPostId(circleGamePostVo.getPost());
+                cmmCircleDtoList.add(cmmCircle);
+            }
             if (cmmCircleDtoList.size() > 0) {
                 CmmCircle cmmCircle = cmmCircleDtoList.get(0);
                 CmmCircleDto cmmCircleDto = new CmmCircleDto();

@@ -11,6 +11,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.*;
 import com.game.common.dto.game.*;
 import com.game.common.dto.index.CardIndexBean;
+import com.game.common.vo.CircleGamePostVo;
 import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,6 +159,12 @@ public class CommunityFacedeHystrixService implements FallbackFactory<CommunityF
             @Override
             public ResultDto<Map> getGameMsgByPost(CmmPostDto cmmPost) {
                 logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "getGameMsgByPost");
+                return null;
+            }
+
+            @Override
+            public ResultDto<CmmCircleDto> getCircleByPost(CircleGamePostVo circleGamePostVo) {
+                logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "getCircleByPost");
                 return null;
             }
         };

@@ -588,8 +588,7 @@ public class GameServiceImpl implements IGameService {
          * @date: 2019/6/24 13:50
          */
         try {
-            CircleGamePostVo circleGamePostVo = new CircleGamePostVo();
-            circleGamePostVo.setGameId(game.getId());
+            CircleGamePostVo circleGamePostVo = new CircleGamePostVo(CircleGamePostVo.CircleGamePostTypeEnum.GAMESID.getKey(),game.getId(),"");
             ResultDto<String> re = communityFeignClient.getCircleByGame(circleGamePostVo);
             if (CommonEnum.SUCCESS.code().equals(String.valueOf(re.getStatus())) && !re.getData().equals("")) {
                 out.setLink_circle(re.getData());
