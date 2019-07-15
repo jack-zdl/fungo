@@ -152,6 +152,15 @@
         order by default_link desc limit 1 )
     </select>
 
+    <select id="getCircleByPostId" resultType="com.fungo.community.entity.CmmCircle">
+        SELECT
+       cc.id, cc.circle_name as circleName, cc.circle_icon AS circleIcon , cc.intro,cc.game_id AS gameId ,cc.cmm_id AS cmmId , cc.type, cc.state, cc.followee_num AS  followeeNum,
+    cc.hot_value AS hotValue , cc.sort, cc.created_at AS  createdAt,cc.updated_at AS  updatedAt, cc.created_by AS  createdBy, cc.updated_by as updatedBy
+        FROM t_cmm_circle cc
+        LEFT JOIN t_cmm_post_circle  cpc on  cc.id = cpc.circle_id
+        WHERE cpc.default_link = 1  and cpc.post_id = #{postId}
+    </select>
+
     <select id="getSumByCircleId" resultType="java.lang.Integer">
  SELECT sum(t.total) FROM
  (
