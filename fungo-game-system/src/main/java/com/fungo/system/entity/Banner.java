@@ -73,6 +73,14 @@ public class Banner extends Model<Banner> {
      */
 	@TableField("cover_image")
 	private String coverImage;
+
+	/**
+	 * 功能描述: 2.5使用的活动图片
+	 * @auther: dl.zhang
+	 * @date: 2019/7/16 14:45
+	 */
+	@TableField("cover_img_new")
+	private String coverImgNew;
     /**
      * 外链地址
 鸡汤文图片链接
@@ -144,6 +152,8 @@ public class Banner extends Model<Banner> {
 	 */
 	@TableField("game_name")
 	private String gameName;
+
+
 
 
 	public String getId() {
@@ -336,6 +346,18 @@ public class Banner extends Model<Banner> {
 
 	public void setGameName(String gameName) {
 		this.gameName = gameName;
+	}
+
+	public void setTargetType(int targetType) {
+		this.targetType = targetType;
+	}
+
+	public String getCoverImgNew() {
+		return coverImgNew;
+	}
+
+	public void setCoverImgNew(String coverImgNew) {
+		this.coverImgNew = coverImgNew;
 	}
 
 	@Override

@@ -18,6 +18,9 @@ public class CircleCardDataBean {
 //	private String subtitle;
 	@ApiModelProperty(value="图片url",example="")
 	private String imageUrl;
+
+	@ApiModelProperty(value="2.5新图片url",example="")
+	private String newImageUrl;
 	@ApiModelProperty(value="视频url",example="")
 	private String videoUrl;
 //	@ApiModelProperty(value="显示时间",example="")

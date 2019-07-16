@@ -246,7 +246,7 @@ public class IndexServiceImpl implements IIndexService {
                 keySuffix += app_channel;
             }
             //@todo
-//            re =  (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+ //           re =  (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
 
             if (null != re && null != re.getData() && re.getData().size() > 0) {
                 return re;
@@ -272,6 +272,7 @@ public class IndexServiceImpl implements IIndexService {
                 b1.setBannerId(b.getId());
                 b1.setMainTitle(b.getGeneralizeTitle());
                 b1.setImageUrl(b.getCoverImage());
+                b1.setNewImageUrl(b.getCoverImgNew());
                 b1.setContent(b.getIntro());
                 b1.setHref(b.getHref());
                 b1.setActionType(String.valueOf(b.getActionType()));
