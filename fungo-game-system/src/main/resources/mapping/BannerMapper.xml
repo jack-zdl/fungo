@@ -15,6 +15,7 @@
 		<result column="intro" property="intro" />
 		<result column="tag" property="tag" />
 		<result column="cover_image" property="coverImage" />
+		<result column="cover_img_new" property="coverImgNew" />
 		<result column="href" property="href" />
 		<result column="state" property="state" />
 		<result column="created_at" property="createdAt" />
@@ -26,12 +27,15 @@
 		<result column="generalize_title" property="generalizeTitle" />
 		<result column="begin_date" property="beginDate" />
 		<result column="end_date" property="endDate" />
+		<result column="date_type" property="dateType" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, action_type AS actionType, position_id AS positionId, position_code AS positionCode, release_time AS releaseTime, target_type AS targetType, target_id AS targetId, title, intro, tag, cover_image AS coverImage, href, state, created_at AS createdAt, updated_at AS updatedAt, created_by AS createdBy, created_name AS createdName, sort ,
-		generalize_title AS	generalizeTitle , begin_date AS beginDate , end_date AS endDate
+        id, action_type AS actionType, position_id AS positionId, position_code AS positionCode, release_time AS releaseTime, target_type AS targetType,
+         target_id AS targetId, title, intro, tag, cover_image AS coverImage, cover_img_new as coverImgNew , href, state, created_at AS createdAt, updated_at AS updatedAt,
+         created_by AS createdBy, created_name AS createdName, sort ,
+		generalize_title AS	generalizeTitle , begin_date AS beginDate , end_date AS endDate , date_type as dateType
     </sql>
     
   <!--   <update id="updateState">
