@@ -8,6 +8,7 @@ import com.fungo.system.service.IMemberNoticeService;
 import com.fungo.system.service.MemberNoticeDaoService;
 import com.fungo.system.service.portal.PortalSystemIIndexService;
 import com.fungo.system.service.portal.PortalSystemIMemberNoticeService;
+import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.repo.cache.facade.FungoCacheNotice;
 import com.game.common.util.PKUtil;
 import org.apache.commons.lang.StringUtils;
@@ -43,7 +44,7 @@ public class PortalSystemMemberNoticeServiceImpl implements PortalSystemIMemberN
         //从redis缓存，获取
         String mb_id = noticeInput.getMb_id();
         Integer ntc_type = noticeInput.getNtc_type();
-        String keyPrefix = FungoCacheNotice.REDIS_MEMBER_NOTICE + mb_id + String.valueOf(ntc_type.intValue());
+        String keyPrefix = FungoCoreApiConstant.REDIS_MEMBER_NOTICE + mb_id + String.valueOf(ntc_type.intValue());
 
         try {
 

@@ -6,6 +6,7 @@ import com.fungo.system.dto.MemberNoticeInput;
 import com.fungo.system.entity.MemberNotice;
 import com.fungo.system.service.IMemberNoticeService;
 import com.fungo.system.service.MemberNoticeDaoService;
+import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.repo.cache.facade.FungoCacheNotice;
 import com.game.common.util.PKUtil;
 import org.apache.commons.lang.StringUtils;
@@ -41,7 +42,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
         //从redis缓存，获取
         String mb_id = noticeInput.getMb_id();
         Integer ntc_type = noticeInput.getNtc_type();
-        String keyPrefix = FungoCacheNotice.REDIS_MEMBER_NOTICE + mb_id + String.valueOf(ntc_type.intValue());
+        String keyPrefix = FungoCoreApiConstant.REDIS_MEMBER_NOTICE + mb_id + String.valueOf(ntc_type.intValue());
 
         try {
 
@@ -189,7 +190,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
             memberNoticeDaoService.insert(memberNotice);
 
             //同时保存到Redis缓存
-            String keyPrefix = FungoCacheNotice.REDIS_MEMBER_NOTICE + mb_id + String.valueOf(ntc_type.intValue());
+            String keyPrefix = FungoCoreApiConstant.REDIS_MEMBER_NOTICE + mb_id + String.valueOf(ntc_type.intValue());
             fungoCacheNotice.excIndexCacheWithOutSecurity(true, keyPrefix, String.valueOf(memberNotice.getId()), ntcData);
 
         } catch (Exception ex) {

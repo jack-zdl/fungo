@@ -17,8 +17,6 @@ import org.springframework.stereotype.Component;
 @RefreshScope
 public class NacosFungoCircleConfig   {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NacosFungoCircleConfig.class);
-
     /**
      * 功能描述: 圈子文章限制分类文章的数目
      * @auther: dl.zhang
@@ -29,6 +27,9 @@ public class NacosFungoCircleConfig   {
 
     @Value(value = "${nacos.config:1}")
     private int config;
+
+    @Value(value = "${fungo.redis.key.tag:v2.5}")
+    private String tag;
 
     public int getValue() {
         return value;
@@ -44,5 +45,13 @@ public class NacosFungoCircleConfig   {
 
     public void setConfig(int config) {
         this.config = config;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 }

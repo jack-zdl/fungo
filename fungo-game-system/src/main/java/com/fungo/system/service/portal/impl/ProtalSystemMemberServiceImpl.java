@@ -175,7 +175,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
 
         PageTools.pageToResultDto(re, plist);
        updateNoticeMap(memberId,"like_count");
-        String keyPrefix = FungoCacheNotice.REDIS_MEMBER_NOTICE + memberId + "7";
+        String keyPrefix = FungoCoreApiConstant.REDIS_MEMBER_NOTICE + memberId + "7";
         //清除redis缓存
         fungoCacheNotice.excIndexCacheWithOutSecurity(false, keyPrefix, "", null);
         return re;
@@ -294,7 +294,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
 
         PageTools.pageToResultDto(re, plist);
         updateNoticeMap(memberId,"comment_count");
-        String keyPrefix = FungoCacheNotice.REDIS_MEMBER_NOTICE + memberId + "7";
+        String keyPrefix = FungoCoreApiConstant.REDIS_MEMBER_NOTICE + memberId + "7";
         //清除redis缓存
         fungoCacheNotice.excIndexCacheWithOutSecurity(false, keyPrefix, "", null);
         return re;
@@ -384,7 +384,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
 
         PageTools.pageToResultDto(re, plist);
         updateNoticeMap(memberId,"notice_count");
-        String keyPrefix = FungoCacheNotice.REDIS_MEMBER_NOTICE + memberId + "7";
+        String keyPrefix = FungoCoreApiConstant.REDIS_MEMBER_NOTICE + memberId + "7";
         //清除redis缓存
         fungoCacheNotice.excIndexCacheWithOutSecurity(false, keyPrefix, "", null);
         return re;
