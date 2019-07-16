@@ -49,7 +49,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -177,7 +176,7 @@ public class CircleServiceImpl implements CircleService {
             PageTools.pageToResultDto(re, page);
         } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.error("获取圈子集合", e);
+            LOGGER.error("获取圈子集合异常", e);
             re = FungoPageResultDto.error("-1", "获取圈子集合异常");
         }
         return re;
@@ -218,7 +217,7 @@ public class CircleServiceImpl implements CircleService {
             re = ResultDto.success(cmmCircleDto);
         } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.error("获取圈子详情", e);
+            LOGGER.error("获取圈子详情异常，圈子id="+circleId, e);
             re = ResultDto.error("-1", "获取圈子详情异常");
         }
         return re;
@@ -230,8 +229,9 @@ public class CircleServiceImpl implements CircleService {
         List<CmmPost> cmmPosts = new ArrayList<>();
         String userId = memberId;
         List<PostOutBean> relist = new ArrayList<>();
+        String circleId = cmmCirclePostVo.getCircleId();
         try {
-            String circleId = cmmCirclePostVo.getCircleId();
+
             String tagId = cmmCirclePostVo.getQueryType();
             String sortType = cmmCirclePostVo.getSortType();
             Page page = new Page(cmmCirclePostVo.getPage(), cmmCirclePostVo.getLimit());
@@ -384,7 +384,7 @@ public class CircleServiceImpl implements CircleService {
             PageTools.pageToResultDto(re, page);
         } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.error("圈子获取下属文章", e);
+            LOGGER.error("圈子获取下属文章异常，圈子id="+circleId, e);
         }
         return re;
     }
@@ -400,8 +400,9 @@ public class CircleServiceImpl implements CircleService {
     public ResultDto<List<CirclePostTypeDto>> selectCirclePostType(String memberId, CmmCirclePostVo cmmCirclePostVo) {
         List<CirclePostTypeDto> circleTypeDtos = new ArrayList<>();
         ResultDto<List<CirclePostTypeDto>> re = new ResultDto<>();
+        String circleId = cmmCirclePostVo.getCircleId();
         try {
-            List<CmmPost> cmmPosts = cmmPostDao.getCmmCircleListByPostId(cmmCirclePostVo.getCircleId());
+            List<CmmPost> cmmPosts = cmmPostDao.getCmmCircleListByPostId(circleId);
             List<TagBean> tagBeans = basTagDao.getPostTags();
             Map<String, List<CmmPost>> cmmPostMap = cmmPosts.stream().collect(groupingBy(CmmPost::getTags));
             Iterator<String> iter = cmmPostMap.keySet().iterator();
@@ -423,7 +424,7 @@ public class CircleServiceImpl implements CircleService {
             re.setData(circleTypeDtos);
         } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.error("查询圈子的文章类型", e);
+            LOGGER.error("查询圈子的文章类型异常，圈子id="+circleId, e);
         }
         return re;
     }
@@ -449,6 +450,13 @@ public class CircleServiceImpl implements CircleService {
         return re;
     }
 
+    /**
+     * 功能描述: 根据游戏id或者文章id查询是否有圈子
+     * @param: [memberId, circleGamePostVo]
+     * @return: com.game.common.dto.ResultDto<com.game.common.dto.community.CmmCircleDto>
+     * @auther: dl.zhang
+     * @date: 2019/7/16 15:54
+     */
     @Override
     public ResultDto<CmmCircleDto> selectCircleByGame(String memberId, CircleGamePostVo circleGamePostVo) {
         ResultDto<CmmCircleDto> resultDto = new ResultDto<>();
@@ -483,7 +491,7 @@ public class CircleServiceImpl implements CircleService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.error("查询该游戏是否是游戏圈", e);
+            LOGGER.error("查询该游戏是否是游戏圈或文章获取关联圈，gameId="+circleGamePostVo.getGameId()+"postId="+circleGamePostVo.getPost() , e);
         }
         return resultDto;
     }
@@ -637,7 +645,7 @@ public class CircleServiceImpl implements CircleService {
             PageTools.pageToResultDto(re, page);
         } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.error("根据游戏id获取文章", e);
+            LOGGER.error("根据游戏id获取文章,游戏id="+gameId, e);
             re = FungoPageResultDto.error("-1", "根据游戏id获取文章异常");
         }
         return re;
@@ -647,8 +655,8 @@ public class CircleServiceImpl implements CircleService {
     public FungoPageResultDto<CmmCircleDto> selectGameCircle(String memberId, CircleGamePostVo circleGamePostVo) {
         FungoPageResultDto<CmmCircleDto> re = null;
         List<CmmCircleDto> cmmCircleDtoList = new ArrayList<>();
+        String gameId = circleGamePostVo.getGameId();
         try {
-            String gameId = circleGamePostVo.getGameId();
             Page page = new Page(circleGamePostVo.getPage(), circleGamePostVo.getLimit());
             List<CmmCircle> cmmCircles = cmmCircleMapper.selectCircleByGame(page, gameId);
             if (cmmCircles != null && cmmCircles.size() > 0) {
@@ -668,7 +676,7 @@ public class CircleServiceImpl implements CircleService {
             PageTools.pageToResultDto(re, page);
         } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.error("-1", "");
+            LOGGER.error("获取游戏相关的圈子异常，游戏id="+gameId, e);
             re = FungoPageResultDto.error("-1", "根据游戏查询相关圈子异常");
         }
         return re;
@@ -687,7 +695,6 @@ public class CircleServiceImpl implements CircleService {
                 } catch (Exception e) {
                     LOGGER.error("更新圈子热度失败,圈子id=" + s.getId(), e);
                 }
-                System.out.println("更新圈子热度成功,圈子id=" + s.getId());
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -699,11 +706,12 @@ public class CircleServiceImpl implements CircleService {
     @Override
     public FungoPageResultDto<CommunityMember> selectCirclePlayer(String memberId, CmmCirclePostVo cmmCirclePostVo) {
         FungoPageResultDto<CommunityMember> re = null;
+        String circleId = cmmCirclePostVo.getCircleId();
         try {
             List<CommunityMember> userList = new ArrayList<>();
             Page<CircleMemberPulishDto> page = new Page<>(cmmCirclePostVo.getPage(), cmmCirclePostVo.getLimit());
-            List<CircleMemberPulishDto> cmmPostCircles = cmmPostCircleMapper.getCmmPostCircleByCircleId(page, cmmCirclePostVo.getCircleId());
-            CmmCircle cmmCircle = cmmCircleMapper.selectById(cmmCirclePostVo.getCircleId());
+            List<CircleMemberPulishDto> cmmPostCircles = cmmPostCircleMapper.getCmmPostCircleByCircleId(page, circleId);
+            CmmCircle cmmCircle = cmmCircleMapper.selectById(circleId);
             //从游戏评论表获取用户数量
             ResultDto<List<MemberPulishFromCommunity>> gameMemberCtmRs = gameFacedeService.getMemberOrder(cmmCircle.getGameId(), null);
             if (null != gameMemberCtmRs) {
@@ -761,9 +769,10 @@ public class CircleServiceImpl implements CircleService {
             }
             re = new FungoPageResultDto();
             re.setData(userList);
+            PageTools.pageToResultDto(re,page);
         } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.error("", e);
+            LOGGER.error("获取圈子玩家榜异常,圈子id="+circleId, e);
             re = FungoPageResultDto.error("-1", "获取玩家榜异常");
         }
         return re;
@@ -779,117 +788,122 @@ public class CircleServiceImpl implements CircleService {
      */
     private List<Map<String, Object>> getCirclePayer(CmmCircle cmmCircle) {
         List<Map<String, Object>> userList = new ArrayList<>();
-        Page<CircleMemberPulishDto> page = new Page<>(1, 10);
-        List<CircleMemberPulishDto> cmmPostCircles = cmmPostCircleMapper.getCmmPostCircleByCircleId(page, cmmCircle.getId());
-        if (CircleTypeEnum.GAME.getKey().equals(cmmCircle.getType().toString())) {
-            //从游戏评论表获取用户数量
-            ResultDto<List<MemberPulishFromCommunity>> gameMemberCtmRs = gameFacedeService.getMemberOrder(cmmCircle.getGameId(), null);
-            if (null != gameMemberCtmRs) {
-                List<MemberPulishFromCommunity> pulishFromCmtList = gameMemberCtmRs.getData();
-                if (null != pulishFromCmtList && !pulishFromCmtList.isEmpty()) {
-                    if (null != cmmPostCircles && !cmmPostCircles.isEmpty()) {
-                        cmmPostCircles.stream().forEach(s -> {
-                            List<MemberPulishFromCommunity> list = pulishFromCmtList.stream().filter(r -> r.getMemberId().equals(s.getMemberId())).collect(Collectors.toList());
-                            if (list != null && list.size() > 0) {
-                                MemberPulishFromCommunity entity = list.get(0);
-                                s.setGamecommentNum(entity.getCommentNum());
-                                s.setLikeNum(entity.getLikeNum());
-                            }
-                        });
-                    }
-                }
-            }
-
-        }
-        cmmPostCircles = cmmPostCircles.stream().sorted((u1, u2) -> {
-            Integer u1sum = (u1.getCommentNum() + u1.getEvaNum() + u1.getGamecommentNum() + u1.getLikeNum() + u1.getPostCommentNum() + u1.getPostLikeNum());
-            Integer u2sum = (u1.getCommentNum() + u1.getEvaNum() + u1.getGamecommentNum() + u1.getLikeNum() + u1.getPostCommentNum() + u1.getPostLikeNum());
-            return u1sum.compareTo(u2sum);
-        }).limit(6).collect(Collectors.toList());
-
-
-        ObjectMapper mapper = new ObjectMapper();
-        for (CircleMemberPulishDto m : cmmPostCircles) {
-            Map<String, Object> mp = new HashMap<>();
-            mp.put("objectId", m.getMemberId());
-
-            //!fixme 获取用户数据
-            //Member member = menberService.selectById(m.getMemberId());
-
-            List<String> mbIdsList = new ArrayList<String>();
-            mbIdsList.add(m.getMemberId());
-
-            ResultDto<List<MemberDto>> listMembersByids = null;
-            try {
-                listMembersByids = systemFacedeService.listMembersByids(mbIdsList, null);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            MemberDto memberDtoPulish = null;
-            if (null != listMembersByids) {
-                List<MemberDto> memberDtoList = listMembersByids.getData();
-                if (null != memberDtoList && !memberDtoList.isEmpty()) {
-                    memberDtoPulish = memberDtoList.get(0);
-                }
-            }
-
-            if (memberDtoPulish != null) {
-
-                mp.put("avatar", memberDtoPulish.getAvatar());
-
-                //!fixme 根据用户id和用户权益(等级、身份、荣誉)类型，获取用户权益数据
-                //IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", member.getId()).eq("rank_type", 2));
-
-                IncentRankedDto incentRankedDto = new IncentRankedDto();
-                incentRankedDto.setMbId(memberDtoPulish.getId());
-                incentRankedDto.setRankType(2);
-
-                IncentRankedDto mBIncentRankedDto = null;
-                try {
-                    FungoPageResultDto<IncentRankedDto> incentRankedPageRs = systemFacedeService.getIncentRankedList(incentRankedDto);
-                    if (null != incentRankedPageRs) {
-                        List<IncentRankedDto> rankedDtoList = incentRankedPageRs.getData();
-                        if (null != rankedDtoList && !rankedDtoList.isEmpty()) {
-                            mBIncentRankedDto = rankedDtoList.get(0);
+        try {
+            Page<CircleMemberPulishDto> page = new Page<>(1, 10);
+            List<CircleMemberPulishDto> cmmPostCircles = cmmPostCircleMapper.getCmmPostCircleByCircleId(page, cmmCircle.getId());
+            if (CircleTypeEnum.GAME.getKey().equals(cmmCircle.getType().toString())) {
+                //从游戏评论表获取用户数量
+                ResultDto<List<MemberPulishFromCommunity>> gameMemberCtmRs = gameFacedeService.getMemberOrder(cmmCircle.getGameId(), null);
+                if (null != gameMemberCtmRs) {
+                    List<MemberPulishFromCommunity> pulishFromCmtList = gameMemberCtmRs.getData();
+                    if (null != pulishFromCmtList && !pulishFromCmtList.isEmpty()) {
+                        if (null != cmmPostCircles && !cmmPostCircles.isEmpty()) {
+                            cmmPostCircles.stream().forEach(s -> {
+                                List<MemberPulishFromCommunity> list = pulishFromCmtList.stream().filter(r -> r.getMemberId().equals(s.getMemberId())).collect(Collectors.toList());
+                                if (list != null && list.size() > 0) {
+                                    MemberPulishFromCommunity entity = list.get(0);
+                                    s.setGamecommentNum(entity.getCommentNum());
+                                    s.setLikeNum(entity.getLikeNum());
+                                }
+                            });
                         }
                     }
+                }
+
+            }
+            cmmPostCircles = cmmPostCircles.stream().sorted((u1, u2) -> {
+                Integer u1sum = (u1.getCommentNum() + u1.getEvaNum() + u1.getGamecommentNum() + u1.getLikeNum() + u1.getPostCommentNum() + u1.getPostLikeNum());
+                Integer u2sum = (u1.getCommentNum() + u1.getEvaNum() + u1.getGamecommentNum() + u1.getLikeNum() + u1.getPostCommentNum() + u1.getPostLikeNum());
+                return u1sum.compareTo(u2sum);
+            }).limit(6).collect(Collectors.toList());
+
+
+            ObjectMapper mapper = new ObjectMapper();
+            for (CircleMemberPulishDto m : cmmPostCircles) {
+                Map<String, Object> mp = new HashMap<>();
+                mp.put("objectId", m.getMemberId());
+
+                //!fixme 获取用户数据
+                //Member member = menberService.selectById(m.getMemberId());
+
+                List<String> mbIdsList = new ArrayList<String>();
+                mbIdsList.add(m.getMemberId());
+
+                ResultDto<List<MemberDto>> listMembersByids = null;
+                try {
+                    listMembersByids = systemFacedeService.listMembersByids(mbIdsList, null);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
+                MemberDto memberDtoPulish = null;
+                if (null != listMembersByids) {
+                    List<MemberDto> memberDtoList = listMembersByids.getData();
+                    if (null != memberDtoList && !memberDtoList.isEmpty()) {
+                        memberDtoPulish = memberDtoList.get(0);
+                    }
+                }
 
-                if (mBIncentRankedDto != null) {
+                if (memberDtoPulish != null) {
 
-                    //!fixme 获取权益规则
-                    //IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
-                    IncentRuleRankDto incentRuleRankDto = null;
+                    mp.put("avatar", memberDtoPulish.getAvatar());
 
+                    //!fixme 根据用户id和用户权益(等级、身份、荣誉)类型，获取用户权益数据
+                    //IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", member.getId()).eq("rank_type", 2));
+
+                    IncentRankedDto incentRankedDto = new IncentRankedDto();
+                    incentRankedDto.setMbId(memberDtoPulish.getId());
+                    incentRankedDto.setRankType(2);
+
+                    IncentRankedDto mBIncentRankedDto = null;
                     try {
-                        ResultDto<IncentRuleRankDto> IncentRuleRankResultDto = systemFacedeService.getIncentRuleRankById(String.valueOf(mBIncentRankedDto.getCurrentRankId().longValue()));
-
-                        if (null != IncentRuleRankResultDto) {
-                            incentRuleRankDto = IncentRuleRankResultDto.getData();
+                        FungoPageResultDto<IncentRankedDto> incentRankedPageRs = systemFacedeService.getIncentRankedList(incentRankedDto);
+                        if (null != incentRankedPageRs) {
+                            List<IncentRankedDto> rankedDtoList = incentRankedPageRs.getData();
+                            if (null != rankedDtoList && !rankedDtoList.isEmpty()) {
+                                mBIncentRankedDto = rankedDtoList.get(0);
+                            }
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
 
-                    if (incentRuleRankDto != null) {
-                        String rankinf = incentRuleRankDto.getRankImgs();
-                        ArrayList<HashMap<String, Object>> infolist = null;
+                    if (mBIncentRankedDto != null) {
+
+                        //!fixme 获取权益规则
+                        //IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
+                        IncentRuleRankDto incentRuleRankDto = null;
+
                         try {
-                            infolist = mapper.readValue(rankinf, ArrayList.class);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                            ResultDto<IncentRuleRankDto> IncentRuleRankResultDto = systemFacedeService.getIncentRuleRankById(String.valueOf(mBIncentRankedDto.getCurrentRankId().longValue()));
+
+                            if (null != IncentRuleRankResultDto) {
+                                incentRuleRankDto = IncentRuleRankResultDto.getData();
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
-                        mp.put("statusImg", infolist);
+
+                        if (incentRuleRankDto != null) {
+                            String rankinf = incentRuleRankDto.getRankImgs();
+                            ArrayList<HashMap<String, Object>> infolist = null;
+                            try {
+                                infolist = mapper.readValue(rankinf, ArrayList.class);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            mp.put("statusImg", infolist);
+                        } else {
+                            mp.put("statusImg", new ArrayList<>());
+                        }
                     } else {
                         mp.put("statusImg", new ArrayList<>());
                     }
-                } else {
-                    mp.put("statusImg", new ArrayList<>());
                 }
+                userList.add(mp);
             }
-            userList.add(mp);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("获取当前圈子的前六名玩家榜异常，圈子id="+cmmCircle.getId(),e);
         }
         return userList;
     }

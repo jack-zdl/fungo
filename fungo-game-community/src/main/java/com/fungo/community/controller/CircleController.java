@@ -1,14 +1,11 @@
 package com.fungo.community.controller;
 
-import com.fungo.community.config.NacosFungoCircleConfig;
 import com.fungo.community.job.CircleHotValueJob;
 import com.fungo.community.service.CircleService;
-import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.*;
-import com.game.common.dto.index.CardIndexBean;
 import com.game.common.enums.CommonEnum;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.vo.CircleGamePostVo;
@@ -20,11 +17,8 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 /**
@@ -287,7 +281,7 @@ public class CircleController {
 
 
     /**
-     * 功能描述: app端获取圈子文章顺序类型
+     * 功能描述: 圈子热度job接口
      * @param: [memberUserPrefile, inputPageDto]
      * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
      * @auther: dl.zhang
