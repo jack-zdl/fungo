@@ -635,7 +635,8 @@ public class IndexServiceImpl implements IIndexService {
 
         //2 6(视频) 7
         //state  状态 -1:删除,  0：上线，1：草稿，2：下线
-        Banner videoBanner = bannerService.selectOne(new EntityWrapper<Banner>().eq("position_code", type).eq("target_type", 1).eq("state", "0").orderBy("sort", false).last("limit 1"));
+        Banner videoBanner = bannerService.selectOne(new EntityWrapper<Banner>().eq("position_code", type).eq("target_type", 1)
+                .eq("state", "0").orderBy("sort", false).last("limit 1"));
         CardIndexBean cb = new CardIndexBean();
 
         if (videoBanner == null) {

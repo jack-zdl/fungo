@@ -466,13 +466,13 @@ public class CircleServiceImpl implements CircleService {
                 cmmCircleDtoList = cmmCircleServiceImap.selectList(wrapper);
             }else if(CircleGamePostVo.CircleGamePostTypeEnum.POSTID.getKey() == circleGamePostVo.getType()) {
                 CmmCircle cmmCircle = cmmPostCircleMapper.getCircleByPostId(circleGamePostVo.getPost());
-                cmmCircleDtoList.add(cmmCircle);
+                if(cmmCircle != null)
+                    cmmCircleDtoList.add(cmmCircle);
             }
             if (cmmCircleDtoList.size() > 0) {
                 CmmCircle cmmCircle = cmmCircleDtoList.get(0);
                 CmmCircleDto cmmCircleDto = new CmmCircleDto();
                 BeanUtils.copyProperties(cmmCircleDto, cmmCircle);
-                cmmCircleDto.setMemberNum(cmmCircle.getFolloweeNum());
                 cmmCircleDto.setMemberNum(cmmCircle.getFolloweeNum());
                 resultDto.setData(cmmCircleDto);
                 resultDto.setCode(AbstractResultEnum.CODE_ONE.getKey());
