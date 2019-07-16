@@ -45,4 +45,12 @@ public interface BannerDao extends BaseMapper<Banner> {
 	 * @date: 2019/6/12 10:30
 	 */
 	List<Banner> afterNewDateBanner(Pagination   page);
+
+	/**
+	 * 功能描述:  首页获取六个每周游戏
+	 * @param: []
+	 * @auther: dl.zhang
+	 * @date: 2019/7/16 19:26
+	 */
+	List<Banner> getBannerByIndex();
 }

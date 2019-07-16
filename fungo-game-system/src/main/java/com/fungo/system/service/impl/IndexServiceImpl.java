@@ -580,8 +580,9 @@ public class IndexServiceImpl implements IIndexService {
     public CardIndexBean hotGames() {
 
         //state 状态 -1:删除,  0：上线，1：草稿，  2：下线
-        List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0001").eq("target_type", 3)
-                .eq("state", 0).orderBy("release_time", false).last("limit 6"));
+        List<Banner> blist = bannerDao.getBannerByIndex();
+//        List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0001").eq("target_type", 3)
+//                .eq("state", 0).orderBy("release_time", false).last("limit 6"));
         if (null == blist || blist.size() == 0) {
             return null;
         }
