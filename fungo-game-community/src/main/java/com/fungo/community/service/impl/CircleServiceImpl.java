@@ -729,29 +729,33 @@ public class CircleServiceImpl implements CircleService {
                     }
                 }
             }
-            cmmPostCircles = cmmPostCircles.stream().sorted((u1, u2) -> {
-                Integer u1sum = (u1.getCommentNum() + u1.getEvaNum() + u1.getGamecommentNum() + u1.getLikeNum() + u1.getPostCommentNum() + u1.getPostLikeNum());
-                Integer u2sum = (u1.getCommentNum() + u1.getEvaNum() + u1.getGamecommentNum() + u1.getLikeNum() + u1.getPostCommentNum() + u1.getPostLikeNum());
-                return u1sum.compareTo(u2sum);
-            }).collect(Collectors.toList());
-            for (CircleMemberPulishDto m : cmmPostCircles) {
-                CommunityMember c = new CommunityMember();
+//            cmmPostCircles = cmmPostCircles.stream().sorted((u1, u2) -> {
+//                Integer u1sum = (u1.getCommentNum() + u1.getEvaNum() + u1.getGamecommentNum() + u1.getLikeNum() + u1.getPostCommentNum() + u1.getPostLikeNum());
+//                Integer u2sum = (u1.getCommentNum() + u1.getEvaNum() + u1.getGamecommentNum() + u1.getLikeNum() + u1.getPostCommentNum() + u1.getPostLikeNum());
+//                return u1sum.compareTo(u2sum);
+//            }).collect(Collectors.toList());
+            cmmPostCircles.stream().forEach(x -> {
+                x.setTotalNum( x.getTotalNum() + x.getLikeNum() + x.getGamecommentNum());
+            });
+            cmmPostCircles = cmmPostCircles.stream().sorted(Comparator.comparing(CircleMemberPulishDto::getTotalNum).reversed()).collect(Collectors.toList());
+            for (CircleMemberPulishDto circleMemberPulishDto : cmmPostCircles) {
+                CommunityMember communityMember = new CommunityMember();
                 try {
-                    ResultDto<AuthorBean> authorBeanResultDto = systemFacedeService.getAuthor(m.getMemberId());
+                    ResultDto<AuthorBean> authorBeanResultDto = systemFacedeService.getAuthor(circleMemberPulishDto.getMemberId());
                     if (null != authorBeanResultDto) {
                         AuthorBean authorBean = authorBeanResultDto.getData();
-                        c.setAuthorBean(authorBean);
+                        communityMember.setAuthorBean(authorBean);
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                c.setMerits(m.getEvaNum() + m.getCommentNum() + m.getPostNum());
-                if (memberId.equals(m.getMemberId())) {
-                    c.setYourself(true);
+                communityMember.setMerits(circleMemberPulishDto.getTotalNum());
+                if (memberId.equals(circleMemberPulishDto.getMemberId())) {
+                    communityMember.setYourself(true);
                 } else {
                     MemberFollowerDto memberFollowerDtoParam = new MemberFollowerDto();
                     memberFollowerDtoParam.setMemberId(memberId);
-                    memberFollowerDtoParam.setFollowerId(m.getMemberId());
+                    memberFollowerDtoParam.setFollowerId(circleMemberPulishDto.getMemberId());
                     MemberFollowerDto memberFollowerDtoData = null;
                     try {
                         ResultDto<MemberFollowerDto> followerDtoResultDto = systemFacedeService.getMemberFollower1(memberFollowerDtoParam);
@@ -762,10 +766,10 @@ public class CircleServiceImpl implements CircleService {
                         ex.printStackTrace();
                     }
                     if (memberFollowerDtoData != null) {
-                        c.setFollowed(true);
+                        communityMember.setFollowed(true);
                     }
                 }
-                userList.add(c);
+                userList.add(communityMember);
             }
             re = new FungoPageResultDto();
             re.setData(userList);

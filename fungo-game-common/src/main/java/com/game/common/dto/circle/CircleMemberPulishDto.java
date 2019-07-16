@@ -21,5 +21,6 @@ public class CircleMemberPulishDto implements Serializable{
 	private String memberId;
 	private int gamecommentNum;
 	private int likeNum;
+	private int totalNum;
 	
 }
