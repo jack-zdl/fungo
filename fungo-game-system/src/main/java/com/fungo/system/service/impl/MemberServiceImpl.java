@@ -1196,7 +1196,7 @@ public class MemberServiceImpl implements IMemberService {
 
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_COMMENTS;
         String keySuffix = loginId + JSON.toJSONString(input);
-        re = null;//(FungoPageResultDto<MyCommentBean>) fungoCacheArticle.getIndexCache(keyPrefix, keySuffix);
+      //  re = (FungoPageResultDto<MyCommentBean>) fungoCacheArticle.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
         }
@@ -1206,6 +1206,9 @@ public class MemberServiceImpl implements IMemberService {
         // @todo 5.22
         FungoPageResultDto<CommentBean>  comments = communityFeignClient.getAllComments(page.getPages(),page.getLimit(),loginId);
       //  List<CommentBean> all = communityProxyService.getAllComments(page, loginId); //memberDao.getAllComments(page, loginId);
+        if(comments == null){
+            return FungoPageResultDto.error("-1","没有评论");
+        }
         List<CommentBean> all = comments.getData();
         List<MyCommentBean> blist = new ArrayList<>();
         for (CommentBean c : all) {
@@ -1343,9 +1346,8 @@ public class MemberServiceImpl implements IMemberService {
             blist.add(bean);
 
         }
+        re.setData(blist);
         PageTools.newPageToResultDto(re,comments.getCount(),comments.getPages(),input.getPage());
-
-
         //redis cache
         fungoCacheArticle.excIndexCache(true, keyPrefix, keySuffix, re);
 

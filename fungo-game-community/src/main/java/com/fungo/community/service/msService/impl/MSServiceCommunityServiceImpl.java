@@ -176,18 +176,18 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
 
         FungoPageResultDto<CommentBean> resultDto = new FungoPageResultDto<CommentBean>();
         List<CommentBean> commentBeanList = null;
+        Page<CommentBean> page = new Page<CommentBean>(pageNum, limit);
         try {
             if (StringUtils.isBlank(userId)) {
                 return resultDto;
             }
-
-            Page<CommentBean> page = new Page<CommentBean>(pageNum, limit);
             commentBeanList = cmmCommunityDaoService.getAllComments(page, userId);
 
         } catch (Exception ex) {
             LOGGER.error("/ms/service/cmm/user/comments--getAllComments-出现异常:", ex);
         }
         resultDto.setData(commentBeanList);
+        PageTools.newPageToResultDto(resultDto,page.getTotal(),limit,pageNum);
         return resultDto;
     }
 
