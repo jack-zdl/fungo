@@ -73,7 +73,7 @@
 		SELECT
 		<include refid="Base_Column_List"></include>
 		<![CDATA[
-		 FROM t_banner WHERE position_code = 0001 and target_type = 3  and state  = 0 and release_time < DATE_SUB(CURDATE(), INTERVAL 1 DAY)  ORDER BY release_time desc limit 6
+		 FROM t_banner WHERE position_code = 0001 and target_type = 3  and state  = 2 and release_time < DATE_SUB(CURDATE(), INTERVAL 1 DAY)  ORDER BY release_time desc limit 6
 		]]>
 	</select>
 
