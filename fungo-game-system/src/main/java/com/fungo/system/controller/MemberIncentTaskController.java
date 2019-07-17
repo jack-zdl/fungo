@@ -89,11 +89,15 @@ public class MemberIncentTaskController {
         int task_type = FunGoGameConsts.TASK_RULE_TASK_TYPE_SCOREANDCOIN;
 
         ResultDto<List<Map<String, Object>>> resultDto = new ResultDto<List<Map<String, Object>>>();
-
-        List<Map<String, Object>> resutList = iMemberIncentTaskService.getMemberTaskProgress(mb_id, task_type);
-        if (null != resutList) {
-            resultDto.setData(resutList);
-        } else {
+        try {
+            List<Map<String, Object>> resutList = iMemberIncentTaskService.getMemberTaskProgress(mb_id, task_type);
+            if (null != resutList) {
+                resultDto.setData(resutList);
+            } else {
+                return ResultDto.error("-1", "获取用户任务进度出现异常");
+            }
+        }catch (Exception e){
+            LOGGER.error("获取用户任务进度出现异常",e);
             return ResultDto.error("-1", "获取用户任务进度出现异常");
         }
         return resultDto;

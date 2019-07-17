@@ -149,6 +149,7 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
 
         } catch (Exception ex) {
             ex.printStackTrace();
+            LOGGER.error("获取用户任务完整进度出现异常",ex);
             throw new BusinessException("-1", "获取用户任务完整进度出现异常");
         }
 
@@ -400,11 +401,9 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                         if (null != permTaskIdt) {
                             permTaskIdt_i = permTaskIdt.intValue();
                         }
-
                         if (null != scoreIdt) {
                             scoreIdt_i = scoreIdt.intValue();
                         }
-
                         if (permTaskIdt_i != -1 && scoreIdt_i != -1) {
                             if (permTaskIdt_i == scoreIdt_i) {
                                 scoreRule.setToLinkUrl(permRanked.getToLinkUrl());
@@ -412,106 +411,84 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                             }
                         }
                     }
-
                 }
-
             }
-
-
         } catch (Exception ex) {
             ex.printStackTrace();
+            LOGGER.error("获取用户任务完整进度出现异常",ex);
             throw new BusinessException("-1", "获取用户任务完整进度出现异常");
         }
-
         //把数据缓存
         fungoCacheTask.excIndexCache(true, keyPreffix, keySuffix, scoreGroupMapList, FungoCacheTask.REDIS_EXPIRE_DEFAULT);
-
         return scoreGroupMapList;
 
     }
 
     @Override
     public IncentTaskedOut getTasked(String memberId, int task_type, String task_id) {
-
-        Wrapper incentTaskedEntityWrapper = new EntityWrapper<IncentTasked>();
-
-        Map<String, Object> criteriaMapRule = new HashMap<String, Object>();
-        criteriaMapRule.put("mb_id", memberId);
-        criteriaMapRule.put("task_type", task_type);
-
-
-        incentTaskedEntityWrapper.allEq(criteriaMapRule);
-        incentTaskedEntityWrapper.orderBy("updated_at", false);
-
-        //已经完成的数据
-        List<IncentTasked> incentTaskedList = incentTaskedService.selectList(incentTaskedEntityWrapper);
-
         IncentTaskedOut taskedOut = null;
+        try {
+            Wrapper incentTaskedEntityWrapper = new EntityWrapper<IncentTasked>();
+            Map<String, Object> criteriaMapRule = new HashMap<String, Object>();
+            criteriaMapRule.put("mb_id", memberId);
+            criteriaMapRule.put("task_type", task_type);
+            incentTaskedEntityWrapper.allEq(criteriaMapRule);
+            incentTaskedEntityWrapper.orderBy("updated_at", false);
+            //已经完成的数据
+            List<IncentTasked> incentTaskedList = incentTaskedService.selectList(incentTaskedEntityWrapper);
 
-        if (null != incentTaskedList && !incentTaskedList.isEmpty()) {
 
-            IncentTasked incentTasked = incentTaskedList.get(0);
 
-            // 获取数据示例：
-            // [  { 1:taskid, 2:taskname,  3:score,  4:type,  5:count ,6:date,  7:incomie_freg_type}  ]
-            // (任务id,任务名称，获取的分值|虚拟币数，任务类型，完成数量,任务完成时间,收益频率类型)
-            String taskIdtIdsJson = incentTasked.getTaskIdtIds();
-
-            //从历史完成的任务中，获取待查找任务id的进度
-            if (StringUtils.isNotBlank(taskIdtIdsJson)) {
-
-                //获取已完成历史任务集合
-                JSONArray jsonArray = JSONObject.parseArray(taskIdtIdsJson);
-
-                for (int i = 0; i < jsonArray.size(); i++) {
-
-                    JSONObject object = jsonArray.getJSONObject(i);
-
-                    //获取taskId
-                    String taskId_done = object.getString("1");
-
-                    //type
-                    String type = String.valueOf(object.get("4"));
-
-                    if (StringUtils.equalsIgnoreCase(task_id, taskId_done) && StringUtils.equalsIgnoreCase(type, String.valueOf(task_type))) {
-
-                        taskedOut = new IncentTaskedOut();
-
-                        //taskname
-                        String taskname = object.getString("2");
-
-                        //score
-                        String score = String.valueOf(object.get("3"));
-
-                        //count
-                        String count = String.valueOf(object.get("5"));
-
-                        //doneDate
-                        String doneDate = String.valueOf(object.get("6"));
-
-                        taskedOut.setTaskId(task_id);
-                        taskedOut.setTaskName(taskname);
-                        taskedOut.setScore(score);
-                        taskedOut.setTaskType(task_type);
-                        taskedOut.setDoneDate(doneDate);
-
-                        if (StringUtils.isNotBlank(count)) {
-                            taskedOut.setTaskedCount(Integer.parseInt(count));
+            if (null != incentTaskedList && !incentTaskedList.isEmpty()) {
+                IncentTasked incentTasked = incentTaskedList.get(0);
+                // 获取数据示例：
+                // [  { 1:taskid, 2:taskname,  3:score,  4:type,  5:count ,6:date,  7:incomie_freg_type}  ]
+                // (任务id,任务名称，获取的分值|虚拟币数，任务类型，完成数量,任务完成时间,收益频率类型)
+                String taskIdtIdsJson = incentTasked.getTaskIdtIds();
+                //从历史完成的任务中，获取待查找任务id的进度
+                if (StringUtils.isNotBlank(taskIdtIdsJson)) {
+                    //获取已完成历史任务集合
+                    JSONArray jsonArray = JSONObject.parseArray(taskIdtIdsJson);
+                    for (int i = 0; i < jsonArray.size(); i++) {
+                        JSONObject object = jsonArray.getJSONObject(i);
+                        //获取taskId
+                        String taskId_done = object.getString("1");
+                        //type
+                        String type = String.valueOf(object.get("4"));
+                        if (StringUtils.equalsIgnoreCase(task_id, taskId_done) && StringUtils.equalsIgnoreCase(type, String.valueOf(task_type))) {
+                            taskedOut = new IncentTaskedOut();
+                            //taskname
+                            String taskname = object.getString("2");
+                            //score
+                            String score = String.valueOf(object.get("3"));
+                            //count
+                            String count = String.valueOf(object.get("5"));
+                            //doneDate
+                            String doneDate = String.valueOf(object.get("6"));
+                            taskedOut.setTaskId(task_id);
+                            taskedOut.setTaskName(taskname);
+                            taskedOut.setScore(score);
+                            taskedOut.setTaskType(task_type);
+                            taskedOut.setDoneDate(doneDate);
+                            if (StringUtils.isNotBlank(count)) {
+                                taskedOut.setTaskedCount(Integer.parseInt(count));
+                            }
+                            return taskedOut;
                         }
-
-                        return taskedOut;
+                    }
+                }
+                for (int i = 1; i < incentTaskedList.size(); i++) {
+                    IncentTasked incentTaskedDel = incentTaskedList.get(i);
+                    if (null != incentTaskedDel) {
+                        if (incentTasked.getId().longValue() != incentTaskedDel.getId().longValue()) {
+                            //incentTaskedDel.deleteById();
+                        }
                     }
                 }
             }
-
-            for (int i = 1; i < incentTaskedList.size(); i++) {
-                IncentTasked incentTaskedDel = incentTaskedList.get(i);
-                if (null != incentTaskedDel) {
-                    if (incentTasked.getId().longValue() != incentTaskedDel.getId().longValue()) {
-                        //incentTaskedDel.deleteById();
-                    }
-                }
-            }
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("用户任务成果表",e);
         }
         return taskedOut;
     }
@@ -671,6 +648,7 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+            LOGGER.error("获取用户执行分值任务的进度",ex);
         }
 
         return taskedOut;
@@ -875,8 +853,8 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+            LOGGER.error("获取用户执行虚拟币任务的进度",ex);
         }
-
         return taskedOut;
     }
 

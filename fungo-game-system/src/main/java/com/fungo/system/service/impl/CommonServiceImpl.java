@@ -13,6 +13,8 @@ import com.fungo.system.service.MemberFollowerService;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.FeedbackBean;
 import com.game.common.dto.ResultDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,8 @@ import java.util.Map;
 
 @Service
 public class CommonServiceImpl implements ICommonService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommonServiceImpl.class);
     @Autowired
     private BasConfigService configService;
     @Autowired
@@ -34,30 +38,36 @@ public class CommonServiceImpl implements ICommonService {
     @Override
     public ResultDto<List<String>> getReportType(String typeId) {
         ResultDto<List<String>> re = new ResultDto<List<String>>();
-        BasConfig config = configService.selectOne(new EntityWrapper<BasConfig>().eq("key_name", "REPORT_CATEGORY"));
-        ReportType type = null;
-        if (config != null) {
-            String value = config.getValueInfo();
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                type = objectMapper.readValue(value, ReportType.class);
-            } catch (Exception e) {
-                e.printStackTrace();
+        try {
+            BasConfig config = configService.selectOne(new EntityWrapper<BasConfig>().eq("key_name", "REPORT_CATEGORY"));
+            ReportType type = null;
+            if (config != null) {
+                String value = config.getValueInfo();
+                ObjectMapper objectMapper = new ObjectMapper();
+                try {
+                    type = objectMapper.readValue(value, ReportType.class);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+            if ("9".equals(typeId)) {
+                re.setData(type.getFeedback());
+            } else if ("3".equals(typeId)) {
+                re.setData(type.getGame());
+            } else if ("1".equals(typeId)) {
+                re.setData(type.getPost());
+            } else if ("5678".contains(typeId)) {
+                re.setData(type.getComment());
+            } else if ("2".equals(typeId)) {
+                re.setData(type.getMood());
+            } else {
+                re.setData(type.getFeedback());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("举报反馈类型异常",e);
         }
-        if ("9".equals(typeId)) {
-            re.setData(type.getFeedback());
-        } else if ("3".equals(typeId)) {
-            re.setData(type.getGame());
-        } else if ("1".equals(typeId)) {
-            re.setData(type.getPost());
-        } else if ("5678".contains(typeId)) {
-            re.setData(type.getComment());
-        } else if ("2".equals(typeId)) {
-            re.setData(type.getMood());
-        } else {
-            re.setData(type.getFeedback());
-        }
+
         return re;
     }
 
@@ -65,7 +75,11 @@ public class CommonServiceImpl implements ICommonService {
     public ResultDto<Map<String, String>> getAppConfig() {
         ResultDto<Map<String, String>> re = new ResultDto<Map<String, String>>();
         List<String> list = new ArrayList<String>();
-        BasConfig config = configService.selectOne(new EntityWrapper<BasConfig>().eq("key", "REPORT_CATEGORY"));
+        try {
+            BasConfig config = configService.selectOne(new EntityWrapper<BasConfig>().eq("key", "REPORT_CATEGORY"));
+        }catch (Exception e){
+            LOGGER.error("getAppConfig异常",e);
+        }
         return re;
     }
 

@@ -9,7 +9,7 @@
     <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, circle_id, game_id, created_at, updated_at
+    id, circle_id as circleId , game_id as gameId, created_at as createdAt, updated_at as updatedAt
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
