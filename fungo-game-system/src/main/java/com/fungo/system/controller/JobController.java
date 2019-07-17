@@ -3,6 +3,7 @@ package com.fungo.system.controller;
 import com.fungo.system.job.DTPTransactionMessageScheduledJob;
 import com.fungo.system.job.FungoMallSeckillTaskService;
 import com.fungo.system.job.PushFunction;
+import com.fungo.system.service.ISeacherService;
 import com.game.common.dto.ResultDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,9 @@ public class JobController {
 
     @Autowired
     private PushFunction pushFunction;
+
+    @Autowired
+    private ISeacherService iSeacherService;
 
     @GetMapping("/dtpTransactionMessageScheduledJob")
     public ResultDto<String> dtpTransactionMessageScheduledJob(){
@@ -79,6 +83,20 @@ public class JobController {
         }catch (Exception e){
             LOGGER.error("管理台消息推送定期任务执行异常",e);
             re = ResultDto.error("-1","管理台消息推送定期任务执行异常");
+        }
+        return re;
+    }
+
+
+    @GetMapping("/updateGameKeywords")
+    public ResultDto<String> updateGameKeywords(){
+        ResultDto<String> re = null;
+        try {
+            iSeacherService.updateGameKeywords();
+            re = ResultDto.success("更新热度游戏关键字定期任务执行成功");
+        }catch (Exception e){
+            LOGGER.error("更新热度游戏关键字定期任务执行异常",e);
+            re = ResultDto.error("-1","更新热度游戏关键字定期任务执行异常");
         }
         return re;
     }

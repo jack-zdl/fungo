@@ -6,11 +6,14 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.system.dao.BasLogDao;
+import com.fungo.system.entity.BasFilterword;
 import com.fungo.system.entity.IncentRuleRank;
 import com.fungo.system.entity.Member;
 import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IMemeberProxyService;
 import com.fungo.system.service.*;
+import com.game.common.bean.HotValue;
 import com.game.common.cache.GuavaCache;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
@@ -19,6 +22,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.search.SearCount;
 import com.game.common.util.PageTools;
+import com.game.common.util.SensitiveWordUtil;
 import com.game.common.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +55,11 @@ public class SeacherServiceImpl implements ISeacherService {
     @Autowired
     private IMemeberProxyService iMemeberProxyService;
 
+    @Autowired
+    private BasFilterwordService filterService;
+
+    @Autowired
+    private BasLogDao basLogDao;
 //	@Autowired
 //	private ITagService tagService;
 
@@ -88,6 +97,24 @@ public class SeacherServiceImpl implements ISeacherService {
         }
 
         return ResultDto.success(list);
+    }
+
+    public void updateGameKeywords() {
+
+        System.out.println("........执行获取关键字过滤.");
+        initFilterWord();
+
+        System.out.println("........执行游戏热值计算.");
+
+        List<HotValue> vlist = basLogDao.getHotValue();
+        if (vlist != null && vlist.size() != 0) {
+            List<String> list = new ArrayList<>();
+            for (HotValue v : vlist) {
+                list.add(v.getGameName());
+            }
+            GuavaCache.put("hotSearchWord", list);
+        }
+
     }
 
 
@@ -173,5 +200,14 @@ public class SeacherServiceImpl implements ISeacherService {
         return ResultDto.success(searchCount);
     }
 
+
+    private void initFilterWord() {
+        Set<String> filterWord = new HashSet<>();
+        List<BasFilterword> wordList = filterService.selectList(Condition.create().setSqlSelect("key_word as keyWord"));
+        for (BasFilterword word : wordList) {
+            filterWord.add(word.getKeyWord());
+        }
+        SensitiveWordUtil.init(filterWord);
+    }
 
 }

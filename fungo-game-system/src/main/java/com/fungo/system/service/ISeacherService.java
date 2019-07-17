@@ -24,4 +24,6 @@ public interface ISeacherService {
 
 	//搜索结果数量
 	public ResultDto<SearCount> getSearchCount(String keyword);
+
+	public void updateGameKeywords();
 }

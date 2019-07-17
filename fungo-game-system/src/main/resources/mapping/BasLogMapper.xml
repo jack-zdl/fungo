@@ -30,4 +30,12 @@
         id, created_at AS createdAt, end_time AS endTime, run_time AS runTime, path, method, ip, member_id AS memberId, input_data AS inputData, out_data AS outData, channel, biz_id AS bizId, re_code AS reCode, state, biz_code AS bizCode, updated_at AS updatedAt, token, brand, user_agent AS userAgent
     </sql>
 
+	<select id="getHotValue" resultType="com.game.common.bean.HotValue" parameterType="String">
+
+		select b.biz_id as gameId,b.total as totalCount,g.name as gameName
+		from
+		(SELECT biz_id,count(*) as total from t_bas_log where path like '%game%' and biz_id is not null and TO_DAYS(CURDATE())-TO_DAYS(created_at) = 1 GROUP BY biz_id)
+		as b,t_game as g where b.biz_id = g.Id ORDER BY b.total DESC limit 10;
+	</select>
+
 </mapper>
