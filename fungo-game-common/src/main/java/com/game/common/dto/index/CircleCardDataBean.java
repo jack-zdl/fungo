@@ -20,7 +20,7 @@ public class CircleCardDataBean {
 	private String imageUrl;
 
 	@ApiModelProperty(value="2.5新图片url",example="")
-	private String newImageUrl;
+	private String imageUrlNew;
 	@ApiModelProperty(value="视频url",example="")
 	private String videoUrl;
 //	@ApiModelProperty(value="显示时间",example="")
