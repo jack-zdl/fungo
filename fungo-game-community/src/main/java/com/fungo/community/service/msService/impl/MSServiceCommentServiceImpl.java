@@ -40,6 +40,7 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
 
         List<CmmCmtReplyDto> cmmCmtReplyDtoList = null;
         FungoPageResultDto<CmmCmtReplyDto> fungoPageResultDto = new FungoPageResultDto<>();
+        String id = postDto.getId();
         try {
 
 
@@ -57,7 +58,7 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
             }
 
             //PK
-            String id = postDto.getId();
+
             if (StringUtils.isNotBlank(id)) {
                 param.put("id", id);
             }
@@ -161,7 +162,7 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
             }
 
         } catch (Exception ex) {
-            LOGGER.error("/ms/service/cmm/cmt/s/list--querySecondLevelCmtList-出现异常:", ex);
+            LOGGER.error("/ms/service/cmm/cmt/s/list--querySecondLevelCmtList-出现异常:id="+id, ex);
         }
         fungoPageResultDto.setData(cmmCmtReplyDtoList);
         return fungoPageResultDto;
@@ -173,6 +174,8 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
 
         List<CmmCmtReplyDto> cmmCmtReplyDtoList = null;
         FungoPageResultDto<CmmCmtReplyDto> fungoPageResultDto = new FungoPageResultDto<>();
+        //PK
+        String id = postDto.getId();
         try {
 
 
@@ -189,8 +192,7 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
                 replyPage = new Page<Reply>(page, limit);
             }
 
-            //PK
-            String id = postDto.getId();
+
             if (StringUtils.isNotBlank(id)) {
                 param.put("id", id);
             }
@@ -293,7 +295,7 @@ public class MSServiceCommentServiceImpl implements IMSServiceCommentService {
             }
 
         } catch (Exception ex) {
-            LOGGER.error("/ms/service/cmm/cmt/s/list--querySecondLevelCmtList-出现异常:", ex);
+            LOGGER.error("/ms/service/cmm/cmt/s/list--querySecondLevelCmtList-出现异常:id"+id, ex);
         }
         fungoPageResultDto.setData(cmmCmtReplyDtoList);
         return fungoPageResultDto;

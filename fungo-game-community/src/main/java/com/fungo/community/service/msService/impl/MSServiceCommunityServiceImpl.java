@@ -44,7 +44,7 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
 
         FungoPageResultDto<CmmCommunityDto> resultDto = new FungoPageResultDto<CmmCommunityDto>();
         List<CmmCommunityDto> cmmCommunityDtoList = null;
-
+        String id = communityDto.getId();
         Page<CmmCommunity> cmmCommunityPageResult = null;
         try {
 
@@ -62,7 +62,7 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
             }
 
             //PK
-            String id = communityDto.getId();
+
             if (StringUtils.isNotBlank(id)) {
                 param.put("id", id);
             }
@@ -141,7 +141,7 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
 
 
         } catch (Exception ex) {
-            LOGGER.error("/ms/service/cmm/cty/lists--queryCmmCommunityList-出现异常:", ex);
+            LOGGER.error("/ms/service/cmm/cty/lists--queryCmmCommunityList-出现异常:社区id="+id, ex);
         }
         resultDto.setData(cmmCommunityDtoList);
         PageTools.pageToResultDto(resultDto, cmmCommunityPageResult);
@@ -152,12 +152,14 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
     public CmmCommunityDto queryCmmCtyDetail(CmmCommunityDto cmmCommunityDto) {
 
         CmmCommunityDto cmmCommunityDtoRs = null;
+        String id = cmmCommunityDto.getId();
         try {
             if (null == cmmCommunityDto) {
                 return cmmCommunityDtoRs;
             }
 
-            CmmCommunity cmmCommunity = cmmCommunityDaoService.selectOne(Condition.create().setSqlSelect("id,name,icon,cover_image as coverImage").eq("id", cmmCommunityDto.getId()).ne("state", -1));
+            CmmCommunity cmmCommunity = cmmCommunityDaoService.selectOne(Condition.create().setSqlSelect("id,name,icon,cover_image as coverImage")
+                    .eq("id", id).ne("state", -1));
             if (null != cmmCommunity) {
                 cmmCommunityDtoRs = new CmmCommunityDto();
 
@@ -165,7 +167,7 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
             }
 
         } catch (Exception ex) {
-            LOGGER.error("/ms/service/cmm/cty--queryCmmCtyDetail-出现异常:", ex);
+            LOGGER.error("/ms/service/cmm/cty--queryCmmCtyDetail-出现异常:社区id="+id, ex);
         }
         return cmmCommunityDtoRs;
     }
@@ -184,7 +186,7 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
             commentBeanList = cmmCommunityDaoService.getAllComments(page, userId);
 
         } catch (Exception ex) {
-            LOGGER.error("/ms/service/cmm/user/comments--getAllComments-出现异常:", ex);
+            LOGGER.error("/ms/service/cmm/user/comments--getAllComments-出现异常:用户id="+userId, ex);
         }
         resultDto.setData(commentBeanList);
         PageTools.newPageToResultDto(resultDto,page.getTotal(),limit,pageNum);
@@ -199,7 +201,7 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
             return cmmPostDaoServiceImap.getRecommendMembersFromCmmPost(ccnt, limitSize, wathMbsSet);
 
         } catch (Exception ex) {
-            LOGGER.error("/ms/service/cmm/user/post/ids--getRecommendMembersFromCmmPost-出现异常:", ex);
+            LOGGER.error("/ms/service/cmm/user/post/ids--getRecommendMembersFromCmmPost-出现异常:用户集合="+wathMbsSet.toString(), ex);
         }
         return null;
     }
@@ -216,7 +218,7 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
             Page page = new Page(pageNum, limit);
             return cmmCommunityDaoService.getFollowerCommunity(page, communityIds);
         } catch (Exception ex) {
-            LOGGER.error("//ms/service/cmm/user/flw/cmtlists--getFollowerCommunity-出现异常:", ex);
+            LOGGER.error("//ms/service/cmm/user/flw/cmtlists--getFollowerCommunity-出现异常:社区集合="+communityIds.toString(), ex);
         }
         return null;
     }

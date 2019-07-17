@@ -169,7 +169,7 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
             }
 
         } catch (Exception ex) {
-            LOGGER.error("/ms/service/cmm/post/lists--queryCmmPostList-出现异常:", ex);
+            LOGGER.error("/ms/service/cmm/post/lists--queryCmmPostList-出现异常:参数="+postDto.toString(), ex);
         }
         resultDto.setData(cmmPostList);
        // PageTools.pageToResultDto(resultDto, cmmPostPageSelect);
@@ -189,7 +189,7 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
 
     @Override
     public Integer queryCmmPostCount(CmmPostDto postDto) {
-
+        String keyword = postDto.getTitle();
         try {
 
            /* int page = postDto.getPage();
@@ -247,18 +247,24 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
                 postEntityWrapper.orNew("content like '%" + content + "%'");
             }
             int selectCount  = postDaoService.selectCount(postEntityWrapper);*/
-            String keyword = postDto.getTitle();
             int selectCount = postDaoService.selectCount(new EntityWrapper<CmmPost>().where("state = {0}", 1).andNew("title like '%" + keyword + "%'")
                     .or("content like " + "'%" + keyword + "%'").or("content like " + "'%" + keyword + "%'"));
             return selectCount;
 
         } catch (Exception ex) {
-            LOGGER.error("/ms/service/cmm/post/count--queryCmmPostCount-出现异常:", ex);
+            LOGGER.error("/ms/service/cmm/post/count--queryCmmPostCount-出现异常:关键字="+keyword, ex);
         }
 
         return 0;
     }
 
+    /**
+     * 功能描述: 获取所有的置顶文章
+     * @param: [cmmPostDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.community.CmmPostDto>
+     * @auther: dl.zhang
+     * @date: 2019/7/17 16:57
+     */
     @Override
     public FungoPageResultDto<CmmPostDto> listCmmPostTopicPost(CmmPostDto cmmPostDto) {
 
@@ -318,7 +324,7 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
             return postDaoService.getCollection(page, postIds);
 
         } catch (Exception ex) {
-            LOGGER.error("/ms/service/cmm/post/user/collect--getCollection-出现异常:", ex);
+            LOGGER.error("/ms/service/cmm/post/user/collect--getCollection-出现异常:文章id="+postIds, ex);
         }
         return null;
     }
@@ -331,58 +337,73 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
      */
     @Override
     public Integer getPostBoomWatchNumByCardId(String cardId) {
-        return postDaoService.getPostBoomWatchNumByCardId(cardId);
+        try {
+            return postDaoService.getPostBoomWatchNumByCardId(cardId);
+        }catch (Exception e){
+            LOGGER.error("fegin根据跟用户ID获取文章的浏览量异常，用户id="+cardId,e);
+        }
+        return 0;
+
     }
 
-
+    /**
+     * 功能描述: 通过文章查询游戏信息
+     * @param: [cmmPost]
+     * @return: java.util.Map
+     * @auther: dl.zhang
+     * @date: 2019/7/17 16:55
+     */
     public Map getGameMsgByPost(CmmPostDto cmmPost) {
         Map<String, Object> communityMap = new HashMap<String, Object>();
-        //type 0 游戏社区 1：官方社区 2 圈子 3.什么都没有
-        communityMap.put("type", 3);
-        if (cmmPost == null || StringUtil.isNull(cmmPost.getId())) {
-            return communityMap;
-        }
-        // 获取文章是否有游戏社区 有游戏社区 优先取游戏社区对应游戏
-        CmmCommunity community = null;
-        if (StringUtil.isNotNull(cmmPost.getCommunityId())) {
-            community = communityService.selectById(cmmPost.getCommunityId());
-        }
-        //无社区 或是官方社区 查找文章关联游戏
-        if (community == null || community.getType() == 1) {
-            //找到文章关联的游戏，选择一个游戏社区
-            String communityId = cmmPostGameMapper.getCommunityIdByPostId(cmmPost.getId());
-            if (StringUtil.isNotNull(communityId)) {
-                community = communityService.selectById(communityId);
+        try {
+            //type 0 游戏社区 1：官方社区 2 圈子 3.什么都没有
+            communityMap.put("type", 3);
+            if (cmmPost == null || StringUtil.isNull(cmmPost.getId())) {
+                return communityMap;
             }
-        }
-        // 若有游戏社区且有对应的游戏id 则
-        if (community != null && community.getType() != 1 && !CommonUtil.isNull(community.getGameId())) {
-            ResultDto<GameDto> resultDto = gameFacedeService.selectGameDetails(community.getGameId(), 0);
-            if (resultDto.isSuccess()) {
-                GameDto gameDto = resultDto.getData();
-                communityMap.put("type", 0);
-                communityMap.put("objectId", community.getId());
-                communityMap.put("name", gameDto.getName());
-                communityMap.put("icon", gameDto.getIcon());
-                communityMap.put("gameId", community.getGameId());
+            // 获取文章是否有游戏社区 有游戏社区 优先取游戏社区对应游戏
+            CmmCommunity community = null;
+            if (StringUtil.isNotNull(cmmPost.getCommunityId())) {
+                community = communityService.selectById(cmmPost.getCommunityId());
             }
-        } else {
-            //查询文章是否有圈子
-            CmmCircle circle = null;
-            String circleId = cmmPostCircleMapper.getCmmCircleByPostId(cmmPost.getId());
-            if (StringUtil.isNotNull(circleId)) {
-                circle = cmmCircleMapper.selectById(circleId);
+            //无社区 或是官方社区 查找文章关联游戏
+            if (community == null || community.getType() == 1) {
+                //找到文章关联的游戏，选择一个游戏社区
+                String communityId = cmmPostGameMapper.getCommunityIdByPostId(cmmPost.getId());
+                if (StringUtil.isNotNull(communityId)) {
+                    community = communityService.selectById(communityId);
+                }
             }
-            if (circle != null) {
-                communityMap.put("objectId", circle.getId());
-                communityMap.put("name", circle.getCircleName());
-                communityMap.put("icon", circle.getCircleIcon());
-                communityMap.put("intro", circle.getIntro());
-                //2标识本次是圈子
-                communityMap.put("type", 2);
+            // 若有游戏社区且有对应的游戏id 则
+            if (community != null && community.getType() != 1 && !CommonUtil.isNull(community.getGameId())) {
+                ResultDto<GameDto> resultDto = gameFacedeService.selectGameDetails(community.getGameId(), 0);
+                if (resultDto.isSuccess()) {
+                    GameDto gameDto = resultDto.getData();
+                    communityMap.put("type", 0);
+                    communityMap.put("objectId", community.getId());
+                    communityMap.put("name", gameDto.getName());
+                    communityMap.put("icon", gameDto.getIcon());
+                    communityMap.put("gameId", community.getGameId());
+                }
+            } else {
+                //查询文章是否有圈子
+                CmmCircle circle = null;
+                String circleId = cmmPostCircleMapper.getCmmCircleByPostId(cmmPost.getId());
+                if (StringUtil.isNotNull(circleId)) {
+                    circle = cmmCircleMapper.selectById(circleId);
+                }
+                if (circle != null) {
+                    communityMap.put("objectId", circle.getId());
+                    communityMap.put("name", circle.getCircleName());
+                    communityMap.put("icon", circle.getCircleIcon());
+                    communityMap.put("intro", circle.getIntro());
+                    //2标识本次是圈子
+                    communityMap.put("type", 2);
+                }
             }
+        }catch (Exception e){
+            LOGGER.error("fegin通过文章查询游戏信息,文章id="+cmmPost.getId(),e);
         }
         return communityMap;
-        //------
     }
 }

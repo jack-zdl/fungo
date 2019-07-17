@@ -40,7 +40,7 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
 
         FungoPageResultDto<MooMoodDto> resultDto = new FungoPageResultDto<MooMoodDto>();
         List<MooMoodDto> cmmPostList = null;
-
+        String id = mooMoodDto.getId();
         try {
 
             int page = mooMoodDto.getPage();
@@ -57,8 +57,8 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
             }
 
             //id
-            if (StringUtils.isNotBlank(mooMoodDto.getId())) {
-                param.put("id", mooMoodDto.getId());
+            if (StringUtils.isNotBlank(id)) {
+                param.put("id", id);
             }
             //会员id
             String member_id = mooMoodDto.getMemberId();
@@ -123,7 +123,7 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
             }
 
         } catch (Exception ex) {
-            LOGGER.error("/ms/service/cmm/mood/lists----queryCmmPostList-出现异常:", ex);
+            LOGGER.error("/ms/service/cmm/mood/lists----queryCmmPostList-出现异常:心情id="+id, ex);
         }
 
         resultDto.setData(cmmPostList);
@@ -135,6 +135,7 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
 
         FungoPageResultDto<MooMessageDto> resultDto = new FungoPageResultDto<MooMessageDto>();
         List<MooMessageDto> mooMessageDtoList = null;
+        String id = mooMessageDto.getId();
         try {
 
             int page = mooMessageDto.getPage();
@@ -151,7 +152,7 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
             }
 
             //pk
-            String id = mooMessageDto.getId();
+//            String id = mooMessageDto.getId();
             if (StringUtils.isNotBlank(id)) {
                 param.put("id", id);
             }
@@ -230,7 +231,7 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
 
 
         } catch (Exception ex) {
-            LOGGER.error("/ms/service/cmm/mood/cmt/lists----queryCmmMoodCommentList-出现异常:", ex);
+            LOGGER.error("/ms/service/cmm/mood/cmt/lists----queryCmmMoodCommentList-出现异常:心情评论id="+id, ex);
         }
         resultDto.setData(mooMessageDtoList);
         return resultDto;
@@ -282,7 +283,7 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
             return mooMoodDaoService.selectCount(moodDtoEntityWrapper);
 
         } catch (Exception ex) {
-            LOGGER.error("/ms/service/cmm/mood/count----queryCmmPostList-出现异常:", ex);
+            LOGGER.error("/ms/service/cmm/mood/count----queryCmmPostList-出现异常:参数="+mooMoodDto.toString(), ex);
         }
         return 0;
     }
