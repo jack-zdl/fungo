@@ -3,6 +3,8 @@ package com.game.common.util.pc20;
 import com.game.common.util.pc20.analysysjavasdk.AnalysysException;
 import com.game.common.util.pc20.analysysjavasdk.AnalysysJavaSdk;
 import com.game.common.util.pc20.analysysjavasdk.DEBUG;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
@@ -18,6 +20,8 @@ import java.util.Map;
  * @create 2019/6/13 13:08
  */
 public class BuriedPointUtils {
+
+    private static Logger logger = LoggerFactory.getLogger(BuriedPointUtils.class);
 
     @Autowired
     private AnalysysJavaSdk analysysJavaSdk;
@@ -62,6 +66,7 @@ public class BuriedPointUtils {
         try {
             analysys.track(distinctId, false, "gamepage", trackPropertie, platForm);
         } catch (AnalysysException e) {
+            logger.error("游戏的详情analysystrack异常",e);
             e.printStackTrace();
         }
 //        analysys.flush();
