@@ -590,6 +590,11 @@ public class IndexServiceImpl implements IIndexService {
         ArrayList<CardDataBean> gameDateList = new ArrayList<>();
         CardIndexBean indexBean = new CardIndexBean();
 
+        /**
+         * 功能描述: @todo 循环遍历blist然后去调游戏微服务接口，需要改进争取只掉一次。
+         * @auther: dl.zhang
+         * @date: 2019/7/17 18:48
+         */
         for (Banner banner : blist) {
 
             GameDto gameParam = new GameDto();
