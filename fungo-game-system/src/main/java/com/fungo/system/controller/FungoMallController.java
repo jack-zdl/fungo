@@ -5,6 +5,7 @@ import com.fungo.system.mall.service.IFungoMallGoodsService;
 import com.game.common.dto.ResultDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +24,7 @@ public class FungoMallController {
     private IFungoMallGoodsService iFungoMallGoodsService;
 
     @PostMapping("/mall/addGoods")
-    public ResultDto<String> addGoods(FungoMallDto fungoMallDto){
+    public ResultDto<String> addGoods(@RequestBody FungoMallDto fungoMallDto){
             iFungoMallGoodsService.addGoods(fungoMallDto);
             return ResultDto.success();
     }
