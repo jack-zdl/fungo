@@ -1,5 +1,0 @@
-spring:
-  profiles:
-    active: dev
-application.version : V3.0.0-SNAPSHOT
-#debug: true

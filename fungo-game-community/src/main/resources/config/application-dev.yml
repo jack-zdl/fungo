@@ -1,5 +1,5 @@
-server:
-  port: 8791
+#server:
+#  port: 8791
 
   
 #--------------------------------------------------------springCloud--------------------------------------------------------------
@@ -14,9 +14,9 @@ eureka:
     lease-expiration-duration-in-seconds: 10
 
 #-----------------------------------------------------------------------------------------------------------
-  client:
-    serviceUrl:
-      defaultZone:  http://fungoEurekaAdmin:3e0914041adb1@127.0.0.1:8761/eureka/
+#  client:
+#    serviceUrl:
+#      defaultZone:  http://fungoEurekaAdmin:3e0914041adb1@127.0.0.1:8761/eureka/
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -95,34 +95,34 @@ spring:
   #-----------------------------------------------------------------------------------------------------------------------------------
   aop:
     proxy-target-class: true
-  datasource:
-    #DB配置
-    type: com.zaxxer.hikari.HikariDataSource
-    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://39.105.18.214:3306/fungo_dev?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-#    username: root
-#    password: affdB440821920A9
-    #RDS主实例外网地址
-    url: jdbc:mysql://rm-bp145sizta1yg4585xo.mysql.rds.aliyuncs.com:3306/fungo_cloud_uat?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: fungo_uat
-    password: b1dcfae36fa84Db88479efbd36b16e
-    # 连接池配置
-    hikari:
-      # 连接池标题
-      pool-name: funGoApiHikariCP
-      # 最小空闲连接数量
-      minimum-idle: 5
-      # 连接池最大连接数，默认是10
-      maximum-pool-size: 15
-      # 空闲连接存活最大时间，默认600000（10分钟）
-      idle-timeout: 600000
-      # 控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
-      max-lifetime: 1800000
-      # 数据库连接超时时间,默认30秒，即30000
-      connection-timeout: 30000
-      connection-test-query: SELECT 1
-      # 控制从池返回的连接的默认自动提交行为,默认值：true
-      auto-commit: true
+#  datasource:
+#    #DB配置
+#    type: com.zaxxer.hikari.HikariDataSource
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+##    url: jdbc:mysql://39.105.18.214:3306/fungo_dev?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+##    username: root
+##    password: affdB440821920A9
+#    #RDS主实例外网地址
+#    url: jdbc:mysql://rm-bp145sizta1yg4585xo.mysql.rds.aliyuncs.com:3306/fungo_cloud_uat?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+#    username: fungo_uat
+#    password: b1dcfae36fa84Db88479efbd36b16e
+#    # 连接池配置
+#    hikari:
+#      # 连接池标题
+#      pool-name: funGoApiHikariCP
+#      # 最小空闲连接数量
+#      minimum-idle: 5
+#      # 连接池最大连接数，默认是10
+#      maximum-pool-size: 15
+#      # 空闲连接存活最大时间，默认600000（10分钟）
+#      idle-timeout: 600000
+#      # 控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
+#      max-lifetime: 1800000
+#      # 数据库连接超时时间,默认30秒，即30000
+#      connection-timeout: 30000
+#      connection-test-query: SELECT 1
+#      # 控制从池返回的连接的默认自动提交行为,默认值：true
+#      auto-commit: true
     #配置ehcache缓存
   cache:
     ehcache:
@@ -131,36 +131,36 @@ spring:
 
 
   #Redis基于哨兵机制的主从
-  redis:
-    sentinel:
-      master: mymaster
-      nodes: 39.105.18.214:26379,39.105.18.214:26380,39.105.18.214:26381
-    database: 0
-    lettuce:
-      pool:
-        max-active: 8
-        max-idle: 8
-        min-idle: 1
-    #连接超时时间（毫秒）
-    timeout: 3000
-    password: fungoredisdev
+#  redis:
+#    sentinel:
+#      master: mymaster
+#      nodes: 39.105.18.214:26379,39.105.18.214:26380,39.105.18.214:26381
+#    database: 0
+#    lettuce:
+#      pool:
+#        max-active: 8
+#        max-idle: 8
+#        min-idle: 1
+#    #连接超时时间（毫秒）
+#    timeout: 3000
+#    password: fungoredisdev
   jackson:
     time-zone: GMT+8
 
 #---------------------------------------mq----------------------------------------------
-  rabbitmq:
-    #外网
-    host: 1811420479436984.mq-amqp.cn-hangzhou-a.aliyuncs.com
-    #内网
-    #host: 1811420479436984.mq-amqp.cn-hangzhou-a.aliyuncs.com
-    port: 5672
-    username: LTAIsW4qLBG6M3Vf
-    password: EBQbTTZGhPptMw3tGJ1grmG4r6uD7l
-    virtual-host: dev
-    template:
-      mandatory: true
-    publisher-confirms: true
-    publisher-returns: true
+#  rabbitmq:
+#    #外网
+#    host: 1811420479436984.mq-amqp.cn-hangzhou-a.aliyuncs.com
+#    #内网
+#    #host: 1811420479436984.mq-amqp.cn-hangzhou-a.aliyuncs.com
+#    port: 5672
+#    username: LTAIsW4qLBG6M3Vf
+#    password: EBQbTTZGhPptMw3tGJ1grmG4r6uD7l
+#    virtual-host: dev
+#    template:
+#      mandatory: true
+#    publisher-confirms: true
+#    publisher-returns: true
 #---------------------------------------mq----------------------------------------------
 
 #--------------------------------------nacos------------------------------------------
