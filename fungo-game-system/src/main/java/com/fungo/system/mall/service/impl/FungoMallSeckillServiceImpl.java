@@ -143,7 +143,9 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
              * goods_status 产品状态 :
              *                       -1 已删除 ，1 已 下架  ，  2 已 上架
              */
-            List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(queryStartDate, queryEndDate, "1,2,21,22,23", 2);
+            List<String> goods_types = new ArrayList<>();
+            goods_types.add("1");goods_types.add("2");goods_types.add("21");goods_types.add("22");goods_types.add("23");
+            List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(queryStartDate, queryEndDate, goods_types, 2);
             if (null != goodsMapList && !goodsMapList.isEmpty()) {
                 goodsOutBeanList = new ArrayList<MallGoodsOutBean>();
 
@@ -355,7 +357,9 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             }
 
             //获取秒杀当天的商品
-            List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(queryStartDate, queryEndDate, "1,2,21,22,23", 2);
+            List<String> goods_types = new ArrayList<>();
+            goods_types.add("1");goods_types.add("2");goods_types.add("21");goods_types.add("22");goods_types.add("23");
+            List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(queryStartDate, queryEndDate, goods_types, 2);
             if (null != goodsMapList && !goodsMapList.isEmpty()) {
                 goodsOutBeanList = new ArrayList<MallGoodsOutBean>();
 

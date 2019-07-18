@@ -51,9 +51,15 @@
 					AND
 					   ( sk.start_time BETWEEN #{startTime} AND #{endTime}  )
 				</if>
-				<if test="goods_type != null">
+				<if test="goods_types != null">
 					AND
-					 gds.goods_type in( #{goods_type} )
+					 gds.goods_type in
+
+					<foreach  item="item" collection="goods_types" index="index"  open="(" separator="," close=")">
+						#{item}
+					</foreach>
+
+
 				</if>
 				<if test="goods_status > 0">
 					AND

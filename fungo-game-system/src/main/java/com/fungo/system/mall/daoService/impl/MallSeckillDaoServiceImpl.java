@@ -26,8 +26,8 @@ public class MallSeckillDaoServiceImpl extends ServiceImpl<MallSeckillDao, MallS
     private MallSeckillDao mallSeckillDao;
 
     @Override
-    public List<Map<String, Object>> querySeckillGoods(String startTime, String endTime, String goods_type, int goods_status) throws Exception {
-        return mallSeckillDao.querySeckillGoods(startTime, endTime, goods_type, goods_status);
+    public List<Map<String, Object>> querySeckillGoods(String startTime, String endTime, List<String> goods_types, int goods_status) throws Exception {
+        return mallSeckillDao.querySeckillGoods(startTime, endTime, goods_types, goods_status);
     }
 
 

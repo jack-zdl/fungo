@@ -29,7 +29,7 @@ public interface MallSeckillDao extends BaseMapper<MallSeckill> {
      * @return
      */
     public List<Map<String,Object>> querySeckillGoods(@Param("startTime") String startTime, @Param("endTime") String endTime,
-                                                      @Param("goods_type") String goods_type,@Param("goods_status") int goods_status);
+                                                      @Param("goods_types") List<String> goods_types,@Param("goods_status") int goods_status);
 
 
 

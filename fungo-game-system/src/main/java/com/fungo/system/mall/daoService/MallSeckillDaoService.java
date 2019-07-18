@@ -20,12 +20,11 @@ public interface MallSeckillDaoService extends IService<MallSeckill> {
      * 查询秒杀的商品
      * @param startTime 开始时间
      * @param endTime 结束时间
-     * @param goods_type 商品类型 如：1,2,3
+     * @param goods_types 商品类型 如：1,2,3
      * @param goods_status 商品状态
-     * @param gameId 游戏ID
      * @return
      */
-    public List<Map<String,Object>> querySeckillGoods(String startTime, String endTime , String  goods_type,int goods_status) throws Exception;
+    public List<Map<String,Object>> querySeckillGoods(String startTime, String endTime , List<String>  goods_types,int goods_status) throws Exception;
 
 
 }
