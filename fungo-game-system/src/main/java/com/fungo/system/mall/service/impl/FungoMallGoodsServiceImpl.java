@@ -3,6 +3,7 @@ package com.fungo.system.mall.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.fungo.system.dto.FungoMallDto;
 import com.fungo.system.mall.daoService.MallGoodsCatesDaoService;
 import com.fungo.system.mall.daoService.MallGoodsDaoService;
 import com.fungo.system.mall.daoService.MallSeckillDaoService;
@@ -43,6 +44,8 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
     @Value("${fungo.mall.seckill.aesSecretKey}")
     private String aESSecretKey;
 
+//    @Autowired
+//    private NacosFungoCircleConfig nacosFungoCircleConfig;
 
     private void addGoodsCates() {
         //分类
@@ -165,53 +168,113 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 
 
     //添加商品
-    public void addGoods() {
+    public void addGoods(FungoMallDto fungoMallDto) {
 
         //实物物品类型id: 2019011415434340219
+        try{
+            Map<String, Object> imgMapBig = new HashMap<>();
+            Long cateId = 0l;
+            switch (fungoMallDto.getType()){
+                case 1:
+                    cateId = 2019011415405395215L;
+                    break;
+                case 2:
+                    cateId = 2019011415434340219L;
+                    break;
+                default:
+                    break;
+            }
+            String goodsName = fungoMallDto.getGoodsName();
+            Long price = fungoMallDto.getPrice();
 
-        Long cateId = 2019011415434340219L;
-        String goodsName = "三只松鼠巨型零食礼盒2217g";
-        Long price = 19800L;
+            List<Map<String, Object>> imgsList = new ArrayList<>();
+//            if(false){
+//                imgMapBig.put("url",fungoMallDto.getBigUrl());
+//                imgMapBig.put("status",fungoMallDto.getStatus());
+//                imgMapBig.put("size",fungoMallDto.getSize());
+//                imgMapBig.put("style",fungoMallDto.getStyle());
+//                imgsList.add(imgMapBig);
+//            }else {
+                imgMapBig.put("url", fungoMallDto.getBigUrl());
+                imgMapBig.put("status", 1);
+                imgMapBig.put("size", 1);
+                imgMapBig.put("style", 1);
 
-        List<Map<String, Object>> imgsList = new ArrayList<>();
-        Map<String, Object> imgMapBig = new HashMap<>();
-        imgMapBig.put("url", "http://output-mingbo.oss-cn-beijing.aliyuncs.com/mall/goods/imgs/lbd.png");
-        imgMapBig.put("status", 1);
-        imgMapBig.put("size", 1);
-        imgMapBig.put("style", 1);
+                Map<String, Object> imgMapSmall = new HashMap<>();
+                imgMapSmall.put("url",fungoMallDto.getSmallUrl());
+                imgMapSmall.put("status", 1);
+                imgMapSmall.put("size", 3);
+                imgMapSmall.put("style", 1);
+                imgsList.add(imgMapBig);
+                imgsList.add(imgMapSmall);
+//            }
+            //----------
+            MallGoods mallGoods = new MallGoods();
 
-        Map<String, Object> imgMapSmall = new HashMap<>();
-        imgMapSmall.put("url", "http://output-mingbo.oss-cn-beijing.aliyuncs.com/mall/goods/imgs/lbs.png");
-        imgMapSmall.put("status", 1);
-        imgMapSmall.put("size", 3);
-        imgMapSmall.put("style", 1);
+            Long goodsId = PKUtil.getInstance().longPK();
 
-        imgsList.add(imgMapBig);
-        imgsList.add(imgMapSmall);
+            mallGoods.setId(goodsId);
 
-
-        //----------
-        MallGoods mallGoods = new MallGoods();
-
-        Long goodsId = PKUtil.getInstance().longPK();
-
-        mallGoods.setId(goodsId);
-
-        mallGoods.setCid(cateId);
-        mallGoods.setGoodsName(goodsName);
-        mallGoods.setMainImg(JSON.toJSONString(imgsList));
+            mallGoods.setCid(cateId);
+            mallGoods.setGoodsName(goodsName);
+            mallGoods.setMainImg(JSON.toJSONString(imgsList));
 
 
-        mallGoods.setMarketPriceVcy(price);
+            mallGoods.setMarketPriceVcy(price);
 
-        mallGoods.setGoodsStatus(2);
-        mallGoods.setGoodsType(1);
-        mallGoods.setSort(4);
+            mallGoods.setGoodsStatus(fungoMallDto.getGoodsStatus());
+            mallGoods.setGoodsType(fungoMallDto.getGoodsType());
+            mallGoods.setSort(fungoMallDto.getSort());
+            mallGoods.setCreatedAt(new Date());
+            mallGoods.setUpdatedAt(new Date());
+//            mallGoodsDaoService.insert(mallGoods);
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("增加商品异常,参数="+fungoMallDto.toString(),e);
+        }
 
-        mallGoods.setCreatedAt(new Date());
-        mallGoods.setUpdatedAt(new Date());
+//        String goodsName = "三只松鼠巨型零食礼盒2217g";
+//        Long price = 19800L;
+//
+//        List<Map<String, Object>> imgsList = new ArrayList<>();
+//        Map<String, Object> imgMapBig = new HashMap<>();
+//        imgMapBig.put("url", "http://output-mingbo.oss-cn-beijing.aliyuncs.com/mall/goods/imgs/lbd.png");
+//        imgMapBig.put("status", 1);
+//        imgMapBig.put("size", 1);
+//        imgMapBig.put("style", 1);
+//
+//        Map<String, Object> imgMapSmall = new HashMap<>();
+//        imgMapSmall.put("url", "http://output-mingbo.oss-cn-beijing.aliyuncs.com/mall/goods/imgs/lbs.png");
+//        imgMapSmall.put("status", 1);
+//        imgMapSmall.put("size", 3);
+//        imgMapSmall.put("style", 1);
+//
+//        imgsList.add(imgMapBig);
+//        imgsList.add(imgMapSmall);
+//
+//
+//        //----------
+//        MallGoods mallGoods = new MallGoods();
+//
+//        Long goodsId = PKUtil.getInstance().longPK();
+//
+//        mallGoods.setId(goodsId);
+//
+//        mallGoods.setCid(cateId);
+//        mallGoods.setGoodsName(goodsName);
+//        mallGoods.setMainImg(JSON.toJSONString(imgsList));
+//
+//
+//        mallGoods.setMarketPriceVcy(price);
+//
+//        mallGoods.setGoodsStatus(2);
+//        mallGoods.setGoodsType(1);
+//        mallGoods.setSort(4);
+//
+//        mallGoods.setCreatedAt(new Date());
+//        mallGoods.setUpdatedAt(new Date());
 
-        mallGoodsDaoService.insert(mallGoods);
+
 
     }
 

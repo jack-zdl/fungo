@@ -1,6 +1,7 @@
 package com.fungo.system.mall.service;
 
 
+import com.fungo.system.dto.FungoMallDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.mall.MallGoodsInput;
 
@@ -31,6 +32,7 @@ public interface IFungoMallGoodsService {
      */
     public ResultDto<Map<String,Object>> queryGoodsCountWithGame(MallGoodsInput mallGoodsInput);
 
-
+    //添加商品
+    public void addGoods(FungoMallDto fungoMallDto);
 
 }

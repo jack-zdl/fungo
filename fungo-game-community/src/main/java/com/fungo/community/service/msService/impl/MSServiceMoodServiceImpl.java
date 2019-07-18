@@ -10,6 +10,7 @@ import com.fungo.community.service.msService.IMSServiceMoodService;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.community.MooMessageDto;
 import com.game.common.dto.community.MooMoodDto;
+import com.game.common.util.PageTools;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,21 +42,18 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
         FungoPageResultDto<MooMoodDto> resultDto = new FungoPageResultDto<MooMoodDto>();
         List<MooMoodDto> cmmPostList = null;
         String id = mooMoodDto.getId();
+        Page<MooMood> mooMoodPage = null;
         try {
 
             int page = mooMoodDto.getPage();
             int limit = mooMoodDto.getLimit();
 
-
             EntityWrapper<MooMood> moodDtoEntityWrapper = new EntityWrapper<MooMood>();
             HashMap<String, Object> param = new HashMap<String, Object>();
-
-            Page<MooMood> mooMoodPage = null;
 
             if (page > 0 && limit > 0) {
                 mooMoodPage = new Page<MooMood>(page, limit);
             }
-
             //id
             if (StringUtils.isNotBlank(id)) {
                 param.put("id", id);
@@ -127,6 +125,7 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
         }
 
         resultDto.setData(cmmPostList);
+        PageTools.pageToResultDto(resultDto,mooMoodPage);
         return resultDto;
     }
 

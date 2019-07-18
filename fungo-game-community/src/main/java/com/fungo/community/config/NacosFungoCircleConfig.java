@@ -22,7 +22,7 @@ public class NacosFungoCircleConfig   {
      * @auther: dl.zhang
      * @date: 2019/7/4 13:58
      */
-    @Value(value = "${cirlce.postnumber:3}")
+    @Value(value = "${cirlce.postnumber}")
     private int value ;
 
     @Value(value = "${nacos.config:1}")

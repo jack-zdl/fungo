@@ -1004,7 +1004,7 @@ public class MemberServiceImpl implements IMemberService {
 
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_MOODS;
         String keySuffix = loginId + JSON.toJSONString(input);
-        re = (FungoPageResultDto<MyPublishBean>) fungoCacheMood.getIndexCache(keyPrefix, keySuffix);
+        //re =  (FungoPageResultDto<MyPublishBean>) fungoCacheMood.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
         }
@@ -1019,7 +1019,8 @@ public class MemberServiceImpl implements IMemberService {
         FungoPageResultDto<MooMoodDto> resultDto = communityFeignClient.queryCmmMoodList(moomoodParam);
      //   Page<MooMoodDto> page = iMemeberProxyService.selectMooMoodPage(moomoodParam); //moodService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<MooMood>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
     //     List<MooMoodDto> mlist = page.getRecords();
-        List<MooMoodDto> mlist = resultDto.getData();
+        if(resultDto == null ) return FungoPageResultDto.error("-1","心情没有数据");
+        List<MooMoodDto> mlist =resultDto.getData() ;
         List<MyPublishBean> blist = new ArrayList<>();
         // TODO Auto-generated method stub
         ObjectMapper mapper = new ObjectMapper();
@@ -1079,9 +1080,8 @@ public class MemberServiceImpl implements IMemberService {
 
             blist.add(bean);
         }
-        PageTools.newPageToResultDto(re, resultDto.getCount(),resultDto.getPages(),input.getPage());
         re.setData(blist);
-
+        PageTools.newPageToResultDto(re, resultDto.getCount(),resultDto.getPages(),input.getPage());
 
         //redis cache
         fungoCacheArticle.excIndexCache(true, keyPrefix, keySuffix, re);
@@ -1201,7 +1201,7 @@ public class MemberServiceImpl implements IMemberService {
             return re;
         }
 
-        re = new FungoPageResultDto<MyCommentBean>();
+        re = new FungoPageResultDto<>();
         Page<CommentBean> page = new Page<>(input.getPage(), input.getLimit());
         // @todo 5.22
         FungoPageResultDto<CommentBean>  comments = communityFeignClient.getAllComments(page.getPages(),page.getLimit(),loginId);

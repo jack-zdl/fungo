@@ -189,7 +189,7 @@ public class MSServiceCommunityServiceImpl implements IMSServiceCommunityService
             LOGGER.error("/ms/service/cmm/user/comments--getAllComments-出现异常:用户id="+userId, ex);
         }
         resultDto.setData(commentBeanList);
-        PageTools.newPageToResultDto(resultDto,page.getTotal(),limit,pageNum);
+        PageTools.pageToResultDto(resultDto,page);
         return resultDto;
     }
 
