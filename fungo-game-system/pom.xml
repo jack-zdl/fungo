@@ -188,11 +188,6 @@
 		<!-- 依赖lang3-->
 
 
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-			<version>0.2.2.RELEASE</version>
-		</dependency>
 
 	</dependencies>
     <dependencyManagement>
@@ -204,13 +199,7 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-alibaba-dependencies</artifactId>
-				<version>0.2.2.RELEASE</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
+
         </dependencies>
     </dependencyManagement>
 
