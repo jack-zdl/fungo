@@ -64,7 +64,7 @@ spring:
       mandatory: true
     publisher-confirms: true
     publisher-returns: true
-  ---------------------------------------mq----------------------------------------------
+ # ---------------------------------------mq----------------------------------------------
   redis:
     sentinel:
       master: mymaster
