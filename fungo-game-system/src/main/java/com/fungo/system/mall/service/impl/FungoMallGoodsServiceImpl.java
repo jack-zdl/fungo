@@ -228,7 +228,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
             mallGoods.setSort(fungoMallDto.getSort());
             mallGoods.setCreatedAt(new Date());
             mallGoods.setUpdatedAt(new Date());
-//            mallGoodsDaoService.insert(mallGoods);
+            mallGoodsDaoService.insert(mallGoods);
         }catch (Exception e){
             e.printStackTrace();
             logger.error("增加商品异常,参数="+fungoMallDto.toString(),e);
