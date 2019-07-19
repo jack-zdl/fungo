@@ -12,19 +12,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-@RefreshScope
 public class NacosFungoCircleConfig {
 
 
-    @Value(value = "${fungo.mall.mallGoodImagesType}")
-    private boolean mallGoodImagesType;
-
-
-    public boolean isMallGoodImagesType() {
-        return mallGoodImagesType;
-    }
-
-    public void setMallGoodImagesType(boolean mallGoodImagesType) {
-        this.mallGoodImagesType = mallGoodImagesType;
-    }
 }

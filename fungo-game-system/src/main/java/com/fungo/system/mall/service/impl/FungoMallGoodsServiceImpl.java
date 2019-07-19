@@ -3,7 +3,6 @@ package com.fungo.system.mall.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.dto.FungoMallDto;
 import com.fungo.system.mall.daoService.MallGoodsCatesDaoService;
 import com.fungo.system.mall.daoService.MallGoodsDaoService;
@@ -45,8 +44,6 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
     @Value("${fungo.mall.seckill.aesSecretKey}")
     private String aESSecretKey;
 
-    @Autowired
-    private NacosFungoCircleConfig nacosFungoCircleConfig;
 
     private void addGoodsCates() {
         //分类
@@ -189,13 +186,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
             Long price = fungoMallDto.getPrice();
 
             List<Map<String, Object>> imgsList = new ArrayList<>();
-            if(nacosFungoCircleConfig.isMallGoodImagesType()){
-//                imgMapBig.put("url",fungoMallDto.getBigUrl());
-//                imgMapBig.put("status",fungoMallDto.getStatus());
-//                imgMapBig.put("size",fungoMallDto.getSize());
-//                imgMapBig.put("style",fungoMallDto.getStyle());
-//                imgsList.add(imgMapBig);
-            }else {
+
                 imgMapBig.put("url", fungoMallDto.getBigUrl());
                 imgMapBig.put("status", 1);
                 imgMapBig.put("size", 1);
@@ -208,7 +199,6 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                 imgMapSmall.put("style", 1);
                 imgsList.add(imgMapBig);
                 imgsList.add(imgMapSmall);
-            }
             //----------
             MallGoods mallGoods = new MallGoods();
 
