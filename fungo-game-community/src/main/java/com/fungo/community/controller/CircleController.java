@@ -58,7 +58,7 @@ public class CircleController {
        }catch (Exception e){
            e.printStackTrace();
            LOGGER.error("获取圈子列表列表及详情",e);
-            re = FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(CommonEnum.ERROR.code(),"获取圈子列表异常，请联系管理员");
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildError("获取圈子列表异常，请联系管理员");
        }
         return re;
     }

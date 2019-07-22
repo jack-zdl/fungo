@@ -103,8 +103,17 @@ public class FungoPageResultDto<T> extends AbstractResultDto {
          * @param msg 结果信息
          * @return RespJson
          */
+        public static FungoPageResultDto buildError(String msg) {
+            return buildInfo(CommonEnum.ERROR.code(), "-1", msg, null,-1,-1);
+        }
+
+        /**
+         * 警告返回请求结果和结果信息的方法
+         * @param msg 结果信息
+         * @return RespJson
+         */
         public static FungoPageResultDto buildWarning(String code,String msg) {
-            return buildInfo(CommonEnum.ERROR.code(), code, msg, null,-1,-1);
+            return buildInfo(CommonEnum.WARMING.code(), code, msg, null,-1,-1);
         }
 
 

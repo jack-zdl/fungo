@@ -2,6 +2,15 @@ package com.game.common.enums;
 
 /**
  * <p>返回给前端code</p>
+ * <p>
+ *     1xxx 代表游戏相关的
+ * </p>
+ * <p>
+ *     2xxx 代表社区相关的
+ * </p>
+ * <p>
+ *     3xxx 代表系统相关的
+ * </p>
  *
  * @Author: dl.zhang
  * @Date: 2019/6/21
@@ -9,7 +18,8 @@ package com.game.common.enums;
 public enum AbstractResultEnum {
 
     CODE_ONE("1001","该游戏已开通圈子",""),
-    CODE_TWO("1002","该游戏未开通圈子","");
+    CODE_TWO("1002","该游戏未开通圈子",""),
+    CODE_GAME_THREE("1003","","该游戏不存在");
 
 
     String key;

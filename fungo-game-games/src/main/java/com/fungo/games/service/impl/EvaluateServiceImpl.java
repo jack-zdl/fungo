@@ -27,6 +27,7 @@ import com.game.common.dto.community.ReplyBean;
 import com.game.common.dto.community.ReplyInputPageDto;
 import com.game.common.dto.evaluation.*;
 import com.game.common.dto.user.MemberDto;
+import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheGame;
@@ -375,7 +376,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
     @Override
     public ResultDto<EvaluationOutBean> getEvaluationDetail(String memberId, String commentId) {
-        ResultDto<EvaluationOutBean> re = new ResultDto<EvaluationOutBean>();
+        ResultDto<EvaluationOutBean> re = new ResultDto<>();
         EvaluationOutBean bean = new EvaluationOutBean();
         GameEvaluation evaluation = gameEvaluationService.selectById(commentId);
         if (evaluation == null) {
@@ -441,133 +442,132 @@ public class EvaluateServiceImpl implements IEvaluateService {
         FungoPageResultDto<EvaluationOutPageDto> re = null;
 
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS;
-        String keySuffix = pageDto.getGame_id() + JSON.toJSONString(pageDto);
-
-        re = (FungoPageResultDto<EvaluationOutPageDto>) fungoCacheGame.getIndexCache(keyPrefix, keySuffix);
-        if (null != re) {
-            return re;
-        }
-        re = new FungoPageResultDto<EvaluationOutPageDto>();
-        List<EvaluationOutPageDto> relist = new ArrayList<EvaluationOutPageDto>();
-        Game game = gameService.selectById(pageDto.getGame_id());
-        if (game == null) {
-            return FungoPageResultDto.error("-1", "游戏不存在");
-        }
-        Wrapper<GameEvaluation> commentWrapper = new EntityWrapper<GameEvaluation>();
-        commentWrapper.eq("game_id", pageDto.getGame_id());
-        commentWrapper.and("state !={0}", -1);
-        if ("mine".equals(pageDto.getFilter())) {//社区主
-            commentWrapper.eq("member_id", memberId);
-        }
-        //pageDto.getSort()==0||
-        if (pageDto.getSort() == 1) {//排序
-            commentWrapper.orderBy("created_at", true);
-        } else if (pageDto.getSort() == 0 || pageDto.getSort() == 2) {
-            commentWrapper.orderBy("created_at", false);
-        } else if (pageDto.getSort() == 3) {
-            commentWrapper.groupBy("id").orderBy("sum(like_num+reply_num)", true);//按照点赞数和回复数排序
-        } else if (pageDto.getSort() == 4) {
-            commentWrapper.groupBy("id").orderBy("sum(like_num+reply_num)", false);
-        }
-
-        Page<GameEvaluation> page = this.gameEvaluationService.selectPage(new Page<>(pageDto.getPage(), pageDto.getLimit()), commentWrapper);
-        List<GameEvaluation> list = page.getRecords();
-
-        for (GameEvaluation cmmComment : list) {
-            EvaluationOutPageDto ctem = new EvaluationOutPageDto();
-            ctem.setContent(CommonUtils.filterWord(cmmComment.getContent()));
-            ctem.setCreatedAt(DateTools.fmtDate(cmmComment.getCreatedAt()));
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                ctem.setImages(objectMapper.readValue(cmmComment.getImages(), ArrayList.class));
-            } catch (Exception e) {
-                e.printStackTrace();
+        String gameId = pageDto.getGame_id();
+        String keySuffix = gameId + JSON.toJSONString(pageDto);
+        try {
+            re = (FungoPageResultDto<EvaluationOutPageDto>) fungoCacheGame.getIndexCache(keyPrefix, keySuffix);
+            if (null != re) {
+                return re;
             }
-            ctem.setIs_recommend("1".equals(cmmComment.getIsRecommend()) ? true : false);
-            ctem.setLike_num(cmmComment.getLikeNum());
-            ctem.setObjectId(cmmComment.getId());
-            ctem.setPhone_model(cmmComment.getPhoneModel());
-            ctem.setReply_count(cmmComment.getReplyNum());
-            ctem.setUpdatedAt(DateTools.fmtDate(cmmComment.getUpdatedAt()));
+            re = new FungoPageResultDto<>();
+            List<EvaluationOutPageDto> relist = new ArrayList<EvaluationOutPageDto>();
+            Game game = gameService.selectById(gameId);
+            if (game == null) {
+                return FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(AbstractResultEnum.CODE_GAME_THREE.getKey(), AbstractResultEnum.CODE_GAME_THREE.getFailevalue());
+            }
+            Wrapper<GameEvaluation> commentWrapper = new EntityWrapper<>();
+            commentWrapper.eq("game_id", gameId);
+            commentWrapper.and("state !={0}", -1);
+            if ("mine".equals(pageDto.getFilter())) {//社区主
+                commentWrapper.eq("member_id", memberId);
+            }
+            //pageDto.getSort()==0||
+            if (pageDto.getSort() == 1) {//排序
+                commentWrapper.orderBy("created_at", true);
+            } else if (pageDto.getSort() == 0 || pageDto.getSort() == 2) {
+                commentWrapper.orderBy("created_at", false);
+            } else if (pageDto.getSort() == 3) {
+                commentWrapper.groupBy("id").orderBy("sum(like_num+reply_num)", true);//按照点赞数和回复数排序
+            } else if (pageDto.getSort() == 4) {
+                commentWrapper.groupBy("id").orderBy("sum(like_num+reply_num)", false);
+            }
+
+            Page<GameEvaluation> page = this.gameEvaluationService.selectPage(new Page<>(pageDto.getPage(), pageDto.getLimit()), commentWrapper);
+            List<GameEvaluation> list = page.getRecords();
+
+            for (GameEvaluation cmmComment : list) {
+                EvaluationOutPageDto ctem = new EvaluationOutPageDto();
+                ctem.setContent(CommonUtils.filterWord(cmmComment.getContent()));
+                ctem.setCreatedAt(DateTools.fmtDate(cmmComment.getCreatedAt()));
+                ObjectMapper objectMapper = new ObjectMapper();
+                try {
+                    ctem.setImages(objectMapper.readValue(cmmComment.getImages(), ArrayList.class));
+                } catch (Exception e) {
+                    logger.error("objectMapper.readValue出现异常,cmmComment.getImages()="+cmmComment.getImages(),e);
+                }
+                ctem.setIs_recommend("1".equals(cmmComment.getIsRecommend()) ? true : false);
+                ctem.setLike_num(cmmComment.getLikeNum());
+                ctem.setObjectId(cmmComment.getId());
+                ctem.setPhone_model(cmmComment.getPhoneModel());
+                ctem.setReply_count(cmmComment.getReplyNum());
+                ctem.setUpdatedAt(DateTools.fmtDate(cmmComment.getUpdatedAt()));
 //            迁移微服务 根据用户id获取authorbean对象 feignclient
 //            ctem.setAuthor(this.userService.getAuthor(cmmComment.getMemberId()));
 //            2019-05-11
 //            lyc
-            ctem.setAuthor(iEvaluateProxyService.getAuthor(cmmComment.getMemberId()));
-            //2.4 评分
-            if (cmmComment.getRating() != null) {
-                ctem.setRating(cmmComment.getRating());
-            }
+                ctem.setAuthor(iEvaluateProxyService.getAuthor(cmmComment.getMemberId()));
+                //2.4 评分
+                if (cmmComment.getRating() != null) {
+                    ctem.setRating(cmmComment.getRating());
+                }
 
-            //回复
+                //回复
 //            迁移微服务 根据条件判断获取ReplyDtoList集合
 //            2019-05-11
 //            lyc
 //            Page<ReplyDto> replyList = replyService.selectPage(new Page<>(1, 3), new EntityWrapper<Reply>().eq("target_id", cmmComment.getId()).eq("state", 0).orderBy("created_at", true));
-            ReplyInputPageDto replyInputPageDto = new ReplyInputPageDto();
-            replyInputPageDto.setPage(1);
-            replyInputPageDto.setLimit(3);
-            replyInputPageDto.setTarget_id(cmmComment.getId());
-            replyInputPageDto.setState(0);
-            FungoPageResultDto<CmmCmtReplyDto> replyList = iEvaluateProxyService.getReplyDtoBysSelectPageOrderByCreatedAt(replyInputPageDto);
-            int i = 0;
-            if (replyList.getData() != null){
-                for (CmmCmtReplyDto reply : replyList.getData()) {
-                    i = i + 1;
-                    if (i == 3) {
-                        ctem.setReply_more(true);
-                        break;
-                    }
-                    ReplyBean replybean = new ReplyBean();
-                    replybean.setAuthor(iEvaluateProxyService.getAuthor(reply.getMemberId()));
-                    replybean.setContent(CommonUtils.filterWord(reply.getContent()));
-                    replybean.setCreatedAt(DateTools.fmtDate(reply.getCreatedAt()));
-                    replybean.setObjectId(reply.getId());
-                    replybean.setUpdatedAt(DateTools.fmtDate(reply.getUpdatedAt()));
-                    replybean.setLike_num(reply.getLikeNum());
-                    replybean.setReplyToId(reply.getReplayToId());
-    //                微服务 根据条件判断获取memberDto对象
-    //                2019-05-11
-    //                lyc
-    //                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
-                    if (reply.getReplayToId()!= null){
-                        MemberDto md = new MemberDto();
-                        md.setId(reply.getReplayToId());
-                        MemberDto m = iEvaluateProxyService.getMemberDtoBySelectOne(md);
-                        if (m != null) {
-                            replybean.setReplyToName(m.getUserName());
+                ReplyInputPageDto replyInputPageDto = new ReplyInputPageDto();
+                replyInputPageDto.setPage(1);
+                replyInputPageDto.setLimit(3);
+                replyInputPageDto.setTarget_id(cmmComment.getId());
+                replyInputPageDto.setState(0);
+                FungoPageResultDto<CmmCmtReplyDto> replyList = iEvaluateProxyService.getReplyDtoBysSelectPageOrderByCreatedAt(replyInputPageDto);
+                int i = 0;
+                if (replyList.getData() != null){
+                    for (CmmCmtReplyDto reply : replyList.getData()) {
+                        i = i + 1;
+                        if (i == 3) {
+                            ctem.setReply_more(true);
+                            break;
                         }
+                        ReplyBean replybean = new ReplyBean();
+                        replybean.setAuthor(iEvaluateProxyService.getAuthor(reply.getMemberId()));
+                        replybean.setContent(CommonUtils.filterWord(reply.getContent()));
+                        replybean.setCreatedAt(DateTools.fmtDate(reply.getCreatedAt()));
+                        replybean.setObjectId(reply.getId());
+                        replybean.setUpdatedAt(DateTools.fmtDate(reply.getUpdatedAt()));
+                        replybean.setLike_num(reply.getLikeNum());
+                        replybean.setReplyToId(reply.getReplayToId());
+                        //                微服务 根据条件判断获取memberDto对象
+                        //                2019-05-11
+                        //                lyc
+                        //                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
+                        if (reply.getReplayToId()!= null){
+                            MemberDto md = new MemberDto();
+                            md.setId(reply.getReplayToId());
+                            MemberDto m = iEvaluateProxyService.getMemberDtoBySelectOne(md);
+                            if (m != null) {
+                                replybean.setReplyToName(m.getUserName());
+                            }
+                        }
+                        ctem.getReplys().add(replybean);
                     }
-
-                    ctem.getReplys().add(replybean);
+                    ctem.setReply_count(replyList.getCount());
                 }
-            ctem.setReply_count(replyList.getCount());
-            }
 
-            //是否点赞
-            if ("".equals(memberId) || memberId == null) {
-                ctem.setIs_liked(false);
-            } else {
+                //是否点赞
+                if ("".equals(memberId) || memberId == null) {
+                    ctem.setIs_liked(false);
+                } else {
 //                int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", cmmComment.getId()).eq("member_id", memberId));
-                BasActionDto basActionDto = new BasActionDto();
-                basActionDto.setType(0);
-                basActionDto.setState(0);
-                basActionDto.setTargetId(cmmComment.getId());
-                basActionDto.setMemberId(memberId);
-                int liked = iEvaluateProxyService.getBasActionSelectCount(basActionDto);
-                ctem.setIs_liked(liked > 0 ? true : false);
-
-
+                    BasActionDto basActionDto = new BasActionDto();
+                    basActionDto.setType(0);
+                    basActionDto.setState(0);
+                    basActionDto.setTargetId(cmmComment.getId());
+                    basActionDto.setMemberId(memberId);
+                    int liked = iEvaluateProxyService.getBasActionSelectCount(basActionDto);
+                    ctem.setIs_liked(liked > 0 ? true : false);
+                }
+                relist.add(ctem);
             }
-            relist.add(ctem);
+            re.setData(relist);
+            PageTools.pageToResultDto(re, page);
+            //redis cache
+            fungoCacheGame.excIndexCache(true, keyPrefix, keySuffix, re);
+        }catch (Exception e){
+            logger.error("获取游戏评价列表,游戏id="+gameId,e);
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildError("获取游戏评价列表异常");
         }
-        re.setData(relist);
-        PageTools.pageToResultDto(re, page);
-
-
-        //redis cache
-        fungoCacheGame.excIndexCache(true, keyPrefix, keySuffix, re);
-
         return re;
     }
 
