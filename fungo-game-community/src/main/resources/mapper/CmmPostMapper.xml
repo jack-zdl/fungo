@@ -207,10 +207,11 @@
         member_id = #{cardId}
     </select>
 
+    <!-- AND cpc.default_link = 1  -->
     <select id="getCmmCircleListByPostId" parameterType="java.lang.String" resultType="com.fungo.community.entity.CmmPost">
     select  *  from  t_cmm_post where state = 1 and id in
     ( select cpc.post_id
-    from t_cmm_post_circle cpc where cpc.circle_id = #{circleId}  )
+    from t_cmm_post_circle cpc where cpc.circle_id = #{circleId} )
 
   </select>
 

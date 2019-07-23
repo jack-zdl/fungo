@@ -404,7 +404,7 @@ public class CircleServiceImpl implements CircleService {
         try {
             List<CmmPost> cmmPosts = cmmPostDao.getCmmCircleListByPostId(circleId);
             List<TagBean> tagBeans = basTagDao.getPostTags();
-            Map<String, List<CmmPost>> cmmPostMap = cmmPosts.stream().collect(groupingBy(CmmPost::getTags));
+            Map<String, List<CmmPost>> cmmPostMap = cmmPosts.stream().filter(x ->( x.getTags() != null && !x.getTags().equals("")) ).collect(groupingBy(CmmPost::getTags));
             Iterator<String> iter = cmmPostMap.keySet().iterator();
             while (iter.hasNext()) {
                 String key = iter.next();
