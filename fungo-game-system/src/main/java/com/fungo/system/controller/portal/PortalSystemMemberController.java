@@ -157,5 +157,40 @@ public class PortalSystemMemberController {
         return re;
     }
 
+
+
+    @ApiOperation(value = "获取关注内容 ", notes = "获取关注内容 ")
+    @RequestMapping(value = "/api/portal/system/mine/follow", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "type", value = "关注目标的类型[0:用户,4:社区]", paramType = "form", dataType = "number"),
+            @ApiImplicitParam(name = "page", value = "请求页", paramType = "form", dataType = "number"),
+            @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "number")
+    })
+    public FungoPageResultDto<Map<String, Object>> getFollower(MemberUserProfile memberUserPrefile, @RequestBody FollowInptPageDao inputPage) throws Exception {
+        String memberId = inputPage.getMemberId();
+        if (CommonUtil.isNull(memberId)) {
+            return FungoPageResultDto.error("-1", "找不到目标");
+        }
+        String myId = memberUserPrefile.getLoginId();
+
+        return portalSystemIUserService.getFollower(myId, memberId, inputPage);
+    }
+
+    @ApiOperation(value = "获取我的粉丝", notes = "获取我的粉丝")
+    @RequestMapping(value = "/api/mine/fans", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "请求页", paramType = "form", dataType = "number"),
+            @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "number")
+    })
+    public FungoPageResultDto<Map<String, Object>> getFollowee(MemberUserProfile memberUserPrefile, @RequestBody FollowInptPageDao inputPage) throws Exception {
+        String memberId = inputPage.getMemberId();
+        if (CommonUtil.isNull(memberId)) {
+            return FungoPageResultDto.error("-1", "找不到目标");
+        }
+        String myId = memberUserPrefile.getLoginId();
+
+        return portalSystemIUserService.getFollowee(myId, memberId, inputPage);
+    }
+
 }
 
