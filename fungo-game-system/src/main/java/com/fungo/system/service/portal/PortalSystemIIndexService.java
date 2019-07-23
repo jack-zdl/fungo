@@ -18,4 +18,5 @@ public interface PortalSystemIIndexService {
 	FungoPageResultDto<CardIndexBean> index(InputPageDto input);
 
 	ResultDto<List<AdvertOutBean>> getAdvertWithPc();
+
 }

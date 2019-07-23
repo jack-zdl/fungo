@@ -37,6 +37,14 @@
          created_by AS createdBy, created_name AS createdName, sort ,
 		generalize_title AS	generalizeTitle , begin_date AS beginDate , end_date AS endDate , date_type as dateType
     </sql>
+
+	<sql id="Base_Column__Banner_List">
+        ${alias}.id, ${alias}.action_type AS actionType, ${alias}.position_id AS positionId, ${alias}.position_code AS positionCode, ${alias}.release_time AS releaseTime, ${alias}.target_type AS targetType,
+         ${alias}.target_id AS targetId, ${alias}.title, ${alias}.intro, ${alias}.tag, ${alias}.cover_image AS coverImage, ${alias}.cover_img_new as coverImgNew , ${alias}.href, ${alias}.state, ${alias}.created_at AS createdAt,
+         ${alias}.updated_at AS updatedAt,
+         ${alias}.created_by AS createdBy, ${alias}.created_name AS createdName, ${alias}.sort ,
+		${alias}.generalize_title AS	generalizeTitle , ${alias}.begin_date AS beginDate , ${alias}.end_date AS endDate , ${alias}.date_type as dateType
+    </sql>
     
   <!--   <update id="updateState">
   		update t_banner set state=#{state} where id=#{bannerId}
@@ -79,8 +87,8 @@
 	
 	<select id="getPCBannerByIndex" resultType="com.fungo.system.dto.PCBannerDto">
 		SELECT
-			<include refid="Base_Column_List"></include>,bi.banner_image AS  bannerImage
-		FROM t_banner b LEFT  JOIN t_banner_images bi on b.id = bi.banner_id WHERE b.position_code = '0001' AND state = 0 AND  bi.type = 1  ORDER  BY sort DESC
+			<include refid="Base_Column__Banner_List"><property name="alias" value="b"/></include>,bi.banner_image AS  bannerImage
+		FROM t_banner b LEFT  JOIN (SELECT * FROM  t_banner_images  WHERE type = 1  ) bi on b.id = bi.banner_id WHERE b.position_code = '0001' AND b.state = 0  ORDER  BY sort DESC
 	</select>
 
 </mapper>

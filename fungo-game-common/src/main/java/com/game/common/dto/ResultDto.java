@@ -1,7 +1,12 @@
 package com.game.common.dto;
 
 
+import com.baomidou.mybatisplus.plugins.Page;
+import com.game.common.enums.CommonEnum;
 import com.game.common.enums.IEnum;
+import com.game.common.util.PageTools;
+
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class ResultDto<T> extends AbstractResultDto {
@@ -76,6 +81,56 @@ public class ResultDto<T> extends AbstractResultDto {
         ResultDto<T> re = new ResultDto<>();
         re.setMessage(msg);
         return re;
+    }
+
+    public static class ResultDtoFactory{
+        /**
+         * 警告返回请求结果和结果信息的方法
+         * @param msg 结果信息
+         * @return RespJson
+         */
+        public static ResultDto buildError(String msg) {
+            return buildInfo(CommonEnum.ERROR.code(), "-1", msg, null);
+        }
+
+        /**
+         * 警告返回请求结果和结果信息的方法
+         * @param msg 结果信息
+         * @return RespJson
+         */
+        public static ResultDto buildWarning(String code,String msg) {
+            return buildInfo(CommonEnum.WARMING.code(), code, msg, null);
+        }
+
+
+
+        /**
+         * 成功返回请求结果和结果信息和数据
+         * @return  RespJson
+         */
+        public static  ResultDto buildSuccess( String msg,Object data) {
+            ResultDto re =  buildInfo(CommonEnum.SUCCESS.code(), CommonEnum.SUCCESS.code(), msg, data);
+            return re;
+        }
+
+        /**
+         * 成功返回请求结果和结果信息和数据
+         * @return  RespJson
+         */
+        public static  ResultDto buildSuccess( Object data) {
+            ResultDto re =  buildInfo(CommonEnum.SUCCESS.code(), CommonEnum.SUCCESS.code(), "", data);
+            return re;
+        }
+
+
+        private static ResultDto buildInfo(String status, String code, String msg, Object data) {
+            ResultDto resultDto = new ResultDto();
+            resultDto.setStatus(Integer.valueOf(status));
+            resultDto.setCode(code);
+            resultDto.setMessage(msg);
+            resultDto.setData(data);
+            return resultDto;
+        }
     }
 
 }

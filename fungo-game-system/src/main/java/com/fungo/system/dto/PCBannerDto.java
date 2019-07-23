@@ -149,7 +149,7 @@ public class PCBannerDto {
     private String gameName;
 
     /**
-     * 功能描述: PC使用的图片
+     * 功能描述: PC2.0使用的图片
      * @auther: dl.zhang
      * @date: 2019/7/23 11:25
      */

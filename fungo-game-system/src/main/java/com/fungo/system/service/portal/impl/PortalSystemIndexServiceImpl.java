@@ -3,6 +3,8 @@ package com.fungo.system.service.portal.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.system.dao.BannerDao;
+import com.fungo.system.dto.PCBannerDto;
 import com.fungo.system.entity.Banner;
 import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IMemeberProxyService;
@@ -72,6 +74,9 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
     @Autowired
     private BannerService bannerService;
 
+    @Autowired
+    private BannerDao bannerDao;
+
     @Override
     public FungoPageResultDto<CardIndexBean> index(InputPageDto input) {
         FungoPageResultDto<CardIndexBean> re = null;
@@ -140,11 +145,11 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
         ResultDto re = null;
         List<AdvertOutBean> list = new ArrayList<>();
         try {
+            List<PCBannerDto> blist = bannerDao.getPCBannerByIndex();
             //获取广告位
-            List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0001").eq("state", 0).orderBy("sort", false));
             if (null != blist && !blist.isEmpty()) {
                 list = new ArrayList<>();
-                for (Banner banner : blist) {
+                for (PCBannerDto banner : blist) {
                     AdvertOutBean bean = new AdvertOutBean();
                     bean.setBizId(banner.getTargetId());
                     bean.setBizType(1);
@@ -152,14 +157,16 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
                     bean.setImageUrl(banner.getCoverImage());
                     bean.setName(banner.getTag());
                     bean.setTitle(CommonUtils.filterWord(banner.getTitle()));
+                    bean.setPcImagesUrl(banner.getBannerImage());
                     list.add(bean);
                 }
             }
+            re = ResultDto.ResultDtoFactory.buildSuccess(list);
         }catch (Exception e){
             LOGGER.error("PC首页轮播异常",e);
-            re = ResultDto.error("-1","PC首页轮播异常");
+            re = ResultDto.ResultDtoFactory.buildError("PC首页轮播异常");
         }
-        return null;
+        return re;
     }
 
 

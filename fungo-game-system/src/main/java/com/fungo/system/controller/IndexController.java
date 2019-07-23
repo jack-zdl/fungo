@@ -34,10 +34,6 @@ public class IndexController {
     @Autowired
     private IIndexService indexService;
 
-
-
-
-
     @ApiOperation(value = "首页(v2.4)", notes = "")
     @RequestMapping(value = "/api/recommend/index", method = RequestMethod.POST)
     @ApiImplicitParams({})
