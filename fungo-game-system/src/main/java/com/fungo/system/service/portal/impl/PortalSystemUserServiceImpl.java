@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.dto.FollowInptPageDao;
-import com.fungo.system.entity.BasAction;
-import com.fungo.system.entity.IncentRanked;
-import com.fungo.system.entity.IncentRuleRank;
-import com.fungo.system.entity.MemberFollower;
+import com.fungo.system.entity.*;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.service.*;
 import com.fungo.system.service.portal.PortalSystemIUserService;
@@ -18,9 +15,11 @@ import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.enums.AbstractResultEnum;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
+import com.game.common.util.date.DateTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +62,8 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
     private IncentRankedService rankedService;
     @Autowired
     private IncentRuleRankService rankRuleService;
+    @Autowired
+    private MemberService memberService;
 
 
     @Override
@@ -167,8 +168,62 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
     }
 
     @Override
-    public FungoPageResultDto<Map<String, Object>> getFollowee(String memberId, String memberId2, InputPageDto inputPage) throws Exception {
-        return null;
+    public FungoPageResultDto<Map<String, Object>> getFollowee(String myId, String memberId, InputPageDto inputPage) throws Exception {
+        FungoPageResultDto<Map<String, Object>> re = null;
+        try{
+            re = new FungoPageResultDto<>();
+            List<Map<String, Object>> list = new ArrayList<>();
+            re.setData(list);
+            Page<BasAction> plist = actionService.selectPage(new Page<BasAction>(inputPage.getPage(), inputPage.getLimit()), new EntityWrapper<BasAction>().eq("type", "5").eq("target_id", memberId).notIn("state", "-1"));
+            List<BasAction> list1 = plist.getRecords();
+            ObjectMapper mapper = new ObjectMapper();
+            List<IncentRuleRank> levelRankList = IRuleRankService.getLevelRankList();
+            for (BasAction basAction : list1) {
+                Map<String, Object> map = new HashMap<String, Object>();
+                Member m = memberService.selectById(basAction.getMemberId());
+                //fix bug: m 为空导致的NPE [by mxf 2019-04-01]
+                if (null == m) {
+                    continue;
+                }
+                //end
+//			IncentRanked ranked = incentRankedService.selectOne(new EntityWrapper<IncentRanked>().eq("rank_type",1).eq("mb_id",basAction.getMemberId()));
+                map.put("sign", m.getSign());
+                map.put("username", m.getUserName());
+                map.put("level", m.getLevel());
+                map.put("avatar", m.getAvatar());
+                map.put("is_followed", false);
+                BasAction action = actionService.selectOne(new EntityWrapper<BasAction>().eq("type", "5").eq("member_id", myId).eq("target_id", m.getId()).ne("state", "-1"));
+                if (action != null) {
+                    map.put("is_followed", true);
+                }
+                String rankImgs = getLevelRankUrl(m.getLevel(), levelRankList);
+                ArrayList<HashMap<String, Object>> urlList = mapper.readValue(rankImgs, ArrayList.class);
+                map.put("dignityImg", (String) urlList.get(0).get("url"));
+                //用户官方身份
+                IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", m.getId()).eq("rank_type", 2));
+                if (ranked != null) {
+                    IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
+                    if (rank != null) {
+                        String rankinf = rank.getRankImgs();
+                        ArrayList<HashMap<String, Object>> infolist = mapper.readValue(rankinf, ArrayList.class);
+                        map.put("statusImg", infolist);
+                    } else {
+                        map.put("statusImg", new ArrayList<>());
+                    }
+                } else {
+                    map.put("statusImg", new ArrayList<>());
+                }
+                map.put("objectId", m.getId());
+                map.put("createdAt", DateTools.fmtDate(m.getCreatedAt()));
+                map.put("updatedAt", DateTools.fmtDate(m.getUpdatedAt()));
+                list.add(map);
+            }
+            PageTools.pageToResultDto(re, plist);
+        }catch (Exception e){
+            logger.error("pc端获取用户粉丝异常",e);
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildError("pc端获取用户粉丝异常"+ AbstractResultEnum.CODE_SYSTEM_TWO.getFailevalue());
+        }
+        return re;
     }
 
 
