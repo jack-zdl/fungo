@@ -28,10 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -70,6 +67,107 @@ public class PortalGamesIndexController {
 
     @Autowired
     private GameEvaluationService gameEvaluationService;
+
+    @ApiOperation(value = "发现页游戏合集数据列表(2.4.3)", notes = "")
+    @RequestMapping(value = "/api/portal/games/recommend/topic", method = RequestMethod.POST)
+    @ApiImplicitParams({
+    })
+    public FungoPageResultDto<Map<String, Object>> topic(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto input) {
+
+        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECM_TOPIC + "POST";
+        String keySuffix = JSON.toJSONString(input);
+        FungoPageResultDto<Map<String, Object>> re = (FungoPageResultDto<Map<String, Object>>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+
+        if (null != re && null != re.getData() && re.getData().size() > 0) {
+            return re;
+        }
+
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        //游戏合集
+        Page<GameCollectionGroup> gpage = gameCollectionGroupService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameCollectionGroup>().eq("state", "0").orderBy("sort", false));
+
+        List<GameCollectionGroup> clist = gpage.getRecords();
+        for (Iterator iterator = clist.iterator(); iterator.hasNext(); ) {
+            GameCollectionGroup gameCollectionGroup = (GameCollectionGroup) iterator.next();
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("topic_name", gameCollectionGroup.getName());
+            map.put("group_id", gameCollectionGroup.getId());
+
+            //游戏合集项
+            List<GameCollectionItem> ilist = this.gameCollectionItemService.selectList(new EntityWrapper<GameCollectionItem>().eq("group_id", gameCollectionGroup.getId()).eq("show_state", "1").orderBy("sort", false));
+
+            if (ilist == null || ilist.size() == 0) {//如果合集为空，跳过
+                continue;
+            }
+            //获取游戏id集合
+            List<String> gameIds = getgameIds(ilist);
+            Map<String, Game> gameMap = gameService.listGame(gameIds);
+            //获取社区id集合
+            List<String> communityIds = getCommunity(gameMap);
+            //获取社区推荐度
+            Map<String, Integer> followeeNum = iEvaluateProxyService.listCommunityFolloweeNum(communityIds);
+            List<Map<String, Object>> lists = new ArrayList<Map<String, Object>>();
+
+            for (GameCollectionItem gameCollectionItem : ilist) {
+                Game game = gameMap.get(gameCollectionItem.getGameId());
+                Map<String, Object> map1 = new HashMap<String, Object>();
+//				HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
+//				if(rateData != null) {
+//					if(rateData.get("avgRating") != null) {
+//						map1.put("rating",rateData.get("avgRating"));
+//					}else {
+//						map1.put("rating",0.0);
+//					}
+//				}else {
+//					map1.put("rating",0.0);
+//				}
+//                迁移微服务 根据id获取cmmcomunity单个对象
+//                2019-05-13
+//                lyc
+//                Wrapper wrapper = Condition.create().setSqlSelect("id,followee_num,post_num").eq("id", game.getCommunityId());
+//                CmmCommunity community = communityService.selectOne(wrapper);
+                Integer followeeNumValue = null;
+                if (followeeNum != null){
+                    followeeNumValue = followeeNum.get(game.getCommunityId());
+                }
+
+
+                map1.put("name", game.getName());
+                map1.put("androidState", game.getAndroidState());
+                map1.put("iosState", game.getIosState());
+                map1.put("tag", game.getTags());
+                map1.put("cover_image", game.getCoverImage());
+                map1.put("icon", game.getIcon());
+                map1.put("objectId", game.getId());
+                map1.put("createdAt", DateTools.fmtDate(game.getCreatedAt()));
+                map1.put("updatedAt", DateTools.fmtDate(game.getUpdatedAt()));
+
+                int hot_value = 0;
+                if (null != followeeNumValue) {
+                    hot_value = followeeNumValue*2;
+                }
+                map1.put("hot_value", hot_value);
+
+                map1.put("androidPackageName", game.getAndroidPackageName() == null ? "" : game.getAndroidPackageName());
+                map1.put("game_size", game.getGameSize());
+                map1.put("itunesId", game.getItunesId());
+                map1.put("apkUrl", game.getApk()==null?"":game.getApk());
+                lists.add(map1);
+            }
+            map.put("game_list", lists);
+            list.add(map);
+        }
+
+        re = new FungoPageResultDto<Map<String, Object>>();
+        re.setData(list);
+        PageTools.pageToResultDto(re, gpage);
+
+
+        //reids cache
+        fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
+
+        return re;
+    }
 
     @ApiOperation(value = "PC2.0端发现页游戏合集", notes = "")
     @RequestMapping(value = "/api/portal/games/recommend/pc/gamegroup", method = RequestMethod.POST)
@@ -253,6 +351,31 @@ public class PortalGamesIndexController {
         //save redis
         fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
         return re;
+    }
+
+
+    private List<String> getCommunity(Map<String, Game> gameMap) {
+        ArrayList<String> list = new ArrayList<>();
+        if(gameMap==null||gameMap.isEmpty()){
+            return list;
+        }
+        Set<Map.Entry<String, Game>> entries = gameMap.entrySet();
+        for (Map.Entry<String, Game> entry : entries) {
+            Game game = entry.getValue();
+            list.add(game.getCommunityId());
+        }
+        return list;
+    }
+
+    private List<String> getgameIds(List<GameCollectionItem> ilist) {
+        ArrayList<String> list = new ArrayList<>();
+        if(ilist==null||ilist.isEmpty()){
+            return  list;
+        }
+        for (GameCollectionItem gameCollectionItem : ilist) {
+            list.add(gameCollectionItem.getGameId());
+        }
+        return list;
     }
 
 }

@@ -64,7 +64,7 @@ public class PortalSystemIndexController {
         //获取广告位
         List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0001").eq("state", 0).orderBy("sort", false));
         if (null != blist && !blist.isEmpty()) {
-            list = new ArrayList<AdvertOutBean>();
+            list = new ArrayList<>();
             for (Banner banner : blist) {
                 AdvertOutBean bean = new AdvertOutBean();
                 bean.setBizId(banner.getTargetId());

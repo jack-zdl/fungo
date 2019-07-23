@@ -15,6 +15,8 @@ import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
+import com.game.common.dto.ResultDto;
+import com.game.common.dto.advert.AdvertOutBean;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.game.GameEvaluationDto;
@@ -27,6 +29,8 @@ import com.game.common.util.CommonUtils;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +49,7 @@ import java.util.Map;
 @Service
 public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PortalSystemIndexServiceImpl.class);
 
     @Autowired
     private IUserService userService;
@@ -73,7 +78,7 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
         //先从Redis获取
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX;
         String keySuffix = JSON.toJSONString(input);
-        // re = (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+         re = (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
 
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
@@ -128,6 +133,33 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
         re.setData(clist);
         fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
         return re;
+    }
+
+    @Override
+    public ResultDto<List<AdvertOutBean>> getAdvertWithPc() {
+        ResultDto re = null;
+        List<AdvertOutBean> list = new ArrayList<>();
+        try {
+            //获取广告位
+            List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0001").eq("state", 0).orderBy("sort", false));
+            if (null != blist && !blist.isEmpty()) {
+                list = new ArrayList<>();
+                for (Banner banner : blist) {
+                    AdvertOutBean bean = new AdvertOutBean();
+                    bean.setBizId(banner.getTargetId());
+                    bean.setBizType(1);
+                    bean.setContent(CommonUtils.filterWord(banner.getIntro()));
+                    bean.setImageUrl(banner.getCoverImage());
+                    bean.setName(banner.getTag());
+                    bean.setTitle(CommonUtils.filterWord(banner.getTitle()));
+                    list.add(bean);
+                }
+            }
+        }catch (Exception e){
+            LOGGER.error("PC首页轮播异常",e);
+            re = ResultDto.error("-1","PC首页轮播异常");
+        }
+        return null;
     }
 
 

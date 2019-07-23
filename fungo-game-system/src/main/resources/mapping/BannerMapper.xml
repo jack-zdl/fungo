@@ -76,5 +76,11 @@
 		 FROM t_banner WHERE position_code = 0001 and target_type = 3  and state  = 2 and release_time < DATE_SUB(CURDATE(), INTERVAL 1 DAY)  ORDER BY release_time desc limit 6
 		]]>
 	</select>
+	
+	<select id="getPCBannerByIndex" resultType="com.fungo.system.dto.PCBannerDto">
+		SELECT
+			<include refid="Base_Column_List"></include>,bi.banner_image AS  bannerImage
+		FROM t_banner b LEFT  JOIN t_banner_images bi on b.id = bi.banner_id WHERE b.position_code = '0001' AND state = 0 AND  bi.type = 1  ORDER  BY sort DESC
+	</select>
 
 </mapper>
