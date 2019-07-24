@@ -2,18 +2,18 @@ package com.fungo.community.controller.portal;
 
 import com.fungo.community.service.IMoodService;
 import com.game.common.dto.MemberUserProfile;
+import com.game.common.dto.ObjectId;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.MoodBean;
+import com.game.common.dto.community.MoodInput;
+import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -43,4 +43,20 @@ public class PortalCommunityMoodController {
         }
         return this.moodService.getMood(memberId, moodId);
     }
+
+
+    @ApiOperation(value="PC2.0发布心情", notes="")
+    @PostMapping(value="/api/portal/community/content/mood")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "cover_image",value = "图片列表",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "content",value = "内容",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "videoId", value = "视频id,  可选", paramType = "form", dataType = "string")
+    })
+    public ResultDto<ObjectId> addMood(MemberUserProfile memberUserPrefile, @RequestBody MoodInput input) throws Exception {
+        if(StringUtil.isNull(input.getContent())){
+            return ResultDto.error("-1","内容不可为空");
+        }
+        return moodService.addMood(memberUserPrefile.getLoginId(),input);
+    }
+
 }
