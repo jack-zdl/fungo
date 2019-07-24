@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.community.config.NacosFungoCircleConfig;
 import com.fungo.community.dao.mapper.CmmCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
@@ -86,9 +87,11 @@ public class PostServiceImpl implements IPostService {
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
 
-
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
+
+    @Autowired
+    private NacosFungoCircleConfig nacosFungoCircleConfig;
 
 
     //依赖系统和用户微服务
@@ -1783,27 +1786,31 @@ public class PostServiceImpl implements IPostService {
         FungoPageResultDto<Map<String, Object>> re = new FungoPageResultDto<Map<String, Object>>();
         List<Map<String, Object>> resultData = new ArrayList<>();
         re.setData(resultData);
+        List<CmmPost> postList = null;
+        Page<CmmPost> postPage = null;
+        if(nacosFungoCircleConfig.isSearchPostType()){
+            Page<CmmPost> pageCmPost = new Page<>(page, limit);
 
-        Page<CmmPost> pageCmPost = new Page<>(page, limit);
+            Wrapper<CmmPost> wrapperCmmPost = Condition.create().setSqlSelect("id,title,content,cover_image as coverImage ,member_id as memberId ,video,created_at as createdAt," +
+                    "updated_at as updatedAt,video_cover_image as videoCoverImage,SUM( watch_num + comment_num + like_num + collect_num ) AS wclc ");
 
-        Wrapper<CmmPost> wrapperCmmPost = Condition.create().setSqlSelect("id,title,content,cover_image as coverImage ,member_id as memberId ,video,created_at as createdAt," +
-                "updated_at as updatedAt,video_cover_image as videoCoverImage,SUM( watch_num + comment_num + like_num + collect_num ) AS wclc ");
+            wrapperCmmPost.where("state = {0}", 1);
+            wrapperCmmPost.andNew("title like '%" + keyword + "%'");
+            wrapperCmmPost.or("content like " + "'%" + keyword + "%'");
+            wrapperCmmPost.groupBy("id");
+            //排序
+            StringBuffer orderByStr = new StringBuffer();
+            orderByStr.append("LOCATE( '" + keyword + "', title ) DESC ,").append(" wclc DESC,");
+            orderByStr.append("LOCATE( '" + keyword + "', content ) DESC,").append(" wclc DESC");
 
-        wrapperCmmPost.where("state = {0}", 1);
-        wrapperCmmPost.andNew("title like '%" + keyword + "%'");
-        wrapperCmmPost.or("content like " + "'%" + keyword + "%'");
-        wrapperCmmPost.groupBy("id");
-        //排序
-        StringBuffer orderByStr = new StringBuffer();
-        orderByStr.append("LOCATE( '" + keyword + "', title ) DESC ,").append(" wclc DESC,");
-        orderByStr.append("LOCATE( '" + keyword + "', content ) DESC,").append(" wclc DESC");
+            wrapperCmmPost.orderBy(orderByStr.toString());
 
-        wrapperCmmPost.orderBy(orderByStr.toString());
-
-        Page<CmmPost> postPage = postService.selectPage(pageCmPost, wrapperCmmPost);
-        List<CmmPost> postList = postPage.getRecords();
+            postPage = postService.selectPage(pageCmPost, wrapperCmmPost);
+            postList = postPage.getRecords();
+        }else {
 
 
+        }
         for (CmmPost post : postList) {
             Map<String, Object> postData = new HashMap<String, Object>();
 

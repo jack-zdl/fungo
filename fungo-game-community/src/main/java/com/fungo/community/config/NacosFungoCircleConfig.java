@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @RefreshScope
+@Order(1)
 public class NacosFungoCircleConfig   {
 
     /**
@@ -30,6 +32,18 @@ public class NacosFungoCircleConfig   {
 
     @Value(value = "${fungo.redis.key.tag:v2.5}")
     private String tag;
+
+    @Value(value = "${es.cluster-nodes.ip}")
+    private String esHttpIp;
+
+    @Value(value = "${es.cluster-nodes.port}")
+    private int esHttpPort;
+
+    @Value(value = "${es.cluster-nodes.index}")
+    private String index;
+
+    @Value(value = "${nacos.es.search}")
+    private boolean searchPostType;
 
     public int getValue() {
         return value;
@@ -53,5 +67,37 @@ public class NacosFungoCircleConfig   {
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public String getEsHttpIp() {
+        return esHttpIp;
+    }
+
+    public void setEsHttpIp(String esHttpIp) {
+        this.esHttpIp = esHttpIp;
+    }
+
+    public int getEsHttpPort() {
+        return esHttpPort;
+    }
+
+    public void setEsHttpPort(int esHttpPort) {
+        this.esHttpPort = esHttpPort;
+    }
+
+    public String getIndex() {
+        return index;
+    }
+
+    public void setIndex(String index) {
+        this.index = index;
+    }
+
+    public boolean isSearchPostType() {
+        return searchPostType;
+    }
+
+    public void setSearchPostType(boolean searchPostType) {
+        this.searchPostType = searchPostType;
     }
 }
