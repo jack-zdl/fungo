@@ -75,8 +75,6 @@ public class PostController {
     private SystemFeignClient systemFeignClient;
     @Autowired
     private CmmPostCircleMapper cmmPostCircleMapper;
-    @Autowired
-    private ESDAOServiceImpl esdaoService;
 
     @ApiOperation(value = "搜索帖子", notes = "")
     @PostMapping(value = "/api/search/posts")
@@ -96,28 +94,6 @@ public class PostController {
         int limit = searchInputDto.getLimit();
         return bsPostService.searchPosts(keyword, page, limit);
     }
-
-
-    @ApiOperation(value = "搜索帖子", notes = "")
-    @PostMapping(value = "/api/search/es/posts")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "key_word", value = "关键字", paramType = "form", dataType = "string"),
-            @ApiImplicitParam(name = "page", value = "页数号", paramType = "form", dataType = "int"),
-            @ApiImplicitParam(name = "limit", value = "每页显示数", paramType = "form", dataType = "int")
-    })
-    public FungoPageResultDto<CmmPost> searchESPosts(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto) throws Exception {
-        String keyword = searchInputDto.getKey_word();
-        int page = searchInputDto.getPage();
-        if (page < 1) {
-            return new FungoPageResultDto<>();
-        }
-        int limit = searchInputDto.getLimit();
-//        esdaoService.addESPosts();
-        Page<CmmPost> cmmPosts =   esdaoService.getAllPosts(keyword,page,limit);
-        return FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(cmmPosts.getRecords(),-1,new Page());
-    }
-
-
 
     @ApiOperation(value = "搜索帖子关联的游戏数据", notes = "")
     @PostMapping(value = "/api/search/posts/games")

@@ -37,6 +37,9 @@ import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.ScoreSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +92,7 @@ public class ESDAOServiceImpl {
 //        Wrapper<CmmPost> wrapperCmmPost = new EntityWrapper<>();
 //        List<CmmPost> posts =  postService.selectList(wrapperCmmPost);
         CmmPost param = new CmmPost();
-        param.setId("78e886acf0294e4ea8d9cd9f6c8bb904");
+        param.setId("b1f1f35d4b4242a0b794e17ed0d1d64a");
         CmmPost cmmPost = postService.selectById(param);
         try {
             // 创建索引
@@ -123,7 +126,7 @@ public class ESDAOServiceImpl {
 
             // 1、创建search请求
             SearchRequest searchRequest = new SearchRequest(nacosFungoCircleConfig.getIndex());
-            searchRequest.types("_doc");
+            searchRequest.types(nacosFungoCircleConfig.getSearchIndexType());
             // 2、用SearchSourceBuilder来构造查询请求体 ,请仔细查看它的方法，构造各种查询的方法都在这。
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
             if(keyword != null && !"".equals(keyword)){
@@ -131,9 +134,15 @@ public class ESDAOServiceImpl {
                 //普通模糊匹配
 //                boolQueryBuilder.must(QueryBuilders.wildcardQuery("title",keyword));
 //                sourceBuilder.query(boolQueryBuilder);
-                MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("title",keyword);
+                MatchQueryBuilder matchQueryBuilder1 = QueryBuilders.matchQuery("state",1);
+                MatchQueryBuilder matchQueryBuilder2 = QueryBuilders.matchQuery("title",keyword);
+                MatchQueryBuilder matchQueryBuilder3 = QueryBuilders.matchQuery("content",keyword);
                 BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-                boolQueryBuilder.must(matchQueryBuilder);
+                BoolQueryBuilder childBoolQueryBuilder = new BoolQueryBuilder()
+                        .should(matchQueryBuilder2)
+                        .should(matchQueryBuilder3);
+                boolQueryBuilder.must(childBoolQueryBuilder);
+                boolQueryBuilder.must(matchQueryBuilder1);
                 sourceBuilder.query(boolQueryBuilder);
             }
 //            sourceBuilder.query( QueryBuilders.termQuery("title", keyword));
@@ -143,8 +152,13 @@ public class ESDAOServiceImpl {
             sourceBuilder.size(page*limit);// sourceBuilder.size(10);
             sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
 
+            //指定排序
+            sourceBuilder.sort(new ScoreSortBuilder().order( SortOrder.DESC));
+            sourceBuilder.sort(new FieldSortBuilder("watch_num").order(SortOrder.DESC));
+
             //将请求体加入到请求中
             searchRequest.source(sourceBuilder);
+
 
             //3、发送请求
             SearchResponse searchResponse = client.search(searchRequest,RequestOptions.DEFAULT);

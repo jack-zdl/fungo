@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
+import com.fungo.community.dao.service.impl.ESDAOServiceImpl;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.feign.SystemFeignClient;
@@ -78,7 +79,8 @@ public class PortalCommunityPostController {
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
 
-
+    @Autowired
+    private ESDAOServiceImpl esdaoService;
     //依赖系统和用户微服务
     @Autowired(required = false)
     private SystemFeignClient systemFeignClient;
@@ -196,6 +198,27 @@ public class PortalCommunityPostController {
         int limit = searchInputDto.getLimit();
         return bsPostService.searchPosts(keyword, page, limit);
     }
+
+
+    @ApiOperation(value = "搜索帖子", notes = "")
+    @PostMapping(value = "/api/portal/community/search/es/posts")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "key_word", value = "关键字", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "page", value = "页数号", paramType = "form", dataType = "int"),
+            @ApiImplicitParam(name = "limit", value = "每页显示数", paramType = "form", dataType = "int")
+    })
+    public FungoPageResultDto<CmmPost> searchESPosts(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto) throws Exception {
+        String keyword = searchInputDto.getKey_word();
+        int page = searchInputDto.getPage();
+        if (page < 1) {
+            return new FungoPageResultDto<>();
+        }
+        int limit = searchInputDto.getLimit();
+//        esdaoService.addESPosts();
+        Page<CmmPost> cmmPosts =   esdaoService.getAllPosts(keyword,page,limit);
+        return FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(cmmPosts.getRecords(),-1,new Page());
+    }
+
 
     /**
      * PC2.0首页文章帖子列表

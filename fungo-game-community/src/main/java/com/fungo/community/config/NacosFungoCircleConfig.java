@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @RefreshScope
-@Order(1)
 public class NacosFungoCircleConfig   {
 
     /**
@@ -44,6 +43,9 @@ public class NacosFungoCircleConfig   {
 
     @Value(value = "${nacos.es.search}")
     private boolean searchPostType;
+
+    @Value( value = "${es.cluster-node.type}")
+    private String searchIndexType;
 
     public int getValue() {
         return value;
@@ -99,5 +101,13 @@ public class NacosFungoCircleConfig   {
 
     public void setSearchPostType(boolean searchPostType) {
         this.searchPostType = searchPostType;
+    }
+
+    public String getSearchIndexType() {
+        return searchIndexType;
+    }
+
+    public void setSearchIndexType(String searchIndexType) {
+        this.searchIndexType = searchIndexType;
     }
 }

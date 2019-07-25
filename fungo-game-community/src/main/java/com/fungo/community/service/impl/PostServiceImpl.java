@@ -16,6 +16,7 @@ import com.fungo.community.dao.mapper.CmmPostGameMapper;
 import com.fungo.community.dao.service.BasVideoJobDaoService;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
+import com.fungo.community.dao.service.impl.ESDAOServiceImpl;
 import com.fungo.community.entity.*;
 import com.fungo.community.facede.GameFacedeService;
 import com.fungo.community.facede.SystemFacedeService;
@@ -117,6 +118,9 @@ public class PostServiceImpl implements IPostService {
     //依赖系统和用户微服务
     @Autowired(required = false)
     private SystemFeignClient systemFeignClient;
+
+    @Autowired
+    private ESDAOServiceImpl esdaoService;
 
 
     @Override
@@ -1804,13 +1808,11 @@ public class PostServiceImpl implements IPostService {
             orderByStr.append("LOCATE( '" + keyword + "', content ) DESC,").append(" wclc DESC");
 
             wrapperCmmPost.orderBy(orderByStr.toString());
-
             postPage = postService.selectPage(pageCmPost, wrapperCmmPost);
-            postList = postPage.getRecords();
         }else {
-
-
+            postPage =  esdaoService.getAllPosts(keyword,page,limit);
         }
+        postList = postPage.getRecords();
         for (CmmPost post : postList) {
             Map<String, Object> postData = new HashMap<String, Object>();
 
