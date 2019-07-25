@@ -17,6 +17,7 @@ import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.ResultDto;
+import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.*;
 import org.apache.commons.lang3.StringUtils;
@@ -104,7 +105,8 @@ public class ProtalSystemActionServiceImpl implements IActionService {
     @Transactional
     public ResultDto<String> follow(String memberId, ActionInput inputDto) throws Exception {
 
-        if (memberId.equals(inputDto.getUser_id()) || memberId.equals(inputDto.getTarget_id())) {
+        ResultDto<String> resultDto = ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FOUR.getKey(),AbstractResultEnum.CODE_SYSTEM_FOUR.getSuccessValue() );;
+        if ( memberId.equals(inputDto.getTarget_id())) {
             return ResultDto.error("-1", "不能关注你自己");
         }
 
@@ -176,6 +178,12 @@ public class ProtalSystemActionServiceImpl implements IActionService {
                     followService.updateById(f2);
                 }
             }
+            // c查看是否相互关注
+            BasAction myAction = actionService.selectOne(new EntityWrapper<BasAction>().eq("type", "5").eq("member_id", memberId).eq("target_id", inputDto.getTarget_id()).ne("state", "-1"));
+            BasAction otherAction = actionService.selectOne(new EntityWrapper<BasAction>().eq("type", "5").eq("member_id",inputDto.getTarget_id()).eq("target_id", memberId).ne("state", "-1"));
+            if(myAction != null && otherAction != null){
+                resultDto = ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_THREE.getKey(),AbstractResultEnum.CODE_SYSTEM_THREE.getSuccessValue() );
+            }
 
 
             //V2.4.6版本任务
@@ -219,7 +227,7 @@ public class ProtalSystemActionServiceImpl implements IActionService {
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
         //获取心情动态列表(v2.4)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOODS_LIST, "", null);
-        return ResultDto.success("关注成功");
+        return resultDto;
     }
 
     @Override
