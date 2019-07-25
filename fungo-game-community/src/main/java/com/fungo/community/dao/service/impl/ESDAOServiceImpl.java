@@ -210,8 +210,8 @@ public class ESDAOServiceImpl {
                 List<Object> users = (List<Object>) sourceAsMap.get("user");
                 Map<String, Object> innerObject = (Map<String, Object>) sourceAsMap.get("innerObject");
                 */
-                LOGGER.info("index:" + index + "  type:" + type + "  id:" + id);
-                LOGGER.info(sourceAsString);
+//                LOGGER.info("index:" + index + "  type:" + type + "  id:" + id);
+//                LOGGER.info(sourceAsString);
 
                 //取高亮结果
                 /*Map<String, HighlightField> highlightFields = hit.getHighlightFields();
@@ -237,27 +237,16 @@ public class ESDAOServiceImpl {
 
         }catch (Exception e){
             LOGGER.error("获取es数据异常,索引id="+nacosFungoCircleConfig.getIndex(),e);
-        }finally {
+        }
+//        finally {
 //            try {
 //                client.close();
 //            } catch (IOException e) {
 //                e.printStackTrace();
 //            }
-        }
+//        }
         return postPage;
     }
 
-    /**
-     * 根据条件查询
-     * @return
-     */
-    public static String queryByMatch(String indexName,String esType,String fieldKey,String fieldValue,RestHighLevelClient client){
-        try {
-
-        }catch (Exception e){
-            LOGGER.error("",e);
-        }
-        return "查询数据出错";
-    }
 
 }
