@@ -1,7 +1,6 @@
-package com.fungo.games.service.impl;
+package com.fungo.games.service.portal.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.dao.GameDao;
@@ -12,6 +11,8 @@ import com.fungo.games.service.GameCollectionGroupService;
 import com.fungo.games.service.GameCollectionItemService;
 import com.fungo.games.service.GameService;
 import com.fungo.games.service.IIndexService;
+import com.fungo.games.service.portal.PortalGamesIIndexService;
+import com.fungo.games.utils.PCGameGroupVO;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
@@ -27,52 +28,27 @@ import java.math.BigDecimal;
 import java.util.*;
 
 @Service
-public class IndexServiceImpl implements IIndexService {
+public class PortalGamesIndexServiceImpl implements PortalGamesIIndexService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(IndexServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger( PortalGamesIndexServiceImpl.class);
 
-//    @Autowired
-//    private BannerService bannerService;
-//
-//    @Autowired
-//    private CmmPostService postService;
-//
     @Autowired
     private GameService gameService;
-//
-//    @Autowired
-//    private IUserService userService;
-//
-//    @Autowired
-//    private CmmCommunityService communityService;
-//
-//    @Autowired
-//    private GameEvaluationService gameEvaluationService;
-//
+
     @Autowired
     private GameCollectionGroupService gameCollectionGroupService;
 
     @Autowired
     private GameCollectionItemService gameCollectionItemService;
-//
-//    @Autowired
-//    private BasTagDao tagDao;
-//
+
     @Autowired
     private GameDao gameDao;
-//
+
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
-//
-//    @Autowired
-//    private SysVersionService sysVersionService;
-
-
-
-
 
     @Override
-    public FungoPageResultDto<Map<String, Object>> pcGameGroup(InputPageDto input) {
+    public FungoPageResultDto<Map<String, Object>> pcGameGroup(PCGameGroupVO input) {
 
         String keySuffix = JSON.toJSONString(input);
         FungoPageResultDto<Map<String, Object>> re = (FungoPageResultDto<Map<String, Object>>) fungoCacheIndex.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_PC_GAMEGROUP,
@@ -100,7 +76,7 @@ public class IndexServiceImpl implements IIndexService {
             }
             List<Map<String, Object>> lists = new ArrayList<Map<String, Object>>();
             for (GameCollectionItem gameCollectionItem : ilist) {
-                if (lists.size() == 4) {
+                if (lists.size() == input.getAmount()) {
                     map.put("is_more", true);
                     break;
                 }

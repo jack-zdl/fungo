@@ -10,6 +10,8 @@ import com.fungo.games.entity.GameCollectionItem;
 import com.fungo.games.entity.GameEvaluation;
 import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.service.*;
+import com.fungo.games.service.portal.PortalGamesIIndexService;
+import com.fungo.games.utils.PCGameGroupVO;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
@@ -24,6 +26,7 @@ import com.game.common.util.date.DateTools;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,6 +70,9 @@ public class PortalGamesIndexController {
 
     @Autowired
     private GameEvaluationService gameEvaluationService;
+
+    @Autowired
+    private PortalGamesIIndexService portalGamesIIndexService;
 
     @ApiOperation(value = "发现页游戏合集数据列表(2.4.3)", notes = "")
     @RequestMapping(value = "/api/portal/games/recommend/topic", method = RequestMethod.POST)
@@ -173,8 +179,8 @@ public class PortalGamesIndexController {
     @RequestMapping(value = "/api/portal/games/recommend/pc/gamegroup", method = RequestMethod.POST)
     @ApiImplicitParams({
     })
-    public FungoPageResultDto<Map<String, Object>> pcGameGroup(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto input) {
-        return indexService.pcGameGroup(input);
+    public FungoPageResultDto<Map<String, Object>> pcGameGroup(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody PCGameGroupVO input) {
+        return portalGamesIIndexService.pcGameGroup(input);
     }
 
 
