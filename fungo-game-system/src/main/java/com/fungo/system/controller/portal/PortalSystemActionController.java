@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -29,8 +30,10 @@ import javax.servlet.http.HttpServletRequest;
 @Api(value="",description="PC2.0用户行为")
 public class PortalSystemActionController {
 
-    @Autowired
+    @Resource(name = "actionServiceImpl")
     private IActionService actionService;
+    @Resource(name = "protalSystemActionServiceImpl")
+    private IActionService protalSystemActionServiceImpl;
 
     @ApiOperation(value="PC2.0点赞", notes="")
     @RequestMapping(value="/api/portal/system/action/like", method= RequestMethod.POST)
@@ -63,7 +66,7 @@ public class PortalSystemActionController {
             @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
     })
     public ResultDto<String> follow(MemberUserProfile memberUserPrefile,@RequestBody ActionInput inputDto) throws Exception {
-        return actionService.follow(memberUserPrefile.getLoginId(), inputDto);
+        return protalSystemActionServiceImpl.follow(memberUserPrefile.getLoginId(), inputDto);
     }
 
     @ApiOperation(value="PC2.0取消关注", notes="")
