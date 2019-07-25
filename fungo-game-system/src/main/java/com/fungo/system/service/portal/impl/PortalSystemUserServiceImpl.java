@@ -200,6 +200,10 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
                 if (action != null) {
                     map.put("is_followed", true);
                 }
+                BasAction otherAction = actionService.selectOne(new EntityWrapper<BasAction>().eq("type", "5").eq("member_id", m.getId()).eq("target_id", myId).ne("state", "-1"));
+                if (otherAction != null) {
+                    map.put("is_mutual_followed", true);
+                }
                 String rankImgs = getLevelRankUrl(m.getLevel(), levelRankList);
                 ArrayList<HashMap<String, Object>> urlList = mapper.readValue(rankImgs, ArrayList.class);
                 map.put("dignityImg", (String) urlList.get(0).get("url"));
