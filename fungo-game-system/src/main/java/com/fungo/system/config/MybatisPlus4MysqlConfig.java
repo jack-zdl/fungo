@@ -4,15 +4,19 @@ import com.baomidou.mybatisplus.MybatisConfiguration;
 import com.baomidou.mybatisplus.MybatisXMLLanguageDriver;
 import com.baomidou.mybatisplus.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean;
+import com.baomidou.mybatisplus.spring.boot.starter.SpringBootVFS;
+import com.fungo.system.config.shardingjdbc.XbDataSource;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.JdbcType;
+import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 import javax.sql.DataSource;
 
@@ -22,7 +26,7 @@ import javax.sql.DataSource;
 public class MybatisPlus4MysqlConfig {
 
     @Autowired
-    public DataSource dataSource;
+    public XbDataSource xbDataSource;
 
     @Autowired
     private PaginationInterceptor paginationInterceptor;
@@ -31,6 +35,7 @@ public class MybatisPlus4MysqlConfig {
     @Bean("mysqlSqlSessionFactory")
     public SqlSessionFactory sqlSessionFactory() throws Exception {
         MybatisSqlSessionFactoryBean sqlSessionFactory = new MybatisSqlSessionFactoryBean();
+        DataSource dataSource = xbDataSource.getShardingDataSource();
         sqlSessionFactory.setDataSource(dataSource);
         MybatisConfiguration configuration = new MybatisConfiguration();
         configuration.setDefaultScriptingLanguage(MybatisXMLLanguageDriver.class);
@@ -41,6 +46,37 @@ public class MybatisPlus4MysqlConfig {
         sqlSessionFactory.setPlugins(new Interceptor[]{
                 paginationInterceptor
         });
+//        DataSource dataSource = xbDataSource.getShardingDataSource();
+//        TransactionFactory transactionFactory = (TransactionFactory) new MyBatisMapperScannerConfig();
+//        TransactionFactory transactionFactory = new JdbcTransactionFactory();
+//
+//        Environment environment = new Environment("development", transactionFactory, dataSource);
+//        org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration(
+//                environment);
+//        // Dao层包路径
+//        configuration.addMappers(" com.ceying.biz.dao.*");
+//        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
+//        return sqlSessionFactory;
+
+//        SqlSessionFactoryBean sessionFactoryBean = new SqlSessionFactoryBean();
+//        sessionFactoryBean.setDataSource(dataSource);
+////        Class<?>[] list = new Class[]{AccountsPayableVo.class};
+////        sessionFactoryBean.setTypeAliases(new Class[]{AccountsPayableVo.class});
+//        sessionFactoryBean.setVfs(SpringBootVFS.class);
+////        sessionFactoryBean.setTypeAliasesPackage("com.ceying.biz.vo;com.ceying.biz.dto;com.ceying.biz.query;com.ceying.biz.entity");
+////        sessionFactoryBean.setTypeAliasesPackage("com.ceying.biz.query");
+////        sessionFactoryBean.setTypeAliasesPackage("com.ceying.biz.entity");
+//        //添加XML目录
+//        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+//        try {
+//            sessionFactoryBean.setMapperLocations(resolver.getResources("classpath:mapping/*.xml"));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new RuntimeException(e);
+//        }finally {
+//            SqlSessionFactory sqlSessionFactory = sessionFactoryBean.getObject();
+//            return sqlSessionFactory;
+//        }
         return sqlSessionFactory.getObject();
     }
 

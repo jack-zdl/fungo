@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.servlet.MultipartConfigElement;
 
-@SpringBootApplication
+@SpringBootApplication()
 @EnableFeignClients(basePackages = {"com.fungo.system.feign"})
 @EnableCaching
 @ComponentScan(basePackages = {"com.*"})
