@@ -21,15 +21,18 @@ spring:
 
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     #    url:  jdbc:mysql://39.105.18.214:3306/fungo_system?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     #    username: root
     #    password: affdB440821920A9
     url: jdbc:mysql://rm-bp145sizta1yg4585xo.mysql.rds.aliyuncs.com:3306/fungo_cloud_uat?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    #url: jdbc:mysql://rm-bp145sizta1yg4585xo.mysql.rds.aliyuncs.com:3306/fungo_pro?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     #RDS读写分离地址（内网）
     #url: jdbc:mysql://rm-bp145sizta1yg4585rw.mysql.rds.aliyuncs.com:3306/fungo_uat?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: fungo_uat
     password: b1dcfae36fa84Db88479efbd36b16e
+    #username: fungo_pros
+    #password: Fungo_123
     hikari:
       # 连接池标题
       pool-name: funGoApiHikariCP

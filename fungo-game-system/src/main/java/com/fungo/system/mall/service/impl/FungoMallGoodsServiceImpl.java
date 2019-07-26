@@ -2,6 +2,7 @@ package com.fungo.system.mall.service.impl;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.dto.FungoMallDto;
 import com.fungo.system.mall.daoService.MallGoodsCatesDaoService;
@@ -10,6 +11,7 @@ import com.fungo.system.mall.daoService.MallSeckillDaoService;
 import com.fungo.system.mall.entity.MallGoods;
 import com.fungo.system.mall.entity.MallGoodsCates;
 import com.fungo.system.mall.entity.MallSeckill;
+import com.fungo.system.mall.mapper.MallSeckillDao;
 import com.fungo.system.mall.service.IFungoMallGoodsService;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
 import com.game.common.dto.ResultDto;
@@ -42,6 +44,9 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 
     @Autowired
     private MallSeckillDaoService mallSeckillDaoServicel;
+
+    @Autowired
+    private MallSeckillDao mallSeckillDao;
 
     @Value("${fungo.mall.seckill.aesSecretKey}")
     private String aESSecretKey;
@@ -104,7 +109,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 //
 //            addGoods(cateId,goodsName, imgs, price, goodsType, sort);
 //            addGoodsSeckill(goodsId,goodsName,price,stock,startDate,endDate);
-            MallGoods mallGoods =  addGoods(fungoMallDto);
+            //MallGoods mallGoods =  addGoods(fungoMallDto);
             //addGoodsSeckill(fungoMallDto,mallGoods.getId());
             return true;
         } catch (Exception ex) {
@@ -163,8 +168,13 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 
             seckill.setCreatedAt(new Date());
             seckill.setUpdatedAt(new Date());
+            MallSeckill mallSeckill = mallSeckillDao.querySeckillGoodsByGoodId(goodId, queryStartDate,queryEndDate );
+            if(mallSeckill == null){
+                mallSeckillDaoServicel.insert(seckill);
+            }else {
+                logger.error( "新增每日库存失败,商品id="+ goodId);
+            }
 
-            mallSeckillDaoServicel.insert(seckill);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -172,7 +182,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 
 
     //添加商品
-    public MallGoods addGoods(FungoMallDto fungoMallDto) {
+    public Object addGoods(FungoMallDto fungoMallDto) {
 
         //实物物品类型id: 2019011415434340219
         try{
@@ -226,7 +236,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
             mallGoods.setCreatedAt(new Date());
             mallGoods.setUpdatedAt(new Date());
             mallGoodsDaoService.insert(mallGoods);
-            return mallGoods;
+            return JSON.toJSON( mallGoods ); // mallGoods.toString();
         }catch (Exception e){
             e.printStackTrace();
             logger.error("增加商品异常,参数="+fungoMallDto.toString(),e);

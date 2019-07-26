@@ -35,6 +35,6 @@ public interface IFungoMallGoodsService {
     public ResultDto<Map<String,Object>> queryGoodsCountWithGame(MallGoodsInput mallGoodsInput);
 
     //添加商品
-    public MallGoods addGoods(FungoMallDto fungoMallDto);
+    public Object addGoods(FungoMallDto fungoMallDto);
 
 }

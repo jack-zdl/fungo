@@ -27,10 +27,10 @@ public class FungoMallController {
     private IFungoMallGoodsService iFungoMallGoodsService;
 
     @PostMapping("/mall/addGoods")
-    public ResultDto<String> addGoods(@RequestBody FungoMallDto fungoMallDto){
-        MallGoods isOk = iFungoMallGoodsService.addGoods(fungoMallDto);
+    public ResultDto<Object> addGoods(@RequestBody FungoMallDto fungoMallDto){
+        Object isOk = iFungoMallGoodsService.addGoods(fungoMallDto);
         if(isOk != null){
-            return ResultDto.success(isOk.toString());
+            return ResultDto.success(isOk);
         }
         return ResultDto.error("-1", "添加商品数据失败");
     }
