@@ -1,6 +1,7 @@
 package com.fungo.system.controller;
 
 import com.fungo.system.dto.FungoMallDto;
+import com.fungo.system.mall.entity.MallGoods;
 import com.fungo.system.mall.service.IFungoMallGoodsService;
 import com.game.common.dto.ResultDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 /**
  * <p>添加商品</p>
@@ -25,7 +28,12 @@ public class FungoMallController {
 
     @PostMapping("/mall/addGoods")
     public ResultDto<String> addGoods(@RequestBody FungoMallDto fungoMallDto){
-            iFungoMallGoodsService.addGoods(fungoMallDto);
-            return ResultDto.success();
+        MallGoods isOk = iFungoMallGoodsService.addGoods(fungoMallDto);
+        if(isOk != null){
+            return ResultDto.success(isOk.toString());
+        }
+        return ResultDto.error("-1", "添加商品数据失败");
     }
+
+
 }

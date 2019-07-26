@@ -20,7 +20,7 @@ public class FungoMallDto implements Serializable {
     private static final long serialVersionUID = 4689603663640279603L;
 
     /**
-     * 功能描述: 添加商品类型  1 虚拟  2 实物
+     * 功能描述: 添加商品类型  1 实物 2 虚拟
      * @auther: dl.zhang
      * @date: 2019/7/18 13:33
      */
@@ -34,7 +34,7 @@ public class FungoMallDto implements Serializable {
     private String goodsName;
 
     /**
-     * 功能描述: 添加商品代号 1 虚拟 2 实物 21 22 23
+     * 功能描述: 添加商品代号 1 实物 2 虚拟  21 22 23
      * @auther: dl.zhang
      * @date: 2019/7/18 13:33
      */
@@ -100,4 +100,15 @@ public class FungoMallDto implements Serializable {
      * @date: 2019/7/18 14:04
      */
     private Integer sort;
+
+    /**
+     * 功能描述: 库存数
+     * @auther: dl.zhang
+     * @date: 2019/7/26 10:52
+     */
+    private String stock;
+
+    private String startDate;
+
+    private String endDate;
 }

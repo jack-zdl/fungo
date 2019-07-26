@@ -2,6 +2,7 @@ package com.fungo.system.mall.service;
 
 
 import com.fungo.system.dto.FungoMallDto;
+import com.fungo.system.mall.entity.MallGoods;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.mall.MallGoodsInput;
 
@@ -22,8 +23,9 @@ public interface IFungoMallGoodsService {
      * 添加商品
      * @return
      */
-    public boolean addGoodsAndSeckill(Map<String, Object> param);
+    public boolean addGoodsAndSeckill(FungoMallDto fungoMallDto);
 
+    public void addGoodsSeckill(String goodId,String stocks);
 
     /**
      * 获取某个游戏的游戏礼包数量
@@ -33,6 +35,6 @@ public interface IFungoMallGoodsService {
     public ResultDto<Map<String,Object>> queryGoodsCountWithGame(MallGoodsInput mallGoodsInput);
 
     //添加商品
-    public void addGoods(FungoMallDto fungoMallDto);
+    public MallGoods addGoods(FungoMallDto fungoMallDto);
 
 }
