@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.MybatisConfiguration;
 import com.baomidou.mybatisplus.MybatisXMLLanguageDriver;
 import com.baomidou.mybatisplus.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean;
+import com.fungo.community.config.shardingjdbc.XbDataSource;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.JdbcType;
@@ -21,14 +22,19 @@ import javax.sql.DataSource;
 @MapperScan("com.fungo.community.dao.mapper")
 public class MybatisPlus4MysqlConfig {
 
+//    @Autowired
+//    public DataSource dataSource;
+
     @Autowired
-    public DataSource dataSource;
+    public XbDataSource xbDataSource;
+
 
 
     @Primary
     @Bean("mysqlSqlSessionFactory")
     public SqlSessionFactory sqlSessionFactory() throws Exception {
         MybatisSqlSessionFactoryBean sqlSessionFactory = new MybatisSqlSessionFactoryBean();
+        DataSource dataSource = xbDataSource.getShardingDataSource();
         sqlSessionFactory.setDataSource(dataSource);
         MybatisConfiguration configuration = new MybatisConfiguration();
         configuration.setDefaultScriptingLanguage(MybatisXMLLanguageDriver.class);
