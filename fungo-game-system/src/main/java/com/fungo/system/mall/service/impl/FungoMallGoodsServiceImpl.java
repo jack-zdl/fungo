@@ -2,6 +2,7 @@ package com.fungo.system.mall.service.impl;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.dto.FungoMallDto;
 import com.fungo.system.mall.daoService.MallGoodsCatesDaoService;
@@ -10,12 +11,14 @@ import com.fungo.system.mall.daoService.MallSeckillDaoService;
 import com.fungo.system.mall.entity.MallGoods;
 import com.fungo.system.mall.entity.MallGoodsCates;
 import com.fungo.system.mall.entity.MallSeckill;
+import com.fungo.system.mall.mapper.MallSeckillDao;
 import com.fungo.system.mall.service.IFungoMallGoodsService;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.mall.MallGoodsInput;
 import com.game.common.util.FungoAESUtil;
 import com.game.common.util.PKUtil;
+import com.game.common.util.date.DateTools;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
@@ -23,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -40,6 +44,9 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 
     @Autowired
     private MallSeckillDaoService mallSeckillDaoServicel;
+
+    @Autowired
+    private MallSeckillDao mallSeckillDao;
 
     @Value("${fungo.mall.seckill.aesSecretKey}")
     private String aESSecretKey;
@@ -69,62 +76,66 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
      *    22 京东卡
      *    23 QB卡
      */
+    @Transactional
     @Override
-    public boolean addGoodsAndSeckill(Map<String, Object> param) {
+    public boolean addGoodsAndSeckill(FungoMallDto fungoMallDto) {
 
         try {
 
-            //虚拟物品类型id: 2019011415405395215L
-            //实物物品类型id: 2019011415434340219
-            //Long cateId = (Long) param.get("cateId");
-
-            Long goodsId = (Long) param.get("goodsId");
-            //商品名称
-            String goodsName = (String) param.get("goodsName");
-
-            Integer price = (Integer) param.get("price");
-            //库存
-            String stock = (String) param.get("stock");
-
-            //序号
-            //int sort = (Integer) param.get("sort");
-            //商品类型
-            // int goodsType = (Integer) param.get("goodsType");
-
-            //开始时间
-            String startDate = (String) param.get("startDate");
-            //结束时间
-            String endDate = (String) param.get("endDate");
-            //商品图片
-            //String imgs = (String) param.get("imgs");
-
-
-            //addGoods(cateId,goodsName, imgs, price, goodsType, sort);
-            //addGoodsSeckill(goodsId,goodsName,price,stock,startDate,endDate);
-
+//            //虚拟物品类型id: 2019011415405395215L
+//            //实物物品类型id: 2019011415434340219
+//            //Long cateId = (Long) param.get("cateId");
+//
+//            Long goodsId = (Long) param.get("goodsId");
+//            //商品名称
+//            String goodsName = (String) param.get("goodsName");
+//
+//            Integer price = (Integer) param.get("price");
+//            //库存
+//            String stock = (String) param.get("stock");
+//
+//            //序号
+//            //int sort = (Integer) param.get("sort");
+//            //商品类型
+//            // int goodsType = (Integer) param.get("goodsType");
+//
+//            //开始时间
+//            String startDate = (String) param.get("startDate");
+//            //结束时间
+//            String endDate = (String) param.get("endDate");
+//            //商品图片
+//            //String imgs = (String) param.get("imgs");
+//
+//
+//            addGoods(cateId,goodsName, imgs, price, goodsType, sort);
+//            addGoodsSeckill(goodsId,goodsName,price,stock,startDate,endDate);
+            //MallGoods mallGoods =  addGoods(fungoMallDto);
+            //addGoodsSeckill(fungoMallDto,mallGoods.getId());
+            return true;
         } catch (Exception ex) {
             ex.printStackTrace();
+            return false;
         }
-        return true;
     }
 
 
     //添加秒杀的商品
-    public void addGoodsSeckill(MallSeckill seckillParm) {
+    public void addGoodsSeckill(String goodId,String stocks) {
 
         try {
 
-            Long goodsId = seckillParm.getGoodsId();
+            Long goodsId = Long.valueOf(goodId);
+            MallGoods mallGoods = mallGoodsDaoService.selectById(goodId);
 
-            String goodsName = seckillParm.getGoodsName();
+            String goodsName = mallGoods.getGoodsName();  //fungoMallDto.getGoodsName();
 
-            String MarketPriceVcy = seckillParm.getSeckillPriceVcy();
+            String MarketPriceVcy = mallGoods.getMarketPriceVcy().toString();  //String.valueOf(fungoMallDto.getPrice());
 
-            String stock = seckillParm.getTotalStock();
+            String stock = stocks; //fungoMallDto.getStock();
 
-            String startDate = seckillParm.getExt1();
+            String startDate = DateTools.getCurrentDate( "-"); // fungoMallDto.getStartDate();
 
-            String endDate = seckillParm.getExt2();
+            String endDate =  DateTools.getCurrentDate( "-"); //;
 
 
             //秒杀表
@@ -157,8 +168,13 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 
             seckill.setCreatedAt(new Date());
             seckill.setUpdatedAt(new Date());
+            MallSeckill mallSeckill = mallSeckillDao.querySeckillGoodsByGoodId(goodId, queryStartDate,queryEndDate );
+            if(mallSeckill == null){
+                mallSeckillDaoServicel.insert(seckill);
+            }else {
+                logger.error( "新增每日库存失败,商品id="+ goodId);
+            }
 
-            mallSeckillDaoServicel.insert(seckill);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -166,17 +182,17 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 
 
     //添加商品
-    public void addGoods(FungoMallDto fungoMallDto) {
+    public Object addGoods(FungoMallDto fungoMallDto) {
 
         //实物物品类型id: 2019011415434340219
         try{
             Map<String, Object> imgMapBig = new HashMap<>();
             Long cateId = 0l;
             switch (fungoMallDto.getType()){
-                case 1:
+                case 2:
                     cateId = 2019011415405395215L;
                     break;
-                case 2:
+                case 1:
                     cateId = 2019011415434340219L;
                     break;
                 default:
@@ -216,9 +232,11 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
             mallGoods.setGoodsStatus(fungoMallDto.getGoodsStatus());
             mallGoods.setGoodsType(fungoMallDto.getGoodsType());
             mallGoods.setSort(fungoMallDto.getSort());
+            mallGoods.setGoodsIntro( "由手动添加商品");
             mallGoods.setCreatedAt(new Date());
             mallGoods.setUpdatedAt(new Date());
             mallGoodsDaoService.insert(mallGoods);
+            return JSON.toJSON( mallGoods ); // mallGoods.toString();
         }catch (Exception e){
             e.printStackTrace();
             logger.error("增加商品异常,参数="+fungoMallDto.toString(),e);
@@ -265,7 +283,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 //        mallGoods.setCreatedAt(new Date());
 //        mallGoods.setUpdatedAt(new Date());
 
-
+        return null;
 
     }
 

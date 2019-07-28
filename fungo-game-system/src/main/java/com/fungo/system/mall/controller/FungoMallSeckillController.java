@@ -346,10 +346,11 @@ public class FungoMallSeckillController {
      * 添加商品数据
      * @return
      */
-    //@PostMapping("/api/mall/goods")
+//    @PostMapping("/api/mall/goods")
     public ResultDto<String> addGoodsWithSeckill(@RequestBody Map<String, Object> param) {
 
-        Boolean isOk = iFungoMallGoodsService.addGoodsAndSeckill(param);
+        Boolean isOk = null ;
+//        isOk = iFungoMallGoodsService.addGoodsAndSeckill(param);
         if (isOk) {
             return ResultDto.success();
         }

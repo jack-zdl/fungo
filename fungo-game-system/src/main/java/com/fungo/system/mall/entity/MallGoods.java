@@ -326,4 +326,31 @@ public class MallGoods extends Model<MallGoods> {
 		return this.id;
 	}
 
+	@Override
+	public String toString() {
+		return "MallGoods{" +
+				"id=" + id +
+				", cid=" + cid +
+				", gameId='" + gameId + '\'' +
+				", gameName='" + gameName + '\'' +
+				", goodsName='" + goodsName + '\'' +
+				", marketPriceCy=" + marketPriceCy +
+				", marketPriceVcy=" + marketPriceVcy +
+				", goodsSn='" + goodsSn + '\'' +
+				", goodsStatus=" + goodsStatus +
+				", goodsType=" + goodsType +
+				", keywords='" + keywords + '\'' +
+				", mainImg='" + mainImg + '\'' +
+				", goodsIntro='" + goodsIntro + '\'' +
+				", sort=" + sort +
+				", usageDesc='" + usageDesc + '\'' +
+				", creatorId='" + creatorId + '\'' +
+				", creatorName='" + creatorName + '\'' +
+				", createdAt=" + createdAt +
+				", updatedAt=" + updatedAt +
+				", ext1='" + ext1 + '\'' +
+				", ext2='" + ext2 + '\'' +
+				", ext3='" + ext3 + '\'' +
+				'}';
+	}
 }
