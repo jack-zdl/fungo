@@ -35,6 +35,9 @@ public class DistributedLockByCurator implements InitializingBean {
 
     /**
      * 获取分布式锁
+     *   String keyPath = "/" + curatorConfiguration.getNoticeLock() + "/" + curatorConfiguration.getNoticeChildrenLock()+path;
+     *   "/" + curatorConfiguration.getNoticeLock()  父节点
+     *   "/" + curatorConfiguration.getNoticeChildrenLock()+path; 临时子节点
      */
     public void acquireDistributedLock(String path) {
         String keyPath = "/" + curatorConfiguration.getNoticeLock() + "/" + curatorConfiguration.getNoticeChildrenLock()+path;
@@ -44,7 +47,7 @@ public class DistributedLockByCurator implements InitializingBean {
                         .create()
                         .creatingParentsIfNeeded()
                         .withMode( CreateMode.EPHEMERAL)
-                        .withACL( ZooDefs.Ids.OPEN_ACL_UNSAFE)
+                        .withACL( ZooDefs.Ids.OPEN_ACL_UNSAFE) // 子节点
                         .forPath(keyPath);
                 logger.info("success to acquire lock for path:{}", keyPath);
                 break;
@@ -68,7 +71,7 @@ public class DistributedLockByCurator implements InitializingBean {
      */
     public boolean releaseDistributedLock(String path) {
         try {
-            String keyPath = "/" + curatorConfiguration.getNoticeLock() + "/" + path;
+            String keyPath = "/" + curatorConfiguration.getNoticeLock() + "/"+curatorConfiguration.getNoticeChildrenLock() + path;
             if (curatorFramework.checkExists().forPath(keyPath) != null) {
                 curatorFramework.delete().forPath(keyPath);
             }
@@ -112,8 +115,8 @@ public class DistributedLockByCurator implements InitializingBean {
             if (curatorFramework.checkExists().forPath(path) == null) {
                 curatorFramework.create()
                         .creatingParentsIfNeeded()
-                        .withMode(CreateMode.PERSISTENT)
-                        .withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE)
+                        .withMode(CreateMode.PERSISTENT)    // PERSISTENT
+                        .withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE)   // 父节点
                         .forPath(path);
             }
             addWatcher(curatorConfiguration.getNoticeLock());
@@ -121,5 +124,24 @@ public class DistributedLockByCurator implements InitializingBean {
         } catch (Exception e) {
             logger.error("connect zookeeper fail，please check the log >> {}", e.getMessage(), e);
         }
+    }
+
+    /**
+     * 检查该节点是否存在
+     * @param path
+     * @return
+     */
+    //检查临时节点
+    public boolean checkTemporaryPropertiesSet(String path) {
+        String keyPath = "/" + curatorConfiguration.getNoticeLock() + "/" + curatorConfiguration.getNoticeChildrenLock()+path;
+        try {
+            if (curatorFramework.checkExists().forPath(keyPath) != null) {
+               return false;
+            }
+            logger.info("root path 的 watcher 事件创建成功");
+        } catch (Exception e) {
+            logger.error("temporaryPropertiesSet {}", e.getMessage(), e);
+        }
+        return true;
     }
 }

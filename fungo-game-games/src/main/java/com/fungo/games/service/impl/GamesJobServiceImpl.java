@@ -8,6 +8,7 @@ import com.fungo.games.utils.dto.GameSurveyRelDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ import java.util.List;
  * @Author: dl.zhang
  * @Date: 2019/7/29
  */
+@Service
 public class GamesJobServiceImpl implements GamesJobService {
 
     private static final Logger logger = LoggerFactory.getLogger(GamesJobServiceImpl.class);
@@ -35,8 +37,20 @@ public class GamesJobServiceImpl implements GamesJobService {
     public void checkGamesNotice() {
         try {
             List<GameSurveyRelDTO> gameSurveyRelList = gameSurveyRelDao.getMemberNoticeByGame();
-            gameSurveyRelList.stream().forEach( s ->{
-                distributedLockByCurator.acquireDistributedLock(s.getMemberId());
+            gameSurveyRelList.stream().parallel().forEach( s ->{
+//                if(distributedLockByCurator.checkTemporaryPropertiesSet(s.getMemberId())){
+                    distributedLockByCurator.acquireDistributedLock(s.getMemberId());
+                    //
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                distributedLockByCurator.releaseDistributedLock(s.getMemberId());
+//                }
+
+
             } );
 
 
