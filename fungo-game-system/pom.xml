@@ -12,6 +12,7 @@
 	<packaging>jar</packaging>
 	<name>fungo-game-system</name>
 	<properties>
+		<sharding-jdbc.version> 1.5.3</sharding-jdbc.version> <!--1.4.1 -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!--properties节点中设置docker镜像的前缀“springboot”-->
@@ -168,6 +169,28 @@
 			<artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
 			<version>0.2.2.RELEASE</version>
 		</dependency>
+
+		<!-- 1.x 的版本-->
+		<dependency>
+			<groupId>com.dangdang</groupId>
+			<artifactId>sharding-jdbc-core</artifactId>
+			<version>1.5.3</version> <!-- 1.4.2 -->
+		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.dangdang</groupId>-->
+<!--			<artifactId>sharding-jdbc-config-spring</artifactId>-->
+<!--			<version>${sharding-jdbc.version}</version>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>io.shardingsphere</groupId>-->
+<!--			<artifactId>sharding-jdbc-spring-boot-starter</artifactId>-->
+<!--			<version>3.0.0</version>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>io.shardingsphere</groupId>-->
+<!--			<artifactId>sharding-jdbc</artifactId>-->
+<!--			<version>3.0.0.M1</version>-->
+<!--		</dependency>-->
 
 	</dependencies>
     <dependencyManagement>

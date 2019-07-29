@@ -47,6 +47,16 @@ public class NacosFungoCircleConfig   {
     @Value( value = "${es.cluster-node.type}")
     private String searchIndexType;
 
+    @Value(value = "${nacos.cloud.basLog}")
+    public String basLog;
+
+    @Value(value = "${nacos.cloud.basLogone}")
+    public String basLogone;
+
+    @Value(value = "${nacos.cloud.basLogtwo}")
+    public String basLogtwo;
+
+
     public int getValue() {
         return value;
     }
@@ -109,5 +119,30 @@ public class NacosFungoCircleConfig   {
 
     public void setSearchIndexType(String searchIndexType) {
         this.searchIndexType = searchIndexType;
+    }
+
+
+    public String getBasLog() {
+        return basLog;
+    }
+
+    public void setBasLog(String basLog) {
+        this.basLog = basLog;
+    }
+
+    public String getBasLogone() {
+        return basLogone;
+    }
+
+    public void setBasLogone(String basLogone) {
+        this.basLogone = basLogone;
+    }
+
+    public String getBasLogtwo() {
+        return basLogtwo;
+    }
+
+    public void setBasLogtwo(String basLogtwo) {
+        this.basLogtwo = basLogtwo;
     }
 }

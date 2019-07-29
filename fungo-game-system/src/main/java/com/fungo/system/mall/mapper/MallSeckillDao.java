@@ -32,6 +32,16 @@ public interface MallSeckillDao extends BaseMapper<MallSeckill> {
                                                       @Param("goods_types") List<String> goods_types,@Param("goods_status") int goods_status);
 
 
+    /**
+     * 查询秒杀的商品
+     * @param  goodId 商品id
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @return
+     */
+    public MallSeckill querySeckillGoodsByGoodId(@Param("goodId") String goodId,@Param("startTime") String startTime, @Param("endTime") String endTime);
+
+
 
 
 

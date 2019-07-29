@@ -67,5 +67,17 @@
 				</if>
 	</select>
 
+	<select id="querySeckillGoodsByGoodId" resultType="com.fungo.system.mall.entity.MallSeckill">
+	SELECT
+		<include refid="Base_Column_List"></include>
+		FROM
+			t_mall_seckill sk
+		WHERE
+		sk.goods_id = #{goodId}
+		<if test="startTime != null  and endTime != null">
+			AND
+			( sk.start_time BETWEEN #{startTime} AND #{endTime}  )
+		</if>
+	</select>
 
 </mapper>

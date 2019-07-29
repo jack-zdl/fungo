@@ -3,6 +3,7 @@ package com.fungo.system.controller;
 import com.fungo.system.job.DTPTransactionMessageScheduledJob;
 import com.fungo.system.job.FungoMallSeckillTaskService;
 import com.fungo.system.job.PushFunction;
+import com.fungo.system.mall.service.IFungoMallGoodsService;
 import com.fungo.system.service.ISeacherService;
 import com.game.common.dto.ResultDto;
 import org.slf4j.Logger;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 /**
  * <p></p>
@@ -35,6 +38,9 @@ public class JobController {
 
     @Autowired
     private ISeacherService iSeacherService;
+
+    @Autowired
+    private IFungoMallGoodsService iFungoMallGoodsService;
 
     @GetMapping("/dtpTransactionMessageScheduledJob")
     public ResultDto<String> dtpTransactionMessageScheduledJob(){
@@ -97,6 +103,22 @@ public class JobController {
         }catch (Exception e){
             LOGGER.error("更新热度游戏关键字定期任务执行异常",e);
             re = ResultDto.error("-1","更新热度游戏关键字定期任务执行异常");
+        }
+        return re;
+    }
+
+    @GetMapping("/addGoodsAndSeckill")
+    public ResultDto<String> addGoodsAndSeckill( String gameId,String stocks ){
+        ResultDto<String> re = null;
+        try {
+            if("".equals( gameId ) || "".equals(stocks)){
+                return ResultDto.error("-1","参数有误");
+            }
+            iFungoMallGoodsService.addGoodsSeckill(gameId,stocks);
+            re = ResultDto.success("更新商品每日库存定期任务执行成功");
+        }catch (Exception e){
+            LOGGER.error("更新商品每日库存定期任务执行异常",e);
+            re = ResultDto.error("-1","更新商品每日库存定期任务执行异常");
         }
         return re;
     }

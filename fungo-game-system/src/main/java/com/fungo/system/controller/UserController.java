@@ -3,6 +3,7 @@ package com.fungo.system.controller;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
 import com.fungo.system.function.MemberLoginedStatisticsService;

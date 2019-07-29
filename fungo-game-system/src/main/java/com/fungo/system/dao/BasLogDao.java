@@ -20,4 +20,6 @@ public interface BasLogDao extends BaseMapper<BasLog> {
 
     //获取一天内访问数前十的游戏
     public List<HotValue> getHotValue();
+
+    boolean insertLogic(BasLog basLog);
 }

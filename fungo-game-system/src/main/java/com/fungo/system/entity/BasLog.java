@@ -17,7 +17,7 @@ import java.util.Date;
  * @author lzh
  * @since 2018-07-09
  */
-@TableName("t_bas_log")
+@TableName("logic_bas_log")
 public class BasLog extends Model<BasLog> {
 
     private static final long serialVersionUID = 1L;
