@@ -415,6 +415,18 @@ public class UserController {
         return re;
     }
 
+    @ApiOperation(value="新增虚拟用户", notes="")
+    @RequestMapping(value="/api/system/user/mockuser", method= RequestMethod.POST)
+    @ApiImplicitParams({})
+    public ResultDto<Member> addVirtualUser(MemberUserProfile memberUserPrefile, @RequestBody AdminUserInputDTO input){
+        String adminId = memberUserPrefile.getLoginId();
+        try {
+            return userService.addVirtualUser(input,adminId);
+        } catch (Exception e) {
+            return ResultDto.error( "-1","新增虚拟用户异常" );
+        }
+    }
+
 
     public String getAllowSuffix() {
         return allowSuffix;

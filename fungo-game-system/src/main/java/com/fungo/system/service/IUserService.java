@@ -142,4 +142,8 @@ public interface IUserService {
 
     //用户注册 初始化数据(Fungo身份证、等级)
     void initUserRank(String memberId);
+
+
+    //添加管理员关联的虚拟用户
+    public ResultDto<Member> addVirtualUser(AdminUserInputDTO input, String adminId) throws Exception;
 }
