@@ -2,6 +2,7 @@ package com.fungo.games.service.impl;
 
 import com.fungo.games.dao.GameSurveyRelDao;
 import com.fungo.games.entity.GameSurveyRel;
+import com.fungo.games.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.games.service.GamesJobService;
 import com.fungo.games.utils.dto.GameSurveyRelDTO;
 import org.slf4j.Logger;
@@ -22,6 +23,8 @@ public class GamesJobServiceImpl implements GamesJobService {
 
     @Autowired
     private GameSurveyRelDao gameSurveyRelDao;
+    @Autowired
+    private DistributedLockByCurator distributedLockByCurator;
     
     /**
      * 功能描述:  检查游戏模块下game已经进入测试阶段
@@ -33,7 +36,7 @@ public class GamesJobServiceImpl implements GamesJobService {
         try {
             List<GameSurveyRelDTO> gameSurveyRelList = gameSurveyRelDao.getMemberNoticeByGame();
             gameSurveyRelList.stream().forEach( s ->{
-
+                distributedLockByCurator.acquireDistributedLock(s.getMemberId());
             } );
 
 

@@ -37,7 +37,7 @@ public class DistributedLockByCurator implements InitializingBean {
      * 获取分布式锁
      */
     public void acquireDistributedLock(String path) {
-        String keyPath = "/" + curatorConfiguration.getNoticeLock() + "/" + path;
+        String keyPath = "/" + curatorConfiguration.getNoticeLock() + "/" + curatorConfiguration.getNoticeChildrenLock()+path;
         while (true) {
             try {
                 curatorFramework
