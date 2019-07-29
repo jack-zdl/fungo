@@ -3,6 +3,7 @@ package com.fungo.system.mall.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.fungo.system.mall.entity.MallSeckill;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Map;
  * @author mxf
  * @since 2019-01-14
  */
+@Repository
 public interface MallSeckillDao extends BaseMapper<MallSeckill> {
 
 

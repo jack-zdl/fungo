@@ -1,6 +1,6 @@
-package com.fungo.system.helper.zookeeper;
+package com.fungo.games.helper.zookeeper;
 
-import com.fungo.system.config.CuratorConfiguration;
+import com.fungo.games.config.CuratorConfiguration;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;

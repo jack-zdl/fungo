@@ -122,4 +122,23 @@ public class JobController {
         }
         return re;
     }
+
+    /**
+     * 功能描述: 定时检查系统管控台系统消息
+     * @return: com.game.common.dto.ResultDto<java.lang.String>
+     * @auther: dl.zhang
+     * @date: 2019/7/29 16:42
+     */
+    @GetMapping("/admin/systemNotice")
+    public ResultDto<String> checkSystemNotice(  ){
+        ResultDto<String> re = null;
+        try {
+            iFungoMallGoodsService.checkSystemNotice();
+            re = ResultDto.success("定时检查系统管控台系统消息定期任务执行成功");
+        }catch (Exception e){
+            LOGGER.error("定时检查系统管控台系统消息定期任务执行异常",e);
+            re = ResultDto.error("-1","定时检查系统管控台系统消息定期任务执行异常");
+        }
+        return re;
+    }
 }

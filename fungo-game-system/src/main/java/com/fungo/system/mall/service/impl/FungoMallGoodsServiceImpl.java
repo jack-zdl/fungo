@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.dto.FungoMallDto;
+import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.mall.daoService.MallGoodsCatesDaoService;
 import com.fungo.system.mall.daoService.MallGoodsDaoService;
 import com.fungo.system.mall.daoService.MallSeckillDaoService;
@@ -35,18 +36,16 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 
     private static final Logger logger = LoggerFactory.getLogger(FungoMallGoodsServiceImpl.class);
 
-
     @Autowired
     private MallGoodsCatesDaoService mallGoodsCatesDaoService;
-
     @Autowired
     private MallGoodsDaoService mallGoodsDaoService;
-
     @Autowired
     private MallSeckillDaoService mallSeckillDaoServicel;
-
     @Autowired
     private MallSeckillDao mallSeckillDao;
+    @Autowired
+    private DistributedLockByCurator distributedLockByCurator;
 
     @Value("${fungo.mall.seckill.aesSecretKey}")
     private String aESSecretKey;
@@ -285,6 +284,16 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 
         return null;
 
+    }
+
+    @Override
+    public void checkSystemNotice() {
+        try {
+
+//            distributedLockByCurator.afterPropertiesSet();
+        }catch (Exception  e){
+            logger.error("定时检查系统管控台系统消息serviceImpl异常",e);
+        }
     }
 
 
