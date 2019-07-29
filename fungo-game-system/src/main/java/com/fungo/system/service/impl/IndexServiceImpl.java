@@ -246,7 +246,7 @@ public class IndexServiceImpl implements IIndexService {
                 keySuffix += app_channel;
             }
             //@todo
- //           re =  (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+            re =  (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
 
             if (null != re && null != re.getData() && re.getData().size() > 0) {
                 return re;

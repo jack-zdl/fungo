@@ -176,10 +176,15 @@
         </dependency>
 
         <!-- 1.x 的版本-->
+<!--        <dependency>-->
+<!--            <groupId>com.dangdang</groupId>-->
+<!--            <artifactId>sharding-jdbc-core</artifactId>-->
+<!--            <version>1.5.3</version> &lt;!&ndash; 1.4.2 &ndash;&gt;-->
+<!--        </dependency>-->
         <dependency>
-            <groupId>com.dangdang</groupId>
-            <artifactId>sharding-jdbc-core</artifactId>
-            <version>1.5.3</version> <!-- 1.4.2 -->
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-jdbc</artifactId>
+            <version>3.0.0.M3</version>
         </dependency>
 
     </dependencies>

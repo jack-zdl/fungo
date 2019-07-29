@@ -65,8 +65,7 @@
 	<select id="beforeNewDateBanner" resultType="com.fungo.system.entity.Banner" >
   		select
 		<include refid="Base_Column_List"></include>
-  		 from t_banner where position_code = '0005' and state = '0' and
-		(end_date > now()  or date_type  = 1 )
+  		 from t_banner where (end_date > now()  or date_type  = 1 ) and position_code = '0005' and state = '0'
   		  order by sort desc
    </select>
 
@@ -88,7 +87,8 @@
 	<select id="getPCBannerByIndex" resultType="com.fungo.system.dto.PCBannerDto">
 		SELECT
 			<include refid="Base_Column__Banner_List"><property name="alias" value="b"/></include>,bi.banner_image AS  bannerImage
-		FROM t_banner b LEFT  JOIN (SELECT * FROM  t_banner_images  WHERE type = 1  ) bi on b.id = bi.banner_id WHERE b.position_code = '0001' AND b.state = 0  ORDER  BY sort DESC
+		FROM t_banner b
+		LEFT  JOIN  t_banner_images  bi on b.id = bi.banner_id WHERE b.position_code = '0001' AND b.state = 0  GROUP BY b.id  ORDER  BY sort DESC
 	</select>
 
 </mapper>

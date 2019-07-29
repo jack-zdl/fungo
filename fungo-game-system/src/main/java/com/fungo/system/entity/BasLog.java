@@ -316,4 +316,33 @@ public class BasLog extends Model<BasLog> {
 		return this.id;
 	}
 
+	public BasLog() {
+	}
+
+	public BasLog(String id, Date createdAt, Date endTime, Integer runTime, String path, String method, String ip, String memberId, String inputData, String outData, String channel, String bizId, String reCode, Integer state, String bizCode, Date updatedAt, String token, String brand, String userAgent, String appversion, String height, String width, String version, String udid) {
+		this.id = id;
+		this.createdAt = createdAt;
+		this.endTime = endTime;
+		this.runTime = runTime;
+		this.path = path;
+		this.method = method;
+		this.ip = ip;
+		this.memberId = memberId;
+		this.inputData = inputData;
+		this.outData = outData;
+		this.channel = channel;
+		this.bizId = bizId;
+		this.reCode = reCode;
+		this.state = state;
+		this.bizCode = bizCode;
+		this.updatedAt = updatedAt;
+		this.token = token;
+		this.brand = brand;
+		this.userAgent = userAgent;
+		this.appversion = appversion;
+		this.height = height;
+		this.width = width;
+		this.version = version;
+		this.udid = udid;
+	}
 }
