@@ -90,6 +90,9 @@ public class FeignServiceController {
     @Autowired
     private GameEvaluationService gameEvaluationService;
 
+    @Autowired
+    private GameSurveyRelService gameSurveyRelServiceImap;
+
     /****************************************************ActionController**********************************************************************/
 
     @ApiOperation(value = "更新计数器", notes = "")
@@ -1125,6 +1128,14 @@ public class FeignServiceController {
         }
         re.setData(gameEvaluationDtos);
         PageTools.pageToResultDto(re, page);
+        return re;
+    }
+
+    @GetMapping("/api/game/notice")
+    public FungoPageResultDto<GameSurveyRelDto> getMemberNoticeByGame() {
+        FungoPageResultDto<GameSurveyRelDto> re = new FungoPageResultDto<>();
+        List<GameSurveyRelDto> gameSurveyRelDTOS = gameSurveyRelServiceImap.getMemberNoticeByGame();
+        re.setData( gameSurveyRelDTOS);
         return re;
     }
 

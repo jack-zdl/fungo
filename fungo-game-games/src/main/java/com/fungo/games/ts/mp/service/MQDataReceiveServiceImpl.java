@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -125,7 +126,11 @@ public class MQDataReceiveServiceImpl implements MQDataReceiveService {
                     Map map = JSON.parseObject(body.toString(), Map.class);
                     //                游戏下载量变化
                     return businessBoolean(imqService.mqUpdateGameDownLoadNum(map),messageId);
-                }else{
+                }else if(mqResultDto.getType() == MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAME_SURVEY_UPDATE.getCode()){
+                    Object body = mqResultDto.getBody();
+                    List ids = JSON.parseObject(body.toString(), List.class);
+                    return businessBoolean(imqService.mqBatchUpdateGameSurveyRel(ids),messageId);
+                }else {
                     if (messageId != null) {
                         UniqueIdCkeckUtil.deleteUniqueId(messageId.toString());
                     }

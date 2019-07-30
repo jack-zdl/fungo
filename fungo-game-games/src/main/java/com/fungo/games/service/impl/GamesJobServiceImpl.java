@@ -1,15 +1,13 @@
 package com.fungo.games.service.impl;
 
 import com.fungo.games.dao.GameSurveyRelDao;
-import com.fungo.games.entity.GameSurveyRel;
 import com.fungo.games.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.games.service.GamesJobService;
-import com.fungo.games.utils.dto.GameSurveyRelDTO;
+import com.game.common.dto.game.GameSurveyRelDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 /**
@@ -36,22 +34,17 @@ public class GamesJobServiceImpl implements GamesJobService {
     @Override
     public void checkGamesNotice() {
         try {
-            List<GameSurveyRelDTO> gameSurveyRelList = gameSurveyRelDao.getMemberNoticeByGame();
-            gameSurveyRelList.stream().parallel().forEach( s ->{
-//                if(distributedLockByCurator.checkTemporaryPropertiesSet(s.getMemberId())){
-                    distributedLockByCurator.acquireDistributedLock(s.getMemberId());
-                    //
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                distributedLockByCurator.releaseDistributedLock(s.getMemberId());
-//                }
-
-
-            } );
+//            List<GameSurveyRelDto> gameSurveyRelList = gameSurveyRelDao.getMemberNoticeByGame();
+//            gameSurveyRelList.stream().parallel().forEach( s ->{
+////                if(distributedLockByCurator.checkTemporaryPropertiesSet(s.getMemberId())){
+//                distributedLockByCurator.acquireDistributedLock(s.getMemberId());
+//
+//
+//                distributedLockByCurator.releaseDistributedLock(s.getMemberId());
+////                }
+//
+//
+//            } );
 
 
         }catch (Exception e){

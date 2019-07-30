@@ -2,7 +2,7 @@ package com.fungo.games.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.fungo.games.entity.GameSurveyRel;
-import com.fungo.games.utils.dto.GameSurveyRelDTO;
+import com.game.common.dto.game.GameSurveyRelDto;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -28,7 +28,7 @@ public interface GameSurveyRelDao extends BaseMapper<GameSurveyRel> {
      * @auther: dl.zhang
      * @date: 2019/7/29 18:23
      */
-    List<GameSurveyRelDTO> getMemberNoticeByGame();
+    List<GameSurveyRelDto> getMemberNoticeByGame();
 
     Integer updateMemberNoticeBatch(@Param("ids") List<String> ids);
 }

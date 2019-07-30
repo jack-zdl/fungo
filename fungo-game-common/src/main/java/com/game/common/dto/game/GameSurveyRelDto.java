@@ -2,6 +2,9 @@ package com.game.common.dto.game;
 
 
 import com.game.common.api.InputPageDto;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,6 +17,9 @@ import java.util.Date;
  * @author lzh
  * @since 2018-06-14
  */
+@Setter
+@Getter
+@ToString
 public class GameSurveyRelDto extends InputPageDto {
 
 	private String id;
@@ -66,109 +72,11 @@ public class GameSurveyRelDto extends InputPageDto {
      */
 	private Date updatedAt;
 
+	/**
+	 * 功能描述: 游戏名称
+	 * @date: 2019/7/30 11:15
+	 */
+	private String gameName;
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getMemberId() {
-		return memberId;
-	}
-
-	public void setMemberId(String memberId) {
-		this.memberId = memberId;
-	}
-
-	public String getGameId() {
-		return gameId;
-	}
-
-	public void setGameId(String gameId) {
-		this.gameId = gameId;
-	}
-
-	public Integer getAgree() {
-		return agree;
-	}
-
-	public void setAgree(Integer agree) {
-		this.agree = agree;
-	}
-
-	public Integer getNotice() {
-		return notice;
-	}
-
-	public void setNotice(Integer notice) {
-		this.notice = notice;
-	}
-
-	public Integer getState() {
-		return state;
-	}
-
-	public void setState(Integer state) {
-		this.state = state;
-	}
-
-	public String getBatchNo() {
-		return batchNo;
-	}
-
-	public void setBatchNo(String batchNo) {
-		this.batchNo = batchNo;
-	}
-
-	public String getPhoneModel() {
-		return phoneModel;
-	}
-
-	public void setPhoneModel(String phoneModel) {
-		this.phoneModel = phoneModel;
-	}
-
-	public String getAppleId() {
-		return appleId;
-	}
-
-	public void setAppleId(String appleId) {
-		this.appleId = appleId;
-	}
-
-	public String getSurname() {
-		return surname;
-	}
-
-	public void setSurname(String surname) {
-		this.surname = surname;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public Date getUpdatedAt() {
-		return updatedAt;
-	}
-
-	public void setUpdatedAt(Date updatedAt) {
-		this.updatedAt = updatedAt;
-	}
 
 }

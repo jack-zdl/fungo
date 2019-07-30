@@ -37,6 +37,6 @@ public interface IFungoMallGoodsService {
     //添加商品
     public Object addGoods(FungoMallDto fungoMallDto);
 
-    void checkSystemNotice();
+
 
 }

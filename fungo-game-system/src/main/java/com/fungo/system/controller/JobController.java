@@ -4,6 +4,7 @@ import com.fungo.system.job.DTPTransactionMessageScheduledJob;
 import com.fungo.system.job.FungoMallSeckillTaskService;
 import com.fungo.system.job.PushFunction;
 import com.fungo.system.mall.service.IFungoMallGoodsService;
+import com.fungo.system.service.IMemberNoticeService;
 import com.fungo.system.service.ISeacherService;
 import com.game.common.dto.ResultDto;
 import org.slf4j.Logger;
@@ -42,7 +43,10 @@ public class JobController {
     @Autowired
     private IFungoMallGoodsService iFungoMallGoodsService;
 
-    @GetMapping("/dtpTransactionMessageScheduledJob")
+    @Autowired
+    private IMemberNoticeService iMemberNoticeService;
+
+   @GetMapping("/dtpTransactionMessageScheduledJob")
     public ResultDto<String> dtpTransactionMessageScheduledJob(){
         ResultDto<String> re = null;
         try {
@@ -133,7 +137,8 @@ public class JobController {
     public ResultDto<String> checkSystemNotice(  ){
         ResultDto<String> re = null;
         try {
-            iFungoMallGoodsService.checkSystemNotice();
+//            iFungoMallGoodsService.checkSystemNotice();
+            iMemberNoticeService.updateSystemByGame();
             re = ResultDto.success("定时检查系统管控台系统消息定期任务执行成功");
         }catch (Exception e){
             LOGGER.error("定时检查系统管控台系统消息定期任务执行异常",e);

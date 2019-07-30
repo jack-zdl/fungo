@@ -155,8 +155,6 @@ public class MemberController {
     public ResultDto<Map<String, Object>> getUnReadNotice(MemberUserProfile memberUserPrefile, HttpServletRequest request) {
         String appVersion = "";
         appVersion = request.getHeader("appversion");
-
-
         ResultDto<Map<String, Object>> re = new ResultDto<Map<String, Object>>();
         Map<String, Object> resultMap = memberService.getUnReadNotice(memberUserPrefile.getLoginId(), appVersion);
         if (null != resultMap && !resultMap.isEmpty()) {

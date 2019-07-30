@@ -26,22 +26,18 @@ import java.util.Map;
 @RestController
 public class MemberNoticeController {
 
-
     @Autowired
     private IMemberNoticeService iMemberNoticeService;
-
 
     /**
      * 客户端轮询获取用户系统消息接口
      * @param memberprofile
-     * @param request
      * @param noticeInput
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/api/user/notices", method = RequestMethod.POST)
-    public ResultDto<List<Map<String, Object>>> bindThirdSNSWithLogged(MemberUserProfile memberprofile, HttpServletRequest request,
-                                                                       @Valid @RequestBody MemberNoticeInput noticeInput) throws Exception {
+    public ResultDto<List<Map<String, Object>>> bindThirdSNSWithLogged(MemberUserProfile memberprofile, @Valid @RequestBody MemberNoticeInput noticeInput) throws Exception {
 
         noticeInput.setMb_id(memberprofile.getLoginId());
 

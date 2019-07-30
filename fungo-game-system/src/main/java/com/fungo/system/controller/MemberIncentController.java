@@ -25,20 +25,14 @@ import java.util.List;
 @RestController
 public class MemberIncentController {
 
-
     @Autowired
     private IMemberIncentAccountService incentAccountService;
-
 
     @Autowired
     private IMemberIncentRuleRankService iMemberIncentRuleRankService;
 
-
     @Autowired
     private IMemberIncentRiskService iMemberIncentRiskService;
-
-
-
 
     @ApiOperation(value = "增加身份规则(v2.4.3)", notes = "")
     @RequestMapping(value = "/api/user/incents/rule/dignity", method = RequestMethod.POST)
@@ -63,10 +57,6 @@ public class MemberIncentController {
 
     }
 
-
-
-
-
     @ApiOperation(value = "用户荣誉详情(v2.4.3)", notes = "")
     @RequestMapping(value = "/api/user/incents/spirit/honor/{honorId}", method = RequestMethod.GET)
     @ApiImplicitParams({})
@@ -85,10 +75,7 @@ public class MemberIncentController {
         FungoPageResultDto<HonorInfo> re = new FungoPageResultDto<HonorInfo>();
         re.setData(sl);
         return re;
-
     }
-
-
 
 //    @ApiOperation(value = "获取用户虚拟币账户(v2.4.3)", notes = "")
 //    @RequestMapping(value = "/api/user/incents/fortune/coin", method = RequestMethod.POST)
@@ -119,7 +106,6 @@ public class MemberIncentController {
         FungoPageResultDto<ScoreBean> re = new FungoPageResultDto<ScoreBean>();
         re.setData(sl);
         return re;
-
     }
 
     @ApiOperation(value = "设置用户任务(v2.4.3)", notes = "")
@@ -127,7 +113,6 @@ public class MemberIncentController {
     @ApiImplicitParams({})
     public ResultDto<String> setUserTask(MemberUserProfile memberUserPrefile, @RequestBody IncentPutInput input) {
         return ResultDto.success();
-
     }
 
     @ApiOperation(value = "修改用户等级(2.4.3)", notes = "")
@@ -135,7 +120,6 @@ public class MemberIncentController {
     @ApiImplicitParams({})
     public ResultDto<String> updateMemberLevel(MemberUserProfile memberUserPrefile, @RequestBody IncentPutInput input) {
         return ResultDto.success();
-
     }
 
     @ApiOperation(value = "修改用户荣誉(2.4.3)", notes = "")
@@ -143,7 +127,6 @@ public class MemberIncentController {
     @ApiImplicitParams({})
     public ResultDto<String> updateMemberHonor(MemberUserProfile memberUserPrefile, @RequestBody IncentPutInput input) {
         return ResultDto.success();
-
     }
 
     @ApiOperation(value = "修改用户身份(2.4.3)", notes = "")
@@ -151,7 +134,6 @@ public class MemberIncentController {
     @ApiImplicitParams({})
     public ResultDto<String> updateMemberDignity(MemberUserProfile memberUserPrefile, @RequestBody IncentPutInput input) {
         return ResultDto.success();
-
     }
 
     @ApiOperation(value = "修改用户积分(2.4.3)", notes = "")
@@ -159,7 +141,6 @@ public class MemberIncentController {
     @ApiImplicitParams({})
     public ResultDto<String> updateMemberScore(MemberUserProfile memberUserPrefile, @RequestBody IncentPutInput input) {
         return ResultDto.success();
-
     }
 
     @ApiOperation(value = "修改用户虚拟币账户(2.4.3)", notes = "")
@@ -168,7 +149,6 @@ public class MemberIncentController {
     public ResultDto<String> updateMemberCoin(MemberUserProfile memberUserPrefile, @RequestBody IncentPutInput input) {
         return ResultDto.success();
     }
-
 
 
 //----

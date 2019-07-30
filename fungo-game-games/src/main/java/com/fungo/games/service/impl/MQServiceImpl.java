@@ -1,7 +1,9 @@
 package com.fungo.games.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.games.dao.GameDao;
+import com.fungo.games.dao.GameSurveyRelDao;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameEvaluation;
 import com.fungo.games.entity.GameReleaseLog;
@@ -11,6 +13,10 @@ import com.game.common.dto.GameDto;
 import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.game.GameReleaseLogDto;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +37,8 @@ import java.util.Map;
 @Service
 public class MQServiceImpl implements IMQService {
 
+    private static final Logger logger = LoggerFactory.getLogger(MQServiceImpl.class);
+
     @Autowired
     private GameDao gameDao;
     @Autowired
@@ -39,6 +47,8 @@ public class MQServiceImpl implements IMQService {
     private GameEvaluationService gameEvaluationService;
     @Autowired
     private GameService gameService;
+    @Autowired
+    private GameSurveyRelDao gameSurveyRelDao;
 
     /**
      * 游戏更新
@@ -153,5 +163,20 @@ public class MQServiceImpl implements IMQService {
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean mqBatchUpdateGameSurveyRel(List<String> ids) {
+        try {
+            if(ids != null && ids.size() != 0){
+                int total = gameSurveyRelDao.updateMemberNoticeBatch( ids );
+            }else {
+                logger.error( "没有检查到参数ids:"+JSON.toJSON( ids) );
+            }
+            return true;
+        }catch (Exception e){
+            logger.error( "批量更新游戏测试关联表异常.ids:{}", JSON.toJSONString(ids,true),e );
+            return false;
+        }
     }
 }
