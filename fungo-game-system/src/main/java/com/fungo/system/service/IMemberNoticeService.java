@@ -53,4 +53,7 @@ public interface IMemberNoticeService {
     void updateSystemByGame() throws Exception;
 
 
+    void insertSystemNotice(String memberId,String data) throws Exception;
+
+
 }

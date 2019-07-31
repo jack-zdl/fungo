@@ -38,6 +38,7 @@ public class RabbitMQProduct {
          * 4 社区-心情
          * 5 游戏
          * 6 首页
+         * 7 管控台
          */
         transactionMessageDto.setMessageDataType(1); //
         transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_GAMES.getName());
