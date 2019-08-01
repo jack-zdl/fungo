@@ -5,6 +5,7 @@ import com.fungo.system.upload.bean.req.UploadInput;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.framework.file.IFileService;
+import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -84,7 +85,7 @@ public class UploadController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "imageUrl", value = "", paramType = "json", dataType = "String"),
     })
-    public ResultDto<Map<String, String>> uploadFile(MemberUserProfile memberUserPrefile, @RequestBody UploadInput input) throws Exception {
+    public ResultDto<Map<String, String>> uploadFile(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody UploadInput input) throws Exception {
 
         URL url = null;
 

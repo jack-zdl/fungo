@@ -577,8 +577,8 @@ public class MemberServiceImpl implements IMemberService {
             }
             notice.updateById();
         }*/
-
-        map.put("count", count);
+        int totalCount = like_count + comment_count + notice_count;
+        map.put("count", totalCount);
         map.put("like_count", like_count);
         map.put("comment_count", comment_count);
         //map.put("notice_count", noticeList.size());
