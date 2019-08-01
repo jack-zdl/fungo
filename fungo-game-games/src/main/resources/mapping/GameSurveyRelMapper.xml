@@ -30,7 +30,7 @@
 	<select id="getMemberNoticeByGame" resultType="com.game.common.dto.game.GameSurveyRelDto">
         SELECT
 		  <include refid="Base_Column_List"><property name="alias" value="gsr"/></include>, tg.name as gameName
-        FROM t_game_survey_rel gsr left join t_game  tg on gsr.game_id = tg.id  WHERE   gsr.state = 0 and gsr.notice =  0  and  gsr.phone_model =  "Android"
+        FROM t_game_survey_rel gsr left join t_game  tg on gsr.game_id = tg.id  WHERE   gsr.state = 0 and gsr.notice =  0  and ( gsr.phone_model =  "Android" or  gsr.phone_model =  "iOS" )
 		and  tg.state = 0 and tg.android_state = 2
     </select>
 
