@@ -13,6 +13,7 @@ import io.shardingsphere.core.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.core.api.config.TableRuleConfiguration;
 import io.shardingsphere.core.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.rule.TableRule;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -84,9 +85,15 @@ public class XbDataSource {
         List<TableRule> tableRuleList = new ArrayList<>();
         List<String> pList = new ArrayList<String>();
 //        pList.addAll(nacosFungoCircleConfig.basLog);
-        pList.add(nacosFungoCircleConfig.getBasLog());
-        pList.add(nacosFungoCircleConfig.getBasLogone());
-        pList.add(nacosFungoCircleConfig.getBasLogtwo());
+        if(StringUtils.isNotEmpty(nacosFungoCircleConfig.getBasLog()) ){
+            pList.add(nacosFungoCircleConfig.getBasLog());
+        }
+        if(StringUtils.isNotEmpty( nacosFungoCircleConfig.getBasLogone())){
+            pList.add(nacosFungoCircleConfig.getBasLogone());
+        }
+        if(StringUtils.isNotEmpty(nacosFungoCircleConfig.getBasLogtwo())){
+            pList.add(nacosFungoCircleConfig.getBasLogtwo());
+        }
 //        for (int i = 0; i < 1; i++) {
 //            pList.add("t_biz_tripartiteagreement");
 //        }
