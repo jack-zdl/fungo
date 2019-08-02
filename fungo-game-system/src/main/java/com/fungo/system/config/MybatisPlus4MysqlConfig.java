@@ -4,19 +4,15 @@ import com.baomidou.mybatisplus.MybatisConfiguration;
 import com.baomidou.mybatisplus.MybatisXMLLanguageDriver;
 import com.baomidou.mybatisplus.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.spring.MybatisSqlSessionFactoryBean;
-import com.baomidou.mybatisplus.spring.boot.starter.SpringBootVFS;
-import com.fungo.system.config.shardingjdbc.XbDataSource;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.JdbcType;
-import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 
 import javax.sql.DataSource;
 
@@ -26,7 +22,7 @@ import javax.sql.DataSource;
 public class MybatisPlus4MysqlConfig {
 
     @Autowired
-    public XbDataSource xbDataSource;
+    public DataSource dataSource;
 
     @Autowired
     private PaginationInterceptor paginationInterceptor;
@@ -35,7 +31,6 @@ public class MybatisPlus4MysqlConfig {
     @Bean("mysqlSqlSessionFactory")
     public SqlSessionFactory sqlSessionFactory() throws Exception {
         MybatisSqlSessionFactoryBean sqlSessionFactory = new MybatisSqlSessionFactoryBean();
-        DataSource dataSource = xbDataSource.getShardingDataSource();
         sqlSessionFactory.setDataSource(dataSource);
         MybatisConfiguration configuration = new MybatisConfiguration();
         configuration.setDefaultScriptingLanguage(MybatisXMLLanguageDriver.class);

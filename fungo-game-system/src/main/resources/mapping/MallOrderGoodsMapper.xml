@@ -44,7 +44,6 @@
 		AND od.pay_status = 2
 		AND odg.goods_id = #{goods_id}
 		AND odg.created_at LIKE  #{created_at}
-
 	</select>
 
 	<select id="querySeckillGoodsTradeFungoCoinSum" resultType="java.util.Map">
