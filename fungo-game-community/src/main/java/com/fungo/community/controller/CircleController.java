@@ -280,30 +280,6 @@ public class CircleController {
     }
 
 
-    /**
-     * 功能描述:app端获取圈子的所有玩家榜
-     * @param: [memberUserPrefile, inputPageDto]
-     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
-     * @auther: dl.zhang
-     * @date: 2019/6/11 11:01
-     */
-    @ApiOperation(value = "v2.5", notes = "")
-    @PostMapping(value = "/api/community/circle/postId")
-    @ApiImplicitParams({})
-    public FungoPageResultDto<CommunityMember>  selectCircleByPostId(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody CmmCirclePostVo cmmCirclePostVo) {
-        FungoPageResultDto<CommunityMember>  re = null;
-        String memberId = memberUserPrefile == null ? "" : memberUserPrefile.getLoginId();
-        try {
-            re = circleServiceImpl.selectCirclePlayer(memberId,cmmCirclePostVo);
-        }catch (Exception e){
-            e.printStackTrace();
-            LOGGER.error("app端获取圈子的所有玩家榜",e);
-            re = FungoPageResultDto.error("-1","app端获取圈子的所有玩家榜异常");
-        }
-        return re;
-    }
-
-
 
     /**
      * 功能描述: 圈子热度job接口

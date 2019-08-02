@@ -149,6 +149,14 @@
     (SELECT 1  FROM t_cmm_circle_game ccg  WHERE ccg.circle_id = cc.id and ccg.game_id = #{gameId} )   ORDER BY  cc.hot_value desc
   </select>
 
+  <select id="selectCircleByPostId" resultType="com.fungo.community.entity.CmmCircle" >
+    SELECT
+    <include refid="Base_Column_List"></include>
+    FROM t_cmm_circle cc WHERE cc.state = 1  and id in
+    (
+        select  circle_id from t_cmm_post_circle where post_id = #{postId}
+    )
+  </select>
 
 
 

@@ -345,6 +345,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                         JSONObject jsonObject = JSON.parseObject( jsonString );
                         jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
                         jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
+                        x.setNtcData( jsonObject.toJSONString());
                         x.updateById();
                     } );
                 } else {
