@@ -246,6 +246,31 @@
     </select>
 
 
+    <select id="getAllCmmCircleListByCircleId" resultType="com.fungo.community.entity.CmmPost">
+        select
+        <include refid="Base_Column_List"></include>
+        ,sum(cp.comment_num+cp.like_num+cp.collect_num+cp.watch_num) as total  from  t_cmm_post cp where  cp.state=1 and id in
+        ( select cpc.post_id
+        from t_cmm_post_circle cpc where cpc.circle_id = #{circleId}   )
+
+
+        <if test='sortType == "1" ' >
+            GROUP BY cp.id   order  by  field(cp.type,'3')   desc  , CASE    WHEN cp.type = 3 then cp.edited_at END DESC,
+
+            cp.created_at desc
+        </if>
+        <if test='sortType == "2"'>
+            GROUP BY cp.id  order  by  field(cp.type,'3')   desc  , CASE    WHEN cp.type = 3 then cp.edited_at END DESC,    cp.last_reply_at desc
+        </if>
+        <if test='sortType == "3"'>
+            and cp.type = 2 GROUP BY cp.id      order  by cp.created_at desc
+        </if>
+        <if test='sortType == "4"'>
+            GROUP BY cp.id order  by  field(cp.type,'3')   desc  , CASE    WHEN cp.type = 3 then cp.edited_at END DESC,  total desc
+        </if>
+    </select>
+
+
     <select id="queryCmmPostRefGameIds" parameterType="map" resultType="java.util.HashMap">
         SELECT
             DISTINCT

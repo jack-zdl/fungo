@@ -236,7 +236,7 @@ public class CircleServiceImpl implements CircleService {
             String sortType = cmmCirclePostVo.getSortType();
             Page page = new Page(cmmCirclePostVo.getPage(), cmmCirclePostVo.getLimit());
             if (CmmCirclePostVo.QueryTypeEnum.ALL.getKey().equals(cmmCirclePostVo.getQueryType())) {  // 全部查询
-                cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page, circleId, null, null, sortType);
+                cmmPosts = cmmPostDao.getAllCmmCircleListByCircleId(page, circleId, null, null, sortType);
             } else if (CmmCirclePostVo.QueryTypeEnum.ESSENCE.getKey().equals(cmmCirclePostVo.getQueryType())) { // 精华查询
                 cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page, circleId, null, PostTypeEnum.CREAM.getKey(), sortType);
             } else {
