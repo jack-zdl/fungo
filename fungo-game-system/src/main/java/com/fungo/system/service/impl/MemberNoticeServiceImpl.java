@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.dto.MemberNoticeInput;
 import com.fungo.system.entity.BasNotice;
+import com.fungo.system.entity.Member;
 import com.fungo.system.entity.MemberNotice;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.helper.mq.MQProduct;
@@ -38,26 +39,22 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
 
     private static final Logger logger = LoggerFactory.getLogger(MemberNoticeServiceImpl.class);
 
-
     @Autowired
     private MemberNoticeDaoService memberNoticeDaoService;
-
     @Autowired
     private FungoCacheNotice fungoCacheNotice;
-
     @Autowired
     private GamesFeignClient gamesFeignClient;
-
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
-
     @Autowired
     private DistributedLockByCurator distributedLockByCurator;
     @Autowired
     private BasNoticeService basNoticeService;
-
     @Autowired
     private MQProduct mqProduct;
+    @Autowired
+    private MemberServiceImap memberServiceImap;
 
     @Override
     public List<Map<String, Object>> queryMbNotices(MemberNoticeInput noticeInput) {
@@ -380,6 +377,74 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                 distributedLockByCurator.releaseDistributedLock(memberId);
             }
         }
+
+    /**
+     * 功能描述: 给某篇文章置顶或者推荐发送消息
+     * @return: void
+     * @auther: dl.zhang
+     * @date: 2019/7/31 9:34
+     */
+    @Transactional
+    public void insertSystemVersionNotice (String data) throws Exception {
+        try {
+            Member member = new Member();
+            EntityWrapper<Member> memberEntity = new EntityWrapper<>();
+            memberEntity.eq( "state","0" );
+            List<Member> memberList = memberServiceImap.selectList( memberEntity);
+            memberList.stream().forEach( o ->{
+                try {
+                    distributedLockByCurator.acquireDistributedLock( o.getId() );
+                    //从DB查
+                    EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
+                    noticeEntityWrapper.eq( "mb_id", o.getId() );
+                    noticeEntityWrapper.eq( "ntc_type", 7 );
+                    noticeEntityWrapper.eq( "is_read", 2 );
+                    List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
+                    if (noticeListDB != null && noticeListDB.size() > 0) {
+                        noticeListDB.parallelStream().forEach( x -> {
+                            String jsonString = x.getNtcData();
+                            JSONObject jsonObject = JSON.parseObject( jsonString );
+                            jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
+                            jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
+                            x.setNtcData( jsonObject.toJSONString());
+                            x.updateById();
+                        } );
+                    } else {
+                        MemberNotice memberNotice = new MemberNotice();
+                        int clusterIndex_i = Integer.parseInt( clusterIndex );
+                        memberNotice.setId( PKUtil.getInstance( clusterIndex_i ).longPK() );
+                        memberNotice.setIsRead( 2 );
+                        memberNotice.setNtcType( 7 );
+                        memberNotice.setMbId( o.getId() );
+                        memberNotice.setCreatedAt( new Date() );
+                        memberNotice.setUpdatedAt( new Date() );
+                        Map map = new ConcurrentHashMap( 4 );
+                        map.put( "count", 1 );
+                        map.put( "like_count", 0 );
+                        map.put( "comment_count", 0 );
+                        map.put( "notice_count", 1 );
+                        memberNotice.setNtcData( JSON.toJSONString( map ) );
+                        memberNoticeDaoService.insert( memberNotice );
+                    }
+                    BasNotice basNotice = new BasNotice();
+                    basNotice.setType( 6 );
+                    basNotice.setIsRead( 0 );
+                    basNotice.setIsPush( 0 );
+                    basNotice.setMemberId( o.getId() );
+                    basNotice.setCreatedAt( new Date() );
+                    basNotice.setData( data );
+                    basNotice.insert();
+                }catch (Exception e){
+                    logger.error( "根据游戏模块版本更新系统消息异常用户id:"+o.getId(), e );
+                }finally {
+                    distributedLockByCurator.releaseDistributedLock(o.getId());
+                }
+            } );
+        } catch (Exception e) {
+            logger.error( "根据游戏模块更新系统消息异常", e );
+            throw new Exception( "根据游戏模块更新系统消息异常" );
+        }
+    }
 
 
     //--------

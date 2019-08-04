@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -96,13 +98,26 @@ public class SystemMqConsumeServiceImpl implements SystemMqConsumeService {
     private boolean processInsertSystemNotice(String body) {
         Map map = JSON.parseObject(body, Map.class);
         String id = (String)map.get("id");
+        String type = (String) map.get( "type" );
         String data = (String)map.get("data");
         if(CommonUtil.isNull(id) || CommonUtil.isNull( data )){
             return false;
         }
         if(!CommonUtil.isNull(id) && !CommonUtil.isNull( data )){
             try {
-                iMemberNoticeServiceImpl.insertSystemNotice(id,data);
+                if("1".equals(type)){
+                    iMemberNoticeServiceImpl.insertSystemVersionNotice(data );
+                }else if("2".equals(type)){
+                    List<String> listString = Arrays.asList(id.split(","));
+                    listString.stream().forEach( s ->{
+                        try {
+                            iMemberNoticeServiceImpl.insertSystemNotice(s,data);
+                        } catch (Exception e) {
+                            LOGGER.error( "系统消息异常",e );
+                        }
+                    } );
+                }
+
             } catch (Exception e) {
                 return false;
             }

@@ -55,5 +55,7 @@ public interface IMemberNoticeService {
 
     void insertSystemNotice(String memberId,String data) throws Exception;
 
+    void insertSystemVersionNotice(String data) throws Exception;
+
 
 }
