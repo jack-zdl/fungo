@@ -87,7 +87,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 //			return ResultDto.error("-1","内容不能为空!");
 //		}
         ResultDto<EvaluationBean> re = new ResultDto<EvaluationBean>();
-        EvaluationBean t = new EvaluationBean();
+        EvaluationBean evaluationBean = new EvaluationBean();
         GameEvaluation evaluation = gameEvaluationService.selectOne(new EntityWrapper<GameEvaluation>().eq("member_id", memberId).eq("game_id", commentInput.getTarget_id()).eq("state", 0));
 
         //int times = -1;
@@ -287,20 +287,25 @@ public class EvaluateServiceImpl implements IEvaluateService {
 //        迁移微服务 feignClient调用 根据用户id获取authorBean
 //        2019-05-10
 //        lyc
-        t.setAuthor(iEvaluateProxyService.getAuthor(memberId));
+        evaluationBean.setAuthor(iEvaluateProxyService.getAuthor(memberId));
 
-        t.setContent(CommonUtils.filterWord(commentInput.getContent()));
-        t.setObjectId(evaluation.getId());
-        t.setCreatedAt(DateTools.fmtDate(new Date()));
-        t.setReply_count(0);
-        t.setRating(commentInput.getRating());
-        t.setReply_more(false);
-        t.setImages(commentInput.getImages());
-        t.setReplys(new ArrayList<String>());
-        t.setUpdatedAt(DateTools.fmtDate(new Date()));
-        t.setPhone_model(commentInput.getPhone_model());
-        t.setIs_recommend(commentInput.isIs_recommend());
-        re.setData(t);
+        evaluationBean.setContent(CommonUtils.filterWord(commentInput.getContent()));
+        evaluationBean.setObjectId(evaluation.getId());
+        evaluationBean.setCreatedAt(DateTools.fmtDate(new Date()));
+        evaluationBean.setReply_count(0);
+        evaluationBean.setRating(commentInput.getRating());
+        evaluationBean.setReply_more(false);
+        evaluationBean.setImages(commentInput.getImages());
+        evaluationBean.setReplys(new ArrayList<String>());
+        evaluationBean.setUpdatedAt(DateTools.fmtDate(new Date()));
+        evaluationBean.setPhone_model(commentInput.getPhone_model());
+        evaluationBean.setIs_recommend(commentInput.isIs_recommend());
+        evaluationBean.setTrait1( commentInput.getTrait1() );
+        evaluationBean.setTrait2( commentInput.getTrait2() );
+        evaluationBean.setTrait3( commentInput.getTrait3() );
+        evaluationBean.setTrait4( commentInput.getTrait4() );
+        evaluationBean.setTrait5( commentInput.getTrait5() );
+        re.setData(evaluationBean);
 
         if (StringUtils.isNotBlank(tips)) {
             re.show(tips);
