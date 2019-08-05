@@ -5,6 +5,8 @@ import com.fungo.games.entity.GameCollectionGroup;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * <p>
   * 游戏合集组 Mapper 接口
@@ -16,6 +18,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GameCollectionGroupDao extends BaseMapper<GameCollectionGroup> {
 
-    GameCollectionGroup selectGameCollectionGroupByGameId(@Param("gameId") String gameId);
+    List<GameCollectionGroup> selectGameCollectionGroupByGameId(@Param("gameId") String gameId);
 
 }

@@ -312,7 +312,7 @@ public class GameServiceImpl implements IGameService {
     public ResultDto<GameOut> getGameDetail(String gameId, String memberId, String ptype) throws Exception {
         GameOut out = new GameOut();
         try {
-            GameOut outResult = (GameOut) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, memberId + ptype);
+            GameOut outResult = null; //(GameOut) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, memberId + ptype);
             if (null != outResult) {
                 return ResultDto.success(outResult);
             }
@@ -599,10 +599,16 @@ public class GameServiceImpl implements IGameService {
                 e.printStackTrace();
                 logger.error("根据游戏id询圈子id异常,游戏id：" + game.getId(), e);
             }
-            GameCollectionGroup gameCollectionGroup = collectionGroupDao.selectGameCollectionGroupByGameId( gameId);
-            if(gameCollectionGroup != null){
-                out.setGameCollectionId( gameCollectionGroup.getId() );
-                out.setGameCollectionName( gameCollectionGroup.getName() );
+            List<GameCollectionGroup> gameCollectionGroupList = collectionGroupDao.selectGameCollectionGroupByGameId( gameId);
+            List<GameOut.GameGroup> gameGroups = new ArrayList<>(  );
+            if(gameCollectionGroupList != null && gameCollectionGroupList.size() > 0){
+                gameCollectionGroupList.stream().forEach( x ->{
+                    GameOut.GameGroup gameGroup = new GameOut.GameGroup();
+                    gameGroup.setGameCollectionId( x.getId() );
+                    gameGroup.setGameCollectionName( x.getName() );
+                    gameGroups.add( gameGroup );
+                } );
+                out.setGameGroups( gameGroups );
             }
         }catch (Exception e){
             logger.error("游戏详情异常,游戏id="+gameId,e);

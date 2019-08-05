@@ -444,11 +444,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 ctem.setTrait3( cmmComment.getTrait3() );
                 ctem.setTrait4( cmmComment.getTrait4() );
                 ctem.setTrait5( cmmComment.getTrait5() );
-                GameCollectionGroup gameCollectionGroup = collectionGroupDao.selectGameCollectionGroupByGameId( gameId);
-                if(gameCollectionGroup != null){
-                    ctem.setGameCollectionId( gameCollectionGroup.getId() );
-                    ctem.setGameCollectionName( gameCollectionGroup.getName() );
-                }
 //            迁移微服务 根据用户id获取authorbean对象 feignclient
 //            ctem.setAuthor(this.userService.getAuthor(cmmComment.getMemberId()));
 //            2019-05-11

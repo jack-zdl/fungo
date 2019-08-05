@@ -88,19 +88,7 @@ public class GameOut {
 
     private Long gameIdtSn;
 
-    /**
-     * 功能描述: 游戏集合id
-     * @auther: dl.zhang
-     * @date: 2019/8/5 13:07
-     */
-    private String gameCollectionId;
-
-    /**
-     * 功能描述: 游戏集合名称
-     * @auther: dl.zhang
-     * @date: 2019/8/5 13:07
-     */
-    private String gameCollectionName;
+   private List<GameGroup> gameGroups;
 
     public int getDownload_num() {
         return download_num;
@@ -523,20 +511,44 @@ public class GameOut {
         this.gameIdtSn = gameIdtSn;
     }
 
-    public String getGameCollectionId() {
-        return gameCollectionId;
+    public List<GameGroup> getGameGroups() {
+        return gameGroups;
     }
 
-    public void setGameCollectionId(String gameCollectionId) {
-        this.gameCollectionId = gameCollectionId;
+    public void setGameGroups(List<GameGroup> gameGroups) {
+        this.gameGroups = gameGroups;
     }
 
-    public String getGameCollectionName() {
-        return gameCollectionName;
-    }
+    public static class  GameGroup{
+        /**
+         * 功能描述: 游戏集合id
+         * @auther: dl.zhang
+         * @date: 2019/8/5 13:07
+         */
+        private String gameCollectionId;
 
-    public void setGameCollectionName(String gameCollectionName) {
-        this.gameCollectionName = gameCollectionName;
+        /**
+         * 功能描述: 游戏集合名称
+         * @auther: dl.zhang
+         * @date: 2019/8/5 13:07
+         */
+        private String gameCollectionName;
+
+        public String getGameCollectionId() {
+            return gameCollectionId;
+        }
+
+        public void setGameCollectionId(String gameCollectionId) {
+            this.gameCollectionId = gameCollectionId;
+        }
+
+        public String getGameCollectionName() {
+            return gameCollectionName;
+        }
+
+        public void setGameCollectionName(String gameCollectionName) {
+            this.gameCollectionName = gameCollectionName;
+        }
     }
 
     //------------
