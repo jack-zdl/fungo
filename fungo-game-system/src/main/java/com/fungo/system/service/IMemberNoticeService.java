@@ -57,5 +57,12 @@ public interface IMemberNoticeService {
 
     void insertSystemVersionNotice(String data) throws Exception;
 
+    /**
+     * 查询用户的消息数据
+     * @param noticeInput 用户查询消息数据封装
+     * @return
+     */
+    List<Map<String,Object>> insertMbNotices(MemberNoticeInput noticeInput);
+
 
 }

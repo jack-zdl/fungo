@@ -146,5 +146,9 @@
                 WHERE
                     id NOT IN ( SELECT DISTINCT mb_id FROM t_incent_ranked WHERE rank_type = 1 OR rank_type = 3 )
     </select>
+
+    <select id="getMemberList" resultType="java.lang.String">
+        SELECT  id FROM  t_member WHERE  state = '0' limit 2000
+    </select>
     
 </mapper>

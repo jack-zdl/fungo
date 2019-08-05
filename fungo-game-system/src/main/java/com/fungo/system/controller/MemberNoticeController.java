@@ -51,4 +51,27 @@ public class MemberNoticeController {
         return resultDto;
     }
 
+
+
+    /**
+     * 建立用户的ios测试，厂商testflight消息接口
+     * @param memberprofile
+     * @param noticeInput
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/api/user/ios/notices", method = RequestMethod.POST)
+    public ResultDto<List<Map<String, Object>>> updateUserIosNotice( @Valid @RequestBody MemberNoticeInput noticeInput) throws Exception {
+
+
+        List<Map<String, Object>> noticesList = iMemberNoticeService.insertMbNotices(noticeInput);
+
+        if (null != noticesList && !noticesList.isEmpty()) {
+            return ResultDto.success(noticesList);
+        }
+        ResultDto<List<Map<String, Object>>> resultDto = ResultDto.success("暂无消息");
+        resultDto.setData(Collections.emptyList());
+        return resultDto;
+    }
+
 }

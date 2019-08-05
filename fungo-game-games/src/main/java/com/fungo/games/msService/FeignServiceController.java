@@ -910,6 +910,13 @@ public class FeignServiceController {
     }
 
 
+    @RequestMapping(value = "/api/game/{gameId}", method = RequestMethod.POST)
+    GameDto selectOne(@PathVariable("gameId") String gameId){
+        Game game =   gameDao.selectById( gameId );
+        GameDto gameDto = new GameDto();
+        BeanUtils.copyProperties(game,gameDto);
+        return gameDto;
+    }
 /****************************************************comunity**********************************************************************/
     /**
      * 获取游戏平均分

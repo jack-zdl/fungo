@@ -439,16 +439,16 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     logger.error("objectMapper.readValue出现异常,cmmComment.getImages()="+cmmComment.getImages(),e);
                 }
                 ctem.setIs_recommend("1".equals(cmmComment.getIsRecommend()) ? true : false);
-                ctem.setLike_num(cmmComment.getLikeNum());
+                ctem.setLike_num(cmmComment.getLikeNum() == null ? 0 : cmmComment.getLikeNum());
                 ctem.setObjectId(cmmComment.getId());
                 ctem.setPhone_model(cmmComment.getPhoneModel());
-                ctem.setReply_count(cmmComment.getReplyNum());
+                ctem.setReply_count(cmmComment.getReplyNum()== null ? 0 : cmmComment.getReplyNum() );
                 ctem.setUpdatedAt(DateTools.fmtDate(cmmComment.getUpdatedAt()));
-                ctem.setTrait1( cmmComment.getTrait1() );
-                ctem.setTrait2( cmmComment.getTrait2() );
-                ctem.setTrait3( cmmComment.getTrait3() );
-                ctem.setTrait4( cmmComment.getTrait4() );
-                ctem.setTrait5( cmmComment.getTrait5() );
+                ctem.setTrait1( cmmComment.getTrait1()== null ? 0 : cmmComment.getTrait1() );
+                ctem.setTrait2( cmmComment.getTrait2()== null ? 0 : cmmComment.getTrait2() );
+                ctem.setTrait3( cmmComment.getTrait3()== null ? 0 : cmmComment.getTrait3() );
+                ctem.setTrait4( cmmComment.getTrait4()== null ? 0 : cmmComment.getTrait4() );
+                ctem.setTrait5( cmmComment.getTrait5() == null ? 0 : cmmComment.getTrait5());
 //            迁移微服务 根据用户id获取authorbean对象 feignclient
 //            ctem.setAuthor(this.userService.getAuthor(cmmComment.getMemberId()));
 //            2019-05-11

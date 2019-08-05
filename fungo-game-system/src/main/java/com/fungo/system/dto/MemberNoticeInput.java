@@ -26,6 +26,8 @@ public class MemberNoticeInput extends InputDto {
      */
     private String mb_id;
 
+    private String gameId;
+
     /**
      * 消息类型
      * 7 -  007，系统推送类消息

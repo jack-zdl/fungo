@@ -57,4 +57,7 @@ public interface MemberDao extends  BaseMapper<Member> {
      */
     public List<Member> queryMbWithoutLevelFungoImgs();
 
+
+    public List<String> getMemberList();
+
 }
