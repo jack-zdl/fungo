@@ -100,10 +100,10 @@ public class SystemMqConsumeServiceImpl implements SystemMqConsumeService {
         String id = (String)map.get("id");
         String type = (String) map.get( "type" );
         String data = (String)map.get("data");
-        if(CommonUtil.isNull(id) || CommonUtil.isNull( data )){
+        if( CommonUtil.isNull( data )){
             return false;
         }
-        if(!CommonUtil.isNull(id) && !CommonUtil.isNull( data )){
+        if( !CommonUtil.isNull( data )){
             try {
                 if("1".equals(type)){
                     iMemberNoticeServiceImpl.insertSystemVersionNotice(data );

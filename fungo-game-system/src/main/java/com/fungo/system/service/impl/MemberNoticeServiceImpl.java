@@ -387,11 +387,10 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
     @Transactional
     public void insertSystemVersionNotice (String data) throws Exception {
         try {
-            Member member = new Member();
             EntityWrapper<Member> memberEntity = new EntityWrapper<>();
             memberEntity.eq( "state","0" );
             List<Member> memberList = memberServiceImap.selectList( memberEntity);
-            memberList.stream().forEach( o ->{
+            memberList.parallelStream().forEach( o ->{
                 try {
                     distributedLockByCurator.acquireDistributedLock( o.getId() );
                     //从DB查
