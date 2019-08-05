@@ -8,11 +8,9 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.games.dao.GameCollectionGroupDao;
 import com.fungo.games.dao.GameDao;
-import com.fungo.games.entity.BasTag;
-import com.fungo.games.entity.Game;
-import com.fungo.games.entity.GameEvaluation;
-import com.fungo.games.entity.GameTag;
+import com.fungo.games.entity.*;
 import com.fungo.games.helper.MQProduct;
 import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.service.*;
@@ -52,85 +50,35 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
     private static final Logger logger = LoggerFactory.getLogger(EvaluateServiceImpl.class);
 
-   /* @Autowired
-    private CmmCommentService commentService;
-    @Autowired
-    private CmmCommunityService communityService;
-    @Autowired
-    private CmmPostService postService;
-    @Autowired
-    private MemberService memberService;*/
     @Autowired
     private ICounterService counterService;
-    /*@Autowired
-    private MooMoodService moodService;
-    @Autowired
-    private MooMessageService messageServive;
-    @Autowired
-    BasActionService actionService;*/
     @Autowired
     private GameEvaluationService gameEvaluationService;
     @Autowired
     private GameService gameService;
-    /*@Autowired
-    private IPushService pushService;
-
-    @Autowired
-    private ReplyService replyService;
-
-    @Autowired
-    private IUserService userService;
-    @Autowired
-    private IGameProxy gameProxy;*/
-
     @Autowired
     private FungoCacheGame fungoCacheGame;
-
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
-
-    /*@Autowired
-    private FungoCacheMood fungoCacheMood;
-
-    @Autowired
-    private FungoCacheComment fungoCacheComment;*/
-
-    //用户成长业务
-    /*@Resource(name = "memberIncentDoTaskFacadeServiceImpl")
-    private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;*/
-
-    /**
-     * 系统feignClient
-     */
-    /*@Autowired
-    private SystemFeignClient systemFeignClient;*/
-
     /**
      * 系统feignClient的hystrix代理
      */
     @Autowired
     private IEvaluateProxyService iEvaluateProxyService;
-
-    /**
-     * MQ
-     */
     @Autowired
     private MQProduct mqProduct;
-
     @Autowired
     private GameTagService gameTagService;
-
     @Autowired
     private GameDao gameDao;
-
     @Autowired
     private GameEvaluationService evaluationService;
-
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
-
     @Autowired
     private BasTagService tagService;
+    @Autowired
+    private GameCollectionGroupDao collectionGroupDao;
 
     @Override
     @Transactional
@@ -491,6 +439,16 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 ctem.setPhone_model(cmmComment.getPhoneModel());
                 ctem.setReply_count(cmmComment.getReplyNum());
                 ctem.setUpdatedAt(DateTools.fmtDate(cmmComment.getUpdatedAt()));
+                ctem.setTrait1( cmmComment.getTrait1() );
+                ctem.setTrait2( cmmComment.getTrait2() );
+                ctem.setTrait3( cmmComment.getTrait3() );
+                ctem.setTrait4( cmmComment.getTrait4() );
+                ctem.setTrait5( cmmComment.getTrait5() );
+                GameCollectionGroup gameCollectionGroup = collectionGroupDao.selectGameCollectionGroupByGameId( gameId);
+                if(gameCollectionGroup != null){
+                    ctem.setGameCollectionId( gameCollectionGroup.getId() );
+                    ctem.setGameCollectionName( gameCollectionGroup.getName() );
+                }
 //            迁移微服务 根据用户id获取authorbean对象 feignclient
 //            ctem.setAuthor(this.userService.getAuthor(cmmComment.getMemberId()));
 //            2019-05-11

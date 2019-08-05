@@ -23,6 +23,30 @@ public class EvaluationOutPageDto {
 	private String createdAt;
 	private String updatedAt;
 	private int rating;
+
+	/**
+	 * 功能描述: 游戏集合id
+	 * @auther: dl.zhang
+	 * @date: 2019/8/5 13:07
+	 */
+	private String gameCollectionId;
+	
+	/**
+	 * 功能描述: 游戏集合名称
+	 * @auther: dl.zhang
+	 * @date: 2019/8/5 13:07
+	 */
+	private String gameCollectionName;
+	/**
+	 * 功能描述: 游戏评价数据
+	 * @auther: dl.zhang
+	 * @date: 2019/8/5 11:39
+	 */
+	private int trait1;
+	private int trait2;
+	private int trait3;
+	private int trait4;
+	private int trait5;
 	
 	public String getContent() {
 		return content;
@@ -60,7 +84,7 @@ public class EvaluationOutPageDto {
 	public void setAuthor(AuthorBean author) {
 		this.author = author;
 	}
-	
+
 	public List<ReplyBean> getReplys() {
 		return replys;
 	}
@@ -110,4 +134,59 @@ public class EvaluationOutPageDto {
 		this.rating = rating;
 	}
 
+	public int getTrait1() {
+		return trait1;
+	}
+
+	public String getGameCollectionId() {
+		return gameCollectionId;
+	}
+
+	public void setGameCollectionId(String gameCollectionId) {
+		this.gameCollectionId = gameCollectionId;
+	}
+
+	public String getGameCollectionName() {
+		return gameCollectionName;
+	}
+
+	public void setGameCollectionName(String gameCollectionName) {
+		this.gameCollectionName = gameCollectionName;
+	}
+
+	public void setTrait1(int trait1) {
+		this.trait1 = trait1;
+	}
+
+	public int getTrait2() {
+		return trait2;
+	}
+
+	public void setTrait2(int trait2) {
+		this.trait2 = trait2;
+	}
+
+	public int getTrait3() {
+		return trait3;
+	}
+
+	public void setTrait3(int trait3) {
+		this.trait3 = trait3;
+	}
+
+	public int getTrait4() {
+		return trait4;
+	}
+
+	public void setTrait4(int trait4) {
+		this.trait4 = trait4;
+	}
+
+	public int getTrait5() {
+		return trait5;
+	}
+
+	public void setTrait5(int trait5) {
+		this.trait5 = trait5;
+	}
 }

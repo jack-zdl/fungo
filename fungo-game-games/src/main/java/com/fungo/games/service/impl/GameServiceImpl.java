@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.games.dao.GameCollectionGroupDao;
 import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.*;
 import com.fungo.games.facede.IEvaluateProxyService;
@@ -56,49 +57,36 @@ public class GameServiceImpl implements IGameService {
     private GameService gameService;
     @Autowired
     private GameReleaseLogService logService;
-
     @Autowired
     private GameEvaluationService gameEvaluationService;
-
     @Autowired
     private GameTagService gameTagService;
-
     @Autowired
     private GameSurveyRelService surveyRelService;
-
     @Autowired
     private GameDao gameDao;
-
     @Autowired
     private GameCollectionItemService gameCollectionItemService;
-
     @Autowired
     private FungoCacheGame fungoCacheGame;
-
     @Autowired
     private IEvaluateProxyService iEvaluateProxyService;
-
     @Autowired
     private FungoCacheMember fungoCacheMember;
-
     @Autowired
     private GameSurveyRelService gameSurveyRelService;
-
     @Autowired
     private GameTagAttitudeService gameTagAttitudeService;
-
     @Autowired
     private BasTagService basTagService;
-
     @Autowired
     private BasTagGroupService basTagGroupService;
-
-
     @Autowired
     private AnalysysJavaSdk analysysJavaSdk;
-
     @Autowired
     private CommunityFeignClient communityFeignClient;
+    @Autowired
+    private GameCollectionGroupDao collectionGroupDao;
 
 
     @Override
@@ -610,6 +598,11 @@ public class GameServiceImpl implements IGameService {
             } catch (Exception e) {
                 e.printStackTrace();
                 logger.error("根据游戏id询圈子id异常,游戏id：" + game.getId(), e);
+            }
+            GameCollectionGroup gameCollectionGroup = collectionGroupDao.selectGameCollectionGroupByGameId( gameId);
+            if(gameCollectionGroup != null){
+                out.setGameCollectionId( gameCollectionGroup.getId() );
+                out.setGameCollectionName( gameCollectionGroup.getName() );
             }
         }catch (Exception e){
             logger.error("游戏详情异常,游戏id="+gameId,e);

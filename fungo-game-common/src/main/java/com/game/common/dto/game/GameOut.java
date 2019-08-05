@@ -79,6 +79,29 @@ public class GameOut {
     @ApiModelProperty(value = "包名", example = "")
     private String packageName;
 
+    @ApiModelProperty(value = "是否同意条款", example = "")
+    private boolean isClause = false;
+    @ApiModelProperty(value = "是否绑定appleId", example = "")
+    private boolean isBinding = false;
+    @ApiModelProperty(value = "是否预约", example = "")
+    private boolean isMake;
+
+    private Long gameIdtSn;
+
+    /**
+     * 功能描述: 游戏集合id
+     * @auther: dl.zhang
+     * @date: 2019/8/5 13:07
+     */
+    private String gameCollectionId;
+
+    /**
+     * 功能描述: 游戏集合名称
+     * @auther: dl.zhang
+     * @date: 2019/8/5 13:07
+     */
+    private String gameCollectionName;
+
     public int getDownload_num() {
         return download_num;
     }
@@ -94,16 +117,6 @@ public class GameOut {
     public void setDownload_num(int download_num) {
         this.download_num = download_num;
     }
-
-    @ApiModelProperty(value = "是否同意条款", example = "")
-    private boolean isClause = false;
-    @ApiModelProperty(value = "是否绑定appleId", example = "")
-    private boolean isBinding = false;
-    @ApiModelProperty(value = "是否预约", example = "")
-    private boolean isMake;
-
-    private Long gameIdtSn;
-
 
     public boolean isMake() {
         return isMake;
@@ -508,6 +521,22 @@ public class GameOut {
 
     public void setGameIdtSn(Long gameIdtSn) {
         this.gameIdtSn = gameIdtSn;
+    }
+
+    public String getGameCollectionId() {
+        return gameCollectionId;
+    }
+
+    public void setGameCollectionId(String gameCollectionId) {
+        this.gameCollectionId = gameCollectionId;
+    }
+
+    public String getGameCollectionName() {
+        return gameCollectionName;
+    }
+
+    public void setGameCollectionName(String gameCollectionName) {
+        this.gameCollectionName = gameCollectionName;
     }
 
     //------------

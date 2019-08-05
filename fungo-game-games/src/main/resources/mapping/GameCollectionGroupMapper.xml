@@ -21,4 +21,8 @@
     <sql id="Base_Column_List">
         id, name, created_at AS createdAt, updated_at AS updatedAt, state, intro, sort, show_type AS showType, platform_type AS platformType, created_by AS createdBy, updated_by AS updatedBy
     </sql>
+
+	<select id="selectGameCollectionGroupByGameId" resultType="com.fungo.games.entity.GameCollectionGroup" >
+		selectSELECT * FROM t_game_collection_group gcg left join t_game_collection_item gci  on gcg.id = gci.group_id WHERE  gci.state = 0 and   gci.game_id =    #{gameId}
+	</select>
 </mapper>
