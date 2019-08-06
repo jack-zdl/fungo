@@ -55,7 +55,8 @@ public class TagServiceImpl implements ITagService {
         if (null != totalList && !totalList.isEmpty()) {
             return ResultDto.success(totalList);
         }
-        List<BasTagGroup> basTagGroupList = basTagGroupService.selectList(new EntityWrapper<BasTagGroup>().ne("type",2));
+        List<BasTagGroup> basTagGroupList = basTagGroupService.selectList(new EntityWrapper<BasTagGroup>());
+        basTagGroupList = basTagGroupList.stream().filter( s ->!"2".equals(s.getType()) ).collect( Collectors.toList());
         if (basTagGroupList == null || basTagGroupList.isEmpty()) {
             return ResultDto.error("251", "找不到标签分类信息");
         }

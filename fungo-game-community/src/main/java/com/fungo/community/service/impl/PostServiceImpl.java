@@ -1463,9 +1463,8 @@ public class PostServiceImpl implements IPostService {
             relist.add(bean);
         }
 
-        PageTools.pageToResultDto(result, pagePost);
         result.setData(relist);
-
+        PageTools.pageToResultDto(result, pagePost);
         //redis cache
         fungoCacheArticle.excIndexCache(true, keyPrefix, keySuffix, result);
 
