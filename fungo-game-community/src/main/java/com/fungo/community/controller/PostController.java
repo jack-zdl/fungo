@@ -11,10 +11,8 @@ import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.entity.CmmCircle;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
-import com.fungo.community.feign.GameFeignClient;
 import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.service.IPostService;
-import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.*;
 import com.game.common.dto.action.BasActionDto;
@@ -23,7 +21,6 @@ import com.game.common.dto.community.PostInputPageDto;
 import com.game.common.dto.community.PostOut;
 import com.game.common.dto.community.PostOutBean;
 import com.game.common.dto.search.SearchInputPageDto;
-import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.*;
 import com.game.common.util.annotation.Anonymous;
@@ -135,6 +132,8 @@ public class PostController {
         String userId = memberUserPrefile.getLoginId();
         return bsPostService.addPost(postInput, userId);
     }
+
+
 
 
     @ApiOperation(value = "删帖", notes = "")

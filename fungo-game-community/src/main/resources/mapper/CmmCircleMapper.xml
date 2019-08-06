@@ -150,6 +150,15 @@
   </select>
 
 
+  <select id="listCircleNameByPost" resultType="java.lang.String" parameterType="java.lang.String">
+    SELECT
+	c.circle_name
+FROM
+	t_cmm_circle c
+	INNER JOIN t_cmm_post_circle pc ON c.id = pc.circle_id
+WHERE
+	pc.post_id = #{postId}
+  </select>
 
 
 

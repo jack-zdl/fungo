@@ -17,6 +17,10 @@ import com.fungo.games.helper.MQProduct;
 import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
+import com.game.common.buriedpoint.BuriedPointUtils;
+import com.game.common.buriedpoint.constants.BuriedPointCommunityConstant;
+import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
+import com.game.common.buriedpoint.model.BuriedPointReplyModel;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.dto.FungoPageResultDto;
@@ -358,6 +362,16 @@ public class EvaluateServiceImpl implements IEvaluateService {
         } else {
             re.show("发布成功");
         }
+
+        //----添加埋点点赞数据----------
+        BuriedPointReplyModel replyModel = new BuriedPointReplyModel();
+        replyModel.setDistinctId(memberId);
+        replyModel.setPlatForm(BuriedPointUtils.getPlatForm());
+        replyModel.setEventName(BuriedPointEventConstant.EVENT_KEY_COMMENT);
+        replyModel.setNickname(BuriedPointCommunityConstant.COMMUNITY_REPLY_NAME);
+        replyModel.setType(BuriedPointCommunityConstant.COMMUNITY_REPLY_TYPE_AUTHOR);
+        BuriedPointUtils.buriedPoint(replyModel);
+
 
         //清除该用户的评论游戏redis cache
         fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_RECENTEVA + memberId, "", null);

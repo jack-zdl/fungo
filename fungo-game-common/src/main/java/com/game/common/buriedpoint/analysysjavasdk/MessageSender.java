@@ -1,4 +1,4 @@
-package com.game.common.util.pc20.analysysjavasdk;
+package com.game.common.buriedpoint.analysysjavasdk;
 
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;

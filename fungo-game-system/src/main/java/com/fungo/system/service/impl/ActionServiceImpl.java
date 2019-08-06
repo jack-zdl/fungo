@@ -7,11 +7,17 @@ import com.fungo.system.constts.CommonlyConst;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.entity.BasAction;
 import com.fungo.system.entity.BasNotice;
+import com.fungo.system.entity.Member;
 import com.fungo.system.entity.MemberFollower;
+import com.fungo.system.facede.ICommunityProxyService;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.helper.mq.MQProduct;
 import com.fungo.system.facede.IDeveloperProxyService;
 import com.fungo.system.service.*;
+import com.game.common.buriedpoint.BuriedPointUtils;
+import com.game.common.buriedpoint.constants.BuriedPointCommunityConstant;
+import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
+import com.game.common.buriedpoint.model.BuriedPointLikeModel;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
@@ -25,9 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ActionServiceImpl implements IActionService {
@@ -61,8 +65,6 @@ public class ActionServiceImpl implements IActionService {
     @Autowired
     private FungoCacheCommunity fungoCacheCommunity;
 
-    @Autowired
-    private CommunityFeignClient communityFeignClient;
 
     /*@Autowired
     private GamesFeignClient gamesFeignClient;*/
@@ -73,17 +75,21 @@ public class ActionServiceImpl implements IActionService {
     @Autowired
     private MQProduct mqProduct;
 
+    @Autowired
+    private ICommunityProxyService iCommunityProxyService;
+
 
     //用户成长业务
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
 
+    @Autowired
+    private MemberService memberService;
 
     //点赞
     @Transactional
     public ResultDto<String> like(String memberId, ActionInput inputDto, String appVersion) throws Exception {
         BasAction action = this.getAction(memberId, Setting.ACTION_TYPE_LIKE, inputDto);
-
         if (action == null) {//点赞记录不存在
             action = this.buildAction(memberId, Setting.ACTION_TYPE_LIKE, inputDto);
             actionService.insert(action);
@@ -138,6 +144,18 @@ public class ActionServiceImpl implements IActionService {
                 scoreLogService.updateRanked(targetMemberId, new ObjectMapper(), 33);
             }
 
+            //----添加埋点点赞数据----------
+            BuriedPointLikeModel likeModel = new BuriedPointLikeModel();
+            likeModel.setDistinctId(memberId);
+            likeModel.setPlatForm(BuriedPointUtils.getPlatForm());
+            likeModel.setEventName(BuriedPointEventConstant.EVENT_KEY_LIKE);
+            if(targetMemberId!=null){
+                likeModel.setNickname(Optional.ofNullable(memberService.selectById(targetMemberId)).map(Member::getUserName).orElse(null));
+            }
+            likeModel.setType(getBuriedPointLikeType(inputDto.getTarget_type()));
+            likeModel.setChannel(getChannal(inputDto.getTarget_type(),inputDto.getTarget_id()));
+            BuriedPointUtils.buriedPoint(likeModel);
+
         } else {//点赞记录存在
 
             if (-1 == action.getState()) {
@@ -169,7 +187,30 @@ public class ActionServiceImpl implements IActionService {
         //获取心情动态列表(v2.4)
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOODS_LIST, "", null);
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOOD_CONTENT_GET, "", null);
+
+
         return ResultDto.success("点赞成功");
+    }
+
+    private List<String> getChannal(int target_type, String target_id) {
+        //只有文章类型才有圈子概念
+        if(target_type == Setting.RES_TYPE_POST){
+            // 根据文章id 获取圈子集合
+            List<String> list = iCommunityProxyService.listCircleNameByPost(target_id);
+            return list.size()>0?list:null;
+        }else if(target_type == Setting.RES_TYPE_COMMENT){
+            // 根据文章评论id 获取圈子名称集合
+            List<String> list = iCommunityProxyService.listCircleNameByComment(target_id);
+            return list.size()>0?list:null;
+        }
+        return null;
+    }
+
+    private String getBuriedPointLikeType(int targetType ){
+        if(targetType == Setting.RES_TYPE_POST || targetType == Setting.RES_TYPE_EVALUATION || targetType == Setting.RES_TYPE_MESSAGE){
+            return BuriedPointCommunityConstant.COMMUNITY_LIKE_TYPE_AUTHOR;
+        }
+        return BuriedPointCommunityConstant.COMMUNITY_LIKE_TYPE_OBSERVER;
     }
 
     //取消点赞

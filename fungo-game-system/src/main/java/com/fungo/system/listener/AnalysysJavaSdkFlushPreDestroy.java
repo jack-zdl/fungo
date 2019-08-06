@@ -1,14 +1,14 @@
 package com.fungo.system.listener;
 
-import com.game.common.util.pc20.analysysjavasdk.AnalysysJavaSdk;
+import com.game.common.buriedpoint.analysysjavasdk.AnalysysJavaSdk;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 
-@Component
+//@Component
 public class AnalysysJavaSdkFlushPreDestroy {
-    @Autowired
+  /*  @Autowired
     private AnalysysJavaSdk analysysJavaSdk;
  
     @PreDestroy
@@ -16,5 +16,5 @@ public class AnalysysJavaSdkFlushPreDestroy {
         System.out.println("释放埋点连接..........................");
         analysysJavaSdk.flush();
         analysysJavaSdk.shutdown();
-    }
+    }*/
 }

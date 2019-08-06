@@ -4,6 +4,7 @@ package com.fungo.community.dao.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.fungo.community.entity.CmmCircle;
+import com.game.common.dto.ResultDto;
 import com.game.common.vo.CmmCircleVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -29,4 +30,6 @@ public interface CmmCircleMapper  extends BaseMapper<CmmCircle> {
     String selectCircleByGameId(@Param("gameId") String gameId);
 
     List<CmmCircle> selectCircleByGame(Pagination page,@Param("gameId") String gameId);
+
+    List<String> listCircleNameByPost(@Param("postId")String postId);
 }

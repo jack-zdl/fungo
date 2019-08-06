@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.community.dao.mapper.CmmCircleMapper;
 import com.fungo.community.dao.service.*;
 import com.fungo.community.entity.*;
 import com.fungo.community.facede.GameFacedeService;
@@ -13,6 +14,11 @@ import com.fungo.community.facede.SystemFacedeService;
 import com.fungo.community.facede.TSMQFacedeService;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IEvaluateService;
+import com.game.common.buriedpoint.BuriedPointUtils;
+import com.game.common.buriedpoint.constants.BuriedPointCommunityConstant;
+import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
+import com.game.common.buriedpoint.model.BuriedPointLikeModel;
+import com.game.common.buriedpoint.model.BuriedPointReplyModel;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
@@ -96,6 +102,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
     @Autowired
     private TSMQFacedeService tSMQFacedeService;
+
+    @Autowired
+    private CmmCircleMapper cmmCircleMapper;
 
 
     @Override
@@ -334,6 +343,24 @@ public class EvaluateServiceImpl implements IEvaluateService {
         } else {
             re.show("发布成功");
         }
+
+        //----添加埋点点赞数据----------
+        BuriedPointReplyModel replyModel = new BuriedPointReplyModel();
+        replyModel.setDistinctId(memberId);
+        replyModel.setPlatForm(BuriedPointUtils.getPlatForm());
+        replyModel.setEventName(BuriedPointEventConstant.EVENT_KEY_COMMENT);
+        if(targetMemberId!=null){
+            replyModel.setNickname(Optional.ofNullable(systemFacedeService.getMembersByid(targetMemberId)).map(MemberDto::getUserName).orElse(null));
+        }
+        replyModel.setType(BuriedPointCommunityConstant.COMMUNITY_REPLY_TYPE_AUTHOR);
+        // 文章评论
+        if (1 == commentInput.getTarget_type()){
+            List<String> circleNames = cmmCircleMapper.listCircleNameByPost(commentInput.getTarget_id());
+            replyModel.setChannel(circleNames.size()>0?circleNames:null);
+        }
+        BuriedPointUtils.buriedPoint(replyModel);
+
+
         //clear redis cache
         //帖子/心情评论列表
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
@@ -345,6 +372,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOOD_CONTENT_GET, "", null);
 
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, commentInput.getTarget_id(), null);
+
+
         return re;
     }
 
@@ -1511,6 +1540,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
     @Override
     public FungoPageResultDto<EvaluationOutPageDto> getEvaluationList(String memberId, EvaluationInputPageDto pageDto) {
 
+
         FungoPageResultDto<EvaluationOutPageDto> re = null;
 
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS;
@@ -1772,6 +1802,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         replyService.insert(reply);
 
         HashMap<String, Object> noticeMap = null;
+        List<String> circleNames = new ArrayList<>();
 
         if (replyInput.getTarget_type() == 5) {//回复文章评论
             counterService.addCounter("t_cmm_comment", "reply_num", replyInput.getTarget_id());//增加评论数
@@ -1782,6 +1813,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 if (post != null) {
                     post.setLastReplyAt(new Date());
                     post.updateById();
+                    circleNames = cmmCircleMapper.listCircleNameByPost(comment.getPostId());
                 }
             }
             try {//发送通知
@@ -2032,6 +2064,20 @@ public class EvaluateServiceImpl implements IEvaluateService {
         } else {
             re.show("发布成功");
         }
+
+        //----添加埋点点赞数据----------
+        BuriedPointReplyModel replyModel = new BuriedPointReplyModel();
+        replyModel.setDistinctId(memberId);
+        replyModel.setPlatForm(BuriedPointUtils.getPlatForm());
+        replyModel.setEventName(BuriedPointEventConstant.EVENT_KEY_COMMENT);
+        String targetMemberId = replyInput.getReply_to();
+        if(targetMemberId!=null){
+            replyModel.setNickname(Optional.ofNullable(systemFacedeService.getMembersByid(targetMemberId)).map(MemberDto::getUserName).orElse(null));
+        }
+        replyModel.setType(BuriedPointCommunityConstant.COMMUNITY_REPLY_TYPE_OBSERVER);
+        replyModel.setChannel(circleNames.size()>0?circleNames:null);
+        BuriedPointUtils.buriedPoint(replyModel);
+
         //clear redis cache
         //帖子/心情评论列表
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);

@@ -29,8 +29,7 @@ import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
-import com.game.common.util.pc20.BuriedPointUtils;
-import com.game.common.util.pc20.analysysjavasdk.AnalysysJavaSdk;
+import com.game.common.buriedpoint.analysysjavasdk.AnalysysJavaSdk;
 import com.game.common.vo.CircleGamePostVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,10 +91,6 @@ public class GameServiceImpl implements IGameService {
 
     @Autowired
     private BasTagGroupService basTagGroupService;
-
-
-    @Autowired
-    private AnalysysJavaSdk analysysJavaSdk;
 
     @Autowired
     private CommunityFeignClient communityFeignClient;
@@ -460,21 +455,7 @@ public class GameServiceImpl implements IGameService {
             }
             out.setDownload_num(downloadNum);
             //ends
-            Map<String, String> buriedpointmap = new HashMap<>();
-            buriedpointmap.put("distinctId", memberId);
-            buriedpointmap.put("platForm", ptype);
-            buriedpointmap.put("gamename", game.getName());
-            buriedpointmap.put("gameid", game.getId());
-            buriedpointmap.put("loadnum", game.getDownloadNum() == null ? 0 + "" : game.getDownloadNum() + "");
-//            首次第三方登录埋点事件ID:login005
-//      首次第三方登录埋点事件ID:login005
 
-            try {
-                BuriedPointUtils.gamepage(buriedpointmap, analysysJavaSdk);
-            } catch (Exception ex) {
-                logger.error("了解游戏的详情",ex);
-                ex.printStackTrace();
-            }
             // 查询评论数量
             int evaCount = gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", gameId).and("state != -1"));
             out.setEvaluation_num(evaCount);

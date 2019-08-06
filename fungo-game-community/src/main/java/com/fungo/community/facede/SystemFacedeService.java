@@ -292,4 +292,16 @@ public class SystemFacedeService {
     }
 
     //-------
+
+    public MemberDto getMembersByid(String memberId){
+        try {
+            ResultDto<MemberDto> membersByid = systemFeignClient.getMembersByid(memberId);
+            if(membersByid.isSuccess()&&membersByid.getData()!=null){
+                return membersByid.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
 }

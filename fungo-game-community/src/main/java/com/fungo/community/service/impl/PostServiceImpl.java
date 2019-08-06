@@ -25,6 +25,9 @@ import com.fungo.community.function.SerUtils;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IPostService;
 import com.fungo.community.service.IVideoService;
+import com.game.common.buriedpoint.BuriedPointUtils;
+import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
+import com.game.common.buriedpoint.model.BuriedPointPostModel;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
@@ -253,6 +256,8 @@ public class PostServiceImpl implements IPostService {
         post.setPostId(PKUtil.getInstance(clusterIndex_i).longPK());
         post.setRecommend(0);
         boolean flag = postService.insert(post);
+        // 文章要发布到的圈子名称集合
+        ArrayList<String> circleNames = new ArrayList<>();
 
         //插入关系 文章-圈子
         if (StringUtil.isNotNull(postInput.getCircleId())) {
@@ -264,6 +269,8 @@ public class PostServiceImpl implements IPostService {
             postCircle.setUpdatedAt(new Date());
             postCircle.setDefaultLink(1);
             cmmPostCircleMapper.insert(postCircle);
+            CmmCircle cmmCircle = cmmCircleMapper.selectById(postInput.getCircleId());
+            circleNames.add(cmmCircle.getCircleName());
         }
 
         //插入关系  文章-游戏  游戏归属圈子--文章
@@ -299,6 +306,8 @@ public class PostServiceImpl implements IPostService {
                     postCircle.setUpdatedAt(new Date());
                     postCircle.setDefaultLink(0);
                     cmmPostCircleMapper.insert(postCircle);
+                    CmmCircle cmmCircle = cmmCircleMapper.selectById(circleId);
+                    circleNames.add(cmmCircle.getCircleName());
                 }
             }
 
@@ -525,6 +534,20 @@ public class PostServiceImpl implements IPostService {
         //我的文章(2.4.3)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
 
+        //添加埋点信息
+        BuriedPointPostModel model = new BuriedPointPostModel();
+        //封装父类3个公共属性
+        model.setDistinctId(user_id);
+        model.setEventName(BuriedPointEventConstant.EVENT_KEY_WORK_PUBLISHED);
+        model.setPlatForm(BuriedPointUtils.getPlatForm());
+        //封装发布文章事件特有属性
+        model.setTitle(post.getTitle());
+        model.setHasPic(StringUtil.isNotNull(post.getImages()));
+        model.setHasVideo(!CommonUtil.isNull(postInput.getVideo()) || !CommonUtil.isNull(postInput.getVideoId()));
+        model.setHasGame(includeGameList!=null&&includeGameList.size()>0);
+        //不存在圈子信息 设为null
+        model.setChannel(circleNames.size()>0?circleNames:null);
+        BuriedPointUtils.buriedPoint(model);
         return resultDto;
     }
 
@@ -1278,7 +1301,6 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public FungoPageResultDto<PostOutBean> getPostList(String userId, PostInputPageDto postInputPageDto) throws Exception {
-
         //结果模型
         FungoPageResultDto<PostOutBean> result = null;
 

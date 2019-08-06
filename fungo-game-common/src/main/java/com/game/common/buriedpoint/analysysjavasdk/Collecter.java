@@ -1,4 +1,4 @@
-package com.game.common.util.pc20.analysysjavasdk;
+package com.game.common.buriedpoint.analysysjavasdk;
 
 import java.util.Map;
 

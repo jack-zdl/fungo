@@ -175,4 +175,8 @@ public interface SystemFeignClient {
      */
     @PostMapping("/user/account/score/sub")
     ResultDto<Boolean> subtractMemberScoreAccount(@RequestBody Map<String, Object> accountParamMap);
+
+    @GetMapping(value = "/getMembersByid")
+    ResultDto<MemberDto> getMembersByid(@RequestParam(value = "memberId" ,required = false) String memberId);
+
 }

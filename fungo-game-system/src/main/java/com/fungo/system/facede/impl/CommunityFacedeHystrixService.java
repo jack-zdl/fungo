@@ -167,6 +167,18 @@ public class CommunityFacedeHystrixService implements FallbackFactory<CommunityF
                 logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "getCircleByPost");
                 return null;
             }
+
+            @Override
+            public ResultDto<List<String>> listCircleNameByPost(String postId) {
+                logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "listCircleNameByPost");
+                return null;
+            }
+
+            @Override
+            public ResultDto<List<String>> listCircleNameByComment(String commentId) {
+                logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "listCircleNameByComment");
+                return null;
+            }
         };
 
     }

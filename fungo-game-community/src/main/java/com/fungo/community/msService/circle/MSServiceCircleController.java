@@ -52,6 +52,33 @@ public class MSServiceCircleController {
         return re;
     }
 
+    @GetMapping(value = "/ms/service/cmm/post/listCircleNameByPost")
+    public ResultDto<List<String>> listCircleNameByPost(@RequestParam("postId")String postId){
+        ResultDto<List<String>> re = null;
+        try {
+            re = circleServiceImpl.listCircleNameByPost(postId);
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("根据文章id查询圈子名称列表");
+            re = ResultDto.error("-1","根据文章id查询圈子名称列表");
+        }
+        return re;
+    }
+
+    @GetMapping(value = "/ms/service/cmm/post/listCircleNameByComment")
+    ResultDto<List<String>> listCircleNameByComment(@RequestParam("commentId")String commentId){
+        ResultDto<List<String>> re = null;
+        try {
+            re = circleServiceImpl.listCircleNameByComment(commentId);
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("根据评论id查询圈子名称列表");
+            re = ResultDto.error("-1","根据评论id查询圈子名称列表");
+        }
+        return re;
+    }
+
+
     @PostMapping(value = "/ms/service/cmm/post/getCircleByPost")
     public ResultDto<CmmCircleDto> getCircleByPost( @RequestBody CircleGamePostVo circleGamePostVo){
         ResultDto<CmmCircleDto> re = null;

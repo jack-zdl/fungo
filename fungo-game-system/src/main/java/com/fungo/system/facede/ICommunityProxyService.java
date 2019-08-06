@@ -43,4 +43,8 @@ public interface ICommunityProxyService {
     List<String> listOfficialCommunityIds();
 
     List<String> listGameIds(List<String> list);
+
+    List<String> listCircleNameByPost(String postId);
+
+    List<String> listCircleNameByComment(String target_id);
 }

@@ -177,4 +177,10 @@ public interface CommunityFeignClient {
 
     @PostMapping("/ms/service/cmm/post/getCircleByPost")
     ResultDto<CmmCircleDto> getCircleByPost(@RequestBody CircleGamePostVo circleGamePostVo);
+
+    @GetMapping(value = "/ms/service/cmm/post/listCircleNameByPost")
+    ResultDto<List<String>> listCircleNameByPost(@RequestParam("postId")String postId);
+
+    @GetMapping(value = "/ms/service/cmm/post/listCircleNameByComment")
+    ResultDto<List<String>> listCircleNameByComment(@RequestParam("commentId")String commentId);
 }

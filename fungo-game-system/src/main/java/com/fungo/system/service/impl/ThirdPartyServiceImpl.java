@@ -17,8 +17,6 @@ import com.game.common.util.FungoStringUtils;
 import com.game.common.util.RandomsAndId;
 import com.game.common.util.UUIDUtils;
 import com.game.common.util.date.DateTools;
-import com.game.common.util.pc20.BuriedPointUtils;
-import com.game.common.util.pc20.analysysjavasdk.AnalysysJavaSdk;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -61,9 +58,6 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
 
-    @Autowired
-    private AnalysysJavaSdk analysysJavaSdk;
-
 
     /**
      * 第三方登录,判断是哪方登录 判断用户是否存在 判断有无绑定用户 如有,直接切换 如无,新建用户(第三方用户绑定功能) 用户登录,memberProfile
@@ -72,7 +66,6 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
     public ResultDto<LoginMemberBean> thirdPartyLogin(ThirdLoginInput input, String channel, String appVersion) throws Exception {
 
         LOGGER.info("第三方登录入参-input:{}---channel:{}", JSON.toJSONString(input), channel);
-        HashMap<String, String> buriedpointmap = new HashMap<>();
         Integer platform = input.getPlatformType();
         String accessToken = input.getAccessToken();
 
@@ -114,7 +107,6 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
                     .selectList(new EntityWrapper<Member>().eq("weibo_open_id", unionid).and("state != {0}", -1));
             member = getMemberWithSNSLogin(memberList);
 
-            buriedpointmap.put("login001","微博");
             //微信
         } else if (platform == 1) {
 
@@ -122,7 +114,6 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
             List<Member> memberList = memberService
                     .selectList(new EntityWrapper<Member>().eq("weixin_open_id", unionid).and("state != {0}", -1));
             member = getMemberWithSNSLogin(memberList);
-            buriedpointmap.put("login001","微信");
             if (null == member) {
                 //获取openId ，把用户的历史openid更新为 unionid
                 String wxOpenId = input.getOpenid();
@@ -148,7 +139,6 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
             List<Member> memberList = memberService
                     .selectList(new EntityWrapper<Member>().eq("qq_open_id", unionid).and("state != {0}", -1));
             member = getMemberWithSNSLogin(memberList);
-            buriedpointmap.put("login001","QQ");
             if (null == member) {
                 //获取openId 把用户的历史openid更新为 unionid
                 String qqOpenId = input.getOpenid();
@@ -200,16 +190,6 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
                     //记录登录用户
                     memberLoginedStatisticsService.addLoginToBucket(member.getId(), appVersion);
                 }
-                buriedpointmap.put("distinctId",member.getId());
-                buriedpointmap.put("platForm",channel);
-                buriedpointmap.put("login002","false");
-//              第三方登录埋点事件ID:login005
-                BuriedPointUtils.login05(buriedpointmap, analysysJavaSdk);
-                buriedpointmap.put("distinctId",member.getId());
-                buriedpointmap.put("platForm",channel);
-                buriedpointmap.put("login002","false");
-//              第三方登录埋点事件ID:login005
-                BuriedPointUtils.login05(buriedpointmap, analysysJavaSdk);
 
                 return rest;
             } else {
@@ -268,19 +248,16 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
             //微博
             if (platform == 0) {
                 LOGGER.info("用户注册-新浪微博-初始化数据 memberId : {}", user.getId());
-                buriedpointmap.put("login001","微博");
                 //user.setWeiboOpenId(input.getUid());
                 user.setWeiboOpenId(unionid);
                 //微信
             } else if (platform == 1) {
                 LOGGER.info("用户注册-微信-初始化数据  memberId : {}", user.getId());
-                buriedpointmap.put("login001","微信");
                 //user.setWeixinOpenId(input.getOpenid());
                 user.setWeixinOpenId(unionid);
                 //QQ
             } else if (platform == 4) {
                 LOGGER.info("用户注册-QQ-初始化数据  memberId : {}", user.getId());
-                buriedpointmap.put("login001","QQ");
                 //user.setQqOpenId(input.getOpenid());
                 user.setQqOpenId(unionid);
             }
@@ -311,11 +288,7 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
             rest.setData(bean);
             rest.setMessage(token);
             rest.setStatus(2);
-            buriedpointmap.put("distinctId",user.getId());
-            buriedpointmap.put("platForm",channel);
-            buriedpointmap.put("login002","true");
 //            首次第三方登录埋点事件ID:login005
-            BuriedPointUtils.login05(buriedpointmap, analysysJavaSdk);
 
 //			scoreLogService.updateRanked(user.getId(), new ObjectMapper(), 1);
 //			scoreLogService.updateRanked(user.getId(), new ObjectMapper(), 24);

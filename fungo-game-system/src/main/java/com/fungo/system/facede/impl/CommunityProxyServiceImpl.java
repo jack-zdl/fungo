@@ -172,8 +172,28 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
         return resultDto.getData();
     }
 
+    @Override
+    public List<String> listCircleNameByPost(String postId) {
+        ResultDto<List<String>> resultDto = communityFeignClient.listCircleNameByPost(postId);
+        if(!resultDto.isSuccess()||resultDto.getData()==null){
+            return  new ArrayList<>();
+        }
+        return resultDto.getData();
+    }
+
+    @Override
+    public List<String> listCircleNameByComment(String commentId) {
+        ResultDto<List<String>> resultDto = communityFeignClient.listCircleNameByComment(commentId);
+        if(!resultDto.isSuccess()||resultDto.getData()==null){
+            return  new ArrayList<>();
+        }
+        return resultDto.getData();
+    }
+
     public List<Map> hystrixGetHonorQualificationOfEssencePost() {
         LOGGER.warn("CommunityProxyServiceImpl.hystrixGetHonorQualificationOfEssencePost 熔断器打开");
         return new ArrayList<>();
     }
+
+
 }

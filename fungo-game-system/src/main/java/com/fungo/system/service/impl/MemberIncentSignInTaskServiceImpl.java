@@ -8,6 +8,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.entity.*;
 import com.fungo.system.service.*;
+import com.game.common.buriedpoint.BuriedPointUtils;
+import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
+import com.game.common.buriedpoint.model.BuriedPointSignModel;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberActionTypeConsts;
 import com.game.common.consts.MemberIncentSignInConsts;
@@ -292,6 +295,15 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
             this.addLog(member.getId(), 1, score, taskGroupId, scoreRuleCurrent.getTaskType(),
                     scoreRuleCurrent.getId(), scoreRuleCurrent.getName(), scoreRuleCurrent.getCodeIdt());
         }
+
+        // 签到埋点
+        BuriedPointSignModel pointSignModel = new BuriedPointSignModel();
+        pointSignModel.setDistinctId(member.getId());
+        pointSignModel.setEventName(BuriedPointEventConstant.EVENT_KEY_SIGN_IN);
+        pointSignModel.setPlatForm(BuriedPointUtils.getPlatForm());
+        pointSignModel.setSerialDays(1);
+        pointSignModel.setQuestGold(score);
+        BuriedPointUtils.buriedPoint(pointSignModel);
     }
 
 
@@ -386,6 +398,14 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
                 updateRanked(mb_id, mapper, 36);
             }
         }
+        // 签到埋点
+     /*   BuriedPointSignModel pointSignModel = new BuriedPointSignModel();
+        pointSignModel.setDistinctId(member.getId());
+        pointSignModel.setEventName(BuriedPointEventConstant.EVENT_KEY_SIGN_IN);
+        pointSignModel.setPlatForm(BuriedPointUtils.getPlatForm());
+        pointSignModel.setSerialDays(1);
+        pointSignModel.setQuestGold(score);
+        BuriedPointUtils.buriedPoint(pointSignModel);*/
 
         return ResultDto.success("签到成功");
     }

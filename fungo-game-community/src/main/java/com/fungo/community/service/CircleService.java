@@ -36,4 +36,8 @@ public interface CircleService {
     void updateCircleHotValue() throws Exception;
 
     FungoPageResultDto<CommunityMember> selectCirclePlayer(String memberId, CmmCirclePostVo cmmCirclePostVo);
+
+    ResultDto<List<String>> listCircleNameByPost(String postId);
+
+    ResultDto<List<String>> listCircleNameByComment(String commentId);
 }

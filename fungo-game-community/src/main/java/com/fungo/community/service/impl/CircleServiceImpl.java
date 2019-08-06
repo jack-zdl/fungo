@@ -9,7 +9,9 @@ import com.fungo.community.dao.mapper.BasTagDao;
 import com.fungo.community.dao.mapper.CmmCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
+import com.fungo.community.dao.service.CmmCommentDaoService;
 import com.fungo.community.entity.CmmCircle;
+import com.fungo.community.entity.CmmComment;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.facede.GameFacedeService;
 import com.fungo.community.facede.SystemFacedeService;
@@ -85,6 +87,9 @@ public class CircleServiceImpl implements CircleService {
     //依赖游戏微服务
     @Autowired(required = false)
     private GameFacedeService gameFacedeService;
+
+    @Autowired
+    private CmmCommentDaoService commentService;
 
     @Override
     public FungoPageResultDto<CmmCircleDto> selectCircle(String memberId, CmmCircleVo cmmCircleVo) {
@@ -780,6 +785,22 @@ public class CircleServiceImpl implements CircleService {
             re = FungoPageResultDto.error("-1", "获取玩家榜异常");
         }
         return re;
+    }
+
+    @Override
+    public ResultDto<List<String>> listCircleNameByPost(String postId) {
+        List<String> circleNameByPost = cmmCircleMapper.listCircleNameByPost(postId);
+        return ResultDto.success(circleNameByPost);
+    }
+@Override
+    public ResultDto<List<String>> listCircleNameByComment(String commentId) {
+        //根据评论id获取文章
+        CmmComment comment = commentService.selectById(commentId);
+        if(comment!=null){
+            List<String> circleNameByPost = cmmCircleMapper.listCircleNameByPost(comment.getPostId());
+            return ResultDto.success(circleNameByPost);
+        }
+        return ResultDto.success();
     }
 
 
