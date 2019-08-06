@@ -37,7 +37,7 @@ public class DistributedLockByCurator implements InitializingBean {
      * 获取分布式锁
      */
     public void acquireDistributedLock(String path) {
-        String keyPath = "/" + curatorConfiguration.getNoticeLock() + "/" + path;
+        String keyPath = "/" + curatorConfiguration.getNoticeLock() + "/" + curatorConfiguration.getNoticeChildrenLock()+path;
         while (true) {
             try {
                 curatorFramework
@@ -68,7 +68,7 @@ public class DistributedLockByCurator implements InitializingBean {
      */
     public boolean releaseDistributedLock(String path) {
         try {
-            String keyPath = "/" + curatorConfiguration.getNoticeLock() + "/" + path;
+            String keyPath = "/" + curatorConfiguration.getNoticeLock() + "/" + curatorConfiguration.getNoticeChildrenLock()+path;
             if (curatorFramework.checkExists().forPath(keyPath) != null) {
                 curatorFramework.delete().forPath(keyPath);
             }
@@ -106,7 +106,7 @@ public class DistributedLockByCurator implements InitializingBean {
     //创建父节点，并创建永久节点
     @Override
     public void afterPropertiesSet() {
-        curatorFramework = curatorFramework.usingNamespace("lock-namespace");
+        curatorFramework = curatorFramework.usingNamespace(curatorConfiguration.getNamespaceLock());
         String path = "/" + curatorConfiguration.getNoticeLock();
         try {
             if (curatorFramework.checkExists().forPath(path) == null) {

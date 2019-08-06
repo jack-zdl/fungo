@@ -109,7 +109,7 @@ public class DistributedLockByCurator implements InitializingBean {
     //创建父节点，并创建永久节点
     @Override
     public void afterPropertiesSet() {
-        curatorFramework = curatorFramework.usingNamespace("lock-namespace");
+        curatorFramework = curatorFramework.usingNamespace(curatorConfiguration.getNamespaceLock());
         String path = "/" + curatorConfiguration.getNoticeLock();
         try {
             if (curatorFramework.checkExists().forPath(path) == null) {

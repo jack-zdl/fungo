@@ -40,6 +40,9 @@ public class CuratorConfiguration {
     @Value( value = "${zk.notice.children.lock}")
     private String noticeChildrenLock;
 
+    @Value( value = "${zk.namespace.notice.lock}")
+    private String namespaceLock;
+
     // 创建Curator客户端
     @Bean(initMethod = "start")
     public CuratorFramework curatorFramework() {
@@ -65,5 +68,13 @@ public class CuratorConfiguration {
 
     public void setNoticeChildrenLock(String noticeChildrenLock) {
         this.noticeChildrenLock = noticeChildrenLock;
+    }
+
+    public String getNamespaceLock() {
+        return namespaceLock;
+    }
+
+    public void setNamespaceLock(String namespaceLock) {
+        this.namespaceLock = namespaceLock;
     }
 }
