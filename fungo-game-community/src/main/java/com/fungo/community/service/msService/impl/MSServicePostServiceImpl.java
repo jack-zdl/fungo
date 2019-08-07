@@ -11,6 +11,7 @@ import com.fungo.community.entity.CmmCircle;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.facede.GameFacedeService;
+import com.fungo.community.service.impl.PostServiceImpl;
 import com.fungo.community.service.msService.IMSServicePostService;
 import com.game.common.bean.CollectionBean;
 import com.game.common.dto.FungoPageResultDto;
@@ -37,25 +38,21 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MSServicePostServiceImpl.class);
 
-
     @Autowired
     private CmmPostDaoService postDaoService;
-
     @Autowired
     private CmmCommunityDaoService communityService;
-
     @Autowired
     private CmmPostGameMapper cmmPostGameMapper;
-
     @Autowired
     private CmmPostCircleMapper cmmPostCircleMapper;
-
     @Autowired
     private CmmCircleMapper cmmCircleMapper;
-
     //依赖游戏微服务
     @Autowired
     private GameFacedeService gameFacedeService;
+    @Autowired
+    private PostServiceImpl postService;
 
     @Override
     public FungoPageResultDto<CmmPostDto> queryCmmPostList(CmmPostDto postDto) {
@@ -247,10 +244,10 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
                 postEntityWrapper.orNew("content like '%" + content + "%'");
             }
             int selectCount  = postDaoService.selectCount(postEntityWrapper);*/
-            int selectCount = postDaoService.selectCount(new EntityWrapper<CmmPost>().where("state = {0}", 1).andNew("title like '%" + keyword + "%'")
-                    .or("content like " + "'%" + keyword + "%'").or("content like " + "'%" + keyword + "%'"));
+           //new EntityWrapper<CmmPost>().where("state = {0}", 1).andNew("title like '%" + keyword + "%'")
+            //                    .or("content like " + "'%" + keyword + "%'").or("content like " + "'%" + keyword + "%'")
+            int selectCount = postDaoService.selectCount(postService.getWrapper(keyword,new EntityWrapper<CmmPost>()));
             return selectCount;
-
         } catch (Exception ex) {
             LOGGER.error("/ms/service/cmm/post/count--queryCmmPostCount-出现异常:关键字="+keyword, ex);
         }

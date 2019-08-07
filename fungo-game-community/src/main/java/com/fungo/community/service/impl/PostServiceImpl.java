@@ -1793,13 +1793,14 @@ public class PostServiceImpl implements IPostService {
         Page<CmmPost> postPage = null;
         if(nacosFungoCircleConfig.isSearchPostType()){
             Page<CmmPost> pageCmPost = new Page<>(page, limit);
-
+//
             Wrapper<CmmPost> wrapperCmmPost = Condition.create().setSqlSelect("id,title,content,cover_image as coverImage ,member_id as memberId ,video,created_at as createdAt," +
                     "updated_at as updatedAt,video_cover_image as videoCoverImage,SUM( watch_num + comment_num + like_num + collect_num ) AS wclc ");
-
-            wrapperCmmPost.where("state = {0}", 1);
-            wrapperCmmPost.andNew("title like '%" + keyword + "%'");
-            wrapperCmmPost.or("content like " + "'%" + keyword + "%'");
+//dada
+//            wrapperCmmPost.where("state = {0}", 1);
+//            wrapperCmmPost.andNew("title like '%" + keyword + "%'");
+//            wrapperCmmPost.or("content like " + "'%" + keyword + "%'");
+            getWrapper(keyword,wrapperCmmPost);
             wrapperCmmPost.groupBy("id");
             //排序
             StringBuffer orderByStr = new StringBuffer();
@@ -1807,7 +1808,7 @@ public class PostServiceImpl implements IPostService {
             orderByStr.append("LOCATE( '" + keyword + "', content ) DESC,").append(" wclc DESC");
 
             wrapperCmmPost.orderBy(orderByStr.toString());
-            postPage = postService.selectPage(pageCmPost, wrapperCmmPost);
+            postPage = postService.selectPage(pageCmPost,wrapperCmmPost );
         }else {
             postPage =  esdaoService.getAllPosts(keyword,page,limit);
         }
@@ -1920,6 +1921,21 @@ public class PostServiceImpl implements IPostService {
         }
 
         return resultDto;
+    }
+
+    /**
+     * 功能描述:  抽象出关键字搜索的Wrapper
+     * @param: [keyword] 关键字
+     * @return: com.baomidou.mybatisplus.mapper.Wrapper
+     * @auther: dl.zhang
+     * @date: 2019/8/7 13:51
+     */
+    public Wrapper getWrapper(String keyword,Wrapper wrapperCmmPost){
+
+        wrapperCmmPost.where("state = {0}", 1);
+        wrapperCmmPost.andNew("title like '%" + keyword + "%'");
+        wrapperCmmPost.or("content like " + "'%" + keyword + "%'");
+        return wrapperCmmPost;
     }
 
     //-----------
