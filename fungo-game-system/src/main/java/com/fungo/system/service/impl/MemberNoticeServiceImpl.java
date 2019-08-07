@@ -396,13 +396,18 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
      * @date: 2019/7/31 9:34
      */
     @Transactional
-    public void insertSystemVersionNotice (String data) throws Exception {
+    public void insertSystemVersionNotice (String mobileType,String data) throws Exception {
         try {
             EntityWrapper<Member> memberEntity = new EntityWrapper<>();
             memberEntity.eq( "state","0" );
             StopWatch watch = new StopWatch( "Stream效率测试" );
             watch.start( "总时间" );
-            List<String> memberList =memberDao.getMemberList();
+            List<String> memberList = memberDao.getMemberList();
+            if("1".equals(mobileType)){  // 安卓用户
+            }else if ("2".equals(mobileType)){ // ios用户
+            }else {
+            }
+
             List<List<String>> memberIdsList = Lists.partition(memberList, 10);
             CountDownLatch countDownLatch = new CountDownLatch(10);
             Executor executorService = CommonUtil.createThread(10);

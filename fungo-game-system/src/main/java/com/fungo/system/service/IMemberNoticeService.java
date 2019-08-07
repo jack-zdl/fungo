@@ -55,7 +55,7 @@ public interface IMemberNoticeService {
 
     void insertSystemNotice(String memberId,String data) throws Exception;
 
-    void insertSystemVersionNotice(String data) throws Exception;
+    void insertSystemVersionNotice(String mobileType, String data) throws Exception;
 
     /**
      * 查询用户的消息数据

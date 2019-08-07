@@ -106,7 +106,8 @@ public class SystemMqConsumeServiceImpl implements SystemMqConsumeService {
         if( !CommonUtil.isNull( data )){
             try {
                 if("1".equals(type)){
-                    iMemberNoticeServiceImpl.insertSystemVersionNotice(data );
+                    String mobileType = (String) map.get( "mobileType" );
+                    iMemberNoticeServiceImpl.insertSystemVersionNotice(mobileType,data );
                 }else if("2".equals(type)){
                     List<String> listString = Arrays.asList(id.split(","));
                     listString.stream().forEach( s ->{
