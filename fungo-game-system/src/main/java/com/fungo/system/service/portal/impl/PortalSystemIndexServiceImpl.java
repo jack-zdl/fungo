@@ -122,9 +122,14 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
                 clist.add(anliWall);
             }
             // 精选文章2（视频）
-            CardIndexBean postVidoe = this.selectPosts("0007",2);
+            CardIndexBean postVidoe = this.selectPosts("0007",1);
             if (postVidoe != null) {
                 clist.add(postVidoe);
+            }
+            //精选文章3 (视频)
+            CardIndexBean postFine = this.selectPosts("0008",1);
+            if (postFine != null) {
+                clist.add(postFine);
             }
             ArrayList<CardIndexBean> topicPosts = this.topicPosts(page, limit, 10 * (page - 1) + 1);
             clist.addAll(topicPosts);
@@ -366,57 +371,60 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
     //精选文章
     public CardIndexBean selectPosts(String type,int limit) {
         //2 6(视频) 7
-        Banner videoBanner = bannerService.selectOne(new EntityWrapper<Banner>().eq("position_code", type).eq("target_type", 1).eq("state", "0").orderBy("sort", false).last("limit "+limit));
+        ArrayList<CardDataBean> cl = new ArrayList<CardDataBean>();
+        List<Banner> videoBanners = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", type).eq("target_type", 1).eq("state", "0").orderBy("sort", false).last("limit "+limit));
         CardIndexBean cb = new CardIndexBean();
-        if (videoBanner == null) {
+        if (videoBanners == null) {
             return null;
         } else {
-            CmmPostDto cmmPostParam = new CmmPostDto();
-            cmmPostParam.setId(videoBanner.getTargetId());
-            cmmPostParam.setState(1);
-            CmmPostDto post =  indexProxyService.selctCmmPostOne(cmmPostParam);
-            if (post == null) {
-                return null;
-            }
-            CardDataBean dataBean = new CardDataBean();
-            dataBean.setMainTitle(videoBanner.getTitle());
-            dataBean.setImageUrl(videoBanner.getCoverImage());
-            dataBean.setSubtitle(videoBanner.getIntro());
-            dataBean.setUserinfo(userService.getAuthor(post.getMemberId()));
-            dataBean.setVideoUrl(post.getVideo());
-            if (!CommonUtil.isNull(post.getContent())) {
+            for(Banner videoBanner : videoBanners){
+                CmmPostDto cmmPostParam = new CmmPostDto();
+                cmmPostParam.setId(videoBanner.getTargetId());
+                cmmPostParam.setState(1);
+                CmmPostDto post =  indexProxyService.selctCmmPostOne(cmmPostParam);
+                if (post == null) {
+                    return null;
+                }
+                CardDataBean dataBean = new CardDataBean();
+                dataBean.setMainTitle(videoBanner.getTitle());
+                dataBean.setImageUrl(videoBanner.getCoverImage());
+                dataBean.setSubtitle(videoBanner.getIntro());
+                dataBean.setUserinfo(userService.getAuthor(post.getMemberId()));
+                dataBean.setVideoUrl(post.getVideo());
+                if (!CommonUtil.isNull(post.getContent())) {
 //				dataBean.setContent(post.getContent().length()>25?CommonUtils.filterWord(post.getContent().substring(0, 25)):CommonUtils.filterWord(post.getContent()));
-                dataBean.setContent(post.getContent());
-            } else {
-                dataBean.setContent(post.getContent());
-            }
-            dataBean.setUpperLeftCorner(videoBanner.getTag());
+                    dataBean.setContent(post.getContent());
+                } else {
+                    dataBean.setContent(post.getContent());
+                }
+                dataBean.setUpperLeftCorner(videoBanner.getTag());
 //			dataBean.setLowerRightCorner(post.getReportNum()+"");
 
-            dataBean.setReplyNum(post.getReportNum());
-            CmmCommunityDto communityParam = new CmmCommunityDto();
-            communityParam.setId(post.getCommunityId());
-            CmmCommunityDto community = iMemeberProxyService.selectCmmCommunityById(communityParam); //  communityService.selectById(post.getCommunityId());
-            if (community != null) {
-                dataBean.setLowerRightCorner(community.getName());
-            }
-            if (!CommonUtil.isNull(post.getVideo()) && CommonUtil.isNull(videoBanner.getCoverImage())) {
+                dataBean.setReplyNum(post.getReportNum());
+                CmmCommunityDto communityParam = new CmmCommunityDto();
+                communityParam.setId(post.getCommunityId());
+                CmmCommunityDto community = iMemeberProxyService.selectCmmCommunityById(communityParam); //  communityService.selectById(post.getCommunityId());
                 if (community != null) {
-                    dataBean.setImageUrl(community.getCoverImage());
+                    dataBean.setLowerRightCorner(community.getName());
                 }
+                if (!CommonUtil.isNull(post.getVideo()) && CommonUtil.isNull(videoBanner.getCoverImage())) {
+                    if (community != null) {
+                        dataBean.setImageUrl(community.getCoverImage());
+                    }
+                }
+
+                dataBean.setActionType("1");
+                dataBean.setHref(videoBanner.getHref());
+                dataBean.setTargetType(videoBanner.getTargetType());
+                dataBean.setTargetId(videoBanner.getTargetId());
+
+                ActionBean actionBean = new ActionBean();
+                actionBean.setTargetId(community.getId());
+                dataBean.setSource(actionBean);
+
+
+                cl.add(dataBean);
             }
-
-            dataBean.setActionType("1");
-            dataBean.setHref(videoBanner.getHref());
-            dataBean.setTargetType(videoBanner.getTargetType());
-            dataBean.setTargetId(videoBanner.getTargetId());
-
-            ActionBean actionBean = new ActionBean();
-            actionBean.setTargetId(community.getId());
-            dataBean.setSource(actionBean);
-
-            ArrayList<CardDataBean> cl = new ArrayList<CardDataBean>();
-            cl.add(dataBean);
             cb.setDataList(cl);
             cb.setCardName("精品文章");
             if ("0007".equals(type)) {
