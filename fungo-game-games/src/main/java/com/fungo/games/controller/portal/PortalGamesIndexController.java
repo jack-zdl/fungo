@@ -3,6 +3,7 @@ package com.fungo.games.controller.portal;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameCollectionGroup;
@@ -10,6 +11,7 @@ import com.fungo.games.entity.GameCollectionItem;
 import com.fungo.games.entity.GameEvaluation;
 import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.service.*;
+import com.fungo.games.service.impl.EvaluateServiceImpl;
 import com.fungo.games.service.portal.PortalGamesIIndexService;
 import com.fungo.games.utils.PCGameGroupVO;
 import com.game.common.api.InputPageDto;
@@ -21,15 +23,19 @@ import com.game.common.dto.index.AmwayWallBean;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
+import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.date.DateTools;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.checkerframework.checker.units.qual.A;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -46,6 +52,8 @@ import java.util.*;
 @RestController
 @Api(value = "", description = "PC首页")
 public class PortalGamesIndexController {
+
+    private static final Logger logger = LoggerFactory.getLogger( PortalGamesIndexController.class);
 
     @Autowired
     private IIndexService indexService;
@@ -303,7 +311,7 @@ public class PortalGamesIndexController {
         String keySuffix = JSON.toJSONString(inputPageDto);
         FungoPageResultDto<AmwayWallBean> re = (FungoPageResultDto<AmwayWallBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
-            return re;
+            //return re;
         }
 
         re = new FungoPageResultDto<AmwayWallBean>();
@@ -323,6 +331,14 @@ public class PortalGamesIndexController {
             Game game = this.gameService.selectById(gameEvaluation.getGameId());
             bean.setEvaluation(CommonUtils.filterWord(gameEvaluation.getContent()));
             bean.setEvaluationId(gameEvaluation.getId());
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                if(StringUtil.isNotNull(gameEvaluation.getImages())){
+                    bean.setImages(objectMapper.readValue(gameEvaluation.getImages(), ArrayList.class));
+                }
+            } catch (IOException e) {
+                logger.error( "数组字符串解析失败GameEvaluation.id="+gameEvaluation.getId(),e );
+            }
 //			ObjectMapper objectMapper = new ObjectMapper();
 //			ArrayList<String> imgs=null;
 //	        try {
