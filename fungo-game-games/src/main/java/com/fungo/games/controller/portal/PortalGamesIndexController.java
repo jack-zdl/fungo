@@ -311,7 +311,7 @@ public class PortalGamesIndexController {
         String keySuffix = JSON.toJSONString(inputPageDto);
         FungoPageResultDto<AmwayWallBean> re = (FungoPageResultDto<AmwayWallBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
-            //return re;
+            return re;
         }
 
         re = new FungoPageResultDto<AmwayWallBean>();
