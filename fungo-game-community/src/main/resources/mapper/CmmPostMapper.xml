@@ -219,7 +219,7 @@
 
     <!-- AND cpc.default_link = 1  -->
     <select id="getCmmCircleListByPostId" parameterType="java.lang.String" resultType="com.fungo.community.entity.CmmPost">
-    select  *  from  t_cmm_post where state = 1 and id in
+    select  *  from  t_cmm_post where state != -1 and id in
     ( select cpc.post_id
     from t_cmm_post_circle cpc where cpc.circle_id = #{circleId} )
 
@@ -229,7 +229,7 @@
     <select id="getCmmCircleListByCircleId" resultType="com.fungo.community.entity.CmmPost">
         select  
          <include refid="Base_Column_List"></include>
-         ,sum(cp.comment_num+cp.like_num+cp.collect_num+cp.watch_num) as total  from  t_cmm_post cp where  cp.state=1 and id in
+         ,sum(cp.comment_num+cp.like_num+cp.collect_num+cp.watch_num) as total  from  t_cmm_post cp where  cp.state != -1 and id in
         ( select cpc.post_id
         from t_cmm_post_circle cpc where cpc.circle_id = #{circleId}   )
 
@@ -259,7 +259,7 @@
     <select id="getAllCmmCircleListByCircleId" resultType="com.fungo.community.entity.CmmPost">
         select
         <include refid="Base_Column_List"></include>
-        ,sum(cp.comment_num+cp.like_num+cp.collect_num+cp.watch_num) as total  from  t_cmm_post cp where  cp.state=1 and id in
+        ,sum(cp.comment_num+cp.like_num+cp.collect_num+cp.watch_num) as total  from  t_cmm_post cp where  cp.state != -1 and id in
         ( select cpc.post_id
         from t_cmm_post_circle cpc where cpc.circle_id = #{circleId}   )
 
@@ -294,7 +294,7 @@
 
         JOIN t_cmm_post_game postGame ON mpost.id = postGame.post_id
 
-        AND state = 1
+        AND state != -1
 
         <if test="keyword != null and keyword !=''">
             AND ( title LIKE concat(concat('%',#{keyword}),'%')
@@ -324,7 +324,7 @@
         FROM
         t_cmm_post mpost
         JOIN t_cmm_post_game postGame ON mpost.id = postGame.post_id
-        AND state = 1
+        AND state != -1
 
         <if test="keyword != null and keyword !=''">
             AND ( title LIKE concat(concat('%',#{keyword}),'%')
@@ -337,7 +337,7 @@
 
 	SELECT 
 	 <include refid="Base_Column_List"></include>
-	 FROM t_cmm_post cp  WHERE cp.state=1 AND
+	 FROM t_cmm_post cp  WHERE cp.state != -1 AND
 	 (
 	    cp.community_id in  (SELECT cc.id  FROM t_cmm_community cc WHERE cc.game_id = #{gameId} )
 	    or cp.id in (SELECT cpg.post_id FROM t_cmm_post_game cpg WHERE cpg.game_id = #{gameId}  )
@@ -347,7 +347,7 @@
     <select id="getCmmPostByRecommend" resultType="com.fungo.community.entity.CmmPost">
         SELECT
         <include refid="Base_List"><property name="alias" value="cp"/></include>
-        FROM t_cmm_post  cp WHERE cp.state = 1  and  cp.recommend = 1 and
+        FROM t_cmm_post  cp WHERE cp.state != -1  and  cp.recommend = 1 and
         NOT EXISTS
         ( SELECT 1 FROM t_cmm_post_circle cpc , t_cmm_circle cc WHERE cc.id = cpc.circle_id  and cpc.post_id = cp.id and cc.state != 1 )  ORDER BY cp.sort DESC , cp.created_at desc
     </select>

@@ -111,13 +111,11 @@ public class MemberServiceImpl implements IMemberService {
             return re;
         }
 
-        re = new FungoPageResultDto<CollectionOutBean>();
-        List<CollectionOutBean> list = new ArrayList<CollectionOutBean>();
+        re = new FungoPageResultDto<>();
+        List<CollectionOutBean> list = new ArrayList<>();
 
-        Page<CollectionBean> p = new Page<CollectionBean>(inputPage.getPage(), inputPage.getLimit());
-        //@todo 5.22
         List<String> ids = actionDao.listArticleIds(memberId);
-        FungoPageResultDto<CollectionBean>  cmmPostUsercollect = communityFeignClient.listCmmPostUsercollect(p.getPages(),p.getLimit(),ids);
+        FungoPageResultDto<CollectionBean>  cmmPostUsercollect = communityFeignClient.listCmmPostUsercollect(inputPage.getPage(),inputPage.getLimit(),ids);
 
        // List<CollectionBean> plist = communityProxyService.getCollection(p, ids); //actionDao.getCollection(p, ids);
         List<CollectionBean> plist = cmmPostUsercollect.getData();

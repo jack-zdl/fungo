@@ -19,6 +19,7 @@ import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.util.CommonUtil;
+import com.game.common.util.PageTools;
 import com.game.common.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -310,16 +311,17 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
     }
 
     @Override
-    public List<CollectionBean> getCollection(int pageNum, int limit, List<String> postIds) {
+    public FungoPageResultDto<CollectionBean>  getCollection(int pageNum, int limit, List<String> postIds) {
         try {
-
+            FungoPageResultDto<CollectionBean> re = new FungoPageResultDto<>( );
             if (null == postIds || postIds.isEmpty()) {
                 return null;
             }
-
             Page<CollectionBean> page = new Page<CollectionBean>(pageNum, limit);
-            return postDaoService.getCollection(page, postIds);
-
+            List<CollectionBean> collectionBeans =  postDaoService.getCollection(page, postIds);
+            re.setData(collectionBeans);
+            PageTools.pageToResultDto( re,page);
+            return  re;
         } catch (Exception ex) {
             LOGGER.error("/ms/service/cmm/post/user/collect--getCollection-出现异常:文章id="+postIds, ex);
         }

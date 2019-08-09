@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameEvaluation;
 import com.fungo.games.facede.IEvaluateProxyService;
@@ -30,7 +31,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -51,11 +55,18 @@ public class ProtalGamesEvaluateServiceImpl implements ProtalGameIEvaluateServic
     private IEvaluateProxyService iEvaluateProxyService;
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
+    @Autowired
+    private GameDao gameDao;
+
 
     public ResultDto<EvaluationOutBean> getEvaluationDetail(String memberId, String commentId) {
         ResultDto<EvaluationOutBean> re = new ResultDto<>();
         EvaluationOutBean bean = new EvaluationOutBean();
         GameEvaluation evaluation = gameEvaluationService.selectById(commentId);
+        HashMap<String, BigDecimal> rateData =  gameDao.getRateData(evaluation.getGameId());
+        if (rateData.get("avgRating") != null) {
+            bean.setGameRating(rateData.get("avgRating"));
+        }
         if (evaluation == null) {
             return ResultDto.error("-1", "该评论详情不存在");
         }
