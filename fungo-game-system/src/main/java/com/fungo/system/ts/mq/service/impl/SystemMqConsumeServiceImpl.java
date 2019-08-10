@@ -100,19 +100,20 @@ public class SystemMqConsumeServiceImpl implements SystemMqConsumeService {
         String id = (String)map.get("id");
         String type = (String) map.get( "type" );
         String data = (String)map.get("data");
+        String mobileType = (String) map.get( "mobileType" );
         if( CommonUtil.isNull( data )){
             return false;
         }
         if( !CommonUtil.isNull( data )){
             try {
                 if("1".equals(type)){
-                    String mobileType = (String) map.get( "mobileType" );
+
                     iMemberNoticeServiceImpl.insertSystemVersionNotice(mobileType,data );
                 }else if("2".equals(type)){
                     List<String> listString = Arrays.asList(id.split(","));
                     listString.stream().forEach( s ->{
                         try {
-                            iMemberNoticeServiceImpl.insertSystemNotice(s,data);
+                            iMemberNoticeServiceImpl.insertSystemNotice(mobileType,s,data);
                         } catch (Exception e) {
                             LOGGER.error( "系统消息异常",e );
                         }

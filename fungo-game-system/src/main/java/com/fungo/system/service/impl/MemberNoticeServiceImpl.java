@@ -21,6 +21,7 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.game.GameOut;
 import com.game.common.dto.game.GameSurveyRelDto;
+import com.game.common.enums.SystemTypeEnum;
 import com.game.common.repo.cache.facade.FungoCacheNotice;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PKUtil;
@@ -68,7 +69,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
     private MemberAppleServiceImap memberAppleServiceImap;
 
     @Override
-    public List<Map<String, Object>> queryMbNotices(MemberNoticeInput noticeInput) {
+    public List<Map<String, Object>> queryMbNotices(String os,MemberNoticeInput noticeInput) {
 
         List<Map<String, Object>> noticesList = null;
         //从redis缓存，获取
@@ -93,7 +94,10 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                     String key = (String) o;
 
                     Map<String, Object> msgMap = (Map<String, Object>) fungoCacheNotice.getIndexCache(key);
+                    String  mobileType = (String) msgMap.get("mobileType");
+                    if(os.equals( "" )){
 
+                    }
                     noticesList.add(msgMap);
 
                     //同时把DB中的消息状态置为已读
@@ -338,7 +342,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
      * @date: 2019/7/31 9:34
      */
     @Transactional
-    public void insertSystemNotice (String memberId,String data) throws Exception {
+    public void insertSystemNotice (String mobileType,String memberId,String data) throws Exception {
             try {
                 distributedLockByCurator.acquireDistributedLock( memberId );
                 //从DB查
@@ -353,6 +357,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                         JSONObject jsonObject = JSON.parseObject( jsonString );
                         jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
                         jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
+//                        jsonObject.put( "mobileType", mobileType );
                         x.setNtcData( jsonObject.toJSONString());
                         x.updateById();
                     } );
@@ -367,6 +372,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                     memberNotice.setUpdatedAt( new Date() );
                     Map map = new ConcurrentHashMap( 4 );
                     map.put( "count", 1 );
+//                    map.put( "mobileType", mobileType );
                     map.put( "like_count", 0 );
                     map.put( "comment_count", 0 );
                     map.put( "notice_count", 1 );
@@ -375,6 +381,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                 }
                 BasNotice basNotice = new BasNotice();
                 basNotice.setType( 6 );
+                basNotice.setChannel(mobileType);
                 basNotice.setIsRead( 0 );
                 basNotice.setIsPush( 0 );
                 basNotice.setMemberId( memberId );
@@ -403,19 +410,24 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
             StopWatch watch = new StopWatch( "Stream效率测试" );
             watch.start( "总时间" );
             List<String> memberList = memberDao.getMemberList();
-            if("1".equals(mobileType)){  // 安卓用户
-            }else if ("2".equals(mobileType)){ // ios用户
-            }else {
+            String channel = "";
+            if(SystemTypeEnum.ANDROID.getKey().equals(mobileType)){  // 安卓用户
+                channel = SystemTypeEnum.ANDROID.getKey();
+            }else if (SystemTypeEnum.IOS.getKey().equals(mobileType)){ // ios用户
+                channel = SystemTypeEnum.IOS.getKey();
+            }else {  //pc 用户
+
             }
 
             List<List<String>> memberIdsList = Lists.partition(memberList, 10);
             CountDownLatch countDownLatch = new CountDownLatch(10);
             Executor executorService = CommonUtil.createThread(10);
+            String finalChannel = channel;
             memberIdsList.parallelStream().forEach( e ->{
                 executorService.execute( new Runnable() {
                     @Override
                     public void run() {
-                        updateNotice(e,data);
+                        updateNotice( finalChannel,e,data);
                     }
                 });
                 countDownLatch.countDown();
@@ -512,7 +524,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
         return null;
     }
 
-    public void updateNotice(  List<String> memberList,String data){
+    public void updateNotice( String channel, List<String> memberList,String data){
         StopWatch watch = new StopWatch( "Stream效率测试" );
         watch.start( "parallelStream start" );
         memberList.parallelStream().forEach( o ->{
@@ -530,6 +542,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                         JSONObject jsonObject = JSON.parseObject( jsonString );
                         jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
                         jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
+//                        jsonObject.put( "mobileType", channel );
                         x.setNtcData( jsonObject.toJSONString());
                         x.updateById();
                     } );
@@ -546,12 +559,14 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                     map.put( "count", 1 );
                     map.put( "like_count", 0 );
                     map.put( "comment_count", 0 );
+//                    map.put( "mobileType",channel );
                     map.put( "notice_count", 1 );
                     memberNotice.setNtcData( JSON.toJSONString( map ) );
                     memberNoticeDaoService.insert( memberNotice );
                 }
                 BasNotice basNotice = new BasNotice();
                 basNotice.setType( 6 );
+                basNotice.setChannel( channel);
                 basNotice.setIsRead( 0 );
                 basNotice.setIsPush( 0 );
                 basNotice.setMemberId( o );
