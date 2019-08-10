@@ -1,9 +1,12 @@
 package com.fungo.system.controller.portal;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.entity.Member;
+import com.fungo.system.entity.MemberFollower;
 import com.fungo.system.service.ICommunityService;
 import com.fungo.system.service.IUserService;
+import com.fungo.system.service.MemberFollowerService;
 import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
@@ -37,11 +40,13 @@ import java.util.List;
 @RestController
 @Api(value = "", description = "PC2.0推荐")
 public class PortalSystemRecommendController {
-    @Autowired
-    private ICommunityService iCommunityService;
 
     @Autowired
+    private ICommunityService iCommunityService;
+    @Autowired
     private IUserService userService;
+    @Autowired
+    private MemberFollowerService followService;
 
     /**
      * PC2.0
@@ -62,9 +67,9 @@ public class PortalSystemRecommendController {
 
         // LOGGER.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/api/recommend/users----");
 
-        FungoPageResultDto<FollowUserOutBean> re = new FungoPageResultDto<FollowUserOutBean>();
+        FungoPageResultDto<FollowUserOutBean> re = new FungoPageResultDto<>();
 
-        List<FollowUserOutBean> list = new ArrayList<FollowUserOutBean>();
+        List<FollowUserOutBean> list = new ArrayList<>();
 
         re.setData(list);
 
@@ -93,7 +98,14 @@ public class PortalSystemRecommendController {
             bean.setUpdatedAt(DateTools.fmtDate(member.getUpdatedAt()));
             bean.setUsername(member.getUserName());
             bean.setFollowed(member.isFollowed());
-
+            //PC2.0新增相互关注业务添加字段 mutualFollowed
+            MemberFollower one = followService.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", memberId).eq("follower_id", member.getId()).andNew("state = {0}", 1).or(" {0}", 2));
+            if (one != null) {
+//                PC2.0新增相互关注业务添加字段 mutualFollowed
+                if (one.getState().equals(2)){
+                    bean.setMutualFollowed("1");
+                }
+            }
             try {
                 bean.setStatusImg(userService.getStatusImage(member.getId()));
             } catch (Exception e) {
@@ -105,10 +117,8 @@ public class PortalSystemRecommendController {
             } else {
                 bean.setSign("活跃达人");
             }
-
             list.add(bean);
         }
-
         PageTools.pageToResultDto(re, pageFormat);
 
 

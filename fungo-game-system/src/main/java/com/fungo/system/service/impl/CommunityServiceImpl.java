@@ -102,7 +102,7 @@ public class CommunityServiceImpl implements ICommunityService {
     private List<Member> getWatchMebmber(int limit, String currentMb_id) {
 
         EntityWrapper actionEntityWrapper = new EntityWrapper<BasAction>();
-        actionEntityWrapper.setSqlSelect("target_id");
+        actionEntityWrapper.setSqlSelect("target_id as targetId");
 
         //target_type 0 关注用户
         actionEntityWrapper.eq("state", "0").eq("type", 5).eq("member_id", currentMb_id).eq("target_type", 0);
