@@ -21,7 +21,7 @@ public interface IMemberNoticeService {
      * @param noticeInput 用户查询消息数据封装
      * @return
      */
-    List<Map<String,Object>> queryMbNotices(MemberNoticeInput noticeInput);
+    List<Map<String,Object>> queryMbNotices(String os,MemberNoticeInput noticeInput);
 
 
     /**
@@ -53,9 +53,9 @@ public interface IMemberNoticeService {
     void updateSystemByGame() throws Exception;
 
 
-    void insertSystemNotice(String memberId,String data) throws Exception;
+    void insertSystemNotice(String mobileType, String memberId,String data) throws Exception;
 
-    void insertSystemVersionNotice(String data) throws Exception;
+    void insertSystemVersionNotice(String mobileType, String data) throws Exception;
 
     /**
      * 查询用户的消息数据

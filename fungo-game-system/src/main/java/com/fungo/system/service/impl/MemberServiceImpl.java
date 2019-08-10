@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class MemberServiceImpl implements IMemberService {
@@ -111,13 +112,11 @@ public class MemberServiceImpl implements IMemberService {
             return re;
         }
 
-        re = new FungoPageResultDto<CollectionOutBean>();
-        List<CollectionOutBean> list = new ArrayList<CollectionOutBean>();
+        re = new FungoPageResultDto<>();
+        List<CollectionOutBean> list = new ArrayList<>();
 
-        Page<CollectionBean> p = new Page<CollectionBean>(inputPage.getPage(), inputPage.getLimit());
-        //@todo 5.22
         List<String> ids = actionDao.listArticleIds(memberId);
-        FungoPageResultDto<CollectionBean>  cmmPostUsercollect = communityFeignClient.listCmmPostUsercollect(p.getPages(),p.getLimit(),ids);
+        FungoPageResultDto<CollectionBean>  cmmPostUsercollect = communityFeignClient.listCmmPostUsercollect(inputPage.getPage(),inputPage.getLimit(),ids);
 
        // List<CollectionBean> plist = communityProxyService.getCollection(p, ids); //actionDao.getCollection(p, ids);
         List<CollectionBean> plist = cmmPostUsercollect.getData();
@@ -566,6 +565,8 @@ public class MemberServiceImpl implements IMemberService {
 
         int comment_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).in("type", types1));
         int notice_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
+        List<BasNotice> basNotices = noticeService.selectList(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
+
        /* List<BasNotice> noticeList = noticeService.selectList(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
         for (BasNotice notice : noticeList) {
             //将未被推送的消息设置为已推送
@@ -588,8 +589,62 @@ public class MemberServiceImpl implements IMemberService {
         return map;
     }
 
+
     @Override
-    public FungoPageResultDto<SysNoticeBean> getSystemNotice(String memberId, InputPageDto inputPage) {
+    public Map<String, Object> getNewUnReadNotice(String memberId,String os, String appVersion) {
+
+        Map<String, Object> map = new HashMap<String, Object>();
+
+        int count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId));
+
+        Integer[] types = null;
+        //版本不同获取的内容不同
+        if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
+            types = new Integer[]{0, 1, 2, 7, 11};
+        } else {
+            types = new Integer[]{0, 1, 2, 7};
+        }
+        int like_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).in("type", types));
+
+        Integer[] types1 = null;
+        //版本不同获取的内容不同
+        if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
+            types1 = new Integer[]{3, 4, 5, 8, 9, 12};
+        } else {
+            types1 = new Integer[]{3, 4, 5, 8};
+        }
+
+//		Integer[] types1= {3,4,5,8};
+//		types1= new Integer[]{3,4,5,8,9};
+
+        int comment_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).in("type", types1));
+        int notice_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
+        List<BasNotice> basNotices = noticeService.selectList(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
+        basNotices = basNotices.stream().filter( s -> os.equals(s.getChannel()) || s.getChannel() == null ).collect( Collectors.toList());
+       /* List<BasNotice> noticeList = noticeService.selectList(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
+        for (BasNotice notice : noticeList) {
+            //将未被推送的消息设置为已推送
+            if (notice.getIsPush() == 0) {
+                notice.setIsPush(1);//已经推送
+            }
+            if (notice.getIsRead() == 0) {
+                notice.setIsRead(1);//消息已读
+            }
+            notice.updateById();
+        }*/
+        //   map.put("count", count);
+        int sumCount = like_count + comment_count + basNotices.size();
+        map.put("count", sumCount );
+        map.put("like_count", like_count);
+        map.put("comment_count", comment_count);
+        //map.put("notice_count", noticeList.size());
+        map.put("notice_count", notice_count);
+
+        return map;
+    }
+
+    @Override
+    public FungoPageResultDto<SysNoticeBean> getSystemNotice(String os ,String memberId, InputPageDto inputPage) {
         FungoPageResultDto<SysNoticeBean> re = new FungoPageResultDto<SysNoticeBean>();
         List<SysNoticeBean> list = new ArrayList<SysNoticeBean>();
         re.setData(list);
@@ -603,13 +658,13 @@ public class MemberServiceImpl implements IMemberService {
         EntityWrapper<BasNotice> noticeEntityWrapper = new EntityWrapper<>();
         noticeEntityWrapper.eq("member_id", memberId);
         //noticeEntityWrapper.eq("is_read", 0);
-
         noticeEntityWrapper.in("type", types);
         noticeEntityWrapper.orderBy("created_at", false);
 
         Page<BasNotice> plist = noticeService.selectPage(noticePage, noticeEntityWrapper);
 
-        List<BasNotice> t = plist.getRecords();
+        List<BasNotice> basNotices = plist.getRecords();
+        List<BasNotice> t = basNotices.stream().filter( s -> ( os.equals(s.getChannel()) || s.getChannel() == null )).collect( Collectors.toList());
         ObjectMapper objectMapper = new ObjectMapper();
         for (BasNotice basNotice : t) {
 
@@ -669,7 +724,8 @@ public class MemberServiceImpl implements IMemberService {
         Map<String, Object> map = new HashMap<>();
         map.put("memberId", memberId);
         map.put("typeList", types);
-        noticeDao.setIsRead(map);
+        map.put( "channel",os );
+        noticeDao.setSystemIsRead(map);
 
         PageTools.pageToResultDto(re, plist);
         return re;

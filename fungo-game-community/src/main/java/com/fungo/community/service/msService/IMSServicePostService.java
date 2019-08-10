@@ -58,7 +58,7 @@ public interface IMSServicePostService {
      * @param  postIds
      * @return
      */
-    public List<CollectionBean> getCollection(int pageNum,int limit, List<String> postIds);
+    FungoPageResultDto<CollectionBean>  getCollection(int pageNum,int limit, List<String> postIds);
 
     /**
      * PC2.0新增浏览量 根据跟用户ID获取文章的浏览量

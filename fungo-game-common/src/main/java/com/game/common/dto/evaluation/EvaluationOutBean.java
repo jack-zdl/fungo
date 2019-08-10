@@ -3,6 +3,7 @@ package com.game.common.dto.evaluation;
 import com.game.common.dto.AuthorBean;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,12 @@ public class EvaluationOutBean {
 	private String createdAt;
 	private String updatedAt;
 	private int rating;
+	/**
+	 * 功能描述: 针对游戏的平均评分
+	 * @auther: dl.zhang
+	 * @date: 2019/8/9 10:20
+	 */
+	private BigDecimal gameRating;
 	@ApiModelProperty(value="2.4上一安利",example="")
 	private String preEvaId;
 	@ApiModelProperty(value="2.4下一安利",example="")
@@ -108,6 +115,15 @@ public class EvaluationOutBean {
 	public void setRating(int rating) {
 		this.rating = rating;
 	}
+
+	public BigDecimal getGameRating() {
+		return gameRating;
+	}
+
+	public void setGameRating(BigDecimal gameRating) {
+		this.gameRating = gameRating;
+	}
+
 	public String getPreEvaId() {
 		return preEvaId;
 	}

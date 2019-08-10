@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameInvite;
+import com.fungo.games.feign.SystemFeignClient;
 import com.fungo.games.helper.MQProduct;
 import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.service.GameInviteService;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -39,21 +41,16 @@ import java.util.Map;
 public class MakeAndInviteGameController {
     @Autowired
     private IMakeAndInviteGameService makeAndInviteGameService;
-//    @Autowired
-//    private MemberService memberService;
     @Autowired
     private GameService gameService;
-//
-//    @Autowired
-//    private IPushService pushService;
     @Autowired
     private GameInviteService gameInviteService;
-//    @Autowired
-//    private IncentRankedService incentRankedService;
     @Autowired
     private IEvaluateProxyService iEvaluateProxyService;
     @Autowired
     private MQProduct mqProduct;
+    @Autowired
+    private SystemFeignClient systemFeignClient;
 
     @ApiOperation(value = "预约接口(v2.3)", notes = "")
     @RequestMapping(value = "/api/make/game", method = RequestMethod.POST)
@@ -162,9 +159,16 @@ public class MakeAndInviteGameController {
 
             if (tem != null) {
                 noticeId = tem.getNoticeId();
-                int count = gameInviteService.selectCount(new EntityWrapper<GameInvite>().eq("game_id", inputPageDto.getGameId()).eq("invite_member_id", inputPageDto.getMemberId()));
+                int count = gameInviteService.selectCount(new EntityWrapper<GameInvite>().eq("game_id", inputPageDto.getGameId()).eq("invite_member_id", inputPageDto.getMemberId()).orderBy( "created_at",false ));
+                List<GameInvite>  gameInvites = gameInviteService.selectList(new EntityWrapper<GameInvite>().eq("game_id", inputPageDto.getGameId()).eq("invite_member_id", inputPageDto.getMemberId()).orderBy( "created_at",true ));
+                ResultDto<MemberDto>  memberDtoResultDto = systemFeignClient.getMembersByid(gameInvites.get(0).getMemberId());
+                String memberName = "";
+                if(memberDtoResultDto != null && memberDtoResultDto.getData() != null){
+                    MemberDto memberDto1 = memberDtoResultDto.getData();
+                    memberName = memberDto1.getUserName();
+                }
                 Game g = gameService.selectById(inputPageDto.getGameId());
-                MsgTplBean msg = this.getMsg(inputPageDto.getGameId(), "<span sytle='color:#242529'>" + name + "</span> 等" + (count + 1) + "人 邀请你测评 <a href='#' style='color: red;' >" + g.getName() + "游戏</a> 快去发表你的看法吧");
+                MsgTplBean msg = this.getMsg(inputPageDto.getGameId(), "<span sytle='color:#242529'>" + memberName + "</span> 等" + (count + 1) + "人 邀请你测评 <a href='#' style='color: red;' >" + g.getName() + "游戏</a> 快去发表你的看法吧");
 //                迁移微服务 逻辑块变动,根据id修改basNotice数据
 //                2019-05-13
 //                lyc
@@ -194,7 +198,7 @@ public class MakeAndInviteGameController {
                 if(g==null){
                     return ResultDto.error("-1", "未找到相关游戏");
                 }
-                MsgTplBean msg = this.getMsg(inputPageDto.getGameId(), "<span sytle='color:#242529'>" + name + "</span> 邀请你测评 <a href='#' style='color: red;' >" + g.getName() + "游戏</a> 快去发表你的看法吧");
+                MsgTplBean msg = this.getMsg(inputPageDto.getGameId(), "<span sytle='color:#242529'>" + name + "</span> 邀请你测评 <a href='#' style='color: red;' >" + g.getName() + "游戏</a> 快去写一些你的看法吧");
 //                迁移微服务 添加插入BasNotice数据返回主键
 //                2019-05-13
 //                lyc

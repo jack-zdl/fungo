@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @ApiModel(value="安利墙",description="安利墙")
 public class AmwayWallBean {
@@ -26,6 +27,10 @@ public class AmwayWallBean {
 	private String evaluationId;
 	@ApiModelProperty(value="2.4游戏评分",example="")
 	private BigDecimal rating;
+	/**
+	 * 图片s
+	 */
+	private List<String> images;
 	
 	public AuthorBean getAuthor() {
 		return author;
@@ -82,7 +87,10 @@ public class AmwayWallBean {
 	public void setRating(BigDecimal rating) {
 		this.rating = rating;
 	}
-	
-
-	
+	public List<String> getImages() {
+		return images;
+	}
+	public void setImages(List<String> images) {
+		this.images = images;
+	}
 }

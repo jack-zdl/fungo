@@ -22,7 +22,10 @@ public interface BasNoticeDao extends BaseMapper<BasNotice> {
 
 	//设置消息为已读
 	public boolean setIsRead(Map<String, Object> map);
-	
+
+	//设置系统消息为已读
+	public boolean setSystemIsRead(Map<String, Object> map);
+
 	//获取未推送的消息,按照用户分组
 	public List<HashMap<String,Object>> getUnpushNotices();
 }

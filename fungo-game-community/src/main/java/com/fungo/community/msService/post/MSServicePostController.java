@@ -6,6 +6,7 @@ import com.game.common.bean.CollectionBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmPostDto;
+import com.game.common.util.PageTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,8 +90,7 @@ public class MSServicePostController {
     public FungoPageResultDto<CollectionBean> listCmmPostUsercollect(@RequestParam("pageNum") int pageNum,
                                                                      @RequestParam("limit") int limit, @RequestParam("postIds") List<String> postIds) {
         FungoPageResultDto<CollectionBean> resultDto = new FungoPageResultDto<CollectionBean>();
-        List<CollectionBean> cmmPostDtoList = imsServicePostService.getCollection(pageNum, limit, postIds);
-        resultDto.setData(cmmPostDtoList);
+       resultDto = imsServicePostService.getCollection(pageNum, limit, postIds);
         return resultDto;
     }
 

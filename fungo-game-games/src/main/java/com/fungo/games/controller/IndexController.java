@@ -317,7 +317,7 @@ public class IndexController {
             bean.setRecommend(gameEvaluation.getIsRecommend().equals("1") ? true : false);
             list.add(bean);
         }
-
+        PageTools.pageToResultDto( re,page);
         //save redis
         fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
         return re;

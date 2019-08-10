@@ -42,7 +42,7 @@ public class PortalSystemCircleController {
      * @date: 2019/6/11 11:01
      */
     @ApiOperation(value = "v2.5", notes = "")
-    @RequestMapping(value = "/api/portal/system/system/circle/event/list", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/portal/system/circle/event/list", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public FungoPageResultDto<CardIndexBean> circleEventList(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPageDto) {
         FungoPageResultDto<CardIndexBean> re = null;

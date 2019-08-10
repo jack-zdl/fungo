@@ -2,6 +2,7 @@ package com.fungo.games.controller.portal;
 
 
 import com.fungo.games.service.IEvaluateService;
+import com.fungo.games.service.portal.ProtalGameIEvaluateService;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 public class PortalGamesEvaluateController {
 	@Autowired
 	private IEvaluateService evaluateService;
+	@Autowired
+	private ProtalGameIEvaluateService protalGameIEvaluateService;
 	
 	/****************************************************游戏评论管理*********************************************************************************/
 	
@@ -77,7 +80,7 @@ public class PortalGamesEvaluateController {
 		if(memberUserPrefile != null) {
 			memberId = memberUserPrefile.getLoginId();
 		}
-		return evaluateService.anliEvaluationDetail(memberId,evaluationId);
+		return protalGameIEvaluateService.anliEvaluationDetail(memberId,evaluationId);
 	}
 
 	/**********************************************回复*******************************************************************/

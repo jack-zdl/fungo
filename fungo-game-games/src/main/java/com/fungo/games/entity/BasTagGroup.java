@@ -24,6 +24,8 @@ public class BasTagGroup extends Model<BasTagGroup> {
 
 	@TableId(value = "id",type = IdType.UUID)
 	private String id;
+
+	private String type;
     /**
      * 名称
      */
@@ -50,6 +52,14 @@ public class BasTagGroup extends Model<BasTagGroup> {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getName() {

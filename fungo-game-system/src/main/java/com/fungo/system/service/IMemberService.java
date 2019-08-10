@@ -47,8 +47,11 @@ public interface IMemberService {
 	//获取我的未读消息
 	public  Map<String,Object>  getUnReadNotice(String memberId, String appVersion);
 
+	//获取我的未读消息 Pc2.0
+	public  Map<String,Object>  getNewUnReadNotice(String memberId,String os, String appVersion);
+
 	//获取系统消息
-	public  FungoPageResultDto<SysNoticeBean> getSystemNotice(String memberId, InputPageDto inputPage);
+	public  FungoPageResultDto<SysNoticeBean> getSystemNotice(String os ,String memberId, InputPageDto inputPage);
 
 	//获取我的时间线
 	public FungoPageResultDto<Map<String,Object>> getTimeLine(String memberId);

@@ -17,6 +17,8 @@ public class PostInputPageDto extends InputPageDto {
 	private String lastUpdateDate;
 
 	private String community_id;
+
+
 	public String getCommunity_id() {
 		return community_id;
 	}
