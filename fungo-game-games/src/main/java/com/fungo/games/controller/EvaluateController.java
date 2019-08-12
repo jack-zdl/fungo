@@ -3,6 +3,7 @@ package com.fungo.games.controller;
 
 import com.fungo.games.service.IEvaluateService;
 import com.fungo.games.service.impl.EvaluateServiceImpl;
+import com.fungo.games.utils.GameEvaluationVO;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
@@ -73,13 +74,12 @@ public class EvaluateController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "evaluation_ids",value = "心情id集合",paramType = "path",dataType = "string"),
 	})
-	public ResultDto<String> delEvaluationDetail(MemberUserProfile memberUserPrefile,@RequestBody String commentIds) {
+	public ResultDto<String> delEvaluationDetail(MemberUserProfile memberUserPrefile,@RequestBody GameEvaluationVO commentIds) {
 		try {
-			ValidateUtils.is(commentIds).notNull();
 			String memberId = memberUserPrefile.getLoginId();
 			List<String> commentIdList = null;
-			if(StringUtil.isNotNull(commentIds)){
-				commentIdList = Arrays.asList(commentIds.split( ","));
+			if(commentIds.getCommentIds().size() > 0 ){
+				commentIdList = commentIds.getCommentIds();
 			}else {
 				return ResultDto.ResultDtoFactory.buildWarning( AbstractResultEnum.CODE_GAME_FOUR.getKey(),AbstractResultEnum.CODE_GAME_FOUR.getFailevalue());
 			}

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.entity.GameEvaluation;
 import com.game.common.bean.MemberPulishFromCommunity;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import java.util.Map;
  * @author lzh
  * @since 2018-04-20
  */
+@Repository
 public interface GameEvaluationDao extends BaseMapper<GameEvaluation> {
 
     /**
@@ -41,4 +43,11 @@ public interface GameEvaluationDao extends BaseMapper<GameEvaluation> {
      * @return
      */
     List<Map> getUserGameReviewBoutiqueNumber();
+
+    /**
+     * 功能描述: 根据游戏评价id删除
+     * @auther: dl.zhang
+     * @date: 2019/8/12 16:07
+     */
+    int updateGameEvaluation(@Param("ids")List<String> ids);
 }
