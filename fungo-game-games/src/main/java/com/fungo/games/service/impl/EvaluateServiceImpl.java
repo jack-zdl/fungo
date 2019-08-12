@@ -47,7 +47,6 @@ import java.util.*;
 @Service
 public class EvaluateServiceImpl implements IEvaluateService {
 
-
     private static final Logger logger = LoggerFactory.getLogger(EvaluateServiceImpl.class);
 
     @Autowired
@@ -387,6 +386,17 @@ public class EvaluateServiceImpl implements IEvaluateService {
         }
         re.setData(bean);
         return re;
+    }
+
+    /**
+     * 功能描述: 删除游戏评论
+     * @auther: dl.zhang
+     * @date: 2019/8/12 13:38
+     */
+    @Override
+    public ResultDto<String> delEvaluationDetail(String memberId, List<String> commentIdList) {
+        
+        return null;
     }
 
     @Override

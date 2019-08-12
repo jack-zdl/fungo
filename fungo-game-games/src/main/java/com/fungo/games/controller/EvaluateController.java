@@ -2,22 +2,34 @@ package com.fungo.games.controller;
 
 
 import com.fungo.games.service.IEvaluateService;
+import com.fungo.games.service.impl.EvaluateServiceImpl;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.evaluation.*;
+import com.game.common.enums.AbstractResultEnum;
+import com.game.common.util.StringUtil;
 import com.game.common.util.ValidateUtils;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @Api(value="",description="评价接口")
 public class EvaluateController {
+
+	private static final Logger logger = LoggerFactory.getLogger( EvaluateController.class);
+
 	@Autowired
 	private IEvaluateService evaluateService;
 	
@@ -49,6 +61,33 @@ public class EvaluateController {
 			memberId=memberUserPrefile.getLoginId();
 		}
 		return this.evaluateService.getEvaluationDetail(memberId, commentId);
+	}
+
+	/**
+	 * 功能描述: 删除评论需要登陆
+	 * @auther: dl.zhang
+	 * @date: 2019/8/12 13:42
+	 */
+	@ApiOperation(value="删除游戏评价详情", notes="")
+	@RequestMapping(value="/api/content/evaluation/", method= RequestMethod.DELETE)
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "evaluation_ids",value = "心情id集合",paramType = "path",dataType = "string"),
+	})
+	public ResultDto<String> delEvaluationDetail(MemberUserProfile memberUserPrefile,@RequestBody String commentIds) {
+		try {
+			ValidateUtils.is(commentIds).notNull();
+			String memberId = memberUserPrefile.getLoginId();
+			List<String> commentIdList = null;
+			if(StringUtil.isNotNull(commentIds)){
+				commentIdList = Arrays.asList(commentIds.split( ","));
+			}else {
+				return ResultDto.ResultDtoFactory.buildWarning( AbstractResultEnum.CODE_GAME_FOUR.getKey(),AbstractResultEnum.CODE_GAME_FOUR.getFailevalue());
+			}
+			return this.evaluateService.delEvaluationDetail(memberId, commentIdList);
+		}catch (Exception e){
+			logger.error( "delEvaluationDetail异常",e );
+			return ResultDto.ResultDtoFactory.buildError("删除游戏评价详情失败，代码异常");
+		}
 	}
 	
 	
