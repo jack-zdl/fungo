@@ -37,6 +37,7 @@ import com.game.common.dto.community.StreamInfo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
+import com.game.common.enums.PostTypeEnum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
@@ -1301,6 +1302,7 @@ public class PostServiceImpl implements IPostService {
         int limit = postInputPageDto.getLimit();
         int page = postInputPageDto.getPage();
         int sort = postInputPageDto.getSort();
+        String filter = postInputPageDto.getFilter();
         String communityId = postInputPageDto.getCommunity_id();
 
         if (communityId == null) {
@@ -1317,6 +1319,9 @@ public class PostServiceImpl implements IPostService {
         Wrapper<CmmPost> wrapper = new EntityWrapper<CmmPost>().eq("community_id", communityId).eq("state", 1).ne("type", 3);
 //		Wrapper<CmmPost> wrapper = new EntityWrapper<CmmPost>().eq("community_id",communityId ).eq("state", 1).ne("type", 3).ne("topic", 2); eq topic1
         List<CmmPost> postList = new ArrayList<CmmPost>();
+        if(filter != null  && !"".equals(filter)){
+            wrapper.eq( "type",filter );
+        }
 
         if (sort == 1) {//  时间正序
             wrapper.orderBy("updated_at", true);
