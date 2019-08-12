@@ -488,10 +488,10 @@ public class PortalCommunityPostController {
 //
             PostOutBean bean = new PostOutBean();
             CmmCommunity community = communityService.selectById(cmmPost.getCommunityId());
-            if (community == null || community.getState() != 1) {
-//				page.setTotal(page.getTotal() - 1);
-                continue;
-            }
+//            if (community == null || community.getState() != 1) {
+////				page.setTotal(page.getTotal() - 1);
+//                continue;
+//            }
             //!fixme 根据用户id查询用户详情
             //bean.setAuthor(userService.getAuthor(cmmPost.getMemberId()));
             AuthorBean authorBean = new AuthorBean();
@@ -521,13 +521,14 @@ public class PortalCommunityPostController {
             bean.setPostId(cmmPost.getId());
             bean.setReplyNum(cmmPost.getCommentNum());
             bean.setTitle(CommonUtils.filterWord(cmmPost.getTitle()));
-            bean.setCommunityIcon(community.getIcon());
-            bean.setCommunityId(community.getId());
-            bean.setCommunityName(community.getName());
+            bean.setCommunityIcon(community == null ? "":community.getIcon());
+            bean.setCommunityId(community == null ? "":community.getId());
+            bean.setCommunityName(community == null ? "":community.getName());
+
             //文章 row_id
             bean.setRowId(cmmPost.getPostId());
             if (!CommonUtil.isNull(cmmPost.getVideo()) && CommonUtil.isNull(cmmPost.getCoverImage())) {
-                bean.setImageUrl(community.getCoverImage());
+                bean.setImageUrl(community == null ? "":community.getCoverImage());
             }
             try {
                 if (!CommonUtil.isNull(cmmPost.getImages())) {
