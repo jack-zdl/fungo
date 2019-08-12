@@ -240,6 +240,8 @@ public class CircleServiceImpl implements CircleService {
                 cmmPosts = cmmPostDao.getAllCmmCircleListByCircleId(page, circleId, null, null, sortType);
             } else if (CmmCirclePostVo.QueryTypeEnum.ESSENCE.getKey().equals(cmmCirclePostVo.getQueryType())) { // 精华查询
                 cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page, circleId, null, PostTypeEnum.CREAM.getKey(), sortType);
+            }else if(CmmCirclePostVo.QueryTypeEnum.TOP.getKey().equals(cmmCirclePostVo.getQueryType())){
+                cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page, circleId, null, PostTypeEnum.TOP.getKey(), CmmCirclePostVo.SortTypeEnum.PUBDATE.getKey());
             } else {
                 if (CmmCirclePostVo.SortTypeEnum.PUBDATE.getKey().equals(cmmCirclePostVo.getSortType())) {
                     cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page, circleId, tagId, null, sortType);

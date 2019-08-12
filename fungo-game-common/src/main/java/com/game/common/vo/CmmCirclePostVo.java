@@ -78,7 +78,8 @@ public class CmmCirclePostVo extends InputPageDto {
         TITTLETATTLE("4","同人杂谈"),
         GOSSIP("5","咨询八卦"),
         OTHER("6","其他"),
-        ESSENCE("7","精华");
+        ESSENCE("7","精华"),
+        TOP("8","置顶");
 
         String key;
         String value;

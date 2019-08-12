@@ -236,9 +236,15 @@
         <if test="tagId != null and tagId != ''">
             and cp.tags = #{tagId}
         </if>
-        <if test="cream != null and cream != ''">
-            and cp.type = #{cream}
-        </if>
+        <choose>
+            <when test="cream != null and cream != ''">
+                and cp.type = #{cream}
+            </when>
+            <otherwise>
+                and cp.type != '3'
+            </otherwise>
+        </choose>
+
         <if test='sortType == "1" ' >
             GROUP BY cp.id   order  by  field(cp.type,'3')   desc  , CASE    WHEN cp.type = 3 then cp.edited_at END DESC,
 
@@ -263,6 +269,14 @@
         ( select cpc.post_id
         from t_cmm_post_circle cpc where cpc.circle_id = #{circleId}   )
 
+        <choose>
+            <when test="cream != null and cream != ''">
+                and cp.type = #{cream}
+            </when>
+            <otherwise>
+                and cp.type != '3'
+            </otherwise>
+        </choose>
 
         <if test='sortType == "1" ' >
             GROUP BY cp.id   order  by  field(cp.type,'3')   desc  , CASE    WHEN cp.type = 3 then cp.edited_at END DESC,
