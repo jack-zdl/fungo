@@ -355,6 +355,7 @@ public class MemberServiceImpl implements IMemberService {
                         if (!CommonUtil.isNull(post.getVideo())) {
                             map.put("video", post.getVideo());
                         }
+                        map.put("post_deltype", post.getState());
                     }
                     // @todo 文章的评论的接口
                 } else if ((int) map.get("type") == 1) {//basNotice.getType()==1
@@ -501,12 +502,23 @@ public class MemberServiceImpl implements IMemberService {
                 if (basNotice.getType() == 3) {
                     //@todo  文章的接口
                     map.put("msg_template", "评论了我的文章");
-                    CmmPostDto post = iMemeberProxyService.selectCmmPost((String) map.get("post_id")); //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
+                    CmmPostDto param = new CmmPostDto();
+                    param.setId((String) map.get("post_id"));
+                    param.setQueryType(1);
+                    FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(param);
+                    CmmPostDto post = (  cmmPostDtoFungoPageResultDto.getData() != null  && cmmPostDtoFungoPageResultDto.getData().size() > 0 ) ? cmmPostDtoFungoPageResultDto.getData().get(0) : null;  //iMemeberProxyService.selectCmmPost((String) map.get("post_id"));   //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
                     if (post != null) {
                         if (!CommonUtil.isNull(post.getVideo())) {
                             map.put("video", post.getVideo());
                         }
+                        map.put("post_deltype", post.getState());
                     }
+//                    CmmPostDto post = iMemeberProxyService.selectCmmPost((String) map.get("post_id")); //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
+//                    if (post != null) {
+//                        if (!CommonUtil.isNull(post.getVideo())) {
+//                            map.put("video", post.getVideo());
+//                        }
+//                    }
                 } else if (basNotice.getType() == 4) {
                     //@todo  文章的评论的接口
                     map.put("msg_template", "回复了我的评论");
@@ -518,10 +530,21 @@ public class MemberServiceImpl implements IMemberService {
                     }
                 } else if (basNotice.getType() == 5) {
                     map.put("msg_template", "回复了我的游戏评价");
+                    String evaluationId = (String) map.get("evaluation_id");
+                    GameEvaluationDto param = new GameEvaluationDto();
+                    param.setId(evaluationId);
+                    FungoPageResultDto<GameEvaluationDto>  resultDto = gamesFeignClient.getGameEvaluationPage(param);
+                    GameEvaluationDto gameEvaluationDto = (resultDto.getData() != null && resultDto.getData().size() > 0 ) ? resultDto.getData().get(0) : null;
+                    if(gameEvaluationDto != null){
+                        map.put( "evaluation_deltype",gameEvaluationDto.getState() );
+                    }
                 } else if (basNotice.getType() == 8) {
                     map.put("msg_template", "评论了我的心情");
+                    dada
+
                 } else if (basNotice.getType() == 9) {
                     map.put("msg_template", "回复了我的心情评论");
+
                 } else if (basNotice.getType() == 12) {
                     map.put("msg_template", "回复了我的回复");
 
