@@ -125,8 +125,11 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
                 postEntityWrapper.orNew("content like '%" + content + "%'");
             }
 
-            //根据修改时间倒叙 状态 -1:已删除 0:压缩转码中 1:正常
-            postEntityWrapper.eq("state", 1);
+            if(1 != postDto.getQueryType()){
+                //根据修改时间倒叙 状态 -1:已删除 0:压缩转码中 1:正常
+                postEntityWrapper.eq("state", 1);
+            }
+
 
             //排序
             postEntityWrapper.orderBy("sort,updated_at", false);

@@ -8,6 +8,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.*;
 import com.game.common.util.ValidateUtils;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.vo.DelObjectListVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @Api(value = "", description = "评价接口")
@@ -91,6 +93,26 @@ public class EvaluateController {
         return this.evaluateService.getCommentList(memberId, commentPage);
     }
 
+    @ApiOperation(value = "删除评论详情", notes = "")
+    @DeleteMapping(value = "/api/content/comment/")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "comment_idS", value = "帖子id集合", paramType = "path", dataType = "string"),
+            @ApiImplicitParam(name = "user_id", value = "用户id", paramType = "path", dataType = "string")
+    })
+    public ResultDto<String> getCommentDetail(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody DelObjectListVO commentIds) {
+        try {
+            ValidateUtils.is(commentIds).notNull();
+            String memberId = "";
+            if (memberUserPrefile != null) {
+                memberId = memberUserPrefile.getLoginId();
+            }
+            int type = commentIds.getType();
+            List<String> ids = commentIds.getCommentIds();
+            return this.evaluateService.delCommentList(memberId, type,ids);
+        }catch (Exception e){
+            LOGGER.error( "删除评论详情异常,id集合:"+commentIds.toString(),e );
+            return ResultDto.error( "-1","删除评论详情异常" );
+        }
+    }
 
-    //-----------
 }

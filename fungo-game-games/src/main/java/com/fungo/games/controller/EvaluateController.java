@@ -3,7 +3,6 @@ package com.fungo.games.controller;
 
 import com.fungo.games.service.IEvaluateService;
 import com.fungo.games.service.impl.EvaluateServiceImpl;
-import com.fungo.games.utils.GameEvaluationVO;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
@@ -12,6 +11,7 @@ import com.game.common.enums.AbstractResultEnum;
 import com.game.common.util.StringUtil;
 import com.game.common.util.ValidateUtils;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.vo.DelObjectListVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -74,7 +74,7 @@ public class EvaluateController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "evaluation_ids",value = "心情id集合",paramType = "path",dataType = "string"),
 	})
-	public ResultDto<String> delEvaluationDetail(MemberUserProfile memberUserPrefile,@RequestBody GameEvaluationVO commentIds) {
+	public ResultDto<String> delEvaluationDetail(MemberUserProfile memberUserPrefile,@RequestBody DelObjectListVO commentIds) {
 		try {
 			String memberId = memberUserPrefile.getLoginId();
 			List<String> commentIdList = null;

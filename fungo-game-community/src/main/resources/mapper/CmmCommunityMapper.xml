@@ -93,14 +93,18 @@
                   UNION ALL
                   (select id,content,7 as type,target_type as targetType,target_id as targetId,date_format(updated_at, '%Y-%c-%d %H:%i:%s' ) as updatedAt, replay_to_id as replyToId, reply_to_content_id as replyContentId from t_reply where member_id = #{userId} and state = 0)
                   ORDER BY updatedAt DESC
+
+                  and state = 0
+                  and state = 0
+                  and state = 0
                   ]]> -->
 
         <![CDATA[
-    (select id,content,5 as type,1 as targetType,post_id as targetId,updated_at as updatedAt, '' as replyToId, '' as replyContentId from t_cmm_comment where member_id = #{userId} and state = 0)
+    (select id,content,5 as type,1 as targetType,post_id as targetId,updated_at as updatedAt, '' as replyToId, '' as replyContentId , state from t_cmm_comment where member_id = #{userId}    )
     UNION ALL
-    (select id,content,8 as type,2 as targetType,mood_id as targetId,updated_at as updatedAt, '' as replyToId, '' as replyContentId from t_moo_message where member_id = #{userId} and state = 0)
+    (select id,content,8 as type,2 as targetType,mood_id as targetId,updated_at as updatedAt, '' as replyToId, '' as replyContentId  , state from t_moo_message where member_id = #{userId}    )
     UNION ALL
-    (select id,content,7 as type,target_type as targetType,target_id as targetId,updated_at as updatedAt, replay_to_id as replyToId, reply_to_content_id as replyContentId from t_reply where member_id = #{userId} and state = 0)
+    (select id,content,7 as type,target_type as targetType,target_id as targetId,updated_at as updatedAt, replay_to_id as replyToId, reply_to_content_id as replyContentId  , state from t_reply where member_id = #{userId}    )
     ORDER BY updatedAt DESC
    ]]>
     </select>

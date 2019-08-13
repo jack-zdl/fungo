@@ -40,6 +40,7 @@ import com.game.common.util.UUIDUtils;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.EmojiDealUtil;
 import com.game.common.util.emoji.FilterEmojiUtil;
+import com.game.common.vo.DelObjectListVO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,55 +49,41 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class EvaluateServiceImpl implements IEvaluateService {
-
 
     private static final Logger logger = LoggerFactory.getLogger(EvaluateServiceImpl.class);
 
     @Autowired
     private CmmCommentDaoService commentService;
-
     @Autowired
     private CmmPostDaoService postService;
-
     @Autowired
     private MooMoodDaoService moodService;
-
     @Autowired
     private MooMessageDaoService messageServive;
-
     @Autowired
     private ReplyDaoService replyService;
-
     @Autowired
     private FungoCacheGame fungoCacheGame;
-
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
-
     @Autowired
     private FungoCacheMood fungoCacheMood;
-
     @Autowired
     private FungoCacheComment fungoCacheComment;
-
     @Autowired
     private ICounterService counterService;
-
-
     //依赖系统和用户微服务
     @Autowired
     private SystemFacedeService systemFacedeService;
-
     //依赖游戏微服务
     @Autowired
     private GameFacedeService gameFacedeService;
-
     @Autowired
     private TSMQFacedeService tSMQFacedeService;
-
 
     @Override
     public ResultDto<CommentOut> addComment(String memberId, CommentInput commentInput, String appVersion) throws Exception {
@@ -108,14 +95,10 @@ public class EvaluateServiceImpl implements IEvaluateService {
         if (CommonUtil.isNull(commentInput.getContent())) {
             return ResultDto.error("-1", "内容不能为空!");
         }
-
-
         Map<String, Object> noticeMap = null;
-
         if (1 == commentInput.getTarget_type()) {//文章评论
             CmmComment comment = new CmmComment();
             floor = commentService.selectCount(new EntityWrapper<CmmComment>().eq("post_id", commentInput.getTarget_id()));
-
             //表情编码
             String content = commentInput.getContent();
             if (StringUtils.isNotBlank(EmojiDealUtil.getEmojiUnicodeString(content))) {
@@ -147,20 +130,12 @@ public class EvaluateServiceImpl implements IEvaluateService {
             //最后回复时间
             post.setLastReplyAt(new Date());
             post.updateById();
-
             commentService.insert(comment);
-
             id = comment.getId();
-
-
             //counterService.addCounter("t_cmm_post", "comment_num", commentInput.getTarget_id());//增加评论数
-
-
             //!fixme 推送通知
             //        addNotice(int eventType, String memberId, String target_id, int target_type, String information, String appVersion, String replyToId)
             //gameProxy.addNotice(Setting.ACTION_TYPE_COMMENT, memberId, commentInput.getTarget_id(), Setting.RES_TYPE_COMMENT, commentInput.getContent(), appVersion, "");
-
-
             noticeMap = new HashMap<>();
             noticeMap.put("eventType", Setting.ACTION_TYPE_COMMENT);
             noticeMap.put("memberId", memberId);
@@ -169,10 +144,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
             noticeMap.put("information", commentInput.getContent());
             noticeMap.put("appVersion", appVersion);
             noticeMap.put("replyToId", "");
-
-
         } else if (2 == commentInput.getTarget_type()) {//心情评论
-
             MooMessage comment = new MooMessage();
             //编码
             String content = commentInput.getContent();
@@ -180,15 +152,12 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 content = FilterEmojiUtil.encodeEmoji(content);
             }
             comment.setContent(content);
-
-
             comment.setMemberId(memberId);
             comment.setLikeNum(0);
             comment.setMoodId(commentInput.getTarget_id());
             comment.setCreatedAt(new Date());
             comment.setUpdatedAt(new Date());
             comment.setState(0);
-
             messageServive.insert(comment);
 
             MooMood mood = this.moodService.selectById(commentInput.getTarget_id());
@@ -213,15 +182,11 @@ public class EvaluateServiceImpl implements IEvaluateService {
             noticeMap.put("appVersion", appVersion);
             noticeMap.put("replyToId", "");
         }
-
         if (null != noticeMap) {
             this.sendNoticeToSystemServcie(noticeMap);
         }
-
-
         //!fixme 查询用户数据
         //t.setAuthor(userService.getAuthor(memberId));
-
         AuthorBean author = null;
         try {
             ResultDto<AuthorBean> beanResultDto = systemFacedeService.getAuthor(memberId);
@@ -231,9 +196,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
         t.setAuthor(author);
-
         t.setContent(CommonUtils.filterWord(commentInput.getContent()));
         t.setFloor(floor + 1);
         t.setObjectId(id);
@@ -244,10 +207,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
         t.setUpdatedAt(DateTools.fmtDate(new Date()));
         re.setData(t);
 //		gameProxy.addScore(Setting.ACTION_TYPE_COMMENT, memberId, commentInput.getTarget_id(), commentInput.getTarget_type());
-
         //完成任务 V2.4.6版本任务之前任务废弃
         // int addTaskCore = gameProxy.addTaskCore(Setting.ACTION_TYPE_COMMENT, memberId, commentInput.getTarget_id(), commentInput.getTarget_type());
-
         //V2.4.6版本任务
         String tips = "";
         //每日任务
@@ -259,18 +220,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
         Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                 MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
         */
-
-
         //任务：
         // 1.调用微服务接口
         // 2.执行失败，发送MQ消息
         Map<String, Object> resMapCoin = null;
         Map<String, Object> resMapExp = null;
-
         String uuidCoin = UUIDUtils.getUUID();
         String uuidExp = UUIDUtils.getUUID();
-
-
         //coin task
         TaskDto taskDtoCoin = new TaskDto();
         taskDtoCoin.setRequestId(uuidCoin);
@@ -278,8 +234,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
         taskDtoCoin.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
         taskDtoCoin.setTaskType(MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT);
         taskDtoCoin.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code());
-
-
         //exp task
         TaskDto taskDtoExp = new TaskDto();
         taskDtoExp.setRequestId(uuidExp);
@@ -287,34 +241,25 @@ public class EvaluateServiceImpl implements IEvaluateService {
         taskDtoExp.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
         taskDtoExp.setTaskType(MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT);
         taskDtoExp.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
-
         try {
-
             //coin task
             ResultDto<Map<String, Object>> coinTaskResultDto = systemFacedeService.exTask(taskDtoCoin);
             if (null != coinTaskResultDto) {
                 resMapCoin = coinTaskResultDto.getData();
             }
-
             //exp task
             ResultDto<Map<String, Object>> expTaskResultDto = systemFacedeService.exTask(taskDtoExp);
             if (null != expTaskResultDto) {
                 resMapExp = expTaskResultDto.getData();
             }
-
         } catch (Exception ex) {
             ex.printStackTrace();
-
             //出现异常mq发送
             //coin task
             doExcTaskSendMQ(taskDtoCoin);
-
             //exp task
             doExcTaskSendMQ(taskDtoExp);
-
         }
-
-
         if (null != resMapCoin && !resMapCoin.isEmpty()) {
             if (null != resMapExp && !resMapExp.isEmpty()) {
                 boolean coinsSuccess = (boolean) resMapCoin.get("success");
@@ -328,7 +273,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
             }
         }
         //end
-
         if (StringUtils.isNotBlank(tips)) {
             re.show(tips);
         } else {
@@ -343,11 +287,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOODS_LIST, "", null);
         //获取心情内容
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOOD_CONTENT_GET, "", null);
-
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, commentInput.getTarget_id(), null);
         return re;
     }
-
 
     //发送消息通知给系统微服务
     private void sendNoticeToSystemServcie(Map<String, Object> noticeMap) {
@@ -378,34 +320,26 @@ public class EvaluateServiceImpl implements IEvaluateService {
         ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
         logger.info("--添加评论-执行发送消息--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
         //-----start
-
     }
-
 
     //社区心情--用户执行任务
     private void doExcTaskSendMQ(TaskDto taskDto) {
         //-----start
         //MQ 业务数据发送给系统用户业务处理
         TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
-
         //消息类型
         transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_MOOD);
-
         //发送的队列
         transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
-
         //路由key
         StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
         routinKey.deleteCharAt(routinKey.length() - 1);
         routinKey.append("cmtPostMQDoTask");
-
         transactionMessageDto.setRoutingKey(routinKey.toString());
-
         MQResultDto mqResultDto = new MQResultDto();
         mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_DO_TASK.getCode());
 
         mqResultDto.setBody(taskDto);
-
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         //执行MQ发送
         ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
@@ -419,7 +353,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         ResultDto<CommentBeanOut> re = new ResultDto<CommentBeanOut>();
         CommentBeanOut bean = null;
-
         //from redis cache
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_POST_COMMENT_DETAIL + commentId;
         String keySuffix = memberId;
@@ -429,11 +362,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
             re.setData(bean);
             return re;
         }
-
         bean = new CommentBeanOut();
-
         CmmComment comment = commentService.selectById(commentId);
-
         if (comment == null) {
             return ResultDto.error("-1", "该评论详情不存在");
         }
@@ -465,27 +395,20 @@ public class EvaluateServiceImpl implements IEvaluateService {
             ex.printStackTrace();
         }
         bean.setAuthor(authorBean);
-
-
         bean.setFloor(comment.getFloor());
         if ("".equals(memberId) || memberId == null) {
             bean.setIs_liked(false);
         } else {
-
             //!fixme 获取点赞数
             //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", comment.getId()).eq("member_id", memberId));
-
             BasActionDto basActionDto = new BasActionDto();
-
             basActionDto.setMemberId(memberId);
             basActionDto.setType(0);
             basActionDto.setState(0);
             basActionDto.setTargetId(comment.getId());
-
             int liked = 0;
             try {
                 ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
-
                 if (null != resultDto) {
                     liked = resultDto.getData();
                 }
@@ -496,40 +419,32 @@ public class EvaluateServiceImpl implements IEvaluateService {
             bean.setIs_liked(liked > 0 ? true : false);
         }
         re.setData(bean);
-
         //redis cahce
         fungoCacheComment.excIndexCache(true, keyPrefix, keySuffix, bean);
         return re;
     }
 
-
     public ResultDto<CommentBeanOut> getMoodMessageDetail(String memberId, String messageId) {
-
         ResultDto<CommentBeanOut> re = new ResultDto<CommentBeanOut>();
         CommentBeanOut bean = null;
-
         //from redis cache
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MOOD_COMMENT_DETAIL + messageId;
         String keySuffix = memberId;
-
         bean = (CommentBeanOut) fungoCacheComment.getIndexCache(keyPrefix, keySuffix);
         if (null != bean) {
             re.setData(bean);
             return re;
         }
-
         bean = new CommentBeanOut();
         MooMessage comment = messageServive.selectById(messageId);
         if (comment == null) {
             return ResultDto.error("-1", "该评论详情不存在");
         }
         bean.setObjectId(comment.getId());
-
         if (StringUtils.isNotBlank(comment.getContent())) {
             String interactContent = FilterEmojiUtil.decodeEmoji(comment.getContent());
             comment.setContent(interactContent);
         }
-
         if (!CommonUtil.isNull(comment.getContent())) {
             bean.setContent(CommonUtils.filterWord(comment.getContent()));
         }
@@ -541,7 +456,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         //!fixme 获取用户数据
         //bean.setAuthor(this.userService.getAuthor(comment.getMemberId()));
-
         AuthorBean authorBean = new AuthorBean();
         try {
             ResultDto<AuthorBean> beanResultDto = systemFacedeService.getAuthor(comment.getMemberId());
@@ -552,7 +466,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
             ex.printStackTrace();
         }
         bean.setAuthor(authorBean);
-
         //是否点赞
         if ("".equals(memberId) || memberId == null) {
             bean.setIs_liked(false);
@@ -562,9 +475,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
             //行为类型
             //点赞 | 0
             //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", comment.getId()).eq("member_id", memberId));
-
             BasActionDto basActionDto = new BasActionDto();
-
             basActionDto.setMemberId(memberId);
             basActionDto.setType(0);
             basActionDto.setState(0);
@@ -587,7 +498,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         //redis cache
         fungoCacheComment.excIndexCache(true, keyPrefix, keySuffix, bean);
-
         return re;
     }
 
@@ -603,7 +513,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
         } else if (StringUtils.isNotBlank(commentpage.getPost_id())) {
             id = commentpage.getPost_id();
         }
-
         //from redis cache
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS;
         String keySuffix = id + JSON.toJSONString(commentpage);
@@ -612,7 +521,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
         }
-
         re = new FungoPageResultDto<CommentOutPageDto>();
         List<CommentOutPageDto> relist = new ArrayList<CommentOutPageDto>();
         re.setData(relist);
@@ -2255,6 +2163,57 @@ public class EvaluateServiceImpl implements IEvaluateService {
         }
         logger.info("查看用户在指定时间段内游戏评论上热门和安利墙的文章数量-gameEvaSet:{}", gameEvaSet);
         return gameEvaSet;
+    }
+
+    /**
+     * 功能描述: 删除文章评论和心情评论
+     * @auther: dl.zhang
+     * @date: 2019/8/13 11:50
+     */
+    @Override
+    public ResultDto<String> delCommentList(String memberId, int type , List<String> commentIds) {
+        AtomicBoolean istrue = new AtomicBoolean( false );
+        try {
+            if( DelObjectListVO.TypeEnum.POSTEVALUATE.getKey() == type ){
+                commentIds.stream().forEach(s ->{
+                    CmmComment cmmComment = new CmmComment();
+                    cmmComment.setId(s);
+                    cmmComment.setState(-1);
+                    istrue.set( commentService.updateById( cmmComment ) );
+                });
+            }else if(DelObjectListVO.TypeEnum.COMMENTEVALUATE.getKey() == type){
+                commentIds.stream().forEach(s ->{
+                    MooMessage mooMessage = new MooMessage();
+                    mooMessage.setId(s);
+                    mooMessage.setState(-1);
+                    istrue.set( messageServive.updateById( mooMessage ) );
+                });
+            } else if(DelObjectListVO.TypeEnum.POSTREPLY.getKey() == type){
+                commentIds.stream().forEach(s ->{
+                    Reply reply = new Reply();
+                    reply.setId(s);
+                    reply.setState(-1);
+                    istrue.set( replyService.updateById( reply ) );
+                });
+            }else if(DelObjectListVO.TypeEnum.COMMENTREPLY.getKey() == type){
+                commentIds.stream().forEach(s ->{
+                    Reply reply = new Reply();
+                    reply.setId(s);
+                    reply.setState(-1);
+                    istrue.set( replyService.updateById( reply ) );
+                });
+            }else if(DelObjectListVO.TypeEnum.GAMEREPLY.getKey() == type){
+                commentIds.stream().forEach(s ->{
+                    Reply reply = new Reply();
+                    reply.setId(s);
+                    reply.setState(-1);
+                    istrue.set( replyService.updateById( reply ) );
+                });
+            }
+        }catch (Exception e){
+            logger.error( "delCommentList删除评论异常,类型:"+type+",id:"+JSON.toJSONString(commentIds),e);
+        }
+        return istrue.get() ? ResultDto.success(): ResultDto.error( "-1","删除评论失败");
     }
 
 

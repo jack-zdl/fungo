@@ -15,6 +15,7 @@ import com.fungo.system.facede.IDeveloperProxyService;
 import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IMemeberProxyService;
 import com.fungo.system.feign.CommunityFeignClient;
+import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.bean.CollectionBean;
@@ -95,6 +96,8 @@ public class MemberServiceImpl implements IMemberService {
     private ICommunityProxyService communityProxyService;
     @Autowired(required = false)
     private CommunityFeignClient communityFeignClient;
+    @Autowired
+    private GamesFeignClient gamesFeignClient;
 
 
     //
@@ -309,7 +312,8 @@ public class MemberServiceImpl implements IMemberService {
         if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
             types = new String[]{"0", "1", "2", "7", "11"};
         } else {
-            types = new String[]{"0", "1", "2", "7"};
+//            types = new String[]{"0", "1", "2", "7"};
+              types = new String[]{"0", "1", "2", "7","11"};
         }
 
         Page<BasNotice> basNoticePage = new Page<>(inputPage.getPage(), inputPage.getLimit());
@@ -322,12 +326,12 @@ public class MemberServiceImpl implements IMemberService {
         noticeEntityWrapper.orderBy("created_at", false);
 
         Page<BasNotice> plist = noticeService.selectPage(basNoticePage, noticeEntityWrapper);
-        List<BasNotice> t = plist.getRecords();
+        List<BasNotice> basNotices = plist.getRecords();
 
         List<IncentRuleRank> levelRankList = IRuleRankService.getLevelRankList();
         ObjectMapper objectMapper = new ObjectMapper();
 
-        for (BasNotice basNotice : t) {
+        for (BasNotice basNotice : basNotices) {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("video", "");
             try {
@@ -342,7 +346,11 @@ public class MemberServiceImpl implements IMemberService {
                 // @todo 文章的接口
                 if ((int) map.get("type") == 0) {
                     map.put("msg_template", "赞了我的文章");
-                    CmmPostDto post = iMemeberProxyService.selectCmmPost((String) map.get("post_id"));   //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
+                    CmmPostDto param = new CmmPostDto();
+                    param.setId((String) map.get("post_id"));
+                    param.setQueryType(1);
+                    FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(param);
+                    CmmPostDto post = (  cmmPostDtoFungoPageResultDto.getData() != null  && cmmPostDtoFungoPageResultDto.getData().size() > 0 ) ? cmmPostDtoFungoPageResultDto.getData().get(0) : null;  //iMemeberProxyService.selectCmmPost((String) map.get("post_id"));   //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
                     if (post != null) {
                         if (!CommonUtil.isNull(post.getVideo())) {
                             map.put("video", post.getVideo());
@@ -359,10 +367,45 @@ public class MemberServiceImpl implements IMemberService {
                     }
                 } else if ((int) map.get("type") == 2) {
                     map.put("msg_template", "赞了我的游戏评价");
+                    String evaluationId = (String) map.get("evaluation_id");
+                    GameEvaluationDto param = new GameEvaluationDto();
+                    param.setId(evaluationId);
+                    FungoPageResultDto<GameEvaluationDto>  resultDto = gamesFeignClient.getGameEvaluationPage(param);
+                    GameEvaluationDto gameEvaluationDto = (resultDto.getData() != null && resultDto.getData().size() > 0 ) ? resultDto.getData().get(0) : null;
+                    if(gameEvaluationDto != null){
+                        map.put( "evaluation_deltype",gameEvaluationDto.getState() );
+                    }
                 } else if (basNotice.getType() == 7) {
                     map.put("msg_template", "赞了我的心情");
+                    String moodId = (String) map.get("mood_id");
+                    MooMoodDto param = new MooMoodDto();
+                    param.setId(moodId);
+                    param.setState(null);
+                    FungoPageResultDto<MooMoodDto> resultDto = communityFeignClient.queryCmmMoodList(param);
+                    MooMoodDto mood =  (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;  //iGameProxyService.selectMooMoodById(commentBean.getTargetId());  // new MooMoodDto();// moodService.selectOne(Condition.create().setSqlSelect("id,content").eq("id", c.getTargetId()));
+                    if (mood != null) {
+                        map.put( "mood_deltype",mood.getState() );
+                    }
                 } else if (basNotice.getType() == 11) {
                     map.put("msg_template", "赞了我的心情评论");
+                    String  mooMessageId = (String) map.get("");
+                    MooMessageDto mooMessageDto = new MooMessageDto();
+                    mooMessageDto.setId(mooMessageId);
+                    mooMessageDto.setState(null);
+                    FungoPageResultDto<MooMessageDto> resultDto = communityFeignClient.queryCmmMoodCommentList(mooMessageDto);
+                    MooMessageDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                    if (message != null) {
+                        map.put( "message_deltype",message.getState() );
+                    }
+                    String moodId = (String) map.get("mood_id");
+                    MooMoodDto param = new MooMoodDto();
+                    param.setId(moodId);
+                    param.setState(null);
+                    FungoPageResultDto<MooMoodDto> result = communityFeignClient.queryCmmMoodList(param);
+                    MooMoodDto mood =  (result.getData() != null && result.getData().size() >0 ) ? result.getData().get(0) : null ;  //iGameProxyService.selectMooMoodById(commentBean.getTargetId());  // new MooMoodDto();// moodService.selectOne(Condition.create().setSqlSelect("id,content").eq("id", c.getTargetId()));
+                    if (mood != null) {
+                        map.put( "mood_deltype",mood.getState() );
+                    }
                 }
 
                 if (basNotice.getIsRead() == 0 || basNotice.getIsPush() == 0) {
@@ -973,7 +1016,7 @@ public class MemberServiceImpl implements IMemberService {
         param.setLimit(input.getLimit());
         param.setMemberId(loginId);
         param.setState(1);
-
+        param.setQueryType(1);
         FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(param);
 
         //  Page<CmmPostDto> page =   iMemeberProxyService.selectCmmPostpage(param); // postService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<CmmPost>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
@@ -1030,7 +1073,7 @@ public class MemberServiceImpl implements IMemberService {
             }
             //
             bean.setVideoCoverImage(post.getVideoCoverImage());
-
+            bean.setDeltype( post.getState() == -1 ? 1 : 0 ); //1 true  已删除  0 false 未删除
             blist.add(bean);
         }
 
@@ -1253,7 +1296,7 @@ public class MemberServiceImpl implements IMemberService {
 
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_COMMENTS;
         String keySuffix = loginId + JSON.toJSONString(input);
-      //  re = (FungoPageResultDto<MyCommentBean>) fungoCacheArticle.getIndexCache(keyPrefix, keySuffix);
+        re = (FungoPageResultDto<MyCommentBean>) fungoCacheArticle.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
         }
@@ -1268,56 +1311,58 @@ public class MemberServiceImpl implements IMemberService {
         }
         List<CommentBean> all = comments.getData();
         List<MyCommentBean> blist = new ArrayList<>();
-        for (CommentBean c : all) {
+        for (CommentBean commentBean : all) {
             //文章评论 心情评论 二级评论
             MyCommentBean bean = new MyCommentBean();
-
-            String content = c.getContent();
+            bean.setCommentDelType(commentBean.getState());
+            String content = commentBean.getContent();
             if (StringUtils.isNotBlank(content)) {
                 content = FilterEmojiUtil.decodeEmoji(content);
                 bean.setCommentConetnt(content);
             }
 
-            bean.setCommentId(c.getId());
-            bean.setCommentType(c.getType());
-            bean.setTargetType(c.getTargetType());
-            bean.setTargetId(c.getTargetId());
-            bean.setTargetType(c.getTargetType());
-            bean.setUpdatedAt(DateTools.fmtDate(c.getUpdatedAt()));
+            bean.setCommentId(commentBean.getId());
+            bean.setCommentType(commentBean.getType());
+            bean.setTargetType(commentBean.getTargetType());
+            bean.setTargetId(commentBean.getTargetId());
+            bean.setTargetType(commentBean.getTargetType());
+            bean.setUpdatedAt(DateTools.fmtDate(commentBean.getUpdatedAt()));
 
             //回复二级回复
-            if (!CommonUtil.isNull(c.getReplyToId()) && !CommonUtil.isNull(c.getReplyContentId())) {
-                bean.setReplyToId(c.getReplyToId());
-                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name as userName").eq("id", c.getReplyToId()));
+            if (!CommonUtil.isNull(commentBean.getReplyToId()) && !CommonUtil.isNull(commentBean.getReplyContentId())) {
+                bean.setReplyToId(commentBean.getReplyToId());
+                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name as userName").eq("id", commentBean.getReplyToId()));
                 if (m != null) {
                     bean.setReplyToName(m.getUserName());
                 }
 
                 // @todo 二级回复
                 CmmCmtReplyDto replyDto = new CmmCmtReplyDto();
-                replyDto.setId(c.getReplyContentId());
+                replyDto.setId(commentBean.getReplyContentId());
+                replyDto.setState(null);
                 CmmCmtReplyDto reply = iMemeberProxyService.selectReplyById(replyDto);   //new ReplyDto();// replyService.selectById(c.getReplyContentId());
                 if (reply != null) {
 
                     String replyContent = reply.getContent();
-
+                    bean.setTargetDelType(reply.getState());
                     if (StringUtils.isNotBlank(replyContent)) {
                         replyContent = FilterEmojiUtil.decodeEmoji(replyContent);
                         bean.setTargetConetnt(replyContent);
                     }
 
-                    bean.setReplyToConentId(c.getReplyContentId());
+                    bean.setReplyToConentId(commentBean.getReplyContentId());
                 }
                 blist.add(bean);
                 continue;
             }
-            if (c.getTargetType() == 1) {// 1帖子 2心情 5帖子评论 6游戏评论 8心情评论
+            if (commentBean.getTargetType() == 1) {// 1帖子 2心情 5帖子评论 6游戏评论 8心情评论
                 // @todo 社区评论
                 CmmPostDto cmmPostDto = new CmmPostDto();
-                cmmPostDto.setId(c.getTargetId());
+                cmmPostDto.setId(commentBean.getTargetId());
+                cmmPostDto.setQueryType(1);
                 CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto);    //postService.selectOne(Condition.create().setSqlSelect("id,content,title,video").eq("id", c.getTargetId()));
                 if (post != null) {
-
+                    bean.setTargetDelType(post.getState());
                     String title = CommonUtils.filterWord(post.getTitle());
                     if (StringUtils.isNotBlank(title)) {
                         title = FilterEmojiUtil.decodeEmoji(title);
@@ -1330,12 +1375,16 @@ public class MemberServiceImpl implements IMemberService {
                 } else {
                     bean.setTargetConetnt("该文章已删除");
                 }
-            } else if (c.getTargetType() == 2) {
+            } else if (commentBean.getTargetType() == 2) {
                 // @todo 心情
-                MooMoodDto mood = iGameProxyService.selectMooMoodById(c.getTargetId());  // new MooMoodDto();// moodService.selectOne(Condition.create().setSqlSelect("id,content").eq("id", c.getTargetId()));
+                MooMoodDto param = new MooMoodDto();
+                param.setId(commentBean.getTargetId());
+                param.setState(null);
+                FungoPageResultDto<MooMoodDto> resultDto = communityFeignClient.queryCmmMoodList(param);
+                MooMoodDto mood =  (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;  //iGameProxyService.selectMooMoodById(commentBean.getTargetId());  // new MooMoodDto();// moodService.selectOne(Condition.create().setSqlSelect("id,content").eq("id", c.getTargetId()));
                 if (mood != null) {
-
                     String contentMood = CommonUtils.filterWord(CommonUtils.reduceString(mood.getContent(), 50));
+                    bean.setTargetDelType(mood.getState());
                     if (StringUtils.isNotBlank(contentMood)) {
                         contentMood = FilterEmojiUtil.decodeEmoji(contentMood);
                         bean.setTargetConetnt(contentMood);
@@ -1346,11 +1395,16 @@ public class MemberServiceImpl implements IMemberService {
                 } else {
                     bean.setTargetConetnt("该心情已删除");
                 }
-            } else if (c.getTargetType() == 5) {
+            } else if (commentBean.getTargetType() == 5) {
                 // @todo 评论
-                CmmCommentDto comment = iGameProxyService.selectCmmCommentById(c.getTargetId()); //commentService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                CmmCommentDto param = new CmmCommentDto();
+                param.setId(commentBean.getTargetId());
+                param.setState(null);
+                FungoPageResultDto<CmmCommentDto> resultDto = communityFeignClient.queryFirstLevelCmtList(param);
+                CmmCommentDto comment =  (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;
+//                CmmCommentDto comment = iGameProxyService.selectCmmCommentById(commentBean.getTargetId()); //commentService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                 if (comment != null) {
-
+                    bean.setTargetDelType(comment.getState());
                     String contentCmmComment = CommonUtils.filterWord(CommonUtils.reduceString(comment.getContent(), 50));
                     if (StringUtils.isNotBlank(contentCmmComment)) {
                         contentCmmComment = FilterEmojiUtil.decodeEmoji(contentCmmComment);
@@ -1363,13 +1417,15 @@ public class MemberServiceImpl implements IMemberService {
                         bean.setReplyToName(m.getUserName());
                     }
                 }
-            } else if (c.getTargetType() == 6) {
+            } else if (commentBean.getTargetType() == 6) {
                 // @todo 游戏评论
                 GameEvaluationDto param = new GameEvaluationDto();
-                param.setId(c.getTargetId());
-                GameEvaluationDto evaluation = iGameProxyService.selectGameEvaluationById(param); //evaluationService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                param.setId(commentBean.getTargetId());
+                param.setSort(null);
+                FungoPageResultDto<GameEvaluationDto> resultDto = gamesFeignClient.getGameEvaluationPage(param);
+                GameEvaluationDto evaluation =  (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ; //iGameProxyService.selectGameEvaluationById(param); //evaluationService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                 if (evaluation != null) {
-
+                    bean.setTargetDelType(evaluation.getState());
                     String contentGameEval = CommonUtils.filterWord(CommonUtils.reduceString(evaluation.getContent(), 50));
                     if (StringUtils.isNotBlank(contentGameEval)) {
                         contentGameEval = FilterEmojiUtil.decodeEmoji(contentGameEval);
@@ -1382,11 +1438,15 @@ public class MemberServiceImpl implements IMemberService {
                         bean.setReplyToName(m.getUserName());
                     }
                 }
-            } else if (c.getTargetType() == 8) {
+            } else if (commentBean.getTargetType() == 8) {
                 // @todo 社区接口
-                MooMessageDto message = iGameProxyService.selectMooMessageById(c.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                MooMessageDto mooMessageDto = new MooMessageDto();
+                mooMessageDto.setId(commentBean.getTargetId());
+                mooMessageDto.setState(null);
+                FungoPageResultDto<MooMessageDto> resultDto = communityFeignClient.queryCmmMoodCommentList(mooMessageDto);
+                MooMessageDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                 if (message != null) {
-
+                    bean.setTargetDelType(message.getState());
                     String contentMoodMsg = CommonUtils.filterWord(CommonUtils.reduceString(message.getContent(), 50));
                     if (StringUtils.isNotBlank(contentMoodMsg)) {
                         contentMoodMsg = FilterEmojiUtil.decodeEmoji(contentMoodMsg);
