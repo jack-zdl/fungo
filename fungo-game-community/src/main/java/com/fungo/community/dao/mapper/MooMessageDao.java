@@ -25,4 +25,5 @@ public interface MooMessageDao extends BaseMapper<MooMessage> {
      * @return
      */
     public List<CommentBean> getMessagesAll(Page page, Map map);
+
 }

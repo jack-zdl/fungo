@@ -2,10 +2,13 @@ package com.fungo.community.controller;
 
 
 import com.fungo.community.service.IEvaluateService;
+import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.*;
+import com.game.common.enums.CommonEnum;
+import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.util.ValidateUtils;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.vo.DelObjectListVO;
@@ -29,6 +32,8 @@ public class EvaluateController {
 
     @Autowired
     private IEvaluateService evaluateService;
+    @Autowired
+    private FungoCacheArticle fungoCacheArticle;
 
 
     @ApiOperation(value = "评论帖子/心情", notes = "")
@@ -108,7 +113,12 @@ public class EvaluateController {
             }
             int type = commentIds.getType();
             List<String> ids = commentIds.getCommentIds();
-            return this.evaluateService.delCommentList(memberId, type,ids);
+            ResultDto<String> resultDto =  this.evaluateService.delCommentList(memberId, type,ids);
+            if(CommonEnum.SUCCESS.code().equals(resultDto.getStatus())){
+                // 文章和心情评论缓存
+                fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
+            }
+            return resultDto;
         }catch (Exception e){
             LOGGER.error( "删除评论详情异常,id集合:"+commentIds.toString(),e );
             return ResultDto.error( "-1","删除评论详情异常" );

@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.community.dao.mapper.CmmPostDao;
+import com.fungo.community.dao.mapper.MooMoodDao;
 import com.fungo.community.dao.service.*;
 import com.fungo.community.entity.*;
 import com.fungo.community.facede.GameFacedeService;
@@ -84,6 +86,10 @@ public class EvaluateServiceImpl implements IEvaluateService {
     private GameFacedeService gameFacedeService;
     @Autowired
     private TSMQFacedeService tSMQFacedeService;
+    @Autowired
+    private CmmPostDao cmmPostDao;
+    @Autowired
+    private MooMoodDao mooMoodDao;
 
     @Override
     public ResultDto<CommentOut> addComment(String memberId, CommentInput commentInput, String appVersion) throws Exception {
@@ -98,7 +104,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         Map<String, Object> noticeMap = null;
         if (1 == commentInput.getTarget_type()) {//文章评论
             CmmComment comment = new CmmComment();
-            floor = commentService.selectCount(new EntityWrapper<CmmComment>().eq("post_id", commentInput.getTarget_id()));
+            floor = commentService.selectCount(new EntityWrapper<CmmComment>().eq("post_id", commentInput.getTarget_id()).ne("state","-1"));
             //表情编码
             String content = commentInput.getContent();
             if (StringUtils.isNotBlank(EmojiDealUtil.getEmojiUnicodeString(content))) {
@@ -1706,6 +1712,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     noticeMap.put("target_id", replyInput.getTarget_id());
                     noticeMap.put("target_type", Setting.RES_TYPE_COMMENT);
                     noticeMap.put("information", replyInput.getContent());
+                    noticeMap.put( "replyId",reply.getId() );
                     noticeMap.put("appVersion", "");
                     noticeMap.put("replyToId", "");
 
@@ -1723,6 +1730,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     noticeMap.put("target_id", replyInput.getTarget_id());
                     noticeMap.put("target_type", Setting.RES_TYPE_COMMENT);
                     noticeMap.put("information", replyInput.getContent());
+                    noticeMap.put( "replyId",reply.getId() );
                     noticeMap.put("appVersion", appVersion);
                     noticeMap.put("replyToId", replyInput.getReply_to());
 
@@ -1752,6 +1760,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     noticeMap.put("target_id", replyInput.getTarget_id());
                     noticeMap.put("target_type", Setting.RES_TYPE_EVALUATION);
                     noticeMap.put("information", replyInput.getContent());
+                    noticeMap.put( "replyId",reply.getId() );
                     noticeMap.put("appVersion", "");
                     noticeMap.put("replyToId", "");
 
@@ -1768,6 +1777,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     noticeMap.put("target_id", replyInput.getTarget_id());
                     noticeMap.put("target_type", Setting.RES_TYPE_EVALUATION);
                     noticeMap.put("information", replyInput.getContent());
+                    noticeMap.put( "replyId",reply.getId() );
                     noticeMap.put("appVersion", appVersion);
                     noticeMap.put("replyToId", replyInput.getReply_to());
 
@@ -1791,6 +1801,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 noticeMap.put("target_id", replyInput.getTarget_id());
                 noticeMap.put("target_type", Setting.RES_TYPE_MESSAGE);
                 noticeMap.put("information", replyInput.getContent());
+                noticeMap.put( "replyId",reply.getId() );
                 noticeMap.put("appVersion", appVersion);
                 noticeMap.put("replyToId", "");
 
@@ -1807,6 +1818,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 noticeMap.put("target_id", replyInput.getTarget_id());
                 noticeMap.put("target_type", Setting.RES_TYPE_MESSAGE);
                 noticeMap.put("information", replyInput.getContent());
+                noticeMap.put( "replyId",reply.getId() );
                 noticeMap.put("appVersion", appVersion);
                 noticeMap.put("replyToId", replyInput.getReply_to());
 
@@ -2178,6 +2190,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         try {
             if( DelObjectListVO.TypeEnum.POSTEVALUATE.getKey() == type ){
                 commentIds.stream().forEach(s ->{
+                    int commentNum =  cmmPostDao.updateCmmPostCommentNum(s);
                     CmmComment cmmComment = new CmmComment();
                     cmmComment.setId(s);
                     cmmComment.setState(-1);
@@ -2185,6 +2198,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 });
             }else if(DelObjectListVO.TypeEnum.COMMENTEVALUATE.getKey() == type){
                 commentIds.stream().forEach(s ->{
+                    mooMoodDao.updateMooMoodCommentNum(s);
                     MooMessage mooMessage = new MooMessage();
                     mooMessage.setId(s);
                     mooMessage.setState(-1);

@@ -67,4 +67,8 @@
 		</if>
 		where id = #{id}
 	</update>
+
+	<update id="updateCmmCommentCommentNum">
+
+	</update>
 </mapper>

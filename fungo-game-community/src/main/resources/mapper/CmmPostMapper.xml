@@ -365,4 +365,10 @@
         NOT EXISTS
         ( SELECT 1 FROM t_cmm_post_circle cpc , t_cmm_circle cc WHERE cc.id = cpc.circle_id  and cpc.post_id = cp.id and cc.state != 1 )  ORDER BY cp.sort DESC , cp.created_at desc
     </select>
+
+
+
+    <update id="updateCmmPostCommentNum" >
+        update t_cmm_post set  comment_num = ${comment_num}-1  WHERE id = (SELECT post_id FROM t_cmm_comment WHERE id = #{commentId})
+    </update>
 </mapper>

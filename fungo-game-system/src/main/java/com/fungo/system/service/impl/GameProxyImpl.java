@@ -53,7 +53,7 @@ public class GameProxyImpl implements IGameProxy {
 	 * information --> content
 	 * 用户通知接口
 	 */
-	public void addNotice(int eventType, String memberId, String target_id, int target_type, String information,String appVersion,String replyToId,String commentId) throws Exception {
+	public void addNotice(int eventType, String memberId, String target_id, int target_type, String information,String appVersion,String replyToId,String commentId,String replyId) throws Exception {
 		String notiveMemberId="";//发送To用户ID
 		int msgType=1;//消息类型
 		Map<String,Object> date=new HashMap<String,Object>();
@@ -152,6 +152,7 @@ public class GameProxyImpl implements IGameProxy {
 			CmmCommentDto comment= iGameProxyService.selectCmmCommentById(target_id); //this.commentService.selectById(target_id);
 			notiveMemberId=comment.getMemberId();
 			date.put("reply_content",information );
+            date.put("replyId",replyId);
 			date.put("type",4 );
 			date.put("comment_id", target_id);
 			date.put("comment_content", comment.getContent());
@@ -170,6 +171,7 @@ public class GameProxyImpl implements IGameProxy {
 			GameEvaluationDto evaluation = iGameProxyService.selectGameEvaluationById(param); //this.gameEvaluationService.selectById(target_id);
 			notiveMemberId=evaluation.getMemberId();
 			date.put("reply_content",information);
+            date.put("replyId",replyId);
 			date.put("type",5 );
 			date.put("evaluation_id",target_id );
 			date.put("evaluation_content",evaluation.getContent());
@@ -187,6 +189,7 @@ public class GameProxyImpl implements IGameProxy {
 			MooMessageDto mooMessage = iGameProxyService.selectMooMessageById(target_id);  // this.messageServive.selectById(target_id);
 			notiveMemberId=mooMessage.getMemberId();
 			date.put("reply_content",information);
+            date.put("replyId",replyId);
 			date.put("type",9 );
 			date.put("message_id",target_id );
 			date.put("message_content",mooMessage.getContent());
@@ -201,6 +204,8 @@ public class GameProxyImpl implements IGameProxy {
 			CmmCommentDto comment= iGameProxyService.selectCmmCommentById(target_id);   //this.commentService.selectById(target_id);
 			notiveMemberId=replyToId;
 			date.put("reply_content",information );
+			date.put("replyId",replyId);
+			date.put("replyToId",replyToId);
 			date.put("type",12 );
 			date.put("comment_id", target_id);
 			date.put("comment_content", comment.getContent());
@@ -220,6 +225,8 @@ public class GameProxyImpl implements IGameProxy {
 			GameEvaluationDto evaluation = iGameProxyService.selectGameEvaluationById(param); //this.gameEvaluationService.selectById(target_id);
 			notiveMemberId=replyToId;
 			date.put("reply_content",information);
+			date.put("replyId",replyId);
+			date.put("replyToId",replyToId);
 			date.put("type",12 );
 			date.put("evaluation_id",target_id );
 			date.put("evaluation_content",evaluation.getContent());
@@ -238,6 +245,8 @@ public class GameProxyImpl implements IGameProxy {
 			MooMessageDto mooMessage = iGameProxyService.selectMooMessageById(target_id); //this.messageServive.selectById(target_id);
 			notiveMemberId=replyToId;
 			date.put("reply_content",information);
+			date.put("replyId",replyId);
+			date.put("replyToId",replyToId);
 			date.put("type",12 );
 			date.put("message_id",target_id );
 			date.put("message_content",mooMessage.getContent());

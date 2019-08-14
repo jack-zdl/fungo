@@ -107,4 +107,7 @@ public interface CmmPostDao extends BaseMapper<CmmPost> {
     List<CmmPost> getCmmPostByGameId(Page page,@Param("gameId")String gameId );
 
     List<CmmPost> getCmmPostByRecommend(Page page);
+
+
+    int updateCmmPostCommentNum(@Param("commentId") String commentId);
 }
