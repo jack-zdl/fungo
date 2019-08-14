@@ -582,7 +582,7 @@ public class MemberServiceImpl implements IMemberService {
                     if(replyId != null){
                         CmmCmtReplyDto cmmCmtReplyDto = new CmmCmtReplyDto();
                         cmmCmtReplyDto.setId(replyId);
-                        FungoPageResultDto<CmmCmtReplyDto>  replyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto)
+                        FungoPageResultDto<CmmCmtReplyDto>  replyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto);
                         CmmCmtReplyDto cmmCmtReplyDto1 =    (replyDtoFungoPageResultDto.getData() != null && replyDtoFungoPageResultDto.getData().size() >0 ) ? replyDtoFungoPageResultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                         if (cmmCmtReplyDto1 != null) {
                             map.put( "one_level_deltype",cmmCmtReplyDto1.getState()  == -1 ? -1 : 0 );
