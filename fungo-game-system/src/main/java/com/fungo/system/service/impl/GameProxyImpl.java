@@ -7,15 +7,15 @@ import com.fungo.system.entity.BasNotice;
 import com.fungo.system.entity.Member;
 import com.fungo.system.facede.IDeveloperProxyService;
 import com.fungo.system.facede.IGameProxyService;
+import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.service.*;
 import com.game.common.consts.Setting;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
-import com.game.common.dto.community.CmmCommentDto;
-import com.game.common.dto.community.CmmPostDto;
-import com.game.common.dto.community.MooMessageDto;
-import com.game.common.dto.community.MooMoodDto;
+import com.game.common.dto.community.*;
 import com.game.common.dto.game.GameEvaluationDto;
+import com.game.common.dto.game.ReplyDto;
 import com.game.common.enums.FunGoTaskV243Enum;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
@@ -43,12 +43,12 @@ public class GameProxyImpl implements IGameProxy {
 	private IPushService pushService;
 	@Autowired
 	private IGameProxyService gameProxyServiceImpl;
-
 	@Autowired
 	private IDeveloperProxyService iDeveloperProxyService;
-
 	@Autowired
 	private IGameProxyService iGameProxyService;
+	@Autowired
+	private CommunityFeignClient communityFeignClient;
 	/**
 	 * information --> content
 	 * 用户通知接口
@@ -59,6 +59,7 @@ public class GameProxyImpl implements IGameProxy {
 		Map<String,Object> date=new HashMap<String,Object>();
 		getMemberInfo(memberId,date);
 		boolean push = true;
+		//  msgType = 6;   系统消息
 		if(Setting.ACTION_TYPE_LIKE == eventType && Setting.RES_TYPE_POST==target_type) {// 点赞帖子
 			// @todo 社区帖子的
 			CmmPostDto cmmPostParam = new CmmPostDto();cmmPostParam.setId(target_id);
@@ -113,17 +114,29 @@ public class GameProxyImpl implements IGameProxy {
 		}else if(Setting.ACTION_TYPE_LIKE == eventType && Setting.RES_TYPE_MESSAGE==target_type) {// 点赞心情评论
 			// @todo 心情评论
 			MooMessageDto mooMessage = iGameProxyService.selectMooMessageById(target_id); //this.messageServive.selectById(target_id);
-			notiveMemberId=mooMessage.getMemberId();
-			date.put("reply_content",information);
-			date.put("type",11 );
-			date.put("message_id",target_id );
-			date.put("message_content",mooMessage.getContent());
-			date.put("mood_id",mooMessage.getMoodId());
+			notiveMemberId = mooMessage.getMemberId();
+			date.put("reply_content", information);
+			date.put("type", 11);
+			date.put("message_id", target_id);
+			date.put("message_content", mooMessage.getContent());
+			date.put("mood_id", mooMessage.getMoodId());
 			// @todo 心情
 			MooMoodDto mood = iGameProxyService.selectMooMoodById(mooMessage.getMoodId()); // this.moodService.selectById(mooMessage.getMoodId());
 			date.put("mood_content", mood.getContent());
-			msgType=11;//消息类型
+			msgType = 11;//消息类型
 			push = CommonUtils.versionAdapte(appVersion, "2.4.4");
+
+		} else if(Setting.ACTION_TYPE_LIKE == eventType && Setting.RES_TYPE_REPLY==target_type ){  // 点赞游戏评论和文章评论和心情评论的所有回复
+			CmmCmtReplyDto cmmCmtReplyDto = new CmmCmtReplyDto();
+			cmmCmtReplyDto.setId(target_id);
+			FungoPageResultDto<CmmCmtReplyDto> cmmCmtReplyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto);
+			if(cmmCmtReplyDtoFungoPageResultDto != null && cmmCmtReplyDtoFungoPageResultDto.getData() != null && cmmCmtReplyDtoFungoPageResultDto.getData().size() > 0 ){
+				CmmCmtReplyDto cmmCmtReplyDto1  = cmmCmtReplyDtoFungoPageResultDto.getData().get(0);
+				date.put("replyContent", information);
+				date.put("type", 10);
+				date.put("replyId", target_id);
+				msgType = 10;//消息类型
+			}
 		}else if(Setting.ACTION_TYPE_COMMENT == eventType){// 评论帖子
 			//// @todo 社区帖子的
 			CmmPostDto cmmPostParam = new CmmPostDto();cmmPostParam.setId(target_id);
