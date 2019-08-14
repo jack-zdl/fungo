@@ -3,11 +3,14 @@ package com.fungo.games.controller;
 
 import com.fungo.games.service.IEvaluateService;
 import com.fungo.games.service.impl.EvaluateServiceImpl;
+import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.evaluation.*;
 import com.game.common.enums.AbstractResultEnum;
+import com.game.common.enums.CommonEnum;
+import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.util.StringUtil;
 import com.game.common.util.ValidateUtils;
 import com.game.common.util.annotation.Anonymous;
@@ -25,11 +28,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.game.common.consts.FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS;
+
 @RestController
 @Api(value="",description="评价接口")
 public class EvaluateController {
 
 	private static final Logger logger = LoggerFactory.getLogger( EvaluateController.class);
+
+	@Autowired
+	private FungoCacheGame fungoCacheGame;
 
 	@Autowired
 	private IEvaluateService evaluateService;
@@ -70,7 +78,7 @@ public class EvaluateController {
 	 * @date: 2019/8/12 13:42
 	 */
 	@ApiOperation(value="删除游戏评价详情", notes="")
-	@RequestMapping(value="/api/content/evaluation/", method= RequestMethod.DELETE)
+	@RequestMapping(value="/api/content/evaluation", method= RequestMethod.DELETE)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "evaluation_ids",value = "心情id集合",paramType = "path",dataType = "string"),
 	})
@@ -83,7 +91,11 @@ public class EvaluateController {
 			}else {
 				return ResultDto.ResultDtoFactory.buildWarning( AbstractResultEnum.CODE_GAME_FOUR.getKey(),AbstractResultEnum.CODE_GAME_FOUR.getFailevalue());
 			}
-			return this.evaluateService.delEvaluationDetail(memberId, commentIdList);
+			ResultDto<String>  resultDto =  this.evaluateService.delEvaluationDetail(memberId, commentIdList);
+			if(CommonEnum.SUCCESS.code().equals(resultDto.getStatus())){
+				fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS, "", null);
+			}
+			return resultDto;
 		}catch (Exception e){
 			logger.error( "delEvaluationDetail异常",e );
 			return ResultDto.ResultDtoFactory.buildError("删除游戏评价详情失败，代码异常");

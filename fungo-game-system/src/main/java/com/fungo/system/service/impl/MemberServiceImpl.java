@@ -355,16 +355,29 @@ public class MemberServiceImpl implements IMemberService {
                         if (!CommonUtil.isNull(post.getVideo())) {
                             map.put("video", post.getVideo());
                         }
-                        map.put("post_deltype", post.getState());
+                        map.put("one_level_deltype", post.getState() == -1 ? -1 : 0);
                     }
                     // @todo 文章的评论的接口
                 } else if ((int) map.get("type") == 1) {//basNotice.getType()==1
                     map.put("msg_template", "赞了我的评论");
-                    CmmPostDto post = iMemeberProxyService.selectCmmPost((String) map.get("post_id"));  //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
+                    CmmPostDto param = new CmmPostDto();
+                    param.setId((String) map.get("post_id"));
+                    param.setQueryType(1);
+                    FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(param);
+                    CmmPostDto post = (  cmmPostDtoFungoPageResultDto.getData() != null  && cmmPostDtoFungoPageResultDto.getData().size() > 0 ) ? cmmPostDtoFungoPageResultDto.getData().get(0) : null;  //iMemeberProxyService.selectCmmPost((String) map.get("post_id"));   //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
                     if (post != null) {
                         if (!CommonUtil.isNull(post.getVideo())) {
                             map.put("video", post.getVideo());
                         }
+                        map.put("two_level_deltype", post.getState() == -1 ? -1 : 0);
+                    }
+                    CmmCommentDto  cmmCommentDto = new CmmCommentDto();
+                    cmmCommentDto.setId((String) map.get("comment_id"));
+                    cmmCommentDto.setState(null);
+                    FungoPageResultDto<CmmCommentDto>  cmmCommentDtoFungoPageResultDto = communityFeignClient.queryFirstLevelCmtList(cmmCommentDto);
+                    CmmCommentDto commentDto = (  cmmCommentDtoFungoPageResultDto.getData() != null  && cmmCommentDtoFungoPageResultDto.getData().size() > 0 ) ? cmmCommentDtoFungoPageResultDto.getData().get(0) : null;  //iMemeberProxyService.selectCmmPost((String) map.get("post_id"));   //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
+                    if (commentDto != null) {
+                        map.put("one_level_deltype", post.getState() == -1 ? -1 : 0);
                     }
                 } else if ((int) map.get("type") == 2) {
                     map.put("msg_template", "赞了我的游戏评价");
@@ -374,8 +387,18 @@ public class MemberServiceImpl implements IMemberService {
                     FungoPageResultDto<GameEvaluationDto>  resultDto = gamesFeignClient.getGameEvaluationPage(param);
                     GameEvaluationDto gameEvaluationDto = (resultDto.getData() != null && resultDto.getData().size() > 0 ) ? resultDto.getData().get(0) : null;
                     if(gameEvaluationDto != null){
-                        map.put( "evaluation_deltype",gameEvaluationDto.getState() );
+                        map.put( "one_level_deltype",gameEvaluationDto.getState() == -1 ? -1 : 0 );
                     }
+                    String gameId = (String) map.get("game_id");
+                    GameDto gameDto = new GameDto();
+                    gameDto.setId(gameId);
+                    gameDto.setState(null);
+                    FungoPageResultDto<GameDto>  resultDto1 = gamesFeignClient.getGamePage(gameDto);
+                    GameDto gameDto1 = (resultDto1.getData() != null && resultDto1.getData().size() > 0 ) ? resultDto1.getData().get(0) : null;
+                    if(gameDto1 != null){
+                        map.put( "two_level_deltype",gameDto1.getState() == -1 ? -1 : 0 );
+                    }
+
                 } else if (basNotice.getType() == 7) {
                     map.put("msg_template", "赞了我的心情");
                     String moodId = (String) map.get("mood_id");
@@ -385,7 +408,7 @@ public class MemberServiceImpl implements IMemberService {
                     FungoPageResultDto<MooMoodDto> resultDto = communityFeignClient.queryCmmMoodList(param);
                     MooMoodDto mood =  (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;  //iGameProxyService.selectMooMoodById(commentBean.getTargetId());  // new MooMoodDto();// moodService.selectOne(Condition.create().setSqlSelect("id,content").eq("id", c.getTargetId()));
                     if (mood != null) {
-                        map.put( "mood_deltype",mood.getState() );
+                        map.put( "one_level_deltype",mood.getState()  == -1 ? -1 : 0  );
                     }
                 } else if (basNotice.getType() == 11) {
                     map.put("msg_template", "赞了我的心情评论");
@@ -396,7 +419,7 @@ public class MemberServiceImpl implements IMemberService {
                     FungoPageResultDto<MooMessageDto> resultDto = communityFeignClient.queryCmmMoodCommentList(mooMessageDto);
                     MooMessageDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                     if (message != null) {
-                        map.put( "message_deltype",message.getState() );
+                        map.put( "one_level_deltype",message.getState()  == -1 ? -1 : 0   );
                     }
                     String moodId = (String) map.get("mood_id");
                     MooMoodDto param = new MooMoodDto();
@@ -405,7 +428,7 @@ public class MemberServiceImpl implements IMemberService {
                     FungoPageResultDto<MooMoodDto> result = communityFeignClient.queryCmmMoodList(param);
                     MooMoodDto mood =  (result.getData() != null && result.getData().size() >0 ) ? result.getData().get(0) : null ;  //iGameProxyService.selectMooMoodById(commentBean.getTargetId());  // new MooMoodDto();// moodService.selectOne(Condition.create().setSqlSelect("id,content").eq("id", c.getTargetId()));
                     if (mood != null) {
-                        map.put( "mood_deltype",mood.getState() );
+                        map.put( "two_level_deltype",mood.getState() == -1 ? -1 : 0   );
                     }
                 }
 
@@ -466,7 +489,7 @@ public class MemberServiceImpl implements IMemberService {
 
             types = new String[]{"3", "4", "5", "8", "9", "12"};
         } else {
-            types = new String[]{"3", "4", "5", "8"};
+            types = new String[]{"3", "4", "5", "8", "9", "12"};
         }
 //		String[] types1= {"3","4","5","8"};
         Page<BasNotice> basNoticePage = new Page<>(inputPage.getPage(), inputPage.getLimit());
@@ -513,6 +536,17 @@ public class MemberServiceImpl implements IMemberService {
                         }
                         map.put("post_deltype", post.getState());
                     }
+                    String commentId = (String) map.get("commentId");
+                    if(commentId != null){
+                        CmmCommentDto cmmCommentDto = new CmmCommentDto();
+                        cmmCommentDto.setId(commentId);
+                        cmmCommentDto.setState(null);
+                        FungoPageResultDto<CmmCommentDto> resultDto = communityFeignClient.queryFirstLevelCmtList(cmmCommentDto);
+                        CmmCommentDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                        if (message != null) {
+                            map.put( "comment_deltype",message.getState() );
+                        }
+                    }
 //                    CmmPostDto post = iMemeberProxyService.selectCmmPost((String) map.get("post_id")); //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
 //                    if (post != null) {
 //                        if (!CommonUtil.isNull(post.getVideo())) {
@@ -522,12 +556,19 @@ public class MemberServiceImpl implements IMemberService {
                 } else if (basNotice.getType() == 4) {
                     //@todo  文章的评论的接口
                     map.put("msg_template", "回复了我的评论");
-                    CmmPostDto post = iMemeberProxyService.selectCmmPost((String) map.get("post_id")); //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
+                    CmmPostDto param = new CmmPostDto();
+                    param.setId((String) map.get("post_id"));
+                    param.setQueryType(1);
+                    FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(param);
+                    CmmPostDto post = (  cmmPostDtoFungoPageResultDto.getData() != null  && cmmPostDtoFungoPageResultDto.getData().size() > 0 ) ? cmmPostDtoFungoPageResultDto.getData().get(0) : null;  //iMemeberProxyService.selectCmmPost((String) map.get("post_id"));   //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
                     if (post != null) {
                         if (!CommonUtil.isNull(post.getVideo())) {
                             map.put("video", post.getVideo());
                         }
+                        map.put("post_deltype", post.getState());
                     }
+
+
                 } else if (basNotice.getType() == 5) {
                     map.put("msg_template", "回复了我的游戏评价");
                     String evaluationId = (String) map.get("evaluation_id");
@@ -540,7 +581,28 @@ public class MemberServiceImpl implements IMemberService {
                     }
                 } else if (basNotice.getType() == 8) {
                     map.put("msg_template", "评论了我的心情");
-
+                    String commentId = (String) map.get("commentId");
+                    if(commentId != null){
+                        MooMessageDto mooMessageDto = new MooMessageDto();
+                        mooMessageDto.setId(commentId);
+                        mooMessageDto.setState(null);
+                        FungoPageResultDto<MooMessageDto> resultDto = communityFeignClient.queryCmmMoodCommentList(mooMessageDto);
+                        MooMessageDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                        if (message != null) {
+                            map.put( "comment_deltype",message.getState() );
+                        }
+                    }
+                    String moodId = (String) map.get("mood_id");
+                    if(moodId != null){
+                        MooMoodDto param = new MooMoodDto();
+                        param.setId(moodId);
+                        param.setState(null);
+                        FungoPageResultDto<MooMoodDto> result = communityFeignClient.queryCmmMoodList(param);
+                        MooMoodDto mood =  (result.getData() != null && result.getData().size() >0 ) ? result.getData().get(0) : null ;  //iGameProxyService.selectMooMoodById(commentBean.getTargetId());  // new MooMoodDto();// moodService.selectOne(Condition.create().setSqlSelect("id,content").eq("id", c.getTargetId()));
+                        if (mood != null) {
+                            map.put( "mood_deltype",mood.getState() );
+                        }
+                    }
                 } else if (basNotice.getType() == 9) {
                     map.put("msg_template", "回复了我的心情评论");
 

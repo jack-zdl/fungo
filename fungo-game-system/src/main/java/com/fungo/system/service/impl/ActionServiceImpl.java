@@ -91,7 +91,7 @@ public class ActionServiceImpl implements IActionService {
 
             //点赞他人内容 点赞他人游戏评价 被点赞
 //			gameProxy.addScore(Setting.ACTION_TYPE_LIKE, memberId, inputDto.getTarget_id(), inputDto.getTarget_type());
-            gameProxy.addNotice(Setting.ACTION_TYPE_LIKE, memberId, inputDto.getTarget_id(), inputDto.getTarget_type(), inputDto.getInformation(), appVersion, "");
+            gameProxy.addNotice(Setting.ACTION_TYPE_LIKE, memberId, inputDto.getTarget_id(), inputDto.getTarget_type(), inputDto.getInformation(), appVersion, "","");
 
             //完成任务
             if (Setting.RES_TYPE_EVALUATION == inputDto.getTarget_type()) {//点赞游戏评价

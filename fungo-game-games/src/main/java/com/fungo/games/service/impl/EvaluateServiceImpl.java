@@ -403,6 +403,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
      * @auther: dl.zhang
      * @date: 2019/8/12 13:38
      */
+    @Transactional
     @Override
     public ResultDto<String> delEvaluationDetail(String memberId, List<String> commentIdList) {
         try {
@@ -447,10 +448,11 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     gameDao.updateCountor( map);
                 }
             } );
+            return ResultDto.success();
         }catch (Exception e){
-
+            logger.error( "删除游戏评论异常id:"+JSON.toJSONString(commentIdList),e );
+            return ResultDto.ResultDtoFactory.buildError("删除游戏评论异常");
         }
-        return null;
     }
 
     @Override

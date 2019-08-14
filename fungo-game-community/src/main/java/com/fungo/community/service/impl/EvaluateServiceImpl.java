@@ -144,6 +144,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
             noticeMap.put("information", commentInput.getContent());
             noticeMap.put("appVersion", appVersion);
             noticeMap.put("replyToId", "");
+            noticeMap.put( "commentId",comment.getId());
         } else if (2 == commentInput.getTarget_type()) {//心情评论
             MooMessage comment = new MooMessage();
             //编码
@@ -181,6 +182,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
             noticeMap.put("information", commentInput.getContent());
             noticeMap.put("appVersion", appVersion);
             noticeMap.put("replyToId", "");
+            noticeMap.put( "commentId",comment.getId());
         }
         if (null != noticeMap) {
             this.sendNoticeToSystemServcie(noticeMap);

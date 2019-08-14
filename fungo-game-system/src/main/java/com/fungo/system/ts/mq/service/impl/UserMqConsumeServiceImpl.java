@@ -79,7 +79,11 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
         String information = noticeMap.get("information").toString();
         String appVersion = noticeMap.get("appVersion").toString();
         String replyToId = noticeMap.get("replyToId").toString();
-        gameProxyService.addNotice(eventType,memberId,targetId,targetType,information,appVersion,replyToId);
+        String commentId = "";
+        if(noticeMap.get("commentId") != null && !"".equals(noticeMap.get("commentId")) ){
+            commentId = noticeMap.get("commentId").toString();
+        }
+        gameProxyService.addNotice(eventType,memberId,targetId,targetType,information,appVersion,replyToId,commentId);
         return true;
     }
 

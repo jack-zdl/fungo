@@ -94,7 +94,7 @@ public class EvaluateController {
     }
 
     @ApiOperation(value = "删除评论详情", notes = "")
-    @DeleteMapping(value = "/api/content/comment/")
+    @DeleteMapping(value = "/api/content/comment")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "comment_idS", value = "帖子id集合", paramType = "path", dataType = "string"),
             @ApiImplicitParam(name = "user_id", value = "用户id", paramType = "path", dataType = "string")

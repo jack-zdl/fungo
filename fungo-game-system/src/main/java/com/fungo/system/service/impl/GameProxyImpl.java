@@ -53,7 +53,7 @@ public class GameProxyImpl implements IGameProxy {
 	 * information --> content
 	 * 用户通知接口
 	 */
-	public void addNotice(int eventType, String memberId, String target_id, int target_type, String information,String appVersion,String replyToId) throws Exception {
+	public void addNotice(int eventType, String memberId, String target_id, int target_type, String information,String appVersion,String replyToId,String commentId) throws Exception {
 		String notiveMemberId="";//发送To用户ID
 		int msgType=1;//消息类型
 		Map<String,Object> date=new HashMap<String,Object>();
@@ -133,6 +133,7 @@ public class GameProxyImpl implements IGameProxy {
 			date.put("post_title", post.getTitle());
 			date.put("post_content",reduceString(post.getContent()));
 			date.put("comment_content", information);
+			date.put( "commentId",commentId );
 			date.put("type",3 );
 			msgType=3;//消息类型
 		}else if(Setting.MSG_TYPE_MOOD == eventType){// 评论心情
@@ -143,6 +144,7 @@ public class GameProxyImpl implements IGameProxy {
 			date.put("mood_content",mood.getContent() );
 			date.put("message_content", information);
 			date.put("type",8 );//7
+			date.put( "commentId",commentId );
 			date.put("createdAt", DateTools.fmtDate(new Date()));
 			msgType=8;//消息类型
 		}else if(Setting.MSG_TYPE_REPLAY_GAME == eventType && Setting.RES_TYPE_COMMENT==target_type){//回复评论
