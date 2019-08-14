@@ -540,7 +540,6 @@ public class MemberServiceImpl implements IMemberService {
                     }
                 } else if (basNotice.getType() == 8) {
                     map.put("msg_template", "评论了我的心情");
-                    dada
 
                 } else if (basNotice.getType() == 9) {
                     map.put("msg_template", "回复了我的心情评论");
