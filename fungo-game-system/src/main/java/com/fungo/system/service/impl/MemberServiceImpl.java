@@ -1490,7 +1490,7 @@ public class MemberServiceImpl implements IMemberService {
         for (CommentBean commentBean : all) {
             //文章评论 心情评论 二级评论
             MyCommentBean bean = new MyCommentBean();
-            bean.setCommentDelType(commentBean.getState());
+            bean.setCommentDelType(commentBean.getState() == -1 ? -1 : 0 );
             String content = commentBean.getContent();
             if (StringUtils.isNotBlank(content)) {
                 content = FilterEmojiUtil.decodeEmoji(content);
@@ -1518,14 +1518,12 @@ public class MemberServiceImpl implements IMemberService {
                 replyDto.setState(null);
                 CmmCmtReplyDto reply = iMemeberProxyService.selectReplyById(replyDto);   //new ReplyDto();// replyService.selectById(c.getReplyContentId());
                 if (reply != null) {
-
                     String replyContent = reply.getContent();
-                    bean.setTargetDelType(reply.getState());
+                    bean.setTargetDelType(reply.getState() == -1 ? -1 : 0);
                     if (StringUtils.isNotBlank(replyContent)) {
                         replyContent = FilterEmojiUtil.decodeEmoji(replyContent);
                         bean.setTargetConetnt(replyContent);
                     }
-
                     bean.setReplyToConentId(commentBean.getReplyContentId());
                 }
                 blist.add(bean);
@@ -1560,7 +1558,7 @@ public class MemberServiceImpl implements IMemberService {
                 MooMoodDto mood =  (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;  //iGameProxyService.selectMooMoodById(commentBean.getTargetId());  // new MooMoodDto();// moodService.selectOne(Condition.create().setSqlSelect("id,content").eq("id", c.getTargetId()));
                 if (mood != null) {
                     String contentMood = CommonUtils.filterWord(CommonUtils.reduceString(mood.getContent(), 50));
-                    bean.setTargetDelType(mood.getState());
+                    bean.setTargetDelType(mood.getState() == -1 ? -1 : 0);
                     if (StringUtils.isNotBlank(contentMood)) {
                         contentMood = FilterEmojiUtil.decodeEmoji(contentMood);
                         bean.setTargetConetnt(contentMood);
@@ -1580,7 +1578,7 @@ public class MemberServiceImpl implements IMemberService {
                 CmmCommentDto comment =  (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;
 //                CmmCommentDto comment = iGameProxyService.selectCmmCommentById(commentBean.getTargetId()); //commentService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                 if (comment != null) {
-                    bean.setTargetDelType(comment.getState());
+                    bean.setTargetDelType(comment.getState() == -1 ? -1 : 0);
                     String contentCmmComment = CommonUtils.filterWord(CommonUtils.reduceString(comment.getContent(), 50));
                     if (StringUtils.isNotBlank(contentCmmComment)) {
                         contentCmmComment = FilterEmojiUtil.decodeEmoji(contentCmmComment);
@@ -1601,7 +1599,7 @@ public class MemberServiceImpl implements IMemberService {
                 FungoPageResultDto<GameEvaluationDto> resultDto = gamesFeignClient.getGameEvaluationPage(param);
                 GameEvaluationDto evaluation =  (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ; //iGameProxyService.selectGameEvaluationById(param); //evaluationService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                 if (evaluation != null) {
-                    bean.setTargetDelType(evaluation.getState());
+                    bean.setTargetDelType(evaluation.getState()== -1 ? -1 : 0);
                     String contentGameEval = CommonUtils.filterWord(CommonUtils.reduceString(evaluation.getContent(), 50));
                     if (StringUtils.isNotBlank(contentGameEval)) {
                         contentGameEval = FilterEmojiUtil.decodeEmoji(contentGameEval);
@@ -1622,7 +1620,7 @@ public class MemberServiceImpl implements IMemberService {
                 FungoPageResultDto<MooMessageDto> resultDto = communityFeignClient.queryCmmMoodCommentList(mooMessageDto);
                 MooMessageDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                 if (message != null) {
-                    bean.setTargetDelType(message.getState());
+                    bean.setTargetDelType(message.getState()== -1 ? -1 : 0);
                     String contentMoodMsg = CommonUtils.filterWord(CommonUtils.reduceString(message.getContent(), 50));
                     if (StringUtils.isNotBlank(contentMoodMsg)) {
                         contentMoodMsg = FilterEmojiUtil.decodeEmoji(contentMoodMsg);
@@ -1637,7 +1635,6 @@ public class MemberServiceImpl implements IMemberService {
                 }
             }
             blist.add(bean);
-
         }
         re.setData(blist);
         PageTools.newPageToResultDto(re,comments.getCount(),comments.getPages(),input.getPage());
