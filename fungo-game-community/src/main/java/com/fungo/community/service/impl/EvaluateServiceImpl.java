@@ -2190,7 +2190,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         try {
             if( DelObjectListVO.TypeEnum.POSTEVALUATE.getKey() == type ){
                 commentIds.stream().forEach(s ->{
-                    int commentNum =  cmmPostDao.updateCmmPostCommentNum(s);
+                    cmmPostDao.updateCmmPostCommentNum(s);
                     CmmComment cmmComment = new CmmComment();
                     cmmComment.setId(s);
                     cmmComment.setState(-1);
