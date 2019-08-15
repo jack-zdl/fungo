@@ -34,7 +34,6 @@
         <result column="last_reply_at" property="lastReplyAt"/>
         <result column="video_cover_image" property="videoCoverImage"/>
         <result column="boom_watch_num" property="boomWatchNum"/>
-
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -369,6 +368,7 @@
 
 
     <update id="updateCmmPostCommentNum" >
-        update t_cmm_post set  comment_num = ${comment_num}-1  WHERE id = (SELECT post_id FROM t_cmm_comment WHERE id = #{commentId})
+        update t_cmm_post set  comment_num = comment_num - 1  WHERE id = (SELECT post_id FROM t_cmm_comment WHERE id = #{commentId})
     </update>
+
 </mapper>
