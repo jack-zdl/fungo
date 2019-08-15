@@ -1,6 +1,7 @@
 package com.game.common.dto.community;
 
 import com.game.common.api.InputPageDto;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
 
@@ -61,6 +62,9 @@ public class CmmCmtReplyDto extends InputPageDto {
      * 回复二级回复的id
      */
 	private String replyToContentId;
+
+	@ApiModelProperty(value="评论的内容是否已删除",example="")
+	private int delType;
 
 
 	public String getId() {
@@ -159,4 +163,11 @@ public class CmmCmtReplyDto extends InputPageDto {
 		this.replyToContentId = replyToContentId;
 	}
 
+	public int getDelType() {
+		return delType;
+	}
+
+	public void setDelType(int delType) {
+		this.delType = delType;
+	}
 }
