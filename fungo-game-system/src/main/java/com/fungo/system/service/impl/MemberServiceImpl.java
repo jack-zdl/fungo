@@ -658,7 +658,7 @@ public class MemberServiceImpl implements IMemberService {
                             map.put( "three_level_deltype",mood.getState()== -1 ? -1 : 0 );
                         }
                     }
-                    String commentId = (String) map.get("commentId");
+                    String commentId = (String) map.get("message_id");
                     if(commentId != null){
                         MooMessageDto mooMessageDto = new MooMessageDto();
                         mooMessageDto.setId(commentId);

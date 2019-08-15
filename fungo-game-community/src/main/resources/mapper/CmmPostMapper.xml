@@ -349,7 +349,7 @@
 
     <select id="getCmmPostByGameId" resultType="com.fungo.community.entity.CmmPost">
 
-	SELECT 
+	SELECT
 	 <include refid="Base_Column_List"></include>
 	 FROM t_cmm_post cp  WHERE cp.state != -1 AND
 	 (
@@ -363,7 +363,7 @@
         <include refid="Base_List"><property name="alias" value="cp"/></include>
         FROM t_cmm_post  cp WHERE cp.state != -1  and  cp.recommend = 1 and
         NOT EXISTS
-        ( SELECT 1 FROM t_cmm_post_circle cpc , t_cmm_circle cc WHERE cc.id = cpc.circle_id  and cpc.post_id = cp.id and cc.state != 1 )  ORDER BY cp.sort DESC , cp.created_at desc
+        ( SELECT 1 FROM t_cmm_post_circle cpc , t_cmm_circle cc WHERE cc.id = cpc.circle_id  and cpc.post_id = cp.id and cc.state != 1 )  ORDER BY cp.sort DESC , cp.edited_at desc
     </select>
 
 
