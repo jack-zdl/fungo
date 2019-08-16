@@ -169,4 +169,18 @@
             tcc.state = 1
     </select>
 
+    <select id="selectCmmCommunityByBrowse" resultType="com.fungo.community.entity.CmmCommunity">
+    select  id,name,icon from t_cmm_community where state = 1 and  id  in
+        <foreach  item="item" collection="ids" index="index"  open="(" separator="," close=")">
+            #{item}
+        </foreach>
+     order by
+        field(
+        id,
+        <foreach collection="ids" index="index" item="item"   separator=","    >
+            #{item}
+        </foreach>
+        )
+    </select>
+
 </mapper>
