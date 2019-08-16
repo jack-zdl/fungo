@@ -546,7 +546,7 @@ public class MemberServiceImpl implements IMemberService {
                         }
                         map.put("two_level_deltype", post.getState()  == -1 ? -1 : 0);
                     }
-                    String commentId = (String) map.get("comment_id");
+                    String commentId = (String) map.get("commentId");
                     if(StringUtil.isNotNull(commentId)){
                         CmmCommentDto cmmCommentDto = new CmmCommentDto();
                         cmmCommentDto.setId(commentId);
