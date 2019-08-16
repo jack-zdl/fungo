@@ -81,7 +81,7 @@ public class GameProxyImpl implements IGameProxy {
 			date.put("type", 1);
 			date.put("post_id", comment.getPostId());
 			// @todo 社区帖子的
-			CmmPostDto cmmPostParam = new CmmPostDto();cmmPostParam.setId(target_id);
+			CmmPostDto cmmPostParam = new CmmPostDto();cmmPostParam.setId(comment.getPostId());
 			CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostParam);  //this.postService.selectById(comment.getPostId());
 			date.put("post_title",post.getTitle() );
 			date.put("post_content",reduceString(post.getContent()));
@@ -173,7 +173,7 @@ public class GameProxyImpl implements IGameProxy {
 			date.put("post_id", comment.getPostId());
 			//@todo 社区帖子的
 			CmmPostDto cmmPostDto = new CmmPostDto();
-			cmmPostDto.setId(target_id);
+			cmmPostDto.setId(comment.getPostId());
 			CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto);//this.postService.selectById(comment.getPostId());
 			date.put("post_title",post.getTitle() );
 			date.put("post_content",post.getContent() );
@@ -226,7 +226,7 @@ public class GameProxyImpl implements IGameProxy {
 			date.put("post_id", comment.getPostId());
 			// @todo 心情
 			CmmPostDto cmmPostDto = new CmmPostDto();
-			cmmPostDto.setId(target_id);
+			cmmPostDto.setId(comment.getPostId());
 			CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto); //this.postService.selectById(comment.getPostId());
 			date.put("post_title",post.getTitle() );
 			date.put("post_content",post.getContent() );

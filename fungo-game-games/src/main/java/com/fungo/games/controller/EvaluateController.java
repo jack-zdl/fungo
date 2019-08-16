@@ -38,7 +38,6 @@ public class EvaluateController {
 
 	@Autowired
 	private FungoCacheGame fungoCacheGame;
-
 	@Autowired
 	private IEvaluateService evaluateService;
 	
