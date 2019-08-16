@@ -422,7 +422,8 @@ public class MemberServiceImpl implements IMemberService {
                     }
                 } else if (basNotice.getType() == 11) {
                     map.put("msg_template", "赞了我的心情评论");
-                    String  mooMessageId = (String) map.get("commentId");
+//                    String  mooMessageId = (String) map.get("commentId");
+                    String  mooMessageId = (String) map.get("message_id");
                     MooMessageDto mooMessageDto = new MooMessageDto();
                     mooMessageDto.setId(mooMessageId);
                     mooMessageDto.setState(null);
