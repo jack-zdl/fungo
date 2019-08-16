@@ -114,7 +114,7 @@ public class EvaluateController {
             int type = commentIds.getType();
             List<String> ids = commentIds.getCommentIds();
             ResultDto<String> resultDto =  this.evaluateService.delCommentList(memberId, type,ids);
-            if(CommonEnum.SUCCESS.code().equals(resultDto.getStatus())){
+            if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(resultDto.getStatus())){
                 // 文章和心情评论缓存
                 fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
             }
