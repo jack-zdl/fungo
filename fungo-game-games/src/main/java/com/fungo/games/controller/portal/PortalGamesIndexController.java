@@ -319,7 +319,8 @@ public class PortalGamesIndexController {
         List<AmwayWallBean> list = new ArrayList<AmwayWallBean>();
         re.setData(list);
         //精选游戏评测
-        Page<GameEvaluation> page = gameEvaluationService.selectPage(new Page<GameEvaluation>(inputPageDto.getPage(), inputPageDto.getLimit()), new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy("RAND()"));
+        Page<GameEvaluation> page = gameEvaluationService.selectPage(new Page<GameEvaluation>(inputPageDto.getPage(), inputPageDto.getLimit()),
+                new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy(" sort desc ,created_at desc"));
         List<GameEvaluation> plist = page.getRecords();
         for (GameEvaluation gameEvaluation : plist) {
             AmwayWallBean bean = new AmwayWallBean();
