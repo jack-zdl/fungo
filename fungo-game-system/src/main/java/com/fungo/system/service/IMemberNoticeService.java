@@ -2,6 +2,8 @@ package com.fungo.system.service;
 
 import com.fungo.system.dto.MemberNoticeInput;
 import com.fungo.system.entity.MemberNotice;
+import com.game.common.dto.ResultDto;
+import com.game.common.vo.DelObjectListVO;
 
 import java.util.List;
 import java.util.Map;
@@ -63,6 +65,8 @@ public interface IMemberNoticeService {
      * @return
      */
     List<Map<String,Object>> insertMbNotices(MemberNoticeInput noticeInput);
+
+    ResultDto<String> delMbNotices(DelObjectListVO noticeInput);
 
 
 }

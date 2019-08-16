@@ -1,10 +1,15 @@
 package com.fungo.system.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.fungo.system.dto.MemberNoticeInput;
 import com.fungo.system.service.IMemberNoticeService;
 import com.fungo.system.service.IMemberService;
+import com.fungo.system.service.impl.CommunityServiceImpl;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.vo.DelObjectListVO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +32,8 @@ import java.util.Map;
  */
 @RestController
 public class MemberNoticeController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( CommunityServiceImpl.class);
 
     @Autowired
     private IMemberNoticeService iMemberNoticeService;
@@ -90,6 +97,25 @@ public class MemberNoticeController {
         }
         ResultDto<List<Map<String, Object>>> resultDto = ResultDto.success("暂无消息");
         resultDto.setData(Collections.emptyList());
+        return resultDto;
+    }
+
+
+    /**
+     * 删除个人消息
+     * @param memberprofile
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/api/user/notices", method = RequestMethod.DELETE)
+    public ResultDto<String> updateUserIosNotice( MemberUserProfile memberprofile,@Valid @RequestBody DelObjectListVO delObjectListVO) throws Exception {
+        ResultDto<String> resultDto = null;
+        try {
+            resultDto = iMemberNoticeService.delMbNotices(delObjectListVO);
+        }catch (Exception e){
+            LOGGER.error( "删除个人消息异常，noticeId="+ JSON.toJSONString(delObjectListVO.getCommentIds()),e);
+            resultDto = ResultDto.error( "-1", "删除个人消息异常");
+        }
         return resultDto;
     }
 

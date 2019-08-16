@@ -33,6 +33,7 @@ import com.game.common.repo.cache.facade.FungoCacheMood;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
+import com.game.common.util.StringUtil;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import org.apache.commons.lang.StringUtils;
@@ -41,10 +42,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -508,7 +506,6 @@ public class MemberServiceImpl implements IMemberService {
 
         EntityWrapper<BasNotice> noticeEntityWrapper = new EntityWrapper<>();
         noticeEntityWrapper.eq("member_id", memberId);
-        //noticeEntityWrapper.eq("is_read", 0);
 
         noticeEntityWrapper.in("type", types);
         noticeEntityWrapper.orderBy("created_at", false);
@@ -533,6 +530,7 @@ public class MemberServiceImpl implements IMemberService {
                 }
 
                 map.put("video", "");
+                map.put( "noticeId",basNotice.getId());
                 map = objectMapper.readValue(basNotice.getData(), Map.class);
                 if (basNotice.getType() == 3) {
                     //@todo  文章的接口
@@ -549,7 +547,7 @@ public class MemberServiceImpl implements IMemberService {
                         map.put("two_level_deltype", post.getState()  == -1 ? -1 : 0);
                     }
                     String commentId = (String) map.get("comment_id");
-                    if(commentId != null){
+                    if(StringUtil.isNotNull(commentId)){
                         CmmCommentDto cmmCommentDto = new CmmCommentDto();
                         cmmCommentDto.setId(commentId);
                         cmmCommentDto.setState(null);
@@ -580,7 +578,7 @@ public class MemberServiceImpl implements IMemberService {
                         map.put("three_level_deltype", post.getState()  == -1 ? -1 : 0);
                     }
                     String commentId = (String) map.get("comment_id");
-                    if(commentId != null){
+                    if(StringUtil.isNotNull(commentId)){
                         CmmCommentDto cmmCommentDto = new CmmCommentDto();
                         cmmCommentDto.setId(commentId);
                         cmmCommentDto.setState(null);
@@ -591,9 +589,10 @@ public class MemberServiceImpl implements IMemberService {
                         }
                     }
                     String replyId = (String) map.get("replyId");
-                    if(replyId != null){
+                    if(StringUtil.isNotNull(replyId)){
                         CmmCmtReplyDto cmmCmtReplyDto = new CmmCmtReplyDto();
                         cmmCmtReplyDto.setId(replyId);
+                        cmmCmtReplyDto.setState(null);
                         FungoPageResultDto<CmmCmtReplyDto>  replyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto);
                         CmmCmtReplyDto cmmCmtReplyDto1 =    (replyDtoFungoPageResultDto.getData() != null && replyDtoFungoPageResultDto.getData().size() >0 ) ? replyDtoFungoPageResultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                         if (cmmCmtReplyDto1 != null) {
@@ -606,15 +605,17 @@ public class MemberServiceImpl implements IMemberService {
                     String evaluationId = (String) map.get("evaluation_id");
                     GameEvaluationDto param = new GameEvaluationDto();
                     param.setId(evaluationId);
+                    param.setState(null);
                     FungoPageResultDto<GameEvaluationDto>  resultDto = gamesFeignClient.getGameEvaluationPage(param);
                     GameEvaluationDto gameEvaluationDto = (resultDto.getData() != null && resultDto.getData().size() > 0 ) ? resultDto.getData().get(0) : null;
                     if(gameEvaluationDto != null){
                         map.put( "two_level_deltype",gameEvaluationDto.getState()  == -1 ? -1 : 0 );
                     }
                     String replyId = (String) map.get("replyId");
-                    if(replyId != null){
+                    if(StringUtil.isNotNull(replyId)){
                         CmmCmtReplyDto cmmCmtReplyDto = new CmmCmtReplyDto();
                         cmmCmtReplyDto.setId(replyId);
+                        cmmCmtReplyDto.setState(null);
                         FungoPageResultDto<CmmCmtReplyDto>  replyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto);
                         CmmCmtReplyDto cmmCmtReplyDto1 =    (replyDtoFungoPageResultDto.getData() != null && replyDtoFungoPageResultDto.getData().size() >0 ) ? replyDtoFungoPageResultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                         if (cmmCmtReplyDto1 != null) {
@@ -624,7 +625,7 @@ public class MemberServiceImpl implements IMemberService {
                 } else if (basNotice.getType() == 8) {
                     map.put("msg_template", "评论了我的心情");
                     String commentId = (String) map.get("commentId");
-                    if(commentId != null){
+                    if(StringUtil.isNotNull(commentId)){
                         MooMessageDto mooMessageDto = new MooMessageDto();
                         mooMessageDto.setId(commentId);
                         mooMessageDto.setState(null);
@@ -635,7 +636,7 @@ public class MemberServiceImpl implements IMemberService {
                         }
                     }
                     String moodId = (String) map.get("mood_id");
-                    if(moodId != null){
+                    if(StringUtil.isNotNull(moodId)){
                         MooMoodDto param = new MooMoodDto();
                         param.setId(moodId);
                         param.setState(null);
@@ -648,7 +649,7 @@ public class MemberServiceImpl implements IMemberService {
                 } else if (basNotice.getType() == 9) {
                     map.put("msg_template", "回复了我的心情评论");
                     String moodId = (String) map.get("mood_id");
-                    if(moodId != null){
+                    if(StringUtil.isNotNull(moodId)){
                         MooMoodDto param = new MooMoodDto();
                         param.setId(moodId);
                         param.setState(null);
@@ -659,7 +660,7 @@ public class MemberServiceImpl implements IMemberService {
                         }
                     }
                     String commentId = (String) map.get("message_id");
-                    if(commentId != null){
+                    if(StringUtil.isNotNull(commentId)){
                         MooMessageDto mooMessageDto = new MooMessageDto();
                         mooMessageDto.setId(commentId);
                         mooMessageDto.setState(null);
@@ -670,9 +671,10 @@ public class MemberServiceImpl implements IMemberService {
                         }
                     }
                     String replyId = (String) map.get("replyId");
-                    if(replyId != null){
+                    if(StringUtil.isNotNull(replyId)){
                         CmmCmtReplyDto cmmCmtReplyDto = new CmmCmtReplyDto();
                         cmmCmtReplyDto.setId(replyId);
+                        cmmCmtReplyDto.setState(null);
                         FungoPageResultDto<CmmCmtReplyDto>  replyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto);
                         CmmCmtReplyDto cmmCmtReplyDto1 =    (replyDtoFungoPageResultDto.getData() != null && replyDtoFungoPageResultDto.getData().size() >0 ) ? replyDtoFungoPageResultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                         if (cmmCmtReplyDto1 != null) {
@@ -682,9 +684,10 @@ public class MemberServiceImpl implements IMemberService {
                 } else if (basNotice.getType() == 12) {
                     map.put("msg_template", "回复了我的回复");
                     String replyToId = (String) map.get("replyToId");
-                    if(replyToId != null){
+                    if(StringUtil.isNotNull(replyToId)){
                         CmmCmtReplyDto cmmCmtReplyDto = new CmmCmtReplyDto();
                         cmmCmtReplyDto.setId(replyToId);
+                        cmmCmtReplyDto.setState(null);
                         FungoPageResultDto<CmmCmtReplyDto>  replyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto);
                         CmmCmtReplyDto cmmCmtReplyDto1 =    (replyDtoFungoPageResultDto.getData() != null && replyDtoFungoPageResultDto.getData().size() >0 ) ? replyDtoFungoPageResultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                         if (cmmCmtReplyDto1 != null) {
@@ -692,9 +695,10 @@ public class MemberServiceImpl implements IMemberService {
                         }
                     }
                     String replyId = (String) map.get("replyId");
-                    if(replyId != null){
+                    if(StringUtil.isNotNull(replyId)){
                         CmmCmtReplyDto cmmCmtReplyDto = new CmmCmtReplyDto();
                         cmmCmtReplyDto.setId(replyId);
+                        cmmCmtReplyDto.setState(null);
                         FungoPageResultDto<CmmCmtReplyDto>  replyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto);
                         CmmCmtReplyDto cmmCmtReplyDto1 =    (replyDtoFungoPageResultDto.getData() != null && replyDtoFungoPageResultDto.getData().size() >0 ) ? replyDtoFungoPageResultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                         if (cmmCmtReplyDto1 != null) {

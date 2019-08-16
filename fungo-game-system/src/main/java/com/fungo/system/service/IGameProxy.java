@@ -6,7 +6,7 @@ import java.text.ParseException;
 
 public interface IGameProxy {
 	public void addNotice(int eventType, String memberId, String target_id, int target_type, String information,
-						  String appVersion, String replyToId,String commentId,String replyId)throws Exception;
+						  String appVersion, String replyToId,String commentId,String replyId,String replyToNoticeId)throws Exception;
 	public ResultDto<String> addScore(int eventType, String memberId, String target_id, int target_type) throws IOException, ParseException ;
 //	public int addsc(int taskType, int icode, String memberId, String target_id, int target_type) throws Exception;
 	String getMemberID(String target_id, int target_type);

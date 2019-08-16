@@ -91,6 +91,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
     @Autowired
     private MooMoodDao mooMoodDao;
 
+    @Transactional
     @Override
     public ResultDto<CommentOut> addComment(String memberId, CommentInput commentInput, String appVersion) throws Exception {
         ResultDto<CommentOut> re = new ResultDto<CommentOut>();
@@ -1731,6 +1732,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     noticeMap.put("target_type", Setting.RES_TYPE_COMMENT);
                     noticeMap.put("information", replyInput.getContent());
                     noticeMap.put( "replyId",reply.getId() );
+                    noticeMap.put("replyToNoticeId", replyInput.getReply_to_content_id());
                     noticeMap.put("appVersion", appVersion);
                     noticeMap.put("replyToId", replyInput.getReply_to());
 
@@ -1778,6 +1780,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     noticeMap.put("target_type", Setting.RES_TYPE_EVALUATION);
                     noticeMap.put("information", replyInput.getContent());
                     noticeMap.put( "replyId",reply.getId() );
+                    noticeMap.put("replyToNoticeId", replyInput.getReply_to_content_id());
                     noticeMap.put("appVersion", appVersion);
                     noticeMap.put("replyToId", replyInput.getReply_to());
 
@@ -1819,6 +1822,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 noticeMap.put("target_type", Setting.RES_TYPE_MESSAGE);
                 noticeMap.put("information", replyInput.getContent());
                 noticeMap.put( "replyId",reply.getId() );
+                noticeMap.put("replyToNoticeId", replyInput.getReply_to_content_id());
                 noticeMap.put("appVersion", appVersion);
                 noticeMap.put("replyToId", replyInput.getReply_to());
 

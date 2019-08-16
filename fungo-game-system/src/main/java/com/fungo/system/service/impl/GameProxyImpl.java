@@ -53,7 +53,8 @@ public class GameProxyImpl implements IGameProxy {
 	 * information --> content
 	 * 用户通知接口
 	 */
-	public void addNotice(int eventType, String memberId, String target_id, int target_type, String information,String appVersion,String replyToId,String commentId,String replyId) throws Exception {
+	public void addNotice(int eventType, String memberId, String target_id, int target_type, String information,String appVersion,String replyToId,
+						  String commentId,String replyId,String replyToNoticeId) throws Exception {
 		String notiveMemberId="";//发送To用户ID
 		int msgType=1;//消息类型
 		Map<String,Object> date=new HashMap<String,Object>();
@@ -218,7 +219,7 @@ public class GameProxyImpl implements IGameProxy {
 			notiveMemberId=replyToId;
 			date.put("reply_content",information );
 			date.put("replyId",replyId);
-			date.put("replyToId",replyToId);
+			date.put("replyToId",replyToNoticeId);
 			date.put("type",12 );
 			date.put("comment_id", target_id);
 			date.put("comment_content", comment.getContent());
@@ -239,7 +240,7 @@ public class GameProxyImpl implements IGameProxy {
 			notiveMemberId=replyToId;
 			date.put("reply_content",information);
 			date.put("replyId",replyId);
-			date.put("replyToId",replyToId);
+			date.put("replyToId",replyToNoticeId);
 			date.put("type",12 );
 			date.put("evaluation_id",target_id );
 			date.put("evaluation_content",evaluation.getContent());
@@ -259,7 +260,7 @@ public class GameProxyImpl implements IGameProxy {
 			notiveMemberId=replyToId;
 			date.put("reply_content",information);
 			date.put("replyId",replyId);
-			date.put("replyToId",replyToId);
+			date.put("replyToId",replyToNoticeId);
 			date.put("type",12 );
 			date.put("message_id",target_id );
 			date.put("message_content",mooMessage.getContent());
