@@ -161,7 +161,7 @@
         </foreach>
         and id not  in
         (
-        SELECT target_id FROM t_bas_action WHERE type = 5 and member_id = #{memberId} and target_type =  0  and target_id  in
+        SELECT target_id FROM t_bas_action WHERE type = 5 and member_id = #{memberId} and state != -1   and target_id  in
         <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
             #{item}
         </foreach>
