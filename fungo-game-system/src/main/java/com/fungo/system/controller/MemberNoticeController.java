@@ -5,8 +5,11 @@ import com.fungo.system.dto.MemberNoticeInput;
 import com.fungo.system.service.IMemberNoticeService;
 import com.fungo.system.service.IMemberService;
 import com.fungo.system.service.impl.CommunityServiceImpl;
+import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.enums.CommonEnum;
+import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.vo.DelObjectListVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +42,8 @@ public class MemberNoticeController {
     private IMemberNoticeService iMemberNoticeService;
     @Autowired
     private IMemberService memberService;
+    @Autowired
+    private FungoCacheGame fungoCacheGame;
 
     /**
      * 客户端轮询获取用户系统消息接口  显示红点
@@ -112,6 +117,9 @@ public class MemberNoticeController {
         ResultDto<String> resultDto = null;
         try {
             resultDto = iMemberNoticeService.delMbNotices(delObjectListVO);
+            if(CommonEnum.SUCCESS.code().equals( String.valueOf(resultDto.getStatus())) ){
+                fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_COMMENTS, "", null);
+            }
         }catch (Exception e){
             LOGGER.error( "删除个人消息异常，noticeId="+ JSON.toJSONString(delObjectListVO.getCommentIds()),e);
             resultDto = ResultDto.error( "-1", "删除个人消息异常");

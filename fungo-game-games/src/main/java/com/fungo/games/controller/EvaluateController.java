@@ -38,7 +38,6 @@ public class EvaluateController {
 
 	@Autowired
 	private FungoCacheGame fungoCacheGame;
-
 	@Autowired
 	private IEvaluateService evaluateService;
 	
@@ -92,7 +91,7 @@ public class EvaluateController {
 				return ResultDto.ResultDtoFactory.buildWarning( AbstractResultEnum.CODE_GAME_FOUR.getKey(),AbstractResultEnum.CODE_GAME_FOUR.getFailevalue());
 			}
 			ResultDto<String>  resultDto =  this.evaluateService.delEvaluationDetail(memberId, commentIdList);
-			if(CommonEnum.SUCCESS.code().equals(resultDto.getStatus())){
+			if(CommonEnum.SUCCESS.code().equals(String.valueOf(resultDto.getStatus()))){
 				fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS, "", null);
 			}
 			return resultDto;

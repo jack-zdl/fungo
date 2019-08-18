@@ -341,6 +341,7 @@ public class MemberServiceImpl implements IMemberService {
                 }
 
                 map = objectMapper.readValue(noticeData, Map.class);
+                map.put( "noticeId",basNotice.getId());
                 // @todo 文章的接口
                 if ((int) map.get("type") == 0) {
                     map.put("msg_template", "赞了我的文章");
@@ -422,7 +423,8 @@ public class MemberServiceImpl implements IMemberService {
                     }
                 } else if (basNotice.getType() == 11) {
                     map.put("msg_template", "赞了我的心情评论");
-                    String  mooMessageId = (String) map.get("commentId");
+//                    String  mooMessageId = (String) map.get("commentId");
+                    String  mooMessageId = (String) map.get("message_id");
                     MooMessageDto mooMessageDto = new MooMessageDto();
                     mooMessageDto.setId(mooMessageId);
                     mooMessageDto.setState(null);
@@ -530,8 +532,8 @@ public class MemberServiceImpl implements IMemberService {
                 }
 
                 map.put("video", "");
-                map.put( "noticeId",basNotice.getId());
                 map = objectMapper.readValue(basNotice.getData(), Map.class);
+                map.put( "noticeId",basNotice.getId());
                 if (basNotice.getType() == 3) {
                     //@todo  文章的接口
                     map.put("msg_template", "评论了我的文章");
@@ -1540,7 +1542,7 @@ public class MemberServiceImpl implements IMemberService {
                 cmmPostDto.setQueryType(1);
                 CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto);    //postService.selectOne(Condition.create().setSqlSelect("id,content,title,video").eq("id", c.getTargetId()));
                 if (post != null) {
-                    bean.setTargetDelType(post.getState());
+                    bean.setTargetDelType(post.getState()  == -1 ? -1 : 0);
                     String title = CommonUtils.filterWord(post.getTitle());
                     if (StringUtils.isNotBlank(title)) {
                         title = FilterEmojiUtil.decodeEmoji(title);
