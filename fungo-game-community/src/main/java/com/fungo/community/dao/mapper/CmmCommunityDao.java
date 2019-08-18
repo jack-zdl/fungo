@@ -75,4 +75,6 @@ public interface CmmCommunityDao extends BaseMapper<CmmCommunity> {
      */
     int getCommunityListPC2_0Count();
 
+    List<CmmCommunity> selectCmmCommunityByBrowse( @Param( "ids" ) List<String> ids);
+
 }

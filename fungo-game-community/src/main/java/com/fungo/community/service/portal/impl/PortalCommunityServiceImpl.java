@@ -60,6 +60,8 @@ public class PortalCommunityServiceImpl implements IPortalCommunityService {
     //依赖系统和用户微服务
     @Autowired(required = false)
     private SystemFeignClient systemFeignClient;
+    @Autowired
+    private CmmCommunityDao cmmCommunityDao;
 
 
 
@@ -321,8 +323,9 @@ public class PortalCommunityServiceImpl implements IPortalCommunityService {
             List<String> data = recentBrowseCommunityByUserId.getData();
             if (data != null && data.size() > 0){
 //                首页最近浏览圈子
-                Wrapper<CmmCommunity> id = new EntityWrapper<CmmCommunity>().setSqlSelect("id,name,icon").in("id", data).eq("state", 1);
-                List<CmmCommunity> cmmCommunities = communityService.selectList(id);
+                List<CmmCommunity> cmmCommunities =  cmmCommunityDao.selectCmmCommunityByBrowse(data);
+//                Wrapper<CmmCommunity> id = new EntityWrapper<CmmCommunity>().setSqlSelect("id,name,icon").in("id", data).eq("state", 1);
+//                List<CmmCommunity> cmmCommunities = communityService.selectList(id);
                 for (CmmCommunity cmmCommunity:cmmCommunities) {
                     CmmCommunityDto cmmCommunityDto = new CmmCommunityDto();
                     BeanUtils.copyProperties(cmmCommunity, cmmCommunityDto);
