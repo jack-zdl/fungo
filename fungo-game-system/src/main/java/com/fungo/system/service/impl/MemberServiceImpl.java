@@ -32,6 +32,7 @@ import com.game.common.repo.cache.facade.FungoCacheMood;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
+import com.game.common.util.StringUtil;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import org.apache.commons.lang.StringUtils;
@@ -620,7 +621,7 @@ public class MemberServiceImpl implements IMemberService {
         int comment_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).in("type", types1));
         int notice_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
         List<BasNotice> basNotices = noticeService.selectList(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
-        basNotices = basNotices.stream().filter( s -> os.equals(s.getChannel()) || s.getChannel() == null ).collect( Collectors.toList());
+        basNotices = basNotices.stream().filter( s -> os.equals(s.getChannel()) ||StringUtil.isNull(s.getChannel())).collect( Collectors.toList());
        /* List<BasNotice> noticeList = noticeService.selectList(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
         for (BasNotice notice : noticeList) {
             //将未被推送的消息设置为已推送
@@ -664,7 +665,7 @@ public class MemberServiceImpl implements IMemberService {
         Page<BasNotice> plist = noticeService.selectPage(noticePage, noticeEntityWrapper);
 
         List<BasNotice> basNotices = plist.getRecords();
-        List<BasNotice> t = basNotices.stream().filter( s -> ( os.equals(s.getChannel()) || s.getChannel() == null )).collect( Collectors.toList());
+        List<BasNotice> t = basNotices.stream().filter( s -> ( os.equals(s.getChannel()) || StringUtil.isNull(s.getChannel()) )).collect( Collectors.toList());
         ObjectMapper objectMapper = new ObjectMapper();
         for (BasNotice basNotice : t) {
 

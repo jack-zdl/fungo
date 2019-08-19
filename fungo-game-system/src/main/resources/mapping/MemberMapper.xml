@@ -151,5 +151,22 @@
         SELECT  id FROM  t_member WHERE  state = '0'
     </select>
 
+    <select id="getUnfollerMemberList" resultType="com.fungo.system.entity.Member" >
+        SELECT  
+        <include refid="Base_Column_List"></include>
+         FROM  t_member where
+        id in
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and id not  in
+        (
+        SELECT target_id FROM t_bas_action WHERE type = 5 and member_id = #{memberId} and target_type =  0  and target_id  in
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        )
+    </select>
+
     
 </mapper>
