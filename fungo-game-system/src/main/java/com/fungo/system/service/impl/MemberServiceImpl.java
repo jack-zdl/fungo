@@ -1316,6 +1316,7 @@ public class MemberServiceImpl implements IMemberService {
                 // @todo 社区评论
                 CmmPostDto cmmPostDto = new CmmPostDto();
                 cmmPostDto.setId(c.getTargetId());
+                cmmPostDto.setState(1);
                 CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto);    //postService.selectOne(Condition.create().setSqlSelect("id,content,title,video").eq("id", c.getTargetId()));
                 if (post != null) {
 

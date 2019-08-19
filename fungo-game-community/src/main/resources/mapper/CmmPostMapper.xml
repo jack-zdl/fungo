@@ -245,13 +245,13 @@
               cp.created_at desc
         </if>
         <if test='sortType == "2"'>
-            GROUP BY cp.id   order  by cp.last_reply_at desc
+            GROUP BY cp.id   order  by cp.last_reply_at desc  ,   cp.created_at desc
         </if>
         <if test='sortType == "3"'>
             and cp.type = 2 GROUP BY cp.id     order  by cp.created_at desc
         </if>
         <if test='sortType == "4"'>
-            GROUP BY cp.id ORDER BY total desc
+            GROUP BY cp.id ORDER BY total desc ,  cp.created_at desc
         </if>
     </select>
 
@@ -276,7 +276,7 @@
             and cp.type = 2 GROUP BY cp.id      order  by cp.created_at desc
         </if>
         <if test='sortType == "4"'>
-            GROUP BY cp.id order  by  field(cp.type,'3')   desc  , CASE    WHEN cp.type = 3 then cp.edited_at END DESC,  total desc
+            GROUP BY cp.id order  by  field(cp.type,'3')   desc  , CASE    WHEN cp.type = 3 then cp.edited_at END DESC,  total desc , cp.created_at desc
         </if>
     </select>
 
