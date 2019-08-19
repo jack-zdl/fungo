@@ -178,6 +178,7 @@ public class AdvertController {
             if (1 == banner.getTargetType()) {
                 CmmPostDto cmmPostParam = new CmmPostDto();
                 cmmPostParam.setId(banner.getTargetId());
+                cmmPostParam.setState(1);
                 CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostParam);  //postService.selectById(banner.getTargetId());
                 if (post != null) {
                     map1.put("video", post.getVideo());
