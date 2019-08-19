@@ -254,7 +254,7 @@ public class CommunityServiceImpl implements ICommunityService {
 //            }
             //若此时还没有足够人数则
             if(ml1.size() < 10){
-
+                return ml1;
             }
         }
         //---end
