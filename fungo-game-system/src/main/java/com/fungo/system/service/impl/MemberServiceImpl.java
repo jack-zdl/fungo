@@ -1445,5 +1445,45 @@ public class MemberServiceImpl implements IMemberService {
         return url;
     }
 
+    @Override
+    public ResultDto<String> getLotteryPermission(String memberId) {
+        try {
+
+        }catch (Exception e){
+            logger.error("获取我的中秋抽奖权限用户id:"+memberId,e);
+        }
+        return null;
+    }
+
+    /**
+     * 如果您是新用户，在9月3日~9月16日期间注册 且等级达到Lv.3即可获得两次免费单抽
+     * @return
+     */
+    private boolean getNewMember(){
+        try {
+
+        }catch (Exception e){
+            logger.error("",e);
+        }
+        return true;
+    }
+
+    /**
+     * 如果您是回归老用户，
+     * 活动期间7天以上未登陆过 平台的，等级达到Lv.3即可获得两次免费单抽
+     * @return
+     */
+    private boolean getOldMember(){
+        return true;
+    }
+
+    /**
+     *  如果您是平台活跃用户，活动期间在平台连续签到 5天及以上且等级达到Lv.3即可获得两次免费单抽
+     *  （若您在活动前已经连续签到超过5天，活动开始后可 立即领取该奖励）
+     * @return
+     */
+    private boolean getActiveMemeber(){
+        return true;
+    }
 
 }
