@@ -547,7 +547,7 @@ public class PostServiceImpl implements IPostService {
         model.setHasGame(includeGameList!=null&&includeGameList.size()>0);
         //不存在圈子信息 设为null
         model.setChannel(circleNames.size()>0?circleNames:null);
-        BuriedPointUtils.buriedPoint(model);
+        BuriedPointUtils.publishBuriedPointEvent(model);
         return resultDto;
     }
 

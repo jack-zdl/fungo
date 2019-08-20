@@ -1,4 +1,4 @@
-package com.game.common.util.map;
+package com.game.common.buriedpoint.util.map.annotation;
 
 
 
@@ -10,14 +10,10 @@ import java.lang.annotation.*;
 /**
  *  bean字段注解，对应map key
  */
-public @interface MapKeyMapping {
+public @interface DateMapping {
     /**
      * bean属性对应的 map key 名称
      */
-    String value() default "";
+    String value() default "yyyy-MM-dd HH:mm:ss";
 
-    /**
-     * 忽略该属性的转化
-     */
-    boolean ignore() default false;
 }

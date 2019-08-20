@@ -1,7 +1,9 @@
 package com.fungo.system.service;
 
 
+import com.fungo.system.entity.IncentTasked;
 import com.fungo.system.entity.IncentTaskedOut;
+import com.fungo.system.entity.ScoreRule;
 import com.game.common.util.exception.BusinessException;
 
 import java.util.List;
@@ -56,4 +58,10 @@ public interface IMemberIncentTaskedService {
      */
     public IncentTaskedOut getTasked(String memberId, int task_type, String task_id);
 
+
+    IncentTaskedOut getMbIncentTaskedOutWithScore(String memberId, ScoreRule scoreRule, IncentTasked incentTasked, Integer taskGroupFlag, IncentTasked incentTaskedScore22);
+
+
+
+    boolean currentTaskIsLast(ScoreRule scoreRule,String memberId,int groupTaskFlag);
 }

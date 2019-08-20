@@ -33,4 +33,9 @@ public class BuriedPointEventConstant {
 	 */
 	public final static String EVENT_KEY_GOLD_CONSUMED = "gold_consumed";
 
+	/**
+	 * 客户端页面按钮埋点事件
+	 */
+	public final static String EVENT_KEY_PAGE_BTN = "btn_click";
+
 }

@@ -1,6 +1,6 @@
 package com.game.common.buriedpoint.model;
 
-import com.game.common.util.map.MapKeyMapping;
+import com.game.common.buriedpoint.util.map.annotation.MapKeyMapping;
 
 import java.util.List;
 

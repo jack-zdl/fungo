@@ -1,5 +1,7 @@
 package com.game.common.buriedpoint.model;
 
+
+
 import java.util.List;
 
 public class BuriedPointLikeModel extends BuriedPointModel{

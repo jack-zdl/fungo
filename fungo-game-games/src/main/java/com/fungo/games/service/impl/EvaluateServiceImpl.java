@@ -363,14 +363,14 @@ public class EvaluateServiceImpl implements IEvaluateService {
             re.show("发布成功");
         }
 
-        //----添加埋点点赞数据----------
+        //----添加埋点评论数据----------
         BuriedPointReplyModel replyModel = new BuriedPointReplyModel();
         replyModel.setDistinctId(memberId);
         replyModel.setPlatForm(BuriedPointUtils.getPlatForm());
         replyModel.setEventName(BuriedPointEventConstant.EVENT_KEY_COMMENT);
         replyModel.setNickname(BuriedPointCommunityConstant.COMMUNITY_REPLY_NAME);
         replyModel.setType(BuriedPointCommunityConstant.COMMUNITY_REPLY_TYPE_AUTHOR);
-        BuriedPointUtils.buriedPoint(replyModel);
+        BuriedPointUtils.publishBuriedPointEvent(replyModel);
 
 
         //清除该用户的评论游戏redis cache

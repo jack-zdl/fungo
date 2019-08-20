@@ -17,7 +17,6 @@ import com.fungo.community.service.IEvaluateService;
 import com.game.common.buriedpoint.BuriedPointUtils;
 import com.game.common.buriedpoint.constants.BuriedPointCommunityConstant;
 import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
-import com.game.common.buriedpoint.model.BuriedPointLikeModel;
 import com.game.common.buriedpoint.model.BuriedPointReplyModel;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
@@ -358,7 +357,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
             List<String> circleNames = cmmCircleMapper.listCircleNameByPost(commentInput.getTarget_id());
             replyModel.setChannel(circleNames.size()>0?circleNames:null);
         }
-        BuriedPointUtils.buriedPoint(replyModel);
+        BuriedPointUtils.publishBuriedPointEvent(replyModel);
 
 
         //clear redis cache
@@ -2076,7 +2075,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         }
         replyModel.setType(BuriedPointCommunityConstant.COMMUNITY_REPLY_TYPE_OBSERVER);
         replyModel.setChannel(circleNames.size()>0?circleNames:null);
-        BuriedPointUtils.buriedPoint(replyModel);
+        BuriedPointUtils.publishBuriedPointEvent(replyModel);
 
         //clear redis cache
         //帖子/心情评论列表

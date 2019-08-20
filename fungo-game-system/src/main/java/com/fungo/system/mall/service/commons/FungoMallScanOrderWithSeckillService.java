@@ -18,6 +18,9 @@ import com.fungo.system.mall.entity.MallVirtualCard;
 import com.fungo.system.mall.service.IFungoMallGoodsService;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
 import com.fungo.system.service.IncentAccountCoinDaoService;
+import com.game.common.buriedpoint.BuriedPointUtils;
+import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
+import com.game.common.buriedpoint.model.BuriedPointConsumeModel;
 import com.game.common.consts.FunGoGameConsts;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.ResultDto;
@@ -237,8 +240,21 @@ public class FungoMallScanOrderWithSeckillService {
 
                                         //7. 记录用户fungo币消费明细
                                         if (isUpdateSucc) {
+
                                             addFungoPayLogs(mb_id, mallOrder.getMbMobile(), mallOrder.getMbName(), String.valueOf(goods.getGoodsPriceVcy()),
                                                     goods.getGoodsName());
+                                            // fun币消耗埋点
+                                            Long goodsPriceVcy1 = goods.getGoodsPriceVcy();
+                                            if(goodsPriceVcy1!=null&&goodsPriceVcy1>0){
+                                                BuriedPointConsumeModel model = new BuriedPointConsumeModel();
+                                                model.setDistinctId(mb_id);
+                                                model.setEventName(BuriedPointEventConstant.EVENT_KEY_GOLD_CONSUMED);
+                                                model.setPlatForm(BuriedPointUtils.getPlatForm());
+                                                model.setMethod("消费");
+                                                model.setAmount(goods.getGoodsPriceVcy());
+                                                BuriedPointUtils.publishBuriedPointEvent(model);
+                                            }
+
                                         }
                                         //8. 推送系统消息通知用户商品秒杀成功和虚拟卡商品卡号密码等信息
                                         if (isUpdateSucc && 3 != goods.getGoodsType().intValue()) {

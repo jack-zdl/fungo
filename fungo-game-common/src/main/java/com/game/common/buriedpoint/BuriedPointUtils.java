@@ -5,8 +5,11 @@ import com.game.common.buriedpoint.analysysjavasdk.AnalysysJavaSdk;
 import com.game.common.buriedpoint.analysysjavasdk.DEBUG;
 import com.game.common.buriedpoint.analysysjavasdk.SyncCollecter;
 import com.game.common.buriedpoint.constants.BuriedPointPlatformConstant;
+import com.game.common.buriedpoint.event.BuriedPointEvent;
 import com.game.common.buriedpoint.model.BuriedPointModel;
-import com.game.common.util.map.ObjectToMap;
+import com.game.common.buriedpoint.util.map.ObjectMappingMapUtil;
+import com.game.common.buriedpoint.util.map.handler.impl.ValueEmptyHandler;
+import com.game.common.util.SpringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -14,11 +17,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * 易观埋点工具类
  * ysx
+ *  易观java-sdk文档说明: https://docs.analysys.cn/ark/integration/sdk/java#31-debug-mo-shi
  */
 public class BuriedPointUtils {
 
@@ -27,11 +30,12 @@ public class BuriedPointUtils {
     /**
      * 易观项目APP_KEY
      */
-    private final static String APP_KEY = "571cf37a38870ec7";
+    private final static String APP_KEY = "2700ad010735c83b";
     /**
      * 埋点数据上报地址
      */
-    private final static String ANALYSIS_SERVICE_URL = "https://arkcloud-0529.analysys.cn:4089";
+    private final static String ANALYSIS_SERVICE_URL = "https://ark-customer.analysys.cn:4089";
+
     /**
      * 咨询过易观 该对象可单例，对应方法线程安全 因此直接默认初始化即可
      */
@@ -55,13 +59,25 @@ public class BuriedPointUtils {
 
 
     /**
-     * 同步上传埋点数据至易观
+     * 在spring容器中发布埋点事件(spring异步事件多播器处理后相当于异步上传埋点数据至易观-不会阻塞业务线程)
+     */
+    public static void publishBuriedPointEvent(BuriedPointModel pointModel) {
+        BuriedPointEvent buriedPointEvent = new BuriedPointEvent(pointModel);
+        // 对应的事件监听器为 BuriedPointEventListener
+        SpringUtil.getContext().publishEvent(buriedPointEvent);
+    }
+
+    /**
+     *  同步上传埋点数据至易观 （项目中可直接调用--阻塞业务线程）
      */
     public static void buriedPoint(BuriedPointModel pointModel) {
+
         //获取埋点属性
-        Map<String, Object> trackPropertie = ObjectToMap.objectToMap(pointModel, BuriedPointModel.class);
+        Map<String, Object> trackPropertie = ObjectMappingMapUtil.objectToMap(pointModel, BuriedPointModel.class,new ValueEmptyHandler());
         //过滤 map中为空的属性 - 易观要求 属性值为空 该属性不可传递过去
-        trackPropertie = filterNullMapvalue(trackPropertie);
+        // ps map工具做了优化-用户可自定义过滤策略 这里使用了空过滤策略 new ValueEmptyHandler() 所以不用在再外层做 二次过滤了 节约性能
+        // trackPropertie = filterNullMapvalue(trackPropertie);
+
         //这里捕获异常 埋点不可对正常的业务有影响
         try {
             // 将数据上报给易观数据分析系统
@@ -83,12 +99,12 @@ public class BuriedPointUtils {
     }
 
 
-    /**
+ /*   *//*
      * 过滤map集合中值为空的属性
      *
      * @param map 要过滤的原始集合
      * @return 过滤后新产生的map集合
-     */
+     *//*
     private static Map<String, Object> filterNullMapvalue(Map<String, Object> map) {
         return map.entrySet().stream()
                 .filter((e) -> !isValueEmpty(e.getValue()))
@@ -96,21 +112,21 @@ public class BuriedPointUtils {
                         (e) -> (String) e.getKey(),
                         Map.Entry::getValue
                 ));
-    }
+    }*/
 
-    /**
+  /*  *//*
      * 判断对象是否为 null 对于字符串 null " " 等也视为空
      *
      * @param object 要判断的对象
      * @return 对象是不是空
-     */
+     *//*
     private static boolean isValueEmpty(Object object) {
         if (object == null) {
             return true;
         }
         return object instanceof String && ("".equals(((String) object).trim()) || "null".equalsIgnoreCase((String) object));
     }
-
+*/
 
 
 }

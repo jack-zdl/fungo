@@ -10,7 +10,6 @@ import com.fungo.system.entity.BasNotice;
 import com.fungo.system.entity.Member;
 import com.fungo.system.entity.MemberFollower;
 import com.fungo.system.facede.ICommunityProxyService;
-import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.helper.mq.MQProduct;
 import com.fungo.system.facede.IDeveloperProxyService;
 import com.fungo.system.service.*;
@@ -154,7 +153,7 @@ public class ActionServiceImpl implements IActionService {
             }
             likeModel.setType(getBuriedPointLikeType(inputDto.getTarget_type()));
             likeModel.setChannel(getChannal(inputDto.getTarget_type(),inputDto.getTarget_id()));
-            BuriedPointUtils.buriedPoint(likeModel);
+            BuriedPointUtils.publishBuriedPointEvent(likeModel);
 
         } else {//点赞记录存在
 
