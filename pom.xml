@@ -29,7 +29,7 @@
 
     </properties>
     <modules>
-        <module>fungo-game-common</module>
+        <module>fungo-game-common   </module>
         <module>fungo-game-eureka</module>
         <module>fungo-game-system</module>
         <module>fungo-game-community</module>
