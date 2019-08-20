@@ -17,4 +17,26 @@ public interface PortalGamesIGameService {
 	 */
 	FungoPageResultDto<GameOutPage> searchGamesByDownload(String userId, InputPageDto input);
 
+
+	/**
+	 * 我的游戏列表
+	 * @param loginId
+	 * @param inputPage
+	 * @param os
+	 * @return
+	 */
+	FungoPageResultDto<MyGameBean> getMyDownloadGameList(String loginId, MyGameInputPageDto inputPage, String os);
+
+
+
+	/**
+	 * 我的游戏列表
+	 * @param loginId
+	 * @param inputPage
+	 * @param os
+	 * @return
+	 */
+	FungoPageResultDto<MyGameBean> getMyGameList(String loginId, MyGameInputPageDto inputPage, String os);
+
+
 }

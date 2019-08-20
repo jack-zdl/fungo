@@ -2,6 +2,8 @@ package com.fungo.games.controller.portal;
 
 import com.fungo.games.service.IEvaluateService;
 import com.fungo.games.service.IGameService;
+import com.fungo.games.service.portal.PortalGamesIGameService;
+import com.fungo.games.service.portal.ProtalGameIEvaluateService;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.evaluation.MyEvaluationBean;
@@ -39,6 +41,8 @@ public class PortalGamesMemberController {
 
     @Autowired
     private IEvaluateService iEvaluateService;
+    @Autowired
+    private PortalGamesIGameService portalGamesIGameService;
 
 
 
@@ -48,7 +52,7 @@ public class PortalGamesMemberController {
     @ApiImplicitParams({})
     public FungoPageResultDto<MyGameBean> getGameList(MemberUserProfile memberUserPrefile, @RequestBody MyGameInputPageDto inputPage, HttpServletRequest request) {
         String os = (String) request.getAttribute("os");
-        return iGameService.getMyGameList(memberUserPrefile.getLoginId(), inputPage,os);
+        return portalGamesIGameService.getMyGameList(memberUserPrefile.getLoginId(), inputPage,os);
     }
 
 
@@ -62,5 +66,20 @@ public class PortalGamesMemberController {
             return FungoPageResultDto.error("-1", "未指定用户");
         }
         return iEvaluateService.getMyEvaluationList(memberId, input);
+    }
+
+
+    /**
+     * 功能描述:PC2.0我的下载的游戏列表
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.game.MyGameBean>
+     * @auther: dl.zhang
+     * @date: 2019/8/20 13:50
+     */
+    @ApiOperation(value = "PC2.0我的下载的游戏列表", notes = "PC2.0我的游戏列表")
+    @RequestMapping(value = "/api/portal/games/mine/download/gameList", method = RequestMethod.POST)
+    @ApiImplicitParams({})
+    public FungoPageResultDto<MyGameBean> getDownloadGameList(MemberUserProfile memberUserPrefile, @RequestBody MyGameInputPageDto inputPage, HttpServletRequest request) {
+        String os = (String) request.getAttribute("os");
+        return portalGamesIGameService.getMyDownloadGameList(memberUserPrefile.getLoginId(), inputPage,os);
     }
 }

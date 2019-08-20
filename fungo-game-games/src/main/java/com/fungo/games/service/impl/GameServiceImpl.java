@@ -913,9 +913,9 @@ public class GameServiceImpl implements IGameService {
                 bean.setIosState(game.getIosState());
                 bean.setMsgCount(0);
                 bean.setPhoneModel(gameSurveyRel.getPhoneModel());
-//                if (os.equalsIgnoreCase(bean.getPhoneModel())) {
+                if (os.equalsIgnoreCase(bean.getPhoneModel())) {
                     list.add(bean);
-//                }
+                }
             }
             re.setData(list);
             PageTools.pageToResultDto(re, page);

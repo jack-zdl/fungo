@@ -38,5 +38,7 @@ public interface GameDao extends BaseMapper<Game> {
     @MapKey("id")
     Map<String,Game> listGame(@Param("ids") List<String> ids);
 
+    List<Game> getGameList(@Param("ids") List<String> ids);
+
 
 }

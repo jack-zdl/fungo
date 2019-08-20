@@ -120,4 +120,6 @@ public interface SystemService {
 
     FungoPageResultDto<String> circleListMineFollow(CircleFollowVo circleFollowVo);
 
+    FungoPageResultDto<String> gameListMineDownload(CircleFollowVo circleFollowVo);
+
 }

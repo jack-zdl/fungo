@@ -10,6 +10,7 @@ import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.game.BasTagDto;
 import com.game.common.dto.game.BasTagGroupDto;
 import com.game.common.dto.mall.MallGoodsInput;
+import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberOutBean;
@@ -123,6 +124,12 @@ public class SystemFacedeHystrixService implements FallbackFactory<SystemFeignCl
             @Override
             public ResultDto<Map<String, Object>> queryGoodsCountWithGame(MallGoodsInput mallGoodsInput) {
                 logger.error("--------------------SystemFeignClient--启动熔断:{}", "queryGoodsCountWithGame");
+                return null;
+            }
+
+            @Override
+            public FungoPageResultDto<String> gameListMineDownload(CircleFollowVo circleFollowVo) {
+                logger.error("--------------------gameListMineDownload--启动熔断:{}", "gameListMineDownload");
                 return null;
             }
         };
