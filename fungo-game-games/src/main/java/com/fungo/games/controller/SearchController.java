@@ -11,6 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,6 +54,9 @@ public class SearchController {
 
         int limit = searchInputDto.getLimit();
         String keyword = searchInputDto.getKey_word();
+        if (StringUtils.isNotBlank(keyword)) {
+            keyword = keyword.trim();
+        }
         String tag = searchInputDto.getTag();
         String sort = searchInputDto.getSorts();
         String os = "";

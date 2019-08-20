@@ -85,6 +85,9 @@ public class PostController {
     })
     public FungoPageResultDto<Map<String, Object>> searchPosts(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto) throws Exception {
         String keyword = searchInputDto.getKey_word();
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(keyword)) {
+            keyword = keyword.trim();
+        }
         int page = searchInputDto.getPage();
         //fix: 页码 小于1 返回空 [by mxf 2019-01-30]
         if (page < 1) {
