@@ -671,6 +671,30 @@ public class SystemController {
 
 
 
+    /**
+     * 功能描述: 根据用户id查询下载的游戏
+     * @param: [memberUserPrefile, request, inputPageDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: dl.zhang
+     * @date: 2019/6/11 11:01
+     */
+    @ApiOperation(value = "v2.5", notes = "")
+    @RequestMapping(value = "/game/mine/download", method = RequestMethod.POST)
+    @ApiImplicitParams({})
+    public FungoPageResultDto<String> gameListMineDownload( @RequestBody CircleFollowVo circleFollowVo) {
+        FungoPageResultDto<String> re = null;
+        try {
+            re = systemService.gameListMineDownload(circleFollowVo);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("根据圈子id查询是否关注",e);
+            re = FungoPageResultDto.error("-1","根据圈子id查询是否关注，请联系管理员");
+        }
+        return re;
+    }
+
+
+
 
 
 }

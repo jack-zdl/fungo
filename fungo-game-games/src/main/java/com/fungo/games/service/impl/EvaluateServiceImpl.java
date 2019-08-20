@@ -745,13 +745,15 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 bean.setIcon(game.getIcon());
                 bean.setGameName(game.getName());
             }
-
+            if(eva.getCreatedAt().compareTo(eva.getUpdatedAt()) != 0){
+                bean.setUpdated(true);
+            }else {
+                bean.setUpdated(false);
+            }
             olist.add(bean);
         }
         re.setData(olist);
         PageTools.pageToResultDto(re, p);
-
-
         //redis cache
         fungoCacheGame.excIndexCache(true, keyPrefix, keySuffix, re);
         return re;

@@ -25,6 +25,8 @@ public class MyEvaluationBean {
 	private String icon;
 	@ApiModelProperty(value="图片列表",example="")
 	private List<String> Images = new ArrayList<>();
+	@ApiModelProperty(value="是否已修改",example="")
+	private boolean updated;
 	
 	public String getGameName() {
 		return gameName;
@@ -75,6 +77,10 @@ public class MyEvaluationBean {
 	public void setEvaId(String evaId) {
 		this.evaId = evaId;
 	}
-
-	
+	public boolean isUpdated() {
+		return updated;
+	}
+	public void setUpdated(boolean updated) {
+		this.updated = updated;
+	}
 }

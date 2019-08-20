@@ -921,6 +921,25 @@ public class SystemServiceImpl implements SystemService {
         return re;
     }
 
+    @Override
+    public FungoPageResultDto<String> gameListMineDownload(CircleFollowVo circleFollowVo) {
+        FungoPageResultDto re = new FungoPageResultDto();
+        String memberId = "";
+        try {
+            Page page = new Page(circleFollowVo.getPage(), circleFollowVo.getLimit());
+            if(ActionTypeEnum.DOWNLOAD.getKey().equals(circleFollowVo.getActionType())){
+                memberId = circleFollowVo.getMemberId();
+                List<String>  gameIds = basActionDao.getDownloadGameIds(page,memberId);
+                re.setData(gameIds);
+                PageTools.pageToResultDto(re, page);
+            }
+        }catch (Exception e){
+            LOGGER.error( "",e);
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildError( "获取用户下载的游戏id集合有误,用户id:"+memberId);
+        }
+        return re;
+    }
+
 
     @Override
     public ResultDto<List<MemberDto>> listRecommendedMebmber(Integer limit, String currentMbId, List<String> wathMbsSet) {

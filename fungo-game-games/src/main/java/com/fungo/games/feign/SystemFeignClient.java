@@ -10,6 +10,7 @@ import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.game.BasTagDto;
 import com.game.common.dto.game.BasTagGroupDto;
 import com.game.common.dto.mall.MallGoodsInput;
+import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberOutBean;
@@ -161,6 +162,17 @@ public interface SystemFeignClient {
     @PostMapping("/mall/game/goods")
     public ResultDto<Map<String, Object>> queryGoodsCountWithGame(@RequestBody MallGoodsInput mallGoodsInput);
 
+    /**
+     * 功能描述: 根据用户id查询下载的游戏
+     * @param: [memberUserPrefile, request, inputPageDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: dl.zhang
+     * @date: 2019/6/11 11:01
+     */
+    @ApiOperation(value = "v2.5", notes = "")
+    @RequestMapping(value = "/game/mine/download", method = RequestMethod.POST)
+    @ApiImplicitParams({})
+    public FungoPageResultDto<String> gameListMineDownload( @RequestBody CircleFollowVo circleFollowVo);
 
     /**
      * 存储并发送消息
