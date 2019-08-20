@@ -36,4 +36,22 @@ public class FungoMallController {
     }
 
 
+
+    /**
+     * 功能描述:
+     * <p>为中秋礼物添加一次性秒杀量，与礼包乐园（日余量）相比。他只有一个总量</p>
+     * @return: com.game.common.dto.ResultDto<java.lang.Object>
+     * @auther: dl.zhang
+     * @date: 2019/8/20 19:46
+     */
+    @PostMapping("/mall/addseckill")
+    public ResultDto<Object> addSeckill(@RequestBody FungoMallDto fungoMallDto){
+        Object isOk = iFungoMallGoodsService.addGoods(fungoMallDto);
+        if(isOk != null){
+            return ResultDto.success(isOk);
+        }
+        return ResultDto.error("-1", "添加商品数据失败");
+    }
+
+
 }

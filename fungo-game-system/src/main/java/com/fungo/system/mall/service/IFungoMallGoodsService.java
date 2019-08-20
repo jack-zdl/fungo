@@ -38,5 +38,10 @@ public interface IFungoMallGoodsService {
     public Object addGoods(FungoMallDto fungoMallDto);
 
 
+    //添加商品
+     ResultDto<String> addSeckill(FungoMallDto fungoMallDto);
+
+
+
 
 }

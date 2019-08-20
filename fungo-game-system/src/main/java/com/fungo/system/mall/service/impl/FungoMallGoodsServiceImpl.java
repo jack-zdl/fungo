@@ -288,6 +288,16 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
     }
 
     @Override
+    public ResultDto<String> addSeckill(FungoMallDto fungoMallDto) {
+        try {
+
+        }catch (Exception e){
+
+        }
+        return null;
+    }
+
+    @Override
     public ResultDto<Map<String, Object>> queryGoodsCountWithGame(MallGoodsInput mallGoodsInput) {
 
         if (null == mallGoodsInput) {
