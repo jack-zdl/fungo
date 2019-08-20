@@ -3,8 +3,11 @@ package com.fungo.system.mall.service;
 
 import com.fungo.system.dto.FungoMallDto;
 import com.fungo.system.mall.entity.MallGoods;
+import com.game.common.api.InputPageDto;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.mall.MallGoodsInput;
+import com.game.common.dto.mall.MallGoodsOutBean;
 
 import java.util.Map;
 
@@ -39,9 +42,9 @@ public interface IFungoMallGoodsService {
 
 
     //添加商品
-     ResultDto<String> addSeckill(FungoMallDto fungoMallDto);
+     ResultDto<String> addSeckill(String goodId,String stocks,String startDate,String endDate);
 
-
+    FungoPageResultDto<MallGoodsOutBean> getFestivalMall(InputPageDto inputPageDto);
 
 
 }

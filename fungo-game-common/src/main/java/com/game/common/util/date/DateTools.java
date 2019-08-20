@@ -249,6 +249,27 @@ public class DateTools {
         return maxDate;
     }
 
+    /**
+     * @description 时间转换为字符串
+     * @param date
+     * @return
+     */
+    public static String dateToString(Date date){
+        if (date !=null){
+            return "";
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(date);
+    }
+
+    public static String dateTimeToString(Date date){
+        if(date != null){
+            return  "";
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(date);
+    }
+
 
     //--------
 }
