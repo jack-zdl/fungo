@@ -899,7 +899,8 @@ public class GameServiceImpl implements IGameService {
         List<MyGameBean> list = new ArrayList<MyGameBean>();
 
         if (2 == inputPage.getType()) {
-            Page<GameSurveyRel> page = gameSurveyRelService.selectPage(new Page<GameSurveyRel>(inputPage.getPage(), inputPage.getLimit()), new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0));
+            Page<GameSurveyRel> page = gameSurveyRelService.selectPage(new Page<GameSurveyRel>(inputPage.getPage(),
+                    inputPage.getLimit()), new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0));
             List<GameSurveyRel> plist = page.getRecords();
             for (GameSurveyRel gameSurveyRel : plist) {
                 Game game = gameService.selectById(gameSurveyRel.getGameId());
@@ -912,9 +913,9 @@ public class GameServiceImpl implements IGameService {
                 bean.setIosState(game.getIosState());
                 bean.setMsgCount(0);
                 bean.setPhoneModel(gameSurveyRel.getPhoneModel());
-                if (os.equalsIgnoreCase(bean.getPhoneModel())) {
+//                if (os.equalsIgnoreCase(bean.getPhoneModel())) {
                     list.add(bean);
-                }
+//                }
             }
             re.setData(list);
             PageTools.pageToResultDto(re, page);
