@@ -466,6 +466,7 @@ public class MemberServiceImpl implements IMemberService {
                         }
                     }
                 } else if (basNotice.getType() == 4) {
+
                     //@todo  文章的评论的接口
                     map.put("msg_template", "回复了我的评论");
                     CmmPostDto post = iMemeberProxyService.selectCmmPost((String) map.get("post_id")); //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
