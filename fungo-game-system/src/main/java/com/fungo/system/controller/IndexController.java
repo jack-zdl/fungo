@@ -79,14 +79,17 @@ public class IndexController {
             iosChannel = request.getHeader("iosChannel");
         }
         JSONObject json = new JSONObject(  );
-        String pictur = nacosFungoCircleConfig.getFestivalPicture();
+        String picture = nacosFungoCircleConfig.getFestivalPicture();
+        String linkUrl = nacosFungoCircleConfig.getFestivallinkUrl();
         if(nacosFungoCircleConfig.isFestivalSwitch()){
             json.put( "code",AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_ON.getKey() );
-            json.put( "pictur",pictur );
+            json.put( "picture",picture );
+            json.put( "linkUrl",linkUrl );
             return ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_ON.getKey(),AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_ON.getSuccessValue(),json);
         }else {
             json.put( "code",AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_OFF.getKey() );
-            json.put( "pictur",pictur );
+            json.put( "picture",picture );
+            json.put( "linkUrl",linkUrl );
             return ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_OFF.getKey(),AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_OFF.getSuccessValue(),json);
         }
 
