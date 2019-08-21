@@ -63,7 +63,7 @@ public class FungoMallController {
      * @auther: dl.zhang
      * @date: 2019/8/20 19:46
      */
-    @GetMapping("/mall/festival")
+    @PostMapping("/mall/festival")
     public FungoPageResultDto<MallGoodsOutBean> getFestivalMall(@RequestBody InputPageDto inputPageDto){
         FungoPageResultDto<MallGoodsOutBean> isOk = iFungoMallGoodsService.getFestivalMall(inputPageDto);
         if(CommonEnum.SUCCESS.code().equals(String.valueOf(isOk.getStatus()))){

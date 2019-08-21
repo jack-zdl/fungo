@@ -60,6 +60,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 
 
 
+
     @Value("${fungo.mall.seckill.aesSecretKey}")
     private String aESSecretKey;
 
@@ -401,7 +402,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                 queryStartDate = FungoMallSeckillConsts.SECKILL_START_DATE_FORMAT + " " + FungoMallSeckillConsts.SECKILL_START_TIME;
                 queryEndDate = FungoMallSeckillConsts.SECKILL_START_DATE_FORMAT + " " + FungoMallSeckillConsts.SECKILL_END_TIME;
             } else {
-                queryStartDate = DateTools.getCurrentDate("-") + " " + FungoMallSeckillConsts.SECKILL_START_TIME;
+                queryStartDate = DateTools.getCurrentDate("-"); // + " " + FungoMallSeckillConsts.SECKILL_START_TIME;
                 queryEndDate = DateTools.getCurrentDate("-") + " " + FungoMallSeckillConsts.SECKILL_END_TIME;
             }
   /*
@@ -418,7 +419,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
              */
             List<String> goods_types = new ArrayList<>();
             goods_types.add("1");goods_types.add("2");goods_types.add("21");goods_types.add("22");goods_types.add("23");
-            List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(queryStartDate, queryEndDate, goods_types, 2);
+            List<Map<String, Object>> goodsMapList = mallSeckillDao.queryFestivalSeckillGoods(page,queryStartDate, queryEndDate, goods_types, 2);
             if (null != goodsMapList && !goodsMapList.isEmpty()) {
                 goodsOutBeanList = new ArrayList<MallGoodsOutBean>();
 
