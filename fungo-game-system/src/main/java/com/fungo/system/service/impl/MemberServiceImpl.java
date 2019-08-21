@@ -685,17 +685,54 @@ public class MemberServiceImpl implements IMemberService {
                     }
                 } else if (basNotice.getType() == 12) {
                     map.put("msg_template", "回复了我的回复");
-                    String replyToId = (String) map.get("replyToId");
-                    if(StringUtil.isNotNull(replyToId)){
-                        CmmCmtReplyDto cmmCmtReplyDto = new CmmCmtReplyDto();
-                        cmmCmtReplyDto.setId(replyToId);
-                        cmmCmtReplyDto.setState(null);
-                        FungoPageResultDto<CmmCmtReplyDto>  replyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto);
-                        CmmCmtReplyDto cmmCmtReplyDto1 =    (replyDtoFungoPageResultDto.getData() != null && replyDtoFungoPageResultDto.getData().size() >0 ) ? replyDtoFungoPageResultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
-                        if (cmmCmtReplyDto1 != null) {
-                            map.put( "two_level_deltype",cmmCmtReplyDto1.getState()  == -1 ? -1 : 0 );
+//                    String replyToId = (String) map.get("replyToId");
+//                    if(StringUtil.isNotNull(replyToId)){
+//                        CmmCmtReplyDto cmmCmtReplyDto = new CmmCmtReplyDto();
+//                        cmmCmtReplyDto.setId(replyToId);
+//                        cmmCmtReplyDto.setState(null);
+//                        FungoPageResultDto<CmmCmtReplyDto>  replyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto);
+//                        CmmCmtReplyDto cmmCmtReplyDto1 =    (replyDtoFungoPageResultDto.getData() != null && replyDtoFungoPageResultDto.getData().size() >0 ) ? replyDtoFungoPageResultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+//                        if (cmmCmtReplyDto1 != null) {
+//                            map.put( "two_level_deltype",cmmCmtReplyDto1.getState()  == -1 ? -1 : 0 );
+//                        }
+//                    }
+                    // 心情評論
+                    String messageId = (String) map.get("message_id");
+                    if(StringUtil.isNotNull(messageId)){
+                        MooMessageDto mooMessageDto = new MooMessageDto();
+                        mooMessageDto.setId(messageId);
+                        mooMessageDto.setState(null);
+                        FungoPageResultDto<MooMessageDto> resultDto = communityFeignClient.queryCmmMoodCommentList(mooMessageDto);
+                        MooMessageDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                        if (message != null) {
+                            map.put( "two_level_deltype",message.getState()== -1 ? -1 : 0 );
                         }
                     }
+                    // 文章評論
+                    String commentId = (String) map.get( "comment_id" );
+                    if(StringUtil.isNotNull(commentId)){
+                        CmmCommentDto cmmCommentDto = new CmmCommentDto();
+                        cmmCommentDto.setId(commentId);
+                        cmmCommentDto.setState(null);
+                        FungoPageResultDto<CmmCommentDto> resultDto = communityFeignClient.queryFirstLevelCmtList(cmmCommentDto);
+                        CmmCommentDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                        if (message != null) {
+                            map.put( "two_level_deltype",message.getState()  == -1 ? -1 : 0 );
+                        }
+                    }
+                    // 游戲评测
+                    String evaluationId = (String) map.get("evaluation_id");
+                    if(StringUtil.isNotNull(evaluationId)){
+                        GameEvaluationDto param = new GameEvaluationDto();
+                        param.setId(evaluationId);
+                        param.setState(null);
+                        FungoPageResultDto<GameEvaluationDto>  resultDto = gamesFeignClient.getGameEvaluationPage(param);
+                        GameEvaluationDto gameEvaluationDto = (resultDto.getData() != null && resultDto.getData().size() > 0 ) ? resultDto.getData().get(0) : null;
+                        if(gameEvaluationDto != null){
+                            map.put( "two_level_deltype",gameEvaluationDto.getState()  == -1 ? -1 : 0 );
+                        }
+                    }
+
                     String replyId = (String) map.get("replyId");
                     if(StringUtil.isNotNull(replyId)){
                         CmmCmtReplyDto cmmCmtReplyDto = new CmmCmtReplyDto();

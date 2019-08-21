@@ -9,6 +9,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.*;
 import com.game.common.enums.CommonEnum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
+import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.ValidateUtils;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.vo.DelObjectListVO;
@@ -34,6 +35,8 @@ public class EvaluateController {
     private IEvaluateService evaluateService;
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
+    @Autowired
+    private FungoCacheIndex fungoCacheIndex;
 
 
     @ApiOperation(value = "评论帖子/心情", notes = "")
@@ -117,6 +120,8 @@ public class EvaluateController {
             if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(resultDto.getStatus())){
                 // 文章和心情评论缓存
                 fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
+                //我的評論redis緩存
+                fungoCacheIndex.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_COMMENTS, "", null);
             }
             return resultDto;
         }catch (Exception e){
@@ -124,5 +129,8 @@ public class EvaluateController {
             return ResultDto.error( "-1","删除评论详情异常" );
         }
     }
+
+
+
 
 }
