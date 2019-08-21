@@ -136,7 +136,10 @@ public class MemberServiceImpl implements IMemberService {
             bean.setCover_image(collectionBean.getCoverImage());
             bean.setCreatedAt(collectionBean.getCreatedAt());
             bean.setObjectId(collectionBean.getId());
-            bean.setTitle(collectionBean.getTitle());
+            if (org.apache.commons.lang3.StringUtils.isNotBlank(collectionBean.getTitle())) {
+                String interactTitle = FilterEmojiUtil.decodeEmoji(collectionBean.getTitle());
+                bean.setTitle(interactTitle);
+            }
             bean.setVideo(collectionBean.getVideo());
             bean.setUpdatedAt(collectionBean.getUpdatedAt());
             list.add(bean);
