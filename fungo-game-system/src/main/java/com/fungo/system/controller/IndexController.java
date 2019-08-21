@@ -1,6 +1,8 @@
 package com.fungo.system.controller;
 
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.service.IIndexService;
 import com.game.common.api.InputPageDto;
@@ -67,7 +69,7 @@ public class IndexController {
     /*
      * iosChannel (int,optional): 1,2,3 (1:appStore上线,2:appTestFlight开发包,3:appInhouse企业包)
      */
-    public ResultDto<String> festivalSwitch(HttpServletRequest request) {
+    public ResultDto<JSONObject> festivalSwitch(HttpServletRequest request) {
         //iOS渠道
         String iosChannel = "";
         String os = "";
@@ -76,10 +78,16 @@ public class IndexController {
         if (request.getHeader("iosChannel") != null) {
             iosChannel = request.getHeader("iosChannel");
         }
+        JSONObject json = new JSONObject(  );
+        String pictur = nacosFungoCircleConfig.getFestivalPicture();
         if(nacosFungoCircleConfig.isFestivalSwitch()){
-            return ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_ON.getKey(),AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_ON.getSuccessValue());
+            json.put( "code",AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_ON.getKey() );
+            json.put( "pictur",pictur );
+            return ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_ON.getKey(),AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_ON.getSuccessValue(),json);
         }else {
-            return ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_OFF.getKey(),AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_OFF.getSuccessValue());
+            json.put( "code",AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_OFF.getKey() );
+            json.put( "pictur",pictur );
+            return ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_OFF.getKey(),AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_OFF.getSuccessValue(),json);
         }
 
     }
