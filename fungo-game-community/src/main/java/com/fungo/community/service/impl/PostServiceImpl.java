@@ -1158,6 +1158,8 @@ public class PostServiceImpl implements IPostService {
                     communityMap.put("icon", community.getIcon());
                     communityMap.put("intro", community.getIntro());
                     communityMap.put("type", community.getType());
+                    communityMap.put( "hotvalue",community.getHotValue());
+                    communityMap.put( "postnum",community.getPostNum() );
                     //游戏社区的评分 标签
                     if (community.getType() == 0) {
                         communityMap.put("gameId", community.getGameId());
