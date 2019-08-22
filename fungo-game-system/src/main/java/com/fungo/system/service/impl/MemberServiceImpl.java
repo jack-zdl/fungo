@@ -1264,43 +1264,42 @@ public class MemberServiceImpl implements IMemberService {
         }
 
         re = new FungoPageResultDto<>();
-        Page<CommentBean> page = new Page<>(input.getPage(), input.getLimit());
         // @todo 5.22
-        FungoPageResultDto<CommentBean>  comments = communityFeignClient.getAllComments(page.getPages(),page.getLimit(),loginId);
+        FungoPageResultDto<CommentBean>  comments = communityFeignClient.getAllComments(input.getPage(),input.getLimit(),loginId);
       //  List<CommentBean> all = communityProxyService.getAllComments(page, loginId); //memberDao.getAllComments(page, loginId);
         if(comments == null){
             return FungoPageResultDto.error("-1","没有评论");
         }
         List<CommentBean> all = comments.getData();
         List<MyCommentBean> blist = new ArrayList<>();
-        for (CommentBean c : all) {
+        for (CommentBean commentBean : all) {
             //文章评论 心情评论 二级评论
             MyCommentBean bean = new MyCommentBean();
 
-            String content = c.getContent();
+            String content = commentBean.getContent();
             if (StringUtils.isNotBlank(content)) {
                 content = FilterEmojiUtil.decodeEmoji(content);
                 bean.setCommentConetnt(content);
             }
 
-            bean.setCommentId(c.getId());
-            bean.setCommentType(c.getType());
-            bean.setTargetType(c.getTargetType());
-            bean.setTargetId(c.getTargetId());
-            bean.setTargetType(c.getTargetType());
-            bean.setUpdatedAt(DateTools.fmtDate(c.getUpdatedAt()));
+            bean.setCommentId(commentBean.getId());
+            bean.setCommentType(commentBean.getType());
+            bean.setTargetType(commentBean.getTargetType());
+            bean.setTargetId(commentBean.getTargetId());
+            bean.setTargetType(commentBean.getTargetType());
+            bean.setUpdatedAt(DateTools.fmtDate(commentBean.getUpdatedAt()));
 
             //回复二级回复
-            if (!CommonUtil.isNull(c.getReplyToId()) && !CommonUtil.isNull(c.getReplyContentId())) {
-                bean.setReplyToId(c.getReplyToId());
-                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name as userName").eq("id", c.getReplyToId()));
+            if (!CommonUtil.isNull(commentBean.getReplyToId()) && !CommonUtil.isNull(commentBean.getReplyContentId())) {
+                bean.setReplyToId(commentBean.getReplyToId());
+                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name as userName").eq("id", commentBean.getReplyToId()));
                 if (m != null) {
                     bean.setReplyToName(m.getUserName());
                 }
 
                 // @todo 二级回复
                 CmmCmtReplyDto replyDto = new CmmCmtReplyDto();
-                replyDto.setId(c.getReplyContentId());
+                replyDto.setId(commentBean.getReplyContentId());
                 CmmCmtReplyDto reply = iMemeberProxyService.selectReplyById(replyDto);   //new ReplyDto();// replyService.selectById(c.getReplyContentId());
                 if (reply != null) {
 
@@ -1311,15 +1310,15 @@ public class MemberServiceImpl implements IMemberService {
                         bean.setTargetConetnt(replyContent);
                     }
 
-                    bean.setReplyToConentId(c.getReplyContentId());
+                    bean.setReplyToConentId(commentBean.getReplyContentId());
                 }
                 blist.add(bean);
                 continue;
             }
-            if (c.getTargetType() == 1) {// 1帖子 2心情 5帖子评论 6游戏评论 8心情评论
+            if (commentBean.getTargetType() == 1) {// 1帖子 2心情 5帖子评论 6游戏评论 8心情评论
                 // @todo 社区评论
                 CmmPostDto cmmPostDto = new CmmPostDto();
-                cmmPostDto.setId(c.getTargetId());
+                cmmPostDto.setId(commentBean.getTargetId());
                 cmmPostDto.setState(1);
                 CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto);    //postService.selectOne(Condition.create().setSqlSelect("id,content,title,video").eq("id", c.getTargetId()));
                 if (post != null) {
@@ -1336,9 +1335,9 @@ public class MemberServiceImpl implements IMemberService {
                 } else {
                     bean.setTargetConetnt("该文章已删除");
                 }
-            } else if (c.getTargetType() == 2) {
+            } else if (commentBean.getTargetType() == 2) {
                 // @todo 心情
-                MooMoodDto mood = iGameProxyService.selectMooMoodById(c.getTargetId());  // new MooMoodDto();// moodService.selectOne(Condition.create().setSqlSelect("id,content").eq("id", c.getTargetId()));
+                MooMoodDto mood = iGameProxyService.selectMooMoodById(commentBean.getTargetId());  // new MooMoodDto();// moodService.selectOne(Condition.create().setSqlSelect("id,content").eq("id", c.getTargetId()));
                 if (mood != null) {
 
                     String contentMood = CommonUtils.filterWord(CommonUtils.reduceString(mood.getContent(), 50));
@@ -1352,9 +1351,9 @@ public class MemberServiceImpl implements IMemberService {
                 } else {
                     bean.setTargetConetnt("该心情已删除");
                 }
-            } else if (c.getTargetType() == 5) {
+            } else if (commentBean.getTargetType() == 5) {
                 // @todo 评论
-                CmmCommentDto comment = iGameProxyService.selectCmmCommentById(c.getTargetId()); //commentService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                CmmCommentDto comment = iGameProxyService.selectCmmCommentById(commentBean.getTargetId()); //commentService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                 if (comment != null) {
 
                     String contentCmmComment = CommonUtils.filterWord(CommonUtils.reduceString(comment.getContent(), 50));
@@ -1369,10 +1368,10 @@ public class MemberServiceImpl implements IMemberService {
                         bean.setReplyToName(m.getUserName());
                     }
                 }
-            } else if (c.getTargetType() == 6) {
+            } else if (commentBean.getTargetType() == 6) {
                 // @todo 游戏评论
                 GameEvaluationDto param = new GameEvaluationDto();
-                param.setId(c.getTargetId());
+                param.setId(commentBean.getTargetId());
                 GameEvaluationDto evaluation = iGameProxyService.selectGameEvaluationById(param); //evaluationService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                 if (evaluation != null) {
 
@@ -1388,9 +1387,9 @@ public class MemberServiceImpl implements IMemberService {
                         bean.setReplyToName(m.getUserName());
                     }
                 }
-            } else if (c.getTargetType() == 8) {
+            } else if (commentBean.getTargetType() == 8) {
                 // @todo 社区接口
-                MooMessageDto message = iGameProxyService.selectMooMessageById(c.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                MooMessageDto message = iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                 if (message != null) {
 
                     String contentMoodMsg = CommonUtils.filterWord(CommonUtils.reduceString(message.getContent(), 50));
