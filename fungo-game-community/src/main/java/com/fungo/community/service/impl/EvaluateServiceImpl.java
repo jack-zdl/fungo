@@ -15,6 +15,7 @@ import com.fungo.community.entity.*;
 import com.fungo.community.facede.GameFacedeService;
 import com.fungo.community.facede.SystemFacedeService;
 import com.fungo.community.facede.TSMQFacedeService;
+import com.fungo.community.helper.MQProduct;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IEvaluateService;
 import com.game.common.consts.FungoCoreApiConstant;
@@ -96,6 +97,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
     private CmmCommentDao cmmCommentDao;
     @Autowired
     private MooMessageDao mooMessageDao;
+    @Autowired
+    private MQProduct mqProduct;
 
 
     @Transactional
@@ -2233,6 +2236,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 });
             }else if(DelObjectListVO.TypeEnum.GAMEREPLY.getKey() == type){
                 commentIds.stream().forEach(s ->{
+
+                    Map<String, String> map = new HashMap<>();
+                    map.put("tableName", "t_game_evaluation");
+                    map.put("fieldName", "reply_num");
+                    map.put("id",s);
+                    map.put("type", "sub");
+                    mqProduct.updateCounter(map);
                     // @todo 游戏评测
                     Reply reply = new Reply();
                     reply.setId(s);
