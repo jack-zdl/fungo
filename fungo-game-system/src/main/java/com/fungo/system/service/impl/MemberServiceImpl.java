@@ -41,10 +41,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -1180,7 +1177,8 @@ public class MemberServiceImpl implements IMemberService {
         bean.setNextLevel(level + 1);
         bean.setUpgradeExp(getUpgradeExp(level, exp));
         bean.setNextLevelExp(getNextLevelExp(level));
-
+        bean.setRegisterDate(DateTools.dateToString(member.getCreatedAt()));
+        bean.setNewMember(getNewMember(member.getCreatedAt()));
         //redis cache
         fungoCacheMember.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_RANKS_LEVEL + loginId, "", bean);
 
@@ -1458,9 +1456,10 @@ public class MemberServiceImpl implements IMemberService {
 
     /**
      * 如果您是新用户，在9月3日~9月16日期间注册 且等级达到Lv.3即可获得两次免费单抽
+     * @todo
      * @return
      */
-    private boolean getNewMember(){
+    private boolean getNewMember(Date registerDate){
         try {
 
         }catch (Exception e){

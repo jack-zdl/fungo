@@ -465,6 +465,8 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                     goodsOutBean.setSort(sort);
                     goodsOutBean.setGoodsIntro(goods_intro);
                     goodsOutBean.setGoodsType(goodsType);
+                    String ext2 = (String) objectMap.get("ext2");
+                    goodsOutBean.setColorType(MallGoodsOutBean.GameColorTypeEnum.getValueByKey(ext2));
 
                     goodsOutBeanList.add(goodsOutBean);
 

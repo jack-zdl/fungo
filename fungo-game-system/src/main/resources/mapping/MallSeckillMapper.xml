@@ -78,7 +78,8 @@
 		sk.seckill_price_vcy,
 		sk.residue_stock,
 		sk.start_time,
-		sk.end_time
+		sk.end_time,
+		sk.ext2
 		FROM
 		t_mall_seckill sk
 		JOIN t_mall_goods gds
