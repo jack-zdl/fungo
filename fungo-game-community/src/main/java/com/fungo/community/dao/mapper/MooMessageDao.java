@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.community.entity.MooMessage;
 import com.game.common.bean.CommentBean;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -26,4 +27,5 @@ public interface MooMessageDao extends BaseMapper<MooMessage> {
      */
     public List<CommentBean> getMessagesAll(Page page, Map map);
 
+    int updateMooMessageCommentNum(@Param("reolyId") String reolyId);
 }

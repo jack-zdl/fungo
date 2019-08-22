@@ -69,6 +69,7 @@
 	</update>
 
 	<update id="updateCmmCommentCommentNum">
-
+		update t_cmm_comment  set  reply_num = reply_num - 1  WHERE  id in (SELECT target_id FROM t_reply WHERE id = #{reolyId} )
 	</update>
+
 </mapper>

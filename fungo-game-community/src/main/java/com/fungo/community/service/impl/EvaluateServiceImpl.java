@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.community.dao.mapper.CmmCommentDao;
 import com.fungo.community.dao.mapper.CmmPostDao;
+import com.fungo.community.dao.mapper.MooMessageDao;
 import com.fungo.community.dao.mapper.MooMoodDao;
 import com.fungo.community.dao.service.*;
 import com.fungo.community.entity.*;
@@ -90,6 +92,11 @@ public class EvaluateServiceImpl implements IEvaluateService {
     private CmmPostDao cmmPostDao;
     @Autowired
     private MooMoodDao mooMoodDao;
+    @Autowired
+    private CmmCommentDao cmmCommentDao;
+    @Autowired
+    private MooMessageDao mooMessageDao;
+
 
     @Transactional
     @Override
@@ -2210,6 +2217,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 });
             } else if(DelObjectListVO.TypeEnum.POSTREPLY.getKey() == type){
                 commentIds.stream().forEach(s ->{
+                    cmmCommentDao.updateCmmCommentCommentNum(s);
                     Reply reply = new Reply();
                     reply.setId(s);
                     reply.setState(-1);
@@ -2217,6 +2225,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 });
             }else if(DelObjectListVO.TypeEnum.COMMENTREPLY.getKey() == type){
                 commentIds.stream().forEach(s ->{
+                    mooMessageDao.updateMooMessageCommentNum(s);
                     Reply reply = new Reply();
                     reply.setId(s);
                     reply.setState(-1);
@@ -2224,6 +2233,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 });
             }else if(DelObjectListVO.TypeEnum.GAMEREPLY.getKey() == type){
                 commentIds.stream().forEach(s ->{
+                    // @todo 游戏评测
                     Reply reply = new Reply();
                     reply.setId(s);
                     reply.setState(-1);
