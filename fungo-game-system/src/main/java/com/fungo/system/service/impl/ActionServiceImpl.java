@@ -16,7 +16,11 @@ import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
 import com.game.common.dto.ActionInput;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.CmmPostDto;
+import com.game.common.dto.community.MooMoodDto;
+import com.game.common.enums.CommonEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.*;
 import org.apache.commons.lang3.StringUtils;
@@ -543,6 +547,33 @@ public class ActionServiceImpl implements IActionService {
         if (action == null) {
             action = this.buildAction(memberId, Setting.ACTION_TYPE_REPORT, inputDto);
             this.actionService.insert(action);
+            String reportMemberId = null;
+            if(1 == inputDto.getTarget_type()){
+                CmmPostDto cmmPostDto = new CmmPostDto();
+                cmmPostDto.setId(inputDto.getTarget_id());
+                FungoPageResultDto<CmmPostDto>  cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(cmmPostDto);
+                if(cmmPostDtoFungoPageResultDto != null && CommonEnum.SUCCESS.code().equals( String.valueOf(cmmPostDtoFungoPageResultDto.getStatus()))
+                    && cmmPostDtoFungoPageResultDto.getData().size() > 0){
+                    cmmPostDto = cmmPostDtoFungoPageResultDto.getData().get(0);
+                    reportMemberId = cmmPostDto.getMemberId();
+                }
+            }else if(2 == inputDto.getTarget_type()){
+                MooMoodDto mooMoodDto = new MooMoodDto();
+                mooMoodDto.setId(inputDto.getTarget_id());
+                FungoPageResultDto<MooMoodDto> mooMoodDtoFungoPageResultDto = communityFeignClient.queryCmmMoodList(mooMoodDto);
+                if(mooMoodDtoFungoPageResultDto != null && CommonEnum.SUCCESS.code().equals( String.valueOf(mooMoodDtoFungoPageResultDto.getStatus()))
+                        && mooMoodDtoFungoPageResultDto.getData().size() > 0){
+                    mooMoodDto = mooMoodDtoFungoPageResultDto.getData().get(0);
+                    reportMemberId = mooMoodDto.getMemberId();
+                }
+            }else if(5 == inputDto.getTarget_type()){
+                
+
+            }else if(6 == inputDto.getTarget_type()){
+
+            }else if(7 == inputDto.getTarget_type()){
+
+            }
 //			gameProxy.addScore(Setting.ACTION_TYPE_REPORT, memberId, inputDto.getTarget_id(), inputDto.getTarget_type());
             //V2.4.6版本中取消举报获取exp和cion
             // times = gameProxy.addTaskCore(Setting.ACTION_TYPE_REPORT, memberId, inputDto.getTarget_id(), inputDto.getTarget_type());
