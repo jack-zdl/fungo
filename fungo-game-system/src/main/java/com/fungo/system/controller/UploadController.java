@@ -1,6 +1,7 @@
 package com.fungo.system.controller;
 
 
+import com.fungo.system.function.MallSeckillOrderFileService;
 import com.fungo.system.upload.bean.req.UploadInput;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
@@ -10,14 +11,19 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.aspectj.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -33,6 +39,9 @@ import java.util.*;
 public class UploadController {
     @Autowired
     private IFileService fileService;
+    @Autowired
+    private MallSeckillOrderFileService mallSeckillOrderFileService;
+
     //	private String allowSuffix = "jpg,png,gif,jpeg";//允许文件格式
     private String allowSuffix = "jpg,png,gif";//允许文件格式
     private long allowSize = 10L;//允许文件大小
@@ -169,6 +178,38 @@ public class UploadController {
 //		}
 //	}
 
+
+    private String allowExcelSuffix = "xlsx,xls";//允许文件格式
+    private long allowExcelSize = 10L;//允许文件大小
+
+    @ApiOperation(value = "上传excel", notes = "上传excel")
+    @RequestMapping(value = "/api/portal/system/mine/excel", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "excelfile", value = "excel", paramType = "form", dataType = "string")
+    })
+    public ResultDto<Map<String, String>> uploadAvatar(MemberUserProfile memberUserPrefile, @RequestParam("excelfile") MultipartFile appFile) throws Exception {
+        String suffix = appFile.getOriginalFilename().substring(appFile.getOriginalFilename().lastIndexOf(".") + 1);
+        suffix = suffix.toLowerCase();
+        int length = allowExcelSuffix.indexOf(suffix);
+        if (length == -1) {
+            throw new Exception("请上传允许格式的文件");
+        }
+        File file = null;
+        InputStream ins =appFile.getInputStream();
+        file = new File( appFile.getOriginalFilename() );
+//        CommonsMultipartFile cf= (CommonsMultipartFile)appFile;
+//        DiskFileItem fi = (DiskFileItem)cf.getFileItem();
+//        file = fi.getStoreLocation();
+        inputStreamToFile(ins,file);
+        mallSeckillOrderFileService.excuteParserToFungoCoin(file);
+        ResultDto<Map<String, String>> re = new ResultDto<Map<String, String>>();
+        Map<String, String> map = new HashMap<String, String>();
+        re.setData(map);
+        re.setMessage("编辑成功");
+        return re;
+    }
+
+
     public void uploadFile(byte[] file, String filePath, String fileName) throws Exception {
         File targetFile = new File(filePath);
         if (!targetFile.exists()) {
@@ -178,6 +219,21 @@ public class UploadController {
         out.write(file);
         out.flush();
         out.close();
+    }
+
+    public static void inputStreamToFile(InputStream ins, File file) {
+        try {
+            OutputStream os = new FileOutputStream(file);
+            int bytesRead = 0;
+            byte[] buffer = new byte[8192];
+            while ((bytesRead = ins.read(buffer, 0, 8192)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+            os.close();
+            ins.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

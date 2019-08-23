@@ -24,7 +24,8 @@ public enum AbstractResultEnum {
     CODE_SYSTEM_ONE("3001","查询banner列表成功",""),
     CODE_SYSTEM_TWO("3002","查询成功","查询失败，请联系管理员"),
     CODE_SYSTEM_THREE("3003","相互关注成功","相互关注失败"),
-    CODE_SYSTEM_FOUR("3004","关注成功","关注失败");
+    CODE_SYSTEM_FOUR("3004","关注成功","关注失败"),
+    CODE_SYSTEM_FIVE("3005","","用户信息异常");
 
     String key;
     String successValue;

@@ -1,5 +1,6 @@
 package com.fungo.system.function;
 
+import com.fungo.system.mall.service.IFungoMallSeckillService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -10,6 +11,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -24,16 +26,19 @@ public class MallSeckillOrderFileService {
 
     private static final Logger logger = LoggerFactory.getLogger(MallSeckillOrderFileService.class);
 
+    @Autowired
+    private IFungoMallSeckillService iFungoMallSeckillServiceImpl;
+
     //excel文件路径
     private String excelPath = "D:\\MingBoWork\\运营维护\\发gungo币/愚人节活动Fun币发放.xls";
 
     /**
      * 批量给用户添加fungo币
      */
-    public void excuteParserToFungoCoin() {
+    public void excuteParserToFungoCoin( File excel ) {
 
         try {
-            File excel = new File(excelPath);
+//            File excel = new File(excelPath);
 
             if (excel.isFile() && excel.exists()) {
 
@@ -71,6 +76,9 @@ public class MallSeckillOrderFileService {
 
                         //商品id
                         Cell goodIdCell = row.getCell(0);
+                        if(goodIdCell == null){
+                            break;
+                        }
                         String goodId = goodIdCell.toString();
                         DecimalFormat df = new DecimalFormat("#");
                         switch (goodIdCell.getCellType()) {
@@ -110,11 +118,10 @@ public class MallSeckillOrderFileService {
                         logger.info("解析excel-goodId:{},--goodName:{},mallOrderNum:{}", goodId, goodName, mallOrderNum);
                         if (StringUtils.isNotBlank(goodId) && StringUtils.isNotBlank(mallOrderNum)) {
                             // @todo 插入顺序表
+                            iFungoMallSeckillServiceImpl.insertMallSeckillOrder(goodId,mallOrderNum);
                         }
                     }
-
                 }
-
             } else {
                 logger.error("找不到指定的文件");
             }

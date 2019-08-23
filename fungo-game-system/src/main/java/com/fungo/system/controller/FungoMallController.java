@@ -9,7 +9,9 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.mall.MallGoodsOutBean;
+import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.CommonEnum;
+import com.game.common.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -85,18 +87,18 @@ public class FungoMallController {
      * @auther: dl.zhang
      * @date: 2019/8/20 19:46
      */
-    @PostMapping("/mall/draw/")
+    @PostMapping("/mall/draw")
     public FungoPageResultDto<MallGoodsOutBean> drawFestivalMall(MemberUserProfile memberUserPrefile,@RequestBody InputPageDto inputPageDto){
-        FungoPageResultDto<MallGoodsOutBean> isOk = iFungoMallGoodsService.getFestivalMall(inputPageDto);
+        String memberId = memberUserPrefile.getLoginId();
+        if(CommonUtil.isNull(memberId)){
+            return FungoPageResultDto.FungoPageResultDtoFactory.buildError( AbstractResultEnum.CODE_SYSTEM_FIVE.getFailevalue());
+        }
+        FungoPageResultDto<MallGoodsOutBean> isOk = iFungoMallGoodsService.drawFestivalMall(memberId,inputPageDto);
         if(CommonEnum.SUCCESS.code().equals(String.valueOf(isOk.getStatus()))){
             return isOk;
         }
-        return FungoPageResultDto.error("-1", "查询中秋节日礼品失败");
+        return FungoPageResultDto.error("-1", "抽取中秋节日礼品失败");
     }
-
-
-
-
 
 
 

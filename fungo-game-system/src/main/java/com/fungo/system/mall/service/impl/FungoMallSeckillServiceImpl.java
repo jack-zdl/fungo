@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.system.dao.MallSeckillOrderDao;
 import com.fungo.system.entity.IncentAccountCoin;
+import com.fungo.system.entity.MallSeckillOrder;
 import com.fungo.system.entity.Member;
 import com.fungo.system.mall.daoService.*;
 import com.fungo.system.mall.entity.*;
@@ -12,6 +14,7 @@ import com.fungo.system.mall.service.IFungoMallSeckillService;
 import com.fungo.system.mall.service.IMallLogsService;
 import com.fungo.system.mall.service.commons.FungoMallSeckillTaskStateCommand;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
+import com.fungo.system.service.IMallSeckillOrderService;
 import com.fungo.system.service.IncentAccountCoinDaoService;
 import com.fungo.system.service.MemberService;
 import com.game.common.consts.FunGoGameConsts;
@@ -23,6 +26,7 @@ import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.*;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
+import io.swagger.models.auth.In;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,36 +48,30 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     private static final Logger logger = LoggerFactory.getLogger(FungoMallSeckillServiceImpl.class);
 
-
     @Autowired
     private MallGoodsDaoService mallGoodsDaoService;
-
     @Autowired
     private MallSeckillDaoService mallSeckillDaoService;
-
     @Autowired
     private MallVirtualCardDaoService mallVirtualCardDaoService;
-
     @Autowired
     private IncentAccountCoinDaoService incentAccountCoinService;
-
     @Autowired
     private MallOrderDaoService mallOrderDaoService;
-
     @Autowired
     private MallOrderGoodsDaoService mallOrderGoodsDaoService;
-
     @Autowired
     private IMallLogsService iMallLogsService;
-
     @Autowired
     private MemberService memberService;
-
     @Autowired
     private FungoCacheTask fungoCacheTask;
-
     @Autowired
     private FungoCacheSystem fungoCacheSystem;
+    @Autowired
+    private MallSeckillOrderDao mallSeckillOrderDao;
+    @Autowired
+    private IMallSeckillOrderService iMallSeckillOrderServiceImpl;
 
 
     @Value("${fungo.mall.seckill.aesSecretKey}")
@@ -932,6 +930,42 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             ex.printStackTrace();
         }
         return fungoPageResultDto;
+    }
+
+    /**
+     * 功能描述: 批量插入顺序表
+     * @param:
+     * @return: void
+     * @auther: dl.zhang
+     * @date: 2019/8/23 15:04
+     */
+    @Override
+    public void insertMallSeckillOrder(String goodId, String numberStr) {
+        try {
+
+            Integer number = Integer.valueOf(numberStr);
+            List<MallSeckillOrder> mallSeckillOrders = new ArrayList<>();
+            for (int i = 0 ; i < number; i++){
+                MallSeckillOrder mallSeckillOrder = new MallSeckillOrder();
+                mallSeckillOrder.setMallGoodsId(goodId);
+                mallSeckillOrder.setTotalStock(1);
+                mallSeckillOrder.setResidueStock(1);
+                mallSeckillOrder.setCreatedAt(new Date());
+                mallSeckillOrder.setCreatedBy("system");
+                mallSeckillOrder.setIsactive("1");
+                mallSeckillOrder.setDescription("系统自动添加");
+                mallSeckillOrders.add(mallSeckillOrder);
+
+            }
+            boolean isTrue =  iMallSeckillOrderServiceImpl.insertBatch(mallSeckillOrders);
+            if(isTrue == true){
+                logger.error( "批量插入顺序表成功,goodId"+goodId);
+            }else {
+                logger.error( "批量插入顺序表失败,goodId"+goodId);
+            }
+        }catch (Exception e){
+            logger.error("批量插入顺序表异常",e);
+        }
     }
 
 
