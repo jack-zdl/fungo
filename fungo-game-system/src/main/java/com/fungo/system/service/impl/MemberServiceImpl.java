@@ -1235,7 +1235,7 @@ public class MemberServiceImpl implements IMemberService {
         param.setLimit(input.getLimit());
         param.setMemberId(loginId);
         param.setState(1);
-        param.setQueryType(1);
+//        param.setQueryType(1);
         FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(param);
 
         //  Page<CmmPostDto> page =   iMemeberProxyService.selectCmmPostpage(param); // postService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<CmmPost>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
