@@ -77,6 +77,23 @@ public class FungoMallController {
         return FungoPageResultDto.error("-1", "查询中秋节日礼品失败");
     }
 
+    /**
+     * 功能描述:
+     * <p>中秋节日抽奖</p>
+     * @Param
+     * @return: com.game.common.dto.ResultDto<java.lang.Object>
+     * @auther: dl.zhang
+     * @date: 2019/8/20 19:46
+     */
+    @PostMapping("/mall/draw/")
+    public FungoPageResultDto<MallGoodsOutBean> drawFestivalMall(MemberUserProfile memberUserPrefile,@RequestBody InputPageDto inputPageDto){
+        FungoPageResultDto<MallGoodsOutBean> isOk = iFungoMallGoodsService.getFestivalMall(inputPageDto);
+        if(CommonEnum.SUCCESS.code().equals(String.valueOf(isOk.getStatus()))){
+            return isOk;
+        }
+        return FungoPageResultDto.error("-1", "查询中秋节日礼品失败");
+    }
+
 
 
 

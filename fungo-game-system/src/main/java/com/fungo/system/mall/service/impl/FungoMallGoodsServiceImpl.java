@@ -483,6 +483,17 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
     }
 
     @Override
+    public FungoPageResultDto<MallGoodsOutBean> drawFestivalMall(String memberId, InputPageDto inputPageDto) {
+        FungoPageResultDto<MallGoodsOutBean> resultDto = new FungoPageResultDto<>();
+        try {
+            resultDto =  getFestivalMall(inputPageDto);
+        }catch (Exception e){
+            logger.error( "中秋礼品抽奖异常用户id="+memberId,e);
+        }
+        return resultDto;
+    }
+
+    @Override
     public ResultDto<Map<String, Object>> queryGoodsCountWithGame(MallGoodsInput mallGoodsInput) {
 
         if (null == mallGoodsInput) {

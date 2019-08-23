@@ -432,7 +432,6 @@ public class MemberController {
     public ResultDto<MemberLevelBean> getMemberLevel(MemberUserProfile memberUserPrefile) {
         String loginId = memberUserPrefile.getLoginId();
         return memberService.getMemberLevel(loginId);
-
     }
 
 

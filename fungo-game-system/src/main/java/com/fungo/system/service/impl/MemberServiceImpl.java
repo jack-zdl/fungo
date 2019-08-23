@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.dao.BasNoticeDao;
 import com.fungo.system.dao.MemberDao;
@@ -15,6 +16,7 @@ import com.fungo.system.facede.IDeveloperProxyService;
 import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IMemeberProxyService;
 import com.fungo.system.feign.CommunityFeignClient;
+import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
 import com.fungo.system.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.bean.CollectionBean;
@@ -93,6 +95,8 @@ public class MemberServiceImpl implements IMemberService {
     private ICommunityProxyService communityProxyService;
     @Autowired(required = false)
     private CommunityFeignClient communityFeignClient;
+    @Autowired
+    private NacosFungoCircleConfig nacosFungoCircleConfig;
 
 
     //
@@ -1177,7 +1181,7 @@ public class MemberServiceImpl implements IMemberService {
         bean.setNextLevel(level + 1);
         bean.setUpgradeExp(getUpgradeExp(level, exp));
         bean.setNextLevelExp(getNextLevelExp(level));
-        bean.setRegisterDate(DateTools.dateToString(member.getCreatedAt()));
+        bean.setRegisterDate(DateTools.channelDateToString(member.getCreatedAt()));
         bean.setNewMember(getNewMember(member.getCreatedAt()));
         //redis cache
         fungoCacheMember.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_RANKS_LEVEL + loginId, "", bean);
@@ -1460,8 +1464,12 @@ public class MemberServiceImpl implements IMemberService {
      * @return
      */
     private boolean getNewMember(Date registerDate){
+        String startDate = nacosFungoCircleConfig.getStartDate();
+        String endDate = nacosFungoCircleConfig.getEndDate();
         try {
-
+            startDate = startDate+ " " + FungoMallSeckillConsts.SECKILL_START_TIME;
+            endDate = endDate + " " + FungoMallSeckillConsts.SECKILL_END_TIME;
+            return DateTools.betweenDate(  DateTools.str2Date(startDate,""),DateTools.str2Date(endDate,""),new Date());
         }catch (Exception e){
             logger.error("",e);
         }
