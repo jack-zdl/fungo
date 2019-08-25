@@ -1459,7 +1459,7 @@ public class MemberServiceImpl implements IMemberService {
     }
 
     /**
-     * 如果您是新用户，在9月3日~9月16日期间注册 且等级达到Lv.3即可获得两次免费单抽
+     * 如果您是新用户，在9月3日~9月16日期间注册
      * @todo
      * @return
      */
@@ -1467,6 +1467,28 @@ public class MemberServiceImpl implements IMemberService {
         String startDate = nacosFungoCircleConfig.getStartDate();
         String endDate = nacosFungoCircleConfig.getEndDate();
         try {
+            startDate = startDate+ " " + FungoMallSeckillConsts.SECKILL_START_TIME;
+            endDate = endDate + " " + FungoMallSeckillConsts.SECKILL_END_TIME;
+            return DateTools.betweenDate(  DateTools.str2Date(startDate,""),DateTools.str2Date(endDate,""),new Date());
+        }catch (Exception e){
+            logger.error("",e);
+        }
+        return true;
+    }
+
+    /**
+     * 如果您是新用户，在9月3日~9月16日期间注册 且等级达到Lv.3即可获得两次免费单抽
+     * @param registerDate 注册时间
+     * @param level 等级
+     * @return false 不是新用户  true 是新用户
+     */
+    private boolean getNewMember(Date registerDate,String level){
+        String startDate = nacosFungoCircleConfig.getStartDate();
+        String endDate = nacosFungoCircleConfig.getEndDate();
+        try {
+            if(Integer.valueOf(level) < 3){
+                return false;
+            }
             startDate = startDate+ " " + FungoMallSeckillConsts.SECKILL_START_TIME;
             endDate = endDate + " " + FungoMallSeckillConsts.SECKILL_END_TIME;
             return DateTools.betweenDate(  DateTools.str2Date(startDate,""),DateTools.str2Date(endDate,""),new Date());
