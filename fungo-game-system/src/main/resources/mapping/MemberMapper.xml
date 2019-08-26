@@ -148,7 +148,7 @@
     </select>
 
     <select id="getMemberList" resultType="java.lang.String">
-        SELECT  id FROM  t_member WHERE  state = '0'
+        SELECT  id FROM  t_member WHERE  state = '0' where  id  = '287c0f55aaf7436b89c0a73964efff3c'
     </select>
 
     <select id="getUnfollerMemberList" resultType="com.fungo.system.entity.Member" >

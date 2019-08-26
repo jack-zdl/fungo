@@ -49,7 +49,7 @@ public class CommunityServiceImpl implements ICommunityService {
         List<Member> watchMebmberList = null;
         StringBuffer mbWatchedMbsWithSql = new StringBuffer();
 
-        List<String> wathMbsSet = new ArrayList<String>();
+        List<String> wathMbsSet = new ArrayList<>();
 
         if (StringUtils.isNotBlank(currentMb_id)) {
             watchMebmberList = this.getWatchMebmber(0, currentMb_id);

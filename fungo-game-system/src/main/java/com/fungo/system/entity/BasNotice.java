@@ -52,6 +52,14 @@ public class BasNotice extends Model<BasNotice> {
      * 数据
      */
 	private String data;
+
+	/**
+	 * 功能描述: -1 删除
+	 * 0 正常
+	 * @auther: dl.zhang
+	 * @date: 2019/8/16 11:49
+	 */
+//	private int state;
     /**
      * 创建时间
      */

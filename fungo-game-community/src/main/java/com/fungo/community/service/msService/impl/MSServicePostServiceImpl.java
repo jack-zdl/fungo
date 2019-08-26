@@ -130,6 +130,7 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
                 postEntityWrapper.eq("state", postDto.getState());
             }
 
+
             //排序
             postEntityWrapper.orderBy("sort desc ,updated_at", false);
 

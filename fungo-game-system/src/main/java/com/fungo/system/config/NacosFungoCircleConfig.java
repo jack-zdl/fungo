@@ -25,6 +25,13 @@ public class NacosFungoCircleConfig {
     @Value(value = "${nacos.cloud.basLogtwo}")
     public String basLogtwo;
 
+    @Value( value = "${fungo.cloud.festival.switch}")
+    public boolean festivalSwitch;
+    @Value( value = "${fungo.cloud.festival.picture}")
+    public String festivalPicture;
+    @Value( value = "${fungo.cloud.festival.linkUrl}")
+    public String festivallinkUrl;
+
     public String getBasLog() {
         return basLog;
     }
@@ -47,5 +54,29 @@ public class NacosFungoCircleConfig {
 
     public void setBasLogtwo(String basLogtwo) {
         this.basLogtwo = basLogtwo;
+    }
+
+    public boolean isFestivalSwitch() {
+        return festivalSwitch;
+    }
+
+    public void setFestivalSwitch(boolean festivalSwitch) {
+        this.festivalSwitch = festivalSwitch;
+    }
+
+    public String getFestivalPicture() {
+        return festivalPicture;
+    }
+
+    public void setFestivalPicture(String festivalPicture) {
+        this.festivalPicture = festivalPicture;
+    }
+
+    public String getFestivallinkUrl() {
+        return festivallinkUrl;
+    }
+
+    public void setFestivallinkUrl(String festivallinkUrl) {
+        this.festivallinkUrl = festivallinkUrl;
     }
 }

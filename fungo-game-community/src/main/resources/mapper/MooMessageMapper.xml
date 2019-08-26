@@ -53,4 +53,8 @@
     	</if>
     </select>
 
+	<update id="updateMooMessageCommentNum">
+		update t_moo_message  set  reply_num = reply_num - 1  WHERE  id in (SELECT target_id FROM t_reply WHERE id = #{reolyId} )
+	</update>
+
 </mapper>

@@ -27,8 +27,8 @@ public interface ICommunityProxyService {
     List<Map<String,Object>> getMoodFeeds(Map<String, Object> map);
 
 
-    //我的动态 - 我的评论
-    List<CommentBean> getAllComments(Page<CommentBean> page, String userId) ;
+//    //我的动态 - 我的评论
+//    List<CommentBean> getAllComments(Page<CommentBean> page, String userId) ;
 
     /**
      *  查询文章表中发表文章大于10条

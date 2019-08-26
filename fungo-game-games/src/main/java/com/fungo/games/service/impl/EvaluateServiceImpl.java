@@ -10,13 +10,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.games.dao.GameCollectionGroupDao;
 import com.fungo.games.dao.GameDao;
+import com.fungo.games.dao.GameEvaluationDao;
 import com.fungo.games.entity.*;
+import com.fungo.games.feign.MQFeignClient;
 import com.fungo.games.helper.MQProduct;
 import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
+import com.game.common.dto.ActionInput;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
@@ -29,6 +32,9 @@ import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheGame;
+import com.game.common.ts.mq.dto.MQResultDto;
+import com.game.common.ts.mq.dto.TransactionMessageDto;
+import com.game.common.ts.mq.enums.RabbitMQEnum;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PKUtil;
@@ -46,7 +52,6 @@ import java.util.*;
 
 @Service
 public class EvaluateServiceImpl implements IEvaluateService {
-
 
     private static final Logger logger = LoggerFactory.getLogger(EvaluateServiceImpl.class);
 
@@ -79,6 +84,10 @@ public class EvaluateServiceImpl implements IEvaluateService {
     private BasTagService tagService;
     @Autowired
     private GameCollectionGroupDao collectionGroupDao;
+    @Autowired
+    private GameEvaluationDao gameEvaluationDao;
+    @Autowired
+    private MQFeignClient mqFeignClient;
 
     @Override
     @Transactional
@@ -387,6 +396,63 @@ public class EvaluateServiceImpl implements IEvaluateService {
         }
         re.setData(bean);
         return re;
+    }
+
+    /**
+     * 功能描述: 删除游戏评论
+     * @auther: dl.zhang
+     * @date: 2019/8/12 13:38
+     */
+    @Transactional
+    @Override
+    public ResultDto<String> delEvaluationDetail(String memberId, List<String> commentIdList) {
+        try {
+            commentIdList.stream().forEach( s ->{
+                Game game = gameDao.getGameByEvaluateId(s);
+                int number  = gameEvaluationDao.updateGameEvaluation( Arrays.asList(s) );
+                if(number == 1){
+                    //扣除经验
+                    int score = 3;
+                    //-----start
+                    //MQ 业务数据发送给系统用户业务处理
+                    TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+                    //消息类型
+                    transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_GAME);
+                    //发送的队列
+                    transactionMessageDto.setConsumerQueue( RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+                    //路由key
+                    StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+                    routinKey.deleteCharAt(routinKey.length() - 1);
+                    routinKey.append("deletePostSubtractExpLevel");
+                    transactionMessageDto.setRoutingKey(routinKey.toString());
+                    MQResultDto mqResultDto = new MQResultDto();
+                    mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MQ_TYPE_DELETE_POST_SUBTRACT_EXP_LEVEL.getCode());
+
+                    HashMap<String, Object> hashMap = new HashMap<String, Object>();
+                    hashMap.put("mb_id", memberId);
+                    hashMap.put("score", score);
+
+                    mqResultDto.setBody(hashMap);
+
+                    transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+                    //执行MQ发送
+                    ResultDto<Long> messageResult = mqFeignClient.saveAndSendMessage(transactionMessageDto);
+                    logger.info("--删除帖子执行扣减用户经验值和等级--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
+                    //-----start
+
+                    Map<String,String> map = new HashMap<>();
+                    map.put( "tableName","t_game" );
+                    map.put( "type","sub" );
+                    map.put( "fieldName","comment_num" );
+                    map.put( "id",game.getId());
+                    gameDao.updateCountor( map);
+                }
+            } );
+            return ResultDto.success();
+        }catch (Exception e){
+            logger.error( "删除游戏评论异常id:"+JSON.toJSONString(commentIdList),e );
+            return ResultDto.ResultDtoFactory.buildError("删除游戏评论异常");
+        }
     }
 
     @Override

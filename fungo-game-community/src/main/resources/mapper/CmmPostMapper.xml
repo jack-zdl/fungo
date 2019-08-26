@@ -34,7 +34,6 @@
         <result column="last_reply_at" property="lastReplyAt"/>
         <result column="video_cover_image" property="videoCoverImage"/>
         <result column="boom_watch_num" property="boomWatchNum"/>
-
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -236,9 +235,15 @@
         <if test="tagId != null and tagId != ''">
             and cp.tags = #{tagId}
         </if>
-        <if test="cream != null and cream != ''">
-            and cp.type = #{cream}
-        </if>
+        <choose>
+            <when test="cream != null and cream != ''">
+                and cp.type = #{cream}
+            </when>
+            <otherwise>
+                and cp.type != '3'
+            </otherwise>
+        </choose>
+
         <if test='sortType == "1" ' >
             GROUP BY cp.id   order  by  field(cp.type,'3')   desc  , CASE    WHEN cp.type = 3 then cp.edited_at END DESC,
 
@@ -263,6 +268,14 @@
         ( select cpc.post_id
         from t_cmm_post_circle cpc where cpc.circle_id = #{circleId}   )
 
+        <choose>
+            <when test="cream != null and cream != ''">
+                and cp.type = #{cream}
+            </when>
+            <otherwise>
+                and cp.type != '3'
+            </otherwise>
+        </choose>
 
         <if test='sortType == "1" ' >
             GROUP BY cp.id   order  by  field(cp.type,'3')   desc  , CASE    WHEN cp.type = 3 then cp.edited_at END DESC,
@@ -335,7 +348,7 @@
 
     <select id="getCmmPostByGameId" resultType="com.fungo.community.entity.CmmPost">
 
-	SELECT 
+	SELECT
 	 <include refid="Base_Column_List"></include>
 	 FROM t_cmm_post cp  WHERE cp.state != -1 AND
 	 (
@@ -351,4 +364,11 @@
         NOT EXISTS
         ( SELECT 1 FROM t_cmm_post_circle cpc , t_cmm_circle cc WHERE cc.id = cpc.circle_id  and cpc.post_id = cp.id and cc.state != 1 )  ORDER BY cp.sort DESC , cp.edited_at desc
     </select>
+
+
+
+    <update id="updateCmmPostCommentNum" >
+        update t_cmm_post set  comment_num = comment_num - 1  WHERE id = (SELECT post_id FROM t_cmm_comment WHERE id = #{commentId})
+    </update>
+
 </mapper>

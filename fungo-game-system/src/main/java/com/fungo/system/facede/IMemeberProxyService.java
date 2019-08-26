@@ -22,7 +22,7 @@ public interface IMemeberProxyService {
 
     int selectMooMoodCount(MooMoodDto mooMoodDto);
 
-    Page<MooMoodDto> selectMooMoodPage(MooMoodDto mooMoodDto);
+//    Page<MooMoodDto> selectMooMoodPage(MooMoodDto mooMoodDto);
 
     int selectReplyCount(CmmCmtReplyDto replyDto);
 
@@ -30,7 +30,7 @@ public interface IMemeberProxyService {
 
     Page<GameEvaluationDto> selectGameEvaluationPage(GameEvaluationDto gameEvaluationDto);
 
-    FungoPageResultDto<CmmPostDto> selectCmmPostpage(CmmPostDto  cmmPostDto);
+//    FungoPageResultDto<CmmPostDto> selectCmmPostpage(CmmPostDto  cmmPostDto);
 
     CmmCommunityDto selectCmmCommunityById(CmmCommunityDto cmmCommunityDto);
 

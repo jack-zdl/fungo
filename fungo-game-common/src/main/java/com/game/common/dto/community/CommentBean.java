@@ -24,7 +24,14 @@ public class CommentBean implements Serializable {
 	
 	private String replyToId;//回复二级回复的用户id
 	private String replyContentId;//回复二级回复的id
-	
+
+	/**
+	 * 功能描述: 状态 0正常 -1删除
+	 * @auther: dl.zhang
+	 * @date: 2019/8/13 15:22
+	 */
+	private int state;
+
 	public String getId() {
 		return id;
 	}
@@ -134,7 +141,11 @@ public class CommentBean implements Serializable {
 		this.updatedAt = updatedAt;
 	}
 
-	
-	
-	
+	public int getState() {
+		return state;
+	}
+
+	public void setState(int state) {
+		this.state = state;
+	}
 }

@@ -250,5 +250,9 @@
 		select member_id from ${tableName} where id=#{id}
 	</select>
 
+    <select id="getGameByEvaluateId" resultType="com.fungo.games.entity.Game">
+        SELECT  * FROM  t_game tg LEFT JOIN t_game_evaluation tge ON tg.id = tge.game_id WHERE  tge.id = #{evaluateId}
+    </select>
+
 
 </mapper>
