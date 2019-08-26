@@ -1,6 +1,7 @@
 package com.fungo.system.mall.service;
 
 
+import com.alibaba.fastjson.JSON;
 import com.fungo.system.dto.FungoMallDto;
 import com.fungo.system.mall.entity.MallGoods;
 import com.game.common.api.InputPageDto;
@@ -47,6 +48,6 @@ public interface IFungoMallGoodsService {
     FungoPageResultDto<MallGoodsOutBean> getFestivalMall(InputPageDto inputPageDto);
 
     FungoPageResultDto<MallGoodsOutBean> drawFestivalMall(String memberId,InputPageDto inputPageDto);
-
+    ResultDto<JSON> drawnFestivalMall(String memberId);
 
 }

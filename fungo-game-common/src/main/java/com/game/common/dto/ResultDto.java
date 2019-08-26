@@ -126,6 +126,15 @@ public class ResultDto<T> extends AbstractResultDto {
          * 成功返回请求结果和结果信息和数据
          * @return  RespJson
          */
+        public static  ResultDto buildSuccess(String msg) {
+            ResultDto re =  buildInfo(CommonEnum.SUCCESS.code(), CommonEnum.SUCCESS.code(), msg, null);
+            return re;
+        }
+
+        /**
+         * 成功返回请求结果和结果信息和数据
+         * @return  RespJson
+         */
         public static  ResultDto buildSuccess(String code, String msg,Object data) {
             ResultDto re =  buildInfo(CommonEnum.SUCCESS.code(),code, msg, data);
             return re;

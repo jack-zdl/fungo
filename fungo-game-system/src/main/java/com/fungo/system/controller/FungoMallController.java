@@ -1,5 +1,6 @@
 package com.fungo.system.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import com.fungo.system.dto.FungoMallDto;
 import com.fungo.system.mall.entity.MallGoods;
@@ -30,7 +31,6 @@ import java.util.Map;
 @RequestMapping("/api/system/")
 public class FungoMallController {
 
-
     @Autowired
     private IFungoMallGoodsService iFungoMallGoodsService;
 
@@ -42,8 +42,6 @@ public class FungoMallController {
         }
         return ResultDto.error("-1", "添加商品数据失败");
     }
-
-
 
     /**
      * 功能描述:
@@ -61,7 +59,6 @@ public class FungoMallController {
         }
         return ResultDto.error("-1", "添加商品秒杀数据失败");
     }
-
 
     /**
      * 功能描述:
@@ -94,7 +91,6 @@ public class FungoMallController {
         if(CommonUtil.isNull(memberId)){
             return FungoPageResultDto.FungoPageResultDtoFactory.buildError( AbstractResultEnum.CODE_SYSTEM_FIVE.getFailevalue());
         }
-
         FungoPageResultDto<MallGoodsOutBean> isOk = iFungoMallGoodsService.drawFestivalMall(memberId,inputPageDto);
         if(CommonEnum.SUCCESS.code().equals(String.valueOf(isOk.getStatus()))){
             return isOk;
@@ -104,6 +100,23 @@ public class FungoMallController {
 
 
 
+    /**
+     * 功能描述:
+     * <p>中秋节日抽奖记录</p>
+     * @Param
+     * @return: com.game.common.dto.ResultDto<java.lang.Object>
+     * @auther: dl.zhang
+     * @date: 2019/8/20 19:46
+     */
+    @PostMapping("/mall/drawn")
+    public ResultDto<JSON> drawnFestivalMall(MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto){
+        String memberId = memberUserPrefile.getLoginId();
 
+        ResultDto<JSON> isOk = iFungoMallGoodsService.drawnFestivalMall(memberId);
+        if(CommonEnum.SUCCESS.code().equals(String.valueOf(isOk.getStatus()))){
+            return isOk;
+        }
+        return ResultDto.error("-1", "中秋节日抽奖记录失败");
+    }
 
 }

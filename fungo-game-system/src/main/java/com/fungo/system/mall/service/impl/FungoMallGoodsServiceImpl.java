@@ -13,13 +13,12 @@ import com.fungo.system.mall.daoService.MallGoodsCatesDaoService;
 import com.fungo.system.mall.daoService.MallGoodsDaoService;
 import com.fungo.system.mall.daoService.MallSeckillDaoService;
 import com.fungo.system.mall.daoService.MallVirtualCardDaoService;
-import com.fungo.system.mall.entity.MallGoods;
-import com.fungo.system.mall.entity.MallGoodsCates;
-import com.fungo.system.mall.entity.MallSeckill;
-import com.fungo.system.mall.entity.MallVirtualCard;
+import com.fungo.system.mall.entity.*;
+import com.fungo.system.mall.mapper.MallLogsDao;
 import com.fungo.system.mall.mapper.MallSeckillDao;
 import com.fungo.system.mall.service.IFungoMallGoodsService;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
+import com.fungo.system.service.MemberInfoService;
 import com.fungo.system.service.MemberService;
 import com.fungo.system.service.impl.MemberServiceImpl;
 import com.game.common.api.InputPageDto;
@@ -27,10 +26,12 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.mall.MallGoodsInput;
 import com.game.common.dto.mall.MallGoodsOutBean;
+import com.game.common.enums.AbstractResultEnum;
 import com.game.common.util.FungoAESUtil;
 import com.game.common.util.PKUtil;
 import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
+import io.netty.handler.codec.json.JsonObjectDecoder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
@@ -42,6 +43,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
 
 @Service
 public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
@@ -64,6 +67,10 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
     private MemberServiceImpl memberServiceImpl;
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private MemberInfoService memberInfoService;
+    @Autowired
+    private MallLogsDao mallLogsDao;
 
 
 
@@ -494,18 +501,46 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
         FungoPageResultDto<MallGoodsOutBean> resultDto = new FungoPageResultDto<>();
         try {
             Member member = memberService.selectById(memberId);
-            if(memberServiceImpl.getNewMember(member.getCreatedAt(),member.getLevel())){
+            boolean istrue = memberInfoService.shareFestival(memberId);
+            int userType = 0 ;
+            if(istrue){
+
+            } else if(memberServiceImpl.getNewMember(member.getCreatedAt(),member.getLevel())){
 
             }else if(memberServiceImpl.getActiveMemeber(member.getId())){
 
             }else {
-
+                return FungoPageResultDto.FungoPageResultDtoFactory.buildWarning( AbstractResultEnum.CODE_SYSTEM_SIX.getKey(),AbstractResultEnum.CODE_SYSTEM_SIX.getFailevalue());
             }
+            // 查询顺序表
+            // 那个商品id去下订单  不能和原来的秒杀
+            // 记录日志
+
             resultDto =  getFestivalMall(inputPageDto);
         }catch (Exception e){
             logger.error( "中秋礼品抽奖异常用户id="+memberId,e);
         }
         return resultDto;
+    }
+
+    @Override
+    public ResultDto<JSON> drawnFestivalMall(String memberId) {
+        JSONObject json = new JSONObject();
+        try {
+            List<MallLogs>  mallLogs = mallLogsDao.selectMallLogsByUserId( memberId);
+            Map<Integer, List<MallLogs>> mallLogsMap =  mallLogs.stream().collect(groupingBy(MallLogs::getUserType));
+            if(mallLogsMap != null){
+                List<MallLogs> mallLogs1 = mallLogsMap.get("1");
+                json.put( "newMember",mallLogs1 != null ? mallLogs1.size() : 0 );
+                List<MallLogs> mallLogs2 = mallLogsMap.get("2");
+                json.put( "oldMember", mallLogs2 != null ? mallLogs1.size() : 0);
+                List<MallLogs> mallLogs3 = mallLogsMap.get("3");
+                json.put( "oldMember", mallLogs3 != null ? mallLogs1.size() : 0);
+            }
+        }catch (Exception e){
+            logger.error("",e);
+        }
+        return ResultDto.ResultDtoFactory.buildSuccess(json);
     }
 
     @Override
@@ -554,21 +589,17 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
         return null;
     }
 
-
     /**
      * 查询某个游戏礼包未卖出剩余的虚拟卡数量
-     *
      * @param goods_id
      * @return
      */
     private int getUnSaledVMCardWithGame( Long goods_id) {
-
         //查询虚拟卡验证用户是否购买过
         EntityWrapper<MallVirtualCard> virtualCardEntityWrapper = new EntityWrapper<MallVirtualCard>();
         virtualCardEntityWrapper.eq("goods_id", goods_id);
         virtualCardEntityWrapper.eq("card_type", 31);
         virtualCardEntityWrapper.eq("is_saled", -1);
-
         int count = mallVirtualCardDaoService.selectCount(virtualCardEntityWrapper);
         return count;
     }
