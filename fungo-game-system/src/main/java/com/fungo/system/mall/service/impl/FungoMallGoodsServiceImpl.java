@@ -496,6 +496,8 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
             Member member = memberService.selectById(memberId);
             if(memberServiceImpl.getNewMember(member.getCreatedAt(),member.getLevel())){
 
+            }else if(memberServiceImpl.getActiveMemeber(member.getId())){
+
             }else {
 
             }
