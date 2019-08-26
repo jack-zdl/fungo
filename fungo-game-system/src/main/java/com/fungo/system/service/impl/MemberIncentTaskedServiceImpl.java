@@ -1084,6 +1084,10 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
             //------------------------引入任务进度逻辑--------------------------
             //第三 步  查询某个用户，完成某个分类下的分类规则数据
             //1 .分值任务用户完成进度和成果
+
+
+            //第三 步  查询某个用户，完成某个分类下的分类规则数据
+            //1 .分值任务用户完成进度和成果
             Wrapper wrapperRuleTaskScore = new EntityWrapper<IncentTasked>();
             Map<String, Object> criteriaMapIncentTaskedScore = new HashMap<String, Object>();
             criteriaMapIncentTaskedScore.put("mb_id", memberId);
@@ -1119,6 +1123,7 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                     incentTaskedScore22 = incentTaskedScore;
                 }
             }
+
             if (null == incentTaskedScore22) {
                 criteriaMapIncentTaskedScore.put("task_type", FunGoGameConsts.TASK_RULE_TASK_TYPE_COIN_SIGN_IN);
 
@@ -1132,7 +1137,10 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                     incentTaskedScore22 = incentTaskedListScore.get(0);
                 }
             }
+
+
             //2 .虚拟币任务用户完成进度和成果
+
             Wrapper wrapperRuleTaskCoin = new EntityWrapper<IncentTasked>();
             Map<String, Object> criteriaMapIncentTaskedCoin = new HashMap<String, Object>();
             criteriaMapIncentTaskedCoin.put("mb_id", memberId);
@@ -1173,6 +1181,7 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                 wrapperRuleTaskCoin = new EntityWrapper<IncentTasked>();
                 wrapperRuleTaskCoin.allEq(criteriaMapIncentTaskedCoin);
                 wrapperRuleTaskCoin.orderBy("updated_at", false);
+
                 incentTaskedListCoin = incentTaskedService.selectList(wrapperRuleTaskCoin);
                 if (null != incentTaskedListCoin && !incentTaskedListCoin.isEmpty()) {
                     incentTaskedCoin22 = incentTaskedListCoin.get(0);
@@ -1184,7 +1193,7 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                 if(Objects.equals(rule.getId(),scoreRule.getId())){
                     continue;
                 }
-                IncentTaskedOut taskedOutScore = getMbIncentTaskedOutWithScore(memberId, scoreRule, incentTaskedScore, scoreGroup.getTaskFlag(), incentTaskedCoin22);
+                IncentTaskedOut taskedOutScore = getMbIncentTaskedOutWithScore(memberId, rule, incentTaskedScore, scoreGroup.getTaskFlag(), incentTaskedCoin22);
                 if(taskedOutScore ==null||scoreRule.getMax()==-1||taskedOutScore.getTaskedCount()<rule.getMax()){
                     return false;
                 }

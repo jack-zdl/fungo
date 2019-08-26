@@ -106,6 +106,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
     private CmmCircleMapper cmmCircleMapper;
 
 
+
     @Override
     public ResultDto<CommentOut> addComment(String memberId, CommentInput commentInput, String appVersion) throws Exception {
         ResultDto<CommentOut> re = new ResultDto<CommentOut>();
@@ -1754,6 +1755,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
         if (CommonUtil.isNull(replyInput.getContent())) {
             return ResultDto.error("-1", "内容不能为空!");
         }
+        // 埋点使用
+        String targetMemberId =null;
         ResultDto<ReplyOutBean> re = new ResultDto<ReplyOutBean>();
         ReplyOutBean t = new ReplyOutBean();
         Reply reply = new Reply();
@@ -1807,6 +1810,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
             counterService.addCounter("t_cmm_comment", "reply_num", replyInput.getTarget_id());//增加评论数
             //最后回复时间
             CmmComment comment = commentService.selectById(replyInput.getTarget_id());
+            if(replyInput.getReply_to()==null){
+                targetMemberId = comment.getMemberId();
+            }
             if (comment != null) {
                 CmmPost post = postService.selectById(comment.getPostId());
                 if (post != null) {
@@ -1859,7 +1865,14 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
             counterService.addCounter("t_game_evaluation", "reply_num", replyInput.getTarget_id());//增加评论数
 
-
+            ResultDto<GameEvaluationDto> idResult = gameFacedeService.getGameEvaluationSelectById(replyInput.getTarget_id());
+            if(idResult!=null&&idResult.isSuccess()&&idResult.getData()!=null){
+                GameEvaluationDto data = idResult.getData();
+                String memberId1 = data.getMemberId();
+                if(memberId!=null){
+                    targetMemberId = memberId1;
+                }
+            }
             try {
 
 
@@ -1902,6 +1915,10 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         } else if (replyInput.getTarget_type() == 8) {//回复心情评论
             counterService.addCounter("t_moo_message", "reply_num", replyInput.getTarget_id());//增加评论数
+            MooMood mooMood = moodService.selectById(replyInput.getTarget_id());
+            if(mooMood!=null&&mooMood.getMemberId()!=null){
+                targetMemberId = mooMood.getMemberId();
+            }
             if (CommonUtil.isNull(replyInput.getReply_to_content_id())) { //只有没有三级评论时才会发送消息
 
                 //this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_GAME, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_MESSAGE, replyInput.getContent(), appVersion, "");
@@ -2069,7 +2086,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
         replyModel.setDistinctId(memberId);
         replyModel.setPlatForm(BuriedPointUtils.getPlatForm());
         replyModel.setEventName(BuriedPointEventConstant.EVENT_KEY_COMMENT);
-        String targetMemberId = replyInput.getReply_to();
+        if(replyInput.getReply_to()!=null){
+            targetMemberId = replyInput.getReply_to();
+        }
         if(targetMemberId!=null){
             replyModel.setNickname(Optional.ofNullable(systemFacedeService.getMembersByid(targetMemberId)).map(MemberDto::getUserName).orElse(null));
         }

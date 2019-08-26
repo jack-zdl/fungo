@@ -61,4 +61,5 @@ public class FungoGameCommunityApplication {
         registrationBean.setName("HystrixMetricsStreamServlet");
         return registrationBean;
     }
+
 }

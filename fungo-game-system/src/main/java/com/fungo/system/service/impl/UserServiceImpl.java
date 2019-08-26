@@ -1,9 +1,11 @@
 package com.fungo.system.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
+import com.fungo.system.facede.ICommunityProxyService;
 import com.fungo.system.function.MemberLoginedStatisticsService;
 import com.fungo.system.service.*;
 import com.game.common.consts.GameConstant;
@@ -69,11 +71,19 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private FungoCacheMember fungoCacheMember;
 
+    @Autowired
+    private IMemberIncentRiskService iMemberIncentRiskService;
+
 
     //用户成长业务
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
 
+    @Autowired
+    private IncentAccountCoinDaoService incentAccountCoinDaoService;
+
+    @Autowired
+    private ICommunityProxyService communityProxyService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -850,6 +860,91 @@ public class UserServiceImpl implements IUserService {
             throw new BusinessException("-1", "初始化注册数据失败!");
         }
     }
+
+    @Override
+    public ResultDto updateUserRegister(String userId, String registerChannel, String registerPlatform) {
+        EntityWrapper<Member> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("id",userId);
+        Member member = new Member();
+        member.setRegisterChannel(registerChannel);
+        member.setRegisterPlatform(registerPlatform);
+        boolean update = memberService.update(member, entityWrapper);
+        if(update){
+            return ResultDto.success();
+        }
+       return ResultDto.error("-1","更新用户注册信息失败");
+    }
+
+
+    @Override
+    public ResultDto<MemberBuriedPointBean> getBuriedPointUserProperties(String loginId) {
+        Member member = memberService.selectById(loginId);
+        if(member == null){
+            return ResultDto.error("-1","未查询到用户信息");
+        }
+        MemberBuriedPointBean memberBuriedPointBean = new MemberBuriedPointBean();
+        // 用户基本属性封装
+        memberBuriedPointBean.setAge(null);
+        memberBuriedPointBean.setFansCount(member.getFolloweeNum());
+        memberBuriedPointBean.setFirstPlatform(member.getRegisterPlatform());
+        memberBuriedPointBean.setFirstSource(member.getRegisterChannel());
+        memberBuriedPointBean.setGender(member.getGender());
+        memberBuriedPointBean.setRegisterDate(member.getCreatedAt().getTime());
+        memberBuriedPointBean.setFollowCount(member.getFollowerNum());
+        memberBuriedPointBean.setExp(member.getExp());
+        memberBuriedPointBean.setUserLevel(member.getLevel());
+
+        // 非用户基本属性封装
+        // 账户余额
+        EntityWrapper<IncentAccountCoin> incentAccountCoinEntityWrapper = new EntityWrapper<>();
+        incentAccountCoinEntityWrapper.eq("mb_id",loginId);
+        IncentAccountCoin incentAccountCoin = incentAccountCoinDaoService.selectOne(incentAccountCoinEntityWrapper);
+        if(incentAccountCoin == null){
+            memberBuriedPointBean.setBalance(0);
+        }else{
+            memberBuriedPointBean.setBalance(incentAccountCoin.getCoinUsable().intValue());
+        }
+
+        //下载记录
+        int downCount = actionService.selectCount(new EntityWrapper<BasAction>()
+                .eq("member_id", loginId)
+                .eq("type", Setting.ACTION_TYPE_DOWNLOAD));
+        memberBuriedPointBean.setGameDownloadCount(downCount);
+
+        // 用户是否完成新手任务
+        ResultDto<Map<String, Object>> mapResultDto = iMemberIncentRiskService.checkeUnfinshedNoviceTask(loginId, null);
+        if(mapResultDto.isSuccess()&&mapResultDto.getData()!=null){
+            Map<String, Object> data = mapResultDto.getData();
+            Object hasNotiveTask = data.get("hasNotiveTask");
+            if(hasNotiveTask instanceof Boolean){
+                memberBuriedPointBean.setHasCompletedCourse(!(Boolean)hasNotiveTask);
+            }else{
+                memberBuriedPointBean.setHasCompletedCourse(false);
+            }
+        }else{
+            // 容错 当未完成处理
+            memberBuriedPointBean.setHasCompletedCourse(false);
+        }
+
+        // 用户类型 - 有身份标识，且标识是鉴游师身份的
+        memberBuriedPointBean.setUserType("普通用户");
+        IncentRanked incentRanked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", member.getId()).eq("rank_type",2));
+        if(incentRanked!=null){
+            IncentRuleRank rank = rankRuleService.selectById(incentRanked.getCurrentRankId());
+            if(rank.getRankGroupId().equals("4")){
+                memberBuriedPointBean.setUserType("鉴游师");
+            }
+        }
+
+        // 文章和心情数量 - 微服务
+        Map<String, Integer> countMap = communityProxyService.countMoodAndPost(loginId);
+        memberBuriedPointBean.setArticlePublished(countMap.get("articlePublished"));
+        memberBuriedPointBean.setMoodPublished(countMap.get("moodPublished"));
+        return ResultDto.success(memberBuriedPointBean);
+
+    }
+
+
 
 
 }

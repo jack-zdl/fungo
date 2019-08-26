@@ -155,6 +155,9 @@ public class PostServiceImpl implements IPostService {
         }
 
 
+
+
+
         if (memberDto == null) {
             return ResultDto.error("126", "不存在的用户");
         }
@@ -542,7 +545,7 @@ public class PostServiceImpl implements IPostService {
         model.setPlatForm(BuriedPointUtils.getPlatForm());
         //封装发布文章事件特有属性
         model.setTitle(post.getTitle());
-        model.setHasPic(StringUtil.isNotNull(post.getImages()));
+        model.setHasPic(!list.isEmpty());
         model.setHasVideo(!CommonUtil.isNull(postInput.getVideo()) || !CommonUtil.isNull(postInput.getVideoId()));
         model.setHasGame(includeGameList!=null&&includeGameList.size()>0);
         //不存在圈子信息 设为null

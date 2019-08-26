@@ -2,12 +2,15 @@ package com.fungo.community.service.msService.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.dao.service.MooMessageDaoService;
 import com.fungo.community.dao.service.MooMoodDaoService;
+import com.fungo.community.entity.CmmPost;
 import com.fungo.community.entity.MooMessage;
 import com.fungo.community.entity.MooMood;
 import com.fungo.community.service.msService.IMSServiceMoodService;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.MooMessageDto;
 import com.game.common.dto.community.MooMoodDto;
 import com.game.common.util.PageTools;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -34,6 +38,9 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
 
     @Autowired
     private MooMessageDaoService mooMessageDaoService;
+
+    @Autowired
+    private CmmPostDaoService postDaoService;
 
 
     @Override
@@ -285,6 +292,16 @@ public class MSServiceMoodServiceImpl implements IMSServiceMoodService {
             LOGGER.error("/ms/service/cmm/mood/count----queryCmmPostList-出现异常:参数="+mooMoodDto.toString(), ex);
         }
         return 0;
+    }
+
+    @Override
+    public ResultDto<Map<String, Integer>> countMoodAndPost(String userId) {
+        int moodCount = mooMoodDaoService.selectCount(new EntityWrapper<MooMood>().eq("member_id", userId).eq("state", 0));
+        int postCount = postDaoService.selectCount(new EntityWrapper<CmmPost>().eq("member_id", userId).eq("state", 1));
+        Map<String, Integer> map = new HashMap<>();
+        map.put("articlePublished",postCount);
+        map.put("moodPublished",moodCount);
+        return ResultDto.success(map);
     }
 
 

@@ -179,6 +179,15 @@ public class CommunityFacedeHystrixService implements FallbackFactory<CommunityF
                 logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "listCircleNameByComment");
                 return null;
             }
+
+            /**
+             * 查询 用户心情及文章总数 - 排除已删除
+             */
+            @Override
+            public ResultDto<Map<String, Integer>> countMoodAndPost(String userId) {
+                logger.error("--------------------CommunityFeignClient--启动熔断:{}" , "countMoodAndPost");
+                return null;
+            }
         };
 
     }

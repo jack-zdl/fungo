@@ -302,8 +302,6 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
         buriedPointTaskModel.setQuestExp(scoreRule.getScore());
         buriedPointTaskModel.setFinalQuest(iMemberIncentTaskedService.currentTaskIsLast(scoreRule,mb_id,FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code()));
         BuriedPointUtils.publishBuriedPointEvent(buriedPointTaskModel);
-
-
         //没有执行过
         //3.更新用户经验值账户
         int accountScore = updateAccountScore(mb_id, scoreRule);

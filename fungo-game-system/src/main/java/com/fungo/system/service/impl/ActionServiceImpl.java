@@ -206,7 +206,7 @@ public class ActionServiceImpl implements IActionService {
     }
 
     private String getBuriedPointLikeType(int targetType ){
-        if(targetType == Setting.RES_TYPE_POST || targetType == Setting.RES_TYPE_EVALUATION || targetType == Setting.RES_TYPE_MESSAGE){
+        if(targetType == Setting.RES_TYPE_POST || targetType == Setting.RES_TYPE_EVALUATION || targetType == Setting.RES_TYPE_MOOD){
             return BuriedPointCommunityConstant.COMMUNITY_LIKE_TYPE_AUTHOR;
         }
         return BuriedPointCommunityConstant.COMMUNITY_LIKE_TYPE_OBSERVER;

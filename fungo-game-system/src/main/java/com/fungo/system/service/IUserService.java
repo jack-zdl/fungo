@@ -142,4 +142,8 @@ public interface IUserService {
 
     //用户注册 初始化数据(Fungo身份证、等级)
     void initUserRank(String memberId);
+
+    ResultDto updateUserRegister(String userId, String registerChannel, String registerPlatform);
+
+    ResultDto<MemberBuriedPointBean> getBuriedPointUserProperties(String loginId);
 }

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -186,6 +187,14 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
         ResultDto<List<String>> resultDto = communityFeignClient.listCircleNameByComment(commentId);
         if(!resultDto.isSuccess()||resultDto.getData()==null){
             return  new ArrayList<>();
+        }
+        return resultDto.getData();
+    }
+
+    public Map<String, Integer> countMoodAndPost(String userId) {
+        ResultDto<Map<String, Integer>> resultDto = communityFeignClient.countMoodAndPost(userId);
+        if(!resultDto.isSuccess()||resultDto.getData()==null){
+            return  new HashMap<String, Integer>();
         }
         return resultDto.getData();
     }

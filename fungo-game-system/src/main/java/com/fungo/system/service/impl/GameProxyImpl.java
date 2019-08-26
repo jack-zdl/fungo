@@ -462,11 +462,10 @@ public class GameProxyImpl implements IGameProxy {
 		map.put("id",target_id);
 		if (CommonlyConst.getCommunityList().contains(target_type)){
 //            社区服务空缺 19-05-07
-			if (false){
 				// @todo 社区
 //				被点赞用户的id
 				return iDeveloperProxyService.getMemberIdByTargetId(map); //  communityFeignClient.getMemberIdByTargetId(map);
-			}
+
 //            return false;
 		}
 		if (CommonlyConst.getGameList().contains(target_type)){

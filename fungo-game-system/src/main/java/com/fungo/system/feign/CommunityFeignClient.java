@@ -183,4 +183,11 @@ public interface CommunityFeignClient {
 
     @GetMapping(value = "/ms/service/cmm/post/listCircleNameByComment")
     ResultDto<List<String>> listCircleNameByComment(@RequestParam("commentId")String commentId);
+
+    /**
+     * 查询 用户心情及文章总数 - 排除已删除
+     * @return
+     */
+    @GetMapping("/ms/service/cmm/mood/countMoodAndPost")
+    ResultDto<Map<String,Integer>> countMoodAndPost(@RequestParam("userId") String userId);
 }

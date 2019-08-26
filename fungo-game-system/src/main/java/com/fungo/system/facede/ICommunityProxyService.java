@@ -47,4 +47,6 @@ public interface ICommunityProxyService {
     List<String> listCircleNameByPost(String postId);
 
     List<String> listCircleNameByComment(String target_id);
+
+    Map<String, Integer> countMoodAndPost(String userId);
 }
