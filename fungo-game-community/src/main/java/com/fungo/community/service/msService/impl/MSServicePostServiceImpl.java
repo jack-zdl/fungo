@@ -131,7 +131,7 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
             }
 
             //排序
-            postEntityWrapper.orderBy("sort,updated_at", false);
+            postEntityWrapper.orderBy("sort desc ,updated_at", false);
 
             //postEntityWrapper .orderBy("updated_at", false);
 
