@@ -4,6 +4,7 @@ import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import com.fungo.system.dto.FungoMallDto;
 import com.fungo.system.mall.entity.MallGoods;
 import com.fungo.system.mall.service.IFungoMallGoodsService;
+import com.fungo.system.service.impl.MemberServiceImpl;
 import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
@@ -93,6 +94,7 @@ public class FungoMallController {
         if(CommonUtil.isNull(memberId)){
             return FungoPageResultDto.FungoPageResultDtoFactory.buildError( AbstractResultEnum.CODE_SYSTEM_FIVE.getFailevalue());
         }
+
         FungoPageResultDto<MallGoodsOutBean> isOk = iFungoMallGoodsService.drawFestivalMall(memberId,inputPageDto);
         if(CommonEnum.SUCCESS.code().equals(String.valueOf(isOk.getStatus()))){
             return isOk;

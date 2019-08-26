@@ -37,6 +37,7 @@ import com.game.common.util.PageTools;
 import com.game.common.util.StringUtil;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
+import io.swagger.models.auth.In;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1482,11 +1483,11 @@ public class MemberServiceImpl implements IMemberService {
      * @param level 等级
      * @return false 不是新用户  true 是新用户
      */
-    private boolean getNewMember(Date registerDate,String level){
+    public boolean getNewMember(Date registerDate, Integer level){
         String startDate = nacosFungoCircleConfig.getStartDate();
         String endDate = nacosFungoCircleConfig.getEndDate();
         try {
-            if(Integer.valueOf(level) < 3){
+            if(level < 3){
                 return false;
             }
             startDate = startDate+ " " + FungoMallSeckillConsts.SECKILL_START_TIME;
@@ -1499,21 +1500,32 @@ public class MemberServiceImpl implements IMemberService {
     }
 
     /**
-     * 如果您是回归老用户，
-     * 活动期间7天以上未登陆过 平台的，等级达到Lv.3即可获得两次免费单抽
+     *  如果您是平台活跃用户，九月一号和九月十六号活动期间在平台连续签到 四天及以上获得两次免费单抽
      * @return
      */
-    private boolean getOldMember(){
-        return true;
-    }
+    public boolean getActiveMemeber(String memberId){
+        try {
+            String startDate = nacosFungoCircleConfig.getStartDate();
+            String endDate = nacosFungoCircleConfig.getEndDate();
+            int days = nacosFungoCircleConfig.getFestivalDays();
 
-    /**
-     *  如果您是平台活跃用户，活动期间在平台连续签到 5天及以上且等级达到Lv.3即可获得两次免费单抽
-     *  （若您在活动前已经连续签到超过5天，活动开始后可 立即领取该奖励）
-     * @return
-     */
-    private boolean getActiveMemeber(){
-        return true;
+            startDate = startDate+ " " + FungoMallSeckillConsts.SECKILL_START_TIME;
+            endDate = endDate + " " + FungoMallSeckillConsts.SECKILL_END_TIME;
+
+            //查询log日志 获取用户签到累计天数
+            EntityWrapper<ScoreLog> scoreLogEntityWrapper = new EntityWrapper<ScoreLog>();
+
+            scoreLogEntityWrapper.eq("member_id", memberId);
+            scoreLogEntityWrapper.in("task_type", "22,220");
+            scoreLogEntityWrapper.ge("created_at", startDate);
+            int signInCount = scoreLogService.selectCount(scoreLogEntityWrapper);
+            if(signInCount >= days ){
+                return true;
+            }
+        }catch (Exception e){
+            logger.error("",e);
+        }
+        return false;
     }
 
 }

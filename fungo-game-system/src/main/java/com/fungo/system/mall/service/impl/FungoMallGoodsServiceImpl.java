@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.dto.FungoMallDto;
+import com.fungo.system.entity.Member;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.mall.daoService.MallGoodsCatesDaoService;
@@ -19,6 +20,8 @@ import com.fungo.system.mall.entity.MallVirtualCard;
 import com.fungo.system.mall.mapper.MallSeckillDao;
 import com.fungo.system.mall.service.IFungoMallGoodsService;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
+import com.fungo.system.service.MemberService;
+import com.fungo.system.service.impl.MemberServiceImpl;
 import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
@@ -57,6 +60,10 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
     private MallVirtualCardDaoService mallVirtualCardDaoService;
     @Autowired
     private MallSeckillDaoService mallSeckillDaoService;
+    @Autowired
+    private MemberServiceImpl memberServiceImpl;
+    @Autowired
+    private MemberService memberService;
 
 
 
@@ -486,6 +493,12 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
     public FungoPageResultDto<MallGoodsOutBean> drawFestivalMall(String memberId, InputPageDto inputPageDto) {
         FungoPageResultDto<MallGoodsOutBean> resultDto = new FungoPageResultDto<>();
         try {
+            Member member = memberService.selectById(memberId);
+            if(memberServiceImpl.getNewMember(member.getCreatedAt(),member.getLevel())){
+
+            }else {
+
+            }
             resultDto =  getFestivalMall(inputPageDto);
         }catch (Exception e){
             logger.error( "中秋礼品抽奖异常用户id="+memberId,e);

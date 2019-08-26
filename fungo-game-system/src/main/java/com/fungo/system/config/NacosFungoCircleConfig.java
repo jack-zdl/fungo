@@ -28,6 +28,8 @@ public class NacosFungoCircleConfig {
     public String startDate;
     @Value( value = "${fungo.cloud.festival.endDate}")
     public String endDate;
+    @Value( value = "${fungo.cloud.festival.days}")
+    public int festivalDays;
 
     public String getBasLog() {
         return basLog;
@@ -67,5 +69,13 @@ public class NacosFungoCircleConfig {
 
     public void setEndDate(String endDate) {
         this.endDate = endDate;
+    }
+
+    public int getFestivalDays() {
+        return festivalDays;
+    }
+
+    public void setFestivalDays(int festivalDays) {
+        this.festivalDays = festivalDays;
     }
 }
