@@ -15,7 +15,7 @@ public class BuriedPointEventConstant {
 	/**
 	 * 发布文章埋点事件id
 	 */
-	public final static String EVENT_KEY_WORK_PUBLISHED = "work_published";
+	public final static String EVENT_KEY_WORK_PUBLISHED = "article_published";
 	/**
 	 * 点赞埋点事件id
 	 */
