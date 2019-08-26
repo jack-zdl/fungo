@@ -5,6 +5,7 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.*;
 
+import java.util.List;
 import java.util.Set;
 
 public interface IEvaluateService {
@@ -31,5 +32,7 @@ public interface IEvaluateService {
 	 * @return
 	 */
 	public Set<String> getGameEvaluationHotAndAnliCount(String mb_id, String startDate, String endDate);
+
+	 ResultDto<String> delCommentList(String memberId,  int type ,List<String> commentIds);//评论详情
 
 }

@@ -24,11 +24,16 @@ public class MybatisPlus4MysqlConfig {
     @Autowired
     public DataSource dataSource;
 
+//    @Autowired
+//    public XbDataSource xbDataSource;
+
+
 
     @Primary
     @Bean("mysqlSqlSessionFactory")
     public SqlSessionFactory sqlSessionFactory() throws Exception {
         MybatisSqlSessionFactoryBean sqlSessionFactory = new MybatisSqlSessionFactoryBean();
+//        DataSource dataSource = xbDataSource.getShardingDataSource();
         sqlSessionFactory.setDataSource(dataSource);
         MybatisConfiguration configuration = new MybatisConfiguration();
         configuration.setDefaultScriptingLanguage(MybatisXMLLanguageDriver.class);

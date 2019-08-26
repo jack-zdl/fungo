@@ -40,6 +40,13 @@ public class MyPublishBean implements Serializable{
 	private ArrayList<StreamInfo> videoList = new ArrayList<>();
 	
 	private String coverImage;
+
+	/**
+	 * 功能描述: 1 true  已删除  0 false 未删除
+	 * @auther: dl.zhang
+	 * @date: 2019/8/13 14:26
+	 */
+	private int deltype;
 	
 	
 	
@@ -129,8 +136,12 @@ public class MyPublishBean implements Serializable{
 	public void setCoverImage(String coverImage) {
 		this.coverImage = coverImage;
 	}
-	
-	
-	
-	
+
+	public int getDeltype() {
+		return deltype;
+	}
+
+	public void setDeltype(int deltype) {
+		this.deltype = deltype;
+	}
 }

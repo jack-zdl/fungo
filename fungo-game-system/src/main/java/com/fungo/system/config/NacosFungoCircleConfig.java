@@ -1,9 +1,9 @@
 package com.fungo.system.config;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
+import java.util.List;
 
 /**
  * <p>nacos的config配置
@@ -11,8 +11,72 @@ import org.springframework.stereotype.Component;
  * @Date: 2019/7/1
  */
 @Component
-@Slf4j
+@RefreshScope
 public class NacosFungoCircleConfig {
 
 
+//    @Value("#{'${nacos.cloud}'.split(',')}")
+    @Value(value = "${nacos.cloud.basLog}")
+    public String basLog;
+
+    @Value(value = "${nacos.cloud.basLogone}")
+    public String basLogone;
+
+    @Value(value = "${nacos.cloud.basLogtwo}")
+    public String basLogtwo;
+
+    @Value( value = "${fungo.cloud.festival.switch}")
+    public boolean festivalSwitch;
+    @Value( value = "${fungo.cloud.festival.picture}")
+    public String festivalPicture;
+    @Value( value = "${fungo.cloud.festival.linkUrl}")
+    public String festivallinkUrl;
+
+    public String getBasLog() {
+        return basLog;
+    }
+
+    public void setBasLog(String basLog) {
+        this.basLog = basLog;
+    }
+
+    public String getBasLogone() {
+        return basLogone;
+    }
+
+    public void setBasLogone(String basLogone) {
+        this.basLogone = basLogone;
+    }
+
+    public String getBasLogtwo() {
+        return basLogtwo;
+    }
+
+    public void setBasLogtwo(String basLogtwo) {
+        this.basLogtwo = basLogtwo;
+    }
+
+    public boolean isFestivalSwitch() {
+        return festivalSwitch;
+    }
+
+    public void setFestivalSwitch(boolean festivalSwitch) {
+        this.festivalSwitch = festivalSwitch;
+    }
+
+    public String getFestivalPicture() {
+        return festivalPicture;
+    }
+
+    public void setFestivalPicture(String festivalPicture) {
+        this.festivalPicture = festivalPicture;
+    }
+
+    public String getFestivallinkUrl() {
+        return festivallinkUrl;
+    }
+
+    public void setFestivallinkUrl(String festivallinkUrl) {
+        this.festivallinkUrl = festivallinkUrl;
+    }
 }

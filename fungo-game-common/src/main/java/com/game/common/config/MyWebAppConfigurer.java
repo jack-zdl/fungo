@@ -134,6 +134,9 @@ class UserProfileArgumentResolver implements HandlerMethodArgumentResolver {
             }
         } else {
             try {
+                if (parameter.hasParameterAnnotation(Anonymous.class)) {  //针对部分接口即支持会员访问又支持匿名访问拦截处理
+                    return null;
+                }
                 long start = System.currentTimeMillis();
                 Claims parseJWT = tokenService.parseJWT(token);
                 String subject = parseJWT.getSubject();

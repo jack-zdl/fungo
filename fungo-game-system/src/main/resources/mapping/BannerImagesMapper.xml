@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.system.dao.BannerImagesDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.fungo.system.entity.BannerImages">
+		<id column="id" jdbcType="VARCHAR" property="id" />
+		<result column="banner_id" jdbcType="VARCHAR" property="bannerId" />
+		<result column="type" jdbcType="INTEGER" property="type" />
+		<result column="banner_image" jdbcType="VARCHAR" property="bannerImage" />
+		<result column="isactive" jdbcType="CHAR" property="isactive" />
+		<result column="created_by" jdbcType="VARCHAR" property="createdBy" />
+		<result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+		<result column="updated_by" jdbcType="VARCHAR" property="updatedBy" />
+		<result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+		<result column="rversion" jdbcType="INTEGER" property="rversion" />
+		<result column="description" jdbcType="VARCHAR" property="description" />
+	</resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+ 		id, banner_id, `type`, banner_image, isactive, created_by, created_at, updated_by,
+    	updated_at, rversion, description
+    </sql>
+
+
+</mapper>

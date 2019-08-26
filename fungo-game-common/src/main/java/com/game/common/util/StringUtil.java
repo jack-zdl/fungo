@@ -715,6 +715,17 @@ public class StringUtil {
         return i;
     }
 
+    public static String getGameNotice(CharSequence c1,CharSequence c2,CharSequence c3 ){
+        StringBuffer stringBuffer = new StringBuffer();
+        return stringBuffer.append("你预约的").append( c1 ).append( "于" ).append( c2 ).append( "(时间)" ).append("开启").append( c3 ).append( "测试,快去抢购体验吧!" ).toString();
+    }
+
+
+    public static String getGameIOSNotice(CharSequence c1,CharSequence c2 ){
+        StringBuffer stringBuffer = new StringBuffer();
+        return stringBuffer.append("恭喜,幸运儿,你已获得的").append( c1 ).append( "IOS版的Testflight测试资格,请检查您的Apple ID邮箱" ).append( c2 ).append( "。" ).toString();
+    }
+
     public static void main(String[] args) {
         String str = "aaa我们测";
         String str1 = "&#10;";

@@ -63,6 +63,18 @@ public class MQProduct {
         rabbitMQProduct.mqGames(mqResultDto);
     }
 
+//    /**
+//     * 功能描述: 向游戏模块发送mq,更新游戏测试关联表
+//     * @auther: dl.zhang
+//     * @date: 2019/7/30 14:28
+//     */
+//    public void gameSurveyRelUpdate(List ids){
+//        MQResultDto mqResultDto = new MQResultDto();
+//        mqResultDto.setType(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAME_SURVEY_UPDATE.getCode());
+//        mqResultDto.setBody(ids);
+//        rabbitMQProduct.mqGames(mqResultDto);
+//    }
+
     public void addGameTag(List<String> tegList , String categoryId,String id){
         Map<String,Object> map = new ConcurrentHashMap<>();
         map.put("tegList",tegList);

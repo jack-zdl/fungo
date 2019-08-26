@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CommunityServiceImpl implements ICommunityService {
@@ -48,7 +49,7 @@ public class CommunityServiceImpl implements ICommunityService {
         List<Member> watchMebmberList = null;
         StringBuffer mbWatchedMbsWithSql = new StringBuffer();
 
-        List<String> wathMbsSet = new ArrayList<String>();
+        List<String> wathMbsSet = new ArrayList<>();
 
         if (StringUtils.isNotBlank(currentMb_id)) {
             watchMebmberList = this.getWatchMebmber(0, currentMb_id);
@@ -102,7 +103,7 @@ public class CommunityServiceImpl implements ICommunityService {
     private List<Member> getWatchMebmber(int limit, String currentMb_id) {
 
         EntityWrapper actionEntityWrapper = new EntityWrapper<BasAction>();
-        actionEntityWrapper.setSqlSelect("target_id");
+        actionEntityWrapper.setSqlSelect("target_id as targetId");
 
         //target_type 0 关注用户
         actionEntityWrapper.eq("state", "0").eq("type", 5).eq("member_id", currentMb_id).eq("target_type", 0);
@@ -152,6 +153,7 @@ public class CommunityServiceImpl implements ICommunityService {
         if (limit > 0) {
             limitSize = limit;
         }
+        limitSize = 100;
         //发布文章数10条
         long sendArticles = 10L;
         //发布评论数14条
@@ -236,14 +238,27 @@ public class CommunityServiceImpl implements ICommunityService {
             }
 
             //查询出符合推荐条件用户的详情数据
-            if (memberIds.size() > 0) {
+            if (memberIds.size() > 0 ) {
                 List<Member> recommendList = menberService.selectList(new EntityWrapper<Member>().in("id", memberIds).eq("state", 0));
+                //.gt( "sort",0 )
+                //                        .orderBy( "sort",false ).last( "10")
                 ml1.addAll(recommendList);
             }
-        }
 
+//            if(ml1.size() < 10){
+                List<String> ids = ml1.stream().map( Member::getId ).collect( Collectors.toList());
+                ml1 = memberDao.getUnfollerMemberList(ids,currentMb_id);
+//                List<Member> sortMemberList = menberService.selectList(new EntityWrapper<Member>().notIn("id", ids).eq("state", 0).gt( "sort",0 )
+//                        .orderBy( "sort",false ).last( "10"));
+//                ml1.addAll(sortMemberList);
+//            }
+            //若此时还没有足够人数则
+            if(ml1.size() < 10){
+                return ml1;
+            }
+        }
         //---end
-        return ml1;
+        return ml1.subList(0, 10);
     }
 
     //-------

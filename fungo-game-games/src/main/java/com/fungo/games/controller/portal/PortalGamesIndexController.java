@@ -3,6 +3,7 @@ package com.fungo.games.controller.portal;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameCollectionGroup;
@@ -10,6 +11,9 @@ import com.fungo.games.entity.GameCollectionItem;
 import com.fungo.games.entity.GameEvaluation;
 import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.service.*;
+import com.fungo.games.service.impl.EvaluateServiceImpl;
+import com.fungo.games.service.portal.PortalGamesIIndexService;
+import com.fungo.games.utils.PCGameGroupVO;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
@@ -19,19 +23,21 @@ import com.game.common.dto.index.AmwayWallBean;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
+import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.date.DateTools;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.checkerframework.checker.units.qual.A;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -46,6 +52,8 @@ import java.util.Map;
 @RestController
 @Api(value = "", description = "PC首页")
 public class PortalGamesIndexController {
+
+    private static final Logger logger = LoggerFactory.getLogger( PortalGamesIndexController.class);
 
     @Autowired
     private IIndexService indexService;
@@ -71,12 +79,116 @@ public class PortalGamesIndexController {
     @Autowired
     private GameEvaluationService gameEvaluationService;
 
+    @Autowired
+    private PortalGamesIIndexService portalGamesIIndexService;
+
+    @ApiOperation(value = "发现页游戏合集数据列表(2.4.3)", notes = "")
+    @RequestMapping(value = "/api/portal/games/recommend/topic", method = RequestMethod.POST)
+    @ApiImplicitParams({
+    })
+    public FungoPageResultDto<Map<String, Object>> topic(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto input) {
+
+        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECM_TOPIC + "POST";
+        String keySuffix = JSON.toJSONString(input);
+        FungoPageResultDto<Map<String, Object>> re = (FungoPageResultDto<Map<String, Object>>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+
+        if (null != re && null != re.getData() && re.getData().size() > 0) {
+            return re;
+        }
+
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        //游戏合集
+        Page<GameCollectionGroup> gpage = gameCollectionGroupService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameCollectionGroup>().eq("state", "0").orderBy("sort", false));
+
+        List<GameCollectionGroup> clist = gpage.getRecords();
+        for (Iterator iterator = clist.iterator(); iterator.hasNext(); ) {
+            GameCollectionGroup gameCollectionGroup = (GameCollectionGroup) iterator.next();
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("topic_name", gameCollectionGroup.getName());
+            map.put("group_id", gameCollectionGroup.getId());
+
+            //游戏合集项
+            List<GameCollectionItem> ilist = this.gameCollectionItemService.selectList(new EntityWrapper<GameCollectionItem>().eq("group_id", gameCollectionGroup.getId()).eq("show_state", "1").orderBy("sort", false));
+
+            if (ilist == null || ilist.size() == 0) {//如果合集为空，跳过
+                continue;
+            }
+            //获取游戏id集合
+            List<String> gameIds = getgameIds(ilist);
+            Map<String, Game> gameMap = gameService.listGame(gameIds);
+            //获取社区id集合
+            List<String> communityIds = getCommunity(gameMap);
+            //获取社区推荐度
+            Map<String, Integer> followeeNum = iEvaluateProxyService.listCommunityFolloweeNum(communityIds);
+            List<Map<String, Object>> lists = new ArrayList<Map<String, Object>>();
+
+            for (GameCollectionItem gameCollectionItem : ilist) {
+                Game game = gameMap.get(gameCollectionItem.getGameId());
+                Map<String, Object> map1 = new HashMap<String, Object>();
+//				HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
+//				if(rateData != null) {
+//					if(rateData.get("avgRating") != null) {
+//						map1.put("rating",rateData.get("avgRating"));
+//					}else {
+//						map1.put("rating",0.0);
+//					}
+//				}else {
+//					map1.put("rating",0.0);
+//				}
+//                迁移微服务 根据id获取cmmcomunity单个对象
+//                2019-05-13
+//                lyc
+//                Wrapper wrapper = Condition.create().setSqlSelect("id,followee_num,post_num").eq("id", game.getCommunityId());
+//                CmmCommunity community = communityService.selectOne(wrapper);
+                Integer followeeNumValue = null;
+                if (followeeNum != null){
+                    followeeNumValue = followeeNum.get(game.getCommunityId());
+                }
+
+
+                map1.put("name", game.getName());
+                map1.put("androidState", game.getAndroidState());
+                map1.put("iosState", game.getIosState());
+                map1.put("tag", game.getTags());
+                map1.put("cover_image", game.getCoverImage());
+                map1.put("icon", game.getIcon());
+                map1.put("objectId", game.getId());
+                map1.put("createdAt", DateTools.fmtDate(game.getCreatedAt()));
+                map1.put("updatedAt", DateTools.fmtDate(game.getUpdatedAt()));
+
+                int hot_value = 0;
+                if (null != followeeNumValue) {
+                    hot_value = followeeNumValue*2;
+                }
+                map1.put("hot_value", hot_value);
+
+                map1.put("androidPackageName", game.getAndroidPackageName() == null ? "" : game.getAndroidPackageName());
+                map1.put("game_size", game.getGameSize());
+                map1.put("itunesId", game.getItunesId());
+                map1.put("apkUrl", game.getApk()==null?"":game.getApk());
+                lists.add(map1);
+            }
+            map.put("game_list", lists);
+            list.add(map);
+        }
+
+        re = new FungoPageResultDto<Map<String, Object>>();
+        re.setData(list);
+        PageTools.pageToResultDto(re, gpage);
+
+
+        //reids cache
+        fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
+
+        return re;
+    }
+
     @ApiOperation(value = "PC2.0端发现页游戏合集", notes = "")
     @RequestMapping(value = "/api/portal/games/recommend/pc/gamegroup", method = RequestMethod.POST)
     @ApiImplicitParams({
     })
-    public FungoPageResultDto<Map<String, Object>> pcGameGroup(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto input) {
-        return indexService.pcGameGroup(input);
+    public FungoPageResultDto<Map<String, Object>> pcGameGroup(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody PCGameGroupVO input) {
+        return portalGamesIIndexService.pcGameGroup(input);
     }
 
 
@@ -207,7 +319,8 @@ public class PortalGamesIndexController {
         List<AmwayWallBean> list = new ArrayList<AmwayWallBean>();
         re.setData(list);
         //精选游戏评测
-        Page<GameEvaluation> page = gameEvaluationService.selectPage(new Page<GameEvaluation>(inputPageDto.getPage(), inputPageDto.getLimit()), new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy("RAND()"));
+        Page<GameEvaluation> page = gameEvaluationService.selectPage(new Page<GameEvaluation>(inputPageDto.getPage(), inputPageDto.getLimit()),
+                new EntityWrapper<GameEvaluation>().eq("type", 2).and("state != {0}", -1).orderBy(" sort desc ,created_at desc"));
         List<GameEvaluation> plist = page.getRecords();
         for (GameEvaluation gameEvaluation : plist) {
             AmwayWallBean bean = new AmwayWallBean();
@@ -219,6 +332,14 @@ public class PortalGamesIndexController {
             Game game = this.gameService.selectById(gameEvaluation.getGameId());
             bean.setEvaluation(CommonUtils.filterWord(gameEvaluation.getContent()));
             bean.setEvaluationId(gameEvaluation.getId());
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                if(StringUtil.isNotNull(gameEvaluation.getImages())){
+                    bean.setImages(objectMapper.readValue(gameEvaluation.getImages(), ArrayList.class));
+                }
+            } catch (IOException e) {
+                logger.error( "数组字符串解析失败GameEvaluation.id="+gameEvaluation.getId(),e );
+            }
 //			ObjectMapper objectMapper = new ObjectMapper();
 //			ArrayList<String> imgs=null;
 //	        try {
@@ -249,10 +370,35 @@ public class PortalGamesIndexController {
             bean.setRecommend(gameEvaluation.getIsRecommend().equals("1") ? true : false);
             list.add(bean);
         }
-
+        PageTools.pageToResultDto( re,page);
         //save redis
         fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
         return re;
+    }
+
+
+    private List<String> getCommunity(Map<String, Game> gameMap) {
+        ArrayList<String> list = new ArrayList<>();
+        if(gameMap==null||gameMap.isEmpty()){
+            return list;
+        }
+        Set<Map.Entry<String, Game>> entries = gameMap.entrySet();
+        for (Map.Entry<String, Game> entry : entries) {
+            Game game = entry.getValue();
+            list.add(game.getCommunityId());
+        }
+        return list;
+    }
+
+    private List<String> getgameIds(List<GameCollectionItem> ilist) {
+        ArrayList<String> list = new ArrayList<>();
+        if(ilist==null||ilist.isEmpty()){
+            return  list;
+        }
+        for (GameCollectionItem gameCollectionItem : ilist) {
+            list.add(gameCollectionItem.getGameId());
+        }
+        return list;
     }
 
 }

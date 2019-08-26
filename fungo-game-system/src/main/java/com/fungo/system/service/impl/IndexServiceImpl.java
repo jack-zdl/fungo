@@ -246,7 +246,7 @@ public class IndexServiceImpl implements IIndexService {
                 keySuffix += app_channel;
             }
             //@todo
- //           re =  (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+            re =  (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
 
             if (null != re && null != re.getData() && re.getData().size() > 0) {
                 return re;
@@ -286,7 +286,7 @@ public class IndexServiceImpl implements IIndexService {
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("获取圈子页面上广告位", e);
-            re = FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(CommonEnum.ERROR.code(), "获取圈子页面上广告位失败,请联系管理员");
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildError( "获取圈子页面上广告位失败,请联系管理员");
         }
         return re;
     }

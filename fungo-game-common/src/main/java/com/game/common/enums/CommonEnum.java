@@ -6,6 +6,8 @@ public enum CommonEnum implements IEnum {
 			"1", "请求成功"
 	), ERROR(
 			"-1", "系统异常"
+	),WARMING( "0","系统异常"
+
 	), ERROR_ALIYUN_SMS(
 			"-1", "获取验证码次数已超过上限，账号异常，请24小时后重试"
 	),

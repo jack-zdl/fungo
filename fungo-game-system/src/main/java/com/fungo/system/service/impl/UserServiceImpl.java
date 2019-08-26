@@ -1,8 +1,8 @@
 package com.fungo.system.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.system.dao.SysMockuserDao;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
 import com.fungo.system.facede.ICommunityProxyService;
@@ -18,16 +18,19 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.user.MemberOutBean;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheMember;
-import com.game.common.util.RandomsAndId;
-import com.game.common.util.UUIDUtils;
+import com.game.common.util.*;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
+
 import com.game.common.util.CommonUtil;
 import com.game.common.util.SecurityMD5;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -74,16 +77,20 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private IMemberIncentRiskService iMemberIncentRiskService;
 
-
     //用户成长业务
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
 
     @Autowired
+
     private IncentAccountCoinDaoService incentAccountCoinDaoService;
 
     @Autowired
     private ICommunityProxyService communityProxyService;
+
+    @Autowired
+    private SysMockuserDao sysMockuserDao;
+
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -861,6 +868,7 @@ public class UserServiceImpl implements IUserService {
         }
     }
 
+
     @Override
     public ResultDto updateUserRegister(String userId, String registerChannel, String registerPlatform) {
         EntityWrapper<Member> entityWrapper = new EntityWrapper<>();
@@ -944,7 +952,86 @@ public class UserServiceImpl implements IUserService {
 
     }
 
+    @Transactional()
+    @Override
+    public ResultDto<Member> addVirtualUser(AdminUserInputDTO input, String adminId) throws Exception {
+        if (input == null) {
+            return ResultDto.error("211", "没有添加的内容");
+        }
+        if (memberService.selectOne(new EntityWrapper<Member>().eq("user_name", input.getUser_name())) != null) {
+            return ResultDto.error("211", "用户名已存在");
+        }
+        Member user = new Member();
+        try {
+            user.setUserName(input.getUser_name());
+            user.setGender(input.getGender());
+            user.setStatus(2);
+            user.setSign(input.getSign());
+            user.setAvatar(input.getAvatar());
+            user.setPassword(SecurityMD5.MD5(input.getPassword()));
+            Date date = new Date();
+            user.setCreatedAt(date);
+            user.setUpdatedAt(date);
 
+            //设置用户编号
+            //fix bug:修改会员编号出现的重复的情况 修改用户的member_no用户编号 [by mxf 2019-03-06]
+            String mb_no = getMbNo();
+            user.setMemberNo(mb_no);
+            //
+            Random ran = new Random();
+            user.setMobilePhoneNum(input.getMobilePhoneNum());
+            user.setLevel( input.getLevel());
+            user.setHasPassword( input.getHasPassword());
+            //添加用户数据
+            boolean flag = user.insert();
+            //fix bug:修改会员编号出现的重复的情况 修改用户的member_no用户编号 [by mxf 2019-03-06]
+            //memberNoService.getMemberNoAndForUpdate(user);
+            //end
 
+            if (flag == false) {
+                throw new BusinessException("-1", "操作失败");
+            }
+
+            SysMockuser mock = new SysMockuser();
+            mock.setId(UUIDUtils.getUUID());
+            mock.setMemberId(user.getId());
+            mock.setAdminId(adminId);
+            mock.setCreatedAt(date);
+            mock.setUpdatedAt(date);
+            Integer insert =  sysMockuserDao.insert( mock );
+//            boolean insert = mock.insert();
+            if (insert != 1) {
+                throw new BusinessException("-1", "操作失败");
+            }
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            scoreLogService.updateRanked(user.getId(), objectMapper, 1);
+            scoreLogService.updateRanked(user.getId(), objectMapper, 24);
+        } catch (RuntimeException e) {
+			LOGGER.error("用户注册-初始化数据失败 memberId : {}",e);
+//            throw new BusinessException("-1", "初始化注册数据失败!");
+            throw new RuntimeException("初始化注册数据失败");
+        }
+        return ResultDto.success(user);
+    }
+
+    /**
+     *  获取mb_no
+     * @return
+     */
+    private String getMbNo() {
+        long longPK = PKUtil.getInstance().longPK();
+        String longPKStr = String.valueOf(longPK);
+        //截取2位年2位月
+        String idYearMonth = StringUtils.substring(longPKStr, 2, 6);
+//        PC2.0需求变更 member_no改为8位
+//        2019-06-10
+//        lyc
+        idYearMonth = idYearMonth.substring(1, 2) + idYearMonth.substring(3);
+        //默认是2位年2位月 + 后6位
+
+        String grapNo = StringUtils.substring(longPKStr, longPKStr.length() - 6);
+        return idYearMonth + grapNo;
+    }
 
 }

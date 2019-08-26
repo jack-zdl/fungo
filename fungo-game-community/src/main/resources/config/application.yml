@@ -1,8 +1,0 @@
-spring:
-  profiles:
-    active: dev
-management:
-  security:
-    enabled:  false
-application.version : V2.4.3-SNAPSHOT
-#debug: true

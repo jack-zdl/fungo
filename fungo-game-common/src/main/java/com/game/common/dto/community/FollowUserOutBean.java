@@ -25,6 +25,8 @@ public class FollowUserOutBean {
 	private String memberNo;
 	@ApiModelProperty(value="是否关注",example="")
 	private boolean isFollowed;
+	@ApiModelProperty(value="PC2.0互相关注：0：否  1:是",example="")
+	private String mutualFollowed;
 	
 	private String dignityImg;
 	
@@ -86,6 +88,12 @@ public class FollowUserOutBean {
 	}
 	public void setFollowed(boolean isFollowed) {
 		this.isFollowed = isFollowed;
+	}
+	public String getMutualFollowed() {
+		return mutualFollowed;
+	}
+	public void setMutualFollowed(String mutualFollowed) {
+		this.mutualFollowed = mutualFollowed;
 	}
 	public String getDignityImg() {
 		return dignityImg;

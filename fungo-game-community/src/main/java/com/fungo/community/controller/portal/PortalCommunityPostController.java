@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
+import com.fungo.community.dao.service.impl.ESDAOServiceImpl;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.feign.SystemFeignClient;
@@ -78,7 +79,8 @@ public class PortalCommunityPostController {
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
 
-
+    @Autowired
+    private ESDAOServiceImpl esdaoService;
     //依赖系统和用户微服务
     @Autowired(required = false)
     private SystemFeignClient systemFeignClient;
@@ -197,6 +199,27 @@ public class PortalCommunityPostController {
         return bsPostService.searchPosts(keyword, page, limit);
     }
 
+
+    @ApiOperation(value = "搜索帖子", notes = "")
+    @PostMapping(value = "/api/portal/community/search/es/posts")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "key_word", value = "关键字", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "page", value = "页数号", paramType = "form", dataType = "int"),
+            @ApiImplicitParam(name = "limit", value = "每页显示数", paramType = "form", dataType = "int")
+    })
+    public FungoPageResultDto<CmmPost> searchESPosts(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto) throws Exception {
+        String keyword = searchInputDto.getKey_word();
+        int page = searchInputDto.getPage();
+        if (page < 1) {
+            return new FungoPageResultDto<>();
+        }
+        int limit = searchInputDto.getLimit();
+//        esdaoService.addESPosts();
+        Page<CmmPost> cmmPosts =   esdaoService.getAllPosts(keyword,page,limit);
+        return FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(cmmPosts.getRecords(),-1,new Page());
+    }
+
+
     /**
      * PC2.0首页文章帖子列表
      * InputPageDto
@@ -240,7 +263,23 @@ public class PortalCommunityPostController {
         if ("0".equals(filter)) {
             EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<CmmPost>();
             postEntityWrapper.eq("type", 2).eq("state", 1);
-            postEntityWrapper.last("ORDER BY sort DESC,updated_at DESC");
+            int sort = inputPageDto.getSort();
+            if (sort == 1) {//  时间正序
+                postEntityWrapper.orderBy("updated_at", true);
+            } else if (sort == 2) {//  时间倒序
+                postEntityWrapper.orderBy("updated_at", false);
+            } else if (sort == 3) {// 热力值正序
+//            wrapper.orderBy("comment_num,like_num", true);
+                postEntityWrapper.last("ORDER BY comment_num ASC,like_num ASC");
+            } else if (sort == 4) {// 热力值倒序
+//            wrapper.orderBy("comment_num,like_num", false);
+                postEntityWrapper.last("ORDER BY comment_num DESC,like_num DESC");
+            } else if (sort == 5) {//最后回复时间
+                postEntityWrapper.orderBy("last_reply_at", false);
+            } else {
+                postEntityWrapper.orderBy("updated_at", false);
+            }
+//            postEntityWrapper.last("ORDER BY sort DESC,updated_at DESC");
             Page<CmmPost> pageRecommend = this.daoPostService.selectPage(new Page<CmmPost>(inputPageDto.getPage(), inputPageDto.getLimit()), postEntityWrapper);
             if (null != pageRecommend) {
                 plist = pageRecommend.getRecords();
@@ -449,10 +488,10 @@ public class PortalCommunityPostController {
 //
             PostOutBean bean = new PostOutBean();
             CmmCommunity community = communityService.selectById(cmmPost.getCommunityId());
-            if (community == null || community.getState() != 1) {
-//				page.setTotal(page.getTotal() - 1);
-                continue;
-            }
+//            if (community == null || community.getState() != 1) {
+////				page.setTotal(page.getTotal() - 1);
+//                continue;
+//            }
             //!fixme 根据用户id查询用户详情
             //bean.setAuthor(userService.getAuthor(cmmPost.getMemberId()));
             AuthorBean authorBean = new AuthorBean();
@@ -482,13 +521,14 @@ public class PortalCommunityPostController {
             bean.setPostId(cmmPost.getId());
             bean.setReplyNum(cmmPost.getCommentNum());
             bean.setTitle(CommonUtils.filterWord(cmmPost.getTitle()));
-            bean.setCommunityIcon(community.getIcon());
-            bean.setCommunityId(community.getId());
-            bean.setCommunityName(community.getName());
+            bean.setCommunityIcon(community == null ? "":community.getIcon());
+            bean.setCommunityId(community == null ? "":community.getId());
+            bean.setCommunityName(community == null ? "":community.getName());
+
             //文章 row_id
             bean.setRowId(cmmPost.getPostId());
             if (!CommonUtil.isNull(cmmPost.getVideo()) && CommonUtil.isNull(cmmPost.getCoverImage())) {
-                bean.setImageUrl(community.getCoverImage());
+                bean.setImageUrl(community == null ? "":community.getCoverImage());
             }
             try {
                 if (!CommonUtil.isNull(cmmPost.getImages())) {

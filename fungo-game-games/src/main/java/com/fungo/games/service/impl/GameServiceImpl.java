@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.games.dao.GameCollectionGroupDao;
 import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.*;
 import com.fungo.games.facede.IEvaluateProxyService;
@@ -55,45 +56,35 @@ public class GameServiceImpl implements IGameService {
     private GameService gameService;
     @Autowired
     private GameReleaseLogService logService;
-
     @Autowired
     private GameEvaluationService gameEvaluationService;
-
     @Autowired
     private GameTagService gameTagService;
-
     @Autowired
     private GameSurveyRelService surveyRelService;
-
     @Autowired
     private GameDao gameDao;
-
     @Autowired
     private GameCollectionItemService gameCollectionItemService;
-
     @Autowired
     private FungoCacheGame fungoCacheGame;
-
     @Autowired
     private IEvaluateProxyService iEvaluateProxyService;
-
     @Autowired
     private FungoCacheMember fungoCacheMember;
-
     @Autowired
     private GameSurveyRelService gameSurveyRelService;
-
     @Autowired
     private GameTagAttitudeService gameTagAttitudeService;
-
     @Autowired
     private BasTagService basTagService;
-
     @Autowired
     private BasTagGroupService basTagGroupService;
 
     @Autowired
     private CommunityFeignClient communityFeignClient;
+    @Autowired
+    private GameCollectionGroupDao collectionGroupDao;
 
 
     @Override
@@ -319,7 +310,7 @@ public class GameServiceImpl implements IGameService {
     public ResultDto<GameOut> getGameDetail(String gameId, String memberId, String ptype) throws Exception {
         GameOut out = new GameOut();
         try {
-            GameOut outResult = (GameOut) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, memberId + ptype);
+            GameOut outResult = null; //(GameOut) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, memberId + ptype);
             if (null != outResult) {
                 return ResultDto.success(outResult);
             }
@@ -591,6 +582,17 @@ public class GameServiceImpl implements IGameService {
             } catch (Exception e) {
                 e.printStackTrace();
                 logger.error("根据游戏id询圈子id异常,游戏id：" + game.getId(), e);
+            }
+            List<GameCollectionGroup> gameCollectionGroupList = collectionGroupDao.selectGameCollectionGroupByGameId( gameId);
+            List<GameOut.GameGroup> gameGroups = new ArrayList<>(  );
+            if(gameCollectionGroupList != null && gameCollectionGroupList.size() > 0){
+                gameCollectionGroupList.stream().forEach( x ->{
+                    GameOut.GameGroup gameGroup = new GameOut.GameGroup();
+                    gameGroup.setGameCollectionId( x.getId() );
+                    gameGroup.setGameCollectionName( x.getName() );
+                    gameGroups.add( gameGroup );
+                } );
+                out.setGameGroups( gameGroups );
             }
         }catch (Exception e){
             logger.error("游戏详情异常,游戏id="+gameId,e);
@@ -881,7 +883,8 @@ public class GameServiceImpl implements IGameService {
         List<MyGameBean> list = new ArrayList<MyGameBean>();
 
         if (2 == inputPage.getType()) {
-            Page<GameSurveyRel> page = gameSurveyRelService.selectPage(new Page<GameSurveyRel>(inputPage.getPage(), inputPage.getLimit()), new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0));
+            Page<GameSurveyRel> page = gameSurveyRelService.selectPage(new Page<GameSurveyRel>(inputPage.getPage(),
+                    inputPage.getLimit()), new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0));
             List<GameSurveyRel> plist = page.getRecords();
             for (GameSurveyRel gameSurveyRel : plist) {
                 Game game = gameService.selectById(gameSurveyRel.getGameId());
@@ -1046,7 +1049,6 @@ public class GameServiceImpl implements IGameService {
 //					out.setMake(true);
 //				}
 //			}
-
             dataList.add(out);
         }
         FungoPageResultDto<GameSearchOut> re = new FungoPageResultDto<GameSearchOut>();

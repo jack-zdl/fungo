@@ -36,4 +36,6 @@ public interface IMQService {
 
     boolean mqUpdateGameDownLoadNum(Map map);
 
+    boolean mqBatchUpdateGameSurveyRel(List<String> ids);
+
 }

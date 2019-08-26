@@ -4,6 +4,7 @@ import com.fungo.system.service.IActionService;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -29,8 +31,10 @@ import javax.servlet.http.HttpServletRequest;
 @Api(value="",description="PC2.0用户行为")
 public class PortalSystemActionController {
 
-    @Autowired
+    @Resource(name = "actionServiceImpl")
     private IActionService actionService;
+    @Resource(name = "protalSystemActionServiceImpl")
+    private IActionService protalSystemActionServiceImpl;
 
     @ApiOperation(value="PC2.0点赞", notes="")
     @RequestMapping(value="/api/portal/system/action/like", method= RequestMethod.POST)
@@ -63,7 +67,7 @@ public class PortalSystemActionController {
             @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
     })
     public ResultDto<String> follow(MemberUserProfile memberUserPrefile,@RequestBody ActionInput inputDto) throws Exception {
-        return actionService.follow(memberUserPrefile.getLoginId(), inputDto);
+        return protalSystemActionServiceImpl.follow(memberUserPrefile.getLoginId(), inputDto);
     }
 
     @ApiOperation(value="PC2.0取消关注", notes="")
@@ -86,5 +90,33 @@ public class PortalSystemActionController {
     })
     public ResultDto<String> report(MemberUserProfile memberUserPrefile,@RequestBody ActionInput inputDto) throws Exception {
         return this.actionService.report(memberUserPrefile.getLoginId(),inputDto);
+    }
+
+
+    @ApiOperation(value="下载", notes="")
+    @RequestMapping(value="/api/portal/system/action/download", method= RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "target_id",value = "目标对象",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
+    })
+    public ResultDto<String> downLoad(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody ActionInput inputDto)  throws Exception{
+        String memberId="";
+        if(memberUserPrefile!=null) {
+            memberId=memberUserPrefile.getLoginId();
+        }
+        return this.actionService.downLoad(memberId, inputDto);
+    }
+
+
+    @ApiOperation(value="分享", notes="")
+    @RequestMapping(value="/api/portal/system/action/share", method= RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "target_id",value = "目标对象",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
+    })
+    public ResultDto<String> share(MemberUserProfile memberUserPrefile,@RequestBody ActionInput inputDto) throws Exception {
+        return actionService.share(memberUserPrefile.getLoginId(), inputDto);
     }
 }

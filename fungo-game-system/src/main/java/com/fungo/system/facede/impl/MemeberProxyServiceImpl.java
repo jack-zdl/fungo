@@ -109,17 +109,17 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
      */
 //    @HystrixCommand(fallbackMethod = "hystrixSelectMooMoodPage",ignoreExceptions = {Exception.class},
 //            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
-    @Override
-    public Page<MooMoodDto> selectMooMoodPage(MooMoodDto mooMoodDto) {
-        Page<MooMoodDto> mooMoodPage = new Page<>();
-        FungoPageResultDto<MooMoodDto> re = communityFeignClient.queryCmmMoodList(mooMoodDto);
-        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
-            mooMoodPage.setRecords(re.getData());
-            mooMoodPage.setTotal(re.getCount());
-        }else
-            logger.warn("MemeberProxyServiceImpl.selectMooMoodPage 异常");
-        return mooMoodPage;
-    }
+//    @Override
+//    public Page<MooMoodDto> selectMooMoodPage(MooMoodDto mooMoodDto) {
+//        Page<MooMoodDto> mooMoodPage = new Page<>();
+//        FungoPageResultDto<MooMoodDto> re = communityFeignClient.queryCmmMoodList(mooMoodDto);
+//        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
+//            mooMoodPage.setRecords(re.getData());
+//            mooMoodPage.setTotal(re.getCount());
+//        }else
+//            logger.warn("MemeberProxyServiceImpl.selectMooMoodPage 异常");
+//        return mooMoodPage;
+//    }
 
     /**
      * 功能描述: 查询回复总数
@@ -185,17 +185,17 @@ public class MemeberProxyServiceImpl implements IMemeberProxyService {
      */
 //    @HystrixCommand(fallbackMethod = "hystrixSelectCmmPostpage",ignoreExceptions = {Exception.class},
 //            commandProperties=@HystrixProperty(name="execution.isolation.strategy", value="SEMAPHORE") )
-    @Override
-    public FungoPageResultDto<CmmPostDto> selectCmmPostpage(CmmPostDto cmmPostDto) {
-        Page<CmmPostDto> page = new Page<CmmPostDto>();
-        FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(cmmPostDto);
-        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmPostDtoFungoPageResultDto.getStatus()) && cmmPostDtoFungoPageResultDto.getData().size() > 0){
-            page.setRecords(cmmPostDtoFungoPageResultDto.getData());
-            page.setTotal(cmmPostDtoFungoPageResultDto.getCount());
-        }else
-            logger.warn("MemeberProxyServiceImpl.selectCmmPostpage 异常");
-        return cmmPostDtoFungoPageResultDto;
-    }
+//    @Override
+//    public FungoPageResultDto<CmmPostDto> selectCmmPostpage(CmmPostDto cmmPostDto) {
+//        Page<CmmPostDto> page = new Page<CmmPostDto>();
+//        FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(cmmPostDto);
+//        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmPostDtoFungoPageResultDto.getStatus()) && cmmPostDtoFungoPageResultDto.getData().size() > 0){
+//            page.setRecords(cmmPostDtoFungoPageResultDto.getData());
+//            page.setTotal(cmmPostDtoFungoPageResultDto.getCount());
+//        }else
+//            logger.warn("MemeberProxyServiceImpl.selectCmmPostpage 异常");
+//        return cmmPostDtoFungoPageResultDto;
+//    }
 
     /**
      * 功能描述: 根据主键查询社区

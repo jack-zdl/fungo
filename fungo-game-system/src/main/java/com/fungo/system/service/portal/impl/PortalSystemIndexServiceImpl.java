@@ -3,6 +3,8 @@ package com.fungo.system.service.portal.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.system.dao.BannerDao;
+import com.fungo.system.dto.PCBannerDto;
 import com.fungo.system.entity.Banner;
 import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IMemeberProxyService;
@@ -15,6 +17,8 @@ import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
+import com.game.common.dto.ResultDto;
+import com.game.common.dto.advert.AdvertOutBean;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.dto.game.GameEvaluationDto;
@@ -27,6 +31,8 @@ import com.game.common.util.CommonUtils;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +51,7 @@ import java.util.Map;
 @Service
 public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PortalSystemIndexServiceImpl.class);
 
     @Autowired
     private IUserService userService;
@@ -67,13 +74,16 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
     @Autowired
     private BannerService bannerService;
 
+    @Autowired
+    private BannerDao bannerDao;
+
     @Override
     public FungoPageResultDto<CardIndexBean> index(InputPageDto input) {
         FungoPageResultDto<CardIndexBean> re = null;
         //先从Redis获取
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX;
         String keySuffix = JSON.toJSONString(input);
-        // re = (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+         re = (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
 
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
@@ -112,9 +122,14 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
                 clist.add(anliWall);
             }
             // 精选文章2（视频）
-            CardIndexBean postVidoe = this.selectPosts("0007",2);
+            CardIndexBean postVidoe = this.selectPosts("0007",1);
             if (postVidoe != null) {
                 clist.add(postVidoe);
+            }
+            //精选文章3 (视频)
+            CardIndexBean postFine = this.selectPosts("0008",1);
+            if (postFine != null) {
+                clist.add(postFine);
             }
             ArrayList<CardIndexBean> topicPosts = this.topicPosts(page, limit, 10 * (page - 1) + 1);
             clist.addAll(topicPosts);
@@ -127,6 +142,35 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
         }
         re.setData(clist);
         fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
+        return re;
+    }
+
+    @Override
+    public ResultDto<List<AdvertOutBean>> getAdvertWithPc() {
+        ResultDto re = null;
+        List<AdvertOutBean> list = new ArrayList<>();
+        try {
+            List<PCBannerDto> blist = bannerDao.getPCBannerByIndex();
+            //获取广告位
+            if (null != blist && !blist.isEmpty()) {
+                list = new ArrayList<>();
+                for (PCBannerDto banner : blist) {
+                    AdvertOutBean bean = new AdvertOutBean();
+                    bean.setBizId(banner.getTargetId());
+                    bean.setBizType(1);
+                    bean.setContent(CommonUtils.filterWord(banner.getIntro()));
+                    bean.setImageUrl(banner.getCoverImage());
+                    bean.setName(banner.getTag());
+                    bean.setTitle(CommonUtils.filterWord(banner.getTitle()));
+                    bean.setPcImagesUrl(banner.getBannerImage());
+                    list.add(bean);
+                }
+            }
+            re = ResultDto.ResultDtoFactory.buildSuccess(list);
+        }catch (Exception e){
+            LOGGER.error("PC首页轮播异常",e);
+            re = ResultDto.ResultDtoFactory.buildError("PC首页轮播异常");
+        }
         return re;
     }
 
@@ -327,57 +371,60 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
     //精选文章
     public CardIndexBean selectPosts(String type,int limit) {
         //2 6(视频) 7
-        Banner videoBanner = bannerService.selectOne(new EntityWrapper<Banner>().eq("position_code", type).eq("target_type", 1).eq("state", "0").orderBy("sort", false).last("limit "+limit));
+        ArrayList<CardDataBean> cl = new ArrayList<CardDataBean>();
+        List<Banner> videoBanners = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", type).eq("target_type", 1).eq("state", "0").orderBy("sort", false).last("limit "+limit));
         CardIndexBean cb = new CardIndexBean();
-        if (videoBanner == null) {
+        if (videoBanners == null) {
             return null;
         } else {
-            CmmPostDto cmmPostParam = new CmmPostDto();
-            cmmPostParam.setId(videoBanner.getTargetId());
-            cmmPostParam.setState(1);
-            CmmPostDto post =  indexProxyService.selctCmmPostOne(cmmPostParam);
-            if (post == null) {
-                return null;
-            }
-            CardDataBean dataBean = new CardDataBean();
-            dataBean.setMainTitle(videoBanner.getTitle());
-            dataBean.setImageUrl(videoBanner.getCoverImage());
-            dataBean.setSubtitle(videoBanner.getIntro());
-            dataBean.setUserinfo(userService.getAuthor(post.getMemberId()));
-            dataBean.setVideoUrl(post.getVideo());
-            if (!CommonUtil.isNull(post.getContent())) {
+            for(Banner videoBanner : videoBanners){
+                CmmPostDto cmmPostParam = new CmmPostDto();
+                cmmPostParam.setId(videoBanner.getTargetId());
+                cmmPostParam.setState(1);
+                CmmPostDto post =  indexProxyService.selctCmmPostOne(cmmPostParam);
+                if (post == null) {
+                    return null;
+                }
+                CardDataBean dataBean = new CardDataBean();
+                dataBean.setMainTitle(videoBanner.getTitle());
+                dataBean.setImageUrl(videoBanner.getCoverImage());
+                dataBean.setSubtitle(videoBanner.getIntro());
+                dataBean.setUserinfo(userService.getAuthor(post.getMemberId()));
+                dataBean.setVideoUrl(post.getVideo());
+                if (!CommonUtil.isNull(post.getContent())) {
 //				dataBean.setContent(post.getContent().length()>25?CommonUtils.filterWord(post.getContent().substring(0, 25)):CommonUtils.filterWord(post.getContent()));
-                dataBean.setContent(post.getContent());
-            } else {
-                dataBean.setContent(post.getContent());
-            }
-            dataBean.setUpperLeftCorner(videoBanner.getTag());
+                    dataBean.setContent(post.getContent());
+                } else {
+                    dataBean.setContent(post.getContent());
+                }
+                dataBean.setUpperLeftCorner(videoBanner.getTag());
 //			dataBean.setLowerRightCorner(post.getReportNum()+"");
 
-            dataBean.setReplyNum(post.getReportNum());
-            CmmCommunityDto communityParam = new CmmCommunityDto();
-            communityParam.setId(post.getCommunityId());
-            CmmCommunityDto community = iMemeberProxyService.selectCmmCommunityById(communityParam); //  communityService.selectById(post.getCommunityId());
-            if (community != null) {
-                dataBean.setLowerRightCorner(community.getName());
-            }
-            if (!CommonUtil.isNull(post.getVideo()) && CommonUtil.isNull(videoBanner.getCoverImage())) {
+                dataBean.setReplyNum(post.getReportNum());
+                CmmCommunityDto communityParam = new CmmCommunityDto();
+                communityParam.setId(post.getCommunityId());
+                CmmCommunityDto community = iMemeberProxyService.selectCmmCommunityById(communityParam); //  communityService.selectById(post.getCommunityId());
                 if (community != null) {
-                    dataBean.setImageUrl(community.getCoverImage());
+                    dataBean.setLowerRightCorner(community.getName());
                 }
+                if (!CommonUtil.isNull(post.getVideo()) && CommonUtil.isNull(videoBanner.getCoverImage())) {
+                    if (community != null) {
+                        dataBean.setImageUrl(community.getCoverImage());
+                    }
+                }
+
+                dataBean.setActionType("1");
+                dataBean.setHref(videoBanner.getHref());
+                dataBean.setTargetType(videoBanner.getTargetType());
+                dataBean.setTargetId(videoBanner.getTargetId());
+
+                ActionBean actionBean = new ActionBean();
+                actionBean.setTargetId(community.getId());
+                dataBean.setSource(actionBean);
+
+
+                cl.add(dataBean);
             }
-
-            dataBean.setActionType("1");
-            dataBean.setHref(videoBanner.getHref());
-            dataBean.setTargetType(videoBanner.getTargetType());
-            dataBean.setTargetId(videoBanner.getTargetId());
-
-            ActionBean actionBean = new ActionBean();
-            actionBean.setTargetId(community.getId());
-            dataBean.setSource(actionBean);
-
-            ArrayList<CardDataBean> cl = new ArrayList<CardDataBean>();
-            cl.add(dataBean);
             cb.setDataList(cl);
             cb.setCardName("精品文章");
             if ("0007".equals(type)) {

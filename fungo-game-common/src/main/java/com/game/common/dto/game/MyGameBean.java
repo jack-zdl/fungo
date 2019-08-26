@@ -21,6 +21,8 @@ public class MyGameBean {
 	private int msgCount;
     @ApiModelProperty(value="手机型号",example="")
 	private String phoneModel;
+	@ApiModelProperty(value = "游戏评分(v2.4)", example = "")
+	private double rating;
 	public String getGameName() {
 		return gameName;
 	}
@@ -69,5 +71,12 @@ public class MyGameBean {
 	public void setPhoneModel(String phoneModel) {
 		this.phoneModel = phoneModel;
 	}
-	
+
+	public double getRating() {
+		return rating;
+	}
+
+	public void setRating(double rating) {
+		this.rating = rating;
+	}
 }

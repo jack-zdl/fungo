@@ -37,6 +37,14 @@
          created_by AS createdBy, created_name AS createdName, sort ,
 		generalize_title AS	generalizeTitle , begin_date AS beginDate , end_date AS endDate , date_type as dateType
     </sql>
+
+	<sql id="Base_Column__Banner_List">
+        ${alias}.id, ${alias}.action_type AS actionType, ${alias}.position_id AS positionId, ${alias}.position_code AS positionCode, ${alias}.release_time AS releaseTime, ${alias}.target_type AS targetType,
+         ${alias}.target_id AS targetId, ${alias}.title, ${alias}.intro, ${alias}.tag, ${alias}.cover_image AS coverImage, ${alias}.cover_img_new as coverImgNew , ${alias}.href, ${alias}.state, ${alias}.created_at AS createdAt,
+         ${alias}.updated_at AS updatedAt,
+         ${alias}.created_by AS createdBy, ${alias}.created_name AS createdName, ${alias}.sort ,
+		${alias}.generalize_title AS	generalizeTitle , ${alias}.begin_date AS beginDate , ${alias}.end_date AS endDate , ${alias}.date_type as dateType
+    </sql>
     
   <!--   <update id="updateState">
   		update t_banner set state=#{state} where id=#{bannerId}
@@ -57,8 +65,7 @@
 	<select id="beforeNewDateBanner" resultType="com.fungo.system.entity.Banner" >
   		select
 		<include refid="Base_Column_List"></include>
-  		 from t_banner where position_code = '0005' and state = '0' and
-		(end_date > now()  or date_type  = 1 )
+  		 from t_banner where (end_date > now()  or date_type  = 1 ) and position_code = '0005' and state = '0'
   		  order by sort desc
    </select>
 
@@ -75,6 +82,13 @@
 		<![CDATA[
 		 FROM t_banner WHERE position_code = 0001 and target_type = 3  and state  = 2 and release_time < DATE_SUB(CURDATE(), INTERVAL 1 DAY)  ORDER BY release_time desc limit 6
 		]]>
+	</select>
+	
+	<select id="getPCBannerByIndex" resultType="com.fungo.system.dto.PCBannerDto">
+		SELECT
+			<include refid="Base_Column__Banner_List"><property name="alias" value="b"/></include>,bi.banner_image AS  bannerImage
+		FROM t_banner b
+		LEFT  JOIN  t_banner_images  bi on b.id = bi.banner_id WHERE b.position_code = '0001' AND b.state = 0  GROUP BY b.id  ORDER  BY sort DESC
 	</select>
 
 </mapper>

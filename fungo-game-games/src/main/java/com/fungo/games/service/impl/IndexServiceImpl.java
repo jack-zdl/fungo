@@ -83,7 +83,8 @@ public class IndexServiceImpl implements IIndexService {
 
 //		ResultDto<List<Map<String,Object>>> re=new ResultDto<List<Map<String,Object>>>();
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        Page<GameCollectionGroup> gpage = gameCollectionGroupService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameCollectionGroup>().eq("state", "0").orderBy("sort", false));
+        Page<GameCollectionGroup> gpage = gameCollectionGroupService.selectPage(new Page<>(input.getPage(), input.getLimit()),
+                new EntityWrapper<GameCollectionGroup>().eq("state", "0").orderBy("sort", false));
 
 //		List<GameCollectionGroup> clist =gameCollectionGroupService.selectList(new EntityWrapper<GameCollectionGroup>().eq("state", "0").orderBy("sort", false));
         List<GameCollectionGroup> clist = gpage.getRecords();

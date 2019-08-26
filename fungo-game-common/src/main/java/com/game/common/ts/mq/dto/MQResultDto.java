@@ -150,6 +150,7 @@ public class MQResultDto {
         SYSTEM_DATA_TYPE_GAMES_DOWNLOAD(9, "java.util.HashMap"),
         SYSTEM_DATA_TYPE_POST_UPDATE(10, "com.game.common.dto.community.CmmPostDto"),
         SYSTEM_DATA_TYPE_MOOD_UPDATE(11, "com.game.common.dto.community.MooMoodDto");
+//        SYSTEM_DATA_TYPE_GAME_SURVEY_UPDATE(12, "java.util.ArrayList");
 
         private int code;
         private String name;
@@ -185,6 +186,34 @@ public class MQResultDto {
         private String name;
 
         GameMQDataType(int code, String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        //---------
+    }
+
+    /**
+     * 功能描述: 管控台发送消息 3xx 开头
+     * @auther: dl.zhang
+     * @date: 2019/7/31 10:03
+     */
+    public enum AdminMQDataType {
+        //默认
+        ADMIN_DATA_TYPE_BASNOTICEUPDATEBYID(300, "java.util.HashMap");
+
+        private int code;
+        private String name;
+
+        AdminMQDataType(int code, String name) {
             this.code = code;
             this.name = name;
         }

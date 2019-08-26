@@ -1,5 +1,7 @@
 package com.game.common.config;
 
+import com.game.common.util.SpringBeanFactory;
+
 /**
  * <p>每个版本的redis的key的tag
  * dl.zhang
@@ -8,13 +10,22 @@ package com.game.common.config;
 public class FungoConfig {
 
 //    @Value(value = "${fungo.redis.key.tag:v2.5}")
-    private String tag  = "_cloudv2.5_";
+    private String tag  =  SpringBeanFactory.getProperty("spring.redis.keysuffix");  //"_cloudv2.5_";
 
+    private String pctag  =  SpringBeanFactory.getProperty("spring.redis.pckeysuffix");  //"_cloudv2.5_";
     public String getTag() {
         return tag;
     }
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public String getPctag() {
+        return pctag;
+    }
+
+    public void setPctag(String pctag) {
+        this.pctag = pctag;
     }
 }

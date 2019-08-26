@@ -24,6 +24,7 @@ public class MybatisPlus4MysqlConfig {
     @Autowired
     public DataSource dataSource;
 
+
     @Autowired
     private PaginationInterceptor paginationInterceptor;
 

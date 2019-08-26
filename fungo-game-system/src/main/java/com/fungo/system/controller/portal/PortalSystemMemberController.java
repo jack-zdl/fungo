@@ -7,21 +7,27 @@ import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.dto.*;
 import com.fungo.system.service.IMemberService;
 import com.fungo.system.service.IUserService;
+import com.fungo.system.service.impl.MemberServiceImpl;
 import com.fungo.system.service.portal.PortalSystemIMemberService;
 import com.fungo.system.service.portal.PortalSystemIUserService;
 import com.game.common.api.InputPageDto;
+import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.MyCommentBean;
 import com.game.common.dto.community.MyPublishBean;
+import com.game.common.enums.AbstractResultEnum;
+import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
@@ -31,14 +37,16 @@ import java.util.*;
 @Api(value = "", description = "会员相关接口")
 public class PortalSystemMemberController {
 
+    private static final Logger logger = LoggerFactory.getLogger(PortalSystemMemberController.class);
+
     @Autowired
     private PortalSystemIMemberService memberService;
-
     @Autowired
     private IMemberService iMemberService;
-
     @Autowired
     private PortalSystemIUserService portalSystemIUserService;
+    @Autowired
+    private FungoCacheMember fungoCacheMember;
 
     @ApiOperation(value = "获取点赞我的", notes = "获取点赞我的")
     @RequestMapping(value = "/api/portal/system/mine/like", method = RequestMethod.POST)
@@ -155,6 +163,56 @@ public class PortalSystemMemberController {
         AuthorBean author = portalSystemIUserService.getUserCard(cardId, memberId);
         re.setData(author);
         return re;
+    }
+
+
+
+    @ApiOperation(value = "获取关注内容 ", notes = "获取关注内容 ")
+    @RequestMapping(value = "/api/portal/system/mine/follow", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "type", value = "关注目标的类型[0:用户,4:社区]", paramType = "form", dataType = "number"),
+            @ApiImplicitParam(name = "page", value = "请求页", paramType = "form", dataType = "number"),
+            @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "number")
+    })
+    public FungoPageResultDto<Map<String, Object>> getFollower(MemberUserProfile memberUserPrefile, @RequestBody FollowInptPageDao inputPage) throws Exception {
+        String memberId = inputPage.getMemberId();
+        if (CommonUtil.isNull(memberId)) {
+            return FungoPageResultDto.error("-1", "找不到目标");
+        }
+        String myId = memberUserPrefile.getLoginId();
+
+        return portalSystemIUserService.getFollower(myId, memberId, inputPage);
+    }
+
+    @ApiOperation(value = "获取我的粉丝", notes = "获取我的粉丝")
+    @RequestMapping(value = "/api/portal/system/mine/fans", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "请求页", paramType = "form", dataType = "number"),
+            @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "number")
+    })
+    public FungoPageResultDto<Map<String, Object>> getFollowee(MemberUserProfile memberUserPrefile, @RequestBody FollowInptPageDao inputPage) throws Exception {
+        String memberId = inputPage.getMemberId();
+        if (CommonUtil.isNull(memberId)) {
+            return FungoPageResultDto.error("-1", "找不到目标");
+        }
+        FungoPageResultDto<Map<String, Object>> re = null;
+        String myId = memberUserPrefile.getLoginId();
+        //redis cache
+        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_FANS + myId;
+        String keySuffix = JSON.toJSONString(inputPage);
+        try {
+            re = (FungoPageResultDto<Map<String, Object>>) fungoCacheMember.getIndexCache(keyPrefix, memberId + keySuffix);
+            if (null != re && null != re.getData() && re.getData().size() > 0) {
+                return re;
+            }
+            re =  portalSystemIUserService.getFollowee(myId, memberId, inputPage);
+            //redis cache
+            fungoCacheMember.excIndexCache(true, keyPrefix, keySuffix, re);
+        }catch (Exception e){
+            logger.error("PortalSystemMemberController.getFollowee获取我的粉丝异常",e);
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildError("获取我的粉丝异常"+ AbstractResultEnum.CODE_SYSTEM_TWO.getFailevalue());
+        }
+        return  re;
     }
 
 }

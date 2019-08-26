@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.community.config.NacosFungoCircleConfig;
 import com.fungo.community.dao.mapper.CmmCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
@@ -15,6 +16,7 @@ import com.fungo.community.dao.mapper.CmmPostGameMapper;
 import com.fungo.community.dao.service.BasVideoJobDaoService;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
+import com.fungo.community.dao.service.impl.ESDAOServiceImpl;
 import com.fungo.community.entity.*;
 import com.fungo.community.facede.GameFacedeService;
 import com.fungo.community.facede.SystemFacedeService;
@@ -38,6 +40,7 @@ import com.game.common.dto.community.StreamInfo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
+import com.game.common.enums.PostTypeEnum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
@@ -89,9 +92,11 @@ public class PostServiceImpl implements IPostService {
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
 
-
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
+
+    @Autowired
+    private NacosFungoCircleConfig nacosFungoCircleConfig;
 
 
     //依赖系统和用户微服务
@@ -117,6 +122,9 @@ public class PostServiceImpl implements IPostService {
     //依赖系统和用户微服务
     @Autowired(required = false)
     private SystemFeignClient systemFeignClient;
+
+    @Autowired
+    private ESDAOServiceImpl esdaoService;
 
 
     @Override
@@ -1176,6 +1184,8 @@ public class PostServiceImpl implements IPostService {
                     communityMap.put("icon", community.getIcon());
                     communityMap.put("intro", community.getIntro());
                     communityMap.put("type", community.getType());
+                    communityMap.put( "hotvalue",community.getHotValue());
+                    communityMap.put( "postnum",community.getPostNum() );
                     //游戏社区的评分 标签
                     if (community.getType() == 0) {
                         communityMap.put("gameId", community.getGameId());
@@ -1319,6 +1329,7 @@ public class PostServiceImpl implements IPostService {
         int limit = postInputPageDto.getLimit();
         int page = postInputPageDto.getPage();
         int sort = postInputPageDto.getSort();
+        String filter = postInputPageDto.getFilter();
         String communityId = postInputPageDto.getCommunity_id();
 
         if (communityId == null) {
@@ -1335,6 +1346,9 @@ public class PostServiceImpl implements IPostService {
         Wrapper<CmmPost> wrapper = new EntityWrapper<CmmPost>().eq("community_id", communityId).eq("state", 1).ne("type", 3);
 //		Wrapper<CmmPost> wrapper = new EntityWrapper<CmmPost>().eq("community_id",communityId ).eq("state", 1).ne("type", 3).ne("topic", 2); eq topic1
         List<CmmPost> postList = new ArrayList<CmmPost>();
+        if(filter != null  && !"".equals(filter)){
+            wrapper.eq( "type",filter );
+        }
 
         if (sort == 1) {//  时间正序
             wrapper.orderBy("updated_at", true);
@@ -1481,9 +1495,8 @@ public class PostServiceImpl implements IPostService {
             relist.add(bean);
         }
 
-        PageTools.pageToResultDto(result, pagePost);
         result.setData(relist);
-
+        PageTools.pageToResultDto(result, pagePost);
         //redis cache
         fungoCacheArticle.excIndexCache(true, keyPrefix, keySuffix, result);
 
@@ -1808,27 +1821,30 @@ public class PostServiceImpl implements IPostService {
         FungoPageResultDto<Map<String, Object>> re = new FungoPageResultDto<Map<String, Object>>();
         List<Map<String, Object>> resultData = new ArrayList<>();
         re.setData(resultData);
+        List<CmmPost> postList = null;
+        Page<CmmPost> postPage = null;
+        if(nacosFungoCircleConfig.isSearchPostType()){
+            Page<CmmPost> pageCmPost = new Page<>(page, limit);
+//
+            Wrapper<CmmPost> wrapperCmmPost = Condition.create().setSqlSelect("id,title,content,cover_image as coverImage ,member_id as memberId ,video,created_at as createdAt," +
+                    "updated_at as updatedAt,video_cover_image as videoCoverImage,SUM( watch_num + comment_num + like_num + collect_num ) AS wclc ");
+//dada
+//            wrapperCmmPost.where("state = {0}", 1);
+//            wrapperCmmPost.andNew("title like '%" + keyword + "%'");
+//            wrapperCmmPost.or("content like " + "'%" + keyword + "%'");
+            getWrapper(keyword,wrapperCmmPost);
+            wrapperCmmPost.groupBy("id");
+            //排序
+            StringBuffer orderByStr = new StringBuffer();
+            orderByStr.append("LOCATE( '" + keyword + "', title ) DESC ,").append(" wclc DESC,");
+            orderByStr.append("LOCATE( '" + keyword + "', content ) DESC,").append(" wclc DESC");
 
-        Page<CmmPost> pageCmPost = new Page<>(page, limit);
-
-        Wrapper<CmmPost> wrapperCmmPost = Condition.create().setSqlSelect("id,title,content,cover_image as coverImage ,member_id as memberId ,video,created_at as createdAt," +
-                "updated_at as updatedAt,video_cover_image as videoCoverImage,SUM( watch_num + comment_num + like_num + collect_num ) AS wclc ");
-
-        wrapperCmmPost.where("state = {0}", 1);
-        wrapperCmmPost.andNew("title like '%" + keyword + "%'");
-        wrapperCmmPost.or("content like " + "'%" + keyword + "%'");
-        wrapperCmmPost.groupBy("id");
-        //排序
-        StringBuffer orderByStr = new StringBuffer();
-        orderByStr.append("LOCATE( '" + keyword + "', title ) DESC ,").append(" wclc DESC,");
-        orderByStr.append("LOCATE( '" + keyword + "', content ) DESC,").append(" wclc DESC");
-
-        wrapperCmmPost.orderBy(orderByStr.toString());
-
-        Page<CmmPost> postPage = postService.selectPage(pageCmPost, wrapperCmmPost);
-        List<CmmPost> postList = postPage.getRecords();
-
-
+            wrapperCmmPost.orderBy(orderByStr.toString());
+            postPage = postService.selectPage(pageCmPost,wrapperCmmPost );
+        }else {
+            postPage =  esdaoService.getAllPosts(keyword,page,limit);
+        }
+        postList = postPage.getRecords();
         for (CmmPost post : postList) {
             Map<String, Object> postData = new HashMap<String, Object>();
 
@@ -1937,6 +1953,21 @@ public class PostServiceImpl implements IPostService {
         }
 
         return resultDto;
+    }
+
+    /**
+     * 功能描述:  抽象出关键字搜索的Wrapper
+     * @param: [keyword] 关键字
+     * @return: com.baomidou.mybatisplus.mapper.Wrapper
+     * @auther: dl.zhang
+     * @date: 2019/8/7 13:51
+     */
+    public Wrapper getWrapper(String keyword,Wrapper wrapperCmmPost){
+
+        wrapperCmmPost.where("state = {0}", 1);
+        wrapperCmmPost.andNew("title like '%" + keyword + "%'");
+        wrapperCmmPost.or("content like " + "'%" + keyword + "%'");
+        return wrapperCmmPost;
     }
 
     //-----------

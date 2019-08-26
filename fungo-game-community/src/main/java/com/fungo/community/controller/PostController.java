@@ -8,6 +8,7 @@ import com.fungo.community.dao.mapper.CmmPostCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
+import com.fungo.community.dao.service.impl.ESDAOServiceImpl;
 import com.fungo.community.entity.CmmCircle;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
@@ -81,6 +82,9 @@ public class PostController {
     })
     public FungoPageResultDto<Map<String, Object>> searchPosts(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto) throws Exception {
         String keyword = searchInputDto.getKey_word();
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(keyword)) {
+            keyword = keyword.trim();
+        }
         int page = searchInputDto.getPage();
         //fix: 页码 小于1 返回空 [by mxf 2019-01-30]
         if (page < 1) {
@@ -90,7 +94,6 @@ public class PostController {
         int limit = searchInputDto.getLimit();
         return bsPostService.searchPosts(keyword, page, limit);
     }
-
 
     @ApiOperation(value = "搜索帖子关联的游戏数据", notes = "")
     @PostMapping(value = "/api/search/posts/games")

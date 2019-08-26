@@ -75,4 +75,11 @@
 		(SELECT member_id,0 as post_count,COUNT(*) as eva_count,0 as like_count FROM t_game_evaluation WHERE type = 2 GROUP BY member_id)
 		a WHERE a.eva_count >= 2
 	</select>
+
+	<update id="updateGameEvaluation" >
+		UPDATE t_game_evaluation  SET state = -1 WHERE id in
+		<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
 </mapper>

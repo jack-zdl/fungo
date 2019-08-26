@@ -9,7 +9,6 @@ import com.game.common.dto.index.CardIndexBean;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -138,5 +137,9 @@ public interface GamesFeignClient {
      */
     @RequestMapping(value = "/ms/service/game/api/game/getUserGameReviewBoutiqueNumber", method = RequestMethod.POST)
     ResultDto<List<Map>> getUserGameReviewBoutiqueNumber();
+
+
+    @GetMapping("/ms/service/game/api/game/notice")
+    FungoPageResultDto<GameSurveyRelDto> getMemberNoticeByGame();
 
 }

@@ -128,28 +128,28 @@ public class SeacherServiceImpl implements ISeacherService {
 
         Page<Member> searchPage = new Page<>(page, limit);
 
-        Wrapper wrapperSearch = Condition.create()
-                .setSqlSelect("id,user_name as userName,avatar,sign,level,created_at as createdAt,updated_at as updatedAt,member_no as memberNo");
+//        Wrapper wrapperSearch = Condition.create()
+//                .setSqlSelect("id,user_name as userName,avatar,sign,level,created_at as createdAt,updated_at as updatedAt,member_no as memberNo");
+//
+//        wrapperSearch.where("state = {0}", 0);
+//
+//        wrapperSearch.like("member_no", keyword);
+//        wrapperSearch.orNew("user_name like '%" + keyword + "%'");
+//
+//
+//        String orderByStr = "";
+//        //是数字
+//        if (StringUtil.checkNum(keyword)) {
+//            //数字
+//            orderByStr = "LOCATE('" + keyword + "',member_no) DESC , LOCATE('" + keyword + "',user_name) DESC";
+//        } else {
+//            //非数字
+//            orderByStr = "REPLACE(user_name,'" + keyword + "','')";
+//        }
+//
+//        wrapperSearch.orderBy(orderByStr);
 
-        wrapperSearch.where("state = {0}", 0);
-
-        wrapperSearch.like("member_no", keyword);
-        wrapperSearch.orNew("user_name like '%" + keyword + "%'");
-
-
-        String orderByStr = "";
-        //是数字
-        if (StringUtil.checkNum(keyword)) {
-            //数字
-            orderByStr = "LOCATE('" + keyword + "',member_no) DESC , LOCATE('" + keyword + "',user_name) DESC";
-        } else {
-            //非数字
-            orderByStr = "REPLACE(user_name,'" + keyword + "','')";
-        }
-
-        wrapperSearch.orderBy(orderByStr);
-
-        Page<Member> userPage = memberService.selectPage(searchPage, wrapperSearch);
+        Page<Member> userPage = memberService.selectPage(searchPage, getWrapper(keyword));
 
 
         List<Member> userList = userPage.getRecords();
@@ -190,7 +190,7 @@ public class SeacherServiceImpl implements ISeacherService {
         gameDto.setState(0);
         gameDto.setName(keyword);
         int gameCount = iGameProxyService.getGameSelectCountByLikeNameAndState(gameDto);//gameService.selectCount(new EntityWrapper<Game>().where("state = {0}", 0).like("name", keyword));
-        int userCount = memberService.selectCount(new EntityWrapper<Member>().where("state = {0}", 0).like("user_name", keyword));
+        int userCount = memberService.selectCount(getWrapper(keyword));
         SearCount searchCount = new SearCount();
         searchCount.setGameCount(gameCount);
         searchCount.setPostCount(postCount);
@@ -200,6 +200,29 @@ public class SeacherServiceImpl implements ISeacherService {
         return ResultDto.success(searchCount);
     }
 
+    private Wrapper getWrapper(String keyword){
+        Wrapper wrapperSearch = Condition.create()
+                .setSqlSelect("id,user_name as userName,avatar,sign,level,created_at as createdAt,updated_at as updatedAt,member_no as memberNo");
+
+        wrapperSearch.where("state = {0}", 0);
+
+        wrapperSearch.like("member_no", keyword);
+        wrapperSearch.orNew("user_name like '%" + keyword + "%'");
+
+
+        String orderByStr = "";
+        //是数字
+        if (StringUtil.checkNum(keyword)) {
+            //数字
+            orderByStr = "LOCATE('" + keyword + "',member_no) DESC , LOCATE('" + keyword + "',user_name) DESC";
+        } else {
+            //非数字
+            orderByStr = "REPLACE(user_name,'" + keyword + "','')";
+        }
+
+        wrapperSearch.orderBy(orderByStr);
+        return wrapperSearch;
+    }
 
     private void initFilterWord() {
         Set<String> filterWord = new HashSet<>();

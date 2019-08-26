@@ -11,6 +11,7 @@ import com.fungo.community.entity.CmmCircle;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.facede.GameFacedeService;
+import com.fungo.community.service.impl.PostServiceImpl;
 import com.fungo.community.service.msService.IMSServicePostService;
 import com.game.common.bean.CollectionBean;
 import com.game.common.dto.FungoPageResultDto;
@@ -18,6 +19,7 @@ import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.util.CommonUtil;
+import com.game.common.util.PageTools;
 import com.game.common.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,25 +39,21 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MSServicePostServiceImpl.class);
 
-
     @Autowired
     private CmmPostDaoService postDaoService;
-
     @Autowired
     private CmmCommunityDaoService communityService;
-
     @Autowired
     private CmmPostGameMapper cmmPostGameMapper;
-
     @Autowired
     private CmmPostCircleMapper cmmPostCircleMapper;
-
     @Autowired
     private CmmCircleMapper cmmCircleMapper;
-
     //依赖游戏微服务
     @Autowired
     private GameFacedeService gameFacedeService;
+    @Autowired
+    private PostServiceImpl postService;
 
     @Override
     public FungoPageResultDto<CmmPostDto> queryCmmPostList(CmmPostDto postDto) {
@@ -127,11 +125,14 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
                 postEntityWrapper.orNew("content like '%" + content + "%'");
             }
 
-            //根据修改时间倒叙 状态 -1:已删除 0:压缩转码中 1:正常
-            postEntityWrapper.eq("state", 1);
+            if(postDto.getState() != null){
+                //根据修改时间倒叙 状态 -1:已删除 0:压缩转码中 1:正常
+                postEntityWrapper.eq("state", postDto.getState());
+            }
+
 
             //排序
-            postEntityWrapper.orderBy("sort,updated_at", false);
+            postEntityWrapper.orderBy("sort desc ,updated_at", false);
 
             //postEntityWrapper .orderBy("updated_at", false);
 
@@ -247,10 +248,10 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
                 postEntityWrapper.orNew("content like '%" + content + "%'");
             }
             int selectCount  = postDaoService.selectCount(postEntityWrapper);*/
-            int selectCount = postDaoService.selectCount(new EntityWrapper<CmmPost>().where("state = {0}", 1).andNew("title like '%" + keyword + "%'")
-                    .or("content like " + "'%" + keyword + "%'").or("content like " + "'%" + keyword + "%'"));
+           //new EntityWrapper<CmmPost>().where("state = {0}", 1).andNew("title like '%" + keyword + "%'")
+            //                    .or("content like " + "'%" + keyword + "%'").or("content like " + "'%" + keyword + "%'")
+            int selectCount = postDaoService.selectCount(postService.getWrapper(keyword,new EntityWrapper<CmmPost>()));
             return selectCount;
-
         } catch (Exception ex) {
             LOGGER.error("/ms/service/cmm/post/count--queryCmmPostCount-出现异常:关键字="+keyword, ex);
         }
@@ -313,16 +314,17 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
     }
 
     @Override
-    public List<CollectionBean> getCollection(int pageNum, int limit, List<String> postIds) {
+    public FungoPageResultDto<CollectionBean>  getCollection(int pageNum, int limit, List<String> postIds) {
         try {
-
+            FungoPageResultDto<CollectionBean> re = new FungoPageResultDto<>( );
             if (null == postIds || postIds.isEmpty()) {
                 return null;
             }
-
             Page<CollectionBean> page = new Page<CollectionBean>(pageNum, limit);
-            return postDaoService.getCollection(page, postIds);
-
+            List<CollectionBean> collectionBeans =  postDaoService.getCollection(page, postIds);
+            re.setData(collectionBeans);
+            PageTools.pageToResultDto( re,page);
+            return  re;
         } catch (Exception ex) {
             LOGGER.error("/ms/service/cmm/post/user/collect--getCollection-出现异常:文章id="+postIds, ex);
         }

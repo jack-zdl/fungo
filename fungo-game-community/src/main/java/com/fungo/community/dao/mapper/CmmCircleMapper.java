@@ -31,5 +31,9 @@ public interface CmmCircleMapper  extends BaseMapper<CmmCircle> {
 
     List<CmmCircle> selectCircleByGame(Pagination page,@Param("gameId") String gameId);
 
+
     List<String> listCircleNameByPost(@Param("postId")String postId);
+
+    List<CmmCircle> selectCircleByPostId(@Param("postId") String postId);
+
 }

@@ -3,12 +3,15 @@ package com.fungo.system.ts.mq.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fungo.system.entity.BasNotice;
+import com.fungo.system.service.IMemberNoticeService;
 import com.fungo.system.service.IPushService;
 import com.fungo.system.service.SystemService;
 import com.fungo.system.ts.mq.service.SystemMqConsumeService;
 import com.game.common.bean.advice.BasNoticeDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.ts.mq.dto.MQResultDto;
+import com.game.common.util.CommonUtil;
+import com.game.common.util.CommonUtils;
 import com.game.common.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -28,6 +33,9 @@ public class SystemMqConsumeServiceImpl implements SystemMqConsumeService {
 
     @Autowired
     private IPushService pushService;
+
+    @Autowired
+    private IMemberNoticeService iMemberNoticeServiceImpl;
 
     /**
      * 处理mq的消息
@@ -54,6 +62,11 @@ public class SystemMqConsumeServiceImpl implements SystemMqConsumeService {
         if(MQResultDto.GameMQDataType.GAME_DATA_TYPE_PUSH.getCode() == type){
             return processPush(body);
         }
+
+        // 添加一个系统通知记录PC2.0
+        if(MQResultDto.AdminMQDataType.ADMIN_DATA_TYPE_BASNOTICEUPDATEBYID.getCode() == type){
+            return processInsertSystemNotice(body);
+        }
         return false;
     }
 
@@ -77,6 +90,43 @@ public class SystemMqConsumeServiceImpl implements SystemMqConsumeService {
         BasNotice basNotice = JSON.parseObject(body, BasNotice.class);
         basNotice.insert();
         return true;
+    }
+
+    /**
+     * 添加一个通知记录
+     */
+    private boolean processInsertSystemNotice(String body) {
+        Map map = JSON.parseObject(body, Map.class);
+        String id = (String)map.get("id");
+        String type = (String) map.get( "type" );
+        String data = (String)map.get("data");
+        String mobileType = (String) map.get( "mobileType" );
+        if( CommonUtil.isNull( data )){
+            return false;
+        }
+        if( !CommonUtil.isNull( data )){
+            try {
+                if("1".equals(type)){
+
+                    iMemberNoticeServiceImpl.insertSystemVersionNotice(mobileType,data );
+                }else if("2".equals(type)){
+                    List<String> listString = Arrays.asList(id.split(","));
+                    listString.stream().forEach( s ->{
+                        try {
+                            iMemberNoticeServiceImpl.insertSystemNotice(mobileType,s,data);
+                        } catch (Exception e) {
+                            LOGGER.error( "系统消息异常",e );
+                        }
+                    } );
+                }
+
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }else {
+            return false;
+        }
     }
 
     /**

@@ -58,7 +58,7 @@ public class CircleController {
        }catch (Exception e){
            e.printStackTrace();
            LOGGER.error("获取圈子列表列表及详情",e);
-            re = FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(CommonEnum.ERROR.code(),"获取圈子列表异常，请联系管理员");
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildError("获取圈子列表异常，请联系管理员");
        }
         return re;
     }
@@ -279,6 +279,26 @@ public class CircleController {
         return re;
     }
 
+//    /**
+//     * 功能描述: app端获取圈子下置顶的文章
+//     * @auther: dl.zhang
+//     * @date: 2019/6/11 11:01
+//     */
+//    @ApiOperation(value = "v2.5", notes = "")
+//    @PostMapping(value = "/api/community/circle/toppost")
+//    @ApiImplicitParams({})
+//    public FungoPageResultDto<PostOutBean> selectCircleTopPost(@Anonymous MemberUserProfile memberUserPrefile , @RequestBody CmmCirclePostVo cmmCirclePostVo) {
+//        FungoPageResultDto<PostOutBean> re = null;
+//        String memberId = memberUserPrefile == null ? "" : memberUserPrefile.getLoginId();
+//        try {
+//            re = circleServiceImpl.selectCirclePost(memberId,cmmCirclePostVo);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            LOGGER.error("app端获取圈子下属的文章",e);
+//            re = FungoPageResultDto.error(CommonEnum.ERROR.code(),"app端获取圈子下属的文章，请联系管理员");
+//        }
+//        return re;
+//    }
 
     /**
      * 功能描述: 圈子热度job接口

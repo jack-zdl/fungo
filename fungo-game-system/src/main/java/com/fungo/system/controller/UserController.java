@@ -3,6 +3,7 @@ package com.fungo.system.controller;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
 import com.fungo.system.function.MemberLoginedStatisticsService;
@@ -415,6 +416,7 @@ public class UserController {
         return re;
     }
 
+
     @GetMapping("/api/user/getBuriedPointUserProperties")
    public ResultDto<MemberBuriedPointBean> getBuriedPointUserProperties(String userId){
         //MemberUserProfile memberUserPrefile
@@ -436,7 +438,17 @@ public class UserController {
     }
 
 
-
+    @ApiOperation(value="新增虚拟用户", notes="")
+    @RequestMapping(value="/api/system/user/mockuser", method= RequestMethod.POST)
+    @ApiImplicitParams({})
+    public ResultDto<Member> addVirtualUser(MemberUserProfile memberUserPrefile, @RequestBody AdminUserInputDTO input){
+        String adminId = memberUserPrefile.getLoginId();
+        try {
+            return userService.addVirtualUser(input,adminId);
+        } catch (Exception e) {
+            return ResultDto.error( "-1","新增虚拟用户异常" );
+        }
+    }
 
 
     public String getAllowSuffix() {

@@ -47,6 +47,7 @@ import com.game.common.vo.CmmCirclePostVo;
 import com.game.common.vo.CmmCircleVo;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.checkerframework.checker.units.qual.C;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -241,9 +242,11 @@ public class CircleServiceImpl implements CircleService {
             String sortType = cmmCirclePostVo.getSortType();
             Page page = new Page(cmmCirclePostVo.getPage(), cmmCirclePostVo.getLimit());
             if (CmmCirclePostVo.QueryTypeEnum.ALL.getKey().equals(cmmCirclePostVo.getQueryType())) {  // 全部查询
-                cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page, circleId, null, null, sortType);
+                cmmPosts = cmmPostDao.getAllCmmCircleListByCircleId(page, circleId, null, null, sortType);
             } else if (CmmCirclePostVo.QueryTypeEnum.ESSENCE.getKey().equals(cmmCirclePostVo.getQueryType())) { // 精华查询
                 cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page, circleId, null, PostTypeEnum.CREAM.getKey(), sortType);
+            }else if(CmmCirclePostVo.QueryTypeEnum.TOP.getKey().equals(cmmCirclePostVo.getQueryType())){
+                cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page, circleId, null, PostTypeEnum.TOP.getKey(), CmmCirclePostVo.SortTypeEnum.PUBDATE.getKey());
             } else {
                 if (CmmCirclePostVo.SortTypeEnum.PUBDATE.getKey().equals(cmmCirclePostVo.getSortType())) {
                     cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page, circleId, tagId, null, sortType);
@@ -792,15 +795,33 @@ public class CircleServiceImpl implements CircleService {
         List<String> circleNameByPost = cmmCircleMapper.listCircleNameByPost(postId);
         return ResultDto.success(circleNameByPost);
     }
-@Override
+
+   @Override
     public ResultDto<List<String>> listCircleNameByComment(String commentId) {
-        //根据评论id获取文章
-        CmmComment comment = commentService.selectById(commentId);
-        if(comment!=null){
-            List<String> circleNameByPost = cmmCircleMapper.listCircleNameByPost(comment.getPostId());
-            return ResultDto.success(circleNameByPost);
+    //根据评论id获取文章
+    CmmComment comment = commentService.selectById(commentId);
+    if (comment != null) {
+        List<String> circleNameByPost = cmmCircleMapper.listCircleNameByPost(comment.getPostId());
+        return ResultDto.success(circleNameByPost);
+    }
+    return ResultDto.success();
+}
+    public ResultDto<CmmCircleDto> selectCircleByPostId(String postId) throws Exception {
+        ResultDto<CmmCircleDto> re ;
+        CmmCircleDto cmmCircleDto = new CmmCircleDto();
+        try {
+          List<CmmCircle> cmmCircleDtoList =  cmmCircleMapper.selectCircleByPostId(postId);
+          if(cmmCircleDtoList != null && cmmCircleDtoList.size() > 0){
+              CmmCircle cmmCircle = cmmCircleDtoList.get(0);
+               cmmCircleDto = new CmmCircleDto();
+                BeanUtils.copyProperties( cmmCircleDto, cmmCircle);
+          }
+            re = ResultDto.ResultDtoFactory.buildSuccess( cmmCircleDto );
+        }catch (Exception e){
+            LOGGER.error( "根据文章id查询圈子信息,文章id="+postId,e);
+            re = ResultDto.ResultDtoFactory.buildError( "根据文章id查询圈子信息异常" );
         }
-        return ResultDto.success();
+        return re;
     }
 
 

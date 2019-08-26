@@ -5,6 +5,7 @@ package com.fungo.system.dao;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.fungo.system.dto.PCBannerDto;
 import com.fungo.system.entity.Banner;
 import org.springframework.stereotype.Repository;
 
@@ -53,4 +54,12 @@ public interface BannerDao extends BaseMapper<Banner> {
 	 * @date: 2019/7/16 19:26
 	 */
 	List<Banner> getBannerByIndex();
+
+	/**
+	 * 功能描述:  首页获取六个每周游戏
+	 * @param: []
+	 * @auther: dl.zhang
+	 * @date: 2019/7/16 19:26
+	 */
+	List<PCBannerDto> getPCBannerByIndex();
 }

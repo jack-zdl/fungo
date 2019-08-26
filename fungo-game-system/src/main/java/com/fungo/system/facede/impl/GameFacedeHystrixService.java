@@ -157,6 +157,12 @@ public class GameFacedeHystrixService implements FallbackFactory<GamesFeignClien
                 logger.error("--------------------GameFeignClient--启动熔断:{}" , "getUserGameReviewBoutiqueNumber");
                 return null;
             }
+
+            @Override
+            public FungoPageResultDto<GameSurveyRelDto> getMemberNoticeByGame() {
+                logger.error("--------------------GameFeignClient--启动熔断:{}" , "getMemberNoticeByGame");
+                return null;
+            }
         };
 
     }

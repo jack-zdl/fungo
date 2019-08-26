@@ -237,6 +237,12 @@
 		 8
 
 	</select>
+
+	<select id="getDownloadGameIds" resultType="java.lang.String">
+		 SELECT  ba.target_id  FROM t_bas_action  ba  WHERE  ba.state = 0 and ba.type = 7 and ba.target_type = 3
+ 		and  ba.member_id = #{memberId}
+		GROUP BY ba.target_id  ORDER BY created_at desc
+	</select>
 	
 
 </mapper>

@@ -34,7 +34,6 @@
         <result column="last_reply_at" property="lastReplyAt"/>
         <result column="video_cover_image" property="videoCoverImage"/>
         <result column="boom_watch_num" property="boomWatchNum"/>
-
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -43,6 +42,16 @@
         edited_at as editedAt, community_id AS communityId, title, member_id AS memberId, origin, watch_num AS watchNum, report_num AS reportNum, created_at AS createdAt,
         updated_at AS updatedAt ,recommend ,type ,sort ,video , game_list as gameList , topic ,video_urls as videoUrls, last_reply_at as lastReplyAt,video_cover_image as videoCoverImage,
         boom_watch_num as boomWatchNum
+    </sql>
+
+    <sql id="Base_List">
+        ${alias}.id, ${alias}.collect_num AS collectNum, ${alias}.tags, ${alias}.html_origin AS htmlOrigin, ${alias}.content, ${alias}.images, ${alias}.cover_image AS coverImage, ${alias}.comment_num AS commentNum,
+        ${alias}.state, ${alias}.like_num AS likeNum,
+        ${alias}.edited_at as editedAt, ${alias}.community_id AS communityId, ${alias}.title, ${alias}.member_id AS memberId, ${alias}.origin, ${alias}.watch_num AS watchNum,
+        ${alias}.report_num AS reportNum, ${alias}.created_at AS createdAt,
+        ${alias}.updated_at AS updatedAt ,${alias}.recommend ,${alias}.type ,${alias}.sort ,${alias}.video , ${alias}.game_list as gameList , ${alias}.topic ,${alias}.video_urls as videoUrls,
+        ${alias}.last_reply_at as lastReplyAt, ${alias}.video_cover_image as videoCoverImage,
+        ${alias}.boom_watch_num as boomWatchNum
     </sql>
 
     <!-- 获取关注用户和社区的帖子分页数据 -->
@@ -209,7 +218,7 @@
 
     <!-- AND cpc.default_link = 1  -->
     <select id="getCmmCircleListByPostId" parameterType="java.lang.String" resultType="com.fungo.community.entity.CmmPost">
-    select  *  from  t_cmm_post where state = 1 and id in
+    select  *  from  t_cmm_post where state != -1 and id in
     ( select cpc.post_id
     from t_cmm_post_circle cpc where cpc.circle_id = #{circleId} )
 
@@ -219,29 +228,68 @@
     <select id="getCmmCircleListByCircleId" resultType="com.fungo.community.entity.CmmPost">
         select  
          <include refid="Base_Column_List"></include>
-         ,sum(cp.comment_num+cp.like_num+cp.collect_num+cp.watch_num) as total  from  t_cmm_post cp where  cp.state=1 and id in
+         ,sum(cp.comment_num+cp.like_num+cp.collect_num+cp.watch_num) as total  from  t_cmm_post cp where  cp.state != -1 and id in
         ( select cpc.post_id
         from t_cmm_post_circle cpc where cpc.circle_id = #{circleId}   )
 
         <if test="tagId != null and tagId != ''">
             and cp.tags = #{tagId}
         </if>
-        <if test="cream != null and cream != ''">
-            and cp.type = #{cream}
-        </if>
+        <choose>
+            <when test="cream != null and cream != ''">
+                and cp.type = #{cream}
+            </when>
+            <otherwise>
+                and cp.type != '3'
+            </otherwise>
+        </choose>
+
         <if test='sortType == "1" ' >
             GROUP BY cp.id   order  by  field(cp.type,'3')   desc  , CASE    WHEN cp.type = 3 then cp.edited_at END DESC,
 
               cp.created_at desc
         </if>
         <if test='sortType == "2"'>
-            GROUP BY cp.id   order  by cp.last_reply_at desc
+            GROUP BY cp.id   order  by cp.last_reply_at desc  ,   cp.created_at desc
         </if>
         <if test='sortType == "3"'>
             and cp.type = 2 GROUP BY cp.id     order  by cp.created_at desc
         </if>
         <if test='sortType == "4"'>
-            GROUP BY cp.id ORDER BY total desc
+            GROUP BY cp.id ORDER BY total desc ,  cp.created_at desc
+        </if>
+    </select>
+
+
+    <select id="getAllCmmCircleListByCircleId" resultType="com.fungo.community.entity.CmmPost">
+        select
+        <include refid="Base_Column_List"></include>
+        ,sum(cp.comment_num+cp.like_num+cp.collect_num+cp.watch_num) as total  from  t_cmm_post cp where  cp.state != -1 and id in
+        ( select cpc.post_id
+        from t_cmm_post_circle cpc where cpc.circle_id = #{circleId}   )
+
+        <choose>
+            <when test="cream != null and cream != ''">
+                and cp.type = #{cream}
+            </when>
+            <otherwise>
+                and cp.type != '3'
+            </otherwise>
+        </choose>
+
+        <if test='sortType == "1" ' >
+            GROUP BY cp.id   order  by  field(cp.type,'3')   desc  , CASE    WHEN cp.type = 3 then cp.edited_at END DESC,
+
+            cp.created_at desc
+        </if>
+        <if test='sortType == "2"'>
+            GROUP BY cp.id  order  by  field(cp.type,'3')   desc  , CASE    WHEN cp.type = 3 then cp.edited_at END DESC,    cp.last_reply_at desc
+        </if>
+        <if test='sortType == "3"'>
+            and cp.type = 2 GROUP BY cp.id      order  by cp.created_at desc
+        </if>
+        <if test='sortType == "4"'>
+            GROUP BY cp.id order  by  field(cp.type,'3')   desc  , CASE    WHEN cp.type = 3 then cp.edited_at END DESC,  total desc , cp.created_at desc
         </if>
     </select>
 
@@ -259,7 +307,7 @@
 
         JOIN t_cmm_post_game postGame ON mpost.id = postGame.post_id
 
-        AND state = 1
+        AND state != -1
 
         <if test="keyword != null and keyword !=''">
             AND ( title LIKE concat(concat('%',#{keyword}),'%')
@@ -289,7 +337,7 @@
         FROM
         t_cmm_post mpost
         JOIN t_cmm_post_game postGame ON mpost.id = postGame.post_id
-        AND state = 1
+        AND state != -1
 
         <if test="keyword != null and keyword !=''">
             AND ( title LIKE concat(concat('%',#{keyword}),'%')
@@ -300,9 +348,9 @@
 
     <select id="getCmmPostByGameId" resultType="com.fungo.community.entity.CmmPost">
 
-	SELECT 
+	SELECT
 	 <include refid="Base_Column_List"></include>
-	 FROM t_cmm_post cp  WHERE cp.state=1 AND
+	 FROM t_cmm_post cp  WHERE cp.state != -1 AND
 	 (
 	    cp.community_id in  (SELECT cc.id  FROM t_cmm_community cc WHERE cc.game_id = #{gameId} )
 	    or cp.id in (SELECT cpg.post_id FROM t_cmm_post_game cpg WHERE cpg.game_id = #{gameId}  )
@@ -311,8 +359,16 @@
 
     <select id="getCmmPostByRecommend" resultType="com.fungo.community.entity.CmmPost">
         SELECT
-        <include refid="Base_Column_List"></include>
-        FROM t_cmm_post WHERE state = 1  and  recommend = 1 and  id  NOT IN
-        ( SELECT cpc.post_id FROM t_cmm_post_circle cpc LEFT JOIN t_cmm_circle cc on cc.id = cpc.circle_id WHERE cc.state != 1 ) ORDER BY sort DESC , created_at desc
+        <include refid="Base_List"><property name="alias" value="cp"/></include>
+        FROM t_cmm_post  cp WHERE cp.state != -1  and  cp.recommend = 1 and
+        NOT EXISTS
+        ( SELECT 1 FROM t_cmm_post_circle cpc , t_cmm_circle cc WHERE cc.id = cpc.circle_id  and cpc.post_id = cp.id and cc.state != 1 )  ORDER BY cp.sort DESC , cp.edited_at desc
     </select>
+
+
+
+    <update id="updateCmmPostCommentNum" >
+        update t_cmm_post set  comment_num = comment_num - 1  WHERE id = (SELECT post_id FROM t_cmm_comment WHERE id = #{commentId})
+    </update>
+
 </mapper>

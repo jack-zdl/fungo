@@ -33,6 +33,14 @@ public class BasNotice extends Model<BasNotice> {
 6:系统消息
      */
 	private Integer type;
+
+	/**
+	 * 功能描述: 渠道，ios android
+	 * @auther: dl.zhang
+	 * @date: 2019/8/9 16:23
+	 */
+	private String channel;
+
 	@TableField("is_read")
 	private Integer isRead;
     /**
@@ -44,6 +52,14 @@ public class BasNotice extends Model<BasNotice> {
      * 数据
      */
 	private String data;
+
+	/**
+	 * 功能描述: -1 删除
+	 * 0 正常
+	 * @auther: dl.zhang
+	 * @date: 2019/8/16 11:49
+	 */
+//	private int state;
     /**
      * 创建时间
      */
@@ -68,6 +84,14 @@ public class BasNotice extends Model<BasNotice> {
 
 	public Integer getType() {
 		return type;
+	}
+
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
 	}
 
 	public void setType(Integer type) {

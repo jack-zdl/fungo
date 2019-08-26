@@ -6,12 +6,14 @@ import com.fungo.games.entity.Game;
 import com.game.common.bean.HotValue;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Repository
 public interface GameDao extends BaseMapper<Game> {
     public boolean updateBatchState(@Param("state")Integer state, @Param("idList")String[] idList);
     public boolean updateTags(@Param("gameId")String gameId,@Param("tags")String tags);
@@ -35,4 +37,9 @@ public interface GameDao extends BaseMapper<Game> {
 
     @MapKey("id")
     Map<String,Game> listGame(@Param("ids") List<String> ids);
+
+    Game getGameByEvaluateId(String evaluateId);
+    List<Game> getGameList(@Param("ids") List<String> ids);
+
+
 }

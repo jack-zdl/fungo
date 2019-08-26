@@ -2,6 +2,8 @@ package com.fungo.system.service;
 
 import com.fungo.system.dto.MemberNoticeInput;
 import com.fungo.system.entity.MemberNotice;
+import com.game.common.dto.ResultDto;
+import com.game.common.vo.DelObjectListVO;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +23,7 @@ public interface IMemberNoticeService {
      * @param noticeInput 用户查询消息数据封装
      * @return
      */
-    public List<Map<String,Object>> queryMbNotices(MemberNoticeInput noticeInput);
+    List<Map<String,Object>> queryMbNotices(String os,MemberNoticeInput noticeInput);
 
 
     /**
@@ -30,7 +32,7 @@ public interface IMemberNoticeService {
      * @param ntc_type 消息类型
      * @return
      */
-    public void deleteMbNotices(String mb_id, Integer ntc_type, Long noticeId);
+    void deleteMbNotices(String mb_id, Integer ntc_type, Long noticeId);
 
 
     /**
@@ -40,14 +42,31 @@ public interface IMemberNoticeService {
      * @param ntcData 消息数据
      * @return
      */
-    public void addMbNotice(String mb_id, Integer ntc_type, Object ntcData);
+    void addMbNotice(String mb_id, Integer ntc_type, Object ntcData);
 
 
     /**修改用户的消息数据
      *
      * @param memberNotice 用户消息数据实体
      */
-    public void updateMbNotice(MemberNotice memberNotice);
+    void updateMbNotice(MemberNotice memberNotice);
+
+
+    void updateSystemByGame() throws Exception;
+
+
+    void insertSystemNotice(String mobileType, String memberId,String data) throws Exception;
+
+    void insertSystemVersionNotice(String mobileType, String data) throws Exception;
+
+    /**
+     * 查询用户的消息数据
+     * @param noticeInput 用户查询消息数据封装
+     * @return
+     */
+    List<Map<String,Object>> insertMbNotices(MemberNoticeInput noticeInput);
+
+    ResultDto<String> delMbNotices(DelObjectListVO noticeInput);
 
 
 }

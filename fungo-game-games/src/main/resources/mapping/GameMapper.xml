@@ -117,6 +117,13 @@
         </foreach>
     </select>
 
+    <select id="getGameList" resultType="com.fungo.games.entity.Game">
+        select * from t_game where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
     <update id="updateBatchState">
         update t_game set state=#{state} where id in
         <foreach item="item" index="index" collection="idList" open="(" separator="," close=")">
@@ -242,4 +249,10 @@
     <select id="getMemberIdByTargetId" resultType="string" parameterType="java.util.Map" >
 		select member_id from ${tableName} where id=#{id}
 	</select>
+
+    <select id="getGameByEvaluateId" resultType="com.fungo.games.entity.Game">
+        SELECT  * FROM  t_game tg LEFT JOIN t_game_evaluation tge ON tg.id = tge.game_id WHERE  tge.id = #{evaluateId}
+    </select>
+
+
 </mapper>

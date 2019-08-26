@@ -8,11 +8,11 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.games.dao.GameCollectionGroupDao;
 import com.fungo.games.dao.GameDao;
-import com.fungo.games.entity.BasTag;
-import com.fungo.games.entity.Game;
-import com.fungo.games.entity.GameEvaluation;
-import com.fungo.games.entity.GameTag;
+import com.fungo.games.dao.GameEvaluationDao;
+import com.fungo.games.entity.*;
+import com.fungo.games.feign.MQFeignClient;
 import com.fungo.games.helper.MQProduct;
 import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.service.*;
@@ -23,6 +23,7 @@ import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
 import com.game.common.buriedpoint.model.BuriedPointReplyModel;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
+import com.game.common.dto.ActionInput;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
@@ -31,9 +32,13 @@ import com.game.common.dto.community.ReplyBean;
 import com.game.common.dto.community.ReplyInputPageDto;
 import com.game.common.dto.evaluation.*;
 import com.game.common.dto.user.MemberDto;
+import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheGame;
+import com.game.common.ts.mq.dto.MQResultDto;
+import com.game.common.ts.mq.dto.TransactionMessageDto;
+import com.game.common.ts.mq.enums.RabbitMQEnum;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PKUtil;
@@ -52,88 +57,41 @@ import java.util.*;
 @Service
 public class EvaluateServiceImpl implements IEvaluateService {
 
-
     private static final Logger logger = LoggerFactory.getLogger(EvaluateServiceImpl.class);
 
-   /* @Autowired
-    private CmmCommentService commentService;
-    @Autowired
-    private CmmCommunityService communityService;
-    @Autowired
-    private CmmPostService postService;
-    @Autowired
-    private MemberService memberService;*/
     @Autowired
     private ICounterService counterService;
-    /*@Autowired
-    private MooMoodService moodService;
-    @Autowired
-    private MooMessageService messageServive;
-    @Autowired
-    BasActionService actionService;*/
     @Autowired
     private GameEvaluationService gameEvaluationService;
     @Autowired
     private GameService gameService;
-    /*@Autowired
-    private IPushService pushService;
-
-    @Autowired
-    private ReplyService replyService;
-
-    @Autowired
-    private IUserService userService;
-    @Autowired
-    private IGameProxy gameProxy;*/
-
     @Autowired
     private FungoCacheGame fungoCacheGame;
-
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
-
-    /*@Autowired
-    private FungoCacheMood fungoCacheMood;
-
-    @Autowired
-    private FungoCacheComment fungoCacheComment;*/
-
-    //用户成长业务
-    /*@Resource(name = "memberIncentDoTaskFacadeServiceImpl")
-    private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;*/
-
-    /**
-     * 系统feignClient
-     */
-    /*@Autowired
-    private SystemFeignClient systemFeignClient;*/
-
     /**
      * 系统feignClient的hystrix代理
      */
     @Autowired
     private IEvaluateProxyService iEvaluateProxyService;
-
-    /**
-     * MQ
-     */
     @Autowired
     private MQProduct mqProduct;
-
     @Autowired
     private GameTagService gameTagService;
-
     @Autowired
     private GameDao gameDao;
-
     @Autowired
     private GameEvaluationService evaluationService;
-
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
-
     @Autowired
     private BasTagService tagService;
+    @Autowired
+    private GameCollectionGroupDao collectionGroupDao;
+    @Autowired
+    private GameEvaluationDao gameEvaluationDao;
+    @Autowired
+    private MQFeignClient mqFeignClient;
 
     @Override
     @Transactional
@@ -142,7 +100,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 //			return ResultDto.error("-1","内容不能为空!");
 //		}
         ResultDto<EvaluationBean> re = new ResultDto<EvaluationBean>();
-        EvaluationBean t = new EvaluationBean();
+        EvaluationBean evaluationBean = new EvaluationBean();
         GameEvaluation evaluation = gameEvaluationService.selectOne(new EntityWrapper<GameEvaluation>().eq("member_id", memberId).eq("game_id", commentInput.getTarget_id()).eq("state", 0));
 
         //int times = -1;
@@ -342,20 +300,25 @@ public class EvaluateServiceImpl implements IEvaluateService {
 //        迁移微服务 feignClient调用 根据用户id获取authorBean
 //        2019-05-10
 //        lyc
-        t.setAuthor(iEvaluateProxyService.getAuthor(memberId));
+        evaluationBean.setAuthor(iEvaluateProxyService.getAuthor(memberId));
 
-        t.setContent(CommonUtils.filterWord(commentInput.getContent()));
-        t.setObjectId(evaluation.getId());
-        t.setCreatedAt(DateTools.fmtDate(new Date()));
-        t.setReply_count(0);
-        t.setRating(commentInput.getRating());
-        t.setReply_more(false);
-        t.setImages(commentInput.getImages());
-        t.setReplys(new ArrayList<String>());
-        t.setUpdatedAt(DateTools.fmtDate(new Date()));
-        t.setPhone_model(commentInput.getPhone_model());
-        t.setIs_recommend(commentInput.isIs_recommend());
-        re.setData(t);
+        evaluationBean.setContent(CommonUtils.filterWord(commentInput.getContent()));
+        evaluationBean.setObjectId(evaluation.getId());
+        evaluationBean.setCreatedAt(DateTools.fmtDate(new Date()));
+        evaluationBean.setReply_count(0);
+        evaluationBean.setRating(commentInput.getRating());
+        evaluationBean.setReply_more(false);
+        evaluationBean.setImages(commentInput.getImages());
+        evaluationBean.setReplys(new ArrayList<String>());
+        evaluationBean.setUpdatedAt(DateTools.fmtDate(new Date()));
+        evaluationBean.setPhone_model(commentInput.getPhone_model());
+        evaluationBean.setIs_recommend(commentInput.isIs_recommend());
+        evaluationBean.setTrait1( commentInput.getTrait1() );
+        evaluationBean.setTrait2( commentInput.getTrait2() );
+        evaluationBean.setTrait3( commentInput.getTrait3() );
+        evaluationBean.setTrait4( commentInput.getTrait4() );
+        evaluationBean.setTrait5( commentInput.getTrait5() );
+        re.setData(evaluationBean);
 
         if (StringUtils.isNotBlank(tips)) {
             re.show(tips);
@@ -389,7 +352,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
     @Override
     public ResultDto<EvaluationOutBean> getEvaluationDetail(String memberId, String commentId) {
-        ResultDto<EvaluationOutBean> re = new ResultDto<EvaluationOutBean>();
+        ResultDto<EvaluationOutBean> re = new ResultDto<>();
         EvaluationOutBean bean = new EvaluationOutBean();
         GameEvaluation evaluation = gameEvaluationService.selectById(commentId);
         if (evaluation == null) {
@@ -449,139 +412,200 @@ public class EvaluateServiceImpl implements IEvaluateService {
         return re;
     }
 
+    /**
+     * 功能描述: 删除游戏评论
+     * @auther: dl.zhang
+     * @date: 2019/8/12 13:38
+     */
+    @Transactional
+    @Override
+    public ResultDto<String> delEvaluationDetail(String memberId, List<String> commentIdList) {
+        try {
+            commentIdList.stream().forEach( s ->{
+                Game game = gameDao.getGameByEvaluateId(s);
+                int number  = gameEvaluationDao.updateGameEvaluation( Arrays.asList(s) );
+                if(number == 1){
+                    //扣除经验
+                    int score = 3;
+                    //-----start
+                    //MQ 业务数据发送给系统用户业务处理
+                    TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+                    //消息类型
+                    transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_GAME);
+                    //发送的队列
+                    transactionMessageDto.setConsumerQueue( RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+                    //路由key
+                    StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+                    routinKey.deleteCharAt(routinKey.length() - 1);
+                    routinKey.append("deletePostSubtractExpLevel");
+                    transactionMessageDto.setRoutingKey(routinKey.toString());
+                    MQResultDto mqResultDto = new MQResultDto();
+                    mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MQ_TYPE_DELETE_POST_SUBTRACT_EXP_LEVEL.getCode());
+
+                    HashMap<String, Object> hashMap = new HashMap<String, Object>();
+                    hashMap.put("mb_id", memberId);
+                    hashMap.put("score", score);
+
+                    mqResultDto.setBody(hashMap);
+
+                    transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+                    //执行MQ发送
+                    ResultDto<Long> messageResult = mqFeignClient.saveAndSendMessage(transactionMessageDto);
+                    logger.info("--删除帖子执行扣减用户经验值和等级--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
+                    //-----start
+
+                    Map<String,String> map = new HashMap<>();
+                    map.put( "tableName","t_game" );
+                    map.put( "type","sub" );
+                    map.put( "fieldName","comment_num" );
+                    map.put( "id",game.getId());
+                    gameDao.updateCountor( map);
+                }
+            } );
+            return ResultDto.success();
+        }catch (Exception e){
+            logger.error( "删除游戏评论异常id:"+JSON.toJSONString(commentIdList),e );
+            return ResultDto.ResultDtoFactory.buildError("删除游戏评论异常");
+        }
+    }
+
     @Override
     public FungoPageResultDto<EvaluationOutPageDto> getEvaluationList(String memberId, EvaluationInputPageDto pageDto) {
 
         FungoPageResultDto<EvaluationOutPageDto> re = null;
 
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS;
-        String keySuffix = pageDto.getGame_id() + JSON.toJSONString(pageDto);
-
-        re = (FungoPageResultDto<EvaluationOutPageDto>) fungoCacheGame.getIndexCache(keyPrefix, keySuffix);
-        if (null != re) {
-            return re;
-        }
-        re = new FungoPageResultDto<EvaluationOutPageDto>();
-        List<EvaluationOutPageDto> relist = new ArrayList<EvaluationOutPageDto>();
-        Game game = gameService.selectById(pageDto.getGame_id());
-        if (game == null) {
-            return FungoPageResultDto.error("-1", "游戏不存在");
-        }
-        Wrapper<GameEvaluation> commentWrapper = new EntityWrapper<GameEvaluation>();
-        commentWrapper.eq("game_id", pageDto.getGame_id());
-        commentWrapper.and("state !={0}", -1);
-        if ("mine".equals(pageDto.getFilter())) {//社区主
-            commentWrapper.eq("member_id", memberId);
-        }
-        //pageDto.getSort()==0||
-        if (pageDto.getSort() == 1) {//排序
-            commentWrapper.orderBy("created_at", true);
-        } else if (pageDto.getSort() == 0 || pageDto.getSort() == 2) {
-            commentWrapper.orderBy("created_at", false);
-        } else if (pageDto.getSort() == 3) {
-            commentWrapper.groupBy("id").orderBy("sum(like_num+reply_num)", true);//按照点赞数和回复数排序
-        } else if (pageDto.getSort() == 4) {
-            commentWrapper.groupBy("id").orderBy("sum(like_num+reply_num)", false);
-        }
-
-        Page<GameEvaluation> page = this.gameEvaluationService.selectPage(new Page<>(pageDto.getPage(), pageDto.getLimit()), commentWrapper);
-        List<GameEvaluation> list = page.getRecords();
-
-        for (GameEvaluation cmmComment : list) {
-            EvaluationOutPageDto ctem = new EvaluationOutPageDto();
-            ctem.setContent(CommonUtils.filterWord(cmmComment.getContent()));
-            ctem.setCreatedAt(DateTools.fmtDate(cmmComment.getCreatedAt()));
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                ctem.setImages(objectMapper.readValue(cmmComment.getImages(), ArrayList.class));
-            } catch (Exception e) {
-                e.printStackTrace();
+        String gameId = pageDto.getGame_id();
+        String keySuffix = gameId + JSON.toJSONString(pageDto);
+        try {
+            re = (FungoPageResultDto<EvaluationOutPageDto>) fungoCacheGame.getIndexCache(keyPrefix, keySuffix);
+            if (null != re) {
+                return re;
             }
-            ctem.setIs_recommend("1".equals(cmmComment.getIsRecommend()) ? true : false);
-            ctem.setLike_num(cmmComment.getLikeNum());
-            ctem.setObjectId(cmmComment.getId());
-            ctem.setPhone_model(cmmComment.getPhoneModel());
-            ctem.setReply_count(cmmComment.getReplyNum());
-            ctem.setUpdatedAt(DateTools.fmtDate(cmmComment.getUpdatedAt()));
+            re = new FungoPageResultDto<>();
+            List<EvaluationOutPageDto> relist = new ArrayList<EvaluationOutPageDto>();
+            Game game = gameService.selectById(gameId);
+            if (game == null) {
+                return FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(AbstractResultEnum.CODE_GAME_THREE.getKey(), AbstractResultEnum.CODE_GAME_THREE.getFailevalue());
+            }
+            Wrapper<GameEvaluation> commentWrapper = new EntityWrapper<>();
+            commentWrapper.eq("game_id", gameId);
+            commentWrapper.and("state !={0}", -1);
+            if ("mine".equals(pageDto.getFilter())) {//社区主
+                commentWrapper.eq("member_id", memberId);
+            }
+            //pageDto.getSort()==0||
+            if (pageDto.getSort() == 1) {//排序
+                commentWrapper.orderBy("created_at", true);
+            } else if (pageDto.getSort() == 0 || pageDto.getSort() == 2) {
+                commentWrapper.orderBy("created_at", false);
+            } else if (pageDto.getSort() == 3) {
+                commentWrapper.groupBy("id").orderBy("sum(like_num+reply_num)", true);//按照点赞数和回复数排序
+            } else if (pageDto.getSort() == 4) {
+                commentWrapper.groupBy("id").orderBy("sum(like_num+reply_num)", false);
+            }
+
+            Page<GameEvaluation> page = this.gameEvaluationService.selectPage(new Page<>(pageDto.getPage(), pageDto.getLimit()), commentWrapper);
+            List<GameEvaluation> list = page.getRecords();
+
+            for (GameEvaluation cmmComment : list) {
+                EvaluationOutPageDto ctem = new EvaluationOutPageDto();
+                ctem.setContent(CommonUtils.filterWord(cmmComment.getContent()));
+                ctem.setCreatedAt(DateTools.fmtDate(cmmComment.getCreatedAt()));
+                ObjectMapper objectMapper = new ObjectMapper();
+                try {
+                    ctem.setImages(objectMapper.readValue(cmmComment.getImages(), ArrayList.class));
+                } catch (Exception e) {
+                    logger.error("objectMapper.readValue出现异常,cmmComment.getImages()="+cmmComment.getImages(),e);
+                }
+                ctem.setIs_recommend("1".equals(cmmComment.getIsRecommend()) ? true : false);
+                ctem.setLike_num(cmmComment.getLikeNum() == null ? 0 : cmmComment.getLikeNum());
+                ctem.setObjectId(cmmComment.getId());
+                ctem.setPhone_model(cmmComment.getPhoneModel());
+                ctem.setReply_count(cmmComment.getReplyNum()== null ? 0 : cmmComment.getReplyNum() );
+                ctem.setUpdatedAt(DateTools.fmtDate(cmmComment.getUpdatedAt()));
+                ctem.setTrait1( cmmComment.getTrait1()== null ? 0 : cmmComment.getTrait1() );
+                ctem.setTrait2( cmmComment.getTrait2()== null ? 0 : cmmComment.getTrait2() );
+                ctem.setTrait3( cmmComment.getTrait3()== null ? 0 : cmmComment.getTrait3() );
+                ctem.setTrait4( cmmComment.getTrait4()== null ? 0 : cmmComment.getTrait4() );
+                ctem.setTrait5( cmmComment.getTrait5() == null ? 0 : cmmComment.getTrait5());
 //            迁移微服务 根据用户id获取authorbean对象 feignclient
 //            ctem.setAuthor(this.userService.getAuthor(cmmComment.getMemberId()));
 //            2019-05-11
 //            lyc
-            ctem.setAuthor(iEvaluateProxyService.getAuthor(cmmComment.getMemberId()));
-            //2.4 评分
-            if (cmmComment.getRating() != null) {
-                ctem.setRating(cmmComment.getRating());
-            }
+                ctem.setAuthor(iEvaluateProxyService.getAuthor(cmmComment.getMemberId()));
+                //2.4 评分
+                if (cmmComment.getRating() != null) {
+                    ctem.setRating(cmmComment.getRating());
+                }
 
-            //回复
+                //回复
 //            迁移微服务 根据条件判断获取ReplyDtoList集合
 //            2019-05-11
 //            lyc
 //            Page<ReplyDto> replyList = replyService.selectPage(new Page<>(1, 3), new EntityWrapper<Reply>().eq("target_id", cmmComment.getId()).eq("state", 0).orderBy("created_at", true));
-            ReplyInputPageDto replyInputPageDto = new ReplyInputPageDto();
-            replyInputPageDto.setPage(1);
-            replyInputPageDto.setLimit(3);
-            replyInputPageDto.setTarget_id(cmmComment.getId());
-            replyInputPageDto.setState(0);
-            FungoPageResultDto<CmmCmtReplyDto> replyList = iEvaluateProxyService.getReplyDtoBysSelectPageOrderByCreatedAt(replyInputPageDto);
-            int i = 0;
-            if (replyList.getData() != null){
-                for (CmmCmtReplyDto reply : replyList.getData()) {
-                    i = i + 1;
-                    if (i == 3) {
-                        ctem.setReply_more(true);
-                        break;
-                    }
-                    ReplyBean replybean = new ReplyBean();
-                    replybean.setAuthor(iEvaluateProxyService.getAuthor(reply.getMemberId()));
-                    replybean.setContent(CommonUtils.filterWord(reply.getContent()));
-                    replybean.setCreatedAt(DateTools.fmtDate(reply.getCreatedAt()));
-                    replybean.setObjectId(reply.getId());
-                    replybean.setUpdatedAt(DateTools.fmtDate(reply.getUpdatedAt()));
-                    replybean.setLike_num(reply.getLikeNum());
-                    replybean.setReplyToId(reply.getReplayToId());
-    //                微服务 根据条件判断获取memberDto对象
-    //                2019-05-11
-    //                lyc
-    //                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
-                    if (reply.getReplayToId()!= null){
-                        MemberDto md = new MemberDto();
-                        md.setId(reply.getReplayToId());
-                        MemberDto m = iEvaluateProxyService.getMemberDtoBySelectOne(md);
-                        if (m != null) {
-                            replybean.setReplyToName(m.getUserName());
+                ReplyInputPageDto replyInputPageDto = new ReplyInputPageDto();
+                replyInputPageDto.setPage(1);
+                replyInputPageDto.setLimit(3);
+                replyInputPageDto.setTarget_id(cmmComment.getId());
+                replyInputPageDto.setState(0);
+                FungoPageResultDto<CmmCmtReplyDto> replyList = iEvaluateProxyService.getReplyDtoBysSelectPageOrderByCreatedAt(replyInputPageDto);
+                int i = 0;
+                if (replyList.getData() != null){
+                    for (CmmCmtReplyDto reply : replyList.getData()) {
+                        i = i + 1;
+                        if (i == 3) {
+                            ctem.setReply_more(true);
+                            break;
                         }
+                        ReplyBean replybean = new ReplyBean();
+                        replybean.setAuthor(iEvaluateProxyService.getAuthor(reply.getMemberId()));
+                        replybean.setContent(CommonUtils.filterWord(reply.getContent()));
+                        replybean.setCreatedAt(DateTools.fmtDate(reply.getCreatedAt()));
+                        replybean.setObjectId(reply.getId());
+                        replybean.setUpdatedAt(DateTools.fmtDate(reply.getUpdatedAt()));
+                        replybean.setLike_num(reply.getLikeNum());
+                        replybean.setReplyToId(reply.getReplayToId());
+                        //                微服务 根据条件判断获取memberDto对象
+                        //                2019-05-11
+                        //                lyc
+                        //                Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name").eq("id", reply.getReplayToId()));
+                        if (reply.getReplayToId()!= null){
+                            MemberDto md = new MemberDto();
+                            md.setId(reply.getReplayToId());
+                            MemberDto m = iEvaluateProxyService.getMemberDtoBySelectOne(md);
+                            if (m != null) {
+                                replybean.setReplyToName(m.getUserName());
+                            }
+                        }
+                        ctem.getReplys().add(replybean);
                     }
-
-                    ctem.getReplys().add(replybean);
+                    ctem.setReply_count(replyList.getCount());
                 }
-            ctem.setReply_count(replyList.getCount());
-            }
 
-            //是否点赞
-            if ("".equals(memberId) || memberId == null) {
-                ctem.setIs_liked(false);
-            } else {
+                //是否点赞
+                if ("".equals(memberId) || memberId == null) {
+                    ctem.setIs_liked(false);
+                } else {
 //                int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", cmmComment.getId()).eq("member_id", memberId));
-                BasActionDto basActionDto = new BasActionDto();
-                basActionDto.setType(0);
-                basActionDto.setState(0);
-                basActionDto.setTargetId(cmmComment.getId());
-                basActionDto.setMemberId(memberId);
-                int liked = iEvaluateProxyService.getBasActionSelectCount(basActionDto);
-                ctem.setIs_liked(liked > 0 ? true : false);
-
-
+                    BasActionDto basActionDto = new BasActionDto();
+                    basActionDto.setType(0);
+                    basActionDto.setState(0);
+                    basActionDto.setTargetId(cmmComment.getId());
+                    basActionDto.setMemberId(memberId);
+                    int liked = iEvaluateProxyService.getBasActionSelectCount(basActionDto);
+                    ctem.setIs_liked(liked > 0 ? true : false);
+                }
+                relist.add(ctem);
             }
-            relist.add(ctem);
+            re.setData(relist);
+            PageTools.pageToResultDto(re, page);
+            //redis cache
+            fungoCacheGame.excIndexCache(true, keyPrefix, keySuffix, re);
+        }catch (Exception e){
+            logger.error("获取游戏评价列表,游戏id="+gameId,e);
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildError("获取游戏评价列表异常");
         }
-        re.setData(relist);
-        PageTools.pageToResultDto(re, page);
-
-
-        //redis cache
-        fungoCacheGame.excIndexCache(true, keyPrefix, keySuffix, re);
-
         return re;
     }
 
@@ -801,13 +825,15 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 bean.setIcon(game.getIcon());
                 bean.setGameName(game.getName());
             }
-
+            if(eva.getCreatedAt().compareTo(eva.getUpdatedAt()) != 0){
+                bean.setUpdated(true);
+            }else {
+                bean.setUpdated(false);
+            }
             olist.add(bean);
         }
         re.setData(olist);
         PageTools.pageToResultDto(re, p);
-
-
         //redis cache
         fungoCacheGame.excIndexCache(true, keyPrefix, keySuffix, re);
         return re;

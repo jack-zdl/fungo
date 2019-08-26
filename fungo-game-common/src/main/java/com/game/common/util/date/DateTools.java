@@ -130,6 +130,26 @@ public class DateTools {
 
 
     /**
+     * 时间相减得到天数
+     * @param dateStr
+     * @return
+     */
+    public static long getHour(String dateStr) {
+        long hour = 0;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date beginDate;
+        Date endDate;
+        try {
+            beginDate = format.parse(dateStr);
+            hour = beginDate.getHours();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return hour;
+    }
+
+
+    /**
      * 获取本周的开始时间
      * @return
      */

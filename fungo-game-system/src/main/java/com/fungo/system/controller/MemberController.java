@@ -44,28 +44,20 @@ public class MemberController {
 
     @Autowired
     private IMemberService memberService;
-
     @Autowired
     private BasActionDao actionDao;
-
     @Autowired
     private MemberService imemberService;
-
     @Autowired
     private IUserService iUserService;
-
     @Autowired
     private BasActionService actionService;
-
     @Autowired
     private FungoCacheMember fungoCacheMember;
-
     @Autowired
     private IGameProxyService gameProxyService;
-
     @Autowired
     private ICommunityProxyService communityProxyService;
-
 
     @ApiOperation(value = "获取我的收藏", notes = "获取我的收藏")
     @RequestMapping(value = "/api/mine/collection", method = RequestMethod.POST)
@@ -149,16 +141,23 @@ public class MemberController {
         return memberService.getCommentNotice(memberUserPrefile.getLoginId(), inputPage, appVersion);
     }
 
-    @ApiOperation(value = "获取我的未读消息", notes = "获取我的未读消息")
+    /**
+     * 功能描述: 个人消息每个消息有几个
+     * @auther: dl.zhang
+     * @date: 2019/8/9 16:57
+     */
+    @ApiOperation(value = "获取我的未读消息", notes = "获取我的未读消息")  
     @RequestMapping(value = "/api/mine/notification", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public ResultDto<Map<String, Object>> getUnReadNotice(MemberUserProfile memberUserPrefile, HttpServletRequest request) {
         String appVersion = "";
         appVersion = request.getHeader("appversion");
-
-
+        String os = request.getHeader("os");
+        if(os == null){
+            os = "";
+        }
         ResultDto<Map<String, Object>> re = new ResultDto<Map<String, Object>>();
-        Map<String, Object> resultMap = memberService.getUnReadNotice(memberUserPrefile.getLoginId(), appVersion);
+        Map<String, Object> resultMap = memberService.getNewUnReadNotice(memberUserPrefile.getLoginId(),os, appVersion);
         if (null != resultMap && !resultMap.isEmpty()) {
             re.setData(resultMap);
         }
@@ -168,8 +167,12 @@ public class MemberController {
     @ApiOperation(value = "获取系统消息", notes = "获取系统消息")
     @RequestMapping(value = "/api/mine/system", method = RequestMethod.POST)
     @ApiImplicitParams({})
-    public FungoPageResultDto<SysNoticeBean> getSystemNotice(MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPage) {
-        return memberService.getSystemNotice(memberUserPrefile.getLoginId(), inputPage);
+    public FungoPageResultDto<SysNoticeBean> getSystemNotice(MemberUserProfile memberUserPrefile,HttpServletRequest request, @RequestBody InputPageDto inputPage) {
+        String os = request.getHeader("os");
+        if(os == null){
+            os = "";
+        }
+        return memberService.getSystemNotice(os,memberUserPrefile.getLoginId(), inputPage);
     }
 
     //暂时无用

@@ -146,5 +146,27 @@
                 WHERE
                     id NOT IN ( SELECT DISTINCT mb_id FROM t_incent_ranked WHERE rank_type = 1 OR rank_type = 3 )
     </select>
+
+    <select id="getMemberList" resultType="java.lang.String">
+        SELECT  id FROM  t_member WHERE  state = '0' where  id  = '287c0f55aaf7436b89c0a73964efff3c'
+    </select>
+
+    <select id="getUnfollerMemberList" resultType="com.fungo.system.entity.Member" >
+        SELECT  
+        <include refid="Base_Column_List"></include>
+         FROM  t_member where
+        id in
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and id not  in
+        (
+        SELECT target_id FROM t_bas_action WHERE type = 5 and member_id = #{memberId} and state != -1   and target_id  in
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        )
+    </select>
+
     
 </mapper>

@@ -44,6 +44,14 @@ public interface CommunityFeignClient {
     @PostMapping("/ms/service/cmm/post/lists")
     FungoPageResultDto<CmmPostDto> queryCmmPostList(@RequestBody CmmPostDto cmmPostDto);
 
+//    /**
+//     * 查询社区帖子|文章数据
+//     * @return
+//     */
+//    @PostMapping("/ms/service/cmm/mypost/lists")
+//    FungoPageResultDto<CmmPostDto> queryMyCmmPostList(@RequestBody CmmPostDto cmmPostDto);
+
+
     /**
      * 查询社区帖子|文章数据
      * @return

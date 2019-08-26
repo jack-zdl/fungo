@@ -22,7 +22,24 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, member_id AS memberId, game_id AS gameId, agree, notice, state, batch_no AS batchNo, created_at AS createdAt, updated_at AS updatedAt
+         ${alias}.id,  ${alias}.member_id AS memberId,  ${alias}.game_id AS gameId,  ${alias}.agree,  ${alias}.notice,  ${alias}.state,  ${alias}.batch_no AS batchNo,
+          ${alias}.created_at AS createdAt,  ${alias}.updated_at AS updatedAt
     </sql>
+
+	<!--gsr.agree = 1 and  -->
+	<select id="getMemberNoticeByGame" resultType="com.game.common.dto.game.GameSurveyRelDto">
+        SELECT
+		  <include refid="Base_Column_List"><property name="alias" value="gsr"/></include>, tg.name as gameName
+        FROM t_game_survey_rel gsr left join t_game  tg on gsr.game_id = tg.id  WHERE   gsr.state = 0 and gsr.notice =  0  and ( gsr.phone_model =  "Android" or  gsr.phone_model =  "iOS" )
+		and  tg.state = 0 and tg.android_state = 2
+    </select>
+
+	<update id="updateMemberNoticeBatch" >
+		update t_game_survey_rel set notice = 1 where
+		id  IN
+		<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
 
 </mapper>

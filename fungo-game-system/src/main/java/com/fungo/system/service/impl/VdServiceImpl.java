@@ -172,6 +172,7 @@ public class VdServiceImpl implements IVdService {
     	if (videoJob.getBizType() == 1) {
             CmmPostDto postParam = new CmmPostDto();
             postParam.setId(videoJob.getBizId());
+            postParam.setState(1);
             CmmPostDto post = gameProxyServiceImpl.selectCmmPostById(postParam);
 //            communityFeignClient.queryCmmPostList(postParam);
 //            CmmPost post = postService.selectById(videoJob.getBizId());

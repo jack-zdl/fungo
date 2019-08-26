@@ -90,6 +90,9 @@ public class FeignServiceController {
     @Autowired
     private GameEvaluationService gameEvaluationService;
 
+    @Autowired
+    private GameSurveyRelService gameSurveyRelServiceImap;
+
     /****************************************************ActionController**********************************************************************/
 
     @ApiOperation(value = "更新计数器", notes = "")
@@ -907,6 +910,13 @@ public class FeignServiceController {
     }
 
 
+    @RequestMapping(value = "/api/game/{gameId}", method = RequestMethod.POST)
+    GameDto selectOne(@PathVariable("gameId") String gameId){
+        Game game =   gameDao.selectById( gameId );
+        GameDto gameDto = new GameDto();
+        BeanUtils.copyProperties(game,gameDto);
+        return gameDto;
+    }
 /****************************************************comunity**********************************************************************/
     /**
      * 获取游戏平均分
@@ -1125,6 +1135,14 @@ public class FeignServiceController {
         }
         re.setData(gameEvaluationDtos);
         PageTools.pageToResultDto(re, page);
+        return re;
+    }
+
+    @GetMapping("/api/game/notice")
+    public FungoPageResultDto<GameSurveyRelDto> getMemberNoticeByGame() {
+        FungoPageResultDto<GameSurveyRelDto> re = new FungoPageResultDto<>();
+        List<GameSurveyRelDto> gameSurveyRelDTOS = gameSurveyRelServiceImap.getMemberNoticeByGame();
+        re.setData( gameSurveyRelDTOS);
         return re;
     }
 

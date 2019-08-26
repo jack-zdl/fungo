@@ -12,6 +12,7 @@ import com.fungo.system.dao.MemberDao;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
 import com.fungo.system.facede.IMemeberProxyService;
+import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.service.*;
 import com.fungo.system.service.portal.PortalSystemIMemberService;
 import com.game.common.api.InputPageDto;
@@ -48,29 +49,24 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
 
     @Autowired
     private BasNoticeService noticeService;
-
     @Autowired
     private IUserService userService;
     @Autowired
     private MemberService memberService;
-
     @Autowired
     private IMemeberProxyService iMemeberProxyService;
-
     @Autowired
     private IMemberIncentRuleRankService IRuleRankService;
-
     @Autowired
     private BasNoticeDao noticeDao;
-
     @Autowired
     private IncentRankedService rankedService;
-
     @Autowired
     private MemberNoticeDaoService memberNoticeDaoService;
-
     @Autowired
     private FungoCacheNotice fungoCacheNotice;
+    @Autowired
+    private DistributedLockByCurator distributedLockByCurator;
 
 
     //消息
@@ -413,7 +409,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
             memberNoticeEntityWrapper.eq("mb_id", memberId);
             memberNoticeEntityWrapper.eq("ntc_type", 7);
             memberNoticeEntityWrapper.eq("is_read", 2);
-
+            distributedLockByCurator.acquireDistributedLock( memberId );
             List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList(memberNoticeEntityWrapper);
             if (null != noticeListDB && !noticeListDB.isEmpty()) {
                 for (MemberNotice memberNotice : noticeListDB) {
@@ -432,6 +428,8 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
         }catch (Exception e){
             e.printStackTrace();
             logger.error("删除未读消息",e);
+        }finally {
+            distributedLockByCurator.releaseDistributedLock(memberId);
         }
     }
     public void updateMap(Map<String,Object> oldMap,Map noticeMap){
