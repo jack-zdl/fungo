@@ -567,6 +567,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
             resultDto =  getFestivalMall(inputPageDto);
         }catch (Exception e){
             logger.error( "中秋礼品抽奖异常用户id="+memberId,e);
+            resultDto =  FungoPageResultDto.FungoPageResultDtoFactory.buildError("中秋礼品抽奖异常");
         }
         return resultDto;
     }

@@ -17,6 +17,7 @@ import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IMemeberProxyService;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
+import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
 import com.fungo.system.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.bean.CollectionBean;
