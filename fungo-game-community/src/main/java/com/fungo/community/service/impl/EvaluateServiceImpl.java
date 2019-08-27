@@ -2037,6 +2037,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
         //游戏评价列表
         fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS, "", null);
+        //回复列表
+        fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOOD_COMMENT_DETAIL+replyInput.getTarget_id(), "", null);
         return re;
     }
 
