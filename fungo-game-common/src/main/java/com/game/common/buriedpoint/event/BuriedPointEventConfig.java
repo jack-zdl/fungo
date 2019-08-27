@@ -36,7 +36,7 @@ public class BuriedPointEventConfig {
      */
     @Bean
     public ThreadPoolExecutor buriedPointThreadPoolExecutor(){
-        return new ThreadPoolExecutor(3, Runtime.getRuntime().availableProcessors(), 60,
+        return new ThreadPoolExecutor(2, Runtime.getRuntime().availableProcessors(), 60,
                 TimeUnit.SECONDS,
                 new ArrayBlockingQueue<>(200),
                 r -> {
