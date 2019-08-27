@@ -6,13 +6,23 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.community.dao.mapper.CmmCircleMapper;
+import com.fungo.community.dao.mapper.CmmCommentDao;
+import com.fungo.community.dao.mapper.CmmPostDao;
+import com.fungo.community.dao.mapper.MooMessageDao;
+import com.fungo.community.dao.mapper.MooMoodDao;
 import com.fungo.community.dao.service.*;
 import com.fungo.community.entity.*;
 import com.fungo.community.facede.GameFacedeService;
 import com.fungo.community.facede.SystemFacedeService;
 import com.fungo.community.facede.TSMQFacedeService;
+import com.fungo.community.helper.MQProduct;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IEvaluateService;
+import com.game.common.buriedpoint.BuriedPointUtils;
+import com.game.common.buriedpoint.constants.BuriedPointCommunityConstant;
+import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
+import com.game.common.buriedpoint.model.BuriedPointReplyModel;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
@@ -40,6 +50,7 @@ import com.game.common.util.UUIDUtils;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.EmojiDealUtil;
 import com.game.common.util.emoji.FilterEmojiUtil;
+import com.game.common.vo.DelObjectListVO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,56 +59,58 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class EvaluateServiceImpl implements IEvaluateService {
-
 
     private static final Logger logger = LoggerFactory.getLogger(EvaluateServiceImpl.class);
 
     @Autowired
     private CmmCommentDaoService commentService;
-
     @Autowired
     private CmmPostDaoService postService;
-
     @Autowired
     private MooMoodDaoService moodService;
-
     @Autowired
     private MooMessageDaoService messageServive;
-
     @Autowired
     private ReplyDaoService replyService;
-
     @Autowired
     private FungoCacheGame fungoCacheGame;
-
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
-
     @Autowired
     private FungoCacheMood fungoCacheMood;
-
     @Autowired
     private FungoCacheComment fungoCacheComment;
-
     @Autowired
     private ICounterService counterService;
-
-
     //依赖系统和用户微服务
     @Autowired
     private SystemFacedeService systemFacedeService;
-
     //依赖游戏微服务
     @Autowired
     private GameFacedeService gameFacedeService;
-
     @Autowired
     private TSMQFacedeService tSMQFacedeService;
+    @Autowired
+    private CmmPostDao cmmPostDao;
+    @Autowired
+    private MooMoodDao mooMoodDao;
+    @Autowired
+    private CmmCommentDao cmmCommentDao;
+    @Autowired
+    private MooMessageDao mooMessageDao;
+    @Autowired
+    private MQProduct mqProduct;
+
+    @Autowired
+    private CmmCircleMapper cmmCircleMapper;
 
 
+
+    @Transactional
     @Override
     public ResultDto<CommentOut> addComment(String memberId, CommentInput commentInput, String appVersion) throws Exception {
         ResultDto<CommentOut> re = new ResultDto<CommentOut>();
@@ -108,14 +121,10 @@ public class EvaluateServiceImpl implements IEvaluateService {
         if (CommonUtil.isNull(commentInput.getContent())) {
             return ResultDto.error("-1", "内容不能为空!");
         }
-
-
         Map<String, Object> noticeMap = null;
-
         if (1 == commentInput.getTarget_type()) {//文章评论
             CmmComment comment = new CmmComment();
-            floor = commentService.selectCount(new EntityWrapper<CmmComment>().eq("post_id", commentInput.getTarget_id()));
-
+            floor = commentService.selectCount(new EntityWrapper<CmmComment>().eq("post_id", commentInput.getTarget_id()).ne("state","-1"));
             //表情编码
             String content = commentInput.getContent();
             if (StringUtils.isNotBlank(EmojiDealUtil.getEmojiUnicodeString(content))) {
@@ -147,20 +156,12 @@ public class EvaluateServiceImpl implements IEvaluateService {
             //最后回复时间
             post.setLastReplyAt(new Date());
             post.updateById();
-
             commentService.insert(comment);
-
             id = comment.getId();
-
-
             //counterService.addCounter("t_cmm_post", "comment_num", commentInput.getTarget_id());//增加评论数
-
-
             //!fixme 推送通知
             //        addNotice(int eventType, String memberId, String target_id, int target_type, String information, String appVersion, String replyToId)
             //gameProxy.addNotice(Setting.ACTION_TYPE_COMMENT, memberId, commentInput.getTarget_id(), Setting.RES_TYPE_COMMENT, commentInput.getContent(), appVersion, "");
-
-
             noticeMap = new HashMap<>();
             noticeMap.put("eventType", Setting.ACTION_TYPE_COMMENT);
             noticeMap.put("memberId", memberId);
@@ -169,10 +170,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
             noticeMap.put("information", commentInput.getContent());
             noticeMap.put("appVersion", appVersion);
             noticeMap.put("replyToId", "");
-
-
+            noticeMap.put( "commentId",comment.getId());
         } else if (2 == commentInput.getTarget_type()) {//心情评论
-
             MooMessage comment = new MooMessage();
             //编码
             String content = commentInput.getContent();
@@ -180,15 +179,12 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 content = FilterEmojiUtil.encodeEmoji(content);
             }
             comment.setContent(content);
-
-
             comment.setMemberId(memberId);
             comment.setLikeNum(0);
             comment.setMoodId(commentInput.getTarget_id());
             comment.setCreatedAt(new Date());
             comment.setUpdatedAt(new Date());
             comment.setState(0);
-
             messageServive.insert(comment);
 
             MooMood mood = this.moodService.selectById(commentInput.getTarget_id());
@@ -212,16 +208,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
             noticeMap.put("information", commentInput.getContent());
             noticeMap.put("appVersion", appVersion);
             noticeMap.put("replyToId", "");
+            noticeMap.put( "commentId",comment.getId());
         }
-
         if (null != noticeMap) {
             this.sendNoticeToSystemServcie(noticeMap);
         }
-
-
         //!fixme 查询用户数据
         //t.setAuthor(userService.getAuthor(memberId));
-
         AuthorBean author = null;
         try {
             ResultDto<AuthorBean> beanResultDto = systemFacedeService.getAuthor(memberId);
@@ -231,9 +224,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
         t.setAuthor(author);
-
         t.setContent(CommonUtils.filterWord(commentInput.getContent()));
         t.setFloor(floor + 1);
         t.setObjectId(id);
@@ -244,10 +235,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
         t.setUpdatedAt(DateTools.fmtDate(new Date()));
         re.setData(t);
 //		gameProxy.addScore(Setting.ACTION_TYPE_COMMENT, memberId, commentInput.getTarget_id(), commentInput.getTarget_type());
-
         //完成任务 V2.4.6版本任务之前任务废弃
         // int addTaskCore = gameProxy.addTaskCore(Setting.ACTION_TYPE_COMMENT, memberId, commentInput.getTarget_id(), commentInput.getTarget_type());
-
         //V2.4.6版本任务
         String tips = "";
         //每日任务
@@ -259,18 +248,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
         Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                 MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
         */
-
-
         //任务：
         // 1.调用微服务接口
         // 2.执行失败，发送MQ消息
         Map<String, Object> resMapCoin = null;
         Map<String, Object> resMapExp = null;
-
         String uuidCoin = UUIDUtils.getUUID();
         String uuidExp = UUIDUtils.getUUID();
-
-
         //coin task
         TaskDto taskDtoCoin = new TaskDto();
         taskDtoCoin.setRequestId(uuidCoin);
@@ -278,8 +262,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
         taskDtoCoin.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
         taskDtoCoin.setTaskType(MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT);
         taskDtoCoin.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code());
-
-
         //exp task
         TaskDto taskDtoExp = new TaskDto();
         taskDtoExp.setRequestId(uuidExp);
@@ -287,34 +269,25 @@ public class EvaluateServiceImpl implements IEvaluateService {
         taskDtoExp.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
         taskDtoExp.setTaskType(MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT);
         taskDtoExp.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
-
         try {
-
             //coin task
             ResultDto<Map<String, Object>> coinTaskResultDto = systemFacedeService.exTask(taskDtoCoin);
             if (null != coinTaskResultDto) {
                 resMapCoin = coinTaskResultDto.getData();
             }
-
             //exp task
             ResultDto<Map<String, Object>> expTaskResultDto = systemFacedeService.exTask(taskDtoExp);
             if (null != expTaskResultDto) {
                 resMapExp = expTaskResultDto.getData();
             }
-
         } catch (Exception ex) {
             ex.printStackTrace();
-
             //出现异常mq发送
             //coin task
             doExcTaskSendMQ(taskDtoCoin);
-
             //exp task
             doExcTaskSendMQ(taskDtoExp);
-
         }
-
-
         if (null != resMapCoin && !resMapCoin.isEmpty()) {
             if (null != resMapExp && !resMapExp.isEmpty()) {
                 boolean coinsSuccess = (boolean) resMapCoin.get("success");
@@ -328,12 +301,29 @@ public class EvaluateServiceImpl implements IEvaluateService {
             }
         }
         //end
-
         if (StringUtils.isNotBlank(tips)) {
             re.show(tips);
         } else {
             re.show("发布成功");
         }
+
+        //----添加埋点点赞数据----------
+        BuriedPointReplyModel replyModel = new BuriedPointReplyModel();
+        replyModel.setDistinctId(memberId);
+        replyModel.setPlatForm(BuriedPointUtils.getPlatForm());
+        replyModel.setEventName(BuriedPointEventConstant.EVENT_KEY_COMMENT);
+        if(targetMemberId!=null){
+            replyModel.setNickname(Optional.ofNullable(systemFacedeService.getMembersByid(targetMemberId)).map(MemberDto::getUserName).orElse(null));
+        }
+        replyModel.setType(BuriedPointCommunityConstant.COMMUNITY_REPLY_TYPE_AUTHOR);
+        // 文章评论
+        if (1 == commentInput.getTarget_type()){
+            List<String> circleNames = cmmCircleMapper.listCircleNameByPost(commentInput.getTarget_id());
+            replyModel.setChannel(circleNames.size()>0?circleNames:null);
+        }
+        BuriedPointUtils.publishBuriedPointEvent(replyModel);
+
+
         //clear redis cache
         //帖子/心情评论列表
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
@@ -343,11 +333,11 @@ public class EvaluateServiceImpl implements IEvaluateService {
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOODS_LIST, "", null);
         //获取心情内容
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOOD_CONTENT_GET, "", null);
-
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, commentInput.getTarget_id(), null);
+
+
         return re;
     }
-
 
     //发送消息通知给系统微服务
     private void sendNoticeToSystemServcie(Map<String, Object> noticeMap) {
@@ -378,34 +368,26 @@ public class EvaluateServiceImpl implements IEvaluateService {
         ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
         logger.info("--添加评论-执行发送消息--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
         //-----start
-
     }
-
 
     //社区心情--用户执行任务
     private void doExcTaskSendMQ(TaskDto taskDto) {
         //-----start
         //MQ 业务数据发送给系统用户业务处理
         TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
-
         //消息类型
         transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_MOOD);
-
         //发送的队列
         transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
-
         //路由key
         StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
         routinKey.deleteCharAt(routinKey.length() - 1);
         routinKey.append("cmtPostMQDoTask");
-
         transactionMessageDto.setRoutingKey(routinKey.toString());
-
         MQResultDto mqResultDto = new MQResultDto();
         mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_MQ_TYPE_DO_TASK.getCode());
 
         mqResultDto.setBody(taskDto);
-
         transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
         //执行MQ发送
         ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
@@ -419,7 +401,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         ResultDto<CommentBeanOut> re = new ResultDto<CommentBeanOut>();
         CommentBeanOut bean = null;
-
         //from redis cache
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_POST_COMMENT_DETAIL + commentId;
         String keySuffix = memberId;
@@ -429,11 +410,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
             re.setData(bean);
             return re;
         }
-
         bean = new CommentBeanOut();
-
         CmmComment comment = commentService.selectById(commentId);
-
         if (comment == null) {
             return ResultDto.error("-1", "该评论详情不存在");
         }
@@ -465,27 +443,20 @@ public class EvaluateServiceImpl implements IEvaluateService {
             ex.printStackTrace();
         }
         bean.setAuthor(authorBean);
-
-
         bean.setFloor(comment.getFloor());
         if ("".equals(memberId) || memberId == null) {
             bean.setIs_liked(false);
         } else {
-
             //!fixme 获取点赞数
             //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", comment.getId()).eq("member_id", memberId));
-
             BasActionDto basActionDto = new BasActionDto();
-
             basActionDto.setMemberId(memberId);
             basActionDto.setType(0);
             basActionDto.setState(0);
             basActionDto.setTargetId(comment.getId());
-
             int liked = 0;
             try {
                 ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
-
                 if (null != resultDto) {
                     liked = resultDto.getData();
                 }
@@ -496,40 +467,32 @@ public class EvaluateServiceImpl implements IEvaluateService {
             bean.setIs_liked(liked > 0 ? true : false);
         }
         re.setData(bean);
-
         //redis cahce
         fungoCacheComment.excIndexCache(true, keyPrefix, keySuffix, bean);
         return re;
     }
 
-
     public ResultDto<CommentBeanOut> getMoodMessageDetail(String memberId, String messageId) {
-
         ResultDto<CommentBeanOut> re = new ResultDto<CommentBeanOut>();
         CommentBeanOut bean = null;
-
         //from redis cache
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MOOD_COMMENT_DETAIL + messageId;
         String keySuffix = memberId;
-
         bean = (CommentBeanOut) fungoCacheComment.getIndexCache(keyPrefix, keySuffix);
         if (null != bean) {
             re.setData(bean);
             return re;
         }
-
         bean = new CommentBeanOut();
         MooMessage comment = messageServive.selectById(messageId);
         if (comment == null) {
             return ResultDto.error("-1", "该评论详情不存在");
         }
         bean.setObjectId(comment.getId());
-
         if (StringUtils.isNotBlank(comment.getContent())) {
             String interactContent = FilterEmojiUtil.decodeEmoji(comment.getContent());
             comment.setContent(interactContent);
         }
-
         if (!CommonUtil.isNull(comment.getContent())) {
             bean.setContent(CommonUtils.filterWord(comment.getContent()));
         }
@@ -541,7 +504,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         //!fixme 获取用户数据
         //bean.setAuthor(this.userService.getAuthor(comment.getMemberId()));
-
         AuthorBean authorBean = new AuthorBean();
         try {
             ResultDto<AuthorBean> beanResultDto = systemFacedeService.getAuthor(comment.getMemberId());
@@ -552,7 +514,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
             ex.printStackTrace();
         }
         bean.setAuthor(authorBean);
-
         //是否点赞
         if ("".equals(memberId) || memberId == null) {
             bean.setIs_liked(false);
@@ -562,9 +523,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
             //行为类型
             //点赞 | 0
             //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).notIn("state", "-1").eq("target_id", comment.getId()).eq("member_id", memberId));
-
             BasActionDto basActionDto = new BasActionDto();
-
             basActionDto.setMemberId(memberId);
             basActionDto.setType(0);
             basActionDto.setState(0);
@@ -587,7 +546,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         //redis cache
         fungoCacheComment.excIndexCache(true, keyPrefix, keySuffix, bean);
-
         return re;
     }
 
@@ -603,7 +561,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
         } else if (StringUtils.isNotBlank(commentpage.getPost_id())) {
             id = commentpage.getPost_id();
         }
-
         //from redis cache
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS;
         String keySuffix = id + JSON.toJSONString(commentpage);
@@ -612,7 +569,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
         }
-
         re = new FungoPageResultDto<CommentOutPageDto>();
         List<CommentOutPageDto> relist = new ArrayList<CommentOutPageDto>();
         re.setData(relist);
@@ -1511,6 +1467,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
     @Override
     public FungoPageResultDto<EvaluationOutPageDto> getEvaluationList(String memberId, EvaluationInputPageDto pageDto) {
 
+
         FungoPageResultDto<EvaluationOutPageDto> re = null;
 
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS;
@@ -1725,6 +1682,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
         if (CommonUtil.isNull(replyInput.getContent())) {
             return ResultDto.error("-1", "内容不能为空!");
         }
+        // 埋点使用
+        String targetMemberId =null;
         ResultDto<ReplyOutBean> re = new ResultDto<ReplyOutBean>();
         ReplyOutBean t = new ReplyOutBean();
         Reply reply = new Reply();
@@ -1772,16 +1731,21 @@ public class EvaluateServiceImpl implements IEvaluateService {
         replyService.insert(reply);
 
         HashMap<String, Object> noticeMap = null;
+        List<String> circleNames = new ArrayList<>();
 
         if (replyInput.getTarget_type() == 5) {//回复文章评论
             counterService.addCounter("t_cmm_comment", "reply_num", replyInput.getTarget_id());//增加评论数
             //最后回复时间
             CmmComment comment = commentService.selectById(replyInput.getTarget_id());
+            if(replyInput.getReply_to()==null){
+                targetMemberId = comment.getMemberId();
+            }
             if (comment != null) {
                 CmmPost post = postService.selectById(comment.getPostId());
                 if (post != null) {
                     post.setLastReplyAt(new Date());
                     post.updateById();
+                    circleNames = cmmCircleMapper.listCircleNameByPost(comment.getPostId());
                 }
             }
             try {//发送通知
@@ -1796,6 +1760,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     noticeMap.put("target_id", replyInput.getTarget_id());
                     noticeMap.put("target_type", Setting.RES_TYPE_COMMENT);
                     noticeMap.put("information", replyInput.getContent());
+                    noticeMap.put( "replyId",reply.getId() );
                     noticeMap.put("appVersion", "");
                     noticeMap.put("replyToId", "");
 
@@ -1813,6 +1778,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     noticeMap.put("target_id", replyInput.getTarget_id());
                     noticeMap.put("target_type", Setting.RES_TYPE_COMMENT);
                     noticeMap.put("information", replyInput.getContent());
+                    noticeMap.put( "replyId",reply.getId() );
+                    noticeMap.put("replyToNoticeId", replyInput.getReply_to_content_id());
                     noticeMap.put("appVersion", appVersion);
                     noticeMap.put("replyToId", replyInput.getReply_to());
 
@@ -1828,7 +1795,14 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
             counterService.addCounter("t_game_evaluation", "reply_num", replyInput.getTarget_id());//增加评论数
 
-
+            ResultDto<GameEvaluationDto> idResult = gameFacedeService.getGameEvaluationSelectById(replyInput.getTarget_id());
+            if(idResult!=null&&idResult.isSuccess()&&idResult.getData()!=null){
+                GameEvaluationDto data = idResult.getData();
+                String memberId1 = data.getMemberId();
+                if(memberId!=null){
+                    targetMemberId = memberId1;
+                }
+            }
             try {
 
 
@@ -1842,6 +1816,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     noticeMap.put("target_id", replyInput.getTarget_id());
                     noticeMap.put("target_type", Setting.RES_TYPE_EVALUATION);
                     noticeMap.put("information", replyInput.getContent());
+                    noticeMap.put( "replyId",reply.getId() );
                     noticeMap.put("appVersion", "");
                     noticeMap.put("replyToId", "");
 
@@ -1858,6 +1833,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     noticeMap.put("target_id", replyInput.getTarget_id());
                     noticeMap.put("target_type", Setting.RES_TYPE_EVALUATION);
                     noticeMap.put("information", replyInput.getContent());
+                    noticeMap.put( "replyId",reply.getId() );
+                    noticeMap.put("replyToNoticeId", replyInput.getReply_to_content_id());
                     noticeMap.put("appVersion", appVersion);
                     noticeMap.put("replyToId", replyInput.getReply_to());
 
@@ -1871,6 +1848,10 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         } else if (replyInput.getTarget_type() == 8) {//回复心情评论
             counterService.addCounter("t_moo_message", "reply_num", replyInput.getTarget_id());//增加评论数
+            MooMood mooMood = moodService.selectById(replyInput.getTarget_id());
+            if(mooMood!=null&&mooMood.getMemberId()!=null){
+                targetMemberId = mooMood.getMemberId();
+            }
             if (CommonUtil.isNull(replyInput.getReply_to_content_id())) { //只有没有三级评论时才会发送消息
 
                 //this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_GAME, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_MESSAGE, replyInput.getContent(), appVersion, "");
@@ -1881,6 +1862,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 noticeMap.put("target_id", replyInput.getTarget_id());
                 noticeMap.put("target_type", Setting.RES_TYPE_MESSAGE);
                 noticeMap.put("information", replyInput.getContent());
+                noticeMap.put( "replyId",reply.getId() );
                 noticeMap.put("appVersion", appVersion);
                 noticeMap.put("replyToId", "");
 
@@ -1897,6 +1879,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 noticeMap.put("target_id", replyInput.getTarget_id());
                 noticeMap.put("target_type", Setting.RES_TYPE_MESSAGE);
                 noticeMap.put("information", replyInput.getContent());
+                noticeMap.put( "replyId",reply.getId() );
+                noticeMap.put("replyToNoticeId", replyInput.getReply_to_content_id());
                 noticeMap.put("appVersion", appVersion);
                 noticeMap.put("replyToId", replyInput.getReply_to());
 
@@ -2032,11 +2016,29 @@ public class EvaluateServiceImpl implements IEvaluateService {
         } else {
             re.show("发布成功");
         }
+
+        //----添加埋点点赞数据----------
+        BuriedPointReplyModel replyModel = new BuriedPointReplyModel();
+        replyModel.setDistinctId(memberId);
+        replyModel.setPlatForm(BuriedPointUtils.getPlatForm());
+        replyModel.setEventName(BuriedPointEventConstant.EVENT_KEY_COMMENT);
+        if(replyInput.getReply_to()!=null){
+            targetMemberId = replyInput.getReply_to();
+        }
+        if(targetMemberId!=null){
+            replyModel.setNickname(Optional.ofNullable(systemFacedeService.getMembersByid(targetMemberId)).map(MemberDto::getUserName).orElse(null));
+        }
+        replyModel.setType(BuriedPointCommunityConstant.COMMUNITY_REPLY_TYPE_OBSERVER);
+        replyModel.setChannel(circleNames.size()>0?circleNames:null);
+        BuriedPointUtils.publishBuriedPointEvent(replyModel);
+
         //clear redis cache
         //帖子/心情评论列表
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
         //游戏评价列表
         fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS, "", null);
+        //回复列表
+        fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOOD_COMMENT_DETAIL+replyInput.getTarget_id(), "", null);
         return re;
     }
 
@@ -2255,6 +2257,69 @@ public class EvaluateServiceImpl implements IEvaluateService {
         }
         logger.info("查看用户在指定时间段内游戏评论上热门和安利墙的文章数量-gameEvaSet:{}", gameEvaSet);
         return gameEvaSet;
+    }
+
+    /**
+     * 功能描述: 删除文章评论和心情评论
+     * @auther: dl.zhang
+     * @date: 2019/8/13 11:50
+     */
+    @Override
+    public ResultDto<String> delCommentList(String memberId, int type , List<String> commentIds) {
+        AtomicBoolean istrue = new AtomicBoolean( false );
+        try {
+            if( DelObjectListVO.TypeEnum.POSTEVALUATE.getKey() == type ){
+                commentIds.stream().forEach(s ->{
+                    cmmPostDao.updateCmmPostCommentNum(s);
+                    CmmComment cmmComment = new CmmComment();
+                    cmmComment.setId(s);
+                    cmmComment.setState(-1);
+                    istrue.set( commentService.updateById( cmmComment ) );
+                });
+            }else if(DelObjectListVO.TypeEnum.COMMENTEVALUATE.getKey() == type){
+                commentIds.stream().forEach(s ->{
+                    mooMoodDao.updateMooMoodCommentNum(s);
+                    MooMessage mooMessage = new MooMessage();
+                    mooMessage.setId(s);
+                    mooMessage.setState(-1);
+                    istrue.set( messageServive.updateById( mooMessage ) );
+                });
+            } else if(DelObjectListVO.TypeEnum.POSTREPLY.getKey() == type){
+                commentIds.stream().forEach(s ->{
+                    cmmCommentDao.updateCmmCommentCommentNum(s);
+                    Reply reply = new Reply();
+                    reply.setId(s);
+                    reply.setState(-1);
+                    istrue.set( replyService.updateById( reply ) );
+                });
+            }else if(DelObjectListVO.TypeEnum.COMMENTREPLY.getKey() == type){
+                commentIds.stream().forEach(s ->{
+                    mooMessageDao.updateMooMessageCommentNum(s);
+                    Reply reply = new Reply();
+                    reply.setId(s);
+                    reply.setState(-1);
+                    istrue.set( replyService.updateById( reply ) );
+                });
+            }else if(DelObjectListVO.TypeEnum.GAMEREPLY.getKey() == type){
+                commentIds.stream().forEach(s ->{
+
+                    Map<String, String> map = new HashMap<>();
+                    map.put("tableName", "t_game_evaluation");
+                    map.put("fieldName", "reply_num");
+                    map.put("id",s);
+                    map.put("type", "sub");
+                    mqProduct.updateCounter(map);
+                    // @todo 游戏评测
+                    Reply reply = new Reply();
+                    reply.setId(s);
+                    reply.setState(-1);
+                    istrue.set( replyService.updateById( reply ) );
+                });
+            }
+        }catch (Exception e){
+            logger.error( "delCommentList删除评论异常,类型:"+type+",id:"+JSON.toJSONString(commentIds),e);
+        }
+        return istrue.get() ? ResultDto.success(): ResultDto.error( "-1","删除评论失败");
     }
 
 

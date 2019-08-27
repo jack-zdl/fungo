@@ -13,8 +13,12 @@ public class MyCommentBean {
 	private Integer commentType;
 	@ApiModelProperty(value="被回复目标的内容",example="")
 	private String targetConetnt;
+	@ApiModelProperty(value="被回复目标的内容是否已删除",example="")
+	private int targetDelType;
 	@ApiModelProperty(value="评论内容",example="")
 	private String commentConetnt;
+	@ApiModelProperty(value="评论的内容是否已删除",example="")
+	private int commentDelType;
 	@ApiModelProperty(value="目标id",example="")
 	private String targetId;
 	@ApiModelProperty(value="评论id",example="")
@@ -97,6 +101,20 @@ public class MyCommentBean {
 	public void setVideo(String video) {
 		this.video = video;
 	}
-	
-	
+
+	public int getTargetDelType() {
+		return targetDelType;
+	}
+
+	public void setTargetDelType(int targetDelType) {
+		this.targetDelType = targetDelType;
+	}
+
+	public int getCommentDelType() {
+		return commentDelType;
+	}
+
+	public void setCommentDelType(int commentDelType) {
+		this.commentDelType = commentDelType;
+	}
 }

@@ -66,14 +66,14 @@
   		select
 		<include refid="Base_Column_List"></include>
   		 from t_banner where (end_date > now()  or date_type  = 1 ) and position_code = '0005' and state = '0'
-  		  order by sort desc
+  		  order by sort desc, updated_at desc
    </select>
 
 	<select id="afterNewDateBanner" resultType="com.fungo.system.entity.Banner" >
   		select
 		<include refid="Base_Column_List"></include>
   		 from t_banner where position_code = '0005' and state = '0' and
-		(  now() > end_date   and  date_type  = 2 ) order by sort desc
+		(  now() > end_date   and  date_type  = 2 ) order by sort desc , updated_at desc
    </select>
 
 	<select id="getBannerByIndex" resultType="com.fungo.system.entity.Banner" >

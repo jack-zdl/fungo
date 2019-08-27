@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.community.entity.CmmComment;
 import com.game.common.bean.CommentBean;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -28,4 +29,7 @@ public interface CmmCommentDao extends BaseMapper<CmmComment> {
 	 * @return
 	 */
 	public List<CommentBean> getCommentsAll(Page page, Map map);
+
+
+	int updateCmmCommentCommentNum(@Param("reolyId") String reolyId);
 }

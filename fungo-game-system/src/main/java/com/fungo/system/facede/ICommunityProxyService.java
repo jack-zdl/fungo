@@ -27,8 +27,8 @@ public interface ICommunityProxyService {
     List<Map<String,Object>> getMoodFeeds(Map<String, Object> map);
 
 
-    //我的动态 - 我的评论
-    List<CommentBean> getAllComments(Page<CommentBean> page, String userId) ;
+//    //我的动态 - 我的评论
+//    List<CommentBean> getAllComments(Page<CommentBean> page, String userId) ;
 
     /**
      *  查询文章表中发表文章大于10条
@@ -43,4 +43,10 @@ public interface ICommunityProxyService {
     List<String> listOfficialCommunityIds();
 
     List<String> listGameIds(List<String> list);
+
+    List<String> listCircleNameByPost(String postId);
+
+    List<String> listCircleNameByComment(String target_id);
+
+    Map<String, Integer> countMoodAndPost(String userId);
 }

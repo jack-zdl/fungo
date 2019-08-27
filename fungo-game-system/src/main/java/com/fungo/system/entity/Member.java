@@ -183,6 +183,20 @@ public class Member extends Model<Member> {
 	@TableField(exist =false)
 	private boolean isFollowed;
 
+	/**
+	 *  注册渠道
+	 */
+	@TableField("register_channel")
+	private String registerChannel;
+
+	/**
+	 * 注册平台
+	 */
+	@TableField("register_platform")
+	private String registerPlatform;
+
+
+
 
 	public String getId() {
 		return id;
@@ -460,6 +474,22 @@ public class Member extends Model<Member> {
 
 	public void setFollowed(boolean followed) {
 		isFollowed = followed;
+	}
+
+	public String getRegisterChannel() {
+		return registerChannel;
+	}
+
+	public void setRegisterChannel(String registerChannel) {
+		this.registerChannel = registerChannel;
+	}
+
+	public String getRegisterPlatform() {
+		return registerPlatform;
+	}
+
+	public void setRegisterPlatform(String registerPlatform) {
+		this.registerPlatform = registerPlatform;
 	}
 
 	@Override

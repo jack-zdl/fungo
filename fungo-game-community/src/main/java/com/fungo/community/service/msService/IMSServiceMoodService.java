@@ -2,9 +2,12 @@ package com.fungo.community.service.msService;
 
 
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.MooMessageDto;
 import com.game.common.dto.community.MooMoodDto;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -39,4 +42,5 @@ public interface IMSServiceMoodService {
     public Integer queryCmmMoodCount(@RequestBody MooMoodDto mooMoodDto);
 
 
+    ResultDto<Map<String,Integer>> countMoodAndPost(String userId);
 }

@@ -9,9 +9,9 @@ import com.game.common.dto.community.MooMoodDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -28,6 +28,8 @@ public class MSServiceMoodController {
 
     @Autowired
     private IMSServiceMoodService imsServiceMoodService;
+
+
 
     /**
      * 查询 社区心情数据列表
@@ -67,6 +69,16 @@ public class MSServiceMoodController {
 
         return resultDto;
     }
+
+    /**
+     * 查询 用户心情及文章总数 - 排除已删除
+     * @return
+     */
+    @GetMapping("/ms/service/cmm/mood/countMoodAndPost")
+    public ResultDto<Map<String,Integer>> countMoodAndPost(@RequestParam("userId") String userId) {
+        return imsServiceMoodService.countMoodAndPost(userId);
+    }
+
 
     //--------
 }

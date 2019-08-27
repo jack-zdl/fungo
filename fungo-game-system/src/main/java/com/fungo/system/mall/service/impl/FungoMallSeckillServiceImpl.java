@@ -17,6 +17,10 @@ import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
 import com.fungo.system.service.IMallSeckillOrderService;
 import com.fungo.system.service.IncentAccountCoinDaoService;
 import com.fungo.system.service.MemberService;
+import com.game.common.buriedpoint.BuriedPointUtils;
+import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
+import com.game.common.buriedpoint.enums.BtnEnum;
+import com.game.common.buriedpoint.model.BuriedPointSignBtnModel;
 import com.game.common.consts.FunGoGameConsts;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
@@ -418,7 +422,6 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     @Override
     public String getSeckillGrantCode(String mb_id) {
-
         String code = null;
 
         try {
@@ -448,6 +451,14 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             ex.printStackTrace();
         }
         logger.info("秒杀授权码:{}", code);
+
+        //我的礼包乐园页按钮埋点
+        BuriedPointSignBtnModel pointSignBtnModel = new BuriedPointSignBtnModel();
+        pointSignBtnModel.setDistinctId(mb_id);
+        pointSignBtnModel.setEventName(BuriedPointEventConstant.EVENT_KEY_PAGE_BTN);
+        pointSignBtnModel.setPlatForm(BuriedPointUtils.getPlatForm());
+        pointSignBtnModel.setBtnEnum(BtnEnum.GIFTBAG);
+        BuriedPointUtils.publishBuriedPointEvent(pointSignBtnModel);
         return code;
     }
 

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -101,21 +102,21 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
     }
 
     //    @HystrixCommand(fallbackMethod = "hystrixGetAllComments")
-    @Override
-    public List<CommentBean> getAllComments(Page<CommentBean> page, String userId) {
-        int pageNum = page.getPages();
-        int limit  = page.getLimit();
-        try {
-        FungoPageResultDto<com.game.common.dto.community.CommentBean>  re = communityFeignClient.getAllComments(pageNum,limit,userId);
-        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
-
-                return CommonUtils.deepCopy(re.getData(),CommentBean.class);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return new ArrayList<>();
-    }
+//    @Override
+//    public List<CommentBean> getAllComments(Page<CommentBean> page, String userId) {
+//        int pageNum = page.getPages();
+//        int limit  = page.getLimit();
+//        try {
+//        FungoPageResultDto<com.game.common.dto.community.CommentBean>  re = communityFeignClient.getAllComments(pageNum,limit,userId);
+//        if(Integer.valueOf(CommonEnum.SUCCESS.code()).equals(re.getStatus()) && re.getData().size() > 0){
+//
+//                return CommonUtils.deepCopy(re.getData(),CommentBean.class);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return new ArrayList<>();
+//    }
 
     public List<CommentBean> hystrixGetAllComments(Page<CommentBean> page, String userId) {
         LOGGER.warn("CommunityProxyServiceImpl.hystrixGetAllComments 熔断器打开");
@@ -172,8 +173,36 @@ public class CommunityProxyServiceImpl implements ICommunityProxyService {
         return resultDto.getData();
     }
 
+    @Override
+    public List<String> listCircleNameByPost(String postId) {
+        ResultDto<List<String>> resultDto = communityFeignClient.listCircleNameByPost(postId);
+        if(!resultDto.isSuccess()||resultDto.getData()==null){
+            return  new ArrayList<>();
+        }
+        return resultDto.getData();
+    }
+
+    @Override
+    public List<String> listCircleNameByComment(String commentId) {
+        ResultDto<List<String>> resultDto = communityFeignClient.listCircleNameByComment(commentId);
+        if(!resultDto.isSuccess()||resultDto.getData()==null){
+            return  new ArrayList<>();
+        }
+        return resultDto.getData();
+    }
+
+    public Map<String, Integer> countMoodAndPost(String userId) {
+        ResultDto<Map<String, Integer>> resultDto = communityFeignClient.countMoodAndPost(userId);
+        if(!resultDto.isSuccess()||resultDto.getData()==null){
+            return  new HashMap<String, Integer>();
+        }
+        return resultDto.getData();
+    }
+
     public List<Map> hystrixGetHonorQualificationOfEssencePost() {
         LOGGER.warn("CommunityProxyServiceImpl.hystrixGetHonorQualificationOfEssencePost 熔断器打开");
         return new ArrayList<>();
     }
+
+
 }

@@ -37,5 +37,11 @@ public interface CircleService {
 
     FungoPageResultDto<CommunityMember> selectCirclePlayer(String memberId, CmmCirclePostVo cmmCirclePostVo);
 
+
+    ResultDto<List<String>> listCircleNameByPost(String postId);
+
+    ResultDto<List<String>> listCircleNameByComment(String commentId);
+
     ResultDto<CmmCircleDto> selectCircleByPostId( String postId) throws Exception;
+
 }

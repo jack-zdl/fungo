@@ -3,10 +3,19 @@ package com.fungo.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.entity.*;
 import com.fungo.system.service.*;
+import com.game.common.buriedpoint.BuriedPointUtils;
+import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
+import com.game.common.buriedpoint.constants.BuriedPointPlatformConstant;
+import com.game.common.buriedpoint.constants.BuriedPointProductFunConstant;
+import com.game.common.buriedpoint.constants.BuriedPointTaskTypeConstant;
+import com.game.common.buriedpoint.event.BuriedPointEvent;
+import com.game.common.buriedpoint.model.BuriedPointProductModel;
+import com.game.common.buriedpoint.model.BuriedPointTaskModel;
 import com.game.common.common.MemberIncentCommonUtils;
 import com.game.common.consts.FunGoGameConsts;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
@@ -14,6 +23,7 @@ import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.StringUtil;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.PKUtil;
+import net.bytebuddy.asm.Advice;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +75,15 @@ public class MemberIncentNewbieTaskServiceImpl implements IMemberIncentNewbieTas
 
     @Autowired
     private FungoCacheTask fungoCacheTask;
+
+    @Autowired
+    private ScoreGroupService scoreGroupService;
+
+    @Autowired
+    private ScoreRuleService scoreRuleService;
+
+
+
 
 
     @Value("${sys.config.fungo.cluster.index}")
@@ -186,6 +205,19 @@ public class MemberIncentNewbieTaskServiceImpl implements IMemberIncentNewbieTas
             }
         }
 
+        //添加新手任务埋点
+        BuriedPointTaskModel buriedPointTaskModel = new BuriedPointTaskModel();
+        buriedPointTaskModel.setDistinctId(mb_id);
+        buriedPointTaskModel.setPlatForm(BuriedPointPlatformConstant.PLATFORM_SERVER);
+        buriedPointTaskModel.setEventName(BuriedPointEventConstant.EVENT_KEY_QUEST_COMPLETE);
+
+        buriedPointTaskModel.setQuestId(scoreRule.getId());
+        buriedPointTaskModel.setQuestName(scoreRule.getName());
+        buriedPointTaskModel.setFirstCategory(BuriedPointTaskTypeConstant.TASK_TYPE_NEW);
+        buriedPointTaskModel.setQuestExp(scoreRule.getScore());
+        buriedPointTaskModel.setFinalQuest(iMemberIncentTaskedService.currentTaskIsLast(scoreRule,mb_id,FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code()));
+        BuriedPointUtils.publishBuriedPointEvent(buriedPointTaskModel);
+
         //没有执行过
         //3.更新用户经验值账户
         int accountScore = updateAccountScore(mb_id, scoreRule);
@@ -203,8 +235,12 @@ public class MemberIncentNewbieTaskServiceImpl implements IMemberIncentNewbieTas
         if(accountScore > 0){
             this.addTaskedLog(mb_id, scoreRule);
         }
+
+
         return 1;
     }
+
+
 
 
     /**
@@ -246,6 +282,16 @@ public class MemberIncentNewbieTaskServiceImpl implements IMemberIncentNewbieTas
                 }
             }
         }
+
+        // 添加新手任务产生 fun币埋点
+        BuriedPointProductModel buriedPointProductModel = new BuriedPointProductModel();
+        buriedPointProductModel.setDistinctId(mb_id);
+        buriedPointProductModel.setPlatForm(BuriedPointPlatformConstant.PLATFORM_SERVER);
+        buriedPointProductModel.setEventName(BuriedPointEventConstant.EVENT_KEY_GOLD_PRODUCED);
+
+        buriedPointProductModel.setAmount(scoreRule.getScore());
+        buriedPointProductModel.setMethod(BuriedPointProductFunConstant.PRODUCT_FUN_TYPE_TASK);
+        BuriedPointUtils.publishBuriedPointEvent(buriedPointProductModel);
 
         //没有执行过
         //3.更新用户fungo币账户

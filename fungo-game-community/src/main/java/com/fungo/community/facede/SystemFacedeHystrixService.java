@@ -157,6 +157,12 @@ public class SystemFacedeHystrixService implements FallbackFactory<SystemFeignCl
                 logger.error("--------------------SystemFeignClient--启动熔断:{}" , "circleListMineFollow");
                 return null;
             }
+
+            @Override
+            public ResultDto<MemberDto> getMembersByid(String memberId) {
+                logger.error("--------------------SystemFeignClient--启动熔断:{}" , "getMembersByid");
+                return null;
+            }
         };
     }
 }

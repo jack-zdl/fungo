@@ -12,6 +12,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,6 +63,9 @@ public class SearchController {
         }
 
         String keyword = searchInputDto.getKey_word();
+        if (StringUtils.isNotBlank(keyword)) {
+            keyword = keyword.trim();
+        }
         String userId = "";
         if (memberUserPrefile != null) {
             userId = memberUserPrefile.getLoginId();
@@ -79,7 +83,9 @@ public class SearchController {
     @RequestMapping(value = "/api/search/searchcount/{keyword}", method = RequestMethod.GET)
     @ApiImplicitParams({})
     public ResultDto<SearCount> getSearchCount(@PathVariable("keyword") String keyword) {
-
+        if (StringUtils.isNotBlank(keyword)) {
+            keyword = keyword.trim();
+        }
         return searchService.getSearchCount(keyword);
     }
 }

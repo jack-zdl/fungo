@@ -1,6 +1,9 @@
 package com.game.common.dto.community;
 
 import com.game.common.api.InputPageDto;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
 
@@ -12,6 +15,9 @@ import java.util.Date;
  * @author lzh
  * @since 2018-12-27
  */
+@Setter
+@Getter
+@ToString
 public class CmmPostDto extends InputPageDto {
 
 
@@ -121,228 +127,11 @@ V2.4.3版本添加
 
 	private Long postId;
 
+	/**
+	 * 功能描述: 1 自己查询自己的信息
+	 * @auther: dl.zhang
+	 * @date: 2019/8/13 14:13
+	 */
+	private int  queryType;
 
-	public Integer getRecommend() {
-		return recommend;
-	}
-
-	public void setRecommend(Integer recommend) {
-		this.recommend = recommend;
-	}
-
-	public String getCommunityId() {
-		return communityId;
-	}
-
-	public void setCommunityId(String communityId) {
-		this.communityId = communityId;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getMemberId() {
-		return memberId;
-	}
-
-	public void setMemberId(String memberId) {
-		this.memberId = memberId;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getTags() {
-		return tags;
-	}
-
-	public void setTags(String tags) {
-		this.tags = tags;
-	}
-
-	public String getHtmlOrigin() {
-		return htmlOrigin;
-	}
-
-	public void setHtmlOrigin(String htmlOrigin) {
-		this.htmlOrigin = htmlOrigin;
-	}
-
-	public String getContent() {
-		return content;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
-
-	public String getImages() {
-		return images;
-	}
-
-	public void setImages(String images) {
-		this.images = images;
-	}
-
-	public String getCoverImage() {
-		return coverImage;
-	}
-
-	public void setCoverImage(String coverImage) {
-		this.coverImage = coverImage;
-	}
-
-	public Date getEditedAt() {
-		return editedAt;
-	}
-
-	public void setEditedAt(Date editedAt) {
-		this.editedAt = editedAt;
-	}
-
-	public String getOrigin() {
-		return origin;
-	}
-
-	public void setOrigin(String origin) {
-		this.origin = origin;
-	}
-
-	public Integer getState() {
-		return state;
-	}
-
-	public void setState(Integer state) {
-		this.state = state;
-	}
-
-	public Integer getCommentNum() {
-		return commentNum;
-	}
-
-	public void setCommentNum(Integer commentNum) {
-		this.commentNum = commentNum;
-	}
-
-	public Integer getLikeNum() {
-		return likeNum;
-	}
-
-	public void setLikeNum(Integer likeNum) {
-		this.likeNum = likeNum;
-	}
-
-	public Integer getCollectNum() {
-		return collectNum;
-	}
-
-	public void setCollectNum(Integer collectNum) {
-		this.collectNum = collectNum;
-	}
-
-	public Integer getWatchNum() {
-		return watchNum;
-	}
-
-	public void setWatchNum(Integer watchNum) {
-		this.watchNum = watchNum;
-	}
-
-	public Integer getReportNum() {
-		return reportNum;
-	}
-
-	public void setReportNum(Integer reportNum) {
-		this.reportNum = reportNum;
-	}
-
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public Date getUpdatedAt() {
-		return updatedAt;
-	}
-
-	public void setUpdatedAt(Date updatedAt) {
-		this.updatedAt = updatedAt;
-	}
-
-	public Integer getType() {
-		return type;
-	}
-
-	public void setType(Integer type) {
-		this.type = type;
-	}
-
-	public String getVideo() {
-		return video;
-	}
-
-	public void setVideo(String video) {
-		this.video = video;
-	}
-
-	public String getGameList() {
-		return gameList;
-	}
-
-	public void setGameList(String gameList) {
-		this.gameList = gameList;
-	}
-
-	public Integer getTopic() {
-		return topic;
-	}
-
-	public void setTopic(Integer topic) {
-		this.topic = topic;
-	}
-
-	public String getVideoUrls() {
-		return videoUrls;
-	}
-
-	public void setVideoUrls(String videoUrls) {
-		this.videoUrls = videoUrls;
-	}
-
-	public Date getLastReplyAt() {
-		return lastReplyAt;
-	}
-
-	public void setLastReplyAt(Date lastReplyAt) {
-		this.lastReplyAt = lastReplyAt;
-	}
-
-	public String getVideoCoverImage() {
-		return videoCoverImage;
-	}
-
-	public void setVideoCoverImage(String videoCoverImage) {
-		this.videoCoverImage = videoCoverImage;
-	}
-
-	public Long getPostId() {
-		return postId;
-	}
-
-	public void setPostId(Long postId) {
-		this.postId = postId;
-	}
 }

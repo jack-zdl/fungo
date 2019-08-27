@@ -7,6 +7,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.entity.*;
 import com.fungo.system.facede.IPostService;
 import com.fungo.system.service.*;
+import com.game.common.buriedpoint.BuriedPointUtils;
+import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
+import com.game.common.buriedpoint.constants.BuriedPointPlatformConstant;
+import com.game.common.buriedpoint.constants.BuriedPointProductFunConstant;
+import com.game.common.buriedpoint.constants.BuriedPointTaskTypeConstant;
+import com.game.common.buriedpoint.model.BuriedPointProductModel;
+import com.game.common.buriedpoint.model.BuriedPointTaskModel;
 import com.game.common.common.MemberIncentCommonUtils;
 import com.game.common.consts.FunGoGameConsts;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
@@ -305,6 +312,19 @@ public class MemberIncentWeeklyTaskServiceImpl implements IMemberIncentWeeklyTas
         }
 
 
+        //添加每周任务完成埋点
+        BuriedPointTaskModel buriedPointTaskModel = new BuriedPointTaskModel();
+        buriedPointTaskModel.setDistinctId(mb_id);
+        buriedPointTaskModel.setPlatForm(BuriedPointPlatformConstant.PLATFORM_SERVER);
+        buriedPointTaskModel.setEventName(BuriedPointEventConstant.EVENT_KEY_QUEST_COMPLETE);
+
+        buriedPointTaskModel.setQuestId(scoreRule.getId());
+        buriedPointTaskModel.setQuestName(scoreRule.getName());
+        buriedPointTaskModel.setFirstCategory(BuriedPointTaskTypeConstant.TASK_TYPE_WEEK_DAY);
+        buriedPointTaskModel.setQuestExp(scoreRule.getScore());
+        buriedPointTaskModel.setFinalQuest(iMemberIncentTaskedService.currentTaskIsLast(scoreRule,mb_id,FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code()));
+        BuriedPointUtils.publishBuriedPointEvent(buriedPointTaskModel);
+
         //没有执行过
         //3.更新用户经验值账户
         int accountScore = updateAccountScore(mb_id, scoreRule);
@@ -395,6 +415,15 @@ public class MemberIncentWeeklyTaskServiceImpl implements IMemberIncentWeeklyTas
             }
         }
 
+        // 添加每周任务产生 fun币埋点
+        BuriedPointProductModel buriedPointProductModel = new BuriedPointProductModel();
+        buriedPointProductModel.setDistinctId(mb_id);
+        buriedPointProductModel.setPlatForm(BuriedPointPlatformConstant.PLATFORM_SERVER);
+        buriedPointProductModel.setEventName(BuriedPointEventConstant.EVENT_KEY_GOLD_PRODUCED);
+
+        buriedPointProductModel.setAmount(scoreRule.getScore());
+        buriedPointProductModel.setMethod(BuriedPointProductFunConstant.PRODUCT_FUN_TYPE_TASK);
+        BuriedPointUtils.publishBuriedPointEvent(buriedPointProductModel);
 
         //没有执行过
         //3.更新用户fungo币账户

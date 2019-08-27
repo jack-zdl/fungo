@@ -44,6 +44,14 @@ public interface CommunityFeignClient {
     @PostMapping("/ms/service/cmm/post/lists")
     FungoPageResultDto<CmmPostDto> queryCmmPostList(@RequestBody CmmPostDto cmmPostDto);
 
+//    /**
+//     * 查询社区帖子|文章数据
+//     * @return
+//     */
+//    @PostMapping("/ms/service/cmm/mypost/lists")
+//    FungoPageResultDto<CmmPostDto> queryMyCmmPostList(@RequestBody CmmPostDto cmmPostDto);
+
+
     /**
      * 查询社区帖子|文章数据
      * @return
@@ -177,4 +185,17 @@ public interface CommunityFeignClient {
 
     @PostMapping("/ms/service/cmm/post/getCircleByPost")
     ResultDto<CmmCircleDto> getCircleByPost(@RequestBody CircleGamePostVo circleGamePostVo);
+
+    @GetMapping(value = "/ms/service/cmm/post/listCircleNameByPost")
+    ResultDto<List<String>> listCircleNameByPost(@RequestParam("postId")String postId);
+
+    @GetMapping(value = "/ms/service/cmm/post/listCircleNameByComment")
+    ResultDto<List<String>> listCircleNameByComment(@RequestParam("commentId")String commentId);
+
+    /**
+     * 查询 用户心情及文章总数 - 排除已删除
+     * @return
+     */
+    @GetMapping("/ms/service/cmm/mood/countMoodAndPost")
+    ResultDto<Map<String,Integer>> countMoodAndPost(@RequestParam("userId") String userId);
 }

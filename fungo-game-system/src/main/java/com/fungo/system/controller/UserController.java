@@ -8,6 +8,7 @@ import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
 import com.fungo.system.function.MemberLoginedStatisticsService;
 import com.fungo.system.service.*;
+import com.game.common.buriedpoint.BuriedPointUtils;
 import com.game.common.consts.GameConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.dto.MemberUserProfile;
@@ -414,6 +415,28 @@ public class UserController {
 
         return re;
     }
+
+
+    @GetMapping("/api/user/getBuriedPointUserProperties")
+   public ResultDto<MemberBuriedPointBean> getBuriedPointUserProperties(String userId){
+        //MemberUserProfile memberUserPrefile
+              // String loginId = memberUserPrefile.getLoginId();
+        return userService.getBuriedPointUserProperties(userId);
+    }
+
+
+    /**
+     *  更新 用户注册信息
+     * @param userId 用户id
+     * @param registerChannel 注册渠道
+     * @return 结果
+     */
+    @GetMapping("/api/user/updateUserRegister")
+    public ResultDto updateUserRegister(String userId,String registerChannel){
+        String platForm = BuriedPointUtils.getPlatForm();
+        return  userService.updateUserRegister(userId,registerChannel,platForm);
+    }
+
 
     @ApiOperation(value="新增虚拟用户", notes="")
     @RequestMapping(value="/api/system/user/mockuser", method= RequestMethod.POST)

@@ -2,6 +2,7 @@ package com.fungo.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.dao.MemberDao;
 import com.fungo.system.dto.MemberNoticeInput;
@@ -19,6 +20,7 @@ import com.fungo.system.service.MemberNoticeDaoServiceImpl;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.GameOut;
 import com.game.common.dto.game.GameSurveyRelDto;
 import com.game.common.enums.SystemTypeEnum;
@@ -28,6 +30,7 @@ import com.game.common.util.PKUtil;
 import com.game.common.util.StringUtil;
 import com.game.common.util.UUIDUtils;
 import com.game.common.util.date.DateTools;
+import com.game.common.vo.DelObjectListVO;
 import org.apache.commons.lang.StringUtils;
 import org.apache.curator.shaded.com.google.common.collect.Lists;
 import org.slf4j.Logger;
@@ -442,6 +445,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
         }
     }
 
+    @Transactional
     @Override
     public List<Map<String, Object>> insertMbNotices(MemberNoticeInput noticeInput) {
 
@@ -522,6 +526,31 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
             logger.error("",e);
         }
         return null;
+    }
+
+    @Transactional
+    @Override
+    public ResultDto<String> delMbNotices(DelObjectListVO noticeInput) {
+        ResultDto<String> resultDto = null;
+        try {
+            List<String> noticeIds = noticeInput.getCommentIds();
+            noticeIds.stream().forEach(s ->{
+                try {
+//                    BasNotice basNotice = new BasNotice();
+//                    basNotice.setId(s);
+//                    basNotice.setState(-1);
+//                    basNoticeService.updateById(basNotice);
+                    basNoticeService.deleteById(s);
+                }catch (Exception e){
+                    logger.error( "id:"+s+"删除信息异常" );
+                }
+            });
+            resultDto = ResultDto.success();
+        }catch (Exception e){
+            logger.error( "删除个人消息delMbNotices方法异常id="+JSON.toJSONString( noticeInput) ,e);
+            resultDto = ResultDto.error( "-1","删除个人消息失败" );
+        }
+        return resultDto;
     }
 
     public void updateNotice( String channel, List<String> memberList,String data){

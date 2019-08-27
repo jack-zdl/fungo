@@ -144,10 +144,16 @@ public interface IUserService {
     void initUserRank(String memberId);
 
 
+    ResultDto updateUserRegister(String userId, String registerChannel, String registerPlatform);
+
+    ResultDto<MemberBuriedPointBean> getBuriedPointUserProperties(String loginId);
+
+
     //添加管理员关联的虚拟用户
     ResultDto<Member> addVirtualUser(AdminUserInputDTO input, String adminId) throws Exception;
 
 
     //添加管理员关联的虚拟用户
     ResultDto<String> userShareMall(String adminId) throws Exception;
+
 }

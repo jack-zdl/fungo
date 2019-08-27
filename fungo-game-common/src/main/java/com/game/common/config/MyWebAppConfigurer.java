@@ -134,6 +134,7 @@ class UserProfileArgumentResolver implements HandlerMethodArgumentResolver {
             }
         } else {
             try {
+
                 long start = System.currentTimeMillis();
                 Claims parseJWT = tokenService.parseJWT(token);
                 String subject = parseJWT.getSubject();
@@ -146,6 +147,9 @@ class UserProfileArgumentResolver implements HandlerMethodArgumentResolver {
                 nativeRequest.setAttribute("member", readValue);
                 return readValue;
             } catch (Exception e) {
+                if (parameter.hasParameterAnnotation(Anonymous.class)) {  //针对部分接口即支持会员访问又支持匿名访问拦截处理
+                    return null;
+                }
                 logger.error("解析token异常:",e);
                 throw new BusinessException(CommonEnum.LOGIN_TIMEOUT);
             }

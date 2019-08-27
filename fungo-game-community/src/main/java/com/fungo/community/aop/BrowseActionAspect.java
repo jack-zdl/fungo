@@ -41,8 +41,7 @@ public class BrowseActionAspect {
 
 
     @Pointcut("execution(public * com.fungo.community.controller.CommunityController.getCommunityDetail(..)) || execution(public * com.fungo.community.controller.portal.PortalCommunityController.getCommunityDetail(..)) || execution(public * com.fungo.community.controller.PostController.getPostDetail(..)) || execution(public * com.fungo.community.controller.portal.PortalCommunityPostController.getPostDetail(..))")
-    public void webLog() {
-    }
+    public void webLog() {}
 
     @Before("webLog()") //之前执行
     public void deBefore() {

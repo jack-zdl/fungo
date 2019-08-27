@@ -1,10 +1,4 @@
-package com.game.common.util.pc20.analysysjavasdk;
-
-import com.google.common.annotations.Beta;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
+package com.game.common.buriedpoint.analysysjavasdk;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

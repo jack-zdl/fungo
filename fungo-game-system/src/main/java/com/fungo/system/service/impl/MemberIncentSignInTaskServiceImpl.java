@@ -8,6 +8,13 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.entity.*;
 import com.fungo.system.service.*;
+import com.game.common.buriedpoint.BuriedPointUtils;
+import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
+import com.game.common.buriedpoint.constants.BuriedPointProductFunConstant;
+import com.game.common.buriedpoint.enums.BtnEnum;
+import com.game.common.buriedpoint.model.BuriedPointProductModel;
+import com.game.common.buriedpoint.model.BuriedPointSignBtnModel;
+import com.game.common.buriedpoint.model.BuriedPointSignModel;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberActionTypeConsts;
 import com.game.common.consts.MemberIncentSignInConsts;
@@ -249,6 +256,14 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
             logger.error("用户执行签到出现异常", ex);
             throw new BusinessException("-1", "服务器非常繁忙，请耐心等一下");
         }
+        //签到按钮埋点
+        BuriedPointSignBtnModel pointSignBtnModel = new BuriedPointSignBtnModel();
+        pointSignBtnModel.setDistinctId(mb_id);
+        pointSignBtnModel.setEventName(BuriedPointEventConstant.EVENT_KEY_PAGE_BTN);
+        pointSignBtnModel.setPlatForm(BuriedPointUtils.getPlatForm());
+        pointSignBtnModel.setBtnEnum(BtnEnum.SIGN);
+        BuriedPointUtils.publishBuriedPointEvent(pointSignBtnModel);
+
         return ResultDto.success("签到成功");
     }
 
@@ -292,6 +307,24 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
             this.addLog(member.getId(), 1, score, taskGroupId, scoreRuleCurrent.getTaskType(),
                     scoreRuleCurrent.getId(), scoreRuleCurrent.getName(), scoreRuleCurrent.getCodeIdt());
         }
+
+        // 签到埋点
+        BuriedPointSignModel pointSignModel = new BuriedPointSignModel();
+        pointSignModel.setDistinctId(member.getId());
+        pointSignModel.setEventName(BuriedPointEventConstant.EVENT_KEY_SIGN_IN);
+        pointSignModel.setPlatForm(BuriedPointUtils.getPlatForm());
+        pointSignModel.setSerialDays(1);
+        pointSignModel.setQuestGold(score);
+        BuriedPointUtils.publishBuriedPointEvent(pointSignModel);
+
+        //签到生成fun币埋点
+        BuriedPointProductModel buriedPointProductModel = new BuriedPointProductModel();
+        buriedPointProductModel.setDistinctId(member.getId());
+        buriedPointProductModel.setPlatForm(BuriedPointUtils.getPlatForm());
+        buriedPointProductModel.setEventName(BuriedPointEventConstant.EVENT_KEY_GOLD_PRODUCED);
+        buriedPointProductModel.setAmount(score);
+        buriedPointProductModel.setMethod(BuriedPointProductFunConstant.PRODUCT_FUN_TYPE_SIGN);
+        BuriedPointUtils.publishBuriedPointEvent(buriedPointProductModel);
     }
 
 
@@ -386,7 +419,6 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
                 updateRanked(mb_id, mapper, 36);
             }
         }
-
         return ResultDto.success("签到成功");
     }
 
@@ -560,6 +592,24 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
         fungoCacheTask.excIndexCache(true, FungoCacheTask.TASK_CACHE_KEY_MEMBER_CHECKIN, member.getId(), incentTasked, FungoCacheTask.REDIS_EXPIRE_24_DAYS);
 
         logger.info("=======用户id:{}----连续签到成功，修改签到成果exUpdateIncentTasked:{}---isUpdate:", member.getId(), JSON.toJSONString(incentTasked), isUpdate);
+
+        // 签到埋点
+        BuriedPointSignModel pointSignModel = new BuriedPointSignModel();
+        pointSignModel.setDistinctId(member.getId());
+        pointSignModel.setEventName(BuriedPointEventConstant.EVENT_KEY_SIGN_IN);
+        pointSignModel.setPlatForm(BuriedPointUtils.getPlatForm());
+        pointSignModel.setSerialDays(days);
+        pointSignModel.setQuestGold(score);
+        BuriedPointUtils.publishBuriedPointEvent(pointSignModel);
+
+        //签到生成fun币埋点
+        BuriedPointProductModel buriedPointProductModel = new BuriedPointProductModel();
+        buriedPointProductModel.setDistinctId(member.getId());
+        buriedPointProductModel.setPlatForm(BuriedPointUtils.getPlatForm());
+        buriedPointProductModel.setEventName(BuriedPointEventConstant.EVENT_KEY_GOLD_PRODUCED);
+        buriedPointProductModel.setAmount(score);
+        buriedPointProductModel.setMethod(BuriedPointProductFunConstant.PRODUCT_FUN_TYPE_SIGN);
+        BuriedPointUtils.publishBuriedPointEvent(buriedPointProductModel);
 
     }
 

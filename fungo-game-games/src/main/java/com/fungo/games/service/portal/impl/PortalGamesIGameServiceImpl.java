@@ -161,6 +161,7 @@ public class PortalGamesIGameServiceImpl implements PortalGamesIGameService {
                 bean.setIosState(game.getIosState());
                 bean.setMsgCount(0);
                 bean.setPhoneModel(gameSurveyRel.getPhoneModel());
+                bean.setRating( getGameRating(game.getId()) );
 //                if (os.equalsIgnoreCase(bean.getPhoneModel())) {
                 list.add(bean);
 //                }
@@ -186,6 +187,7 @@ public class PortalGamesIGameServiceImpl implements PortalGamesIGameService {
                     bean.setGameName(game.getName());
                     bean.setIosState(game.getIosState()== null ? 0 : game.getIosState());
                     bean.setMsgCount(0);
+                    bean.setRating( getGameRating(game.getId()) );
 //                    bean.setPhoneModel(gameSurveyRel.getPhoneModel());
 //                if (os.equalsIgnoreCase(bean.getPhoneModel())) {
                     list.add(bean);
@@ -196,5 +198,17 @@ public class PortalGamesIGameServiceImpl implements PortalGamesIGameService {
         }
         //redis cache
         return re;
+    }
+
+    public double getGameRating(String gameId) {
+
+        double rating = 0;
+        HashMap<String, BigDecimal> rateData = gameDao.getRateData( gameId );
+        if (rateData != null) {
+            if (rateData.get( "avgRating" ) != null) {
+                rating = Double.parseDouble( rateData.get( "avgRating" ).toString() );
+            }
+        }
+        return rating;
     }
 }

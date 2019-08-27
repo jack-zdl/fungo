@@ -50,6 +50,7 @@ public class GameEvaluation extends Model<GameEvaluation> {
     /**
      * 状态
 	 * 0 正常
+	 * -1删除
      */
 	private Integer state;
     /**

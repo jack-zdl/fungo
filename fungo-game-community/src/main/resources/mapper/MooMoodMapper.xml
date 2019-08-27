@@ -28,4 +28,9 @@
         id, member_id AS memberId, content, images, cover_image AS coverImage, state, comment_num AS commentNum, like_num AS likeNum, created_at AS createdAt, updated_at AS updatedAt, type
     </sql>
 
+
+	<update id="updateMooMoodCommentNum">
+		update t_moo_mood set  comment_num = comment_num -1  WHERE id = (SELECT mood_id FROM t_moo_message WHERE id = #{commentId})
+	</update>
+
 </mapper>

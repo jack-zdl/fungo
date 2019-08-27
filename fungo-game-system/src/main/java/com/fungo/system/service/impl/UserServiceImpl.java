@@ -6,6 +6,7 @@ import com.fungo.system.dao.MemberInfoDao;
 import com.fungo.system.dao.SysMockuserDao;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
+import com.fungo.system.facede.ICommunityProxyService;
 import com.fungo.system.function.MemberLoginedStatisticsService;
 import com.fungo.system.service.*;
 import com.game.common.consts.GameConstant;
@@ -21,21 +22,19 @@ import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.*;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
-import com.game.common.util.pc20.BuriedPointUtils;
-import com.game.common.util.pc20.analysysjavasdk.AnalysysJavaSdk;
-import lombok.ToString;
+
+import com.game.common.util.CommonUtil;
+import com.game.common.util.SecurityMD5;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -73,7 +72,7 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private FungoCacheMember fungoCacheMember;
     @Autowired
-    private AnalysysJavaSdk analysysJavaSdk;
+    private IMemberIncentRiskService iMemberIncentRiskService;
     @Autowired
     private MemberInfoDao memberInfoDao;
 
@@ -82,7 +81,15 @@ public class UserServiceImpl implements IUserService {
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
 
     @Autowired
+
+    private IncentAccountCoinDaoService incentAccountCoinDaoService;
+
+    @Autowired
+    private ICommunityProxyService communityProxyService;
+
+    @Autowired
     private SysMockuserDao sysMockuserDao;
+
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -238,11 +245,9 @@ public class UserServiceImpl implements IUserService {
                     //fix bug:修改会员编号出现的重复的情况 修改用户的member_no用户编号 [by mxf 2019-03-06]
                     //memberNoService.getMemberNoAndForUpdate(member);
                     //end
-                    buriedPointFun(member, "true");
+
                     LOGGER.info("用户注册-手机验证-初始化数据  memberId : {}, phoneNumber:{}", member.getId(), mobile);
                     this.initUserRank(member.getId());
-                }else{
-                    buriedPointFun(member, "false");
                 }
 
                 messageCodeService.updateCheckCodeSuccess(re.getData());//更新验证成功
@@ -276,7 +281,7 @@ public class UserServiceImpl implements IUserService {
         return rest;
     }
 
-    private void buriedPointFun(Member member, String s) {
+   /* private void buriedPointFun(Member member, String s) {
         Map<String, String> buriedpointmap = new HashMap<>();
         buriedpointmap.put("distinctId", member.getId());
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
@@ -285,7 +290,7 @@ public class UserServiceImpl implements IUserService {
         buriedpointmap.put("login002", s);
 //                  手机登录埋点事件ID:login005
         BuriedPointUtils.login05(buriedpointmap, analysysJavaSdk);
-    }
+    }*/
 
     @Override
     public ResultDto<String> smscode(String mobile) throws Exception {
@@ -860,6 +865,90 @@ public class UserServiceImpl implements IUserService {
             LOGGER.error("用户注册-初始化数据失败 memberId: {}", memberId, e);
             throw new BusinessException("-1", "初始化注册数据失败!");
         }
+    }
+
+
+    @Override
+    public ResultDto updateUserRegister(String userId, String registerChannel, String registerPlatform) {
+        EntityWrapper<Member> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("id",userId);
+        Member member = new Member();
+        member.setRegisterChannel(registerChannel);
+        member.setRegisterPlatform(registerPlatform);
+        boolean update = memberService.update(member, entityWrapper);
+        if(update){
+            return ResultDto.success();
+        }
+       return ResultDto.error("-1","更新用户注册信息失败");
+    }
+
+
+    @Override
+    public ResultDto<MemberBuriedPointBean> getBuriedPointUserProperties(String loginId) {
+        Member member = memberService.selectById(loginId);
+        if(member == null){
+            return ResultDto.error("-1","未查询到用户信息");
+        }
+        MemberBuriedPointBean memberBuriedPointBean = new MemberBuriedPointBean();
+        // 用户基本属性封装
+        memberBuriedPointBean.setAge(null);
+        memberBuriedPointBean.setFansCount(member.getFolloweeNum());
+        memberBuriedPointBean.setFirstPlatform(member.getRegisterPlatform());
+        memberBuriedPointBean.setFirstSource(member.getRegisterChannel());
+        memberBuriedPointBean.setGender(member.getGender());
+        memberBuriedPointBean.setRegisterDate(member.getCreatedAt().getTime());
+        memberBuriedPointBean.setFollowCount(member.getFollowerNum());
+        memberBuriedPointBean.setExp(member.getExp());
+        memberBuriedPointBean.setUserLevel(member.getLevel());
+
+        // 非用户基本属性封装
+        // 账户余额
+        EntityWrapper<IncentAccountCoin> incentAccountCoinEntityWrapper = new EntityWrapper<>();
+        incentAccountCoinEntityWrapper.eq("mb_id",loginId);
+        IncentAccountCoin incentAccountCoin = incentAccountCoinDaoService.selectOne(incentAccountCoinEntityWrapper);
+        if(incentAccountCoin == null){
+            memberBuriedPointBean.setBalance(0);
+        }else{
+            memberBuriedPointBean.setBalance(incentAccountCoin.getCoinUsable().intValue());
+        }
+
+        //下载记录
+        int downCount = actionService.selectCount(new EntityWrapper<BasAction>()
+                .eq("member_id", loginId)
+                .eq("type", Setting.ACTION_TYPE_DOWNLOAD));
+        memberBuriedPointBean.setGameDownloadCount(downCount);
+
+        // 用户是否完成新手任务
+        ResultDto<Map<String, Object>> mapResultDto = iMemberIncentRiskService.checkeUnfinshedNoviceTask(loginId, null);
+        if(mapResultDto.isSuccess()&&mapResultDto.getData()!=null){
+            Map<String, Object> data = mapResultDto.getData();
+            Object hasNotiveTask = data.get("hasNotiveTask");
+            if(hasNotiveTask instanceof Boolean){
+                memberBuriedPointBean.setHasCompletedCourse(!(Boolean)hasNotiveTask);
+            }else{
+                memberBuriedPointBean.setHasCompletedCourse(false);
+            }
+        }else{
+            // 容错 当未完成处理
+            memberBuriedPointBean.setHasCompletedCourse(false);
+        }
+
+        // 用户类型 - 有身份标识，且标识是鉴游师身份的
+        memberBuriedPointBean.setUserType("普通用户");
+        IncentRanked incentRanked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", member.getId()).eq("rank_type",2));
+        if(incentRanked!=null){
+            IncentRuleRank rank = rankRuleService.selectById(incentRanked.getCurrentRankId());
+            if(rank.getRankGroupId().equals("4")){
+                memberBuriedPointBean.setUserType("鉴游师");
+            }
+        }
+
+        // 文章和心情数量 - 微服务
+        Map<String, Integer> countMap = communityProxyService.countMoodAndPost(loginId);
+        memberBuriedPointBean.setArticlePublished(countMap.get("articlePublished"));
+        memberBuriedPointBean.setMoodPublished(countMap.get("moodPublished"));
+        return ResultDto.success(memberBuriedPointBean);
+
     }
 
     @Transactional()

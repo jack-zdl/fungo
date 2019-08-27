@@ -9,7 +9,9 @@ import com.fungo.community.dao.mapper.BasTagDao;
 import com.fungo.community.dao.mapper.CmmCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
+import com.fungo.community.dao.service.CmmCommentDaoService;
 import com.fungo.community.entity.CmmCircle;
+import com.fungo.community.entity.CmmComment;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.facede.GameFacedeService;
 import com.fungo.community.facede.SystemFacedeService;
@@ -86,6 +88,9 @@ public class CircleServiceImpl implements CircleService {
     //依赖游戏微服务
     @Autowired(required = false)
     private GameFacedeService gameFacedeService;
+
+    @Autowired
+    private CmmCommentDaoService commentService;
 
     @Override
     public FungoPageResultDto<CmmCircleDto> selectCircle(String memberId, CmmCircleVo cmmCircleVo) {
@@ -240,6 +245,8 @@ public class CircleServiceImpl implements CircleService {
                 cmmPosts = cmmPostDao.getAllCmmCircleListByCircleId(page, circleId, null, null, sortType);
             } else if (CmmCirclePostVo.QueryTypeEnum.ESSENCE.getKey().equals(cmmCirclePostVo.getQueryType())) { // 精华查询
                 cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page, circleId, null, PostTypeEnum.CREAM.getKey(), sortType);
+            }else if(CmmCirclePostVo.QueryTypeEnum.TOP.getKey().equals(cmmCirclePostVo.getQueryType())){
+                cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page, circleId, null, PostTypeEnum.TOP.getKey(), CmmCirclePostVo.SortTypeEnum.PUBDATE.getKey());
             } else {
                 if (CmmCirclePostVo.SortTypeEnum.PUBDATE.getKey().equals(cmmCirclePostVo.getSortType())) {
                     cmmPosts = cmmPostDao.getCmmCircleListByCircleId(page, circleId, tagId, null, sortType);
@@ -784,6 +791,21 @@ public class CircleServiceImpl implements CircleService {
     }
 
     @Override
+    public ResultDto<List<String>> listCircleNameByPost(String postId) {
+        List<String> circleNameByPost = cmmCircleMapper.listCircleNameByPost(postId);
+        return ResultDto.success(circleNameByPost);
+    }
+
+   @Override
+    public ResultDto<List<String>> listCircleNameByComment(String commentId) {
+    //根据评论id获取文章
+    CmmComment comment = commentService.selectById(commentId);
+    if (comment != null) {
+        List<String> circleNameByPost = cmmCircleMapper.listCircleNameByPost(comment.getPostId());
+        return ResultDto.success(circleNameByPost);
+    }
+    return ResultDto.success();
+}
     public ResultDto<CmmCircleDto> selectCircleByPostId(String postId) throws Exception {
         ResultDto<CmmCircleDto> re ;
         CmmCircleDto cmmCircleDto = new CmmCircleDto();

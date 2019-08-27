@@ -5,18 +5,30 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.constts.CommonlyConst;
 import com.fungo.system.dao.BasActionDao;
+import com.fungo.system.dao.MemberDao;
 import com.fungo.system.entity.BasAction;
 import com.fungo.system.entity.BasNotice;
+import com.fungo.system.entity.Member;
 import com.fungo.system.entity.MemberFollower;
+import com.fungo.system.facede.ICommunityProxyService;
 import com.fungo.system.feign.CommunityFeignClient;
+import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.helper.mq.MQProduct;
 import com.fungo.system.facede.IDeveloperProxyService;
 import com.fungo.system.service.*;
+import com.game.common.buriedpoint.BuriedPointUtils;
+import com.game.common.buriedpoint.constants.BuriedPointCommunityConstant;
+import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
+import com.game.common.buriedpoint.model.BuriedPointLikeModel;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
 import com.game.common.dto.ActionInput;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.*;
+import com.game.common.dto.game.GameEvaluationDto;
+import com.game.common.enums.CommonEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.*;
 import org.apache.commons.lang3.StringUtils;
@@ -25,9 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ActionServiceImpl implements IActionService {
@@ -45,45 +55,46 @@ public class ActionServiceImpl implements IActionService {
     private ScoreLogService scoreLogService;
     @Autowired
     private BasNoticeService noticeService;
-
     @Autowired
     private FungoCacheMember fungoCacheMember;
-
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
-
     @Autowired
     private FungoCacheMood fungoCacheMood;
-
     @Autowired
     private FungoCacheGame fungoCacheGame;
-
     @Autowired
     private FungoCacheCommunity fungoCacheCommunity;
-
-    @Autowired
-    private CommunityFeignClient communityFeignClient;
 
     /*@Autowired
     private GamesFeignClient gamesFeignClient;*/
 
     @Autowired
+    private CommunityFeignClient communityFeignClient;
+    @Autowired
     private IDeveloperProxyService iDeveloperProxyService;
-
     @Autowired
     private MQProduct mqProduct;
+    @Autowired
+    private MemberDao memberDao;
+    @Autowired
+    private GamesFeignClient gamesFeignClient;
+
+    @Autowired
+    private ICommunityProxyService iCommunityProxyService;
 
 
     //用户成长业务
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
 
+    @Autowired
+    private MemberService memberService;
 
     //点赞
     @Transactional
     public ResultDto<String> like(String memberId, ActionInput inputDto, String appVersion) throws Exception {
         BasAction action = this.getAction(memberId, Setting.ACTION_TYPE_LIKE, inputDto);
-
         if (action == null) {//点赞记录不存在
             action = this.buildAction(memberId, Setting.ACTION_TYPE_LIKE, inputDto);
             actionService.insert(action);
@@ -91,7 +102,7 @@ public class ActionServiceImpl implements IActionService {
 
             //点赞他人内容 点赞他人游戏评价 被点赞
 //			gameProxy.addScore(Setting.ACTION_TYPE_LIKE, memberId, inputDto.getTarget_id(), inputDto.getTarget_type());
-            gameProxy.addNotice(Setting.ACTION_TYPE_LIKE, memberId, inputDto.getTarget_id(), inputDto.getTarget_type(), inputDto.getInformation(), appVersion, "");
+            gameProxy.addNotice(Setting.ACTION_TYPE_LIKE, memberId, inputDto.getTarget_id(), inputDto.getTarget_type(), inputDto.getInformation(), appVersion, "","","","");
 
             //完成任务
             if (Setting.RES_TYPE_EVALUATION == inputDto.getTarget_type()) {//点赞游戏评价
@@ -138,6 +149,18 @@ public class ActionServiceImpl implements IActionService {
                 scoreLogService.updateRanked(targetMemberId, new ObjectMapper(), 33);
             }
 
+            //----添加埋点点赞数据----------
+            BuriedPointLikeModel likeModel = new BuriedPointLikeModel();
+            likeModel.setDistinctId(memberId);
+            likeModel.setPlatForm(BuriedPointUtils.getPlatForm());
+            likeModel.setEventName(BuriedPointEventConstant.EVENT_KEY_LIKE);
+            if(targetMemberId!=null){
+                likeModel.setNickname(Optional.ofNullable(memberService.selectById(targetMemberId)).map(Member::getUserName).orElse(null));
+            }
+            likeModel.setType(getBuriedPointLikeType(inputDto.getTarget_type()));
+            likeModel.setChannel(getChannal(inputDto.getTarget_type(),inputDto.getTarget_id()));
+            BuriedPointUtils.publishBuriedPointEvent(likeModel);
+
         } else {//点赞记录存在
 
             if (-1 == action.getState()) {
@@ -169,7 +192,30 @@ public class ActionServiceImpl implements IActionService {
         //获取心情动态列表(v2.4)
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOODS_LIST, "", null);
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOOD_CONTENT_GET, "", null);
+
+
         return ResultDto.success("点赞成功");
+    }
+
+    private List<String> getChannal(int target_type, String target_id) {
+        //只有文章类型才有圈子概念
+        if(target_type == Setting.RES_TYPE_POST){
+            // 根据文章id 获取圈子集合
+            List<String> list = iCommunityProxyService.listCircleNameByPost(target_id);
+            return list.size()>0?list:null;
+        }else if(target_type == Setting.RES_TYPE_COMMENT){
+            // 根据文章评论id 获取圈子名称集合
+            List<String> list = iCommunityProxyService.listCircleNameByComment(target_id);
+            return list.size()>0?list:null;
+        }
+        return null;
+    }
+
+    private String getBuriedPointLikeType(int targetType ){
+        if(targetType == Setting.RES_TYPE_POST || targetType == Setting.RES_TYPE_EVALUATION || targetType == Setting.RES_TYPE_MOOD){
+            return BuriedPointCommunityConstant.COMMUNITY_LIKE_TYPE_AUTHOR;
+        }
+        return BuriedPointCommunityConstant.COMMUNITY_LIKE_TYPE_OBSERVER;
     }
 
     //取消点赞
@@ -543,6 +589,67 @@ public class ActionServiceImpl implements IActionService {
         if (action == null) {
             action = this.buildAction(memberId, Setting.ACTION_TYPE_REPORT, inputDto);
             this.actionService.insert(action);
+            String reportMemberId = null;
+            if(1 == inputDto.getTarget_type()){
+                CmmPostDto cmmPostDto = new CmmPostDto();
+                cmmPostDto.setId(inputDto.getTarget_id());
+                FungoPageResultDto<CmmPostDto>  cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(cmmPostDto);
+                if(cmmPostDtoFungoPageResultDto != null && CommonEnum.SUCCESS.code().equals( String.valueOf(cmmPostDtoFungoPageResultDto.getStatus()))
+                    && cmmPostDtoFungoPageResultDto.getData().size() > 0){
+                    cmmPostDto = cmmPostDtoFungoPageResultDto.getData().get(0);
+                    reportMemberId = cmmPostDto.getMemberId();
+                }
+            }else if(2 == inputDto.getTarget_type()){
+                MooMoodDto mooMoodDto = new MooMoodDto();
+                mooMoodDto.setId(inputDto.getTarget_id());
+                FungoPageResultDto<MooMoodDto> mooMoodDtoFungoPageResultDto = communityFeignClient.queryCmmMoodList(mooMoodDto);
+                if(mooMoodDtoFungoPageResultDto != null && CommonEnum.SUCCESS.code().equals( String.valueOf(mooMoodDtoFungoPageResultDto.getStatus()))
+                        && mooMoodDtoFungoPageResultDto.getData().size() > 0){
+                    mooMoodDto = mooMoodDtoFungoPageResultDto.getData().get(0);
+                    reportMemberId = mooMoodDto.getMemberId();
+                }
+            }else if(5 == inputDto.getTarget_type()){
+                CmmCommentDto cmmCommentDto = new CmmCommentDto();
+                cmmCommentDto.setId(inputDto.getTarget_id());
+                FungoPageResultDto<CmmCommentDto> cmmCommentDtoFungoPageResultDto = communityFeignClient.queryFirstLevelCmtList(cmmCommentDto);
+                if(cmmCommentDtoFungoPageResultDto != null && CommonEnum.SUCCESS.code().equals( String.valueOf(cmmCommentDtoFungoPageResultDto.getStatus()))
+                        && cmmCommentDtoFungoPageResultDto.getData().size() > 0){
+                    cmmCommentDto = cmmCommentDtoFungoPageResultDto.getData().get(0);
+                    reportMemberId = cmmCommentDto.getMemberId();
+                }
+            }else if(6 == inputDto.getTarget_type()){
+                GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
+                gameEvaluationDto.setId(inputDto.getTarget_id());
+                FungoPageResultDto<GameEvaluationDto> gameEvaluationPage =  gamesFeignClient.getGameEvaluationPage( gameEvaluationDto);
+                if(gameEvaluationPage != null && CommonEnum.SUCCESS.code().equals( String.valueOf(gameEvaluationPage.getStatus()))
+                        && gameEvaluationPage.getData().size() > 0){
+                    gameEvaluationDto = gameEvaluationPage.getData().get(0);
+                    reportMemberId = gameEvaluationDto.getMemberId();
+                }
+            }else if(7 == inputDto.getTarget_type()){
+                CmmCmtReplyDto cmmCmtReplyDto = new CmmCmtReplyDto();
+                cmmCmtReplyDto.setId(inputDto.getTarget_id());
+                FungoPageResultDto<CmmCmtReplyDto> cmmCmtReplyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto);
+                if(cmmCmtReplyDtoFungoPageResultDto != null && CommonEnum.SUCCESS.code().equals( String.valueOf(cmmCmtReplyDtoFungoPageResultDto.getStatus()))
+                        && cmmCmtReplyDtoFungoPageResultDto.getData().size() > 0){
+                    cmmCmtReplyDto = cmmCmtReplyDtoFungoPageResultDto.getData().get(0);
+                    reportMemberId = cmmCmtReplyDto.getMemberId();
+                }
+            }else if(8 == inputDto.getTarget_type()){
+                MooMessageDto mooMessageDto = new MooMessageDto();
+                mooMessageDto.setId(inputDto.getTarget_id());
+                FungoPageResultDto<MooMessageDto> mooMessageDtoFungoPageResultDto =  communityFeignClient.queryCmmMoodCommentList( mooMessageDto);
+                if(mooMessageDtoFungoPageResultDto != null && CommonEnum.SUCCESS.code().equals( String.valueOf(mooMessageDtoFungoPageResultDto.getStatus()))
+                        && mooMessageDtoFungoPageResultDto.getData().size() > 0){
+                    mooMessageDto = mooMessageDtoFungoPageResultDto.getData().get(0);
+                    reportMemberId = mooMessageDto.getMemberId();
+                }
+            }
+            if(reportMemberId != null){
+                Member member = memberDao.selectById( reportMemberId);
+                member.setReportNum(member.getReportNum()+1);
+                memberDao.updateById(member);
+            }
 //			gameProxy.addScore(Setting.ACTION_TYPE_REPORT, memberId, inputDto.getTarget_id(), inputDto.getTarget_type());
             //V2.4.6版本中取消举报获取exp和cion
             // times = gameProxy.addTaskCore(Setting.ACTION_TYPE_REPORT, memberId, inputDto.getTarget_id(), inputDto.getTarget_type());
