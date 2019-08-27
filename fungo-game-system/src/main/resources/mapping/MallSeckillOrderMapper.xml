@@ -73,7 +73,14 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, mall_goods_id, total_stock, residue_stock, isactive, created_by, created_at, 
-    updated_by, updated_at, rversion, description
+    id, mall_goods_id AS mallGoodsId , total_stock AS totalStock  , residue_stock AS residueStock , isactive AS isactive , created_by AS createdBy , created_at AS createdAt ,
+    updated_by AS updatedBy , updated_at AS updatedAt , rversion, description
   </sql>
+
+
+  <select id="getMallSeckillOrderByActive" resultType="com.fungo.system.entity.MallSeckillOrder">
+    SELECT
+    <include refid="Base_Column_List"></include>
+    FROM t_mall_seckill_order WHERE isactive = 1  ORDER BY id asc
+  </select>
 </mapper>

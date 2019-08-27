@@ -1682,7 +1682,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
     /**
      * 记录浏览商品页面日志
      */
-    private void addMallLogs(String mb_id, String userName, Long goodsId, String realIp, Integer actionType) {
+    public void addMallLogs(String mb_id, String userName, Long goodsId, String realIp, Integer actionType,int... values) {
         fixedThreadPoolMallLog.execute(new Runnable() {
             @Override
             public void run() {
@@ -1702,7 +1702,10 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                 Date currentDatte = new Date();
                 logsDto.setCreatedAt(currentDatte);
                 logsDto.setUpdatedAt(currentDatte);
-
+                if(values != null){
+                    logsDto.setUserType( values[0]);
+                    logsDto.setChannelType( values[1]);
+                }
                 iMallLogsService.addMallLog(logsDto);
             }
         });

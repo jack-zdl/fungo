@@ -1,5 +1,6 @@
 package com.fungo.system.controller;
 
+import cn.yueshutong.springbootstartercurrentlimiting.method.annotation.CurrentLimiter;
 import com.alibaba.fastjson.JSON;
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import com.fungo.system.dto.FungoMallDto;
@@ -14,9 +15,11 @@ import com.game.common.dto.mall.MallGoodsOutBean;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.CommonEnum;
 import com.game.common.util.CommonUtil;
+import com.game.common.util.SpringBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,12 +89,17 @@ public class FungoMallController {
      * @date: 2019/8/20 19:46
      */
     @PostMapping("/mall/draw")
-    public FungoPageResultDto<MallGoodsOutBean> drawFestivalMall(MemberUserProfile memberUserPrefile,@RequestBody InputPageDto inputPageDto){
+    @CurrentLimiter(QPS = 1)
+    public FungoPageResultDto<MallGoodsOutBean> drawFestivalMall(HttpServletRequest request ,MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto){
         String memberId = memberUserPrefile.getLoginId();
         if(CommonUtil.isNull(memberId)){
             return FungoPageResultDto.FungoPageResultDtoFactory.buildError( AbstractResultEnum.CODE_SYSTEM_FIVE.getFailevalue());
         }
-        FungoPageResultDto<MallGoodsOutBean> isOk = iFungoMallGoodsService.drawFestivalMall(memberId,inputPageDto);
+        String realIp = "";
+        if (null != request) {
+            realIp = request.getHeader("x-forwarded-for");
+        }
+        FungoPageResultDto<MallGoodsOutBean> isOk = iFungoMallGoodsService.drawFestivalMall(memberId,inputPageDto,realIp);
         if(CommonEnum.SUCCESS.code().equals(String.valueOf(isOk.getStatus()))){
             return isOk;
         }

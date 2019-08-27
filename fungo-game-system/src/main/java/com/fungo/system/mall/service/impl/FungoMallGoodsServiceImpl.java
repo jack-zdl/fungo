@@ -5,7 +5,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.system.config.NacosFungoCircleConfig;
+import com.fungo.system.dao.MallSeckillOrderDao;
 import com.fungo.system.dto.FungoMallDto;
+import com.fungo.system.entity.BasNotice;
+import com.fungo.system.entity.MallSeckillOrder;
 import com.fungo.system.entity.Member;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
@@ -30,6 +34,7 @@ import com.game.common.enums.AbstractResultEnum;
 import com.game.common.util.FungoAESUtil;
 import com.game.common.util.PKUtil;
 import com.game.common.util.PageTools;
+import com.game.common.util.StringUtil;
 import com.game.common.util.date.DateTools;
 import io.netty.handler.codec.json.JsonObjectDecoder;
 import org.apache.commons.lang3.StringUtils;
@@ -71,6 +76,12 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
     private MemberInfoService memberInfoService;
     @Autowired
     private MallLogsDao mallLogsDao;
+    @Autowired
+    private MallSeckillOrderDao mallSeckillOrderDao;
+    @Autowired
+    private FungoMallSeckillServiceImpl fungoMallSeckillServiceImpl;
+    @Autowired
+    private NacosFungoCircleConfig nacosFungoCircleConfig;
 
 
 
@@ -496,25 +507,62 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
         return resultDto;
     }
 
+    @Transactional()
     @Override
-    public FungoPageResultDto<MallGoodsOutBean> drawFestivalMall(String memberId, InputPageDto inputPageDto) {
+    public FungoPageResultDto<MallGoodsOutBean> drawFestivalMall(String memberId, InputPageDto inputPageDto,String realIp) {
         FungoPageResultDto<MallGoodsOutBean> resultDto = new FungoPageResultDto<>();
         try {
             Member member = memberService.selectById(memberId);
             boolean istrue = memberInfoService.shareFestival(memberId);
             int userType = 0 ;
             if(istrue){
-
+                userType = 3;
             } else if(memberServiceImpl.getNewMember(member.getCreatedAt(),member.getLevel())){
-
+                userType = 1;
             }else if(memberServiceImpl.getActiveMemeber(member.getId())){
-
+                userType = 2;
             }else {
                 return FungoPageResultDto.FungoPageResultDtoFactory.buildWarning( AbstractResultEnum.CODE_SYSTEM_SIX.getKey(),AbstractResultEnum.CODE_SYSTEM_SIX.getFailevalue());
             }
             // 查询顺序表
+            Page<MallSeckillOrder> page = new Page<>(inputPageDto.getPage(),inputPageDto.getLimit());
+            List<MallSeckillOrder> mallSeckillOrders = mallSeckillOrderDao.getMallSeckillOrderByActive(page);
+            if(nacosFungoCircleConfig.isWarnningSwitch()){
+                MallSeckillOrder mallSeckillOrder = mallSeckillOrders.get(0);
+                if(mallSeckillOrder.getId() > 1){
+                    BasNotice basNotice = new BasNotice();
+                    basNotice.setType( 6 );
+                    basNotice.setIsRead( 0 );
+                    basNotice.setIsPush( 0 );
+                    basNotice.setMemberId( nacosFungoCircleConfig.getOperatorId());
+                    basNotice.setCreatedAt( new Date() );
+                    Map<String,Object> dataMap = new HashMap<>();
+                    dataMap.put( "actionType","1");
+                    dataMap.put( "userAvatar","http://output-mingbo.oss-cn-beijing.aliyuncs.com/official.png" );
+                    dataMap.put( "targetType","3" );
+                    dataMap.put( "userType","1" );
+                    dataMap.put( "userName" ,"FunGo大助手");
+                    dataMap.put( "userId","0b8aba833f934452992a972b60e9ad10" );
+                    dataMap.put("content", "发送奖品数量已经超过1000，请尽快填充奖品。");
+                    dataMap.put("msgTime", DateTools.fmtDate(new Date()));
+                    basNotice.setData(JSON.toJSONString(dataMap));
+                    basNotice.insert();
+                }
+            }
+            int finalUserType = userType;
+            mallSeckillOrders.stream().forEach( s -> {
+                s.setIsactive("0");
+                s.setUpdatedAt(new Date());
+                s.setUpdatedBy(memberId);
+                s.updateById();
+
+                fungoMallSeckillServiceImpl.addMallLogs(memberId, "", Long.parseLong(s.getMallGoodsId()), realIp, 2, finalUserType,Integer.valueOf(inputPageDto.getFilter()));
+
+            });
+//            orderMap = iFungoMallSeckillService.createOrderWithSeckill(mallOrderInput, realIp);
             // 那个商品id去下订单  不能和原来的秒杀
             // 记录日志
+            //记录日志
 
             resultDto =  getFestivalMall(inputPageDto);
         }catch (Exception e){
