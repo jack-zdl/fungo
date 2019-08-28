@@ -1155,7 +1155,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
      * @param orderId
      * @return
      */
-    private List<MallOrderGoods> queryOrderGoodsWithMember(String mb_id, String orderId) {
+    public List<MallOrderGoods> queryOrderGoodsWithMember(String mb_id, String orderId) {
 
         EntityWrapper<MallOrderGoods> orderGoodsEntityWrapper = new EntityWrapper<MallOrderGoods>();
         orderGoodsEntityWrapper.eq("mb_id", mb_id).eq("order_id", orderId);
@@ -1284,6 +1284,22 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         return mallSeckill;
     }
 
+    /**
+     * 功能描述: 查询中秋节礼品
+     * @param: [goodsId]
+     * @return: com.fungo.system.mall.entity.MallSeckill
+     * @auther: dl.zhang
+     * @date: 2019/8/28 15:02
+     */
+    public MallSeckill getFestivalGoods(String goodsId){
+        EntityWrapper<MallSeckill> mallSeckillEntityWrapper = new EntityWrapper<MallSeckill>();
+        Map<String, Object> criteriaMap = new HashMap<String, Object>();
+        criteriaMap.put("goods_id", goodsId);
+        criteriaMap.put( "ext1",1 );
+        mallSeckillEntityWrapper.allEq(criteriaMap);
+        MallSeckill mallSeckill = mallSeckillDaoService.selectOne(mallSeckillEntityWrapper);
+        return mallSeckill;
+    }
 
     /**
      * 验证用户是否有足够的fungo币可用余额
@@ -1291,7 +1307,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
      * @param mb_id
      * @return
      */
-    private IncentAccountCoin isFullMbFungo(String mb_id) {
+    public IncentAccountCoin isFullMbFungo(String mb_id) {
 
         EntityWrapper<IncentAccountCoin> mbAccountCoinEntityWrapper = new EntityWrapper<IncentAccountCoin>();
 
@@ -1315,7 +1331,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
      * @param goodsPriceVcyBD
      * @return
      */
-    private int freezeMemberFungo(String mb_id, IncentAccountCoin incentAccountCoin, BigDecimal goodsPriceVcyBD) {
+    public int freezeMemberFungo(String mb_id, IncentAccountCoin incentAccountCoin, BigDecimal goodsPriceVcyBD) {
         if (StringUtils.isBlank(mb_id)) {
             return -1;
         }
@@ -1776,6 +1792,63 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
         int count = mallVirtualCardDaoService.selectCount(virtualCardEntityWrapper);
         return count;
+    }
+
+
+    /**
+     * 功能描述:  查询当前用户钱是否够
+     * @param: [memberId, seckillPriceVcy]
+     * @return: boolean
+     * @auther: dl.zhang
+     * @date: 2019/8/28 14:07
+     */
+    public boolean checkUserMoney(String memberId,String seckillPriceVcy){
+        //4.有足够的fungo币可用余额，且下单后要冻结与订单金额对等的可用余额
+        // 验证当前用户的fungo币可用余额是否大于等于当前商品的价格
+        //  4.1 若fungo币可用余额 足够秒杀当前商品，则下单
+        //  4.2 同时直接扣除可用余额，到冻结余额
+        boolean isFullMbFungo = false;
+
+        IncentAccountCoin incentAccountCoin = isFullMbFungo(memberId);
+        if (null == incentAccountCoin) {
+            logger.info("秒杀商品失败--用户id:{}--商品id:{}--msg:{}", memberId, "用户fungo币不足");
+            return false;
+        }
+
+
+        BigDecimal coinUsable = incentAccountCoin.getCoinUsable();
+        if (null == coinUsable) {
+            logger.info("秒杀商品失败--用户id:{}--商品id:{}--msg:{}", memberId,  "用户fungo币不足");
+            return false;
+        }
+
+        int isHaveCoin = coinUsable.compareTo(BigDecimal.ZERO);
+        if (0 == isHaveCoin || -1 == isHaveCoin) {
+            logger.info("秒杀商品失败--用户id:{}--商品id:{}--msg:{}", memberId,  "用户fungo币不足");
+            return false;
+        }
+
+        coinUsable = coinUsable.setScale(2);
+
+        //获取商品的价格fungo币 加密串
+//        String seckillPriceVcy = mallSeckill.getSeckillPriceVcy();
+        //解密
+//        String seckillPriceVcyDecrypt = FungoAESUtil.decrypt(seckillPriceVcy, aESSecretKey + FungoMallSeckillConsts.AES_SALT);
+
+        BigDecimal goodsPriceVcyBD = new BigDecimal(seckillPriceVcy);
+        goodsPriceVcyBD = goodsPriceVcyBD.setScale(2);
+
+        //可用余额是否大于等于商品价格
+        int cmpResult = coinUsable.compareTo(goodsPriceVcyBD);
+        if (0 == cmpResult || 1 == cmpResult) {
+            isFullMbFungo = true;
+        }
+
+        if (!isFullMbFungo) {
+            logger.info("秒杀商品失败--用户id:{}--商品id:{}--msg:{}", memberId, "用户fungo币不足");
+            return false;
+        }
+        return  isFullMbFungo;
     }
 
 

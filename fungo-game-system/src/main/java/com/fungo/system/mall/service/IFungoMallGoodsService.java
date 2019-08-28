@@ -47,7 +47,7 @@ public interface IFungoMallGoodsService {
 
     FungoPageResultDto<MallGoodsOutBean> getFestivalMall(InputPageDto inputPageDto);
 
-    FungoPageResultDto<MallGoodsOutBean> drawFestivalMall(String memberId,InputPageDto inputPageDto,String realIp);
+    FungoPageResultDto<MallGoodsOutBean> drawFestivalMall(String memberId,InputPageDto inputPageDto,String realIp) throws Exception;
 
     ResultDto<JSON> drawnFestivalMall(String memberId);
 

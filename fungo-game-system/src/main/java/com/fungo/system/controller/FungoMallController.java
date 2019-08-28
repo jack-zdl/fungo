@@ -89,7 +89,7 @@ public class FungoMallController {
      * @date: 2019/8/20 19:46
      */
     @PostMapping("/mall/draw")
-    @CurrentLimiter(QPS = 1)
+    @CurrentLimiter(QPS = 50)
     public FungoPageResultDto<MallGoodsOutBean> drawFestivalMall(HttpServletRequest request ,MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto){
         String memberId = memberUserPrefile.getLoginId();
         if(CommonUtil.isNull(memberId)){
@@ -99,11 +99,16 @@ public class FungoMallController {
         if (null != request) {
             realIp = request.getHeader("x-forwarded-for");
         }
-        FungoPageResultDto<MallGoodsOutBean> isOk = iFungoMallGoodsService.drawFestivalMall(memberId,inputPageDto,realIp);
-        if(CommonEnum.SUCCESS.code().equals(String.valueOf(isOk.getStatus()))){
-            return isOk;
+        FungoPageResultDto<MallGoodsOutBean> isOk;
+        try {
+            isOk = iFungoMallGoodsService.drawFestivalMall(memberId,inputPageDto,realIp);
+            if(CommonEnum.SUCCESS.code().equals(String.valueOf(isOk.getStatus()))){
+                return isOk;
+            }
+        }catch (Exception e){
+            return FungoPageResultDto.error("-1", "抽取中秋节日礼品失败");
         }
-        return FungoPageResultDto.error("-1", "抽取中秋节日礼品失败");
+        return isOk;
     }
 
 

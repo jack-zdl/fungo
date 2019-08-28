@@ -101,6 +101,16 @@ public class FungoMallSeckillSuccessAdviceService {
                     msgDataContent = msgDataContent.replace("{", cardSn).replace("}", cardPwd);
                     msgContentMap.put("actionType", "2");
                     break;
+                case 24:
+                    msgDataContent = FungoMallSeckillConsts.FESTIVAL_GOODS_SUCCESS_lv1;
+                    msgDataContent = msgDataContent.replace("{", goodsName).replace("}", cardPwd);
+                    msgContentMap.put("actionType", "2");
+                    break;
+                case 25:
+                    msgDataContent = FungoMallSeckillConsts.FESTIVAL_GOODS_SUCCESS_lv2;
+                    msgDataContent = msgDataContent.replace("$", goodsName).replace("{", cardSn).replace("}", cardPwd);
+                    msgContentMap.put("actionType", "2");
+                    break;
                 case 1:
                     msgDataContent = FungoMallSeckillConsts.MSG_SECKILL_SUCCESS_physical;
                     msgDataContent = msgDataContent.replace("$", goodsName);

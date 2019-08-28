@@ -14,4 +14,6 @@ import com.fungo.system.entity.MemberInfo;
 public interface MemberInfoService extends IService<MemberInfo> {
 
     boolean shareFestival(String memberId);
+
+    boolean delFestival(String memberId);
 }

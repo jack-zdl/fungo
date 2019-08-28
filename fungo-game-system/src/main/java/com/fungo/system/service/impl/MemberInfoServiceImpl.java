@@ -8,6 +8,7 @@ import com.fungo.system.entity.MemberNo;
 import com.fungo.system.mall.service.impl.FungoMallGoodsServiceImpl;
 import com.fungo.system.service.MemberInfoService;
 import com.fungo.system.service.MemberNoService;
+import com.game.common.util.CommonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,22 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoDao, MemberInfo
             memberInfo.setMdId( memberId);
             memberInfo.setIsactive("1");
             memberInfo = memberInfoDao.selectOne( memberInfo);
-            return StringUtils.isNoneBlank(memberInfo.getId());
+            return memberInfo != null;
+        }catch (Exception e){
+            logger.error("查询用户是否分享中秋异常",e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean delFestival(String memberId) {
+        try {
+            MemberInfo memberInfo = new MemberInfo();
+            memberInfo.setMdId( memberId);
+            memberInfo.setIsactive("1");
+            memberInfo = memberInfoDao.selectOne( memberInfo);
+            memberInfo.setIsactive("0");
+            return memberInfo.updateById();
         }catch (Exception e){
             logger.error("查询用户是否分享中秋异常",e);
         }
