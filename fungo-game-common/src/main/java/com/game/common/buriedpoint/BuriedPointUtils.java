@@ -48,14 +48,13 @@ public class BuriedPointUtils {
 
     static {
         //设置debug模式 调试阶段为 DEBUG.OPENNOSAVE 上线阶段为 DEBUG.CLOSE
-        analysys.setDebugMode(DEBUG.OPENANDSAVE);
+        analysys.setDebugMode(DEBUG.CLOSE);
     }
 
     /**
      * 工具方法构造私有
      */
-    private BuriedPointUtils() {
-    }
+    private BuriedPointUtils() {}
 
 
     /**
