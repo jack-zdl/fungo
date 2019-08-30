@@ -30,7 +30,7 @@ public class BuriedPointUtils {
     /**
      * 易观项目APP_KEY
      */
-    private final static String APP_KEY = "2700ad010735c83b";
+    private final static String APP_KEY = "7ac33689e44ae908";
     /**
      * 埋点数据上报地址
      */
@@ -48,14 +48,13 @@ public class BuriedPointUtils {
 
     static {
         //设置debug模式 调试阶段为 DEBUG.OPENNOSAVE 上线阶段为 DEBUG.CLOSE
-        analysys.setDebugMode(DEBUG.OPENANDSAVE);
+        analysys.setDebugMode(DEBUG.CLOSE);
     }
 
     /**
      * 工具方法构造私有
      */
-    private BuriedPointUtils() {
-    }
+    private BuriedPointUtils() {}
 
 
     /**

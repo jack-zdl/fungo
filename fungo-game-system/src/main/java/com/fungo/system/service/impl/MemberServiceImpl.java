@@ -1590,8 +1590,8 @@ public class MemberServiceImpl implements IMemberService {
                 cmmPostDto.setId(commentBean.getTargetId());
                 cmmPostDto.setState(1);
                 CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto);    //postService.selectOne(Condition.create().setSqlSelect("id,content,title,video").eq("id", c.getTargetId()));
-                if (post != null) {
-                    bean.setTargetDelType(post.getState()  == -1 ? -1 : 0);
+                if (post != null && post.getState() != null) {
+                    bean.setTargetDelType( post.getState()  == -1 ? -1 : 0);
                     String title = CommonUtils.filterWord(post.getTitle());
                     if (StringUtils.isNotBlank(title)) {
                         title = FilterEmojiUtil.decodeEmoji(title);

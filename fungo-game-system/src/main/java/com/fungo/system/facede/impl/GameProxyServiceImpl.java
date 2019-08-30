@@ -89,7 +89,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
 //    @HystrixCommand(fallbackMethod = "hystrixSelectGameEvaluationById", ignoreExceptions = {Exception.class})
     @Override
     public GameEvaluationDto selectGameEvaluationById(GameEvaluationDto gameEvaluationDto) {
-        GameEvaluationDto re = new GameEvaluationDto();
+        GameEvaluationDto re =new GameEvaluationDto();
         FungoPageResultDto<GameEvaluationDto> gameEvaluationDtoPage = gamesFeignClient.getGameEvaluationPage(gameEvaluationDto);
         if (null != gameEvaluationDtoPage) {
             List<GameEvaluationDto> gameEvaluationDtoList = gameEvaluationDtoPage.getData();
