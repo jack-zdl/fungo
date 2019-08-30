@@ -30,7 +30,7 @@ public class BuriedPointUtils {
     /**
      * 易观项目APP_KEY
      */
-    private final static String APP_KEY = "2700ad010735c83b";
+    private final static String APP_KEY = "7ac33689e44ae908";
     /**
      * 埋点数据上报地址
      */
