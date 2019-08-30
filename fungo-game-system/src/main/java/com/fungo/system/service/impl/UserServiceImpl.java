@@ -17,6 +17,7 @@ import com.game.common.consts.Setting;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.user.MemberOutBean;
+import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.*;
@@ -1028,6 +1029,10 @@ public class UserServiceImpl implements IUserService {
             MemberInfo memberInfo = new MemberInfo();
             memberInfo.setMdId(adminId);
             memberInfo.setShareType(1);
+            memberInfo = memberInfoDao.selectOne( memberInfo);
+            if(memberInfo != null){
+               return ResultDto.ResultDtoFactory.buildWarning( AbstractResultEnum.CODE_SYSTEM_FESTIVAL_EIGHT.getKey(),AbstractResultEnum.CODE_SYSTEM_FESTIVAL_EIGHT.getFailevalue());
+            }
             memberInfo.setIsactive("1");
             memberInfo.setRversion(1);
             memberInfo.setCreatedBy(adminId);

@@ -452,7 +452,7 @@ public class UserController {
 
 
     @ApiOperation(value="用户分享中秋礼品", notes="")
-    @RequestMapping(value="/api/system/user/share", method= RequestMethod.POST)
+    @RequestMapping(value="/api/system/user/share", method= RequestMethod.GET)
     @ApiImplicitParams({})
     public ResultDto<String> userShareMall(MemberUserProfile memberUserPrefile){
         String adminId = memberUserPrefile.getLoginId();

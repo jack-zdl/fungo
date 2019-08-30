@@ -22,6 +22,7 @@ import com.fungo.system.mall.service.commons.FungoMallSeckillTaskStateCommand;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
 import com.fungo.system.service.MemberInfoService;
 import com.fungo.system.service.MemberService;
+import com.fungo.system.service.ScoreLogService;
 import com.fungo.system.service.impl.MemberServiceImpl;
 import com.game.common.api.InputPageDto;
 import com.game.common.buriedpoint.BuriedPointUtils;
@@ -98,6 +99,8 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
     private FungoMallScanOrderWithSeckillService fungoMallScanOrderWithSeckillServiceImpl;
     @Autowired
     private FungoCacheTask fungoCacheTask;
+    @Autowired
+    private ScoreLogService scoreLogService;
 
     @Value("${fungo.mall.seckill.aesSecretKey}")
     private String aESSecretKey;
@@ -538,30 +541,25 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                 userType = 3;
                 MemberInfo memberInfo = new MemberInfo();
                 memberInfoService.delFestival(memberId);
-            } else if(memberServiceImpl.getNewMember(member.getCreatedAt(),member.getLevel()) && inputPageDto.getLimit() == 1 && (mallLogsDao.selectList(wrapper.eq( "user_type",1)).size() < 1)){
+            } else if(memberServiceImpl.getNewMember(member.getCreatedAt(),member.getLevel()) && inputPageDto.getLimit() == 1 && (mallLogsDao.selectList(wrapper.eq( "user_type",1)).size() < 2)){
                 //查询是否已使用过
-//                wrapper.eq( "user_type",1   );
-//                mallLogs =  mallLogsDao.selectList(wrapper);
-//                if(mallLogs.size() < 1){
                     userType = 1;
-//                }
             }else if(memberServiceImpl.getActiveMemeber(member.getId()) && inputPageDto.getLimit() == 1 && ( mallLogsDao.selectList(wrapper.eq( "user_type",2  )).size() < 2) ){
                 //查询是否已使用过
-//                wrapper.eq( "user_type",2  );
-//                mallLogs =  mallLogsDao.selectList(wrapper);
-//                if(mallLogs.size() < 2){
                     userType = 2;
-//                }else {
-//
-//                }
-
             }else {
                 // 用户使用自己fun币购买
-                String money = String.valueOf(200 * inputPageDto.getLimit());
-                boolean isEnough = fungoMallSeckillServiceImpl.checkUserMoney(memberId,money);
-                if(isEnough){
+                boolean isEnough = false;
+                if(1 == inputPageDto.getLimit()){
+                    String money = String.valueOf(200 * inputPageDto.getLimit());
+                    isEnough = fungoMallSeckillServiceImpl.checkUserMoney(memberId,money);
                     userType = 4;
                 }else {
+                    String money = String.valueOf(200 * inputPageDto.getLimit() - 50);
+                    isEnough = fungoMallSeckillServiceImpl.checkUserMoney(memberId,money);
+                    userType = 5;
+                }
+                if(!isEnough) {
                     return FungoPageResultDto.FungoPageResultDtoFactory.buildWarning( AbstractResultEnum.CODE_SYSTEM_SIX.getKey(),AbstractResultEnum.CODE_SYSTEM_SIX.getFailevalue());
                 }
             }
@@ -622,6 +620,17 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                         //创建订单
                         MallOrder mallOrder = addSeckillOrder(memberId, s.getMallGoodsId(), mallSeckill, 11,200);
                     }
+                }else if(finalUserType == 5){
+                    //5.执行下单
+                    //5.1 先冻结用户的可用余额
+                    IncentAccountCoin incentAccountCoin = fungoMallSeckillServiceImpl.isFullMbFungo(memberId);
+                    BigDecimal goodsPriceVcyBD = new BigDecimal(190);
+                    goodsPriceVcyBD = goodsPriceVcyBD.setScale(2);
+                    int isFreezeMbCoinAccount = fungoMallSeckillServiceImpl.freezeMemberFungo(memberId, incentAccountCoin, goodsPriceVcyBD);
+                    if (1 == isFreezeMbCoinAccount) {
+                        //创建订单
+                        MallOrder mallOrder = addSeckillOrder(memberId, s.getMallGoodsId(), mallSeckill, 11,190);
+                    }
                 }
                 fungoMallSeckillServiceImpl.addMallLogs(memberId, "", Long.parseLong(s.getMallGoodsId()), realIp, 2, finalUserType,Integer.valueOf(inputPageDto.getFilter()));
             });
@@ -632,7 +641,6 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                 throw new Exception("处理订单异常");
             }
             //记录日志
-
             List<String> goodsIds = mallSeckillOrders.stream().map(MallSeckillOrder::getMallGoodsId).collect(Collectors.toList());
             List<MallGoodsOutBean> goodsOutBeanList = null;
             if (null != goodsIds && !goodsIds.isEmpty()) {
@@ -706,6 +714,23 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
         try {
             List<MallLogs>  mallLogs = mallLogsDao.selectMallLogsByUserId( memberId);
             Map<Integer, List<MallLogs>> mallLogsMap =  mallLogs.stream().collect(groupingBy(MallLogs::getUserType));
+            Member member = memberService.selectById(memberId);
+            boolean isNew = memberServiceImpl.getNewMember(member.getCreatedAt(),member.getLevel());
+            boolean isOld = memberServiceImpl.getActiveMemeber(member.getId());
+            //查询log日志 获取用户签到累计天数
+            EntityWrapper<ScoreLog> scoreLogEntityWrapper = new EntityWrapper<ScoreLog>();
+
+            String startDate = nacosFungoCircleConfig.getStartDate();
+            String endDate = nacosFungoCircleConfig.getEndDate();
+            int days = nacosFungoCircleConfig.getFestivalDays();
+
+            startDate = startDate+ " " + FungoMallSeckillConsts.SECKILL_START_TIME;
+            endDate = endDate + " " + FungoMallSeckillConsts.SECKILL_END_TIME;
+            scoreLogEntityWrapper.eq("member_id", memberId);
+            scoreLogEntityWrapper.in("task_type", "22,220");
+            scoreLogEntityWrapper.ge("created_at", startDate);
+            int signInCount = scoreLogService.selectCount(scoreLogEntityWrapper);
+            boolean istrue = memberInfoService.shareFestival(memberId);
             if(mallLogsMap != null){
                 List<MallLogs> mallLogs1 = mallLogsMap.get(1);
                 json.put( "newMember",mallLogs1 != null ? mallLogs1.size() : 0 );
@@ -713,6 +738,10 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                 json.put( "oldMember", mallLogs2 != null ? mallLogs2.size() : 0);
                 List<MallLogs> mallLogs3 = mallLogsMap.get(3);
                 json.put( "share", mallLogs3 != null ? mallLogs3.size() : 0);
+                json.put( "count",signInCount );
+                json.put( "isNew",isNew ? 2: 0 );
+                json.put( "isOld",isOld ? 2 : 0 );
+                json.put( "isShare",istrue ? 1 : 0 );
             }
         }catch (Exception e){
             logger.error("",e);
