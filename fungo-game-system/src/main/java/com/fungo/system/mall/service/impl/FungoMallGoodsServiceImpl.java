@@ -34,6 +34,7 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.mall.MallGoodsInput;
 import com.game.common.dto.mall.MallGoodsOutBean;
+import com.game.common.dto.mall.MallSeckillOrderDto;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.FungoAESUtil;
@@ -43,6 +44,7 @@ import com.game.common.util.StringUtil;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
 import io.netty.handler.codec.json.JsonObjectDecoder;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
@@ -52,6 +54,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
@@ -596,22 +599,33 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                 }
             }
             int finalUserType = userType;
+            List<MallSeckillOrderDto> mallSeckillOrderDtos = new ArrayList<>();
             mallSeckillOrders.stream().forEach( s -> {
                 s.setIsactive("0");
                 s.setUpdatedAt(new Date());
                 s.setUpdatedBy(memberId);
                 s.updateById();
 
+                MallSeckillOrderDto mallSeckillOrderDto = new MallSeckillOrderDto();
+                try {
+                    BeanUtils.copyProperties(mallSeckillOrderDto,s);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 MallSeckill mallSeckill = fungoMallSeckillServiceImpl.getFestivalGoods(s.getMallGoodsId());
                 if(finalUserType == 1 ){
                     //创建订单
                     MallOrder mallOrder = addSeckillOrder(memberId, s.getMallGoodsId(), mallSeckill, 11,0);
+                    mallSeckillOrderDto.setOrderId( String.valueOf(mallOrder.getId()));
                 }else if(finalUserType == 2){
                     //创建订单
                     MallOrder mallOrder = addSeckillOrder(memberId, s.getMallGoodsId(),mallSeckill, 11,0);
+                    mallSeckillOrderDto.setOrderId( String.valueOf(mallOrder.getId()));
                 }else if(finalUserType == 3){
                     //创建订单
                     MallOrder mallOrder = addSeckillOrder(memberId, s.getMallGoodsId(), mallSeckill, 11,0);
+                    mallSeckillOrderDto.setOrderId( String.valueOf(mallOrder.getId()));
                 }else if(finalUserType == 4){
                     //5.执行下单
                     //5.1 先冻结用户的可用余额
@@ -622,6 +636,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                     if (1 == isFreezeMbCoinAccount) {
                         //创建订单
                         MallOrder mallOrder = addSeckillOrder(memberId, s.getMallGoodsId(), mallSeckill, 11,200);
+                        mallSeckillOrderDto.setOrderId( String.valueOf(mallOrder.getId()));
                     }
                 }else if(finalUserType == 5){
                     //5.执行下单
@@ -633,8 +648,10 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                     if (1 == isFreezeMbCoinAccount) {
                         //创建订单
                         MallOrder mallOrder = addSeckillOrder(memberId, s.getMallGoodsId(), mallSeckill, 11,190);
+                        mallSeckillOrderDto.setOrderId( String.valueOf(mallOrder.getId()));
                     }
                 }
+                mallSeckillOrderDtos.add(mallSeckillOrderDto);
                 fungoMallSeckillServiceImpl.addMallLogs(memberId, "", Long.parseLong(s.getMallGoodsId()), realIp, 2, finalUserType,Integer.valueOf(inputPageDto.getFilter()));
             });
 //            orderMap = iFungoMallSeckillService.createOrderWithSeckill(mallOrderInput, realIp);
@@ -643,63 +660,58 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
             if(!isOk){
                 throw new Exception("处理订单异常");
             }
-            //记录日志
-            List<String> goodsIds = mallSeckillOrders.stream().map(MallSeckillOrder::getMallGoodsId).collect(Collectors.toList());
-            List<MallGoodsOutBean> goodsOutBeanList = null;
-            if (null != goodsIds && !goodsIds.isEmpty()) {
-                goodsOutBeanList  = new ArrayList<MallGoodsOutBean>();
+            List<MallGoodsOutBean> goodsOutBeanList = new ArrayList<>();
+            mallSeckillOrderDtos.stream().forEach( x ->{
                 List<MallGoodsOutBean> finalGoodsOutBeanList = goodsOutBeanList;
-                goodsIds.stream().forEach( x ->{
-                    List<Map<String, Object>> goodsMapList = mallSeckillDao.queryFestivalSeckillGoodsById(goodsIds);
-                    for (Map<String, Object> objectMap : goodsMapList) {
+                List<Map<String, Object>> goodsMapList = mallSeckillDao.queryFestivalSeckillGoodsById(Arrays.asList(x.getMallGoodsId()));
+                for (Map<String, Object> objectMap : goodsMapList) {
 
-                        MallGoodsOutBean goodsOutBean = new MallGoodsOutBean();
+                    MallGoodsOutBean goodsOutBean = new MallGoodsOutBean();
 
-                        Long goodsId = (Long) objectMap.get("goodsId");
-                        String goods_name = (String) objectMap.get("goods_name");
-                        String main_img = (String) objectMap.get("main_img");
-                        Integer sort = (Integer) objectMap.get("sort");
-                        Integer goodsType = (Integer) objectMap.get("goods_type");
-                        String goods_intro = (String) objectMap.get("goods_intro");
+                    Long goodsId = (Long) objectMap.get("goodsId");
+                    String goods_name = (String) objectMap.get("goods_name");
+                    String main_img = (String) objectMap.get("main_img");
+                    Integer sort = (Integer) objectMap.get("sort");
+                    Integer goodsType = (Integer) objectMap.get("goods_type");
+                    String goods_intro = (String) objectMap.get("goods_intro");
 
-                        //价格解密
-                        String seckill_price_vcy = (String) objectMap.get("seckill_price_vcy");
-                        seckill_price_vcy = FungoAESUtil.decrypt(seckill_price_vcy,
-                                aESSecretKey + FungoMallSeckillConsts.AES_SALT);
-
-
-                        //剩余库存解析
-                        String residue_stock = (String) objectMap.get("residue_stock");
-                        residue_stock = FungoAESUtil.decrypt(residue_stock,
-                                aESSecretKey + FungoMallSeckillConsts.AES_SALT);
+                    //价格解密
+                    String seckill_price_vcy = (String) objectMap.get("seckill_price_vcy");
+                    seckill_price_vcy = FungoAESUtil.decrypt(seckill_price_vcy,
+                            aESSecretKey + FungoMallSeckillConsts.AES_SALT);
 
 
-                        Date start_time = (Date) objectMap.get("start_time");
-                        if (null != start_time) {
-                            String startDate_s = DateTools.fmtSimpleDateToString(start_time);
-                            goodsOutBean.setStartTime(startDate_s);
-                        }
-                        Date end_time = (Date) objectMap.get("end_time");
-                        if (null != end_time) {
-                            String endDate_s = DateTools.fmtSimpleDateToString(end_time);
-                            goodsOutBean.setEndTime(endDate_s);
-                        }
+                    //剩余库存解析
+                    String residue_stock = (String) objectMap.get("residue_stock");
+                    residue_stock = FungoAESUtil.decrypt(residue_stock,
+                            aESSecretKey + FungoMallSeckillConsts.AES_SALT);
 
-                        goodsOutBean.setId(String.valueOf(goodsId));
-                        goodsOutBean.setGoodsName(goods_name);
-                        goodsOutBean.setSeckillPriceVcy(seckill_price_vcy);
-                        goodsOutBean.setResidueStock(residue_stock);
-                        goodsOutBean.setMainImg(main_img);
-                        goodsOutBean.setSort(sort);
-                        goodsOutBean.setGoodsIntro(goods_intro);
-                        goodsOutBean.setGoodsType(goodsType);
-                        String ext2 = (String) objectMap.get("ext2");
-                        goodsOutBean.setColorType(MallGoodsOutBean.GameColorTypeEnum.getValueByKey(ext2));
 
-                        finalGoodsOutBeanList.add(goodsOutBean);
+                    Date start_time = (Date) objectMap.get("start_time");
+                    if (null != start_time) {
+                        String startDate_s = DateTools.fmtSimpleDateToString(start_time);
+                        goodsOutBean.setStartTime(startDate_s);
                     }
-                });
-            }
+                    Date end_time = (Date) objectMap.get("end_time");
+                    if (null != end_time) {
+                        String endDate_s = DateTools.fmtSimpleDateToString(end_time);
+                        goodsOutBean.setEndTime(endDate_s);
+                    }
+
+                    goodsOutBean.setId(String.valueOf(goodsId));
+                    goodsOutBean.setGoodsName(goods_name);
+                    goodsOutBean.setSeckillPriceVcy(seckill_price_vcy);
+                    goodsOutBean.setResidueStock(residue_stock);
+                    goodsOutBean.setMainImg(main_img);
+                    goodsOutBean.setSort(sort);
+                    goodsOutBean.setGoodsIntro(goods_intro);
+                    goodsOutBean.setGoodsType(goodsType);
+                    String ext2 = (String) objectMap.get("ext2");
+                    goodsOutBean.setColorType(MallGoodsOutBean.GameColorTypeEnum.getValueByKey(ext2));
+                    goodsOutBean.setOrderId(x.getOrderId());
+                    finalGoodsOutBeanList.add(goodsOutBean);
+                }
+            });
             List<MallGoodsOutBean> list = goodsOutBeanList.stream().sorted((e1, e2) -> Long.valueOf(e1.getSeckillPriceVcy()).compareTo(Long.valueOf(e2.getSeckillPriceVcy())) ).collect( Collectors.toList());
             resultDto.setData(list);
 //            PageTools.pageToResultDto(resultDto,page);

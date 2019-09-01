@@ -129,6 +129,8 @@ public class MallGoodsOutBean implements Serializable {
      */
     private String colorType;
 
+    private String orderId;
+
 
     public String getValidPeriodIntro() {
         return validPeriodIntro;
@@ -289,6 +291,14 @@ public class MallGoodsOutBean implements Serializable {
 
     public void setColorType(String colorType) {
         this.colorType = colorType;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
     public enum GameColorTypeEnum {
