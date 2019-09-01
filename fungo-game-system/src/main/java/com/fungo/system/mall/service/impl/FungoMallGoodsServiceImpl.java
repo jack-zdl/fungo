@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.dao.MallSeckillOrderDao;
+import com.fungo.system.dao.MemberInfoDao;
 import com.fungo.system.dto.FungoMallDto;
 import com.fungo.system.entity.*;
 import com.fungo.system.feign.GamesFeignClient;
@@ -101,6 +102,8 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
     private FungoCacheTask fungoCacheTask;
     @Autowired
     private ScoreLogService scoreLogService;
+    @Autowired
+    private MemberInfoDao memberInfoDao;
 
     @Value("${fungo.mall.seckill.aesSecretKey}")
     private String aESSecretKey;
@@ -572,7 +575,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
             // 是否发送预警信息
             if(nacosFungoCircleConfig.isWarnningSwitch()){
                 MallSeckillOrder mallSeckillOrder = mallSeckillOrders.get(0);
-                if(mallSeckillOrder.getId() > 1000){
+                if(mallSeckillOrder.getId() > nacosFungoCircleConfig.getWarningNumber()){
                     BasNotice basNotice = new BasNotice();
                     basNotice.setType( 6 );
                     basNotice.setIsRead( 0 );
@@ -730,7 +733,9 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
             scoreLogEntityWrapper.in("task_type", "22,220");
             scoreLogEntityWrapper.ge("created_at", startDate);
             int signInCount = scoreLogService.selectCount(scoreLogEntityWrapper);
-            boolean istrue = memberInfoService.shareFestival(memberId);
+            MemberInfo memberInfo = new MemberInfo();
+            memberInfo.setMdId( memberId);
+            memberInfo = memberInfoDao.selectOne( memberInfo);
             if(mallLogsMap != null){
                 List<MallLogs> mallLogs1 = mallLogsMap.get(1);
                 json.put( "newMember",mallLogs1 != null ? mallLogs1.size() : 0 );
@@ -741,7 +746,8 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                 json.put( "count",signInCount );
                 json.put( "isNew",isNew ? 2: 0 );
                 json.put( "isOld",isOld ? 2 : 0 );
-                json.put( "isShare",istrue ? 1 : 0 );
+                json.put( "isShare",memberInfo != null ? 1 : 0 );
+                json.put( "surplus", (Integer)json.get("isNew")+(Integer)json.get("isOld")+(Integer)json.get("isShare")-(Integer)json.get("newMember")-(Integer)json.get("oldMember")-(Integer)json.get("share"));
             }
         }catch (Exception e){
             logger.error("",e);
@@ -870,12 +876,15 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
             case 21:
                 orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
                 break;
-
             case 22:
                 orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
                 break;
-
             case 23:
+                orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+            case 24:
+                orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+                break;
+            case 25:
                 orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
                 break;
             default:

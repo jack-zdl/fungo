@@ -50,6 +50,9 @@ public class MemberInfoServiceImpl extends ServiceImpl<MemberInfoDao, MemberInfo
         return false;
     }
 
+
+
+
     @Override
     public boolean delFestival(String memberId) {
         try {

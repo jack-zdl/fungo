@@ -32,6 +32,8 @@ public class NacosFungoCircleConfig {
     public int festivalDays;
     @Value( value = "${fungo.cloud.festival.warnning.switch}")
     public boolean warnningSwitch;
+    @Value( value = "${fungo.cloud.festival.warnning.number}")
+    public long warningNumber;
     @Value( value = "${fungo.cloud.festival.operator}")
     public String operatorId;
 
@@ -96,6 +98,14 @@ public class NacosFungoCircleConfig {
 
     public void setWarnningSwitch(boolean warnningSwitch) {
         this.warnningSwitch = warnningSwitch;
+    }
+
+    public long getWarningNumber() {
+        return warningNumber;
+    }
+
+    public void setWarningNumber(long warningNumber) {
+        this.warningNumber = warningNumber;
     }
 
     public String getOperatorId() {

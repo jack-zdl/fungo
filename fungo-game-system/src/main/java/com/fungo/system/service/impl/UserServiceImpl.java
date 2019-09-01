@@ -1022,6 +1022,7 @@ public class UserServiceImpl implements IUserService {
      * @auther: dl.zhang
      * @date: 2019/8/26 15:53
      */
+    @Transactional
     @Override
     public ResultDto<String> userShareMall(String adminId) throws Exception {
         ResultDto<String> resultDto = null;
@@ -1033,6 +1034,9 @@ public class UserServiceImpl implements IUserService {
             if(memberInfo != null){
                return ResultDto.ResultDtoFactory.buildWarning( AbstractResultEnum.CODE_SYSTEM_FESTIVAL_EIGHT.getKey(),AbstractResultEnum.CODE_SYSTEM_FESTIVAL_EIGHT.getFailevalue());
             }
+            memberInfo = new MemberInfo();
+            memberInfo.setMdId(adminId);
+            memberInfo.setShareType(1);
             memberInfo.setIsactive("1");
             memberInfo.setRversion(1);
             memberInfo.setCreatedBy(adminId);

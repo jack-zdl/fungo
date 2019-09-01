@@ -103,7 +103,7 @@ public class FungoMallSeckillSuccessAdviceService {
                     break;
                 case 24:
                     msgDataContent = FungoMallSeckillConsts.FESTIVAL_GOODS_SUCCESS_lv1;
-                    msgDataContent = msgDataContent.replace("{", goodsName).replace("}", cardPwd);
+                    msgDataContent = msgDataContent.replace("{", goodsName).replace("}", cardSn);
                     msgContentMap.put("actionType", "2");
                     break;
                 case 25:

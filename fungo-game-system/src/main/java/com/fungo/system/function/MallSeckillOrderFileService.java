@@ -83,13 +83,13 @@ public class MallSeckillOrderFileService {
                         DecimalFormat df = new DecimalFormat("#");
                         switch (goodIdCell.getCellType()) {
                             case HSSFCell.CELL_TYPE_NUMERIC:// 数字
-                                goodId = df.format(goodIdCell.getNumericCellValue());
+//                                goodId = df.format(goodIdCell.getNumericCellValue());
                                 break;
                             case HSSFCell.CELL_TYPE_STRING:// 字符串
-                                goodId = df.format(Double.parseDouble(goodIdCell.toString()));
+//                                goodId = df.format(Double.parseDouble(goodIdCell.toString()));
                                 break;
                             default:
-                                goodId = goodIdCell.toString();
+//                                goodId = goodIdCell.toString();
                                 break;
                         }
 

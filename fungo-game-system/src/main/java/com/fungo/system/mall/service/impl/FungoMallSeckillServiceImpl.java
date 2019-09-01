@@ -777,7 +777,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
         try {
             logger.info("用户修改订单--用户Id:{}--订单Id:{}", mallOrderInput.getMbId(), mallOrderInput.getOrderId());
-
+            List<String> orderIds = Arrays.asList( mallOrderInput.getOrderId().split( "," ) );
             MallOrder order = new MallOrder();
             order.setConsigneeName(mallOrderInput.getConsigneeName());
             order.setCsgAddress(mallOrderInput.getCsgAddress());
@@ -788,7 +788,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             order.setUpdatedTime(new Date());
 
             EntityWrapper<MallOrder> orderEntityWrapper = new EntityWrapper<MallOrder>();
-            orderEntityWrapper.eq("mb_id", mallOrderInput.getMbId()).eq("id", mallOrderInput.getOrderId());
+            orderEntityWrapper.eq("mb_id", mallOrderInput.getMbId()).in("id", orderIds);
 
             boolean updateOk = mallOrderDaoService.update(order, orderEntityWrapper);
             return updateOk;
@@ -846,7 +846,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
                 //查询该用户所有交易成功的订单
             } else {
-                List<MallOrder> mallOrders = queryTradeSuccessOrderrWithMember(mb_id, 1);
+                List<MallOrder> mallOrders = queryTradeSuccessOrderrWithMember(mb_id, Arrays.asList( 1,11 ));
                 if (null != mallOrders && !mallOrders.isEmpty()) {
 
                     for (MallOrder mallOrder : mallOrders) {
@@ -1002,7 +1002,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
                 //查询该用户所有交易成功的订单
             } else {
-                List<MallOrder> mallOrders = queryTradeSuccessOrderrWithMember(mb_id, 2);
+                List<MallOrder> mallOrders = queryTradeSuccessOrderrWithMember(mb_id, Arrays.asList(2) );
                 if (null != mallOrders && !mallOrders.isEmpty()) {
 
                     for (MallOrder mallOrder : mallOrders) {
@@ -1186,12 +1186,12 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
      * @param mb_id
      * @return
      */
-    private List<MallOrder> queryTradeSuccessOrderrWithMember(String mb_id, int orderType) {
+    private List<MallOrder> queryTradeSuccessOrderrWithMember(String mb_id, List<Integer> orderTypes) {
         EntityWrapper<MallOrder> orderEntityWrapper = new EntityWrapper<MallOrder>();
         orderEntityWrapper.eq("mb_id", mb_id)
                 .eq("order_status", 5)
                 .eq("pay_status", 2)
-                .eq("order_type", orderType)
+                .in("order_type", orderTypes)
                 .orderBy("create_time", false);
         return mallOrderDaoService.selectList(orderEntityWrapper);
     }
