@@ -2,7 +2,9 @@ package com.fungo.system.controller;
 
 import cn.yueshutong.springbootstartercurrentlimiting.method.annotation.CurrentLimiter;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
+import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.dto.FungoMallDto;
 import com.fungo.system.mall.entity.MallGoods;
 import com.fungo.system.mall.service.IFungoMallGoodsService;
@@ -16,6 +18,7 @@ import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.CommonEnum;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.SpringBeanFactory;
+import com.game.common.util.annotation.Anonymous;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +39,8 @@ public class FungoMallController {
 
     @Autowired
     private IFungoMallGoodsService iFungoMallGoodsService;
+    @Autowired
+    private NacosFungoCircleConfig nacosFungoCircleConfig;
 
     @PostMapping("/mall/addGoods")
     public ResultDto<Object> addGoods(@RequestBody FungoMallDto fungoMallDto){
@@ -130,6 +135,19 @@ public class FungoMallController {
             return isOk;
         }
         return ResultDto.error("-1", "中秋节日抽奖记录失败");
+    }
+
+    /**
+     * 功能描述:
+     * <p>返回中秋文章id</p>
+     * @Param
+     * @return: com.game.common.dto.ResultDto<java.lang.Object>
+     * @auther: dl.zhang
+     * @date: 2019/8/20 19:46
+     */
+    @GetMapping("/mall/postId")
+    public ResultDto<JSON> getFestivalPostId(@Anonymous MemberUserProfile memberUserPrefile){
+        return ResultDto.ResultDtoFactory.buildSuccess((Object) nacosFungoCircleConfig.getFestivalPostId());
     }
 
 }

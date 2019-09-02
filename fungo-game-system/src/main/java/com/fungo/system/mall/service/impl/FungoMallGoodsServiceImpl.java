@@ -652,7 +652,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                     }
                 }
                 mallSeckillOrderDtos.add(mallSeckillOrderDto);
-                fungoMallSeckillServiceImpl.addMallLogs(memberId, "", Long.parseLong(s.getMallGoodsId()), realIp, 2, finalUserType,Integer.valueOf(inputPageDto.getFilter()));
+                fungoMallSeckillServiceImpl.addMallLogs(memberId, "", Long.parseLong(s.getMallGoodsId()), realIp, 2,"/api/system/mall/draw", finalUserType,Integer.valueOf(inputPageDto.getFilter()));
             });
 //            orderMap = iFungoMallSeckillService.createOrderWithSeckill(mallOrderInput, realIp);
             // 那个商品id去下订单  不能和原来的秒杀

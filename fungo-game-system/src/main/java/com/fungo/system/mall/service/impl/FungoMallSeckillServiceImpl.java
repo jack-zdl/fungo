@@ -100,7 +100,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         try {
 
             //记录日志
-            addMallLogs(mb_id, "", 0L, realIp, 1);
+            addMallLogs(mb_id, "", 0L, realIp, 1,"/api/mall/goods/seckill/list");
 
             //已指定秒杀活动开始和结束日期
             int startDate = FungoMallSeckillConsts.SECKILL_START_DATE;
@@ -330,7 +330,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
         try {
             //记录日志
-            addMallLogs(mb_id, "", 0L, realIp, 1);
+            addMallLogs(mb_id, "", 0L, realIp, 1,"/api/mall/goods/seckill/list");
 
             //查询可以秒杀的商品从2019-02-03~2019-02-10
             //获取当前日期 yyyyMMdd
@@ -479,7 +479,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
     public Map<String, Object> createOrderWithSeckill(MallOrderInput orderInput, String realIp) {
 
         //记录日志
-        addMallLogs(orderInput.getMbId(), "", Long.parseLong(orderInput.getGoodsId()), realIp, 2);
+        addMallLogs(orderInput.getMbId(), "", Long.parseLong(orderInput.getGoodsId()), realIp, 2,"/api/mall/order/seckill");
 
         logger.info("秒杀商品--用户id:{}--商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "开始了...");
 
@@ -643,7 +643,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
     public Map<String, Object> createOrderWithSeckillWithGame(MallOrderInput orderInput, String realIp) {
 
         //记录日志
-        addMallLogs(orderInput.getMbId(), "", Long.parseLong(orderInput.getGoodsId()), realIp, 2);
+        addMallLogs(orderInput.getMbId(), "", Long.parseLong(orderInput.getGoodsId()), realIp, 2,"/api/mall/order/seckill");
 
         logger.info("秒杀游戏礼包商品--用户id:{}--游戏礼包商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "开始了...");
 
@@ -1709,7 +1709,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
     /**
      * 记录浏览商品页面日志
      */
-    public void addMallLogs(String mb_id, String userName, Long goodsId, String realIp, Integer actionType,int... values) {
+    public void addMallLogs(String mb_id, String userName, Long goodsId, String realIp, Integer actionType,String uerName,int... values) {
         fixedThreadPoolMallLog.execute(new Runnable() {
             @Override
             public void run() {
@@ -1720,7 +1720,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                 logsDto.setId(PKUtil.getInstance(clusterIndex_i).longPK());
                 logsDto.setMbId(mb_id);
                 logsDto.setPageUrl("/shopmall.html");
-                logsDto.setIUrl("/api/mall/goods/seckill/list");
+                logsDto.setIUrl(uerName);
                 logsDto.setGoodsId(goodsId);
                 logsDto.setVisitIp(realIp);
                 logsDto.setActionType(actionType);
