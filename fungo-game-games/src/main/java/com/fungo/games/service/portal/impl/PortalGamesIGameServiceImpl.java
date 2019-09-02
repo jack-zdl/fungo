@@ -175,8 +175,8 @@ public class PortalGamesIGameServiceImpl implements PortalGamesIGameService {
             param.setPage( inputPage.getPage() );
             param.setLimit( inputPage.getLimit());
             FungoPageResultDto<String>  resultDto = systemFeignClient.gameListMineDownload(param);
-            if(resultDto != null && CommonEnum.SUCCESS.code().equals(String.valueOf(resultDto.getStatus()))){
-                List<String> gameIds = resultDto.getData() != null ?  resultDto.getData() : new ArrayList<>();
+            if(resultDto != null && CommonEnum.SUCCESS.code().equals(String.valueOf(resultDto.getStatus())) && resultDto.getData().size() > 0){
+                List<String> gameIds =  resultDto.getData();
                 List<Game>  gamesList =  gameDao.getGameList(gameIds);
                 gamesList.stream().forEach(game ->{
                     MyGameBean bean = new MyGameBean();
@@ -192,9 +192,9 @@ public class PortalGamesIGameServiceImpl implements PortalGamesIGameService {
 //                if (os.equalsIgnoreCase(bean.getPhoneModel())) {
                     list.add(bean);
                 });
-                re.setData(list);
-                PageTools.newPageToResultDto(re, resultDto.getCount(),inputPage.getLimit(),inputPage.getPage());
             }
+            re.setData(list);
+            PageTools.newPageToResultDto(re, resultDto.getCount(),inputPage.getLimit(),inputPage.getPage());
         }
         //redis cache
         return re;

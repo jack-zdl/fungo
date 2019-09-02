@@ -34,6 +34,13 @@ public class CommunityOut {
      * 置顶帖(2.4.3) objectId title
 	 */
 	private List<Map<String,String>> topicPosts = new ArrayList<>();
+
+	/**
+	 * 功能描述: 社区的文章数目
+	 * @auther: dl.zhang
+	 * @date: 2019/9/2 17:33
+	 */
+	private int postNum;
 	
 	public Boolean getIs_followed() {
 		return is_followed;
@@ -133,7 +140,35 @@ public class CommunityOut {
 		this.eliteMembers = eliteMembers;
 	}
 
+	public void setType(int type) {
+		this.type = type;
+	}
 
-	
-	
+	public void setState(int state) {
+		this.state = state;
+	}
+
+	public void setFollowee_num(int followee_num) {
+		this.followee_num = followee_num;
+	}
+
+	public void setHot_value(int hot_value) {
+		this.hot_value = hot_value;
+	}
+
+	public boolean isIs_followed() {
+		return is_followed;
+	}
+
+	public void setIs_followed(boolean is_followed) {
+		this.is_followed = is_followed;
+	}
+
+	public int getPostNum() {
+		return postNum;
+	}
+
+	public void setPostNum(int postNum) {
+		this.postNum = postNum;
+	}
 }
