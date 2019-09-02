@@ -97,6 +97,7 @@
 			m.avatar,
 			m.level,
 			m.sign,
+			m.member_no as member_no,
 			date_format(a.created_at, '%Y-%c-%d %H:%i:%s' ) as created_at
 		from t_member m ,t_bas_action a where  
 			a.member_id=#{memberId} and a.type=5 and a.state<>-1  

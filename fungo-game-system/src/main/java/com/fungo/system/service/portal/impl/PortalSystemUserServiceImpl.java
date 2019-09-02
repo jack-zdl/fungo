@@ -196,6 +196,7 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
                 map.put("level", m.getLevel());
                 map.put("avatar", m.getAvatar());
                 map.put("is_followed", false);
+                map.put("member_no", m.getMemberNo());
                 BasAction action = actionService.selectOne(new EntityWrapper<BasAction>().eq("type", "5").eq("member_id", myId).eq("target_id", m.getId()).ne("state", "-1"));
                 if (action != null) {
                     map.put("is_followed", true);
