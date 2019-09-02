@@ -12,6 +12,7 @@ import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.service.IPostService;
+import com.fungo.community.service.portal.IPortalPostService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.*;
 import com.game.common.dto.action.BasActionDto;
@@ -84,6 +85,8 @@ public class PortalCommunityPostController {
     //依赖系统和用户微服务
     @Autowired(required = false)
     private SystemFeignClient systemFeignClient;
+    @Autowired
+    private IPortalPostService portalPostService;
 
     @ApiOperation(value = "PC2.0帖子列表", notes = "")
     @RequestMapping(value = "/api/portal/community/content/posts", method = RequestMethod.POST)
@@ -100,7 +103,7 @@ public class PortalCommunityPostController {
             userId = memberUserPrefile.getLoginId();
         }
         try {
-            return bsPostService.getPostList(userId, postInputPageDto);
+            return portalPostService.getPostList(userId, postInputPageDto);
         } catch (Exception e) {
             e.printStackTrace();
             return FungoPageResultDto.error("-1", "操作失败");
