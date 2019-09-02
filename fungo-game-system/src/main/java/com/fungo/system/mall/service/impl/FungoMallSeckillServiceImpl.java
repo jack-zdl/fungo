@@ -945,7 +945,6 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         return fungoPageResultDto;
     }
 
-
     @Override
     public List<MallOrderOutBean> getOrdersWithSeckillGame(String mb_id, String orderId, String orderSn, String orderType) {
 
