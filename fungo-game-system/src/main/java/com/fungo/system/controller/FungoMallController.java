@@ -8,17 +8,22 @@ import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.dto.FungoMallDto;
 import com.fungo.system.mall.entity.MallGoods;
 import com.fungo.system.mall.service.IFungoMallGoodsService;
+import com.fungo.system.mall.service.commons.FungoMallScanOrderWithSeckillService;
 import com.fungo.system.service.impl.MemberServiceImpl;
 import com.game.common.api.InputPageDto;
+import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.mall.MallGoodsOutBean;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.CommonEnum;
+import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.SpringBeanFactory;
 import com.game.common.util.annotation.Anonymous;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,10 +42,17 @@ import java.util.Map;
 @RequestMapping("/api/system/")
 public class FungoMallController {
 
+    private static final Logger logger = LoggerFactory.getLogger( FungoMallController.class);
+
     @Autowired
     private IFungoMallGoodsService iFungoMallGoodsService;
     @Autowired
     private NacosFungoCircleConfig nacosFungoCircleConfig;
+    @Autowired
+    private FungoCacheTask fungoCacheTask;
+    @Autowired
+    private FungoMallScanOrderWithSeckillService fungoMallScanOrderWithSeckillService;
+
 
     @PostMapping("/mall/addGoods/")
     public ResultDto<Object> addGoods(@RequestBody FungoMallDto fungoMallDto){
@@ -108,6 +120,11 @@ public class FungoMallController {
         try {
             isOk = iFungoMallGoodsService.drawFestivalMall(memberId,inputPageDto,realIp);
             if(CommonEnum.SUCCESS.code().equals(String.valueOf(isOk.getStatus()))){
+                String cacheKey = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + memberId;
+                logger.info("扫描处理订单-清除缓存的用户fun币消耗", cacheKey);
+                fungoCacheTask.excIndexCache(false, cacheKey, "", null);
+                //清除个人信息的fun币缓存 FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + memberId,
+                fungoCacheTask.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + memberId, "", null);
                 return isOk;
             }
         }catch (Exception e){
@@ -149,5 +166,6 @@ public class FungoMallController {
     public ResultDto<JSON> getFestivalPostId(@Anonymous MemberUserProfile memberUserPrefile){
         return ResultDto.ResultDtoFactory.buildSuccess((Object) nacosFungoCircleConfig.getFestivalPostId());
     }
+
 
 }
