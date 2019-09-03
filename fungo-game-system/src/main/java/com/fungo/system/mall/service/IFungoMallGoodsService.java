@@ -1,10 +1,14 @@
 package com.fungo.system.mall.service;
 
 
+import com.alibaba.fastjson.JSON;
 import com.fungo.system.dto.FungoMallDto;
 import com.fungo.system.mall.entity.MallGoods;
+import com.game.common.api.InputPageDto;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.mall.MallGoodsInput;
+import com.game.common.dto.mall.MallGoodsOutBean;
 
 import java.util.Map;
 
@@ -38,5 +42,13 @@ public interface IFungoMallGoodsService {
     public Object addGoods(FungoMallDto fungoMallDto);
 
 
+    //添加商品
+     ResultDto<String> addSeckill(String goodId,String stocks,String startDate,String endDate);
+
+    FungoPageResultDto<MallGoodsOutBean> getFestivalMall(InputPageDto inputPageDto);
+
+    FungoPageResultDto<MallGoodsOutBean> drawFestivalMall(String memberId,InputPageDto inputPageDto,String realIp) throws Exception;
+
+    ResultDto<JSON> drawnFestivalMall(String memberId);
 
 }

@@ -451,6 +451,19 @@ public class UserController {
     }
 
 
+    @ApiOperation(value="用户分享中秋礼品", notes="")
+    @RequestMapping(value="/api/system/user/share", method= RequestMethod.GET)
+    @ApiImplicitParams({})
+    public ResultDto<String> userShareMall(MemberUserProfile memberUserPrefile){
+        String adminId = memberUserPrefile.getLoginId();
+        try {
+            return userService.userShareMall(adminId);
+        } catch (Exception e) {
+            return ResultDto.error( "-1","新增虚拟用户异常" );
+        }
+    }
+
+
     public String getAllowSuffix() {
         return allowSuffix;
     }

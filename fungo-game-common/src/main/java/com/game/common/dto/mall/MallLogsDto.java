@@ -69,6 +69,20 @@ public class MallLogsDto implements Serializable {
      */
     private String ext3;
 
+    /**
+     * 功能描述: 用户类型 x 1 新用户免费领取  2 老用户免费领取 3 分享免费领取
+     * @auther: dl.zhang
+     * @date: 2019/8/27 17:04
+     */
+    private int userType;
+
+    /**
+     * 功能描述: 用户渠道类型 x 1 APP首页轮播图、2 APP首页广告位、3 APP圈子活动栏、4 文章详情页内链接、5 APP开屏点击、6 分享页面点击
+     * @auther: dl.zhang
+     * @date: 2019/8/27 17:04
+     */
+    private int channelType;
+
 
     public Long getId() {
         return id;
@@ -180,6 +194,22 @@ public class MallLogsDto implements Serializable {
 
     public void setExt3(String ext3) {
         this.ext3 = ext3;
+    }
+
+    public int getUserType() {
+        return userType;
+    }
+
+    public void setUserType(int userType) {
+        this.userType = userType;
+    }
+
+    public int getChannelType() {
+        return channelType;
+    }
+
+    public void setChannelType(int channelType) {
+        this.channelType = channelType;
     }
 
     @Override

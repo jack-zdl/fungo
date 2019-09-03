@@ -27,7 +27,11 @@ public enum AbstractResultEnum {
     CODE_SYSTEM_THREE("3003","相互关注成功","相互关注失败"),
     CODE_SYSTEM_FOUR("3004","关注成功","关注失败"),
     CODE_SYSTEM_FESTIVAL_SWITCH_ON("3005","中秋开关已开启",""),
-    CODE_SYSTEM_FESTIVAL_SWITCH_OFF("3006","中秋开关已关闭","");
+    CODE_SYSTEM_FESTIVAL_SWITCH_OFF("3006","中秋开关已关闭",""),
+    CODE_SYSTEM_FIVE("3005","","用户信息异常"),
+    CODE_SYSTEM_SIX("3006","","用户无法免费抽奖"),
+    CODE_SYSTEM_SEVEN("3007","","抱歉,中秋抽奖库存已无!"),
+    CODE_SYSTEM_FESTIVAL_EIGHT("3008","","抱歉你已经分享过了");
 
     String key;
     String successValue;

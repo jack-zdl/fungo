@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.dao.BasNoticeDao;
 import com.fungo.system.dao.MemberDao;
@@ -16,6 +17,7 @@ import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IMemeberProxyService;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
+import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
 import com.fungo.system.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.bean.CollectionBean;
@@ -36,6 +38,7 @@ import com.game.common.util.PageTools;
 import com.game.common.util.StringUtil;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
+import io.swagger.models.auth.In;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,6 +99,9 @@ public class MemberServiceImpl implements IMemberService {
     private CommunityFeignClient communityFeignClient;
     @Autowired
     private GamesFeignClient gamesFeignClient;
+
+    @Autowired
+    private NacosFungoCircleConfig nacosFungoCircleConfig;
 
 
     //
@@ -1445,7 +1451,8 @@ public class MemberServiceImpl implements IMemberService {
         bean.setNextLevel(level + 1);
         bean.setUpgradeExp(getUpgradeExp(level, exp));
         bean.setNextLevelExp(getNextLevelExp(level));
-
+        bean.setRegisterDate(DateTools.channelDateToString(member.getCreatedAt()));
+        bean.setNewMember(getNewMember(member.getCreatedAt()));
         //redis cache
         fungoCacheMember.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_RANKS_LEVEL + loginId, "", bean);
 
@@ -1725,5 +1732,83 @@ public class MemberServiceImpl implements IMemberService {
         return url;
     }
 
+    @Override
+    public ResultDto<String> getLotteryPermission(String memberId) {
+        try {
+
+        }catch (Exception e){
+            logger.error("获取我的中秋抽奖权限用户id:"+memberId,e);
+        }
+        return null;
+    }
+
+    /**
+     * 如果您是新用户，在9月3日~9月16日期间注册
+     * @todo
+     * @return
+     */
+    private boolean getNewMember(Date registerDate){
+        String startDate = nacosFungoCircleConfig.getStartDate();
+        String endDate = nacosFungoCircleConfig.getEndDate();
+        try {
+            startDate = startDate+ " " + FungoMallSeckillConsts.SECKILL_START_TIME;
+            endDate = endDate + " " + FungoMallSeckillConsts.SECKILL_END_TIME;
+            return DateTools.betweenDate(  DateTools.str2Date(startDate,""),DateTools.str2Date(endDate,""),new Date());
+        }catch (Exception e){
+            logger.error("",e);
+        }
+        return true;
+    }
+
+    /**
+     * 如果您是新用户，在9月3日~9月16日期间注册 且等级达到Lv.3即可获得两次免费单抽
+     * @param registerDate 注册时间
+     * @param level 等级
+     * @return false 不是新用户  true 是新用户
+     */
+    public boolean getNewMember(Date registerDate, Integer level){
+        String startDate = nacosFungoCircleConfig.getStartDate();
+        String endDate = nacosFungoCircleConfig.getEndDate();
+        try {
+            if(level < 3){
+                return false;
+            }
+            startDate = startDate+ " " + FungoMallSeckillConsts.SECKILL_START_TIME;
+            endDate = endDate + " " + FungoMallSeckillConsts.SECKILL_END_TIME;
+            return DateTools.betweenDate(  DateTools.str2Date(startDate,""),DateTools.str2Date(endDate,""),new Date());
+        }catch (Exception e){
+            logger.error("",e);
+        }
+        return true;
+    }
+
+    /**
+     *  如果您是平台活跃用户，九月一号和九月十六号活动期间在平台连续签到 四天及以上获得两次免费单抽
+     * @return
+     */
+    public boolean getActiveMemeber(String memberId){
+        try {
+            String startDate = nacosFungoCircleConfig.getStartDate();
+            String endDate = nacosFungoCircleConfig.getEndDate();
+            int days = nacosFungoCircleConfig.getFestivalDays();
+
+            startDate = startDate+ " " + FungoMallSeckillConsts.SECKILL_START_TIME;
+            endDate = endDate + " " + FungoMallSeckillConsts.SECKILL_END_TIME;
+
+            //查询log日志 获取用户签到累计天数
+            EntityWrapper<ScoreLog> scoreLogEntityWrapper = new EntityWrapper<ScoreLog>();
+
+            scoreLogEntityWrapper.eq("member_id", memberId);
+            scoreLogEntityWrapper.in("task_type", "22,220");
+            scoreLogEntityWrapper.ge("created_at", startDate);
+            int signInCount = scoreLogService.selectCount(scoreLogEntityWrapper);
+            if(signInCount >= days ){
+                return true;
+            }
+        }catch (Exception e){
+            logger.error("",e);
+        }
+        return false;
+    }
 
 }

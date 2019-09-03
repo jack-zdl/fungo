@@ -116,4 +116,21 @@ public class FungoMallSeckillConsts {
      */
     public static final String MSG_GAME_GOODS_SUCCESS = "领取成功!\n" + "兑换码为 “$”，点击复制可直接前往游戏兑换。";
 
+    public static final String FESTIVAL_GOODS_SUCCESS_lv1 = "恭喜获得“{”，激活码为“}”，请至steam客户端左下角“添加游戏”进行激活";
+
+    /**
+     * QB 10元 消息
+     */
+    public static final String FESTIVAL_GOODS_SUCCESS_lv2 = "恭喜您获得“<span style='color:#242529'>$</span>”， 卡号：<span style='color:#242529'>{</span>  密码为：<span style='color:#242529'>}</span> \n" +
+            " 请至官网：<a href='https://pay.qq.com'><span style='color:#4995D7'>https://pay.qq.com/</span> </a>进行兑换";
+
+//    public static final String FESTIVAL_GOODS_SUCCESS_lv2 = "恭喜获得“喜加一Lv.2”，激活码为“xxxxx”，请至steam客户端左下角“添加游戏”进行激活";
+    public static final String FESTIVAL_GOODS_SUCCESS_lv3 = "恭喜获得“喜加一Lv.3”，激活码为“xxxxx”，请至steam客户端左下角“添加游戏”进行激活";
+    public static final String FESTIVAL_GOODS_SUCCESS_lv4 = "恭喜获得“随机大作”，激活码为“xxxxx”，请至steam客户端左下角“添加游戏”进行激活";
+
+    public static final String FESTIVAL_GOODS_SUCCESS_lv5 = "恭喜获得“一箱快乐水”！正确填写收货信息我们将在3个工作日内为您邮寄！";
+    public static final String FESTIVAL_GOODS_SUCCESS_lv6 = "恭喜获得“口袋妖怪摆件”！正确填写收货信息我们将在3个工作日内为您邮寄！";
+    public static final String FESTIVAL_GOODS_SUCCESS_lv7 = "恭喜获得“小米蓝牙耳机”！正确填写收货信息我们将在3个工作日内为您邮寄！";
+    public static final String FESTIVAL_GOODS_SUCCESS_lv8 = "恭喜您获得“100QB”，兑换码为：XXXXXXXXXX 请至官网：https://pay.qq.com/进行兑换";
+
 }
