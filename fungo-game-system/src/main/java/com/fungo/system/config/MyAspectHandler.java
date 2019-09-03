@@ -18,6 +18,6 @@ public class MyAspectHandler implements CurrentAspectHandler {
     public Object around(ProceedingJoinPoint pjp, CurrentLimiter rateLimiter) throws Throwable {
         //被注解修饰的方法返回值，慎用！
         //可以结合Controller返回自定义视图
-        return FungoPageResultDto.error("-1", "抽取中秋节日礼品失败");
+        return FungoPageResultDto.error("-1", "抽取中秋节日礼品人数过多,请稍后再试。");
     }
 }
