@@ -80,7 +80,7 @@ public class AdvertController {
             Integer targetType = banner.getTargetType();
 
             //若targetType值为空或者0，则不展示，即不返回给前端
-            if (null == targetType || 0 == targetType) {
+            if ( banner.getActionType() == 1 &&(null == targetType || 0 == targetType)) {
                 continue;
             }
             //end
