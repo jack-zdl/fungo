@@ -42,7 +42,7 @@ public class FungoMallController {
     @Autowired
     private NacosFungoCircleConfig nacosFungoCircleConfig;
 
-    @PostMapping("/mall/addGoods")
+    @PostMapping("/mall/addGoods/")
     public ResultDto<Object> addGoods(@RequestBody FungoMallDto fungoMallDto){
         Object isOk = iFungoMallGoodsService.addGoods(fungoMallDto);
         if(isOk != null){
@@ -59,7 +59,7 @@ public class FungoMallController {
      * @auther: dl.zhang
      * @date: 2019/8/20 19:46
      */
-    @GetMapping("/mall/addseckill")
+    @GetMapping("/mall/addseckill/")
     public ResultDto<String> addSeckill(String goodId,String stocks,String start,String end){
         ResultDto<String> isOk = iFungoMallGoodsService.addSeckill(goodId,stocks,start,end);
         if(CommonEnum.SUCCESS.code().equals(String.valueOf(isOk.getStatus()))){
@@ -76,7 +76,7 @@ public class FungoMallController {
      * @auther: dl.zhang
      * @date: 2019/8/20 19:46
      */
-    @PostMapping("/mall/festival")
+    @PostMapping("/mall/festival/")
     public FungoPageResultDto<MallGoodsOutBean> getFestivalMall(@RequestBody InputPageDto inputPageDto){
         FungoPageResultDto<MallGoodsOutBean> isOk = iFungoMallGoodsService.getFestivalMall(inputPageDto);
         if(CommonEnum.SUCCESS.code().equals(String.valueOf(isOk.getStatus()))){
@@ -93,7 +93,7 @@ public class FungoMallController {
      * @auther: dl.zhang
      * @date: 2019/8/20 19:46
      */
-    @PostMapping("/mall/draw")
+    @PostMapping("/mall/draw/")
     @CurrentLimiter(QPS = 50)
     public FungoPageResultDto<MallGoodsOutBean> drawFestivalMall(HttpServletRequest request ,MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto){
         String memberId = memberUserPrefile.getLoginId();
@@ -126,7 +126,7 @@ public class FungoMallController {
      * @auther: dl.zhang
      * @date: 2019/8/20 19:46
      */
-    @PostMapping("/mall/drawn")
+    @PostMapping("/mall/drawn/")
     public ResultDto<JSON> drawnFestivalMall(MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto){
         String memberId = memberUserPrefile.getLoginId();
 
@@ -145,7 +145,7 @@ public class FungoMallController {
      * @auther: dl.zhang
      * @date: 2019/8/20 19:46
      */
-    @GetMapping("/mall/postId")
+    @GetMapping("/mall/postId/")
     public ResultDto<JSON> getFestivalPostId(@Anonymous MemberUserProfile memberUserPrefile){
         return ResultDto.ResultDtoFactory.buildSuccess((Object) nacosFungoCircleConfig.getFestivalPostId());
     }
