@@ -83,11 +83,14 @@ public class AdvertController {
             if ( banner.getActionType() == 1 &&(null == targetType || 0 == targetType)) {
                 continue;
             }
+
             //end
 
             AdvertOutBean bean = new AdvertOutBean();
             bean.setBizId(banner.getTargetId());
-
+            if(banner.getActionType() == 2){
+                bean.setLinkUrl(banner.getHref());
+            }
             bean.setBizType(targetType);
 
             if (3 == targetType) {
