@@ -755,7 +755,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                 json.put( "oldMember", mallLogs2 != null ? mallLogs2.size() : 0);
                 List<MallLogs> mallLogs3 = mallLogsMap.get(3);
                 json.put( "share", mallLogs3 != null ? mallLogs3.size() : 0);
-                json.put( "count",signInCount );
+                json.put( "count",signInCount > 4 ? 4 : signInCount );
                 json.put( "isNew",isNew ? 2: 0 );
                 json.put( "isOld",isOld ? 2 : 0 );
                 json.put( "isShare",memberInfo != null ? 1 : 0 );
