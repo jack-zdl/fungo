@@ -533,7 +533,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
         return resultDto;
     }
 
-    @Transactional()
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public FungoPageResultDto<MallGoodsOutBean> drawFestivalMall(String memberId, InputPageDto inputPageDto,String realIp) throws Exception {
         FungoPageResultDto<MallGoodsOutBean> resultDto = new FungoPageResultDto<>();
@@ -848,9 +848,9 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 
 
         //2 从秒杀商品信息中 解析商品秒杀价格
-        String seckillPriceVcy = mallSeckill.getSeckillPriceVcy();
+//        String seckillPriceVcy = mallSeckill.getSeckillPriceVcy();
         //解密 商品秒杀价格
-        String seckillPriceVcyDecrypt = FungoAESUtil.decrypt(seckillPriceVcy, aESSecretKey + FungoMallSeckillConsts.AES_SALT);
+//        String seckillPriceVcyDecrypt = FungoAESUtil.decrypt(seckillPriceVcy, aESSecretKey + FungoMallSeckillConsts.AES_SALT);
 
 //        long seckillPriceVcy_i = 0;
 //        if (StringUtils.isNoneBlank(seckillPriceVcyDecrypt)) {
