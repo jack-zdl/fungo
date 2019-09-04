@@ -26,7 +26,7 @@ public class MallTest {
     @Test
     public void testRedis() {
         try {
-//            fungoVMallGoodsExcelParserService.excuteParserToVCard();
+            fungoVMallGoodsExcelParserService.excuteParserToVCard();
         } catch (Exception e) {
             e.printStackTrace();
         }
