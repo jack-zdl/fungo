@@ -533,7 +533,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
         return resultDto;
     }
 
-    @Transactional()
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public FungoPageResultDto<MallGoodsOutBean> drawFestivalMall(String memberId, InputPageDto inputPageDto,String realIp) throws Exception {
         FungoPageResultDto<MallGoodsOutBean> resultDto = new FungoPageResultDto<>();
