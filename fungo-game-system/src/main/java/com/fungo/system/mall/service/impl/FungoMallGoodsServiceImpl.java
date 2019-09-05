@@ -659,8 +659,9 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
             });
             mallSeckillOrderDao.updateBatch(mallSeckillOrders);
 //            orderMap = iFungoMallSeckillService.createOrderWithSeckill(mallOrderInput, realIp);
+            List<String> mallOrderIds = mallSeckillOrderDtos.stream().map(MallSeckillOrderDto::getOrderId).collect(Collectors.toList());
             // 那个商品id去下订单  不能和原来的秒杀
-            boolean isOk = dealFestivalOrder();
+            boolean isOk = dealFestivalOrder(mallOrderIds);
             if(!isOk){
                 throw new Exception("处理订单异常");
             }
@@ -969,35 +970,38 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
      * @auther: dl.zhang
      * @date: 2019/8/28 16:19
      */
-    public boolean dealFestivalOrder(){
+    public boolean dealFestivalOrder(List<String> orderIds){
         boolean isOk = false;
         try {
             logger.info("扫描订单表,处理已确定和已冻结余额的订单....");
 
-            //开始扫描订单，设置处理订单状态为 2 正在扫描订单处理中
+//            //开始扫描订单，设置处理订单状态为 2 正在扫描订单处理中
             FungoMallSeckillTaskStateCommand.getInstance().setScanOrderIsOk(2);
-            //每次处理条数
-            int pageSize = 40;
-
-            //分页查询订单
-            //1 先查询订单总条数
+//            //每次处理条数
+//            int pageSize = 40;
+//
+//            //分页查询订单
+//            //1 先查询订单总条数
             EntityWrapper<MallOrder> orderEntityWrapper = new EntityWrapper<MallOrder>();
-            //1 已确认     3 已冻结物品价格可用余额
-            orderEntityWrapper.eq("order_status", 1).eq("pay_status", 3).eq( "order_type",11);
+            orderEntityWrapper.in( "id", orderIds);
+//            //1 已确认     3 已冻结物品价格可用余额
+//            orderEntityWrapper.eq("order_status", 1).eq("pay_status", 3).eq( "order_type",11);
+//
+//            int orderCount = mallOrderDaoService.selectCount(orderEntityWrapper);
+//            if (orderCount > 0) {
 
-            int orderCount = mallOrderDaoService.selectCount(orderEntityWrapper);
-            if (orderCount > 0) {
-
-                long totalPage = (orderCount - 1) / pageSize + 1;
+//                long totalPage = (orderCount - 1) / pageSize + 1;
 
                 //订单按创建时间正序顺序排列
-                orderEntityWrapper.orderBy("create_time", true);
+//                orderEntityWrapper.orderBy("create_time", true);
 
                 //按页处理订单 当前页下标从1开始
-                for (int i = 1; i <= totalPage; i++) {
-                    Page<MallOrder> mallOrderPage = mallOrderDaoService.selectPage(new Page<>(i, pageSize), orderEntityWrapper);
-                    List<MallOrder> mallOrderList = mallOrderPage.getRecords();
+//                for (int i = 1; i <= totalPage; i++) {
+//                    Page<MallOrder> mallOrderPage = mallOrderDaoService.selectList(orderEntityWrapper);
+
+                    List<MallOrder> mallOrderList = mallOrderDaoService.selectList(orderEntityWrapper);
                     if (null != mallOrderList && !mallOrderList.isEmpty()) {
+
                         for (MallOrder mallOrder : mallOrderList) {
 
                             //处理交易
@@ -1041,15 +1045,15 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                                         isFullGoodsStock = fungoMallScanOrderWithSeckillServiceImpl.isFullGoodsStockForScanOrder(mallSeckill, goodsNumber, goods.getGoodsId());
                                     }
                                     //3.1 若库存不足，把冻结余额 加回到 可用余额中，同时标记订单为 8 商品库存不足，继续处理下一个商品
-                                    if (!isFullGoodsStock) {
-                                        logger.info("mb_id:{}--order_id:{}--goods_id:{}--商品库存不足，解冻用户fungo币账户,修改订单状态: 8 商品库存不足,4 被冻结额已解冻, -1 未发货",
-                                                mb_id, orderId, goods.getGoodsId());
-                                        //解冻用户fungo币账户
-                                        fungoMallScanOrderWithSeckillServiceImpl.unfreezeAccountCoinWithMember(mb_id, goodsPriceVcy);
-                                        //修改订单状态 8 商品库存不足  4 被冻结额已解冻   -1 未发货
-                                        fungoMallScanOrderWithSeckillServiceImpl.updateOrderStatusWithScan(mb_id, orderId, 8, 4, -1);
-                                        continue;
-                                    }
+//                                    if (!isFullGoodsStock ) {
+//                                        logger.info("mb_id:{}--order_id:{}--goods_id:{}--商品库存不足，解冻用户fungo币账户,修改订单状态: 8 商品库存不足,4 被冻结额已解冻, -1 未发货",
+//                                                mb_id, orderId, goods.getGoodsId());
+//                                        //解冻用户fungo币账户
+//                                        fungoMallScanOrderWithSeckillServiceImpl.unfreezeAccountCoinWithMember(mb_id, goodsPriceVcy);
+//                                        //修改订单状态 8 商品库存不足  4 被冻结额已解冻   -1 未发货
+//                                        fungoMallScanOrderWithSeckillServiceImpl.updateOrderStatusWithScan(mb_id, orderId, 8, 4, -1);
+//                                        continue;
+//                                    }
 
                                     //若库存足，先扣钱，再减库存
                                     //4.扣减冻结商品价格额
@@ -1067,16 +1071,16 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                                     //不是游戏礼包订单
                                     if (3 != goods.getGoodsType().intValue()) {
                                         boolean goodsStockUpdateResult = fungoMallScanOrderWithSeckillServiceImpl.deductionGoodsStock(mallSeckill, goodsNumber);
-                                        if (!goodsStockUpdateResult) {
-                                            logger.info("mb_id:{}--order_id:{}--goods_id:{}--扣减库存失败，解冻用户fungo币账户,修改订单状态: 8 商品库存不足,4 被冻结额已解冻 ,-1 未发货",
-                                                    mb_id, orderId, goods.getGoodsId());
-                                            //扣减库存失败
-                                            //解冻用户fungo币账户
-                                            fungoMallScanOrderWithSeckillServiceImpl.unfreezeAccountCoinWithMember(mb_id, goodsPriceVcy);
-                                            //修改订单状态  8 商品库存不足  4 被冻结额已解冻  -1 未发货
-                                            fungoMallScanOrderWithSeckillServiceImpl.updateOrderStatusWithScan(mb_id, orderId, 8, 4, -1);
-                                            continue;
-                                        }
+//                                        if (!goodsStockUpdateResult ) {
+//                                            logger.info("mb_id:{}--order_id:{}--goods_id:{}--扣减库存失败，解冻用户fungo币账户,修改订单状态: 8 商品库存不足,4 被冻结额已解冻 ,-1 未发货",
+//                                                    mb_id, orderId, goods.getGoodsId());
+//                                            //扣减库存失败
+//                                            //解冻用户fungo币账户
+//                                            fungoMallScanOrderWithSeckillServiceImpl.unfreezeAccountCoinWithMember(mb_id, goodsPriceVcy);
+//                                            //修改订单状态  8 商品库存不足  4 被冻结额已解冻  -1 未发货
+//                                            fungoMallScanOrderWithSeckillServiceImpl.updateOrderStatusWithScan(mb_id, orderId, 8, 4, -1);
+//                                            continue;
+//                                        }
                                     }
 
                                     lock.lock();
@@ -1151,8 +1155,8 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                             fungoCacheTask.excIndexCache(false, cacheKey, "", null);
                         }
                     }
-                }
-            }
+//                }
+//            }
             isOk = true;
         } catch (Exception ex) {
             logger.error("扫描订单表,处理已确定和已冻结余额的订单出现异常", ex);
