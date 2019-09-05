@@ -661,7 +661,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 //            orderMap = iFungoMallSeckillService.createOrderWithSeckill(mallOrderInput, realIp);
             List<String> mallOrderIds = mallSeckillOrderDtos.stream().map(MallSeckillOrderDto::getOrderId).collect(Collectors.toList());
             // 那个商品id去下订单  不能和原来的秒杀
-            boolean isOk = dealFestivalOrder(mallOrderIds);
+            boolean isOk = dealFestivalOrder(mallOrderIds,finalUserType);
             if(!isOk){
                 throw new Exception("处理订单异常");
             }
@@ -970,7 +970,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
      * @auther: dl.zhang
      * @date: 2019/8/28 16:19
      */
-    public boolean dealFestivalOrder(List<String> orderIds){
+    public boolean dealFestivalOrder(List<String> orderIds,int finalUserType){
         boolean isOk = false;
         try {
             logger.info("扫描订单表,处理已确定和已冻结余额的订单....");
@@ -1057,7 +1057,11 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 
                                     //若库存足，先扣钱，再减库存
                                     //4.扣减冻结商品价格额
-                                    boolean dedCoinAccoutResult = fungoMallScanOrderWithSeckillServiceImpl.deductionAccountCoinWithMember(mb_id, goodsPriceVcy);
+                                    boolean dedCoinAccoutResult = true;
+                                    if(finalUserType == 4 || finalUserType == 5 ){
+                                        dedCoinAccoutResult = fungoMallScanOrderWithSeckillServiceImpl.deductionAccountCoinWithMember(mb_id, goodsPriceVcy);
+                                    }
+
                                     if (!dedCoinAccoutResult) {
                                         //若扣减冻结账户失败 同时标记订单为 3  无效   5 扣减冻结失败 ，继续处理下一个商品
                                         logger.info("mb_id:{}--order_id:{}--goods_id:{}--扣减冻结用户账户的商品价格额失败,修改订单状态: 3 无效, 5 扣减冻结失败 ,-1 未发货",
@@ -1117,21 +1121,21 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 
                                         //7. 记录用户fungo币消费明细
                                         if (isUpdateSucc) {
-
-                                            fungoMallScanOrderWithSeckillServiceImpl.addFungoPayLogs(mb_id, mallOrder.getMbMobile(), mallOrder.getMbName(), String.valueOf(goodsPriceVcy),
-                                                    goods.getGoodsName());
-                                            // fun币消耗埋点
-                                            Long goodsPriceVcy1 = goods.getGoodsPriceVcy();
-                                            if(goodsPriceVcy1!=null&&goodsPriceVcy1>0){
-                                                BuriedPointConsumeModel model = new BuriedPointConsumeModel();
-                                                model.setDistinctId(mb_id);
-                                                model.setEventName( BuriedPointEventConstant.EVENT_KEY_GOLD_CONSUMED);
-                                                model.setPlatForm( BuriedPointUtils.getPlatForm());
-                                                model.setMethod("消费");
-                                                model.setAmount(goodsPriceVcy);
-                                                BuriedPointUtils.publishBuriedPointEvent(model);
+                                            if(finalUserType == 4 || finalUserType == 5 ){
+                                                fungoMallScanOrderWithSeckillServiceImpl.addFungoPayLogs(mb_id, mallOrder.getMbMobile(), mallOrder.getMbName(), String.valueOf(goodsPriceVcy),
+                                                        goods.getGoodsName());
+                                                // fun币消耗埋点
+                                                Long goodsPriceVcy1 = goods.getGoodsPriceVcy();
+                                                if(goodsPriceVcy1!=null&&goodsPriceVcy1>0){
+                                                    BuriedPointConsumeModel model = new BuriedPointConsumeModel();
+                                                    model.setDistinctId(mb_id);
+                                                    model.setEventName( BuriedPointEventConstant.EVENT_KEY_GOLD_CONSUMED);
+                                                    model.setPlatForm( BuriedPointUtils.getPlatForm());
+                                                    model.setMethod("消费");
+                                                    model.setAmount(goodsPriceVcy);
+                                                    BuriedPointUtils.publishBuriedPointEvent(model);
+                                                }
                                             }
-
                                         }
                                         //8. 推送系统消息通知用户商品秒杀成功和虚拟卡商品卡号密码等信息
                                         if (isUpdateSucc && 3 != goods.getGoodsType().intValue()) {
