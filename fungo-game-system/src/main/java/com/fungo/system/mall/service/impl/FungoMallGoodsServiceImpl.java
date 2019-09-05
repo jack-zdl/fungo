@@ -761,10 +761,10 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                 List<MallLogs> mallLogs3 = mallLogsMap.get(3);
                 json.put( "share", mallLogs3 != null ? mallLogs3.size() : 0);
                 json.put( "count",signInCount > 4 ? 4 : signInCount );
-                json.put( "isNew",isNew ? 2: 0 );
-                json.put( "isOld",isOld ? 2 : 0 );
+                json.put( "isNew",isNew ? 1: 0 );
+                json.put( "isOld",isOld ? 1 : 0 );
                 json.put( "isShare",memberInfo != null ? 1 : 0 );
-                json.put( "surplus", (Integer)json.get("isNew")+(Integer)json.get("isOld")+(Integer)json.get("isShare")-(Integer)json.get("newMember")-(Integer)json.get("oldMember")-(Integer)json.get("share"));
+                json.put( "surplus", ((Integer)json.get("isNew")* 2) +((Integer)json.get("isOld")* 2)+(Integer)json.get("isShare")-(Integer)json.get("newMember")-(Integer)json.get("oldMember")-(Integer)json.get("share"));
             }
         }catch (Exception e){
             logger.error("",e);
