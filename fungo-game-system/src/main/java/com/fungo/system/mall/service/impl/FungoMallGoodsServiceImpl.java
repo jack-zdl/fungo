@@ -600,11 +600,14 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
             }
             int finalUserType = userType;
             List<MallSeckillOrderDto> mallSeckillOrderDtos = new ArrayList<>();
+
             mallSeckillOrders.stream().forEach( s -> {
                 s.setIsactive("0");
                 s.setUpdatedAt(new Date());
                 s.setUpdatedBy(memberId);
-                s.updateById();
+                s.setRversion( s.getRversion()+1);
+
+//                s.updateById();
 
                 MallSeckillOrderDto mallSeckillOrderDto = new MallSeckillOrderDto();
                 try {
@@ -654,6 +657,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
                 mallSeckillOrderDtos.add(mallSeckillOrderDto);
                 fungoMallSeckillServiceImpl.addMallLogs(memberId, "", Long.parseLong(s.getMallGoodsId()), realIp, 2,"/api/system/mall/draw", finalUserType,Integer.valueOf(inputPageDto.getFilter()));
             });
+            mallSeckillOrderDao.updateBatch(mallSeckillOrders);
 //            orderMap = iFungoMallSeckillService.createOrderWithSeckill(mallOrderInput, realIp);
             // 那个商品id去下订单  不能和原来的秒杀
             boolean isOk = dealFestivalOrder();
@@ -848,9 +852,9 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 
 
         //2 从秒杀商品信息中 解析商品秒杀价格
-        String seckillPriceVcy = mallSeckill.getSeckillPriceVcy();
+//        String seckillPriceVcy = mallSeckill.getSeckillPriceVcy();
         //解密 商品秒杀价格
-        String seckillPriceVcyDecrypt = FungoAESUtil.decrypt(seckillPriceVcy, aESSecretKey + FungoMallSeckillConsts.AES_SALT);
+//        String seckillPriceVcyDecrypt = FungoAESUtil.decrypt(seckillPriceVcy, aESSecretKey + FungoMallSeckillConsts.AES_SALT);
 
 //        long seckillPriceVcy_i = 0;
 //        if (StringUtils.isNoneBlank(seckillPriceVcyDecrypt)) {

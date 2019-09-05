@@ -83,4 +83,17 @@
     <include refid="Base_Column_List"></include>
     FROM t_mall_seckill_order WHERE isactive = 1  ORDER BY id asc
   </select>
+
+  <update id="updateBatch"  parameterType="java.util.List">
+    <foreach collection="list" item="bean" index="index" open="" close="" separator=";">
+      UPDATE t_mall_seckill_order
+      <set>
+        isactive= #{bean.isactive} ,  updated_by= #{bean.updatedBy}, updated_at=#{bean.updatedAt}, rversion=#{bean.rversion}
+      </set>
+      <where>
+        id= #{bean.id}
+      </where>
+    </foreach>
+
+  </update>
 </mapper>

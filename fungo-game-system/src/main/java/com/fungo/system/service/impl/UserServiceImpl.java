@@ -1032,7 +1032,10 @@ public class UserServiceImpl implements IUserService {
             memberInfo.setShareType(1);
             memberInfo = memberInfoDao.selectOne( memberInfo);
             if(memberInfo != null){
-               return ResultDto.ResultDtoFactory.buildWarning( AbstractResultEnum.CODE_SYSTEM_FESTIVAL_EIGHT.getKey(),AbstractResultEnum.CODE_SYSTEM_FESTIVAL_EIGHT.getFailevalue());
+                resultDto = ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FESTIVAL_EIGHT.getKey(),AbstractResultEnum.CODE_SYSTEM_FESTIVAL_EIGHT.getSuccessValue());
+                resultDto.setShowState(-1);
+                return resultDto;
+
             }
             memberInfo = new MemberInfo();
             memberInfo.setMdId(adminId);
@@ -1045,7 +1048,7 @@ public class UserServiceImpl implements IUserService {
             memberInfo.setUpdatedAt(new Date());
             memberInfo.setDescription("用户分享中秋活动成功");
             memberInfoDao.insert(memberInfo);
-            resultDto = ResultDto.ResultDtoFactory.buildSuccess(  "用户分享中秋活动成功");
+            resultDto = ResultDto.ResultDtoFactory.buildSuccess(  "分享成功，已获得1次免费抽奖次数，快去抽奖吧!");
         }catch (Exception e){
             LOGGER.error("用户分享中秋活动",e);
             resultDto = ResultDto.ResultDtoFactory.buildError(  "用户分享中秋活动失败,请联系管理员");

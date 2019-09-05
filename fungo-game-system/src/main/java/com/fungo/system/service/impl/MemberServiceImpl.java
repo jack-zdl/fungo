@@ -929,7 +929,7 @@ public class MemberServiceImpl implements IMemberService {
 
         EntityWrapper<BasNotice> noticeEntityWrapper = new EntityWrapper<>();
         noticeEntityWrapper.eq("member_id", memberId);
-        //noticeEntityWrapper.eq("is_read", 0);
+//        noticeEntityWrapper.eq("is_read", 0);
         noticeEntityWrapper.in("type", types);
         noticeEntityWrapper.orderBy("created_at", false);
 
