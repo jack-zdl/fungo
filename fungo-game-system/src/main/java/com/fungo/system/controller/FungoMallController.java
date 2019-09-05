@@ -117,6 +117,9 @@ public class FungoMallController {
             realIp = request.getHeader("x-forwarded-for");
         }
         FungoPageResultDto<MallGoodsOutBean> isOk;
+        if(inputPageDto.getLimit() == 0 || CommonUtil.isNull(inputPageDto.getFilter()) ){
+                return FungoPageResultDto.FungoPageResultDtoFactory.buildError( "参数有误");
+        }
         try {
             isOk = iFungoMallGoodsService.drawFestivalMall(memberId,inputPageDto,realIp);
             if(CommonEnum.SUCCESS.code().equals(String.valueOf(isOk.getStatus()))){
