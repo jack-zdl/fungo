@@ -69,16 +69,29 @@ public class PostHtmlContentController {
         String keyPrefixTitle = FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_TITLE + postId;
         String htmlContentTitle = fungoCacheArticle.getIndexCacheWithStr(keyPrefixTitle, "");
 
+        CmmPost post = null;
         if (StringUtils.isNotBlank(htmlContent) && StringUtils.isNotBlank(htmlContentTitle)) {
+            // 有头图直接放行
+            if(htmlContent.startsWith("<img")){
+                htmlContent = FilterEmojiUtil.decodeEmoji(htmlContent);
+                htmlContentTitle = FilterEmojiUtil.decodeEmoji(htmlContentTitle);
 
-            htmlContent = FilterEmojiUtil.decodeEmoji(htmlContent);
-            htmlContentTitle = FilterEmojiUtil.decodeEmoji(htmlContentTitle);
-
-            return TemplateUtil.returnPostHtmlTemplate(htmlContent, htmlContentTitle);
-
+                return TemplateUtil.returnPostHtmlTemplate(htmlContent, htmlContentTitle);
+            }else {
+                // 修复 缓存可能对有头图的文章过滤掉头图
+                 post = daoPostService.selectById(postId);
+                String htmlOrigin = post.getHtmlOrigin();
+                if(htmlOrigin!=null&&!htmlOrigin.startsWith("<img")){
+                    htmlContent = FilterEmojiUtil.decodeEmoji(htmlContent);
+                    htmlContentTitle = FilterEmojiUtil.decodeEmoji(htmlContentTitle);
+                    return TemplateUtil.returnPostHtmlTemplate(htmlContent, htmlContentTitle);
+                }
+            }
+        }
+        if(post==null){
+            post = daoPostService.selectById(postId);
         }
 
-        CmmPost post = daoPostService.selectById(postId);
         if (post == null) {
             throw new Exception("帖子不存在");
         } else {
