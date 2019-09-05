@@ -1776,7 +1776,7 @@ public class MemberServiceImpl implements IMemberService {
             }
             startDate = startDate+ " " + FungoMallSeckillConsts.SECKILL_START_TIME;
             endDate = endDate + " " + FungoMallSeckillConsts.SECKILL_END_TIME;
-            return DateTools.betweenDate(  DateTools.str2Date(startDate,""),DateTools.str2Date(endDate,""),new Date());
+            return DateTools.betweenDate(  DateTools.str2Date(startDate,""),DateTools.str2Date(endDate,""),registerDate);
         }catch (Exception e){
             logger.error("",e);
         }
