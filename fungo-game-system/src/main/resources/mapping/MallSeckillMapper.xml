@@ -67,6 +67,42 @@
 				</if>
 	</select>
 
+	<select id="queryFestivalSeckillGoods" resultType="java.util.Map">
+		/*FORCE_MASTER*/ SELECT
+		gds.id AS goodsId,
+		gds.goods_name,
+		gds.goods_intro,
+		gds.main_img,
+		gds.sort,
+		gds.goods_type,
+		sk.seckill_price_vcy,
+		sk.residue_stock,
+		sk.start_time,
+		sk.end_time,
+		sk.ext2
+		FROM
+		t_mall_seckill sk
+		JOIN t_mall_goods gds
+		ON sk.goods_id = gds.id
+		AND sk.ext1 = '1'
+		<if test="startTime != null  and endTime != null">
+			AND
+			( #{startTime}  BETWEEN sk.start_time  AND sk.end_time    )
+		</if>
+		<if test="goods_types != null">
+			AND
+			gds.goods_type in
+
+			<foreach  item="item" collection="goods_types" index="index"  open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="goods_status > 0">
+			AND
+			gds.goods_status = #{goods_status}
+		</if>
+	</select>
+
 	<select id="querySeckillGoodsByGoodId" resultType="com.fungo.system.mall.entity.MallSeckill">
 	SELECT
 		<include refid="Base_Column_List"></include>
@@ -77,6 +113,33 @@
 		<if test="startTime != null  and endTime != null">
 			AND
 			( sk.start_time BETWEEN #{startTime} AND #{endTime}  )
+		</if>
+	</select>
+
+
+	<select id="queryFestivalSeckillGoodsById" resultType="java.util.Map">
+		/*FORCE_MASTER*/ SELECT
+		gds.id AS goodsId,
+		gds.goods_name,
+		gds.goods_intro,
+		gds.main_img,
+		gds.sort,
+		gds.goods_type,
+		sk.seckill_price_vcy,
+		sk.residue_stock,
+		sk.start_time,
+		sk.end_time,
+		sk.ext2
+		FROM
+		t_mall_seckill sk
+		JOIN t_mall_goods gds
+		ON sk.goods_id = gds.id
+		AND sk.ext1 = '1'
+		<if test="goodIds != null">
+			AND	gds.id in
+			<foreach  item="item" collection="goodIds" index="index"  open="(" separator="," close=")">
+				#{item}
+			</foreach>
 		</if>
 	</select>
 

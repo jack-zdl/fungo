@@ -85,6 +85,12 @@ public class MallLogs extends Model<MallLogs> {
      */
 	private String ext3;
 
+	@TableField("user_type")
+	private int userType;
+
+	@TableField("channel_type")
+	private int channelType;
+
 
 	public Long getId() {
 		return id;
@@ -196,6 +202,30 @@ public class MallLogs extends Model<MallLogs> {
 
 	public void setExt3(String ext3) {
 		this.ext3 = ext3;
+	}
+
+	public String getiUrl() {
+		return iUrl;
+	}
+
+	public void setiUrl(String iUrl) {
+		this.iUrl = iUrl;
+	}
+
+	public int getUserType() {
+		return userType;
+	}
+
+	public void setUserType(int userType) {
+		this.userType = userType;
+	}
+
+	public int getChannelType() {
+		return channelType;
+	}
+
+	public void setChannelType(int channelType) {
+		this.channelType = channelType;
 	}
 
 	@Override

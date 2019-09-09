@@ -244,13 +244,15 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
 
             //获取用户最后的签到数据
             //若没有记录，则表示是第一次签到
-            IncentTasked incentTasked = getMbLastSignInData(mb_id);
-            if (null == incentTasked) {
-                //执行签到： 第一次
-                this.exFirstSignIn(member);
-            } else {
-                //执行签到：连续签到
-                return this.exSuccessionSignIn(member, incentTasked);
+            synchronized (this){
+                IncentTasked incentTasked = getMbLastSignInData(mb_id);
+                if (null == incentTasked) {
+                    //执行签到： 第一次
+                    this.exFirstSignIn(member);
+                } else {
+                    //执行签到：连续签到
+                    return this.exSuccessionSignIn(member, incentTasked);
+                }
             }
         } catch (Exception ex) {
             logger.error("用户执行签到出现异常", ex);

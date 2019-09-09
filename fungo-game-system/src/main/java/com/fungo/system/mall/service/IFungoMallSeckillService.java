@@ -110,5 +110,6 @@ public interface IFungoMallSeckillService {
     public FungoPageResultDto<Map<String, Object>> queryMemberGameOrderList(String mb_id , Map<String, Object> param);
 
 
+    public void insertMallSeckillOrder(String goodId,String number);
 
 }

@@ -31,7 +31,7 @@
 	<update id="setSystemIsRead" parameterType="java.util.Map">
 		update t_bas_notice set is_read = 1 where member_id = #{memberId}
 		 <if test="channel != null ">
-			 and (channel = #{channel} or channel = null )
+			 and (channel = #{channel} or channel is null )
 		 </if>
 		 and is_read = 0 and type in
 		<foreach collection="typeList" item="item" index="index" open="(" separator="," close=")">

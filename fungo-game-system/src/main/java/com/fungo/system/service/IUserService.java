@@ -150,6 +150,10 @@ public interface IUserService {
 
 
     //添加管理员关联的虚拟用户
-    public ResultDto<Member> addVirtualUser(AdminUserInputDTO input, String adminId) throws Exception;
+    ResultDto<Member> addVirtualUser(AdminUserInputDTO input, String adminId) throws Exception;
+
+
+    //添加管理员关联的虚拟用户
+    ResultDto<String> userShareMall(String adminId) throws Exception;
 
 }

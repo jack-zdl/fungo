@@ -277,10 +277,12 @@ public class ProtalGamesEvaluateServiceImpl implements ProtalGameIEvaluateServic
         int sort = eva.getSort();
         String id = eva.getObjectId();
         //上一评论
-        GameEvaluation pre = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).gt("created_at", eva.getCreatedAt()).ne("id", id).orderBy("concat(sort,created_at)").last("limit 1"));
+        GameEvaluation pre = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2)
+                .and("state != {0}", -1).gt("created_at", eva.getCreatedAt()).ne("id", id).orderBy("created_at").last("limit 1"));  //concat(sort,created_at)
 //		GameEvaluation pree = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}",-1).le("sort",sort).ne("id", id).orderBy("concat(sort,created_at)",false).last("limit 1"));
         //下一评论
-        GameEvaluation next = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2).and("state != {0}", -1).le("created_at", eva.getCreatedAt()).ne("id", id).orderBy("concat(sort,created_at)", false).last("limit 1"));
+        GameEvaluation next = gameEvaluationService.selectOne(Condition.create().setSqlSelect("id").eq("type", 2)
+                .and("state != {0}", -1).le("created_at", eva.getCreatedAt()).ne("id", id).orderBy("created_at", false).last("limit 1")); //concat(sort,created_at)
         if (pre != null) {
             eva.setPreEvaId(pre.getId());
         }//

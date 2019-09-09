@@ -321,6 +321,8 @@ public class MallGoods extends Model<MallGoods> {
 		this.gameName = gameName;
 	}
 
+
+
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
