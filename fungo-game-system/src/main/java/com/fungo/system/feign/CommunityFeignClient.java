@@ -6,10 +6,8 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.*;
 import com.game.common.vo.CircleGamePostVo;
-import com.game.common.vo.CmmCircleVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
 
@@ -43,14 +41,6 @@ public interface CommunityFeignClient {
      */
     @PostMapping("/ms/service/cmm/post/lists")
     FungoPageResultDto<CmmPostDto> queryCmmPostList(@RequestBody CmmPostDto cmmPostDto);
-
-//    /**
-//     * 查询社区帖子|文章数据
-//     * @return
-//     */
-//    @PostMapping("/ms/service/cmm/mypost/lists")
-//    FungoPageResultDto<CmmPostDto> queryMyCmmPostList(@RequestBody CmmPostDto cmmPostDto);
-
 
     /**
      * 查询社区帖子|文章数据

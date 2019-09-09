@@ -46,6 +46,9 @@ public class CommonServiceImpl implements ICommonService {
                 ObjectMapper objectMapper = new ObjectMapper();
                 try {
                     type = objectMapper.readValue(value, ReportType.class);
+                    if(type == null){
+                        type = new  ReportType();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

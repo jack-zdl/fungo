@@ -2,9 +2,6 @@ package com.fungo.system.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.fungo.system.entity.BasTag;
-import com.game.common.bean.TagBean;
-
-import java.util.List;
 
 /**
  * <p>
