@@ -432,7 +432,6 @@ public class MemberController {
     public ResultDto<MemberLevelBean> getMemberLevel(MemberUserProfile memberUserPrefile) {
         String loginId = memberUserPrefile.getLoginId();
         return memberService.getMemberLevel(loginId);
-
     }
 
 
@@ -446,6 +445,18 @@ public class MemberController {
             return ResultDto.error("-1", "未指定用户");
         }
 //		String loginId = memberUserPrefile.getLoginId();
+        return memberService.getPublishCount(memberId);
+    }
+
+
+    @ApiOperation(value = "获取我的中秋抽奖权限", notes = "")
+    @RequestMapping(value = "/api/mine/lottery", method = RequestMethod.POST)
+    @ApiImplicitParams({})
+    public ResultDto<Map<String, Integer>> getLotteryPermission(MemberUserProfile memberUserPrefile) {
+        String memberId = memberUserPrefile.getLoginId();
+        if (CommonUtil.isNull(memberId)) {
+            return ResultDto.error("-1", "未指定用户");
+        }
         return memberService.getPublishCount(memberId);
     }
 

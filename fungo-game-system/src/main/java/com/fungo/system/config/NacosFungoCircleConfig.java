@@ -24,6 +24,18 @@ public class NacosFungoCircleConfig {
 
     @Value(value = "${nacos.cloud.basLogtwo}")
     public String basLogtwo;
+    @Value( value = "${fungo.cloud.festival.startDate}")
+    public String startDate;
+    @Value( value = "${fungo.cloud.festival.endDate}")
+    public String endDate;
+    @Value( value = "${fungo.cloud.festival.days}")
+    public int festivalDays;
+    @Value( value = "${fungo.cloud.festival.warnning.switch}")
+    public boolean warnningSwitch;
+    @Value( value = "${fungo.cloud.festival.warnning.number}")
+    public long warningNumber;
+    @Value( value = "${fungo.cloud.festival.operator}")
+    public String operatorId;
 
     @Value( value = "${fungo.cloud.festival.switch}")
     public boolean festivalSwitch;
@@ -31,6 +43,8 @@ public class NacosFungoCircleConfig {
     public String festivalPicture;
     @Value( value = "${fungo.cloud.festival.linkUrl}")
     public String festivallinkUrl;
+    @Value( value = "${fungo.cloud.festival.postId}")
+    public String festivalPostId;
 
     public String getBasLog() {
         return basLog;
@@ -56,6 +70,54 @@ public class NacosFungoCircleConfig {
         this.basLogtwo = basLogtwo;
     }
 
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    public int getFestivalDays() {
+        return festivalDays;
+    }
+
+    public void setFestivalDays(int festivalDays) {
+        this.festivalDays = festivalDays;
+    }
+
+    public boolean isWarnningSwitch() {
+        return warnningSwitch;
+    }
+
+    public void setWarnningSwitch(boolean warnningSwitch) {
+        this.warnningSwitch = warnningSwitch;
+    }
+
+    public long getWarningNumber() {
+        return warningNumber;
+    }
+
+    public void setWarningNumber(long warningNumber) {
+        this.warningNumber = warningNumber;
+    }
+
+    public String getOperatorId() {
+        return operatorId;
+    }
+
+    public void setOperatorId(String operatorId) {
+        this.operatorId = operatorId;
+    }
+
     public boolean isFestivalSwitch() {
         return festivalSwitch;
     }
@@ -78,5 +140,13 @@ public class NacosFungoCircleConfig {
 
     public void setFestivallinkUrl(String festivallinkUrl) {
         this.festivallinkUrl = festivallinkUrl;
+    }
+
+    public String getFestivalPostId() {
+        return festivalPostId;
+    }
+
+    public void setFestivalPostId(String festivalPostId) {
+        this.festivalPostId = festivalPostId;
     }
 }

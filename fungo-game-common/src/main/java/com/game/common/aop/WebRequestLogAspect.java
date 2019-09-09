@@ -54,7 +54,12 @@ public class WebRequestLogAspect {
             if (brand == null) {
                 brand = "";
             }
-            weblog.setBrand(brand);
+            weblog.setChannel(os);
+            String bizId = request.getHeader("bizId");
+            if (bizId == null) {
+                bizId = "";
+            }
+            weblog.setBizId(bizId);
             String appversion = request.getHeader("appversion");
             if (appversion == null) {
                 appversion = "";

@@ -78,6 +78,7 @@ public class CorsConfigGateway {
         corsConfiguration.addAllowedHeader(RequestHeaderKeys.VERSION);
         corsConfiguration.addAllowedHeader(RequestHeaderKeys.IOSCHANNEL);
         corsConfiguration.addAllowedHeader(RequestHeaderKeys.APP_CHANNEL);
+        corsConfiguration.addAllowedHeader(RequestHeaderKeys.BIZ_ID);
         // corsConfiguration.addAllowedHeader("*");
 
         corsConfiguration.setMaxAge(7200L);
@@ -104,4 +105,5 @@ class RequestHeaderKeys{
     public static final String VERSION = "version";
     public static final String IOSCHANNEL = "iosChannel";
     public static final String  APP_CHANNEL = "app_channel";
+    public static final String  BIZ_ID = "bizId";
 }

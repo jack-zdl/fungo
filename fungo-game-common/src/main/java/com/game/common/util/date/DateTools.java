@@ -249,6 +249,68 @@ public class DateTools {
         return maxDate;
     }
 
+    /**
+     * @description 时间转换为字符串
+     * @param date
+     * @return
+     */
+    public static String dateToString(Date date){
+        if (date !=null){
+            return "";
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(date);
+    }
+
+    public static String dateTimeToString(Date date){
+        if(date != null){
+            return  "";
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(date);
+    }
+
+    /**
+     * 时间相减得到天数
+     * @param beginDate 开始时间
+     * @param endDateStr 结束时间
+     * @param newDate 当前时间
+     * @return
+     */
+    public static boolean betweenDate(Date beginDate, Date endDateStr,Date newDate) {
+
+        try {
+            long startTime = (newDate.getTime() - beginDate.getTime());
+            long endTime = (endDateStr.getTime() - newDate.getTime());
+            if(startTime > 0 && endTime > 0){
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param date
+     * @return
+     */
+    public static String channelDateToString(Date date) {
+
+        try {
+            Calendar calendar = Calendar.getInstance();
+            int currentWeek = calendar.get(Calendar.WEEK_OF_YEAR);
+            calendar.setTime(date);
+            java.util.Date updateDate = calendar.getTime();
+            SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd");
+            String dateStr=sdf.format(updateDate);
+            return dateStr;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 
     //--------
 }

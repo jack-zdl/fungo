@@ -299,7 +299,7 @@ public class FungoMallScanOrderWithSeckillService {
     /**
      * 清除缓存的商品数据
      */
-    private void removeCacheWithGoods() {
+    public void removeCacheWithGoods() {
         //获取当前日期 yyyyMMdd
         String currentDate = DateTools.getCurrentDate(null);
         String cacheKey = FungoMallSeckillConsts.CACHE_KEY_MALL_SECKILL_GOODS + currentDate;
@@ -310,7 +310,7 @@ public class FungoMallScanOrderWithSeckillService {
     /**
      * 清除缓存的用户订单数据
      */
-    private void removeCacheWithOrders(String mb_id, String orderId) {
+    public void removeCacheWithOrders(String mb_id, String orderId) {
         String cacheKey = FungoMallSeckillConsts.CACHE_KEY_MALL_SECKILL_ORDER + mb_id + orderId;
         logger.info("扫描处理订单-清除缓存的用户订单数据-缓存key:{}", cacheKey);
         FunGoEHCacheUtils.remove(FunGoGameConsts.CACHE_EH_NAME, cacheKey);
@@ -325,7 +325,7 @@ public class FungoMallScanOrderWithSeckillService {
      * @param fungoCoin
      * @param goodsName
      */
-    private void addFungoPayLogs(String userId, String phone, String nickName, String fungoCoin, String goodsName) {
+    public void addFungoPayLogs(String userId, String phone, String nickName, String fungoCoin, String goodsName) {
         fungoMallSeckillLogService.addCoinMbToLog(userId, phone, nickName, fungoCoin, goodsName);
     }
 
@@ -336,7 +336,7 @@ public class FungoMallScanOrderWithSeckillService {
      * @param goodsType
      * @param vCard
      */
-    private void pushMsgToMember(final String mb_Id, final String goodsName, final Integer goodsType, final MallVirtualCard vCard) {
+    public void pushMsgToMember(final String mb_Id, final String goodsName, final Integer goodsType, final MallVirtualCard vCard) {
 
         String cardSn = "";
         String cardPwd = "";
@@ -364,7 +364,7 @@ public class FungoMallScanOrderWithSeckillService {
      * @param orderGoods 订单商品关系表实体
      * @return
      */
-    private MallVirtualCard updateOrderGoodsInfoWithVCard(String mb_Id, Long orderId, MallOrderGoods orderGoods,Integer card_type) {
+    public MallVirtualCard updateOrderGoodsInfoWithVCard(String mb_Id, Long orderId, MallOrderGoods orderGoods,Integer card_type) {
 
         MallVirtualCard virtualCard = this.queryMallVirtualCard(orderGoods.getGoodsId(), card_type);
 
@@ -447,7 +447,7 @@ public class FungoMallScanOrderWithSeckillService {
      * @param orderGoods 订单商品关系表实体
      * @return
      */
-    private MallVirtualCard updateOrderGoodsInfoWithVCard(String mb_Id, Long orderId, MallOrderGoods orderGoods) {
+    public MallVirtualCard updateOrderGoodsInfoWithVCard(String mb_Id, Long orderId, MallOrderGoods orderGoods) {
 
         MallVirtualCard virtualCard = this.queryMallVirtualCard(orderGoods.getGoodsId(), orderGoods.getGoodsType());
 
@@ -582,7 +582,7 @@ public class FungoMallScanOrderWithSeckillService {
      * @param mb_id
      * @param goodsPriceVcy
      */
-    private void unfreezeAccountCoinWithMember(String mb_id, Long goodsPriceVcy) {
+    public void unfreezeAccountCoinWithMember(String mb_id, Long goodsPriceVcy) {
 
         EntityWrapper<IncentAccountCoin> mbAccountCoinEntityWrapper = new EntityWrapper<IncentAccountCoin>();
         Map<String, Object> criteriaMap = new HashMap<String, Object>();
@@ -700,7 +700,7 @@ public class FungoMallScanOrderWithSeckillService {
      * @param mallSeckill
      * @param goodsNumber
      */
-    private boolean deductionGoodsStock(MallSeckill mallSeckill, Long goodsNumber) {
+    public boolean deductionGoodsStock(MallSeckill mallSeckill, Long goodsNumber) {
 
         String residueStock = mallSeckill.getResidueStock();
         //解密
@@ -742,7 +742,7 @@ public class FungoMallScanOrderWithSeckillService {
      * @param mb_id
      * @param goodsPriceVcy
      */
-    private boolean deductionAccountCoinWithMember(String mb_id, Long goodsPriceVcy) {
+    public boolean deductionAccountCoinWithMember(String mb_id, Long goodsPriceVcy) {
         if (org.apache.commons.lang3.StringUtils.isBlank(mb_id)){
             return false;
         }
@@ -819,7 +819,7 @@ public class FungoMallScanOrderWithSeckillService {
      * @param goodsId
      * @return
      */
-    private MallSeckill isFullGoodsStock(String goodsId) {
+    public MallSeckill isFullGoodsStock(String goodsId) {
 
         String currengDate = DateTools.getCurrentDate("-");
 

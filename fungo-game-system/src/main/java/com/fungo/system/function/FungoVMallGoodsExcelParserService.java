@@ -1,4 +1,4 @@
-package com.fungo.system.mall.service.commons;
+package com.fungo.system.function;
 
 
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
@@ -33,13 +33,13 @@ import java.util.Date;
  * @since 2018-12-04
  */
 @Component
-public class FungoMallGoodsExcelParserService {
+public class FungoVMallGoodsExcelParserService {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(FungoMallGoodsExcelParserService.class);
+    private static final Logger logger = LoggerFactory.getLogger( FungoVMallGoodsExcelParserService.class);
 
     //excel文件路径
-    private String excelPath = "E:/temps/vCard.xlsx";
+    private static String excelPath = "F:/vCard.xlsx";
 
 
     @Autowired
@@ -51,7 +51,7 @@ public class FungoMallGoodsExcelParserService {
     /**
      * 解析excel
      */
-    public void excuteParserToVCard() {
+    public  void excuteParserToVCard() {
 
         try {
             File excel = new File(excelPath);
@@ -77,7 +77,7 @@ public class FungoMallGoodsExcelParserService {
 
 
                 //开始解析  //读取sheet 0
-                Sheet sheet = wb.getSheetAt(0);
+                Sheet sheet = wb.getSheetAt(3);
                 //第一行是列名，所以不读
                 int firstRowIndex = sheet.getFirstRowNum() + 1;
                 int lastRowIndex = sheet.getLastRowNum();
@@ -88,6 +88,8 @@ public class FungoMallGoodsExcelParserService {
                     Row row = sheet.getRow(rIndex);
                     if (row != null) {
 
+                        Cell goodIdCell = row.getCell(0);
+                        String goodId = goodIdCell.toString();
                         //面额
                        // Cell valueCell = row.getCell(1);
                         //String valueData = valueCell.toString();
@@ -97,7 +99,7 @@ public class FungoMallGoodsExcelParserService {
 
 
                         //卡号
-                        Cell cardSnCell = row.getCell(0);
+                        Cell cardSnCell = row.getCell(3);
                         String cardSnData = cardSnCell.toString();
 
                         //密码
@@ -157,7 +159,7 @@ public class FungoMallGoodsExcelParserService {
     }
 
 
-    private void addVCardToDB (String cardSn ,String cardPwd ,String validPeriodIntro , Integer valueRmb) {
+    private   void addVCardToDB (String cardSn ,String cardPwd ,String validPeriodIntro , Integer valueRmb) {
 
         MallVirtualCard virtualCard = new MallVirtualCard();
 
@@ -166,7 +168,8 @@ public class FungoMallGoodsExcelParserService {
         // 喜加一Lv.2  2019082822021549316
         // 喜加一Lv.3  2019082822041316706
         // 随机大作    2019082822055917436
-        virtualCard.setGoodsId(2019011810120065413L);
+//        virtualCard.setGoodsId(2019011810120065413L);
+        virtualCard.setGoodsId(2019082822055917436L);
 
         String cardSnEncrypt = FungoAESUtil.encrypt( cardSn,
                 aESSecretKey + FungoMallSeckillConsts.AES_SALT);
@@ -186,7 +189,7 @@ public class FungoMallGoodsExcelParserService {
         long cardCrc32Validate = FungoCRC32Util.getInstance().encrypt(cardSn + cardPwd);
         virtualCard.setCardCrc32(cardCrc32Validate);
 
-        virtualCard.setCardType(21);
+        virtualCard.setCardType(24);
 
         virtualCard.setCreatedAt(new Date());
         virtualCard.setUpdatedAt(new Date());
@@ -194,5 +197,9 @@ public class FungoMallGoodsExcelParserService {
         mallVirtualCardDaoService.insert(virtualCard);
     }
 
+    public static void main(String[] args) {
+        FungoVMallGoodsExcelParserService fungoVMallGoodsExcelParserService = new FungoVMallGoodsExcelParserService();
+        fungoVMallGoodsExcelParserService.excuteParserToVCard();
+    }
     //--------
 }

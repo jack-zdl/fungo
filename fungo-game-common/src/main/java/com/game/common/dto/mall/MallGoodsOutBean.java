@@ -124,6 +124,13 @@ public class MallGoodsOutBean implements Serializable {
      */
     private String usageDesc;
 
+    /**
+     * 商品尺寸
+     */
+    private String colorType;
+
+    private String orderId;
+
 
     public String getValidPeriodIntro() {
         return validPeriodIntro;
@@ -276,6 +283,60 @@ public class MallGoodsOutBean implements Serializable {
 
     public void setIs_expire(boolean is_expire) {
         this.is_expire = is_expire;
+    }
+
+    public String getColorType() {
+        return colorType;
+    }
+
+    public void setColorType(String colorType) {
+        this.colorType = colorType;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public enum GameColorTypeEnum {
+
+        N ("1","N"),
+        R("2","R"),
+        SR("3","SR"),
+        SSR("4","SSR");
+
+        String key;
+        String value;
+
+        GameColorTypeEnum(String s, String s1) {
+            this.key = s;
+            this.value = s1;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public static String getValueByKey(String key){
+            String value = "";
+            if(GameColorTypeEnum.N.getKey().equals(key)){
+                value = GameColorTypeEnum.N.getValue();
+            }else if(GameColorTypeEnum.R.getKey().equals(key)){
+                value = GameColorTypeEnum.R.getValue();
+            }else if(GameColorTypeEnum.SR.getKey().equals(key)){
+                value = GameColorTypeEnum.SR.getValue();
+            }else if(GameColorTypeEnum.SSR.getKey().equals(key)){
+                value = GameColorTypeEnum.SSR.getValue();
+            }
+            return  value;
+        }
     }
 
     @Override

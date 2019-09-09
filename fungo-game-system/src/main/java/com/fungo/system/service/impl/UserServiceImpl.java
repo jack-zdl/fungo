@@ -2,6 +2,7 @@ package com.fungo.system.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.system.dao.MemberInfoDao;
 import com.fungo.system.dao.SysMockuserDao;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
@@ -16,6 +17,7 @@ import com.game.common.consts.Setting;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.user.MemberOutBean;
+import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.*;
@@ -64,18 +66,16 @@ public class UserServiceImpl implements IUserService {
     private ScoreLogService scoreLogService;
     @Autowired
     private MemberFollowerService followService;
-
     @Autowired
     private IPKNoService iPKNoService;
-
     @Autowired
     private MemberLoginedStatisticsService memberLoginedStatisticsService;
-
     @Autowired
     private FungoCacheMember fungoCacheMember;
-
     @Autowired
     private IMemberIncentRiskService iMemberIncentRiskService;
+    @Autowired
+    private MemberInfoDao memberInfoDao;
 
     //用户成长业务
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
@@ -1013,6 +1013,47 @@ public class UserServiceImpl implements IUserService {
             throw new RuntimeException("初始化注册数据失败");
         }
         return ResultDto.success(user);
+    }
+
+    /**
+     * 功能描述:  用户分享中秋活动
+     * @param: [adminId]
+     * @return: com.game.common.dto.ResultDto<com.fungo.system.entity.Member>
+     * @auther: dl.zhang
+     * @date: 2019/8/26 15:53
+     */
+    @Transactional
+    @Override
+    public ResultDto<String> userShareMall(String adminId) throws Exception {
+        ResultDto<String> resultDto = null;
+        try {
+            MemberInfo memberInfo = new MemberInfo();
+            memberInfo.setMdId(adminId);
+            memberInfo.setShareType(1);
+            memberInfo = memberInfoDao.selectOne( memberInfo);
+            if(memberInfo != null){
+                resultDto = ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FESTIVAL_EIGHT.getKey(),AbstractResultEnum.CODE_SYSTEM_FESTIVAL_EIGHT.getSuccessValue());
+                resultDto.setShowState(-1);
+                return resultDto;
+
+            }
+            memberInfo = new MemberInfo();
+            memberInfo.setMdId(adminId);
+            memberInfo.setShareType(1);
+            memberInfo.setIsactive("1");
+            memberInfo.setRversion(1);
+            memberInfo.setCreatedBy(adminId);
+            memberInfo.setCreatedAt(new Date());
+            memberInfo.setUpdatedBy(adminId);
+            memberInfo.setUpdatedAt(new Date());
+            memberInfo.setDescription("用户分享中秋活动成功");
+            memberInfoDao.insert(memberInfo);
+            resultDto = ResultDto.ResultDtoFactory.buildSuccess(  "分享成功，已获得1次免费抽奖次数，快去抽奖吧!");
+        }catch (Exception e){
+            LOGGER.error("用户分享中秋活动",e);
+            resultDto = ResultDto.ResultDtoFactory.buildError(  "用户分享中秋活动失败,请联系管理员");
+        }
+        return resultDto;
     }
 
     /**

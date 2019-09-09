@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.system.dao.MallSeckillOrderDao;
 import com.fungo.system.entity.IncentAccountCoin;
+import com.fungo.system.entity.MallSeckillOrder;
 import com.fungo.system.entity.Member;
 import com.fungo.system.mall.daoService.*;
 import com.fungo.system.mall.entity.*;
@@ -12,6 +14,7 @@ import com.fungo.system.mall.service.IFungoMallSeckillService;
 import com.fungo.system.mall.service.IMallLogsService;
 import com.fungo.system.mall.service.commons.FungoMallSeckillTaskStateCommand;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
+import com.fungo.system.service.IMallSeckillOrderService;
 import com.fungo.system.service.IncentAccountCoinDaoService;
 import com.fungo.system.service.MemberService;
 import com.game.common.buriedpoint.BuriedPointUtils;
@@ -27,6 +30,7 @@ import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.*;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
+import io.swagger.models.auth.In;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,36 +52,30 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
     private static final Logger logger = LoggerFactory.getLogger(FungoMallSeckillServiceImpl.class);
 
-
     @Autowired
     private MallGoodsDaoService mallGoodsDaoService;
-
     @Autowired
     private MallSeckillDaoService mallSeckillDaoService;
-
     @Autowired
     private MallVirtualCardDaoService mallVirtualCardDaoService;
-
     @Autowired
     private IncentAccountCoinDaoService incentAccountCoinService;
-
     @Autowired
     private MallOrderDaoService mallOrderDaoService;
-
     @Autowired
     private MallOrderGoodsDaoService mallOrderGoodsDaoService;
-
     @Autowired
     private IMallLogsService iMallLogsService;
-
     @Autowired
     private MemberService memberService;
-
     @Autowired
     private FungoCacheTask fungoCacheTask;
-
     @Autowired
     private FungoCacheSystem fungoCacheSystem;
+    @Autowired
+    private MallSeckillOrderDao mallSeckillOrderDao;
+    @Autowired
+    private IMallSeckillOrderService iMallSeckillOrderServiceImpl;
 
 
     @Value("${fungo.mall.seckill.aesSecretKey}")
@@ -102,7 +100,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         try {
 
             //记录日志
-            addMallLogs(mb_id, "", 0L, realIp, 1);
+            addMallLogs(mb_id, "", 0L, realIp, 1,"/api/mall/goods/seckill/list");
 
             //已指定秒杀活动开始和结束日期
             int startDate = FungoMallSeckillConsts.SECKILL_START_DATE;
@@ -332,7 +330,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
         try {
             //记录日志
-            addMallLogs(mb_id, "", 0L, realIp, 1);
+            addMallLogs(mb_id, "", 0L, realIp, 1,"/api/mall/goods/seckill/list");
 
             //查询可以秒杀的商品从2019-02-03~2019-02-10
             //获取当前日期 yyyyMMdd
@@ -481,7 +479,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
     public Map<String, Object> createOrderWithSeckill(MallOrderInput orderInput, String realIp) {
 
         //记录日志
-        addMallLogs(orderInput.getMbId(), "", Long.parseLong(orderInput.getGoodsId()), realIp, 2);
+        addMallLogs(orderInput.getMbId(), "", Long.parseLong(orderInput.getGoodsId()), realIp, 2,"/api/mall/order/seckill");
 
         logger.info("秒杀商品--用户id:{}--商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "开始了...");
 
@@ -645,7 +643,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
     public Map<String, Object> createOrderWithSeckillWithGame(MallOrderInput orderInput, String realIp) {
 
         //记录日志
-        addMallLogs(orderInput.getMbId(), "", Long.parseLong(orderInput.getGoodsId()), realIp, 2);
+        addMallLogs(orderInput.getMbId(), "", Long.parseLong(orderInput.getGoodsId()), realIp, 2,"/api/mall/order/seckill");
 
         logger.info("秒杀游戏礼包商品--用户id:{}--游戏礼包商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "开始了...");
 
@@ -779,7 +777,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
         try {
             logger.info("用户修改订单--用户Id:{}--订单Id:{}", mallOrderInput.getMbId(), mallOrderInput.getOrderId());
-
+            List<String> orderIds = Arrays.asList( mallOrderInput.getOrderId().split( "," ) );
             MallOrder order = new MallOrder();
             order.setConsigneeName(mallOrderInput.getConsigneeName());
             order.setCsgAddress(mallOrderInput.getCsgAddress());
@@ -790,7 +788,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             order.setUpdatedTime(new Date());
 
             EntityWrapper<MallOrder> orderEntityWrapper = new EntityWrapper<MallOrder>();
-            orderEntityWrapper.eq("mb_id", mallOrderInput.getMbId()).eq("id", mallOrderInput.getOrderId());
+            orderEntityWrapper.eq("mb_id", mallOrderInput.getMbId()).in("id", orderIds);
 
             boolean updateOk = mallOrderDaoService.update(order, orderEntityWrapper);
             return updateOk;
@@ -848,7 +846,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
                 //查询该用户所有交易成功的订单
             } else {
-                List<MallOrder> mallOrders = queryTradeSuccessOrderrWithMember(mb_id, 1);
+                List<MallOrder> mallOrders = queryTradeSuccessOrderrWithMember(mb_id, Arrays.asList( 1,11 ));
                 if (null != mallOrders && !mallOrders.isEmpty()) {
 
                     for (MallOrder mallOrder : mallOrders) {
@@ -945,6 +943,43 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         return fungoPageResultDto;
     }
 
+    /**
+     * 功能描述: 批量插入顺序表
+     * @param:
+     * @return: void
+     * @auther: dl.zhang
+     * @date: 2019/8/23 15:04
+     */
+    @Override
+    public void insertMallSeckillOrder(String goodId, String numberStr) {
+        try {
+
+            Integer number = Integer.valueOf(numberStr);
+            List<MallSeckillOrder> mallSeckillOrders = new ArrayList<>();
+            for (int i = 0 ; i < number; i++){
+                MallSeckillOrder mallSeckillOrder = new MallSeckillOrder();
+                mallSeckillOrder.setMallGoodsId(goodId);
+                mallSeckillOrder.setTotalStock(1);
+                mallSeckillOrder.setResidueStock(1);
+                mallSeckillOrder.setCreatedAt(new Date());
+                mallSeckillOrder.setCreatedBy("system");
+                mallSeckillOrder.setIsactive("1");
+                mallSeckillOrder.setDescription("系统自动添加");
+                mallSeckillOrders.add(mallSeckillOrder);
+
+            }
+            boolean isTrue =  iMallSeckillOrderServiceImpl.insertBatch(mallSeckillOrders);
+            if(isTrue == true){
+                logger.error( "批量插入顺序表成功,goodId"+goodId);
+            }else {
+                logger.error( "批量插入顺序表失败,goodId"+goodId);
+            }
+        }catch (Exception e){
+            logger.error("批量插入顺序表异常",e);
+        }
+    }
+
+
     @Override
     public List<MallOrderOutBean> getOrdersWithSeckillGame(String mb_id, String orderId, String orderSn, String orderType) {
 
@@ -967,7 +1002,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
                 //查询该用户所有交易成功的订单
             } else {
-                List<MallOrder> mallOrders = queryTradeSuccessOrderrWithMember(mb_id, 2);
+                List<MallOrder> mallOrders = queryTradeSuccessOrderrWithMember(mb_id, Arrays.asList(2) );
                 if (null != mallOrders && !mallOrders.isEmpty()) {
 
                     for (MallOrder mallOrder : mallOrders) {
@@ -1120,7 +1155,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
      * @param orderId
      * @return
      */
-    private List<MallOrderGoods> queryOrderGoodsWithMember(String mb_id, String orderId) {
+    public List<MallOrderGoods> queryOrderGoodsWithMember(String mb_id, String orderId) {
 
         EntityWrapper<MallOrderGoods> orderGoodsEntityWrapper = new EntityWrapper<MallOrderGoods>();
         orderGoodsEntityWrapper.eq("mb_id", mb_id).eq("order_id", orderId);
@@ -1151,12 +1186,12 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
      * @param mb_id
      * @return
      */
-    private List<MallOrder> queryTradeSuccessOrderrWithMember(String mb_id, int orderType) {
+    private List<MallOrder> queryTradeSuccessOrderrWithMember(String mb_id, List<Integer> orderTypes) {
         EntityWrapper<MallOrder> orderEntityWrapper = new EntityWrapper<MallOrder>();
         orderEntityWrapper.eq("mb_id", mb_id)
                 .eq("order_status", 5)
                 .eq("pay_status", 2)
-                .eq("order_type", orderType)
+                .in("order_type", orderTypes)
                 .orderBy("create_time", false);
         return mallOrderDaoService.selectList(orderEntityWrapper);
     }
@@ -1249,6 +1284,22 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         return mallSeckill;
     }
 
+    /**
+     * 功能描述: 查询中秋节礼品
+     * @param: [goodsId]
+     * @return: com.fungo.system.mall.entity.MallSeckill
+     * @auther: dl.zhang
+     * @date: 2019/8/28 15:02
+     */
+    public MallSeckill getFestivalGoods(String goodsId){
+        EntityWrapper<MallSeckill> mallSeckillEntityWrapper = new EntityWrapper<MallSeckill>();
+        Map<String, Object> criteriaMap = new HashMap<String, Object>();
+        criteriaMap.put("goods_id", goodsId);
+        criteriaMap.put( "ext1",1 );
+        mallSeckillEntityWrapper.allEq(criteriaMap);
+        MallSeckill mallSeckill = mallSeckillDaoService.selectOne(mallSeckillEntityWrapper);
+        return mallSeckill;
+    }
 
     /**
      * 验证用户是否有足够的fungo币可用余额
@@ -1256,7 +1307,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
      * @param mb_id
      * @return
      */
-    private IncentAccountCoin isFullMbFungo(String mb_id) {
+    public IncentAccountCoin isFullMbFungo(String mb_id) {
 
         EntityWrapper<IncentAccountCoin> mbAccountCoinEntityWrapper = new EntityWrapper<IncentAccountCoin>();
 
@@ -1280,7 +1331,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
      * @param goodsPriceVcyBD
      * @return
      */
-    private int freezeMemberFungo(String mb_id, IncentAccountCoin incentAccountCoin, BigDecimal goodsPriceVcyBD) {
+    public int freezeMemberFungo(String mb_id, IncentAccountCoin incentAccountCoin, BigDecimal goodsPriceVcyBD) {
         if (StringUtils.isBlank(mb_id)) {
             return -1;
         }
@@ -1658,7 +1709,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
     /**
      * 记录浏览商品页面日志
      */
-    private void addMallLogs(String mb_id, String userName, Long goodsId, String realIp, Integer actionType) {
+    public void addMallLogs(String mb_id, String userName, Long goodsId, String realIp, Integer actionType,String uerName,int... values) {
         fixedThreadPoolMallLog.execute(new Runnable() {
             @Override
             public void run() {
@@ -1669,7 +1720,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                 logsDto.setId(PKUtil.getInstance(clusterIndex_i).longPK());
                 logsDto.setMbId(mb_id);
                 logsDto.setPageUrl("/shopmall.html");
-                logsDto.setIUrl("/api/mall/goods/seckill/list");
+                logsDto.setIUrl(uerName);
                 logsDto.setGoodsId(goodsId);
                 logsDto.setVisitIp(realIp);
                 logsDto.setActionType(actionType);
@@ -1678,7 +1729,10 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                 Date currentDatte = new Date();
                 logsDto.setCreatedAt(currentDatte);
                 logsDto.setUpdatedAt(currentDatte);
-
+                if(values != null){
+                    logsDto.setUserType( values[0]);
+                    logsDto.setChannelType( values[1]);
+                }
                 iMallLogsService.addMallLog(logsDto);
             }
         });
@@ -1738,6 +1792,63 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
         int count = mallVirtualCardDaoService.selectCount(virtualCardEntityWrapper);
         return count;
+    }
+
+
+    /**
+     * 功能描述:  查询当前用户钱是否够
+     * @param: [memberId, seckillPriceVcy]
+     * @return: boolean
+     * @auther: dl.zhang
+     * @date: 2019/8/28 14:07
+     */
+    public boolean checkUserMoney(String memberId,String seckillPriceVcy){
+        //4.有足够的fungo币可用余额，且下单后要冻结与订单金额对等的可用余额
+        // 验证当前用户的fungo币可用余额是否大于等于当前商品的价格
+        //  4.1 若fungo币可用余额 足够秒杀当前商品，则下单
+        //  4.2 同时直接扣除可用余额，到冻结余额
+        boolean isFullMbFungo = false;
+
+        IncentAccountCoin incentAccountCoin = isFullMbFungo(memberId);
+        if (null == incentAccountCoin) {
+            logger.info("秒杀商品失败--用户id:{}--商品id:{}--msg:{}", memberId, "用户fungo币不足");
+            return false;
+        }
+
+
+        BigDecimal coinUsable = incentAccountCoin.getCoinUsable();
+        if (null == coinUsable) {
+            logger.info("秒杀商品失败--用户id:{}--商品id:{}--msg:{}", memberId,  "用户fungo币不足");
+            return false;
+        }
+
+        int isHaveCoin = coinUsable.compareTo(BigDecimal.ZERO);
+        if (0 == isHaveCoin || -1 == isHaveCoin) {
+            logger.info("秒杀商品失败--用户id:{}--商品id:{}--msg:{}", memberId,  "用户fungo币不足");
+            return false;
+        }
+
+        coinUsable = coinUsable.setScale(2);
+
+        //获取商品的价格fungo币 加密串
+//        String seckillPriceVcy = mallSeckill.getSeckillPriceVcy();
+        //解密
+//        String seckillPriceVcyDecrypt = FungoAESUtil.decrypt(seckillPriceVcy, aESSecretKey + FungoMallSeckillConsts.AES_SALT);
+
+        BigDecimal goodsPriceVcyBD = new BigDecimal(seckillPriceVcy);
+        goodsPriceVcyBD = goodsPriceVcyBD.setScale(2);
+
+        //可用余额是否大于等于商品价格
+        int cmpResult = coinUsable.compareTo(goodsPriceVcyBD);
+        if (0 == cmpResult || 1 == cmpResult) {
+            isFullMbFungo = true;
+        }
+
+        if (!isFullMbFungo) {
+            logger.info("秒杀商品失败--用户id:{}--商品id:{}--msg:{}", memberId, "用户fungo币不足");
+            return false;
+        }
+        return  isFullMbFungo;
     }
 
 

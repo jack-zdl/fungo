@@ -30,6 +30,12 @@ public class AdvertOutBean {
 	 * 游戏icon URL
 	 */
 	private String gameIconURL;
+	/**
+	 * 功能描述: 外链地址
+	 * @auther: dl.zhang
+	 * @date: 2019/9/3 13:14
+	 */
+	private String linkUrl;
 
 
 }
