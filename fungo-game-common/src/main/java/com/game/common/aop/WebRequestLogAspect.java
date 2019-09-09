@@ -10,6 +10,7 @@ import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -110,6 +111,8 @@ public class WebRequestLogAspect {
                             break;
                         } else if (HttpServletRequest.class.isAssignableFrom(clz)) {
                             break;
+                        } else if (BeanPropertyBindingResult.class.isAssignableFrom(clz)) {
+                            break;
                         } else {
                             inputObj = o;
                         }
@@ -168,7 +171,7 @@ public class WebRequestLogAspect {
 
             WebLog weblog = (WebLog) RequestContextHolder.currentRequestAttributes().getAttribute("webLog", RequestAttributes.SCOPE_REQUEST);
             weblog.setEndTime(new Date());
-//      weblog.setOutData(out);
+            weblog.setOutData(out);
             IRequestLogger logs = SpringContextUtil.getBean(IRequestLogger.class);
             if (logs != null) {
                 logs.log(weblog);

@@ -14,6 +14,7 @@ import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.user.MemberOutBean;
+import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.framework.file.IFileService;
 import com.game.common.util.ValidateUtils;
@@ -25,17 +26,23 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * 用户登录
@@ -288,13 +295,16 @@ public class UserController {
 
 
     @ApiOperation(value = "编辑个人资料", notes = "编辑个人资料")
-    @RequestMapping(value = "/api/mine/info", method = RequestMethod.POST)
+    @PostMapping(value = "/api/mine/info")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "gender", value = "性别", paramType = "form", dataType = "int"),
             @ApiImplicitParam(name = "sign", value = "签名", paramType = "form", dataType = "String"),
             @ApiImplicitParam(name = "username", value = "名称", paramType = "form", dataType = "string")
     })
-    public ResultDto<String> editUser(MemberUserProfile memberUserPrefile, @RequestBody UserBean msg) throws Exception {
+    public ResultDto<String> editUser(MemberUserProfile memberUserPrefile, @Valid @RequestBody UserBean msg, BindingResult errors) throws Exception {
+        if(errors.hasErrors()){
+            return ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FIVE.getKey(),errors.getAllErrors().stream().map( ObjectError::getDefaultMessage).collect(Collectors.joining(",") ));
+        }
         String memberId = "";
         if (memberUserPrefile != null) {
             memberId = memberUserPrefile.getLoginId();

@@ -24,7 +24,9 @@ public class RequestLoggerServiceImpl implements IRequestLogger {
 		log.setOutData(wlog.getOutData());
 
 		String path = wlog.getPath();
-		if (null != path && path.length() > 0) {
+		if("POST".equals(wlog.getMethod())){
+
+		}else if (null != path && path.length() > 0) {
 			path = path.substring(0, path.lastIndexOf("/"));
 		}
 		log.setPath(path);
