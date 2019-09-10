@@ -175,11 +175,17 @@ public class AdvertController {
                 if (post != null) {
                     map1.put("video", post.getVideo());
                 }
+            }else {
+                GameDto gameDto = new GameDto();
+                gameDto.setId(banner.getTargetId());
+//                gameDto.setState(1);
+                gameDto = iGameProxyService.selectGameById(gameDto);
+                map1.put( "gameName",gameDto.getName());
             }
             map1.put("objectId", banner.getTargetId());
             map1.put("cover_image", banner.getCoverImage());
             map1.put("type", String.valueOf(banner.getTargetType()));
-            map1.put( "gameName",banner.getGameName());
+
             list.add(map1);
         }
         re.setData(list);
