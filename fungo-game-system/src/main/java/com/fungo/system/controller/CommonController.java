@@ -32,7 +32,7 @@ import java.util.Map;
  *
  */
 @RestController
-@Api(value = "", description = "公共基础接口")
+@Api(value = "")
 public class CommonController {
     @Autowired
     private ICommonService commonService;
@@ -55,8 +55,6 @@ public class CommonController {
     public ResultDto<Map<String, Boolean>> getAppConfig() {
         ResultDto<Map<String, Boolean>> re = new ResultDto<Map<String, Boolean>>();
         Map<String, Boolean> map = new HashMap<String, Boolean>();
-//		map.put("game_download_switch", true);
-//		map.put("index_banner_switch", true);
         SysVersion sysVersion = versionService.selectOne(new EntityWrapper<SysVersion>().eq("new_version", 1));
         map.put("game_download_switch", sysVersion.getGameDownloadSwitch() == 1 ? true : false);
         map.put("index_banner_switch", sysVersion.getIndexBannerSwitch() == 1 ? true : false);
@@ -93,8 +91,6 @@ public class CommonController {
         SysVersionChannel channelVersion = channelService.selectOne(new EntityWrapper<SysVersionChannel>().eq("channel_code", input.getChannelCode()).eq("version_id", sysVersion.getId()));
         if (channelVersion == null) {
             return ResultDto.error("-1", "找不到对应版本的目标渠道");
-        } else {
-
         }
 
         map.put("game_download_switch", channelVersion.getGameDownloadSwitch() == 1 ? true : false);

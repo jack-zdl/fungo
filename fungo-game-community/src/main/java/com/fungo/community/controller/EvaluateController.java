@@ -122,6 +122,7 @@ public class EvaluateController {
                 fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
                 //我的評論redis緩存
                 fungoCacheIndex.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_COMMENTS, "", null);
+
             }
             return resultDto;
         }catch (Exception e){

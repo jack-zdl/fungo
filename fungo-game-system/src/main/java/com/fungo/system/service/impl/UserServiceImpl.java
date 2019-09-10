@@ -27,6 +27,7 @@ import com.game.common.util.exception.BusinessException;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.SecurityMD5;
 
+import com.game.common.validate.an.Max;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -604,13 +605,15 @@ public class UserServiceImpl implements IUserService {
 
         Member member = this.memberService.selectById(memberId);
 
-        member.setGender(msg.getGender());
+        Member newMemeber = new Member();
+        newMemeber.setId(member.getId());
+        newMemeber.setGender(msg.getGender());
 
         if (!CommonUtil.isNull(msg.getUser_name()) && !member.getUserName().equals(msg.getUser_name())) {//昵称
 
             //转码表情符号
             String usereName = msg.getUser_name();
-            member.setUserName(usereName);
+            newMemeber.setUserName(usereName);
 
             //V2.4.6版本之前任务
             //gameProxy.addTaskCore(Setting.ACTION_TYPE_NICKNAME, memberId, "", -1);
@@ -630,7 +633,7 @@ public class UserServiceImpl implements IUserService {
 //			gameProxy.addTaskCore(Setting.ACTION_TYPE_INTRO, memberId, "", -1);
 //		}
         if (null != msg.getSign() &&!"".equals(msg.getSign().trim())&& !member.getSign().equals(msg.getSign())) {//简介
-            member.setSign(msg.getSign());
+            newMemeber.setSign(msg.getSign());
 
             //V2.4.6版本之前任务
             //gameProxy.addTaskCore(Setting.ACTION_TYPE_INTRO, memberId, "", -1);
@@ -646,7 +649,7 @@ public class UserServiceImpl implements IUserService {
 
         }
 
-        member.updateById();
+        newMemeber.updateById();
 
         //clear redis
         //其他会员信息接口 清除
@@ -657,8 +660,9 @@ public class UserServiceImpl implements IUserService {
         fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_WEBIINFO + memberId, "", null);
         // 个人资料
         fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + memberId, "", null);
-
-        return ResultDto.success("修改成功");
+        // 个人等级
+        fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_RANKS_LEVEL + memberId, "", null);
+        return ResultDto.success("  修改成功  ");
     }
 
     @Override

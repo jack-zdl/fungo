@@ -14,8 +14,8 @@ public interface ThirdLoginService {
 	 * @return
 	 */
 	ResultDto<String> checkThirdParty(Integer platformType, String accessToken, String openid, String channel)throws Exception;
-	public ResultDto<ThirdLoginInput> sinaVerify(String host, String code) throws Exception;
-	public ResultDto<ThirdLoginInput> qqVerify(String host, String code) throws Exception;
-	public ResultDto<ThirdLoginInput> wxVerify(String host, String code) throws Exception;
+	ResultDto<ThirdLoginInput> sinaVerify(String host, String code) throws Exception;
+	ResultDto<ThirdLoginInput> qqVerify(String host, String code) throws Exception;
+	ResultDto<ThirdLoginInput> wxVerify(String host, String code) throws Exception;
 	
 }

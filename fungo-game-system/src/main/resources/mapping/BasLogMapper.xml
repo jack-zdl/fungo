@@ -34,12 +34,12 @@
 
 		select b.biz_id as gameId,b.total as totalCount,g.name as gameName
 		from
-		(SELECT biz_id,count(*) as total from logic_bas_log where path like '%game%' and biz_id is not null and TO_DAYS(CURDATE())-TO_DAYS(created_at) = 1 GROUP BY biz_id)
+		(SELECT biz_id,count(*) as total from t_bas_log where path like '%game%' and biz_id is not null and TO_DAYS(CURDATE())-TO_DAYS(created_at) = 1 GROUP BY biz_id)
 		as b,t_game as g where b.biz_id = g.Id ORDER BY b.total DESC limit 10;
 	</select>
 
 	<insert id="insertLogic" parameterType="com.fungo.system.entity.BasLog">
-    insert into logic_bas_log (id, created_at, end_time,
+    insert into t_bas_log (id, created_at, end_time,
       run_time, `path`, `method`,
       ip, member_id, channel,
       biz_id, re_code, `state`,
