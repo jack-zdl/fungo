@@ -407,7 +407,8 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
             if(mallSeckill == null){
                 mallSeckillDaoServicel.insert(seckill);
             }else {
-                logger.error( "新增每日库存失败,商品id="+ goodId);
+                seckill.setId( mallSeckill.getId());
+                mallSeckillDaoServicel.updateById(seckill);
             }
             resultDto = ResultDto.success();
         } catch (Exception ex) {
