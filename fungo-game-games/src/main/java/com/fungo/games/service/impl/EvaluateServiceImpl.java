@@ -20,6 +20,7 @@ import com.game.common.api.InputPageDto;
 import com.game.common.buriedpoint.BuriedPointUtils;
 import com.game.common.buriedpoint.constants.BuriedPointCommunityConstant;
 import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
+import com.game.common.buriedpoint.model.BuriedPointGameScoreModel;
 import com.game.common.buriedpoint.model.BuriedPointReplyModel;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
@@ -31,6 +32,7 @@ import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.ReplyBean;
 import com.game.common.dto.community.ReplyInputPageDto;
 import com.game.common.dto.evaluation.*;
+import com.game.common.dto.game.TraitBean;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
@@ -52,6 +54,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -335,6 +338,63 @@ public class EvaluateServiceImpl implements IEvaluateService {
         replyModel.setType(BuriedPointCommunityConstant.COMMUNITY_REPLY_TYPE_AUTHOR);
         BuriedPointUtils.publishBuriedPointEvent(replyModel);
 
+        //----添加埋点游戏评分数据----------
+        BuriedPointGameScoreModel gameScoreModel = new BuriedPointGameScoreModel();
+        gameScoreModel.setDistinctId(memberId);
+        gameScoreModel.setPlatForm(BuriedPointUtils.getPlatForm());
+        gameScoreModel.setEventName(BuriedPointEventConstant.EVENT_KEY_GAME_SCORE);
+        gameScoreModel.setGameId(commentInput.getTarget_id());
+        Game game = gameService.selectById(commentInput.getTarget_id());
+        gameScoreModel.setGameName(game.getName());
+
+        List<TraitBean> traitBeans = null;
+        //没人评分 有人评分
+        int count = gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", commentInput.getTarget_id()));
+        if (count > 0) {
+            HashMap<String, BigDecimal> rateData = gameDao.getRateData(commentInput.getTarget_id());
+            if (rateData != null) {
+                if (rateData.get("avgRating") != null) {
+                    gameScoreModel.setRank(Double.parseDouble(rateData.get("avgRating").toString()));
+                }
+                rateData.remove("gameId");
+                rateData.remove("avgRating");
+            } else {
+                rateData = new HashMap<String, BigDecimal>();
+                rateData.put("avgTrait1", BigDecimal.valueOf(0));
+                rateData.put("avgTrait2", BigDecimal.valueOf(0));
+                rateData.put("avgTrait3", BigDecimal.valueOf(0));
+                rateData.put("avgTrait4", BigDecimal.valueOf(0));
+                rateData.put("avgTrait5", BigDecimal.valueOf(0));
+            }
+             traitBeans = traitFormat(rateData);
+
+            //无评分时，返回默认值数据
+        } else {
+            gameScoreModel.setRank(0d);
+            traitBeans = new ArrayList<>();
+            for (int i = 1; i <= 5; i++) {
+                TraitBean tb = new TraitBean();
+                tb.setKey("avgTrait" + i);
+                tb.setKeyName(transKey(tb.getKey()));
+                tb.setValue(BigDecimal.valueOf(0));
+                traitBeans.add(tb);
+            }
+        }
+        for(int i=0;i<traitBeans.size();i++){
+            double score = traitBeans.get(i).getValue().doubleValue();
+            if(i==0){
+                gameScoreModel.setGameRules(score);
+            }else if(i==1){
+                gameScoreModel.setGameCost(score);
+            }else if(i==2){
+                gameScoreModel.setGameBgm(score);
+            }else if(i==3){
+                gameScoreModel.setGameImage(score);
+            }else if (i==4){
+                gameScoreModel.setGamePlot(score);
+            }
+        }
+        BuriedPointUtils.publishBuriedPointEvent(gameScoreModel);
 
         //清除该用户的评论游戏redis cache
         fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_RECENTEVA + memberId, "", null);
@@ -348,6 +408,47 @@ public class EvaluateServiceImpl implements IEvaluateService {
         //游戏评价列表
         fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS, "", null);
         return re;
+    }
+
+    public List<TraitBean> traitFormat(HashMap<String, BigDecimal> rateData) {
+        List<TraitBean> traitList = new ArrayList<>();
+
+        if (traitList.size() == 0) {
+            for (int i = 1; i <= 5; i++) {
+                TraitBean tb = new TraitBean();
+                tb.setKey("avgTrait" + i);
+                tb.setKeyName(transKey(tb.getKey()));
+                tb.setValue(rateData.get(tb.getKey()) == null ? BigDecimal.valueOf(0) : rateData.get(tb.getKey()));
+                traitList.add(tb);
+            }
+        }
+        return traitList;
+    }
+
+    public String transKey(String key) {
+        //        if (key.contains("1")) {
+        //            return "画面";
+        //        } else if (key.contains("2")) {
+        //            return "音乐";
+        //        } else if (key.contains("3")) {
+        //            return "氪金";
+        //        } else if (key.contains("4")) {
+        //            return "剧情";
+        //        } else if (key.contains("5")) {
+        //            return "玩法";
+        //        }
+        if (key.contains("1")) {
+            return "玩法";
+        } else if (key.contains("2")) {
+            return "氪金";
+        } else if (key.contains("3")) {
+            return "音乐";
+        } else if (key.contains("4")) {
+            return "画面";
+        } else if (key.contains("5")) {
+            return "剧情";
+        }
+        return "";
     }
 
     @Override
