@@ -11,7 +11,6 @@ import javax.validation.constraints.Size;
 
 public class UserBean {
 
-	@NotNull(message = "用户名不能为null")
 	@Length( min = 1,max = 100,message = "用户名长度不能超过100")
 	private String user_name;
 	@Min( value = 0,message = "用户传递性别标示错误")

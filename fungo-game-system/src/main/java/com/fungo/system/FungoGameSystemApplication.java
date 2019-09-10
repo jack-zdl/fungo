@@ -61,8 +61,8 @@ public class FungoGameSystemApplication {
 		SpringApplication.run(FungoGameSystemApplication.class, args);
 	}
 
-	@Autowired
-	private CustomObjectMapper customObjectMapper;
+//	@Autowired
+//	private CustomObjectMapper customObjectMapper;
 
 //	@Bean
 //	public MappingJackson2HttpMessageConverter getMappingJackson2HttpMessageConverter() {
