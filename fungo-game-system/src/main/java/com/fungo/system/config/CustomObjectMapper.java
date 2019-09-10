@@ -2,15 +2,14 @@ package com.fungo.system.config;
 
 
 
-//import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.sun.corba.se.spi.ior.ObjectId;
 import org.codehaus.jackson.JsonGenerator;
-        import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.JsonSerializer;
-import org.codehaus.jackson.map.ObjectMapper;
-        import org.codehaus.jackson.map.SerializerProvider;
-        import org.codehaus.jackson.map.ser.CustomSerializerFactory;
-//import com.fasterxml.jackson.databind.SerializerProvider;
-//import org.codehaus.jackson.map.ser.CustomSerializerFactory;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.map.SerializerProvider;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -26,25 +25,78 @@ import java.io.IOException;
  * @Author: dl.zhang
  * @Date: 2019/9/9
  */
-@Component("customObjectMapper")
-public class CustomObjectMapper extends ObjectMapper  {
+//@Component("customObjectMapper")
+public class CustomObjectMapper   { //extends ObjectMapper
 
     public CustomObjectMapper() {
-        CustomSerializerFactory factory = new CustomSerializerFactory();
-        factory.addGenericMapping(String.class, new JsonSerializer<String>() {
-            @Override
-            public void serialize(String o, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-
-            }
-
+//        CustomSerializerFactory factory = new CustomSerializerFactory();
+//        factory.addGenericMapping(String.class, new JsonSerializer<String>() {
 //            @Override
-//            public void serialize(String s, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-//                jsonGenerator.writeString(s.trim());
+//            public void serialize(String o, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+//
 //            }
-        });
-        this.setSerializerFactory(factory);
+//
+////            @Override
+////            public void serialize(String s, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+////                jsonGenerator.writeString(s.trim());
+////            }
+//        });
+//        this.setSerializerFactory(factory);
+        SimpleModule se = new SimpleModule();
+        se.addSerializer(String.class, new ObjectIdSerializer());
+//        se.addDeserializer(Document.class, new DocumentDeserializer());
+//        this.registerModule(se);
     }
 
+
+    private class ObjectIdSerializer extends JsonSerializer<String> {
+//        @Override
+//        public void serialize(ObjectId arg0, JsonGenerator arg1, SerializerProvider arg2)
+//                throws IOException, JsonProcessingException {
+//
+//            System.out.println("序列化，进来了。");
+//            System.out.println(arg1.toString());
+//
+//            if(arg0 == null) {
+//                arg1.writeNull();
+//            } else {
+//                arg1.writeString(arg0.toString());
+//            }
+//        }
+
+        @Override
+        public void serialize(String objectId, com.fasterxml.jackson.core.JsonGenerator jsonGenerator, com.fasterxml.jackson.databind.SerializerProvider serializerProvider) throws IOException {
+
+            System.out.println("序列化，进来了。");
+            System.out.println(jsonGenerator.toString());
+
+            if(objectId == null) {
+//                objectId.();
+            } else {
+                jsonGenerator.writeString(objectId.toString().trim());
+            }
+        }
+    }
+
+//    private class DocumentDeserializer extends JsonDeserializer<Document> {
+//        public Document deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+//
+//            System.out.println("Document反序列化进来了");
+//            JsonNode node = p.getCodec().readTree(p);
+//            String docstr = node.toString();
+//            String oid = node.get("_id").asText();
+//
+//            System.out.println("node.toString--->"+ docstr);
+//
+//            docstr = docstr.replace("\""+oid+"\"","{ \"$oid\" : \""+oid+"\" }");
+//
+//            System.out.println("转换后的node.toString--->"+docstr);
+//
+//            return Document.parse(docstr);
+//
+//        }
+//
+//    }
 
 
 }

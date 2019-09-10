@@ -658,7 +658,7 @@ public class UserServiceImpl implements IUserService {
         // 个人资料
         fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + memberId, "", null);
 
-        return ResultDto.success("修改成功");
+        return ResultDto.success("  修改成功  ");
     }
 
     @Override

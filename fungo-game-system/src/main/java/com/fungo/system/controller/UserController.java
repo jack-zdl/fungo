@@ -85,7 +85,6 @@ public class UserController {
     @Autowired
     private IncentRankedService rankedService;
 
-
     @Autowired
     private IGameProxy gameProxy;
 
