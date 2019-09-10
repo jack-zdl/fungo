@@ -65,14 +65,14 @@ public class FungoGameSystemApplication {
 	private CustomObjectMapper customObjectMapper;
 
 //	@Bean
-	public MappingJackson2HttpMessageConverter getMappingJackson2HttpMessageConverter() {
-		MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
-        mappingJackson2HttpMessageConverter.setObjectMapper(customObjectMapper);
-		ObjectMapper mapper = mappingJackson2HttpMessageConverter.getObjectMapper();
-		// 为mapper注册一个带有SerializerModifier的Factory，此modifier主要做的事情为：当序列化类型为array，list、set时，当值为空时，序列化成[]
-		mapper.setSerializerFactory(mapper.getSerializerFactory().withSerializerModifier(new MyBeanSerializerModifier()));
-		mapper.setPropertyNamingStrategy( new MyPropertyNamingStrategyBase());
-		mappingJackson2HttpMessageConverter.setSupportedMediaTypes(ImmutableList.of(MediaType.TEXT_HTML, MediaType.APPLICATION_JSON));
+//	public MappingJackson2HttpMessageConverter getMappingJackson2HttpMessageConverter() {
+//		MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
+//        mappingJackson2HttpMessageConverter.setObjectMapper(customObjectMapper);
+//		ObjectMapper mapper = mappingJackson2HttpMessageConverter.getObjectMapper();
+//		// 为mapper注册一个带有SerializerModifier的Factory，此modifier主要做的事情为：当序列化类型为array，list、set时，当值为空时，序列化成[]
+//		mapper.setSerializerFactory(mapper.getSerializerFactory().withSerializerModifier(new MyBeanSerializerModifier()));
+//		mapper.setPropertyNamingStrategy( new MyPropertyNamingStrategyBase());
+//		mappingJackson2HttpMessageConverter.setSupportedMediaTypes(ImmutableList.of(MediaType.TEXT_HTML, MediaType.APPLICATION_JSON));
 
 		//设置日期格式
 //		ObjectMapper objectMapper = new ObjectMapper( );
@@ -91,8 +91,8 @@ public class FungoGameSystemApplication {
 //		List<MediaType> list = new ArrayList<MediaType>();
 //		list.add( MediaType.APPLICATION_JSON_UTF8);
 //		mappingJackson2HttpMessageConverter.setSupportedMediaTypes(list);
-		return mappingJackson2HttpMessageConverter;
-	}
+//		return mappingJackson2HttpMessageConverter;
+//	}
 
 	@Bean
 	public ServletRegistrationBean getServlet() {
