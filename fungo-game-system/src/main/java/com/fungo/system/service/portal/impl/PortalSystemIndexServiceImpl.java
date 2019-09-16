@@ -9,6 +9,7 @@ import com.fungo.system.entity.Banner;
 import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IMemeberProxyService;
 import com.fungo.system.facede.IndexProxyService;
+import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.service.BannerService;
 import com.fungo.system.service.IUserService;
 import com.fungo.system.service.SysVersionService;
@@ -55,27 +56,22 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
 
     @Autowired
     private IUserService userService;
-
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
-
     @Autowired
     private SysVersionService sysVersionService;
-
     @Autowired
     private IMemeberProxyService iMemeberProxyService;
-
     @Autowired
     private IGameProxyService iGameProxyService;
-
     @Autowired
     private IndexProxyService indexProxyService;
-
     @Autowired
     private BannerService bannerService;
-
     @Autowired
     private BannerDao bannerDao;
+    @Autowired
+    private CommunityFeignClient communityFeignClient;
 
     @Override
     public FungoPageResultDto<CardIndexBean> index(InputPageDto input) {
@@ -231,13 +227,14 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
         cmmPostDto.setLimit(limit);
         cmmPostDto.setType(3);
         cmmPostDto.setState(1);
-        Page<CmmPostDto> pageList = indexProxyService.selectCmmPostPage(cmmPostDto);    //  postService.selectPage(new Page<CmmPost>(page, limit), new EntityWrapper<CmmPost>().eq("type", 3).eq("state", 1).last("ORDER BY sort DESC,updated_at DESC"));
+        FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.listCmmPostTopicPost(cmmPostDto);
+//        Page<CmmPostDto> pageList = indexProxyService.selectCmmPostPage(cmmPostDto);    //  postService.selectPage(new Page<CmmPost>(page, limit), new EntityWrapper<CmmPost>().eq("type", 3).eq("state", 1).last("ORDER BY sort DESC,updated_at DESC"));
 //		List<CmmPost> list = postService.selectList(new EntityWrapper<CmmPost>().eq("type", 3).orderBy("created_at", false).last("limit " + start+","+limit));
 //		List<CmmPost> list = p.getRecords();
         ArrayList<CardIndexBean> indexList = new ArrayList<>();
         CardIndexBean index = new CardIndexBean();
         ArrayList<CardDataBean> gameDateList = new ArrayList<>();
-        for (CmmPostDto post : pageList.getRecords()) {
+        for (CmmPostDto post : cmmPostDtoFungoPageResultDto.getData()) {
 
             CardDataBean bean = new CardDataBean();
             // 图片/标题/用户名/头像/评论数
@@ -288,6 +285,14 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
             bean.setTargetId(post.getId());
             bean.setTargetType(1);
             gameDateList.add(bean);
+        }
+        Map map = new HashMap<>(  );
+        if(cmmPostDtoFungoPageResultDto.getPages() <= page){
+            map.put( "hasNext",false );
+            index.setExtendData( map );
+        }else {
+            map.put( "hasNext",true );
+            index.setExtendData( map );
         }
         index.setCardName("社区置顶文章");
         index.setCardType(8);
