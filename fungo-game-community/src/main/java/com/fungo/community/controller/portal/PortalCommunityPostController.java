@@ -268,9 +268,9 @@ public class PortalCommunityPostController {
             postEntityWrapper.eq("type", 2).eq("state", 1);
             int sort = inputPageDto.getSort();
             if (sort == 1) {//  时间正序
-                postEntityWrapper.orderBy("updated_at", true);
+                postEntityWrapper.orderBy("edited_at", true);
             } else if (sort == 2) {//  时间倒序
-                postEntityWrapper.orderBy("updated_at", false);
+                postEntityWrapper.orderBy("edited_at", false);
             } else if (sort == 3) {// 热力值正序
 //            wrapper.orderBy("comment_num,like_num", true);
                 postEntityWrapper.last("ORDER BY comment_num ASC,like_num ASC");
@@ -280,7 +280,7 @@ public class PortalCommunityPostController {
             } else if (sort == 5) {//最后回复时间
                 postEntityWrapper.orderBy("last_reply_at", false);
             } else {
-                postEntityWrapper.orderBy("updated_at", false);
+                postEntityWrapper.orderBy("edited_at", false);
             }
 //            postEntityWrapper.last("ORDER BY sort DESC,updated_at DESC");
             Page<CmmPost> pageRecommend = this.daoPostService.selectPage(new Page<CmmPost>(inputPageDto.getPage(), inputPageDto.getLimit()), postEntityWrapper);

@@ -1,9 +1,13 @@
 package com.fungo.system.controller.portal;
 
 import com.fungo.system.service.IActionService;
+import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.enums.AbstractResultEnum;
+import com.game.common.enums.CommonEnum;
+import com.game.common.repo.cache.facade.FungoCacheMood;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -35,6 +39,8 @@ public class PortalSystemActionController {
     private IActionService actionService;
     @Resource(name = "protalSystemActionServiceImpl")
     private IActionService protalSystemActionServiceImpl;
+    @Autowired
+    private FungoCacheMood fungoCacheMood;
 
     @ApiOperation(value="PC2.0点赞", notes="")
     @RequestMapping(value="/api/portal/system/action/like", method= RequestMethod.POST)
@@ -46,7 +52,11 @@ public class PortalSystemActionController {
     public ResultDto<String> like(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody ActionInput inputDto) throws Exception {
         String appVersion = "";
         appVersion = request.getHeader("appversion");
-        return actionService.like(memberUserPrefile.getLoginId(), inputDto,appVersion);
+        ResultDto<String>  resultDto = actionService.like(memberUserPrefile.getLoginId(), inputDto,appVersion);
+        if(CommonEnum.SUCCESS.code().equals(String.valueOf(resultDto.getStatus()))){
+            fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS, "", null);
+        }
+        return resultDto;
     }
 
     @ApiOperation(value="PC2.0取消赞", notes="")
