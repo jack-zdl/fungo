@@ -234,7 +234,7 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
             //set id
             user.setId(UUIDUtils.getUUID());
 
-            String name = input.getName();
+            String name = input.getName().trim();
             if (CommonUtil.isNull(name)) {
                 return ResultDto.error("26", "用户名不存在");
             }

@@ -1,6 +1,7 @@
 package com.fungo.system.config;
 
 import com.alibaba.fastjson.JSON;
+import com.fungo.system.dto.UserBean;
 import org.apache.commons.io.IOUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -35,7 +36,7 @@ public class RequestBodyDecryptAdvice  extends RequestBodyAdviceAdapter{
      */
     @Override
     public boolean supports(MethodParameter methodParameter, Type type, Class<? extends HttpMessageConverter<?>> converterType) {
-        return true; //StringHttpMessageConverter.class.isAssignableFrom(converterType)
+        return true;  // type.getTypeName().equals( UserBean.class.getName());
     }
 
     /**
@@ -75,15 +76,15 @@ public class RequestBodyDecryptAdvice  extends RequestBodyAdviceAdapter{
      *
      * @date 2018/10/10 12:55
      */
-//    @Override
-//    public Object afterBodyRead(Object body, HttpInputMessage inputMessage, MethodParameter parameter, Type targetType,
-//                                Class<? extends HttpMessageConverter<?>> converterType) {
-//        //对加密的请求参数，解密
-//        return String.valueOf(body).trim();
-//    }
+    @Override
+    public Object afterBodyRead(Object body, HttpInputMessage inputMessage, MethodParameter parameter, Type targetType,
+                                Class<? extends HttpMessageConverter<?>> converterType) {
+        //对加密的请求参数，解密
+        return body;
+    }
 }
 
-class MyHttpInputMessage implements HttpInputMessage {
+class MyHttpInputMessage  implements HttpInputMessage{
     private HttpHeaders headers;
     private InputStream body;
 
@@ -91,7 +92,7 @@ class MyHttpInputMessage implements HttpInputMessage {
     public MyHttpInputMessage(HttpInputMessage inputMessage) throws Exception {
         String string = IOUtils.toString(inputMessage.getBody(), "UTF-8");
         Map<String, Object> mapJson = (Map<String, Object>) JSON.parseObject(string, Map.class);
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         Set<Map.Entry<String, Object>> entrySet = mapJson.entrySet();
         for (Map.Entry<String, Object> entry : entrySet) {
             String key = entry.getKey();
@@ -99,6 +100,8 @@ class MyHttpInputMessage implements HttpInputMessage {
             if (objValue instanceof String) {
                 String value = objValue.toString();
                 map.put(key,value.trim() ); //filterDangerString(value)
+            }else{
+                map.put(key,objValue ); //filterDangerString(value)
             }
 //            else { // 针对结合的处理
 //                @SuppressWarnings("rawtypes")
