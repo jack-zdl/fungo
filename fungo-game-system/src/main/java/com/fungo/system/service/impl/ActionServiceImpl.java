@@ -65,14 +65,8 @@ public class ActionServiceImpl implements IActionService {
     private FungoCacheGame fungoCacheGame;
     @Autowired
     private FungoCacheCommunity fungoCacheCommunity;
-
-    /*@Autowired
-    private GamesFeignClient gamesFeignClient;*/
-
     @Autowired
     private CommunityFeignClient communityFeignClient;
-    @Autowired
-    private IDeveloperProxyService iDeveloperProxyService;
     @Autowired
     private MQProduct mqProduct;
     @Autowired
@@ -106,41 +100,29 @@ public class ActionServiceImpl implements IActionService {
 
             //完成任务
             if (Setting.RES_TYPE_EVALUATION == inputDto.getTarget_type()) {//点赞游戏评价
-
                 //V2.4.6版本之前任务 废弃
                 //scoreLogService.expTask(memberId, 35, "", inputDto.getTarget_id(), inputDto.getTarget_type());
-
             } else {//点赞其它内容
-
                 //V2.4.6版本之前任务 废弃
                 //scoreLogService.expTask(memberId, 22, "", inputDto.getTarget_id(), inputDto.getTarget_type());
-
                 if (Setting.RES_TYPE_POST == inputDto.getTarget_type()) {
-
                     //帖子详情
                     //fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, inputDto.getTarget_id(), null);
                     //帖子/心情评论列表 + inputDto.getTarget_id()
                     fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
-
                 }
             }
-
             //被点赞用户的id
             String targetMemberId = gameProxy.getMemberID(inputDto.getTarget_id(), inputDto.getTarget_type());
-
-
             //V2.4.6版本之前任务 废弃
             //被点赞玩家获得奖励
             //ResultDto<Integer> expTask = scoreLogService.expTask(targetMemberId, 41, "", inputDto.getTarget_id(), inputDto.getTarget_type());
-
             //获得勋章判断
             //if (expTask.isSuccess()) {
             //}
-
             //用户被点赞总次数
             int likeCount = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("member_id", targetMemberId).in("type", new Integer[]{0, 1, 2, 7, 11}));
 //			int likeCount = scoreLogService.selectCount(new EntityWrapper<ScoreLog>().eq("member_id", targetMemberId).eq("code_idt", 41));
-
             if (likeCount == 50) {//expTask.getData()
                 scoreLogService.updateRanked(targetMemberId, new ObjectMapper(), 31);
             } else if (likeCount == 100) {
@@ -148,7 +130,6 @@ public class ActionServiceImpl implements IActionService {
             } else if (likeCount == 300) {
                 scoreLogService.updateRanked(targetMemberId, new ObjectMapper(), 33);
             }
-
             //----添加埋点点赞数据----------
             BuriedPointLikeModel likeModel = new BuriedPointLikeModel();
             likeModel.setDistinctId(memberId);
@@ -160,9 +141,7 @@ public class ActionServiceImpl implements IActionService {
             likeModel.setType(getBuriedPointLikeType(inputDto.getTarget_type()));
             likeModel.setChannel(getChannal(inputDto.getTarget_type(),inputDto.getTarget_id()));
             BuriedPointUtils.publishBuriedPointEvent(likeModel);
-
         } else {//点赞记录存在
-
             if (-1 == action.getState()) {
                 action.setState(0);
                 action.setUpdatedAt(new Date());
@@ -170,21 +149,16 @@ public class ActionServiceImpl implements IActionService {
                 this.actionService.updateById(action);
             }
         }
-
-
         //V2.4.6版本任务
         // 每日任务
         //1 经验值
         iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                 MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_LIKE_EXP.code());
-
         //2 fungo币
         iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                 MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_LIKE_COIN.code());
-
         //redis cache
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, null, null);
-
         //首页文章帖子列表(v2.4)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
         //心情评论列表
@@ -192,8 +166,6 @@ public class ActionServiceImpl implements IActionService {
         //获取心情动态列表(v2.4)
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOODS_LIST, "", null);
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOOD_CONTENT_GET, "", null);
-
-
         return ResultDto.success("点赞成功");
     }
 
@@ -790,16 +762,6 @@ public class ActionServiceImpl implements IActionService {
         return re;
     }
 
-    //  切换feign客户端 调用游戏服务
-    //@todo  mq  调用游戏服务
-    private void gameFeignClientUpdateCounterByDownLoad(ActionInput inputDto) {
-        Map<String, String> map = new HashMap<>();
-        map.put("tableName", "t_game");
-        map.put("fieldName", "download_num");
-        map.put("id", inputDto.getTarget_id());
-        map.put("type", "add");
-        mqProduct.updateCounter(map);
-    }
 
     //忽略
     @Transactional
@@ -873,14 +835,12 @@ public class ActionServiceImpl implements IActionService {
     private boolean getCounterBoolean(ActionInput inputDto, Map<String, String> map) {
         if (CommonlyConst.getCommunityList().contains(inputDto.getTarget_type())) {
 //            社区服务空缺 19-05-07
-            //@todo mq 消息
-            mqProduct.communityUpdate(map); //communityFeignClient.updateCounter(map);
+            mqProduct.communityUpdate(map);
             return true;
         }
         if (CommonlyConst.getGameList().contains(inputDto.getTarget_type())) {
 //            feign客户端调用游戏服务
-            //@todo mq 消息
-            mqProduct.updateCounter(map);//iDeveloperProxyService.updateCounter(map);
+            mqProduct.updateCounter(map);
             return true;
         }
         if (CommonlyConst.getSystemList().contains(inputDto.getTarget_type())) {

@@ -1304,9 +1304,10 @@ public class MemberServiceImpl implements IMemberService {
             //
             bean.setVideoCoverImage(post.getVideoCoverImage());
             bean.setDeltype( post.getState() == -1 ? 1 : 0 ); //1 true  已删除  0 false 未删除
+            bean.setCreatedAt( post.getCreatedAt());
             blist.add(bean);
         }
-
+        blist = blist.stream().sorted( Comparator.comparing(MyPublishBean::getCreatedAt).reversed()).collect( Collectors.toList());
         re.setData(blist);
         PageTools.newPageToResultDto(re, cmmPostDtoFungoPageResultDto.getCount(),cmmPostDtoFungoPageResultDto.getPages(),input.getPage());
         //PageTools.pageToResultDto(re, page);

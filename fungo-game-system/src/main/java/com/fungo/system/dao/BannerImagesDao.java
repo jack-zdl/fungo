@@ -5,8 +5,6 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.fungo.system.entity.BannerImages;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 /**
  * <p>
   * 广告 Mapper 接口

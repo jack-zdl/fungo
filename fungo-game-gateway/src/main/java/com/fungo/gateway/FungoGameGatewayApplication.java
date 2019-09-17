@@ -3,6 +3,8 @@ package com.fungo.gateway;
 import com.fungo.gateway.filter.FungoGatewayFilter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.DispatcherType;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +24,8 @@ public class FungoGameGatewayApplication {
 	public FungoGatewayFilter gatewayFilter() {
 		return new FungoGatewayFilter();
 	}
+
+
 
 	@RequestMapping("/")
 	public String home() {

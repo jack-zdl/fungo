@@ -1,28 +1,19 @@
 package com.fungo.system.controller;
 
-import com.fungo.system.helper.RabbitMQProduct;
-import com.fungo.system.helper.mq.MQProduct;
 import com.fungo.system.service.IActionService;
 import com.game.common.dto.ActionInput;
-import com.game.common.dto.GameDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
-import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
+
 
 /**
  * 用户行为
@@ -31,26 +22,15 @@ import java.util.Map;
  * @update 2019/5/5 16:26
  */
 @RestController
-@Api(value="",description="用户行为")
+@Api(value="")
 public class ActionController {
 
     @Resource(name = "actionServiceImpl")
     private IActionService actionService;
 
-    @Autowired
-    private RabbitMQProduct rabbitMQProduct;
-
-    @Autowired
-    private MQProduct mqProduct;
-
-    /*@Autowired
-    private GamesFeignClient gamesFeignClient;
-
-    @Autowired
-    private IDeveloperProxyService iDeveloperProxyService;*/
 
     @ApiOperation(value="点赞", notes="")
-    @RequestMapping(value="/api/action/like", method= RequestMethod.POST)
+    @PostMapping(value="/api/action/like")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "target_id",value = "目标对象",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string"),
@@ -187,17 +167,5 @@ public class ActionController {
         return actionService.whetherIsDone(memberUserPrefile.getLoginId(), inputDto);
     }
 
-
-//    gamesFeignClient.updateCountor(map);
-   /* @ApiOperation(value="测试", notes="")
-    @RequestMapping(value="/api/action/ceshi", method= RequestMethod.POST)
-    public Boolean whetherIsDone() throws Exception {
-        Map<String, String> map = new HashMap<>();
-        map.put("tableName", "t_game_evaluation");
-        map.put("fieldName", "like_num");
-        map.put("id", "003bd43296a54fa28a47426920225c42");
-        map.put("type", "sub");
-        return iDeveloperProxyService.updateCounter(map);
-    }*/
 
 }

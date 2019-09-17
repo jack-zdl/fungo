@@ -77,7 +77,7 @@ public class FungoVMallGoodsExcelParserService {
 
 
                 //开始解析  //读取sheet 0
-                Sheet sheet = wb.getSheetAt(3);
+                Sheet sheet = wb.getSheetAt(2);
                 //第一行是列名，所以不读
                 int firstRowIndex = sheet.getFirstRowNum() + 1;
                 int lastRowIndex = sheet.getLastRowNum();
@@ -164,12 +164,12 @@ public class FungoVMallGoodsExcelParserService {
         MallVirtualCard virtualCard = new MallVirtualCard();
 
         virtualCard.setId(PKUtil.getInstance().longPK());
-        // 喜加一Lv.1 2019082818350185994
-        // 喜加一Lv.2  2019082822021549316
-        // 喜加一Lv.3  2019082822041316706
-        // 随机大作    2019082822055917436
+        // 喜加一Lv.1 2019090410175965512
+        // 喜加一Lv.2  2019090410403036092
+        // 喜加一Lv.3  2019090410404753342
+        // 随机大作    2019090410405561072
 //        virtualCard.setGoodsId(2019011810120065413L);
-        virtualCard.setGoodsId(2019082822055917436L);
+        virtualCard.setGoodsId(2019090410404753342L);
 
         String cardSnEncrypt = FungoAESUtil.encrypt( cardSn,
                 aESSecretKey + FungoMallSeckillConsts.AES_SALT);

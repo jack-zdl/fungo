@@ -8,12 +8,15 @@ import com.fungo.system.service.impl.CommunityServiceImpl;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.CommonEnum;
 import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.vo.DelObjectListVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -53,8 +57,11 @@ public class MemberNoticeController {
      * @throws Exception
      */
     @RequestMapping(value = "/api/user/notices", method = RequestMethod.POST)
-    public ResultDto<List<Map<String, Object>>> bindThirdSNSWithLogged(MemberUserProfile memberprofile,HttpServletRequest request, @Valid @RequestBody MemberNoticeInput noticeInput) throws Exception {
+    public ResultDto<List<Map<String, Object>>> bindThirdSNSWithLogged(MemberUserProfile memberprofile,HttpServletRequest request, @Valid @RequestBody MemberNoticeInput noticeInput, BindingResult errors) throws Exception {
 
+        if(errors.hasErrors()){
+            return ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FIVE.getKey(),errors.getAllErrors().stream().map( ObjectError::getDefaultMessage).collect( Collectors.joining(",") ));
+        }
 //        noticeInput.setMb_id(memberprofile.getLoginId());
 //        String os = request.getHeader("os");
 //        if(os == null){

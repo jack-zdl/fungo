@@ -47,10 +47,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
         //查询当前登录用户关注的所有用户
         List<Member> watchMebmberList = null;
-        StringBuffer mbWatchedMbsWithSql = new StringBuffer();
-
         List<String> wathMbsSet = new ArrayList<>();
-
         if (StringUtils.isNotBlank(currentMb_id)) {
             watchMebmberList = this.getWatchMebmber(0, currentMb_id);
             if (null != watchMebmberList && !watchMebmberList.isEmpty()) {
@@ -60,7 +57,7 @@ public class CommunityServiceImpl implements ICommunityService {
                 }
             }
         }
-        LOGGER.info("查询当前登录用户关注的所有用户:{}", wathMbsSet.toString());
+//        LOGGER.info("查询当前登录用户关注的所有用户:{}", wathMbsSet.toString());
 
         //先获取官方推荐和符合条件推荐用户
         List<Member> ml1 = getRecommeMembers(limit, currentMb_id, wathMbsSet);
@@ -199,7 +196,7 @@ public class CommunityServiceImpl implements ICommunityService {
             //1.先查询发布文章数大于10条的用户
             // @todo 5.22
             List<String> sendArticleMembers = communityProxyService.getRecommendMembersFromCmmPost(sendArticles,limitSize, wathMbsSet); //memberDao.getRecommendMembersFromCmmPost(sendArticles, limitSize, wathMbsSet);
-            LOGGER.info("查询发布文章数大于10条的用户:{}", sendArticleMembers.toString());
+//            LOGGER.info("查询发布文章数大于10条的用户:{}", sendArticleMembers.toString());
 
             if (null != sendArticleMembers && !sendArticleMembers.isEmpty()) {
                 members.addAll(sendArticleMembers);
@@ -210,7 +207,7 @@ public class CommunityServiceImpl implements ICommunityService {
             // @todo 5.22
             List<String> sendCommentMembers = iGameProxyService.getRecommendMembersFromEvaluation(Long.valueOf(sendComments).intValue(), Long.valueOf(limitSize).intValue(), wathMbsSet);   //memberDao.getRecommendMembersFromEvaluation(sendComments, limitSize, wathMbsSet);
 
-            LOGGER.info("查询发布游戏评论>大于14条的，前10名用户:{}", sendCommentMembers.toString());
+//            LOGGER.info("查询发布游戏评论>大于14条的，前10名用户:{}", sendCommentMembers.toString());
             if (null != sendCommentMembers && !sendCommentMembers.isEmpty()) {
                 members.addAll(sendCommentMembers);
                 sendCommentMembers.clear();

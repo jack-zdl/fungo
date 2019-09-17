@@ -16,7 +16,7 @@ public class CounterServiceImpl implements ICounterService {
 	
 	@Override
 	public boolean addCounter(String tableType, String fieldType, String id) {
-		Map<String,String> map =new HashMap<String,String>();
+		Map<String,String> map =new HashMap<>();
 		map.put("tableName", tableType);
 		map.put("fieldName", fieldType);
 		map.put("id", id);
@@ -26,7 +26,7 @@ public class CounterServiceImpl implements ICounterService {
 
 	@Override
 	public boolean subCounter(String tableType, String fieldType, String id) {
-		Map<String,String> map =new HashMap<String,String>();
+		Map<String,String> map =new HashMap<>();
 		map.put("tableName", tableType);
 		map.put("fieldName", fieldType);
 		map.put("id", id);

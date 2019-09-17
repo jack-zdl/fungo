@@ -4,10 +4,7 @@ import com.game.common.dto.StreamInfo;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MyPublishBean implements Serializable{
 
@@ -47,6 +44,10 @@ public class MyPublishBean implements Serializable{
 	 * @date: 2019/8/13 14:26
 	 */
 	private int deltype;
+	/**
+	 * 创建时间
+	 */
+	private Date createdAt;
 	
 	
 	
@@ -143,5 +144,13 @@ public class MyPublishBean implements Serializable{
 
 	public void setDeltype(int deltype) {
 		this.deltype = deltype;
+	}
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
 	}
 }

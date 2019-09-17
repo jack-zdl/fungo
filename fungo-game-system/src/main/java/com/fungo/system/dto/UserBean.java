@@ -1,9 +1,22 @@
 package com.fungo.system.dto;
 
+
+
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class UserBean {
-	
+
+	@Length( min = 1,max = 100,message = "用户名长度不能超过100")
 	private String user_name;
+	@Min( value = 0,message = "用户传递性别标示错误")
+	@Max( value = 2,message = "用户传递性别标示错误")
 	private int gender;
+	@Length(max = 1024,message = "用户签名过长,不应超过1024")
 	private String sign;
 	private String avatar;
 	

@@ -234,7 +234,7 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
             //set id
             user.setId(UUIDUtils.getUUID());
 
-            String name = input.getName();
+            String name = input.getName().trim();
             if (CommonUtil.isNull(name)) {
                 return ResultDto.error("26", "用户名不存在");
             }
@@ -344,29 +344,28 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
             if (platform == 0) {
                 //1 经验值
                 iMemberIncentDoTaskFacadeService.exTask(mb_id, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
-                        MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_SNS_WB_COIN.code());
+                        MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_NS_WB_EXP.code());
 
                 //2 fungo币
                 iMemberIncentDoTaskFacadeService.exTask(mb_id, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
-                        MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_NS_WB_EXP.code());
+                        MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_SNS_WB_COIN.code());
                 //微信
             } else if (platform == 1) {
                 //1 经验值
                 iMemberIncentDoTaskFacadeService.exTask(mb_id, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
-                        MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_SNS_WX_COIN.code());
-
+                        MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_NS_WX_EXP.code());
                 //2 fungo币
                 iMemberIncentDoTaskFacadeService.exTask(mb_id, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
-                        MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_NS_WX_EXP.code());
+                        MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_SNS_WX_COIN.code());
                 //QQ
             } else if (platform == 4) {
                 //1 经验值
                 iMemberIncentDoTaskFacadeService.exTask(mb_id, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
-                        MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_SNS_QQ_COIN.code());
+                        MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_NS_QQ_EXP.code());
 
                 //2 fungo币
                 iMemberIncentDoTaskFacadeService.exTask(mb_id, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
-                        MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_NS_QQ_EXP.code());
+                        MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_SNS_QQ_COIN.code());
             }
 
         } catch (Exception ex) {
