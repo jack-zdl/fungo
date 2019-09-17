@@ -3,7 +3,6 @@ package com.fungo.system.dto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.transaction.annotation.Transactional;
 
 @Setter
 @Getter

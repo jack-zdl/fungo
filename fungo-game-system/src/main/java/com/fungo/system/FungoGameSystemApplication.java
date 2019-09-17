@@ -1,6 +1,5 @@
 package com.fungo.system;
 
-
 import com.game.common.framework.MyProperties;
 import com.game.common.framework.runtime.SpringUtils;
 import com.netflix.hystrix.contrib.metrics.eventstream.HystrixMetricsStreamServlet;
@@ -19,7 +18,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
 import javax.servlet.MultipartConfigElement;
 
 @SpringBootApplication()
@@ -40,6 +38,20 @@ public class FungoGameSystemApplication {
 		SpringApplication.run(FungoGameSystemApplication.class, args);
 	}
 
+
+//	@Bean
+//	public MappingJackson2HttpMessageConverter getMappingJackson2HttpMessageConverter() {
+//		MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
+//		ObjectMapper mapper = mappingJackson2HttpMessageConverter.getObjectMapper();
+////		// 为mapper注册一个带有SerializerModifier的Factory，此modifier主要做的事情为：当序列化类型为array，list、set时，当值为空时，序列化成[]
+//		mapper.setSerializerFactory(mapper.getSerializerFactory().withSerializerModifier(new MyBeanSerializerModifier()));
+//		mappingJackson2HttpMessageConverter.setSupportedMediaTypes( ImmutableList.of( MediaType.TEXT_HTML, MediaType.APPLICATION_JSON));
+////		设置中文编码格式
+//		List<MediaType> list = new ArrayList<MediaType>();
+//		list.add( MediaType.APPLICATION_JSON_UTF8);
+//		mappingJackson2HttpMessageConverter.setSupportedMediaTypes(list);
+//		return mappingJackson2HttpMessageConverter;
+//	}
 
 	@Bean
 	public ServletRegistrationBean getServlet() {

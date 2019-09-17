@@ -30,7 +30,7 @@ public class JobController {
         ResultDto<String> re = null;
         try {
 
-            re = ResultDto.success("定时检查社区模块系统管控台系统消息定期任务执行成功");
+            re = ResultDto.success("  定时检查社区模块系统管控台系统消息定期任务执行成功   ");
         }catch (Exception e){
             LOGGER.error("定时检查社区模块系统管控台系统消息定期任务执行异常",e);
             re = ResultDto.error("-1","定时检查社区模块系统管控台系统消息定期任务执行异常");

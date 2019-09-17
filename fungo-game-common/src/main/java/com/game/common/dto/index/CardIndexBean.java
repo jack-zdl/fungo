@@ -44,7 +44,7 @@ public class CardIndexBean {
     /**
      * 文章关联的游戏 或 圈子信息
      */
-    private Map postLinkGameOrCircle;
+    private Map postLinkGameOrCircle = new HashMap();
 
     public Map getPostLinkGameOrCircle() {
         return postLinkGameOrCircle;

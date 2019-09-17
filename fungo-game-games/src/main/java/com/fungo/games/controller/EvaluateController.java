@@ -93,6 +93,8 @@ public class EvaluateController {
 			ResultDto<String>  resultDto =  this.evaluateService.delEvaluationDetail(memberId, commentIdList);
 			if(CommonEnum.SUCCESS.code().equals(String.valueOf(resultDto.getStatus()))){
 				fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS, "", null);
+				//我的评测redis緩存
+				fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_EVALUATIONLIST, "", null);
 			}
 			return resultDto;
 		}catch (Exception e){

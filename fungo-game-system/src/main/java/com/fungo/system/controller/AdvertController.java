@@ -31,27 +31,16 @@ import java.util.Map;
 import static com.game.common.consts.FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_RECOMMEND_DISCOVER;
 
 @RestController
-@Api(value = "", description = "广告")
+@Api(value = "")
 public class AdvertController {
 
 
     @Autowired
     private BannerService bannerService;
-
-
-    //    @Autowired
-//    private GameDao gameDao;
-//    @Autowired
-//    private CmmPostService postService;
-
-
     @Autowired
     private FungoCacheAdvert fungoCacheAdvert;
-
     @Autowired
     private IndexProxyService indexProxyService;
-
-
     @Autowired
     private IGameProxyService iGameProxyService;
 
@@ -175,21 +164,28 @@ public class AdvertController {
         //获取广告位
         List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0002").eq("state", 0).orderBy("sort", false));
         for (Banner banner : blist) {
-            Map<String, BigDecimal> rateData = indexProxyService.getRateData(banner.getTargetId());  //gameDao.getRateData(banner.getTargetId());
+//            Map<String, BigDecimal> rateData = indexProxyService.getRateData(banner.getTargetId());  //gameDao.getRateData(banner.getTargetId());
             Map<String, String> map1 = new HashMap<String, String>();
 //				 map1.put("rating",rateData.get("avgRating").toString());
             if (1 == banner.getTargetType()) {
                 CmmPostDto cmmPostParam = new CmmPostDto();
                 cmmPostParam.setId(banner.getTargetId());
                 cmmPostParam.setState(1);
-                CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostParam);  //postService.selectById(banner.getTargetId());
+                CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostParam);
                 if (post != null) {
                     map1.put("video", post.getVideo());
                 }
+            }else {
+                GameDto gameDto = new GameDto();
+                gameDto.setId(banner.getTargetId());
+//                gameDto.setState(1);
+                gameDto = iGameProxyService.selectGameById(gameDto);
+                map1.put( "gameName",gameDto.getName());
             }
             map1.put("objectId", banner.getTargetId());
             map1.put("cover_image", banner.getCoverImage());
             map1.put("type", String.valueOf(banner.getTargetType()));
+
             list.add(map1);
         }
         re.setData(list);

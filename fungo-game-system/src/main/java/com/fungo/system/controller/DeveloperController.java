@@ -131,10 +131,6 @@ public class DeveloperController {
 	@RequestMapping(value="/api/developer/gameHistory", method= RequestMethod.POST)
 	@ApiImplicitParams({})
 	public FungoPageResultDto<GameHistoryOut> gameHistory(MemberUserProfile memberUserPrefile, @RequestBody DeveloperGamePageInput input){
-//		boolean b = iDeveloperService.checkDpPower(memberUserPrefile.getLoginId());
-//		if(!b) {
-//			return FungoPageResultDto.error("-1", "没有开发者权限");
-//		}
 		return iDeveloperService.gameHistory(memberUserPrefile.getLoginId(),input);
 	}
 
