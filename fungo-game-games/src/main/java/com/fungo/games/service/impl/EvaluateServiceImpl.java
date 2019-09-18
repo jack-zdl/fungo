@@ -56,6 +56,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class EvaluateServiceImpl implements IEvaluateService {
@@ -603,11 +604,15 @@ public class EvaluateServiceImpl implements IEvaluateService {
             } else if (pageDto.getSort() == 3) {
                 commentWrapper.groupBy("id").orderBy("sum(like_num+reply_num)", true);//按照点赞数和回复数排序
             } else if (pageDto.getSort() == 4) {
-                commentWrapper.groupBy("id").orderBy("sum(like_num+reply_num)", false);
+//                commentWrapper.groupBy("id").orderBy("sum(like_num+reply_num)", false);
+                commentWrapper.groupBy("id").orderBy("type DESC , sum(like_num+reply_num) desc created_at", false);
+            }else if(pageDto.getSort() == 5){
+                commentWrapper.groupBy("id").orderBy("type DESC , sum(like_num+reply_num) desc created_at", false);
             }
 
             Page<GameEvaluation> page = this.gameEvaluationService.selectPage(new Page<>(pageDto.getPage(), pageDto.getLimit()), commentWrapper);
             List<GameEvaluation> list = page.getRecords();
+            list = list.stream().filter( s ->(s.getType() != 2)).collect( Collectors.toList() );
 
             for (GameEvaluation cmmComment : list) {
                 EvaluationOutPageDto ctem = new EvaluationOutPageDto();
