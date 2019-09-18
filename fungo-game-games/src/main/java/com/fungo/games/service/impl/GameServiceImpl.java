@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.games.dao.BasTagDao;
 import com.fungo.games.dao.GameCollectionGroupDao;
 import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.*;
@@ -14,6 +15,7 @@ import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.feign.CommunityFeignClient;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
+import com.game.common.bean.TagBean;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.Setting;
 import com.game.common.dto.FungoPageResultDto;
@@ -85,6 +87,8 @@ public class GameServiceImpl implements IGameService {
     private CommunityFeignClient communityFeignClient;
     @Autowired
     private GameCollectionGroupDao collectionGroupDao;
+    @Autowired
+    private BasTagDao dao;
 
 
     @Override
@@ -516,14 +520,13 @@ public class GameServiceImpl implements IGameService {
                 out.setRatingList(rateFormat(perMap));
 
             }
-
+            List<TagBean> tags = dao.getGameTags(gameId);
             // 查询游戏标签
-            List<GameTag> gameTagList = gameTagService.selectList(new EntityWrapper<GameTag>().eq("game_id", gameId).eq("type", 1));
+            List<GameTag> gameTagList = gameTagService.selectList(new EntityWrapper<GameTag>().eq("game_id", gameId).eq("type", 2));
             //andNew("type = {0}",1).or("like_num > {0}",5).orderBy("like_num", false).last("LIMIT 5"));
             if (gameTagList != null && gameTagList.size() > 0) {
 //            迁移微服务 根据判断集合id获取BasTagList集合
                 List<BasTag> tagList = basTagService.selectList(new EntityWrapper<BasTag>().in("id", gameTagList.stream().map(GameTag::getTagId).collect(Collectors.toList())));
-
 
                 if (tagList != null && tagList.size() > 0) {
                     List<String> tagNames = new ArrayList<>();
