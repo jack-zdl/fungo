@@ -190,7 +190,7 @@ public class MemberIncentNewbieTaskServiceImpl implements IMemberIncentNewbieTas
             }
         }
 
-        
+
         //添加新手任务埋点
         BuriedPointTaskModel buriedPointTaskModel = new BuriedPointTaskModel();
         buriedPointTaskModel.setDistinctId(mb_id);
