@@ -14,7 +14,6 @@ import com.fungo.system.facede.ICommunityProxyService;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.helper.mq.MQProduct;
-import com.fungo.system.facede.IDeveloperProxyService;
 import com.fungo.system.service.*;
 import com.game.common.buriedpoint.BuriedPointUtils;
 import com.game.common.buriedpoint.constants.BuriedPointCommunityConstant;
@@ -216,7 +215,7 @@ public class ActionServiceImpl implements IActionService {
 
     //分享
     public ResultDto<String> share(String memberId, ActionInput inputDto) throws Exception {
-        ResultDto<String> re = new ResultDto<String>();
+        ResultDto<String> re = new ResultDto<>();
         BasAction action = this.getAction(memberId, Setting.ACTION_TYPE_SHARE, inputDto);
 
         //int times = -1;
@@ -555,7 +554,7 @@ public class ActionServiceImpl implements IActionService {
     //举报
     @Transactional
     public ResultDto<String> report(String memberId, ActionInput inputDto) throws Exception {
-        ResultDto<String> re = new ResultDto<String>();
+        ResultDto<String> re = new ResultDto<>();
         BasAction action = this.getAction(memberId, Setting.ACTION_TYPE_REPORT, inputDto);
         int times = -1;
         if (action == null) {
@@ -746,7 +745,7 @@ public class ActionServiceImpl implements IActionService {
             //end
         }
 
-        ResultDto<String> re = new ResultDto<String>();
+        ResultDto<String> re = new ResultDto<>();
         if (StringUtils.isNotBlank(tips)) {
             re.show(tips);
             re.setData(tips);
@@ -824,7 +823,7 @@ public class ActionServiceImpl implements IActionService {
 
     //表字段 增数
     public boolean addCounter(String memberId, int type, ActionInput inputDto) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("tableName", getTableName(inputDto.getTarget_type()));
         map.put("fieldName", getFieldName(type));
         map.put("id", inputDto.getTarget_id());
@@ -851,7 +850,7 @@ public class ActionServiceImpl implements IActionService {
 
     //表字段 减数
     public boolean subCounter(String memberId, int type, ActionInput inputDto) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put("tableName", getTableName(inputDto.getTarget_type()));
         map.put("fieldName", getFieldName(type));
         map.put("id", inputDto.getTarget_id());

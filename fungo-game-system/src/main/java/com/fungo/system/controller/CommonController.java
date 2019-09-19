@@ -14,6 +14,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +36,9 @@ import java.util.Map;
 @RestController
 @Api(value = "")
 public class CommonController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommonController.class);
+
     @Autowired
     private ICommonService commonService;
     @Autowired
@@ -53,8 +58,8 @@ public class CommonController {
     @RequestMapping(value = "/api/config", method = RequestMethod.GET)
     @ApiImplicitParams({})
     public ResultDto<Map<String, Boolean>> getAppConfig() {
-        ResultDto<Map<String, Boolean>> re = new ResultDto<Map<String, Boolean>>();
-        Map<String, Boolean> map = new HashMap<String, Boolean>();
+        ResultDto<Map<String, Boolean>> re = new ResultDto<>();
+        Map<String, Boolean> map = new HashMap<>();
         SysVersion sysVersion = versionService.selectOne(new EntityWrapper<SysVersion>().eq("new_version", 1));
         map.put("game_download_switch", sysVersion.getGameDownloadSwitch() == 1 ? true : false);
         map.put("index_banner_switch", sysVersion.getIndexBannerSwitch() == 1 ? true : false);
@@ -68,8 +73,8 @@ public class CommonController {
     public ResultDto<Map<String, Boolean>> getAndroidAppConfig(@RequestBody AppConfigGetInput input, HttpServletRequest request) {
         String os = (String) request.getAttribute("os");
 
-        ResultDto<Map<String, Boolean>> re = new ResultDto<Map<String, Boolean>>();
-        Map<String, Boolean> map = new HashMap<String, Boolean>();
+        ResultDto<Map<String, Boolean>> re = new ResultDto<>();
+        Map<String, Boolean> map = new HashMap<>();
         SysVersion sysVersion = null;
 
         //查询对应版本
@@ -115,8 +120,8 @@ public class CommonController {
     @RequestMapping(value = "/api/checkupdate", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public ResultDto<Map<String, Object>> checkupdate(@Anonymous MemberUserProfile memberUserPrefile) {
-        ResultDto<Map<String, Object>> re = new ResultDto<Map<String, Object>>();
-        Map<String, Object> map = new HashMap<String, Object>();
+        ResultDto<Map<String, Object>> re = new ResultDto<>();
+        Map<String, Object> map = new HashMap<>();
         SysVersion sysVersion = versionService.selectOne(new EntityWrapper<SysVersion>().eq("mobile_type", "Android").eq("new_version", 1));
         map.put("code", sysVersion.getCode());
         map.put("name", sysVersion.getVersion());
@@ -133,7 +138,7 @@ public class CommonController {
     @RequestMapping(value = "/api/checkappupdate", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public ResultDto<Map<String, Object>> checkAppUpdate(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody VersionInput input) {
-        ResultDto<Map<String, Object>> re = new ResultDto<Map<String, Object>>();
+        ResultDto<Map<String, Object>> re = new ResultDto<>();
         //客户端当前版本
         String currentVersion = input.getCurrentVersion();
 
@@ -142,7 +147,7 @@ public class CommonController {
 
         SysVersion lastNewVersion = versionService.selectOne(new EntityWrapper<SysVersion>().eq("new_version", 1).eq("mobile_type", "Android"));
 
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
 
         if (null != lastNewVersion) {
             map.put("code", lastNewVersion.getCode());
@@ -170,7 +175,7 @@ public class CommonController {
                         }
 
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        LOGGER.error( "检查更新异常",ex );
                     }
 
                 }
@@ -186,7 +191,7 @@ public class CommonController {
     @RequestMapping(value = "/api/checkiosupdate", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public ResultDto<Map<String, Object>> checkIOSUpdate(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody VersionInput input) {
-        ResultDto<Map<String, Object>> re = new ResultDto<Map<String, Object>>();
+        ResultDto<Map<String, Object>> re = new ResultDto<>();
         String currentVersion = input.getCurrentVersion();
 
         //查看当前版本(如查找不到,直接强制升级)
@@ -194,7 +199,7 @@ public class CommonController {
 
         SysVersion lastNewVersion = versionService.selectOne(new EntityWrapper<SysVersion>().eq("new_version", 1).eq("mobile_type", "IOS"));
 
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         if (null != lastNewVersion) {
 
             map.put("code", lastNewVersion.getCode());
@@ -229,7 +234,7 @@ public class CommonController {
                         }
 
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                       LOGGER.error( "ios检查更新",ex );
                     }
 
                 }
@@ -245,8 +250,8 @@ public class CommonController {
     @ApiOperation(value = "关于我们", notes = "")
     @RequestMapping(value = "/api/about", method = RequestMethod.GET)
     public ResultDto<Map<String, String>> getTaskHelp(@Anonymous MemberUserProfile memberUserPrefile) {
-        ResultDto<Map<String, String>> re = new ResultDto<Map<String, String>>();
-        Map<String, String> map = new HashMap<String, String>();
+        ResultDto<Map<String, String>> re = new ResultDto<>();
+        Map<String, String> map = new HashMap<>();
         map.put("url", "http://static.fungoweb.com/static/site/pages/about_me.html");
         re.setData(map);
         return re;
@@ -257,7 +262,7 @@ public class CommonController {
     @RequestMapping(value = "/api/starInfo", method = RequestMethod.GET)
     public ResultDto<ArrayList<StartInfo>> getStarInfo(@Anonymous MemberUserProfile memberUserPrefile) {
 //		ArrayList<StartInfo> list = (ArrayList<StartInfo>) GuavaCache.get("startInfo");
-        ArrayList<StartInfo> list = new ArrayList<StartInfo>();
+        ArrayList<StartInfo> list = new ArrayList<>();
         list.add(new StartInfo("不会再玩", 1));
         list.add(new StartInfo("很烂", 2));
         list.add(new StartInfo("极差", 3));
@@ -274,7 +279,7 @@ public class CommonController {
     @ApiOperation(value = "游戏评价特征说明(v 2.4)", notes = "")
     @RequestMapping(value = "/api/trait", method = RequestMethod.GET)
     public ResultDto<ArrayList<Trait>> gettraitInfo(@Anonymous MemberUserProfile memberUserPrefile) {
-        ArrayList<Trait> list = new ArrayList<Trait>();
+        ArrayList<Trait> list = new ArrayList<>();
         list.add(new Trait("trait1", "画面"));
         list.add(new Trait("trait2", "音乐"));
         list.add(new Trait("trait3", "氪金"));

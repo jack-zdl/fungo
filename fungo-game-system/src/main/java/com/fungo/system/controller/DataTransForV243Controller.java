@@ -151,10 +151,7 @@ public class DataTransForV243Controller {
             return false;
         }
         String authValuee = authMap.get("authKey");
-        if (StringUtils.equalsIgnoreCase(authValuee, fgoTransfAuth)) {
-            return true;
-        }
-        return false;
+        return StringUtils.equalsIgnoreCase(authValuee, fgoTransfAuth);
     }
 
 //---------

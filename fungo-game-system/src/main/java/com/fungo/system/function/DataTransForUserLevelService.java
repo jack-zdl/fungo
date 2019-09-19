@@ -121,7 +121,7 @@ public class DataTransForUserLevelService {
             }
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+           logger.error( "迁移用户等级数据异常",ex );
         }
     }
 
@@ -156,7 +156,7 @@ public class DataTransForUserLevelService {
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+           logger.error( "查询没有等级和fungo身份证图片的用户",ex );
         }
     }
 

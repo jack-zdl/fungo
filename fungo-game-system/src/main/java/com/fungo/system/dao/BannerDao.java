@@ -1,9 +1,7 @@
 package com.fungo.system.dao;
 
-//import com.baomidou.mybatisplus.mapper.BaseMapper;
-//import com.baomidou.mybatisplus.plugins.Page;
+
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.fungo.system.dto.PCBannerDto;
 import com.fungo.system.entity.Banner;

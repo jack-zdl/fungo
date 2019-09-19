@@ -57,7 +57,6 @@ public class CommunityServiceImpl implements ICommunityService {
                 }
             }
         }
-//        LOGGER.info("查询当前登录用户关注的所有用户:{}", wathMbsSet.toString());
 
         //先获取官方推荐和符合条件推荐用户
         List<Member> ml1 = getRecommeMembers(limit, currentMb_id, wathMbsSet);

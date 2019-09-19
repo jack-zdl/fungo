@@ -294,7 +294,7 @@ public class DTPTransactionMessageScheduledService {
         try {
             date = sdf.parse(dateStr);
         } catch (ParseException e) {
-            e.printStackTrace();
+            LOGGER.error( "获取配置的开始处理的时间",e );
         }
         return date;
     }
@@ -306,7 +306,7 @@ public class DTPTransactionMessageScheduledService {
      * @return
      */
     private Map<Integer, Integer> getSendTime() {
-        Map<Integer, Integer> notifyParam = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> notifyParam = new HashMap<>();
         notifyParam.put(1, msgSendTimeOne);
         notifyParam.put(2, msgSendTimeTwo);
         notifyParam.put(3, msgSendTimeThree);

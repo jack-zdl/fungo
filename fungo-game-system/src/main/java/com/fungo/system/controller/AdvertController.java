@@ -51,7 +51,7 @@ public class AdvertController {
     public ResultDto<List<AdvertOutBean>> getAdvert() {
 
         //from redis
-        ResultDto<List<AdvertOutBean>> re = new ResultDto<List<AdvertOutBean>>();
+        ResultDto<List<AdvertOutBean>> re = new ResultDto<>();
         List<AdvertOutBean> list = null;
         list = (List<AdvertOutBean>) fungoCacheAdvert.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_INDEX, "");
         if (null != list && !list.isEmpty()) {
@@ -59,7 +59,7 @@ public class AdvertController {
             return re;
         }
 
-        list = new ArrayList<AdvertOutBean>();
+        list = new ArrayList<>();
         //获取广告位
         List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0001").eq("state", 0).orderBy("sort", false));
         for (Banner banner : blist) {
@@ -83,7 +83,6 @@ public class AdvertController {
             bean.setBizType(targetType);
 
             if (3 == targetType) {
-                // @todo 游戏
                 GameDto param = new GameDto();
                 param.setId(banner.getTargetId());
                 GameDto game = iGameProxyService.selectGameById(param);
@@ -116,7 +115,7 @@ public class AdvertController {
     @RequestMapping(value = "/api/adt/bnr", method = RequestMethod.GET)
     public ResultDto<List<AdvertOutBean>> getAdvertWithPc() {
 
-        ResultDto<List<AdvertOutBean>> re = new ResultDto<List<AdvertOutBean>>();
+        ResultDto<List<AdvertOutBean>> re = new ResultDto<>();
         //from redis
         List<AdvertOutBean> list = (List<AdvertOutBean>) fungoCacheAdvert.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_BNR, "");
         if (null != list && !list.isEmpty()) {
@@ -127,7 +126,7 @@ public class AdvertController {
         //获取广告位
         List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0001").eq("state", 0).orderBy("sort", false));
         if (null != blist && !blist.isEmpty()) {
-            list = new ArrayList<AdvertOutBean>();
+            list = new ArrayList<>();
             for (Banner banner : blist) {
                 AdvertOutBean bean = new AdvertOutBean();
                 bean.setBizId(banner.getTargetId());
@@ -152,7 +151,7 @@ public class AdvertController {
     @ApiImplicitParams({})
     public ResultDto<List<Map<String, String>>> discover(@Anonymous MemberUserProfile memberUserPrefile) {
 
-        ResultDto<List<Map<String, String>>> re = new ResultDto<List<Map<String, String>>>();
+        ResultDto<List<Map<String, String>>> re = new ResultDto<>();
         List<Map<String, String>> listResult = (List<Map<String, String>>) fungoCacheAdvert.getIndexCache(FUNGO_CORE_API_ADVERT_RECOMMEND_DISCOVER,
                 "");
         if (null != listResult && !listResult.isEmpty()) {
@@ -160,12 +159,12 @@ public class AdvertController {
             return re;
         }
 
-        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> list = new ArrayList<>();
         //获取广告位
         List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0002").eq("state", 0).orderBy("sort", false));
         for (Banner banner : blist) {
 //            Map<String, BigDecimal> rateData = indexProxyService.getRateData(banner.getTargetId());  //gameDao.getRateData(banner.getTargetId());
-            Map<String, String> map1 = new HashMap<String, String>();
+            Map<String, String> map1 = new HashMap<>();
 //				 map1.put("rating",rateData.get("avgRating").toString());
             if (1 == banner.getTargetType()) {
                 CmmPostDto cmmPostParam = new CmmPostDto();
