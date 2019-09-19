@@ -34,6 +34,12 @@ public class MyCommentBean {
 	private String replyToConentId;
 	@ApiModelProperty(value="视频地址",example="")
 	private String video;
+	/**
+	 * 功能描述: 父级id
+	 * @auther: dl.zhang
+	 * @date: 2019/9/18 18:25
+	 */
+	private String parentId;
 	
 	public Integer getTargetType() {
 		return targetType;
@@ -116,5 +122,13 @@ public class MyCommentBean {
 
 	public void setCommentDelType(int commentDelType) {
 		this.commentDelType = commentDelType;
+	}
+
+	public String getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
 	}
 }

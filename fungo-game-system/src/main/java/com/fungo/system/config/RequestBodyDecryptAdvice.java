@@ -36,7 +36,7 @@ public class RequestBodyDecryptAdvice  extends RequestBodyAdviceAdapter{
      */
     @Override
     public boolean supports(MethodParameter methodParameter, Type type, Class<? extends HttpMessageConverter<?>> converterType) {
-        return true;  // type.getTypeName().equals( UserBean.class.getName());
+        return type.getTypeName().equals( UserBean.class.getName() );  // type.getTypeName().equals( UserBean.class.getName());
     }
 
     /**

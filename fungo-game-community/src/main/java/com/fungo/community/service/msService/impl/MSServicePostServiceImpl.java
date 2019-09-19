@@ -282,8 +282,8 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
             EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<>();
             postEntityWrapper.eq("type", 3);
             postEntityWrapper.eq("state", 1);
-            postEntityWrapper.last("ORDER BY sort DESC,updated_at DESC");
-
+//            postEntityWrapper.last("ORDER BY sort DESC,updated_at DESC");
+            postEntityWrapper.last("ORDER BY sort DESC,edited_at DESC");
             Page<CmmPost> postPage = new Page<>(page, limit);
 
             Page<CmmPost> pageList = postDaoService.selectPage(postPage, postEntityWrapper);

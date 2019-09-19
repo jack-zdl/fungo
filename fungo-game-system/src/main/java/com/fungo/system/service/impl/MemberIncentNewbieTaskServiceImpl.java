@@ -40,49 +40,34 @@ public class MemberIncentNewbieTaskServiceImpl implements IMemberIncentNewbieTas
 
     private static final Logger logger = LoggerFactory.getLogger(MemberIncentNewbieTaskServiceImpl.class);
 
-
     private static final String REDISCACHE_KEY_PREFIX = "IncentNewbieTask";
-
     //用户业务类
     @Autowired
     private MemberService memberService;
-
     //用户任务成果Dao层业务类
     @Autowired
     private IncentTaskedService incentTaskService;
-
     //获取用户已任务完成情况业务层
     @Autowired
     private IMemberIncentTaskedService iMemberIncentTaskedService;
-
     @Autowired
     private IncentRankedService rankedService;
-
     @Autowired
     private ScoreLogService scoreLogService;
-
     @Autowired
     private IMemberAccountScoreDaoService accountScoreDaoService;
-
     @Autowired
     private IncentAccountCoinDaoService accountCoinService;
-
     @Autowired
     private IMemberIncentTaskRuleService iMemberIncentTaskRuleService;
-
     @Autowired
     private IMemberIncentRuleRankService iMemberIncentRuleRankService;
-
     @Autowired
     private FungoCacheTask fungoCacheTask;
-
     @Autowired
     private ScoreGroupService scoreGroupService;
-
     @Autowired
     private ScoreRuleService scoreRuleService;
-
-
 
 
 
@@ -204,6 +189,7 @@ public class MemberIncentNewbieTaskServiceImpl implements IMemberIncentNewbieTas
                 }
             }
         }
+
 
         //添加新手任务埋点
         BuriedPointTaskModel buriedPointTaskModel = new BuriedPointTaskModel();
