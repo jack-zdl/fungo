@@ -193,7 +193,7 @@ public class PortalGamesIndexController {
 
 
     @ApiOperation(value = "PC2.0端游戏合集详情", notes = "")
-    @RequestMapping(value = "/api/portal/games/recommend/pc/groupdetail/{groupId}", method = RequestMethod.GET)
+    @GetMapping(value = "/api/portal/games/recommend/pc/groupdetail/{groupId}")
     @ApiImplicitParams({
     })
     public ResultDto<Map<String, Object>> groupDetail(@Anonymous MemberUserProfile memberUserPrefile, @PathVariable("groupId") String groupId) {
@@ -215,7 +215,8 @@ public class PortalGamesIndexController {
 
         if (group != null) {
             map.put("topic_name", group.getName());
-            List<GameCollectionItem> ilist = this.gameCollectionItemService.selectList(new EntityWrapper<GameCollectionItem>().eq("group_id", group.getId()).eq("show_state", "1").orderBy("sort", false));
+            List<GameCollectionItem> ilist = this.gameCollectionItemService.selectList(new EntityWrapper<GameCollectionItem>().eq("group_id", group.getId()).eq("show_state", "1")
+                    .orderBy("sort", false));
 //			if(ilist == null || ilist.size() == 0) {
 //				continue;
 //			}
