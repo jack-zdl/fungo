@@ -1026,6 +1026,9 @@ public class GameServiceImpl implements IGameService {
             if (unredNum != 0) {
                 DecimalFormat df = new DecimalFormat("#.00");
                 out.setScore((reNum != null ? (int) Double.parseDouble(df.format((double) reNum / (reNum + unredNum) * 100)) : 0));
+            }else {
+                DecimalFormat df = new DecimalFormat("#.00");
+                out.setScore(reNum != null ? (int) Double.parseDouble(df.format((double) reNum  * 100)) : 0);
             }
             out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
             out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
