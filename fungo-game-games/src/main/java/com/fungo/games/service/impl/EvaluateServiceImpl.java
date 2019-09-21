@@ -255,7 +255,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     evaluation.setImages(objectMapper.writeValueAsString(commentInput.getImages()));
                 }
             } catch (JsonProcessingException e) {
-                e.printStackTrace();
+                logger.error("addGameEvaluation-setImages异常", e );
             }
 //			String r = commentInput.isIs_recommend()?"1":"0";
 //			String d = evaluation.getIsRecommend();

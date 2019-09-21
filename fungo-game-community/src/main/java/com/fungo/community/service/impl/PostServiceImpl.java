@@ -540,10 +540,10 @@ public class PostServiceImpl implements IPostService {
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
         if (StringUtil.isNotNull(postInput.getCommunity_id())) {
             //社区置顶文章(2.4.3)
-            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, postInput.getCommunity_id(), null);
+            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC+postInput.getCommunity_id(),"", null);
 
             //社区详情
-            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_DETAIL, postInput.getCommunity_id(), null);
+            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_DETAIL+postInput.getCommunity_id(),"", null);
         }
         //我的文章(2.4.3)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
