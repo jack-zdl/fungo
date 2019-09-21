@@ -12,6 +12,7 @@ import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.service.IPostService;
+import com.fungo.community.service.impl.PostServiceImpl;
 import com.fungo.community.service.portal.IPortalPostService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.*;
@@ -36,6 +37,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
@@ -62,24 +65,20 @@ import java.util.Map;
 @EnableAsync
 public class PortalCommunityPostController {
 
+    private static final Logger logger = LoggerFactory.getLogger( PortalCommunityPostController.class);
+
     @Autowired
     private IPostService bsPostService;
-
     @Autowired
     private CmmPostDaoService daoPostService;
-
     @Autowired
     private CmmPostDao cmmPostDao;
-
     @Autowired
     private CmmCommunityDaoService communityService;
-
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
-
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
-
     @Autowired
     private ESDAOServiceImpl esdaoService;
     //依赖系统和用户微服务
@@ -105,7 +104,7 @@ public class PortalCommunityPostController {
         try {
             return portalPostService.getPostList(userId, postInputPageDto);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error( "PC2.0帖子列表",e );
             return FungoPageResultDto.error("-1", "操作失败");
         }
     }

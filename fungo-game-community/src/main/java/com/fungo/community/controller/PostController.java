@@ -208,7 +208,7 @@ public class PostController {
         try {
             return bsPostService.getPostList(userId, postInputPageDto);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error( "帖子列表异常",e );
             return FungoPageResultDto.error("-1", "操作失败");
         }
     }
