@@ -288,7 +288,7 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
         }
         Map map = new HashMap<>(  );
         if(cmmPostDtoFungoPageResultDto.getPages() <= page){
-            map.put( "hasNext",false );
+            map.put( ":/api/portal/games/content/evaluations",false );
             index.setExtendData( map );
         }else {
             map.put( "hasNext",true );
