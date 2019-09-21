@@ -31,7 +31,7 @@ public class DTPTransactionMessageScheduledJob   {
 
         LOGGER.info(".......DTPTransactionMessageScheduledJob-execute-start...." );
 
-        Map<String ,Object> param = new HashMap<String ,Object>();
+        Map<String ,Object> param = new HashMap<>();
 
         LOGGER.info("执行(处理[waiting_confirm]状态的消息)任务开始");
                  dTPTransactionMessageScheduledService.handleWaitingConfirmTimeOutMessages(param);
@@ -41,9 +41,8 @@ public class DTPTransactionMessageScheduledJob   {
             LOGGER.info("........睡眠1秒......");
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.error( "分布式事务之消息状态监控定时任务",e );
         }
-
         LOGGER.info("执行(处理[SENDING]的消息)任务开始");
                     dTPTransactionMessageScheduledService.handleSendingTimeOutMessage(param);
         LOGGER.info("执行(处理[SENDING]的消息)任务结束");

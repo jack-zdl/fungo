@@ -76,14 +76,14 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
     @Override
     public FungoPageResultDto<CardIndexBean> index(InputPageDto input) {
         FungoPageResultDto<CardIndexBean> re = null;
-        //先从Redis获取
-        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX;
-        String keySuffix = JSON.toJSONString(input);
-         re = (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
-
-        if (null != re && null != re.getData() && re.getData().size() > 0) {
-            return re;
-        }
+//        //先从Redis获取
+//        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX;
+//        String keySuffix = JSON.toJSONString(input);
+//         re = (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+//
+//        if (null != re && null != re.getData() && re.getData().size() > 0) {
+//            return re;
+//        }
         re = new FungoPageResultDto<>();
         List<CardIndexBean> clist = new ArrayList<>();
         int page = input.getPage();
@@ -137,7 +137,7 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
             clist.addAll(topicPosts);
         }
         re.setData(clist);
-        fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
+//        fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
         return re;
     }
 

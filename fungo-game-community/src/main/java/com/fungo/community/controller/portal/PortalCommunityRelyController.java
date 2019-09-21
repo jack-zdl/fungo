@@ -14,10 +14,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -57,7 +54,7 @@ public class PortalCommunityRelyController {
 
 
     @ApiOperation(value = "PC2.0回复列表", notes = "")
-    @RequestMapping(value = "/api/portal/community/content/replys", method = RequestMethod.POST)
+    @PostMapping(value = "/api/portal/community/content/replys")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "target_id", value = "对象id", paramType = "path", dataType = "string"),
             @ApiImplicitParam(name = "user_id", value = "用户id", paramType = "path", dataType = "string")

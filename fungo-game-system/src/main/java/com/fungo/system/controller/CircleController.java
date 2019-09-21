@@ -60,7 +60,6 @@ public class CircleController {
            String appVersion = request.getHeader("appVersion");
            re = indexService.circleEventList(inputPageDto, os, iosChannel, app_channel, appVersion);
        }catch (Exception e){
-           e.printStackTrace();
            LOGGER.error("获取活动列表异常",e);
             re = FungoPageResultDto.error("-1","获取活动列表异常，请联系管理员");
        }

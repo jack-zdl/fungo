@@ -700,13 +700,14 @@ public class GameServiceImpl implements IGameService {
     public FungoPageResultDto<GameItem> getGameItems(String memberId, GameItemInput input, String os) {
         //通过id找出合集项
         //找出游戏 一个一个配
-        String keySuffix = memberId + JSON.toJSONString(input) + os;
-        FungoPageResultDto<GameItem> re = (FungoPageResultDto<GameItem>) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_ITEMS,
-                keySuffix);
-
-        if (null != re && null != re.getData() && re.getData().size() > 0) {
-            return re;
-        }
+        FungoPageResultDto<GameItem> re = null;
+//        String keySuffix = memberId + JSON.toJSONString(input) + os;
+//        FungoPageResultDto<GameItem> re = (FungoPageResultDto<GameItem>) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_ITEMS,
+//                keySuffix);
+//
+//        if (null != re && null != re.getData() && re.getData().size() > 0) {
+//            return re;
+//        }
 
         boolean m = false;
         if (!CommonUtil.isNull(memberId)) {//是否为登录用户
@@ -716,15 +717,15 @@ public class GameServiceImpl implements IGameService {
         re = new FungoPageResultDto<GameItem>();
         List<GameItem> ilist = new ArrayList<>();
         Page<GameCollectionItem> itemPage =
-                gameCollectionItemService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameCollectionItem>().eq("group_id", input.getGroup_id()));
-
+                gameCollectionItemService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameCollectionItem>().eq("group_id", input.getGroup_id()).eq("show_state", "1")
+                        .orderBy("sort", false));
         List<GameCollectionItem> glist = itemPage.getRecords();
         List<String> gameIdList = new ArrayList<>();
         if (glist.size() > 0) {
             gameIdList = glist.stream().map(GameCollectionItem::getGameId).collect(Collectors.toList());
         }
         if (gameIdList.size() > 0) {
-            List<Game> gamel = gameService.selectList(new EntityWrapper<Game>().in("id", gameIdList));
+            List<Game> gamel = gameDao.getGameList(gameIdList);  //gameService.selectList(new EntityWrapper<Game>().in("id", gameIdList));
             for (Game game : gamel) {
                 GameItem it = new GameItem();
                 if (game.getAndroidPackageName() == null) {
@@ -734,10 +735,11 @@ public class GameServiceImpl implements IGameService {
                     game.setApk("");
                 }
                 it.setAndroidPackageName(game.getAndroidPackageName());
-                it.setAndroidState(game.getAndroidState());
+                it.setAndroidState(game.getAndroidState() == null ? -1 : game.getAndroidState() );
                 it.setApkUrl(game.getApk());
                 if (m) {
-                    GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", game.getId()).eq("phone_model", os).eq("state", 0));
+                    GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", game.getId())
+                            .eq("phone_model", os).eq("state", 0));
                     if (srel != null) {
                         it.setBinding(!StringUtils.isNullOrEmpty(srel.getAppleId()));
                         it.setClause(1 == srel.getAgree() ? true : false);
@@ -747,7 +749,7 @@ public class GameServiceImpl implements IGameService {
                 it.setIcon(game.getIcon());
                 it.setObjectId(game.getId());
                 it.setName(game.getName());
-                it.setIosState(game.getIosState());
+                it.setIosState(game.getIosState() == null ? -1 : game.getIosState());
                 it.setItunesId(game.getItunesId());
 
                 HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
@@ -769,7 +771,7 @@ public class GameServiceImpl implements IGameService {
 
         }
         //redis cache
-        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_ITEMS, keySuffix, re);
+//        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_ITEMS, keySuffix, re);
         return re;
     }
 
@@ -1024,6 +1026,9 @@ public class GameServiceImpl implements IGameService {
             if (unredNum != 0) {
                 DecimalFormat df = new DecimalFormat("#.00");
                 out.setScore((reNum != null ? (int) Double.parseDouble(df.format((double) reNum / (reNum + unredNum) * 100)) : 0));
+            }else {
+                DecimalFormat df = new DecimalFormat("#.00");
+                out.setScore(reNum != null ? (int) Double.parseDouble(df.format((double) reNum / reNum  * 100)) : 0);
             }
             out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
             out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
