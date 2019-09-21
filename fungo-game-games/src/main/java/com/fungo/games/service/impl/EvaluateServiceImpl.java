@@ -100,9 +100,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
     @Override
     @Transactional
     public ResultDto<EvaluationBean> addGameEvaluation(String memberId, EvaluationInput commentInput) throws Exception {
-//		if(CommonUtil.isNull(commentInput.getContent())) {
-//			return ResultDto.error("-1","内容不能为空!");
-//		}
+
         ResultDto<EvaluationBean> re = new ResultDto<EvaluationBean>();
         EvaluationBean evaluationBean = new EvaluationBean();
         GameEvaluation evaluation = gameEvaluationService.selectOne(new EntityWrapper<GameEvaluation>().eq("member_id", memberId).eq("game_id", commentInput.getTarget_id()).eq("state", 0));
@@ -250,7 +248,6 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
             evaluation.setContent(commentInput.getContent());
             Date date = new Date();
-            evaluation.setCreatedAt(date);
             evaluation.setGameId(commentInput.getTarget_id());
             ObjectMapper objectMapper = new ObjectMapper();
             try {
@@ -396,20 +393,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
             }
         }
         BuriedPointUtils.publishBuriedPointEvent(gameScoreModel);
-
-        //清除该用户的评论游戏redis cache
-        fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_RECENTEVA + memberId, "", null);
-        //清除 我的游戏评测(2.4.3)
-        fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_EVALUATIONLIST , memberId, null);
-        //游戏详情
-        fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + commentInput.getTarget_id(), "", null);
-        // 获取最近评论的游戏
-        fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_RECENTEVA + memberId, "", null);
-
-        //游戏评价列表
-        fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS, "", null);
         return re;
     }
+
 
     public List<TraitBean> traitFormat(HashMap<String, BigDecimal> rateData) {
         List<TraitBean> traitList = new ArrayList<>();
