@@ -97,16 +97,12 @@ public class PostServiceImpl implements IPostService {
 
     @Autowired
     private NacosFungoCircleConfig nacosFungoCircleConfig;
-
-
     //依赖系统和用户微服务
     @Autowired
     private SystemFacedeService systemFacedeService;
-
     //依赖游戏微服务
     @Autowired
     private GameFacedeService gameFacedeService;
-
     @Autowired
     private TSMQFacedeService tSMQFacedeService;
 
@@ -131,7 +127,6 @@ public class PostServiceImpl implements IPostService {
     @Transactional
     public ResultDto<ObjectId> addPost(PostInput postInput, String user_id) throws Exception {
 
-
         if (postInput == null) {
             return ResultDto.error("222", "不存在的帖子内容");
         }
@@ -141,7 +136,6 @@ public class PostServiceImpl implements IPostService {
         if (user_id == null) {
             return ResultDto.error("126", "不存在的用户");
         }
-
         //!fixme 查询用户数据
         //Member member = memberService.selectById(user_id);
 
@@ -161,10 +155,6 @@ public class PostServiceImpl implements IPostService {
                 memberDto = memberDtoList.get(0);
             }
         }
-
-
-
-
 
         if (memberDto == null) {
             return ResultDto.error("126", "不存在的用户");
@@ -217,12 +207,9 @@ public class PostServiceImpl implements IPostService {
 
         post.setGameList(parseGameLabelToDB(postInput.getHtml()));
 
-
-//		String txtcontent = postInput.getHtml().replaceAll("<img src=.+?>", ""); 
+//		String txtcontent = postInput.getHtml().replaceAll("<img src=.+?>", "");
 //		txtcontent = txtcontent.replaceAll("</?[^>]+>", ""); 
 //      txtcontent = txtcontent.replaceAll("<a>\\s*|\t|\r|\n</a>", "");
-
-
         post.setContent(txtcontent);
         post.setCommunityId(postInput.getCommunity_id());
         post.setHtmlOrigin(SerUtils.saveOrigin(postInput.getHtml()));
