@@ -179,4 +179,13 @@ public interface SystemFeignClient {
     @GetMapping(value = "/getMembersByid")
     ResultDto<MemberDto> getMembersByid(@RequestParam(value = "memberId" ,required = false) String memberId);
 
+    /**
+     * 功能描述: 查询用户是否关注
+     * @auther: dl.zhang
+     * @date: 2019/9/23 14:11
+     */
+    @GetMapping(value = "/member/follow")
+    ResultDto<Map<String,Object>>  getMemberFollow(@RequestBody MemberFollowerVo  memberFollowVo );
+
+
 }

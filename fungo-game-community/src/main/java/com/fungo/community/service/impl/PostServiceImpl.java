@@ -1172,7 +1172,7 @@ public class PostServiceImpl implements IPostService {
                     communityMap.put("intro", community.getIntro());
                     communityMap.put("type", community.getType());
                     int comment_num = communityDao.getCommentNumOfCommunity(community.getId());
-                    communityMap.put( "hotvalue",comment_num);
+                    communityMap.put( "hotvalue",community.getFolloweeNum() + community.getPostNum() + comment_num);
                     communityMap.put( "postnum",community.getPostNum() );
                     //游戏社区的评分 标签
                     if (community.getType() == 0) {
