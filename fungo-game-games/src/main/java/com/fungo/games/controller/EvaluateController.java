@@ -53,7 +53,17 @@ public class EvaluateController {
 			@ApiImplicitParam(name = "target_id",value = "游戏id",paramType = "form",dataType = "string")
 	})
 	public ResultDto<EvaluationBean> addGameEvaluation(MemberUserProfile memberUserPrefile, @RequestBody EvaluationInput commentInput) throws Exception {
-		return this.evaluateService.addGameEvaluation(memberUserPrefile.getLoginId(), commentInput);
+		ResultDto<EvaluationBean> resultDto = null;
+		try {
+			resultDto =  this.evaluateService.addGameEvaluation(memberUserPrefile.getLoginId(), commentInput);
+			if(CommonEnum.SUCCESS.code().equals( String.valueOf( resultDto.getStatus() ) )){
+				fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS, "", null);
+			}
+		}catch (Exception e){
+			logger.error( "发表评价（游戏）异常",e );
+			resultDto = ResultDto.ResultDtoFactory.buildError(  "发表评价异常");
+		}
+		return resultDto;
 	}
 	
 	@ApiOperation(value="游戏评价详情", notes="")
