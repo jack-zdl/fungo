@@ -159,7 +159,7 @@ public class PortalPostServiceImpl implements IPortalPostService {
 
         result = new FungoPageResultDto<PostOutBean>();
         List<PostOutBean> relist = new ArrayList<PostOutBean>();
-        Wrapper<CmmPost> wrapper = new EntityWrapper<CmmPost>().eq("community_id", communityId).eq("state", 1).ne("type", 3);
+        Wrapper<CmmPost> wrapper = new EntityWrapper<CmmPost>().eq("community_id", communityId).eq("state", 1); //.ne("type", 3);
 //		Wrapper<CmmPost> wrapper = new EntityWrapper<CmmPost>().eq("community_id",communityId ).eq("state", 1).ne("type", 3).ne("topic", 2); eq topic1
         List<CmmPost> postList = new ArrayList<CmmPost>();
         if(filter != null  && !"".equals(filter)){
