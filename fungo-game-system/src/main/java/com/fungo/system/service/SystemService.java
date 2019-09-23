@@ -122,4 +122,6 @@ public interface SystemService {
 
     FungoPageResultDto<String> gameListMineDownload(CircleFollowVo circleFollowVo);
 
+    ResultDto<Map<String,Object>> getMemberFollow(MemberFollowerVo  memberFollowVo);
+
 }

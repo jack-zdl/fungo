@@ -687,6 +687,7 @@ public class GameServiceImpl implements IGameService {
             olist.add(out);
         }
         re = new FungoPageResultDto<GameOutPage>();
+        olist = olist.stream().distinct().collect( Collectors.toList());
         re.setData(olist);
         PageTools.pageToResultDto(re, page);
 

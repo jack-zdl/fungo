@@ -109,6 +109,8 @@ public class SystemServiceImpl implements SystemService {
 
     @Autowired
     private BasActionServiceImap basActionServiceImap;
+    @Autowired
+    private BasActionService actionService;
 
 
     /**
@@ -938,6 +940,30 @@ public class SystemServiceImpl implements SystemService {
             re = FungoPageResultDto.FungoPageResultDtoFactory.buildError( "获取用户下载的游戏id集合有误,用户id:"+memberId);
         }
         return re;
+    }
+    
+    /**
+     * 功能描述: 查询用户是否关注
+     * @auther: dl.zhang
+     * @date: 2019/9/23 14:23
+     */
+    @Override
+    public ResultDto<Map<String, Object>> getMemberFollow(MemberFollowerVo memberFollowVo) {
+        Map<String, Object> map = new HashMap<>(  );
+        try {
+          BasAction action = actionService.selectOne(new EntityWrapper<BasAction>().eq("type", "5").eq("member_id", memberFollowVo.getMemberId())
+                  .eq("target_id", memberFollowVo.getFollowId()).ne("state", "-1"));
+          if (action != null) {
+              map.put("is_followed", true);
+          }
+          BasAction otherAction = actionService.selectOne(new EntityWrapper<BasAction>().eq("type", "5").eq("member_id", memberFollowVo.getFollowId())
+                  .eq("target_id", memberFollowVo.getMemberId()).ne("state", "-1"));
+          if(otherAction != null){
+              map.put("is_mutual_followed", true);
+          }
+      }catch (Exception e){
+          LOGGER.error( "查询用户是否关注异常",e );
+      }return ResultDto.success(map) ;
     }
 
 

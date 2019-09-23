@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -177,7 +178,7 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
         try{
             re = new FungoPageResultDto<>();
             List<Map<String, Object>> list = new ArrayList<>();
-            re.setData(list);
+
             Page<BasAction> plist = actionService.selectPage(new Page<BasAction>(inputPage.getPage(), inputPage.getLimit()), new EntityWrapper<BasAction>().eq("type", "5").eq("target_id", memberId).notIn("state", "-1"));
             List<BasAction> list1 = plist.getRecords();
             ObjectMapper mapper = new ObjectMapper();
@@ -227,6 +228,8 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
                 map.put("updatedAt", DateTools.fmtDate(m.getUpdatedAt()));
                 list.add(map);
             }
+            list = list.stream().distinct().collect( Collectors.toList() );
+            re.setData(list);
             PageTools.pageToResultDto(re, plist);
         }catch (Exception e){
             logger.error("pc端获取用户粉丝异常",e);
