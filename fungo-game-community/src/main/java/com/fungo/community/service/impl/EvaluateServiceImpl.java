@@ -1849,10 +1849,10 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         } else if (replyInput.getTarget_type() == 8) {//回复心情评论
             counterService.addCounter("t_moo_message", "reply_num", replyInput.getTarget_id());//增加评论数
-            MooMood mooMood = moodService.selectById(replyInput.getTarget_id());
-            if(mooMood!=null&&mooMood.getMemberId()!=null){
-                targetMemberId = mooMood.getMemberId();
-            }
+//            MooMood mooMood = moodService.selectById(replyInput.getTarget_id());
+//            if(mooMood!=null&&mooMood.getMemberId()!=null){
+//                targetMemberId = mooMood.getMemberId();
+//            }
             if (CommonUtil.isNull(replyInput.getReply_to_content_id())) { //只有没有三级评论时才会发送消息
 
                 //this.gameProxy.addNotice(Setting.MSG_TYPE_REPLAY_GAME, memberId, replyInput.getTarget_id(), Setting.RES_TYPE_MESSAGE, replyInput.getContent(), appVersion, "");
