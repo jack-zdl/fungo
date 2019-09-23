@@ -9,10 +9,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.community.config.NacosFungoCircleConfig;
-import com.fungo.community.dao.mapper.CmmCircleMapper;
-import com.fungo.community.dao.mapper.CmmPostCircleMapper;
-import com.fungo.community.dao.mapper.CmmPostDao;
-import com.fungo.community.dao.mapper.CmmPostGameMapper;
+import com.fungo.community.dao.mapper.*;
 import com.fungo.community.dao.service.BasVideoJobDaoService;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
@@ -87,8 +84,8 @@ public class PostServiceImpl implements IPostService {
 
     @Autowired
     private IVideoService vdoService;
-
-
+    @Autowired
+    private CmmCommunityDao communityDao;
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
 
@@ -1174,7 +1171,8 @@ public class PostServiceImpl implements IPostService {
                     communityMap.put("icon", community.getIcon());
                     communityMap.put("intro", community.getIntro());
                     communityMap.put("type", community.getType());
-                    communityMap.put( "hotvalue",community.getHotValue());
+                    int comment_num = communityDao.getCommentNumOfCommunity(community.getId());
+                    communityMap.put( "hotvalue",comment_num);
                     communityMap.put( "postnum",community.getPostNum() );
                     //游戏社区的评分 标签
                     if (community.getType() == 0) {
