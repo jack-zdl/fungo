@@ -117,8 +117,9 @@ public class CommunityServiceImpl implements ICommunityService {
                     mbIds = mbIds.append(",");
                 }
             }
-            mbIds.deleteCharAt(mbIds.length() - 1);
-
+            if(StringUtils.isNoneBlank(mbIds)){
+                mbIds.deleteCharAt(mbIds.length() - 1);
+            }
             //查询出符合推荐条件用户的详情数据
             if (mbIds.length() > 0) {
                 List<Member> watchMebmberList = menberService.selectList(new EntityWrapper<Member>().in("id", mbIds.toString()).eq("state", 0));
