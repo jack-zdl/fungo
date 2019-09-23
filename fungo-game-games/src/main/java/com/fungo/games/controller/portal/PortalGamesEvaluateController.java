@@ -59,7 +59,7 @@ public class PortalGamesEvaluateController {
 				//清除该用户的评论游戏redis cache
 				fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_RECENTEVA + memberId, "", null);
 				//清除 我的游戏评测(2.4.3)
-				fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_EVALUATIONLIST , memberId, null);
+				fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_EVALUATIONLIST , "", null);
 				//游戏详情
 				fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + commentInput.getTarget_id(), "", null);
 				// 获取最近评论的游戏
