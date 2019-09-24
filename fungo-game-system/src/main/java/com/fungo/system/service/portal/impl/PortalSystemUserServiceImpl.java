@@ -78,7 +78,7 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
         author = iUserService.getAuthor(cardId);
         if (!CommonUtil.isNull(memberId)) {
 //			BasAction action=actionService.selectOne(new EntityWrapper<BasAction>().eq("type", "5").eq("member_id",memberId).eq("target_id", cardId).notIn("state", "-1"));
-            MemberFollower one = followService.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", memberId).eq("follower_id", cardId).andNew("state = {0}", 1).or(" {0}", 2));
+            MemberFollower one = followService.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", memberId).eq("follower_id", cardId).andNew("state = {0}", 1).or(" state =  {0}", 2));
             if (one != null) {
                 author.setIs_followed(true);
 //                PC2.0新增相互关注业务添加字段 mutualFollowed
