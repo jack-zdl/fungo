@@ -154,6 +154,7 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
                     AdvertOutBean bean = new AdvertOutBean();
                     bean.setBizId(banner.getTargetId());
                     bean.setBizType(1);
+                    bean.setTargetType( banner.getTargetType());
                     bean.setContent(CommonUtils.filterWord(banner.getIntro()));
                     bean.setImageUrl(banner.getCoverImage());
                     bean.setName(banner.getTag());
