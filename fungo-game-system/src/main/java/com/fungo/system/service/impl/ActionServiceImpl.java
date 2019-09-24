@@ -458,6 +458,8 @@ public class ActionServiceImpl implements IActionService {
             fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + targetId, "", null);
             //清除个人获取用户任务完成进度数据的缓存
             fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_TASK_USER_TASK_PROGRESS + "-" + memberId, "", null);
+            // @todo 清除搜索用户
+
         }
 
         //clear redis
