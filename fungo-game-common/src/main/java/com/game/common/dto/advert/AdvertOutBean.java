@@ -37,5 +37,10 @@ public class AdvertOutBean {
 	 */
 	private String linkUrl;
 
+	/**
+	 * 业务类型，3：游戏，1：帖子
+	 */
+	private int targetType;
+
 
 }
