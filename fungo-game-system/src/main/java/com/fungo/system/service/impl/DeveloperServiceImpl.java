@@ -149,7 +149,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
                 try {
                     game.setImages(mapper.writeValueAsString(input.getImages()));
                 } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                    logger.error( "addGame转换失败",e );
                 }
             }
             game.setIntro(input.getGameIntro());
@@ -249,7 +249,6 @@ public class DeveloperServiceImpl implements IDeveloperService {
                 throw new BusinessException("-1",dto.getMessage());
             }
         }catch (Exception e){
-            e.printStackTrace();
             logger.error("开发者上传游戏异常",e);
         }
         return ResultDto.success();
@@ -334,7 +333,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
             try {
                 logGame.setImages(mapper.writeValueAsString(input.getImages()));
             } catch (JsonProcessingException e) {
-                e.printStackTrace();
+               logger.error( "updateGame转换失败",e );
             }
         }
         logGame.setIntro(input.getGameIntro());
@@ -365,7 +364,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
             try {
                 logGame.setCredentials(mapper.writeValueAsString(input.getCredentials()));
             } catch (JsonProcessingException e) {
-                e.printStackTrace();
+                logger.error( "updateGame-setCredentialsz转换失败",e );
             }
         }
         logGame.setItunesId(input.getIssueId());
@@ -405,7 +404,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
         try {
             logGame.setRemark(mapper.writeValueAsString(markList));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error( "updateGame-setRemark 转换失败",e );
         }
         logGame.setGameSize(input.getSize());
         logGame.setOrigin(input.getOrigin());
@@ -417,13 +416,13 @@ public class DeveloperServiceImpl implements IDeveloperService {
         try {
             logGame.setTags(mapper.writeValueAsString(tags));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error( "updateGame-setTags 转换失败",e );
         }
 
         try {
             logGame.setCompatibility(mapper.writeValueAsString(new ArrayList<String>()));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error( "updateGame-setCompatibility 转换失败",e );
         }
         logGame.setCommunityId(game.getCommunityId());
         logGame.setCommunityIntro(input.getCommunityIntro());
@@ -489,7 +488,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
                     out.setImages((ArrayList<String>)mapper.readValue(log.getImages(),ArrayList.class));
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error( "gameDetail-setImages 转换失败",e );
             }
             out.setIssueId(log.getIssueId());
             out.setIsbnId(log.getIsbnId());
@@ -520,7 +519,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
                 ArrayList<String> tagList = (ArrayList<String>) map.get("tags");
                 out.setTagList(tagList);
             } catch (IOException e1) {
-                e1.printStackTrace();
+                logger.error( "gameDetail-readValue 转换失败",e1 );
             }
 
 //		if(log.getCompatibility() != null) {
@@ -534,7 +533,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
                 try {
                     out.setCredentials(mapper.readValue(log.getCredentials(),ArrayList.class));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error( "gameDetail-setCredentials 转换失败",e );
                 }
             }
 //		List<DeveloperGameRel> rl = dgrService.selectList(new EntityWrapper<DeveloperGameRel>().eq("game_id",gameId));
@@ -546,7 +545,6 @@ public class DeveloperServiceImpl implements IDeveloperService {
             out.setDeveloperList(getDeveloperList(gameId,developer.getMemberId()));
             out.setGameLogId(log.getId());
         }catch (Exception e){
-            e.printStackTrace();
             logger.error("获取开发者游戏详情异常",e);
         }
         return ResultDto.success(out);
@@ -601,7 +599,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
             try {
                 out.setRemark(mapper.readValue(log.getRemark(), ArrayList.class));
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error( "gameHistory-setRemark转换异常",e );
             }
             olist.add(out);
         }
@@ -851,7 +849,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
             try {
                 logGame.setImages(mapper.writeValueAsString(input.getImages()));
             } catch (JsonProcessingException e) {
-                e.printStackTrace();
+                logger.error( "copyGameTolog-setImages转换异常",e );
             }
         }
         logGame.setIntro(input.getGameIntro());
@@ -883,7 +881,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
             try {
                 logGame.setCredentials(mapper.writeValueAsString(input.getCredentials()));
             } catch (JsonProcessingException e) {
-                e.printStackTrace();
+                logger.error( "copyGameTolog-setCredentials 转换异常",e );
             }
         }
         logGame.setItunesId(input.getItunesId());
@@ -903,13 +901,13 @@ public class DeveloperServiceImpl implements IDeveloperService {
         try {
             logGame.setRemark(mapper.writeValueAsString(rm));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error( "copyGameTolog-setRemark 转换异常",e );
         }
         logGame.setGameSize(input.getSize());
         try {
             logGame.setCompatibility(mapper.writeValueAsString(new ArrayList<String>()));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error( "copyGameTolog-setCompatibility 转换异常",e );
         }
         //communityId
         logGame.setCommunityIntro(input.getCommunityIntro());;
@@ -919,7 +917,7 @@ public class DeveloperServiceImpl implements IDeveloperService {
         try {
             logGame.setTags(mapper.writeValueAsString(tags));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error( "copyGameTolog-setTags 转换异常",e );
         }
         logGame.setState(0);
 

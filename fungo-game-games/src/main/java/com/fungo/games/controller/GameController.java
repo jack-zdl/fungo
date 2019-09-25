@@ -8,12 +8,14 @@ import com.fungo.games.service.GameService;
 import com.fungo.games.service.GameSurveyRelService;
 import com.fungo.games.service.IGameService;
 import com.game.common.api.InputPageDto;
+import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.game.*;
+import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.util.AesUtil;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.annotation.Anonymous;
@@ -23,6 +25,8 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.units.qual.A;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,14 +44,16 @@ import java.util.*;
 @Api(value = "", description = "游戏")
 public class GameController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GameController.class);
+
     @Autowired
     private IGameService gameService;
-
     @Autowired
     private GameService gameServicer;
-
     @Autowired
     private GameSurveyRelService gameSurveyRelService;
+    @Autowired
+    private FungoCacheGame fungoCacheGame;
 
     @ApiOperation(value = "游戏详情(2.4修改/api/content/evaluations|)", notes = "")
     @RequestMapping(value = "/api/content/game/{gameId}", method = RequestMethod.GET)
@@ -177,7 +183,7 @@ public class GameController {
     }
 
     @ApiOperation(value = "游戏合集项列表(2.4.3)", notes = "")
-    @RequestMapping(value = "/api/content/game/items", method = RequestMethod.POST)
+    @PostMapping(value = "/api/content/game/items")
     @ApiImplicitParams({
     })
     public FungoPageResultDto<GameItem> getGameItems(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody GameItemInput input, HttpServletRequest request) {
@@ -187,8 +193,22 @@ public class GameController {
         }
         String os = "";
         os = (String) request.getAttribute("os");
+        FungoPageResultDto<GameItem> resultDto = null;
+        try {
+            String keySuffix = memberId + JSON.toJSONString(input) + os;
+            FungoPageResultDto<GameItem> re = (FungoPageResultDto<GameItem>) fungoCacheGame.getIndexCache( FungoCoreApiConstant.FUNGO_CORE_API_GAME_ITEMS,
+                    keySuffix);
 
-        return gameService.getGameItems(memberId, input, os);
+            if (null != re && null != re.getData() && re.getData().size() > 0) {
+                return re;
+            }
+            resultDto =  gameService.getGameItems(memberId, input, os);
+            fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_ITEMS, keySuffix, re);
+        }catch (Exception e){
+            LOGGER.error( "游戏合集项列表获取异常",e );
+            resultDto = FungoPageResultDto.FungoPageResultDtoFactory.buildError( "游戏合集项列表获取异常" );
+        }
+        return resultDto;
     }
 
     /**

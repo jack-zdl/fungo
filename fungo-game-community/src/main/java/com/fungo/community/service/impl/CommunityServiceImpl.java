@@ -98,6 +98,7 @@ public class CommunityServiceImpl implements ICommunityService {
         out.setUpdatedAt(DateTools.fmtDate(community.getUpdatedAt()));
         out.setState(community.getState());
         out.setType(community.getType());
+        out.setPostNum( community.getPostNum());
 
 //        int followNum = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).eq("target_id", communityId).eq("target_type", 4).and("state = 0"));
         int comment_num = communityDao.getCommentNumOfCommunity(communityId);

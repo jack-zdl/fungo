@@ -57,7 +57,7 @@ public class DistributedLockByCurator implements InitializingBean {
                     }
                     countDownLatch.await();
                 } catch (InterruptedException e1) {
-                    e1.printStackTrace();
+                    logger.error( "acquireDistributedLock 转换异常",e1 );
                 }
             }
         }

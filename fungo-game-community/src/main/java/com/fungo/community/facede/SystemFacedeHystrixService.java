@@ -163,6 +163,12 @@ public class SystemFacedeHystrixService implements FallbackFactory<SystemFeignCl
                 logger.error("--------------------SystemFeignClient--启动熔断:{}" , "getMembersByid");
                 return null;
             }
+
+            @Override
+            public ResultDto<Map<String, Object>> getMemberFollow(MemberFollowerVo memberFollowVo) {
+                logger.error("--------------------SystemFeignClient--启动熔断:{}" , "getMemberFollow");
+                return null;
+            }
         };
     }
 }

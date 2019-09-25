@@ -12,6 +12,8 @@ import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.service.IPostService;
+import com.fungo.community.service.impl.PostServiceImpl;
+import com.fungo.community.service.portal.IPortalPostService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.*;
 import com.game.common.dto.action.BasActionDto;
@@ -35,6 +37,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
@@ -61,29 +65,27 @@ import java.util.Map;
 @EnableAsync
 public class PortalCommunityPostController {
 
+    private static final Logger logger = LoggerFactory.getLogger( PortalCommunityPostController.class);
+
     @Autowired
     private IPostService bsPostService;
-
     @Autowired
     private CmmPostDaoService daoPostService;
-
     @Autowired
     private CmmPostDao cmmPostDao;
-
     @Autowired
     private CmmCommunityDaoService communityService;
-
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
-
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
-
     @Autowired
     private ESDAOServiceImpl esdaoService;
     //依赖系统和用户微服务
     @Autowired(required = false)
     private SystemFeignClient systemFeignClient;
+    @Autowired
+    private IPortalPostService portalPostService;
 
     @ApiOperation(value = "PC2.0帖子列表", notes = "")
     @RequestMapping(value = "/api/portal/community/content/posts", method = RequestMethod.POST)
@@ -100,9 +102,9 @@ public class PortalCommunityPostController {
             userId = memberUserPrefile.getLoginId();
         }
         try {
-            return bsPostService.getPostList(userId, postInputPageDto);
+            return portalPostService.getPostList(userId, postInputPageDto);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error( "PC2.0帖子列表",e );
             return FungoPageResultDto.error("-1", "操作失败");
         }
     }
@@ -265,9 +267,9 @@ public class PortalCommunityPostController {
             postEntityWrapper.eq("type", 2).eq("state", 1);
             int sort = inputPageDto.getSort();
             if (sort == 1) {//  时间正序
-                postEntityWrapper.orderBy("updated_at", true);
+                postEntityWrapper.orderBy("edited_at", true);
             } else if (sort == 2) {//  时间倒序
-                postEntityWrapper.orderBy("updated_at", false);
+                postEntityWrapper.orderBy("edited_at", false);
             } else if (sort == 3) {// 热力值正序
 //            wrapper.orderBy("comment_num,like_num", true);
                 postEntityWrapper.last("ORDER BY comment_num ASC,like_num ASC");
@@ -277,7 +279,7 @@ public class PortalCommunityPostController {
             } else if (sort == 5) {//最后回复时间
                 postEntityWrapper.orderBy("last_reply_at", false);
             } else {
-                postEntityWrapper.orderBy("updated_at", false);
+                postEntityWrapper.orderBy("edited_at", false);
             }
 //            postEntityWrapper.last("ORDER BY sort DESC,updated_at DESC");
             Page<CmmPost> pageRecommend = this.daoPostService.selectPage(new Page<CmmPost>(inputPageDto.getPage(), inputPageDto.getLimit()), postEntityWrapper);

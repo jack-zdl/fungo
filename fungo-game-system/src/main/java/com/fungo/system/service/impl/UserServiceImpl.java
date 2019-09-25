@@ -2,6 +2,7 @@ package com.fungo.system.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.dao.MemberInfoDao;
 import com.fungo.system.dao.SysMockuserDao;
 import com.fungo.system.dto.*;
@@ -77,6 +78,8 @@ public class UserServiceImpl implements IUserService {
     private IMemberIncentRiskService iMemberIncentRiskService;
     @Autowired
     private MemberInfoDao memberInfoDao;
+    @Autowired
+    private BasActionDao actionDao;
 
     //用户成长业务
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
@@ -494,8 +497,9 @@ public class UserServiceImpl implements IUserService {
 //			author.setFollowerNum(member.getFollowerNum());
             int followed = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).ne("state", "-1").eq("target_id", memberId));
             author.setFolloweeNum(followed);//粉丝数
+            List followlist = actionDao.getFollowerUserList(memberId);
             int follower = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).ne("state", "-1").eq("target_type", 0).eq("member_id", memberId));
-            author.setFollowerNum(follower);//关注数
+            author.setFollowerNum(followlist.size());//关注数
 
             author.setMemberNo(member.getMemberNo());
             author.setSign(member.getSign());
@@ -693,8 +697,9 @@ public class UserServiceImpl implements IUserService {
 
         int followed = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).eq("state", "0").eq("target_id", memberId));
         bean.setFollowee_num(followed);//粉丝
+        List followlist = actionDao.getFollowerUserList(memberId);
         int follower = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).eq("state", "0").eq("target_type", 0).eq("member_id", memberId));
-        bean.setFollower_num(follower);//关注
+        bean.setFollower_num(followlist.size());//关注
 
         bean.setGender(member.getGender());
         bean.setHas_password(member.getHasPassword().equals("1") ? true : false);
@@ -829,6 +834,9 @@ public class UserServiceImpl implements IUserService {
             MemberFollower one = followService.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", memberId).eq("follower_id", cardId).andNew("state = {0}", 1).or("state = {0}", 2));
             if (one != null) {
                 author.setIs_followed(true);
+                if(one.getState().equals(2)){
+                    author.setMutualFollowed("1");
+                }
             }
         }
 

@@ -1603,6 +1603,7 @@ public class MemberServiceImpl implements IMemberService {
                     if (!CommonUtil.isNull(post.getVideo())) {
                         bean.setVideo(post.getVideo());
                     }
+                    bean.setParentId( post.getId());
                 } else {
                     bean.setTargetConetnt("该文章已删除");
                 }
@@ -1623,6 +1624,7 @@ public class MemberServiceImpl implements IMemberService {
 // if(!CommonUtil.isNull(mood.getVideo())) {
 //						bean.setVideo(mood.getVideo());
 //					}
+                    bean.setParentId( mood.getId());
                 } else {
                     bean.setTargetConetnt("该心情已删除");
                 }
@@ -1668,6 +1670,7 @@ public class MemberServiceImpl implements IMemberService {
                     if (m != null) {
                         bean.setReplyToName(m.getUserName());
                     }
+                    bean.setParentId( evaluation.getId());
                 }
             } else if (commentBean.getTargetType() == 8) {
                 // @todo 社区接口

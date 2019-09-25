@@ -43,7 +43,7 @@ public class FileBatchUploadController {
     public WebAsyncTask uploadFileWithOtherOriginalNet(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody BatchUploadInput uploadInput) {
 
         List<String> imageUrlList = uploadInput.getImageUrl();
-        List<UploadFileOutBean> uploadFileOutBeanList = new ArrayList<UploadFileOutBean>();
+        List<UploadFileOutBean> uploadFileOutBeanList = new ArrayList<>();
 
         Callable<ResultDto<List<UploadFileOutBean>>> callable = new Callable<ResultDto<List<UploadFileOutBean>>>() {
             @Override
@@ -55,7 +55,7 @@ public class FileBatchUploadController {
                 //执行上传
                 fileBatchUploadService.excuteUpload(imageUrlList, uploadFileOutBeanList);
 
-                ResultDto<List<UploadFileOutBean>> resultDto = new ResultDto<List<UploadFileOutBean>>();
+                ResultDto<List<UploadFileOutBean>> resultDto = new ResultDto<>();
                 resultDto.setData(uploadFileOutBeanList);
                 resultDto.setStatus(1);
                 resultDto.setMessage("上传完成");
@@ -72,7 +72,7 @@ public class FileBatchUploadController {
                 new Callable<ResultDto<List<UploadFileOutBean>>>() {
                     @Override
                     public ResultDto<List<UploadFileOutBean>> call() throws Exception {
-                        ResultDto<List<UploadFileOutBean>> resultDto = new ResultDto<List<UploadFileOutBean>>();
+                        ResultDto<List<UploadFileOutBean>> resultDto = new ResultDto<>();
                         resultDto.setData(uploadFileOutBeanList);
                         resultDto.setStatus(-1);
                         resultDto.setMessage("上传超时，请继续上传未上传的图片");

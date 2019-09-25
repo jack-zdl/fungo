@@ -57,7 +57,6 @@ public class CommunityServiceImpl implements ICommunityService {
                 }
             }
         }
-//        LOGGER.info("查询当前登录用户关注的所有用户:{}", wathMbsSet.toString());
 
         //先获取官方推荐和符合条件推荐用户
         List<Member> ml1 = getRecommeMembers(limit, currentMb_id, wathMbsSet);
@@ -118,8 +117,9 @@ public class CommunityServiceImpl implements ICommunityService {
                     mbIds = mbIds.append(",");
                 }
             }
-            mbIds.deleteCharAt(mbIds.length() - 1);
-
+            if(StringUtils.isNoneBlank(mbIds)){
+                mbIds.deleteCharAt(mbIds.length() - 1);
+            }
             //查询出符合推荐条件用户的详情数据
             if (mbIds.length() > 0) {
                 List<Member> watchMebmberList = menberService.selectList(new EntityWrapper<Member>().in("id", mbIds.toString()).eq("state", 0));

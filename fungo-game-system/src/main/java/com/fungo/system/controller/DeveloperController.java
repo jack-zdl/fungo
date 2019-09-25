@@ -1,8 +1,6 @@
 package com.fungo.system.controller;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.dto.DeveloperBean;
-import com.fungo.system.entity.Developer;
 import com.fungo.system.service.DeveloperService;
 import com.fungo.system.service.IDeveloperService;
 import com.game.common.dto.*;
@@ -19,7 +17,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -148,7 +145,6 @@ public class DeveloperController {
 	}
 
 	/**
-	 * @todo
 	 */
 	@ApiOperation(value="开发者更新游戏", notes="")
 	@RequestMapping(value="/api/developer/test", method= RequestMethod.POST)

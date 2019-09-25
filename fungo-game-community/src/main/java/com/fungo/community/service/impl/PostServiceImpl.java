@@ -9,10 +9,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.community.config.NacosFungoCircleConfig;
-import com.fungo.community.dao.mapper.CmmCircleMapper;
-import com.fungo.community.dao.mapper.CmmPostCircleMapper;
-import com.fungo.community.dao.mapper.CmmPostDao;
-import com.fungo.community.dao.mapper.CmmPostGameMapper;
+import com.fungo.community.dao.mapper.*;
 import com.fungo.community.dao.service.BasVideoJobDaoService;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
@@ -88,8 +85,8 @@ public class PostServiceImpl implements IPostService {
 
     @Autowired
     private IVideoService vdoService;
-
-
+    @Autowired
+    private CmmCommunityDao communityDao;
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
 
@@ -98,16 +95,12 @@ public class PostServiceImpl implements IPostService {
 
     @Autowired
     private NacosFungoCircleConfig nacosFungoCircleConfig;
-
-
     //依赖系统和用户微服务
     @Autowired
     private SystemFacedeService systemFacedeService;
-
     //依赖游戏微服务
     @Autowired
     private GameFacedeService gameFacedeService;
-
     @Autowired
     private TSMQFacedeService tSMQFacedeService;
 
@@ -132,7 +125,6 @@ public class PostServiceImpl implements IPostService {
     @Transactional
     public ResultDto<ObjectId> addPost(PostInput postInput, String user_id) throws Exception {
 
-
         if (postInput == null) {
             return ResultDto.error("222", "不存在的帖子内容");
         }
@@ -142,7 +134,6 @@ public class PostServiceImpl implements IPostService {
         if (user_id == null) {
             return ResultDto.error("126", "不存在的用户");
         }
-
         //!fixme 查询用户数据
         //Member member = memberService.selectById(user_id);
 
@@ -162,10 +153,6 @@ public class PostServiceImpl implements IPostService {
                 memberDto = memberDtoList.get(0);
             }
         }
-
-
-
-
 
         if (memberDto == null) {
             return ResultDto.error("126", "不存在的用户");
@@ -218,12 +205,9 @@ public class PostServiceImpl implements IPostService {
 
         post.setGameList(parseGameLabelToDB(postInput.getHtml()));
 
-
-//		String txtcontent = postInput.getHtml().replaceAll("<img src=.+?>", ""); 
+//		String txtcontent = postInput.getHtml().replaceAll("<img src=.+?>", "");
 //		txtcontent = txtcontent.replaceAll("</?[^>]+>", ""); 
 //      txtcontent = txtcontent.replaceAll("<a>\\s*|\t|\r|\n</a>", "");
-
-
         post.setContent(txtcontent);
         post.setCommunityId(postInput.getCommunity_id());
         post.setHtmlOrigin(SerUtils.saveOrigin(postInput.getHtml()));
@@ -541,10 +525,10 @@ public class PostServiceImpl implements IPostService {
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
         if (StringUtil.isNotNull(postInput.getCommunity_id())) {
             //社区置顶文章(2.4.3)
-            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, postInput.getCommunity_id(), null);
+            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC+postInput.getCommunity_id(),"", null);
 
             //社区详情
-            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_DETAIL, postInput.getCommunity_id(), null);
+            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_DETAIL+postInput.getCommunity_id(),"", null);
         }
         //我的文章(2.4.3)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
@@ -1228,7 +1212,8 @@ public class PostServiceImpl implements IPostService {
                     communityMap.put("icon", community.getIcon());
                     communityMap.put("intro", community.getIntro());
                     communityMap.put("type", community.getType());
-                    communityMap.put( "hotvalue",community.getHotValue());
+                    int comment_num = communityDao.getCommentNumOfCommunity(community.getId());
+                    communityMap.put( "hotvalue",community.getFolloweeNum() + community.getPostNum() + comment_num);
                     communityMap.put( "postnum",community.getPostNum() );
                     //游戏社区的评分 标签
                     if (community.getType() == 0) {
@@ -1387,7 +1372,7 @@ public class PostServiceImpl implements IPostService {
 
         result = new FungoPageResultDto<PostOutBean>();
         List<PostOutBean> relist = new ArrayList<PostOutBean>();
-        Wrapper<CmmPost> wrapper = new EntityWrapper<CmmPost>().eq("community_id", communityId).eq("state", 1).ne("type", 3);
+        Wrapper<CmmPost> wrapper = new EntityWrapper<CmmPost>().eq("community_id", communityId).eq("state", 1); //.ne("type", 3);
 //		Wrapper<CmmPost> wrapper = new EntityWrapper<CmmPost>().eq("community_id",communityId ).eq("state", 1).ne("type", 3).ne("topic", 2); eq topic1
         List<CmmPost> postList = new ArrayList<CmmPost>();
         if(filter != null  && !"".equals(filter)){

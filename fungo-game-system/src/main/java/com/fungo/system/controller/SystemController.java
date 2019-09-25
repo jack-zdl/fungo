@@ -691,4 +691,23 @@ public class SystemController {
         return re;
     }
 
+    /**
+     * 功能描述: 查询用户是否关注
+     * @auther: dl.zhang
+     * @date: 2019/9/23 14:11
+     */
+    @ApiOperation(value = "v2.5", notes = "")
+    @RequestMapping(value = "/member/follow", method = RequestMethod.POST)
+    @ApiImplicitParams({})
+    public ResultDto<Map<String,Object>> getMemberFollow(@RequestBody MemberFollowerVo  memberFollowVo ) {
+        ResultDto<Map<String,Object>> re = null;
+        try {
+            re = systemService.getMemberFollow(memberFollowVo);
+        }catch (Exception e){
+            LOGGER.error("根据圈子id查询是否关注",e);
+            re = ResultDto.error("-1","根据圈子id查询是否关注，请联系管理员");
+        }
+        return re;
+    }
+
 }

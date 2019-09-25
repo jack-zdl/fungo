@@ -23,6 +23,13 @@ public class MemberFollowerVo extends InputPageDto implements Serializable {
      */
     private Integer state;
 
+    /**
+     * 功能描述: 目标对象
+     * @auther: dl.zhang
+     * @date: 2019/9/23 14:13
+     */
+    private String followId;
+
     public String getMemberId() {
         return memberId;
     }
@@ -39,5 +46,11 @@ public class MemberFollowerVo extends InputPageDto implements Serializable {
         this.state = state;
     }
 
+    public String getFollowId() {
+        return followId;
+    }
 
+    public void setFollowId(String followId) {
+        this.followId = followId;
+    }
 }

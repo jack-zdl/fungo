@@ -122,6 +122,14 @@
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
+
+            order by
+            field(
+            id,
+        <foreach collection="ids" item="id"  separator=",">
+                #{id}
+            </foreach>
+            )
     </select>
 
     <update id="updateBatchState">
@@ -207,7 +215,7 @@
 	<select id="getRecentCommentedGames" resultType="java.util.HashMap" parameterType="String">
 		select g.id as game_id,g.name,g.icon,g.tags,g.community_id,g.comment_num,e.content,e.updated_at 
 		from t_game g,t_game_evaluation e 
-		WHERE e.game_id = g.id AND e.member_id = #{memberId} 
+		WHERE e.game_id = g.id AND e.member_id = #{memberId}   GROUP BY game_id
 		ORDER BY e.updated_at DESC
 	</select>
 

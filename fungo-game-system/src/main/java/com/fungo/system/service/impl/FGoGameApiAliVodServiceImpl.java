@@ -35,7 +35,7 @@ public class FGoGameApiAliVodServiceImpl implements IFGoGameApiAliVodService {
     @Override
     public String getUploadAuth(VodIntroInput vodIntroInput) {
 
-        ResultDto<Map<String, String>> resultDto = new ResultDto<Map<String, String>>();
+        ResultDto<Map<String, String>> resultDto = new ResultDto<>();
 
         try {
 
@@ -44,7 +44,7 @@ public class FGoGameApiAliVodServiceImpl implements IFGoGameApiAliVodService {
                 return JSONObject.toJSONString(errorMsg);
             }
 
-            Map<String, String> vodParamMap = new HashMap<String, String>();
+            Map<String, String> vodParamMap = new HashMap<>();
             vodParamMap.put("vdFileName", vodIntroInput.getVdFileName());
             vodParamMap.put("vdTitle", vodIntroInput.getVdTitle());
             vodParamMap.put("vdTags", vodIntroInput.getVdTags());
@@ -61,7 +61,7 @@ public class FGoGameApiAliVodServiceImpl implements IFGoGameApiAliVodService {
             resultDto.setData(resultMap);
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+           LOGGER.error( "getUploadAuth异常",ex );
             return JSONObject.toJSONString(ResultDto.error("-1", "阿里云视频点播服务获取上传凭证出现异常"));
         }
         return JSONObject.toJSONString(resultDto);
@@ -78,7 +78,7 @@ public class FGoGameApiAliVodServiceImpl implements IFGoGameApiAliVodService {
     public String  getVideoPayURL(VodIntroInput vodIntroInput) {
 
         //基于视频ID获取视频播放地址
-        ResultDto<List> resultDto = new ResultDto<List>();
+        ResultDto<List> resultDto = new ResultDto<>();
 
         try {
                 if (null == vodIntroInput) {
@@ -92,7 +92,7 @@ public class FGoGameApiAliVodServiceImpl implements IFGoGameApiAliVodService {
 
                 LOGGER.info("基于视频ID从阿里云获取视频播放地址-videoId:{}",videoId);
 
-                Map<String, String> vdUrlMap = new HashMap<String, String>();
+                Map<String, String> vdUrlMap = new HashMap<>();
                 vdUrlMap.put("videoId", vodIntroInput.getVideoId());
 
                 List< Map<String, String> >   vdUrlMapR = vdService.getVideoPayURL(vdUrlMap);
@@ -106,7 +106,7 @@ public class FGoGameApiAliVodServiceImpl implements IFGoGameApiAliVodService {
                 }
 
         }catch (Exception ex) {
-            ex.printStackTrace();
+           LOGGER.error( "getVideoPayURL异常",ex );
         }
         return JSONObject.toJSONString(ResultDto.error("-1", "阿里云视频点播服务获取播放地址出现异常"));
     }

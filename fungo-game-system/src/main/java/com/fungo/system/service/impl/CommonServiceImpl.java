@@ -37,7 +37,7 @@ public class CommonServiceImpl implements ICommonService {
 
     @Override
     public ResultDto<List<String>> getReportType(String typeId) {
-        ResultDto<List<String>> re = new ResultDto<List<String>>();
+        ResultDto<List<String>> re = new ResultDto<>();
         try {
             BasConfig config = configService.selectOne(new EntityWrapper<BasConfig>().eq("key_name", "REPORT_CATEGORY"));
             ReportType type = null;
@@ -50,7 +50,7 @@ public class CommonServiceImpl implements ICommonService {
                         type = new  ReportType();
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error( "CommonServiceImpl.getReportType",e );
                 }
             }
             if ("9".equals(typeId)) {
@@ -67,7 +67,6 @@ public class CommonServiceImpl implements ICommonService {
                 re.setData(type.getFeedback());
             }
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("举报反馈类型异常",e);
         }
 
@@ -76,8 +75,8 @@ public class CommonServiceImpl implements ICommonService {
 
     @Override
     public ResultDto<Map<String, String>> getAppConfig() {
-        ResultDto<Map<String, String>> re = new ResultDto<Map<String, String>>();
-        List<String> list = new ArrayList<String>();
+        ResultDto<Map<String, String>> re = new ResultDto<>();
+        List<String> list = new ArrayList<>();
         try {
             BasConfig config = configService.selectOne(new EntityWrapper<BasConfig>().eq("key", "REPORT_CATEGORY"));
         }catch (Exception e){
@@ -88,15 +87,15 @@ public class CommonServiceImpl implements ICommonService {
 
     @Override
     public ResultDto<Map<String, String>> checkUpdate() {
-        ResultDto<Map<String, String>> re = new ResultDto<Map<String, String>>();
-        List<String> list = new ArrayList<String>();
+        ResultDto<Map<String, String>> re = new ResultDto<>();
+        List<String> list = new ArrayList<>();
         BasConfig config = configService.selectOne(new EntityWrapper<BasConfig>().eq("key", "REPORT_CATEGORY"));
         return re;
     }
 
     @Override
     public ResultDto<String> feedback(String memberId, FeedbackBean feedBack) throws Exception {
-        ResultDto<String> re = new ResultDto<String>();
+        ResultDto<String> re = new ResultDto<>();
         BasFeedback feed = new BasFeedback();
         feed.setContent(feedBack.getContent());
         feed.setMemberId(memberId);

@@ -36,6 +36,9 @@ public interface BasActionDao extends BaseMapper<BasAction> {
 	//获取关注用户
 	public List<Map<String,Object>> getFollowerUser(Page page, String memberId);
 
+
+	//获取关注用户
+	public List<Map<String,Object>> getFollowerUserList(String memberId);
 	//用户时间线-帖子 新版已弃用
 	public List<Map<String,Object>> getPostFeeds(Map<String, Object> map);
 

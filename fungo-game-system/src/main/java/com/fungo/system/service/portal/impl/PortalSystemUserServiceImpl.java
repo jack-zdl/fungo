@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -77,7 +78,7 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
         author = iUserService.getAuthor(cardId);
         if (!CommonUtil.isNull(memberId)) {
 //			BasAction action=actionService.selectOne(new EntityWrapper<BasAction>().eq("type", "5").eq("member_id",memberId).eq("target_id", cardId).notIn("state", "-1"));
-            MemberFollower one = followService.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", memberId).eq("follower_id", cardId).andNew("state = {0}", 1).or(" {0}", 2));
+            MemberFollower one = followService.selectOne(new EntityWrapper<MemberFollower>().eq("member_id", memberId).eq("follower_id", cardId).andNew("state = {0}", 1).or(" state =  {0}", 2));
             if (one != null) {
                 author.setIs_followed(true);
 //                PC2.0新增相互关注业务添加字段 mutualFollowed
@@ -177,7 +178,7 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
         try{
             re = new FungoPageResultDto<>();
             List<Map<String, Object>> list = new ArrayList<>();
-            re.setData(list);
+
             Page<BasAction> plist = actionService.selectPage(new Page<BasAction>(inputPage.getPage(), inputPage.getLimit()), new EntityWrapper<BasAction>().eq("type", "5").eq("target_id", memberId).notIn("state", "-1"));
             List<BasAction> list1 = plist.getRecords();
             ObjectMapper mapper = new ObjectMapper();
@@ -196,6 +197,7 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
                 map.put("level", m.getLevel());
                 map.put("avatar", m.getAvatar());
                 map.put("is_followed", false);
+                map.put("member_no", m.getMemberNo());
                 BasAction action = actionService.selectOne(new EntityWrapper<BasAction>().eq("type", "5").eq("member_id", myId).eq("target_id", m.getId()).ne("state", "-1"));
                 if (action != null) {
                     map.put("is_followed", true);
@@ -226,6 +228,8 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
                 map.put("updatedAt", DateTools.fmtDate(m.getUpdatedAt()));
                 list.add(map);
             }
+            list = list.stream().distinct().collect( Collectors.toList() );
+            re.setData(list);
             PageTools.pageToResultDto(re, plist);
         }catch (Exception e){
             logger.error("pc端获取用户粉丝异常",e);
