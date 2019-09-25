@@ -179,9 +179,9 @@ public class ProtalSystemActionServiceImpl implements IActionService {
                 }
             }
             // c查看是否相互关注
-            BasAction myAction = actionService.selectOne(new EntityWrapper<BasAction>().eq("type", "5").eq("member_id", memberId).eq("target_id", inputDto.getTarget_id()).ne("state", "-1"));
-            BasAction otherAction = actionService.selectOne(new EntityWrapper<BasAction>().eq("type", "5").eq("member_id",inputDto.getTarget_id()).eq("target_id", memberId).ne("state", "-1"));
-            if(myAction != null && otherAction != null){
+//            BasAction myAction = actionService.selectOne(new EntityWrapper<BasAction>().eq("type", "5").eq("member_id", memberId).eq("target_id", inputDto.getTarget_id()).ne("state", "-1"));
+//            BasAction otherAction = actionService.selectOne(new EntityWrapper<BasAction>().eq("type", "5").eq("member_id",inputDto.getTarget_id()).eq("target_id", memberId).ne("state", "-1"));
+            if( 2 == f1.getState()){
                 resultDto = ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_THREE.getKey(),AbstractResultEnum.CODE_SYSTEM_THREE.getSuccessValue() );
             }
 
