@@ -37,6 +37,7 @@ import com.game.common.util.PKUtil;
 import com.game.common.util.UUIDUtils;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
+import com.game.common.vo.UserFunVO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -411,7 +412,12 @@ public class MoodServiceImpl implements IMoodService {
 
             //-----------------------------------start------------------------
             //扣除经验
-            int score = 3;
+            /**
+             * 功能描述: 由3变更5
+             * @auther: dl.zhang
+             * @date: 2019/9/25 13:08
+             */
+            int score = 5;
 
             //MQ 业务数据发送给系统用户业务处理
             TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
@@ -443,9 +449,36 @@ public class MoodServiceImpl implements IMoodService {
             ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
             LOGGER.info("--删除心情执行扣减用户经验值和等级--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
             //-----------------------------------end------------------------
+            //start  扣减fun币
 
+            //@todo
+            TransactionMessageDto transactionMessageDto1 = new TransactionMessageDto();
 
+            //消息类型
+            transactionMessageDto1.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
 
+            //发送的队列
+            transactionMessageDto1.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+
+            //路由key
+            StringBuffer routinKey1 = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+            routinKey1.deleteCharAt(routinKey1.length() - 1);
+            routinKey1.append("deletePostSubtractExpLevel");
+
+            transactionMessageDto1.setRoutingKey(routinKey1.toString());
+
+            MQResultDto mqResultDto1 = new MQResultDto();
+            mqResultDto1.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_GAME_MQ_TYPE_DELETE.getCode());
+
+            UserFunVO userFunVO = new UserFunVO();
+            userFunVO.setMemberId(memberId );
+            userFunVO.setDescription( "删除心情");
+            userFunVO.setNumber(10);
+            mqResultDto1.setBody(userFunVO);
+            transactionMessageDto1.setMessageBody(JSON.toJSONString(mqResultDto1));
+            //执行MQ发送
+            ResultDto<Long> Result = tSMQFacedeService.saveAndSendMessage(transactionMessageDto1);
+            //start  扣减fun币
             //clear cache
             //帖子/心情评论列表 + moodId
             fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
@@ -454,7 +487,10 @@ public class MoodServiceImpl implements IMoodService {
             //我的心情(2.4.3)
             fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_MOODS, "", null);
             //
-
+            // 个人信息
+            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + memberId, "", null);
+            // fun币消耗详情
+            fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + memberId, "", null);
             return ResultDto.success();
         } else {
             return ResultDto.error("-1", "心情不存在");

@@ -49,6 +49,7 @@ import com.game.common.util.*;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.EmojiDealUtil;
 import com.game.common.util.emoji.FilterEmojiUtil;
+import com.game.common.vo.UserFunVO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -653,8 +654,14 @@ public class PostServiceImpl implements IPostService {
          * @date: 2019/7/9 17:24
          */
         cmmPostCircleMapper.deletePostCircleByPostIds(Arrays.asList(cmmPost.getId()));
-        //扣除经验
-        int score = 3;
+        //扣除经验  修改为5
+        /**
+         * 功能描述: 由3变成5
+         * <p> 扣除fun币更改为5</p>
+         * @auther: dl.zhang
+         * @date: 2019/9/25 9:58
+         */
+        int score = 5;
 
         //!fixme 扣减用户经验值 MQ
         // --------------------------------------------------start-----------------------------------------------
@@ -753,6 +760,36 @@ public class PostServiceImpl implements IPostService {
         //执行MQ发送
         ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
         logger.info("--删除帖子执行扣减用户经验值和等级--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
+
+        //--start 扣减10fun币
+        //@todo
+        TransactionMessageDto transactionMessageDto1 = new TransactionMessageDto();
+
+        //消息类型
+        transactionMessageDto1.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
+
+        //发送的队列
+        transactionMessageDto1.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+
+        //路由key
+        StringBuffer routinKey1 = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+        routinKey1.deleteCharAt(routinKey1.length() - 1);
+        routinKey1.append("deletePostSubtractExpLevel");
+
+        transactionMessageDto1.setRoutingKey(routinKey1.toString());
+
+        MQResultDto mqResultDto1 = new MQResultDto();
+        mqResultDto1.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_GAME_MQ_TYPE_DELETE.getCode());
+
+        UserFunVO userFunVO = new UserFunVO();
+        userFunVO.setMemberId(userId );
+        userFunVO.setDescription( "删除文章" );
+        userFunVO.setNumber(10);
+        mqResultDto1.setBody(userFunVO);
+        transactionMessageDto1.setMessageBody(JSON.toJSONString(mqResultDto1));
+        //执行MQ发送
+        ResultDto<Long> Result = tSMQFacedeService.saveAndSendMessage(transactionMessageDto1);
+        //--end 扣减10fun币
         //-----start
 
         ActionInput actioninput = new ActionInput();
@@ -779,6 +816,10 @@ public class PostServiceImpl implements IPostService {
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
 
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX, "", null);
+        // 个人信息
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + userId, "", null);
+        // fun币消耗详情
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + userId, "", null);
         return ResultDto.success("删除成功");
 
     }

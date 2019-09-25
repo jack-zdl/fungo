@@ -41,11 +41,13 @@ import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
 import com.game.common.ts.mq.enums.RabbitMQEnum;
+import com.game.common.ts.mq.service.MQDataReceiveService;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PKUtil;
 import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
+import com.game.common.vo.UserFunVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +98,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
     private GameEvaluationDao gameEvaluationDao;
     @Autowired
     private MQFeignClient mqFeignClient;
+    @Autowired
+    private MQDataReceiveService mqDataReceiveService;
+
 
     @Override
     @Transactional
@@ -562,8 +567,33 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     map.put( "fieldName","comment_num" );
                     map.put( "id",game.getId());
                     gameDao.updateCountor( map);
+
+                    //--start 扣减10fun币
+                    //@todo
+                    TransactionMessageDto transactionMessageDto1 = new TransactionMessageDto();
+                    //消息类型
+                    transactionMessageDto1.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
+                    //发送的队列
+                    transactionMessageDto1.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+                    //路由key
+                    StringBuffer routinKey1 = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+                    routinKey1.deleteCharAt(routinKey1.length() - 1);
+                    routinKey1.append("deletePostSubtractExpLevel");
+                    transactionMessageDto1.setRoutingKey(routinKey1.toString());
+                    MQResultDto mqResultDto1 = new MQResultDto();
+                    mqResultDto1.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_GAME_MQ_TYPE_DELETE.getCode());
+                    UserFunVO userFunVO = new UserFunVO();
+                    userFunVO.setMemberId(memberId );
+                    userFunVO.setDescription( "删除游戏评测" );
+                    userFunVO.setNumber(10);
+                    mqResultDto1.setBody(userFunVO);
+                    transactionMessageDto1.setMessageBody(JSON.toJSONString(mqResultDto1));
+                    //执行MQ发送
+                    ResultDto<Long> messageResult1 = mqFeignClient.saveAndSendMessage(transactionMessageDto1);
                 }
             } );
+
+            //--end 扣减10fun币
             return ResultDto.success();
         }catch (Exception e){
             logger.error( "删除游戏评论异常id:"+JSON.toJSONString(commentIdList),e );

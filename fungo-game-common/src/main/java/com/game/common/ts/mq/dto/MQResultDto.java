@@ -113,7 +113,14 @@ public class MQResultDto {
         /**
          * 社区  修改 游戏评论消息通知
          */
-        CMT_POST_MOOD_MQ_TYPE_GAME_EVALUATION_UPDATE(6,"社区 修改游戏评论消息通知")
+        CMT_POST_MOOD_MQ_TYPE_GAME_EVALUATION_UPDATE(6,"社区 修改游戏评论消息通知"),
+
+        /**
+        * 功能描述: 删除文章,心情,游戏评测,文章评论,心情评论,回复
+         * @auther: dl.zhang
+         * @date: 2019/9/25 10:47
+         */
+        CMT_POST_MOOD_GAME_MQ_TYPE_DELETE(7,"删除文章,心情,游戏评测,文章评论,心情评论,回复")
 
 
         ;

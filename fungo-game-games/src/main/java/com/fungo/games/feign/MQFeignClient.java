@@ -17,12 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author: lidf
- * @date: 2018/3/29
- * @description:
- * @version: 2.0
- */
+
 @FeignClient(name = "fungo-game-system")
 @RestController("/ms/service/dtp/mq")
 public interface MQFeignClient {

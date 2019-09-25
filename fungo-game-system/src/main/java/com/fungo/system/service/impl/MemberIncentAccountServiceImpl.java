@@ -224,7 +224,7 @@ public class MemberIncentAccountServiceImpl implements IMemberIncentAccountServi
          如果是消费记录 task_type = -1
          */
 
-        re = new FungoPageResultDto<CoinBean>();
+        re = new FungoPageResultDto<>();
         List<CoinBean> clist = new ArrayList<>();
         Page<ScoreLog> logPage = null;
 

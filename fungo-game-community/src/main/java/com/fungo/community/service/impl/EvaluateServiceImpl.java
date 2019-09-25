@@ -51,6 +51,7 @@ import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.EmojiDealUtil;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import com.game.common.vo.DelObjectListVO;
+import com.game.common.vo.UserFunVO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2271,15 +2272,21 @@ public class EvaluateServiceImpl implements IEvaluateService {
     public ResultDto<String> delCommentList(String memberId, int type , List<String> commentIds) {
         AtomicBoolean istrue = new AtomicBoolean( false );
         try {
+            UserFunVO userFunVO = new UserFunVO();
+            userFunVO.setMemberId(memberId );
+
+            userFunVO.setNumber(10);
             if( DelObjectListVO.TypeEnum.POSTEVALUATE.getKey() == type ){
+                userFunVO.setDescription( "删除文章评论" );
                 commentIds.stream().forEach(s ->{
                     cmmPostDao.updateCmmPostCommentNum(s);
                     CmmComment cmmComment = new CmmComment();
                     cmmComment.setId(s);
                     cmmComment.setState(-1);
-                    istrue.set( commentService.updateById( cmmComment ) );
+                    istrue.set(commentService.updateById(cmmComment));
                 });
             }else if(DelObjectListVO.TypeEnum.COMMENTEVALUATE.getKey() == type){
+                userFunVO.setDescription( "删除心情评论" );
                 commentIds.stream().forEach(s ->{
                     mooMoodDao.updateMooMoodCommentNum(s);
                     MooMessage mooMessage = new MooMessage();
@@ -2288,6 +2295,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     istrue.set( messageServive.updateById( mooMessage ) );
                 });
             } else if(DelObjectListVO.TypeEnum.POSTREPLY.getKey() == type){
+                userFunVO.setDescription( "删除文章回复" );
                 commentIds.stream().forEach(s ->{
                     cmmCommentDao.updateCmmCommentCommentNum(s);
                     Reply reply = new Reply();
@@ -2296,6 +2304,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     istrue.set( replyService.updateById( reply ) );
                 });
             }else if(DelObjectListVO.TypeEnum.COMMENTREPLY.getKey() == type){
+                userFunVO.setDescription( "删除心情回复" );
                 commentIds.stream().forEach(s ->{
                     mooMessageDao.updateMooMessageCommentNum(s);
                     Reply reply = new Reply();
@@ -2304,8 +2313,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     istrue.set( replyService.updateById( reply ) );
                 });
             }else if(DelObjectListVO.TypeEnum.GAMEREPLY.getKey() == type){
+                userFunVO.setDescription( "删除游戏回复" );
                 commentIds.stream().forEach(s ->{
-
                     Map<String, String> map = new HashMap<>();
                     map.put("tableName", "t_game_evaluation");
                     map.put("fieldName", "reply_num");
@@ -2316,12 +2325,63 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     Reply reply = new Reply();
                     reply.setId(s);
                     reply.setState(-1);
-                    istrue.set( replyService.updateById( reply ) );
+                    istrue.set(replyService.updateById(reply));
                 });
             }
+            //-----start
+            //MQ 业务数据发送给系统用户业务处理
+            TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+            //消息类型
+            transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
+            //发送的队列
+            transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+            //路由key
+            StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+            routinKey.deleteCharAt(routinKey.length() - 1);
+            routinKey.append("deletePostSubtractExpLevel");
+
+            transactionMessageDto.setRoutingKey(routinKey.toString());
+
+            MQResultDto mqResultDto = new MQResultDto();
+            mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MQ_TYPE_DELETE_POST_SUBTRACT_EXP_LEVEL.getCode());
+
+            HashMap<String, Object> hashMap = new HashMap<String, Object>();
+            hashMap.put("mb_id", memberId);
+            hashMap.put("score", 3);
+
+            mqResultDto.setBody(hashMap);
+
+            transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+            //执行MQ发送
+            ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
+            logger.info("--删除帖子执行扣减用户经验值和等级--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
+
+            //--start 扣减10fun币
+            TransactionMessageDto transactionMessageDto1 = new TransactionMessageDto();
+            //消息类型
+            transactionMessageDto1.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
+            //发送的队列
+            transactionMessageDto1.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
+            //路由key
+            StringBuffer routinKey1 = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
+            routinKey1.deleteCharAt(routinKey1.length() - 1);
+            routinKey1.append("deletePostSubtractExpLevel");
+            transactionMessageDto1.setRoutingKey(routinKey1.toString());
+            MQResultDto mqResultDto1 = new MQResultDto();
+            mqResultDto1.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_GAME_MQ_TYPE_DELETE.getCode());
+
+            mqResultDto1.setBody(userFunVO);
+            transactionMessageDto1.setMessageBody(JSON.toJSONString(mqResultDto1));
+            //执行MQ发送
+            ResultDto<Long> Result = tSMQFacedeService.saveAndSendMessage(transactionMessageDto1);
+            //--end 扣减10fun币
         }catch (Exception e){
             logger.error( "delCommentList删除评论异常,类型:"+type+",id:"+JSON.toJSONString(commentIds),e);
         }
+        // 个人信息
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + memberId, "", null);
+        // fun币消耗详情
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + memberId, "", null);
         return istrue.get() ? ResultDto.success(): ResultDto.error( "-1","删除评论失败");
     }
 

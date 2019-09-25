@@ -39,7 +39,7 @@ public class FungoMallSeckillLogService {
 
         ScoreLog newLog = new ScoreLog();
 
-        newLog.setMemberId(userId);
+       newLog.setMemberId(userId);
         newLog.setTaskType(-1);
 
         newLog.setMbUserName(nickName);

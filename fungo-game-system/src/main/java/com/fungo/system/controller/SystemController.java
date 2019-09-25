@@ -669,8 +669,6 @@ public class SystemController {
         return re;
     }
 
-
-
     /**
      * 功能描述: 根据用户id查询下载的游戏
      * @param: [memberUserPrefile, request, inputPageDto]
@@ -692,9 +690,5 @@ public class SystemController {
         }
         return re;
     }
-
-
-
-
 
 }

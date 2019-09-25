@@ -3,20 +3,23 @@ package com.fungo.system.ts.mq.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fungo.system.service.IGameProxy;
+import com.fungo.system.service.IncentAccountCoinDaoService;
 import com.fungo.system.service.SystemService;
 import com.fungo.system.ts.mq.service.UserMqConsumeService;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.system.TaskDto;
+import com.game.common.enums.CommonEnum;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.util.StringUtil;
+import com.game.common.vo.UserFunVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Map;
+import static com.game.common.ts.mq.dto.MQResultDto.CommunityEnum.CMT_POST_MOOD_GAME_MQ_TYPE_DELETE;
 
 @Service
 @Transactional
@@ -26,9 +29,10 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
 
     @Autowired
     private IGameProxy gameProxyService;
-
     @Autowired
     private SystemService systemService;
+    @Autowired
+    private IncentAccountCoinDaoService incentAccountCoinDaoService;
 
 
     /**
@@ -66,6 +70,10 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
             return processGameBasActionChange(body);
         }
 
+        //@todo 用户扣减fun币
+        if(CMT_POST_MOOD_GAME_MQ_TYPE_DELETE.getCode() == type){
+            return deleteUserFun(body);
+        }
         return false;
     }
 
@@ -139,6 +147,13 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
         Map map = JSON.parseObject(body, Map.class);
         ResultDto resultDto = systemService.updateActionUpdatedAtByCondition(map);
         return resultDto.isSuccess();
+    }
+
+    private boolean deleteUserFun(String body){
+        JSONObject jsonObject = JSON.parseObject( body );
+        UserFunVO userFunVO = JSON.toJavaObject( jsonObject,UserFunVO.class );
+        ResultDto<String> resultDto = incentAccountCoinDaoService.deleteUserFun( userFunVO);
+        return CommonEnum.SUCCESS.code().equals(String.valueOf(resultDto.getStatus()));
     }
 
 
