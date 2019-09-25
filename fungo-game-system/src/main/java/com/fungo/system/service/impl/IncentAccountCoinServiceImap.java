@@ -107,10 +107,10 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
                         coinUsableNew.toString(), updateOk);
 
                 resultDto = ResultDto.ResultDtoFactory.buildSuccess( "扣除用户fun币成功" );
-                //7. 记录用户fungo币消费明细
-                fungoMallScanOrderWithSeckillServiceImpl.addFungoPayLogs(memberId, member.getMobilePhoneNum(), member.getUserName(), String.valueOf(funNumber),
-                        description);
-                resultDto = ResultDto.ResultDtoFactory.buildSuccess( "用户fun币不足,扣除用户多余fun币" );
+                if(0 != coinUsable.compareTo( BigDecimal.ZERO ) ){
+                    //7. 记录用户fungo币消费明细
+                    fungoMallScanOrderWithSeckillServiceImpl.addFungoPayLogs(memberId, member.getMobilePhoneNum(), member.getUserName(), String.valueOf(coinUsable), description);
+                }
             }
         }catch (Exception e){
             logger.error( "扣除用户fun异常",e );
