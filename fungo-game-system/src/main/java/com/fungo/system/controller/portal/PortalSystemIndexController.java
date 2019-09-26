@@ -63,7 +63,7 @@ public class PortalSystemIndexController {
         ResultDto<List<AdvertOutBean>> re = null;
         //from redis
         try {
-            List<AdvertOutBean> list = (List<AdvertOutBean>) fungoCacheAdvert.getIndexCache("/api/portal/index/adt/bnr", "");
+            List<AdvertOutBean> list = (List<AdvertOutBean>) fungoCacheAdvert.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_BNR, "");
             if (null != list && !list.isEmpty()) {
                 re.setData(list);
                 return re;

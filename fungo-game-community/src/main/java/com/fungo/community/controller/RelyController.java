@@ -14,6 +14,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,8 +55,10 @@ public class RelyController {
         String os = "";
         os = (String) request.getAttribute("os");
         reply.setOs(os);
-        String appVersion = "";
-        appVersion = request.getHeader("appversion");
+        String appVersion = "2.5.1";
+        if(StringUtils.isNoneBlank(request.getHeader("appversion"))){
+            appVersion = request.getHeader("appversion");
+        }
         return this.evaluateService.addReply(memberUserPrefile.getLoginId(), reply, appVersion);
     }
 
