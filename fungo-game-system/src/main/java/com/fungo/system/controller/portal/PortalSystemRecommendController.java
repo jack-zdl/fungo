@@ -2,6 +2,7 @@ package com.fungo.system.controller.portal;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.system.controller.RecommendController;
 import com.fungo.system.entity.Member;
 import com.fungo.system.entity.MemberFollower;
 import com.fungo.system.service.ICommunityService;
@@ -47,6 +48,8 @@ public class PortalSystemRecommendController {
     private IUserService userService;
     @Autowired
     private MemberFollowerService followService;
+    @Autowired
+    private RecommendController recommendController;
 
     /**
      * PC2.0
@@ -65,6 +68,9 @@ public class PortalSystemRecommendController {
     public FungoPageResultDto<FollowUserOutBean> getDynamicsUsersList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto) {
 
 
+        if(true){
+            return recommendController.getDynamicsUsersList(memberUserPrefile, inputPageDto );
+        }
         // LOGGER.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/api/recommend/users----");
 
         FungoPageResultDto<FollowUserOutBean> re = new FungoPageResultDto<>();
