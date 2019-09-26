@@ -474,7 +474,7 @@ public class ScoreLogServiceImap extends ServiceImpl<ScoreLogDao, ScoreLog> impl
     public Member updateLevel(Member user) {
         int exp = user.getExp();
         int level = 0;
-        if (0 < exp && exp <= 10) {
+        if (0 <= exp && exp <= 10) {
             level = 1;
         } else if (10 < exp && exp <= 50) {
             level = 2;
@@ -524,7 +524,7 @@ public class ScoreLogServiceImap extends ServiceImpl<ScoreLogDao, ScoreLog> impl
 
     public int getLevel(int exp) {
         int level = 0;
-        if (0 < exp && exp <= 10) {
+        if (0 <= exp && exp <= 10) {
             level = 1;
         } else if (10 < exp && exp <= 50) {
             level = 2;
