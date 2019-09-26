@@ -165,6 +165,7 @@ public class ActionServiceImpl implements IActionService {
         //获取心情动态列表(v2.4)
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOODS_LIST, "", null);
         fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOOD_CONTENT_GET, "", null);
+
         return ResultDto.success("点赞成功");
     }
 

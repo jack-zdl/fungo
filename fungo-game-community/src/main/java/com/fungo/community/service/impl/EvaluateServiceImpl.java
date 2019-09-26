@@ -709,6 +709,27 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     if (memberDto != null) {
                         replybean.setReplyToName(memberDto.getUserName());
                     }
+
+                    //!fixme 获取点赞数
+
+                    BasActionDto basActionDto = new BasActionDto();
+
+                    basActionDto.setMemberId(memberId);
+                    basActionDto.setType(0);
+                    basActionDto.setState(0);
+                    basActionDto.setTargetId(reply.getId());
+
+                    int liked = 0;
+                    try {
+                        ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
+
+                        if (null != resultDto) {
+                            liked = resultDto.getData();
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    basActionDto.setLiked(liked > 0 ? true : false);
                     ctem.getReplys().add(replybean);
                 }
                 //是否点赞
@@ -878,6 +899,26 @@ public class EvaluateServiceImpl implements IEvaluateService {
                         replybean.setReplyToName(memberDto.getUserName());
                     }
 
+                    //!fixme 获取点赞数
+
+                    BasActionDto basActionDto = new BasActionDto();
+
+                    basActionDto.setMemberId(memberId);
+                    basActionDto.setType(0);
+                    basActionDto.setState(0);
+                    basActionDto.setTargetId(reply.getId());
+
+                    int liked = 0;
+                    try {
+                        ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
+
+                        if (null != resultDto) {
+                            liked = resultDto.getData();
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    replybean.setLiked(liked > 0 ? true : false);
                     ctem.getReplys().add(replybean);
 
                 }

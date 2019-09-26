@@ -1287,20 +1287,22 @@ public class MemberServiceImpl implements IMemberService {
             bean.setUpdatedAt(DateTools.fmtDate(post.getUpdatedAt()));
 
             //@todo  社区主键查询
-            CmmCommunityDto cmmParam = new CmmCommunityDto();
-            cmmParam.setId(post.getCommunityId());
-            CmmCommunityDto community = iMemeberProxyService.selectCmmCommunityById(cmmParam); //communityService.selectById(post.getCommunityId());
-
-            if (community != null) {
-                Map<String, Object> communityMap = new HashMap<>();
-                communityMap.put("objectId", community.getId());
-                communityMap.put("name", community.getName());
-                communityMap.put("icon", community.getIcon());
-                bean.setLink_community(communityMap);
-                if (CommonUtil.isNull(post.getCoverImage())) {
-                    bean.setCoverImage(community.getCoverImage());
+            if(org.apache.commons.lang3.StringUtils.isNoneBlank(post.getCommunityId()) ){
+                CmmCommunityDto cmmParam = new CmmCommunityDto();
+                cmmParam.setId(post.getCommunityId());
+                CmmCommunityDto community = iMemeberProxyService.selectCmmCommunityById(cmmParam); //communityService.selectById(post.getCommunityId());
+                if (community != null) {
+                    Map<String, Object> communityMap = new HashMap<>();
+                    communityMap.put("objectId", community.getId());
+                    communityMap.put("name", community.getName());
+                    communityMap.put("icon", community.getIcon());
+                    bean.setLink_community(communityMap);
+                    if (CommonUtil.isNull(post.getCoverImage())) {
+                        bean.setCoverImage(community.getCoverImage());
+                    }
                 }
             }
+
             //
             bean.setVideoCoverImage(post.getVideoCoverImage());
             bean.setDeltype( post.getState() == -1 ? 1 : 0 ); //1 true  已删除  0 false 未删除

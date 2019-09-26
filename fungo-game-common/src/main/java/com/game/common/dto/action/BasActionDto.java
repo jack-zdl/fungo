@@ -49,4 +49,11 @@ public class BasActionDto extends InputPageDto {
      * 更新时间
      */
     private Date updatedAt;
+
+    /**
+     * 功能描述:
+     * @auther: dl.zhang
+     * @date: 2019/9/26 16:40
+     */
+    private boolean liked;
 }

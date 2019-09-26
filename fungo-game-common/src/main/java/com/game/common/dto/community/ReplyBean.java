@@ -18,6 +18,9 @@ public class ReplyBean {
 	 * 回复对象昵称(2.4.3)
 	 */
 	private String replyToName;
+
+	private boolean liked;
+
 	public String getContent() {
 		return content;
 	}
@@ -67,6 +70,11 @@ public class ReplyBean {
 		this.replyToName = replyToName;
 	}
 
+	public boolean isLiked() {
+		return liked;
+	}
 
-	
+	public void setLiked(boolean liked) {
+		this.liked = liked;
+	}
 }
