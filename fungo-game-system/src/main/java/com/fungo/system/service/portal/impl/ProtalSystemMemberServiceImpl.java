@@ -188,7 +188,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
         if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
             types = new String[]{"3", "4", "5", "8", "9", "12"};
         } else {
-            types = new String[]{"3", "4", "5", "8"};
+            types = new String[]{"3", "4", "5", "8", "9", "12"};
         }
 //		String[] types1= {"3","4","5","8"};
         Page<BasNotice> basNoticePage = new Page<>(inputPage.getPage(), inputPage.getLimit());
