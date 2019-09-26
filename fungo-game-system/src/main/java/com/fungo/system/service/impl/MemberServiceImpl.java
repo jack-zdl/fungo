@@ -1649,6 +1649,7 @@ public class MemberServiceImpl implements IMemberService {
                     if (m != null) {
                         bean.setReplyToName(m.getUserName());
                     }
+                    bean.setParentId( comment.getPostId());
                 }
             } else if (commentBean.getTargetType() == 6) {
                 // @todo 游戏评论
@@ -1692,6 +1693,7 @@ public class MemberServiceImpl implements IMemberService {
                     if (m != null) {
                         bean.setReplyToName(m.getUserName());
                     }
+                    bean.setParentId( message.getMoodId());
                 }
             }
             blist.add(bean);
