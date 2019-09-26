@@ -11,6 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -71,9 +72,10 @@ public class PortalCommunityEvaluateController {
 
     })
     public ResultDto<CommentOut> addComment(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody CommentInput commentInput) throws Exception {
-        String appVersion = "";
-        appVersion = request.getHeader("appversion");
-
+        String appVersion = "2.5.1";
+        if(StringUtils.isNoneBlank(request.getHeader("appversion"))){
+            appVersion = request.getHeader("appversion");
+        }
         return this.evaluateService.addComment(memberUserPrefile.getLoginId(), commentInput, appVersion);
     }
 

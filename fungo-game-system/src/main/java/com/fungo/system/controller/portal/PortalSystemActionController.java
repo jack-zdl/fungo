@@ -13,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,8 +51,10 @@ public class PortalSystemActionController {
             @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
     })
     public ResultDto<String> like(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody ActionInput inputDto) throws Exception {
-        String appVersion = "";
-        appVersion = request.getHeader("appversion");
+        String appVersion = "2.5.1";
+        if(StringUtils.isNoneBlank(request.getHeader("appversion"))){
+            appVersion = request.getHeader("appversion");
+        }
         ResultDto<String>  resultDto = actionService.like(memberUserPrefile.getLoginId(), inputDto,appVersion);
         if(CommonEnum.SUCCESS.code().equals(String.valueOf(resultDto.getStatus()))){
             fungoCacheMood.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS, "", null);
