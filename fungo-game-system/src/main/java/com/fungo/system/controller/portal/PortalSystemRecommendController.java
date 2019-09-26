@@ -68,9 +68,6 @@ public class PortalSystemRecommendController {
     public FungoPageResultDto<FollowUserOutBean> getDynamicsUsersList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto) {
 
 
-        if(true){
-            return recommendController.getDynamicsUsersList(memberUserPrefile, inputPageDto );
-        }
         // LOGGER.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/api/recommend/users----");
 
         FungoPageResultDto<FollowUserOutBean> re = new FungoPageResultDto<>();

@@ -72,7 +72,7 @@ public class PortalSystemMemberController {
 
         String appVersion = "";
         appVersion = request.getHeader("appversion");
-        return iMemberService.getCommentNotice(memberUserPrefile.getLoginId(), inputPage, appVersion);
+        return memberService.getCommentNotice(memberUserPrefile.getLoginId(), inputPage, appVersion);
     }
 
 
