@@ -284,7 +284,12 @@ public class SystemServiceImpl implements SystemService {
         if (scoreCount == null) {
             scoreCount = accountScoreDaoServiceImap.createAccountScore(user, 1);
         }
-        scoreCount.setScoreUsable(scoreCount.getScoreUsable().subtract((new BigDecimal(changeScore))));
+        BigDecimal changeScoreBigDecimal = new BigDecimal(changeScore);
+        int usableCompResult = scoreCount.getScoreUsable().compareTo(changeScoreBigDecimal);
+        if(!(0 == usableCompResult || 1 == usableCompResult )){
+            changeScoreBigDecimal = scoreCount.getScoreUsable();
+        }
+        scoreCount.setScoreUsable(scoreCount.getScoreUsable().subtract(changeScoreBigDecimal));
         scoreCount.setUpdatedAt(new Date());
         scoreCount.updateById();
 

@@ -8,7 +8,7 @@ public class CommentBean implements Serializable {
 	private String id;
 	private String content;
 	private int type;//评论主体类型
-	private int targetType;//评论对象类型
+	private int targetType;//评论对象类型  5 文章评论 6 游戏评测   8  心情评论
 	private String targetId;//评论对象id
 	private String createdAt;
 	private Date updatedAt;

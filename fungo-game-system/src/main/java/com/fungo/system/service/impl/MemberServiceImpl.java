@@ -1581,6 +1581,29 @@ public class MemberServiceImpl implements IMemberService {
                     }
                     bean.setReplyToConentId(commentBean.getReplyContentId());
                 }
+                if(commentBean.getTargetType() == 5 ){ //  5 文章评论 6 游戏评测   8  心情评论
+                    CmmCommentDto param = new CmmCommentDto();
+                    param.setId(commentBean.getTargetId());
+                    param.setState(null);
+                    FungoPageResultDto<CmmCommentDto> resultDto = communityFeignClient.queryFirstLevelCmtList(param);
+                    CmmCommentDto comment =  (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;
+                    bean.setParentId( comment != null ? comment.getPostId() : "");
+                }else if(commentBean.getTargetType() == 6){
+                    GameEvaluationDto param = new GameEvaluationDto();
+                    param.setId(commentBean.getTargetId());
+                    param.setSort(null);
+                    FungoPageResultDto<GameEvaluationDto> resultDto = gamesFeignClient.getGameEvaluationPage(param);
+                    GameEvaluationDto evaluation =  (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;
+                    bean.setParentId( evaluation != null ? evaluation.getId() : "");
+
+                }if(commentBean.getTargetType() == 8 ){
+                    MooMessageDto mooMessageDto = new MooMessageDto();
+                    mooMessageDto.setId(commentBean.getTargetId());
+                    mooMessageDto.setState(null);
+                    FungoPageResultDto<MooMessageDto> resultDto = communityFeignClient.queryCmmMoodCommentList(mooMessageDto);
+                    MooMessageDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;
+                    bean.setParentId( message != null ? message.getMoodId() : "" );
+                }
                 blist.add(bean);
                 continue;
             }
