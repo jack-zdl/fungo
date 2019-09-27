@@ -154,7 +154,7 @@ public class CommunityServiceImpl implements ICommunityService {
          * 2.发布文章数>10或游戏评论>14 （精选文章/评论 *5）
          * 3.合并去重
          */
-        //fix: 从用户中查询出所有被推荐的用户，且状态是0(正常)  [by mxf 2019-01-09]
+        //fix: 从用户中查询出所有被推荐的用户，且状态是0(正常) type = 2 就是推荐  =1 普通
         EntityWrapper memberSqlWrapper = new EntityWrapper<Member>();
         memberSqlWrapper.eq("type", 2).eq("state", 0);
 

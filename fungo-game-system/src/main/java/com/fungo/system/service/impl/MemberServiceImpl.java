@@ -912,7 +912,6 @@ public class MemberServiceImpl implements IMemberService {
         map.put("comment_count", comment_count);
         //map.put("notice_count", noticeList.size());
         map.put("notice_count", notice_count);
-
         return map;
     }
 

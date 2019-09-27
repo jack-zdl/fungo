@@ -651,7 +651,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 int i = 0;
                 for (Reply reply : replyList.getRecords()) {
                     i = i + 1;
-                    if (i == 3) {
+                    if (i == 4) {
                         ctem.setReply_more(true);
                         break;
                     }
@@ -829,7 +829,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 //回复
                 for (Reply reply : replyList.getRecords()) {
                     i = i + 1;
-                    if (i == 3) {
+                    if (i == 4) {
                         ctem.setReply_more(true);
                         break;
                     }
