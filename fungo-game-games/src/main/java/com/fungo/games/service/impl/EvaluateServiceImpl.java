@@ -700,6 +700,24 @@ public class EvaluateServiceImpl implements IEvaluateService {
                                 replybean.setReplyToName(m.getUserName());
                             }
                         }
+
+                        //!fixme 获取点赞数
+
+                        BasActionDto basActionDto = new BasActionDto();
+
+                        basActionDto.setMemberId(memberId);
+                        basActionDto.setType(0);
+                        basActionDto.setState(0);
+                        basActionDto.setTargetId(reply.getId());
+
+                        int liked = 0;
+                        try {
+                             liked = iEvaluateProxyService.getBasActionSelectCount(basActionDto);
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        replybean.setLiked(liked > 0 ? true : false);
                         ctem.getReplys().add(replybean);
                     }
                     ctem.setReply_count(replyList.getCount());

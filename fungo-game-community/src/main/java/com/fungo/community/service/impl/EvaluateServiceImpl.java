@@ -729,7 +729,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                    basActionDto.setLiked(liked > 0 ? true : false);
+                    replybean.setLiked(liked > 0 ? true : false);
                     ctem.getReplys().add(replybean);
                 }
                 //是否点赞
