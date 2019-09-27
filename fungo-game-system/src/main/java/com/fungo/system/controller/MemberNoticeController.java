@@ -12,6 +12,7 @@ import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.CommonEnum;
 import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.vo.DelObjectListVO;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,8 +70,10 @@ public class MemberNoticeController {
 //        }
 //        List<Map<String, Object>> noticesList = iMemberNoticeService.queryMbNotices(os,noticeInput);
 
-        String appVersion = "";
-        appVersion = request.getHeader("appversion");
+        String appVersion = "2.5.1";
+        if(StringUtils.isNoneBlank(request.getHeader("appversion"))){
+            appVersion = request.getHeader("appversion");
+        }
         String os = request.getHeader("os");
         if(os == null){
             os = "";

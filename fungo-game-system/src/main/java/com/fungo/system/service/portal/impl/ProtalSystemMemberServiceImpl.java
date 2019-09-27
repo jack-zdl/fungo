@@ -251,6 +251,11 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                                 map.put("video", post.getVideo());
                             }
                         }
+                        map.put("parentId", map.get("post_id"));
+                    }else if(map.get("mood_id") != null){
+                        map.put("parentId", map.get("mood_id"));
+                    }else if(map.get("game_id") != null){
+                        map.put("parentId", map.get("game_id"));
                     }
                 }
             } catch (Exception e) {

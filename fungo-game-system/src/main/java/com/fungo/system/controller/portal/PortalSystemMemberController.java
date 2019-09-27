@@ -26,6 +26,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,8 +57,10 @@ public class PortalSystemMemberController {
     })
     public FungoPageResultDto<Map<String, Object>> getLikeNotice(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPage) throws Exception {
 
-        String appVersion = "";
-        appVersion = request.getHeader("appversion");
+        String appVersion = "2.5.1";
+        if(StringUtils.isNoneBlank(request.getHeader("appversion"))){
+            appVersion = request.getHeader("appversion");
+        }
         return memberService.getLikeNotice(memberUserPrefile.getLoginId(), inputPage, appVersion);
     }
 
@@ -70,8 +73,10 @@ public class PortalSystemMemberController {
     })
     public FungoPageResultDto<Map<String, Object>> getCommentNotice(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPage) throws Exception {
 
-        String appVersion = "";
-        appVersion = request.getHeader("appversion");
+        String appVersion = "2.5.1";
+        if(StringUtils.isNoneBlank(request.getHeader("appversion"))){
+            appVersion = request.getHeader("appversion");
+        }
         return memberService.getCommentNotice(memberUserPrefile.getLoginId(), inputPage, appVersion);
     }
 

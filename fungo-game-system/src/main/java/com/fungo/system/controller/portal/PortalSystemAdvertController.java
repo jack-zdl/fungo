@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.game.common.consts.FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_RECOMMEND_DISCOVER;
+
 /**
  * <p>
  *  PC广告
@@ -58,7 +60,7 @@ public class PortalSystemAdvertController {
     public ResultDto<List<Map<String, String>>> discover(@Anonymous MemberUserProfile memberUserPrefile) {
 
         ResultDto<List<Map<String, String>>> re = new ResultDto<List<Map<String, String>>>();
-        List<Map<String, String>> listResult = (List<Map<String, String>>) fungoCacheAdvert.getIndexCache("/api/recommend/discover",
+        List<Map<String, String>> listResult = (List<Map<String, String>>) fungoCacheAdvert.getIndexCache(FUNGO_CORE_API_ADVERT_RECOMMEND_DISCOVER,
                 "");
         if (null != listResult && !listResult.isEmpty()) {
             re.setData(listResult);

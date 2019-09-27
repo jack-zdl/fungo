@@ -874,7 +874,7 @@ public class MemberServiceImpl implements IMemberService {
         if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
             types = new Integer[]{0, 1, 2, 7, 11};
         } else {
-            types = new Integer[]{0, 1, 2, 7};
+            types = new Integer[]{0, 1, 2, 7, 11};
         }
         int like_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).in("type", types));
 
@@ -883,7 +883,7 @@ public class MemberServiceImpl implements IMemberService {
         if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
             types1 = new Integer[]{3, 4, 5, 8, 9, 12};
         } else {
-            types1 = new Integer[]{3, 4, 5, 8};
+            types1 = new Integer[]{3, 4, 5, 8, 9, 12};
         }
 
 //		Integer[] types1= {3,4,5,8};
