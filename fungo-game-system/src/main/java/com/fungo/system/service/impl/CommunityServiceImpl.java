@@ -142,7 +142,7 @@ public class CommunityServiceImpl implements ICommunityService {
         if (limit > 0) {
             limitSize = limit;
         }
-        limitSize = 100;
+//        limitSize = 10;
         //发布文章数10条
         long sendArticles = 10L;
         //发布评论数14条
