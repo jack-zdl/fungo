@@ -19,7 +19,7 @@ public interface PortalSystemIMemberService {
 	//获取评论我的
 	FungoPageResultDto<Map<String,Object>> getCommentNotice(String memberId, InputPageDto inputPage, String appVersion) throws Exception;
 	//获取系统消息
-	FungoPageResultDto<SysNoticeBean> getSystemNotice(String memberId, InputPageDto inputPage);
+	FungoPageResultDto<SysNoticeBean> getSystemNotice(String memberId, InputPageDto inputPage,String os);
 	
 
 

@@ -668,7 +668,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 //            Page<ReplyDto> replyList = replyService.selectPage(new Page<>(1, 3), new EntityWrapper<Reply>().eq("target_id", cmmComment.getId()).eq("state", 0).orderBy("created_at", true));
                 ReplyInputPageDto replyInputPageDto = new ReplyInputPageDto();
                 replyInputPageDto.setPage(1);
-                replyInputPageDto.setLimit(3);
+                replyInputPageDto.setLimit(4);
                 replyInputPageDto.setTarget_id(cmmComment.getId());
                 replyInputPageDto.setState(0);
                 FungoPageResultDto<CmmCmtReplyDto> replyList = iEvaluateProxyService.getReplyDtoBysSelectPageOrderByCreatedAt(replyInputPageDto);

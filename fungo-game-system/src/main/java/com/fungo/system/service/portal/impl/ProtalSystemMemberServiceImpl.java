@@ -28,6 +28,7 @@ import com.game.common.repo.cache.facade.*;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
+import com.game.common.util.StringUtil;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import org.apache.commons.lang.StringUtils;
@@ -80,7 +81,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
         if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
             types = new String[]{"0", "1", "2", "7", "11"};
         } else {
-            types = new String[]{"0", "1", "2", "7"};
+            types = new String[]{"0", "1", "2", "7","11"};
         }
 
         Page<BasNotice> basNoticePage = new Page<>(inputPage.getPage(), inputPage.getLimit());
@@ -302,7 +303,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
     }
 
     @Override
-    public FungoPageResultDto<SysNoticeBean> getSystemNotice(String memberId, InputPageDto inputPage) {
+    public FungoPageResultDto<SysNoticeBean> getSystemNotice(String memberId, InputPageDto inputPage,String os) {
         FungoPageResultDto<SysNoticeBean> re = new FungoPageResultDto<SysNoticeBean>();
         List<SysNoticeBean> list = new ArrayList<SysNoticeBean>();
         re.setData(list);
@@ -322,7 +323,8 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
 
         Page<BasNotice> plist = noticeService.selectPage(noticePage, noticeEntityWrapper);
 
-        List<BasNotice> t = plist.getRecords();
+        List<BasNotice> basNotices = plist.getRecords();
+        List<BasNotice> t = basNotices.stream().filter( s -> ( os.equals(s.getChannel()) || StringUtil.isNull(s.getChannel()) )).collect( Collectors.toList());
         ObjectMapper objectMapper = new ObjectMapper();
         for (BasNotice basNotice : t) {
 

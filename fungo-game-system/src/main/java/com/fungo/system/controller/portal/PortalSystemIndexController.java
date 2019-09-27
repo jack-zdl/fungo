@@ -65,6 +65,7 @@ public class PortalSystemIndexController {
         try {
             List<AdvertOutBean> list = (List<AdvertOutBean>) fungoCacheAdvert.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_BNR, "");
             if (null != list && !list.isEmpty()) {
+                re =  new ResultDto<>( );
                 re.setData(list);
                 return re;
             }

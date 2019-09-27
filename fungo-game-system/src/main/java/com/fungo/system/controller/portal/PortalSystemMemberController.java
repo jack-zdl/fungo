@@ -84,8 +84,12 @@ public class PortalSystemMemberController {
     @ApiOperation(value = "获取系统消息", notes = "获取系统消息")
     @RequestMapping(value = "/api/portal/system/mine/system", method = RequestMethod.POST)
     @ApiImplicitParams({})
-    public FungoPageResultDto<SysNoticeBean> getSystemNotice(MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPage) {
-        return memberService.getSystemNotice(memberUserPrefile.getLoginId(), inputPage);
+    public FungoPageResultDto<SysNoticeBean> getSystemNotice(MemberUserProfile memberUserPrefile,HttpServletRequest request, @RequestBody InputPageDto inputPage) {
+        String os = request.getHeader("os");
+        if(os == null){
+            os = "";
+        }
+        return memberService.getSystemNotice(memberUserPrefile.getLoginId(), inputPage,os);
     }
 
     @ApiOperation(value = "PC2.0我的心情(2.4.3)", notes = "我的心情")

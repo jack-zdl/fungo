@@ -647,7 +647,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 }
 
                 //回复
-                Page<Reply> replyList = replyService.selectPage(new Page<>(1, 3), new EntityWrapper<Reply>().eq("target_id", mooMessage.getId()).ne("state", -1).orderBy("created_at", true));
+                Page<Reply> replyList = replyService.selectPage(new Page<>(1, 4), new EntityWrapper<Reply>().eq("target_id", mooMessage.getId()).ne("state", -1).orderBy("created_at", true));
                 int i = 0;
                 for (Reply reply : replyList.getRecords()) {
                     i = i + 1;
@@ -824,7 +824,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 if (null != author) {
                     ctem.setAuthor(author);
                 }
-                Page<Reply> replyList = replyService.selectPage(new Page<>(1, 3), new EntityWrapper<Reply>().eq("target_id", cmmComment.getId()).ne("state", -1).orderBy("created_at", true));
+                Page<Reply> replyList = replyService.selectPage(new Page<>(1, 4), new EntityWrapper<Reply>().eq("target_id", cmmComment.getId()).ne("state", -1).orderBy("created_at", true));
                 int i = 0;
                 //回复
                 for (Reply reply : replyList.getRecords()) {
