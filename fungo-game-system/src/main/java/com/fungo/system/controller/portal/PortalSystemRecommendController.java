@@ -59,7 +59,6 @@ public class PortalSystemRecommendController {
      *   规则二 玩家已关注列表替换规则：
      *    1.显示已经关注用户数量：最大10个
      *    2.若有新的推荐用户，且未关注，替换到玩家已关注列表的前面。且 该类别数量恒定10人
-     *
      */
     @ApiOperation(value = "推荐用户列表(v2.3)", notes = "")
     @RequestMapping(value = "/api/portal/system/recommend/users", method = RequestMethod.POST)
@@ -67,30 +66,18 @@ public class PortalSystemRecommendController {
     })
     public FungoPageResultDto<FollowUserOutBean> getDynamicsUsersList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto) {
 
-
-        // LOGGER.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/api/recommend/users----");
-
         FungoPageResultDto<FollowUserOutBean> re = new FungoPageResultDto<>();
-
         List<FollowUserOutBean> list = new ArrayList<>();
-
         re.setData(list);
-
         String memberId = "";
         if (memberUserPrefile != null) {
             memberId = memberUserPrefile.getLoginId();
         }
-
         //按规则一 查询出官方推荐的玩家数据
         List<Member> members = iCommunityService.getRecomMembers(inputPageDto.getLimit(), memberId);
-
-
         Page<Member> pageFormat = pageFormat(members, inputPageDto.getPage(), inputPageDto.getLimit());
         members = pageFormat.getRecords();
-
-
         for (Member member : members) {
-
             FollowUserOutBean bean = new FollowUserOutBean();
             bean.setAvatar(member.getAvatar());
             bean.setCreatedAt(DateTools.fmtDate(member.getCreatedAt()));
@@ -123,8 +110,6 @@ public class PortalSystemRecommendController {
             list.add(bean);
         }
         PageTools.pageToResultDto(re, pageFormat);
-
-
         return re;
     }
 

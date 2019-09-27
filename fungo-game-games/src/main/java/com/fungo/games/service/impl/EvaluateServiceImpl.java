@@ -676,7 +676,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 if (replyList.getData() != null){
                     for (CmmCmtReplyDto reply : replyList.getData()) {
                         i = i + 1;
-                        if (i == 3) {
+                        if (i == 4) {
                             ctem.setReply_more(true);
                             break;
                         }

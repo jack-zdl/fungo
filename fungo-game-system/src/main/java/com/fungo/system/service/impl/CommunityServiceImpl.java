@@ -42,9 +42,7 @@ public class CommunityServiceImpl implements ICommunityService {
     //@Cacheable(cacheNames = {FunGoGameConsts.CACHE_EH_NAME}, key = "'" + FunGoGameConsts.CACHE_EH_KEY_PRE_MEMBER + "_recommendMembers'+ #currentMb_id")
     @Override
     public List<Member> getRecomMembers(int limit, String currentMb_id) {
-
         List<Member> recommendedMbsList = new ArrayList<>();
-
         //查询当前登录用户关注的所有用户
         List<Member> watchMebmberList = null;
         List<String> wathMbsSet = new ArrayList<>();
@@ -52,15 +50,13 @@ public class CommunityServiceImpl implements ICommunityService {
             watchMebmberList = this.getWatchMebmber(0, currentMb_id);
             if (null != watchMebmberList && !watchMebmberList.isEmpty()) {
                 for (Member member : watchMebmberList) {
-                    member.setFollowed(true);
+//                    member.setFollowed(true);
                     wathMbsSet.add(member.getId());
                 }
             }
         }
-
         //先获取官方推荐和符合条件推荐用户
         List<Member> ml1 = getRecommeMembers(limit, currentMb_id, wathMbsSet);
-
         int recommeMbs = 0;
         if (null != ml1 && !ml1.isEmpty()) {
             recommeMbs = ml1.size();
@@ -68,12 +64,10 @@ public class CommunityServiceImpl implements ICommunityService {
                 member.setFollowed(false);
             }
         }
-
         if (null != ml1 && !ml1.isEmpty()) {
             recommendedMbsList.addAll(ml1);
             ml1.clear();
         }
-
         //及时刷新出推荐用户
         //若推荐用户不足limit数量，查询该用户已关注用户
         limit -= recommeMbs;
@@ -83,11 +77,9 @@ public class CommunityServiceImpl implements ICommunityService {
                     recommendedMbsList.add(watchMebmberList.get(i));
                 }
             }
-
         }
         LOGGER.info("===========recommendedMbsList:{}", recommendedMbsList);
         return recommendedMbsList;
-
     }
 
     /**
@@ -103,7 +95,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
         //target_type 0 关注用户
         actionEntityWrapper.eq("state", "0").eq("type", 5).eq("member_id", currentMb_id).eq("target_type", 0);
-        actionEntityWrapper.orderBy("created_at", false);
+        actionEntityWrapper.orderBy("updated_at", false);
         if (limit > 0) {
             actionEntityWrapper.last("limit " + limit);
         }
@@ -112,7 +104,7 @@ public class CommunityServiceImpl implements ICommunityService {
         if (null != watchMebmberIdsList && !watchMebmberIdsList.isEmpty()) {
             StringBuffer mbIds = new StringBuffer();
             for (BasAction basAction : watchMebmberIdsList) {
-                if (null != basAction) {
+                if (null != basAction && StringUtils.isNoneBlank(basAction.getTargetId())) {
                     mbIds = mbIds.append(basAction.getTargetId());
                     mbIds = mbIds.append(",");
                 }
