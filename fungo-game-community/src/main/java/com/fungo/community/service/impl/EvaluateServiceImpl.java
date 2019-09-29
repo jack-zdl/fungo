@@ -2424,7 +2424,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + memberId, "", null);
         // fun币消耗详情
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + memberId, "", null);
-        return istrue.get() ? ResultDto.success(): ResultDto.error( "-1","删除评论失败");
+        return istrue.get() ? ResultDto.success("删除成功"): ResultDto.error( "-1","删除评论失败");
     }
 
 
