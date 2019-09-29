@@ -309,7 +309,6 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
             this.addLog(member.getId(), 1, score, taskGroupId, scoreRuleCurrent.getTaskType(),
                     scoreRuleCurrent.getId(), scoreRuleCurrent.getName(), scoreRuleCurrent.getCodeIdt());
         }
-
         // 签到埋点
         BuriedPointSignModel pointSignModel = new BuriedPointSignModel();
         pointSignModel.setDistinctId(member.getId());
@@ -633,10 +632,8 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
             taskedEntityWrapper.eq("mb_id", mb_id);
             taskedEntityWrapper.eq("task_type", MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_CHECKIN_CODE_IDT_V246);
             incentTasked = incentTaskedService.selectOne(taskedEntityWrapper);
-
             //redis cache
             fungoCacheTask.excIndexCache(true, keyPrefix, mb_id, incentTasked, FungoCacheTask.REDIS_EXPIRE_24_DAYS);
-
         }
         return incentTasked;
     }

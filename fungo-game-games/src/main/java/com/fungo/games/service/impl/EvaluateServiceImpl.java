@@ -324,6 +324,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         evaluationBean.setTrait3( commentInput.getTrait3() );
         evaluationBean.setTrait4( commentInput.getTrait4() );
         evaluationBean.setTrait5( commentInput.getTrait5() );
+        evaluationBean.setUpdatedAt(DateTools.dateTimeToString(new Date()));
         re.setData(evaluationBean);
 
         if (StringUtils.isNotBlank(tips)) {

@@ -62,6 +62,8 @@ public interface MemberDao extends  BaseMapper<Member> {
 
      List<String> getMemberList();
 
+    List<Member> getEnableMemberList(@Param("ids") List<String> ids);
+
      List<Member> getUnfollerMemberList(@Param("ids") List<String> ids,@Param("memberId") String memberId);
 
 }

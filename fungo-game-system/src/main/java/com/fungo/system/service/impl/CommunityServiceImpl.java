@@ -183,7 +183,7 @@ public class CommunityServiceImpl implements ICommunityService {
             //条件用户
             //List<HashMap<String, Object>> members = memberDao.getRecommendMembers();
             Set<String> members = new HashSet<>();
-
+            List<String> memberList = new ArrayList<>();
 
             //1.先查询发布文章数大于10条的用户
             // @todo 5.22
@@ -192,6 +192,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
             if (null != sendArticleMembers && !sendArticleMembers.isEmpty()) {
                 members.addAll(sendArticleMembers);
+                memberList.addAll(sendArticleMembers);
                 sendArticleMembers.clear();
             }
 
@@ -202,6 +203,7 @@ public class CommunityServiceImpl implements ICommunityService {
 //            LOGGER.info("查询发布游戏评论>大于14条的，前10名用户:{}", sendCommentMembers.toString());
             if (null != sendCommentMembers && !sendCommentMembers.isEmpty()) {
                 members.addAll(sendCommentMembers);
+                sendCommentMembers.stream().filter(s ->!memberList.contains(s)).forEach( x ->memberList.add(x) );
                 sendCommentMembers.clear();
             }
 
@@ -216,7 +218,7 @@ public class CommunityServiceImpl implements ICommunityService {
             List<String> memberIds = new ArrayList<>();
 
             //查询未包含在官方推荐中且符合推荐条件的用户id
-            for (String mb_id : members) {
+            for (String mb_id : memberList) {
                 int remMebs = ormCount + memberIds.size();
                 if (remMebs == limitSize) {
                     break;
@@ -228,9 +230,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
             //查询出符合推荐条件用户的详情数据
             if (memberIds.size() > 0 ) {
-                List<Member> recommendList = menberService.selectList(new EntityWrapper<Member>().in("id", memberIds).eq("state", 0));
-                //.gt( "sort",0 )
-                //                        .orderBy( "sort",false ).last( "10")
+                List<Member> recommendList = memberDao.getEnableMemberList(memberIds); //  menberService.selectList(new EntityWrapper<Member>().in("id", memberIds).eq("state", 0));
                 ml1.addAll(recommendList);
             }
 
