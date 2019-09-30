@@ -151,6 +151,22 @@
         SELECT  id FROM  t_member WHERE  state = '0' where  id  = '287c0f55aaf7436b89c0a73964efff3c'
     </select>
 
+    <select id="getEnableMemberList" resultType="com.fungo.system.entity.Member">
+        SELECT  * FROM  t_member where
+        state = 0 and
+        id in
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        order by
+        field(
+        id,
+        <foreach collection="ids" index="index" item="item"   separator=","    >
+            #{item}
+        </foreach>
+        )
+    </select>
+
     <select id="getUnfollerMemberList" resultType="com.fungo.system.entity.Member" >
         SELECT  
         <include refid="Base_Column_List"></include>
@@ -163,6 +179,13 @@
         (
         SELECT target_id FROM t_bas_action WHERE type = 5 and member_id = #{memberId} and state != -1   and target_id  in
         <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        )
+        order by
+        field(
+        id,
+        <foreach item="item" index="index" collection="ids"  separator=","    >
             #{item}
         </foreach>
         )
