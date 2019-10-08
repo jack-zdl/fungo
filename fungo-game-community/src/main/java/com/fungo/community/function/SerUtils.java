@@ -86,6 +86,100 @@ public class SerUtils {
             " </head>\r\n" +
             " <body>";
 
+
+    private static final String pcHead = "<!DOCTYPE html>\r\n" +
+            " <html lang=\"en\">\r\n" +
+            " <head><meta charset=\"UTF-8\">\r\n" +
+            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0,  user-scalable=0\"/>" +
+            " <meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">\r\n" +
+            " <style>\r\n" +
+            "img {\r\n" +
+            "  max-width: 100%;\r\n" +
+            " margin: 1em auto;\n"+
+            " display: block;\n"+
+            "  cursor: zoom-in;\n"+
+            "}\r\n" +
+            "body {\r\n" +
+            "  padding: 12px 4%;\r\n" +
+            "  margin: 0;\r\n" +
+            "}\r\n" +
+            "p {\r\n" +
+            "  line-height: 27px;\r\n" +
+            "  font-size: 17px;\r\n" +
+            "  color: #242529;\r\n" +
+            "  margin: 12px 0;\r\n" +
+            "  word-wrap: break-word;\r\n" +
+            "}\r\n" +
+            ".game {\r\n" +
+            "	max-width: 100%;\r\n" +
+            "  display: flex;\r\n" +
+            "	box-sizing: border-box;\r\n" +
+//            "	justify-content: center;\r\n" +
+            "	  align-items: center;\r\n" +
+            "  margin: 1em auto;\r\n" +
+//            "  box-shadow: 0px 0px 7px 0px rgba(172, 172, 172, 0.5);\r\n" +
+            "  border-radius: 25px;\r\n" +
+            "  height: 50px;\r\n" +
+            "  padding: 0px 15px 0px 5px;\r\n" +
+            "   background-color: #fff ;\r\n" +
+            "  color: #12a192 ;\r\n" +
+            "  cursor: pointer;\r\n" +
+            "  box-shadow: 0px 0px 4px #B2B2B2 ;\r\n" +
+            "}\r\n" +
+            ".game img {\r\n" +
+            "  width: 43px;\r\n" +
+            "  height: 43px;\r\n" +
+            "  border-radius: 50%;\r\n" +
+            "  margin: 0;\r\n" +
+            "	cursor: auto;\r\n" +
+            "}\r\n" +
+            ".game .score {\r\n" +
+//            "  line-height: 60px;\r\n" +
+//            "  color: #242529;\r\n" +
+            "}\r\n" +
+            ".game .score .num {\r\n" +
+            "  font-size: 18px;\r\n" +
+            "  font-weight: bold;\r\n" +
+            "  color: #333333 ;\r\n" +
+            "}\r\n" +
+            ".game .score .unit {\r\n" +
+            "  color :#B2B2B2;\r\n" +
+            "  font-size: 12px;\r\n" +
+            "  margin-left: 4px;\r\n" +
+            "}\r\n" +
+            ".game .info {\r\n" +
+            "  padding: 0px 10px;\r\n" +
+            "  flex-grow: 1;\r\n" +
+            "  overflow: hidden;\r\n" +
+            "}\r\n" +
+            ".game .info .name {\r\n" +
+            "  font-size: 14px;\r\n" +
+//            "  color: #242529;\r\n" +
+
+            "  line-height: 14px;\r\n" +
+            "  white-space: nowrap;\r\n" +
+            "  text-overflow: ellipsis;\r\n" +
+            "  overflow: hidden;\r\n" +
+            "  font-weight : bold;\r\n" +
+            "}\r\n" +
+            ".game .info .category {\r\n" +
+            "  display: inline-block;\r\n" +
+            "   background-color : #fff ;\r\n" +
+            "   font-size :  10px ;\r\n" +
+            "  padding: 0px 8px ;\r\n" +
+            "    border-radius: 8px ;\r\n" +
+            "    color : #12a192 ;\r\n" +
+            "    border : 1px solid #12a192 ;\r\n" +
+//            "  font-size: 12px;\r\n" +
+//            "  margin-top: 8px;\r\n" +
+            "  margin-left: 10px;\r\n" +
+            "}\r\n" +
+            "" +
+            " </style>\r\n" +
+            " </head>\r\n" +
+            " <body>";
+
+
     private static final String waterMakerSuffix =
             "?x-oss-process=image/watermark,image_aW1ncy93YXRlcm1hcmsxLnBuZz94LW9zcy1wcm9jZXNzPWltYWdlL3Jlc2l6ZSxQXzE1Cg==,t_90,g_se,x_10,y_10";
 
@@ -157,14 +251,12 @@ public class SerUtils {
 
 
 
-
-
     public static String returnOriginHrml(String origin) {
 
-        return head + origin + "</body></html>";
-
+        return pcHead + origin + "</body></html>";
 
     }
+
 
     //游戏标签解析
     public static String getGameLabelFormPost(String html, String gameList) throws Exception {

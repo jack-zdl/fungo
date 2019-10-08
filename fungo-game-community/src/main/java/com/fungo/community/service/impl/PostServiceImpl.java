@@ -1030,6 +1030,7 @@ public class PostServiceImpl implements IPostService {
         //社区置顶文章(2.4.3)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, post.getCommunityId(), null);
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
+
         return ResultDto.success();
     }
 
@@ -1134,7 +1135,9 @@ public class PostServiceImpl implements IPostService {
             if (origin != null && !"".equals(origin)) {
                 out.setHtml(SerUtils.returnOriginHrml(SerUtils.getOriginImageContent(CommonUtils.filterWord(origin), out.getImages(), gameList)));
             }
-            out.setHtml_origin(SerUtils.returnOriginHrml(SerUtils.getOriginImageContent(CommonUtils.filterWord(origin), out.getImages(), gameList)));
+            /** pc已经不使用htmlOrigin修改为app相同逻辑**/
+            out.setHtml_origin(origin);
+//            out.setHtml_origin(SerUtils.returnOriginHrml(SerUtils.getOriginImageContent(CommonUtils.filterWord(origin), out.getImages(), gameList)));
             out.setContent(origin);
             out.setTxt(CommonUtils.filterWord(cmmPost.getContent()));
         }

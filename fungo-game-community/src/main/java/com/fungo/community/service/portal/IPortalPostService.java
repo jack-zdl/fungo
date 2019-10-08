@@ -24,7 +24,7 @@ public interface IPortalPostService {
 	 * @throws IllegalAccessException
 	 * @throws Exception
 	 */
-	public FungoPageResultDto<PostOutBean> getPostList(String userId, PostInputPageDto postInputPageDto) throws Exception;
+	FungoPageResultDto<PostOutBean> getPostList(String userId, PostInputPageDto postInputPageDto) throws Exception;
 
 
 

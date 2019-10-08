@@ -9,10 +9,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.community.config.NacosFungoCircleConfig;
-import com.fungo.community.dao.mapper.CmmCircleMapper;
-import com.fungo.community.dao.mapper.CmmPostCircleMapper;
-import com.fungo.community.dao.mapper.CmmPostDao;
-import com.fungo.community.dao.mapper.CmmPostGameMapper;
+import com.fungo.community.dao.mapper.*;
 import com.fungo.community.dao.service.BasVideoJobDaoService;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
@@ -72,59 +69,43 @@ public class PortalPostServiceImpl implements IPortalPostService {
 
     @Autowired
     private CmmPostDaoService postService;
-
     @Autowired
     private CmmPostDao cmmPostDao;
-
     @Autowired
     private CmmCommunityDaoService communityService;
-
     @Autowired
     private ICounterService iCountService;
-
     @Autowired
     private BasVideoJobDaoService videoJobService;
-
     @Autowired
     private IVideoService vdoService;
-
-
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
-
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
-
     @Autowired
     private NacosFungoCircleConfig nacosFungoCircleConfig;
-
-
     //依赖系统和用户微服务
     @Autowired
     private SystemFacedeService systemFacedeService;
-
     //依赖游戏微服务
     @Autowired
     private GameFacedeService gameFacedeService;
-
     @Autowired
     private TSMQFacedeService tSMQFacedeService;
-
     @Autowired
     private CmmPostCircleMapper cmmPostCircleMapper;
-
     @Autowired
     private CmmPostGameMapper cmmPostGameMapper;
-
     @Autowired
     private CmmCircleMapper cmmCircleMapper;
-
     //依赖系统和用户微服务
     @Autowired(required = false)
     private SystemFeignClient systemFeignClient;
-
     @Autowired
     private ESDAOServiceImpl esdaoService;
+    @Autowired
+    private CmmCommunityDao communityDao;
 
 
 
@@ -323,5 +304,4 @@ public class PortalPostServiceImpl implements IPortalPostService {
     }
 
 
-    //-----------
 }
