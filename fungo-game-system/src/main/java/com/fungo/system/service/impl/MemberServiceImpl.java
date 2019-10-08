@@ -1305,7 +1305,7 @@ public class MemberServiceImpl implements IMemberService {
             //
             bean.setVideoCoverImage(post.getVideoCoverImage());
             bean.setDeltype( post.getState() == -1 ? 1 : 0 ); //1 true  已删除  0 false 未删除
-            bean.setCreatedAt( post.getCreatedAt());
+            bean.setCreatedAt( DateTools.fmtDate(post.getCreatedAt()));
             blist.add(bean);
         }
         blist = blist.stream().sorted( Comparator.comparing(MyPublishBean::getCreatedAt).reversed()).collect( Collectors.toList());
@@ -1396,7 +1396,7 @@ public class MemberServiceImpl implements IMemberService {
             bean.setLikeNum(mood.getLikeNum());
             bean.setVideo(mood.getVideo());
             bean.setUpdatedAt(DateTools.fmtDate(mood.getUpdatedAt()));
-
+            bean.setCreatedAt( DateTools.fmtDate(mood.getCreatedAt()));
             bean.setVideoCoverImage(mood.getVideoCoverImage());
 
             // @TODO  游戏的部分

@@ -47,8 +47,9 @@ public class MyPublishBean implements Serializable{
 	/**
 	 * 创建时间
 	 */
-	private Date createdAt;
-	
+//	private Date createdAt;
+	private String createdAt;
+
 	
 	
 	public String getTitle() {
@@ -146,11 +147,11 @@ public class MyPublishBean implements Serializable{
 		this.deltype = deltype;
 	}
 
-	public Date getCreatedAt() {
+	public String getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(Date createdAt) {
+	public void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;
 	}
 }
