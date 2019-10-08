@@ -36,7 +36,7 @@ public interface ICommunityProxyService {
      * @param ccnt
      * @return
      */
-    List<String> getRecommendMembersFromCmmPost(@Param("ccnt") long ccnt, @Param("limitSize") long limitSize, @Param("wathMbsSet") List<String> wathMbsSet);
+    List<String> getRecommendMembersFromCmmPost(@Param("ccnt") long ccnt, @Param("limitSize") long limitSize,  List<String> wathMbsSet);
 
     List<Map> getHonorQualificationOfEssencePost();
 

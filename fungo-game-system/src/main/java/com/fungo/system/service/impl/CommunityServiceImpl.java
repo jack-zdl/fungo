@@ -236,11 +236,9 @@ public class CommunityServiceImpl implements ICommunityService {
 
 //            if(ml1.size() < 10){
                 List<String> ids = ml1.stream().map( Member::getId ).collect( Collectors.toList());
-                ml1 = memberDao.getUnfollerMemberList(ids,currentMb_id);
-//                List<Member> sortMemberList = menberService.selectList(new EntityWrapper<Member>().notIn("id", ids).eq("state", 0).gt( "sort",0 )
-//                        .orderBy( "sort",false ).last( "10"));
-//                ml1.addAll(sortMemberList);
-//            }
+                if(StringUtils.isNotBlank(currentMb_id)){
+                    ml1 = memberDao.getUnfollerMemberList(ids,currentMb_id);
+                }
             //若此时还没有足够人数则
             if(ml1.size() < 10){
                 return ml1;

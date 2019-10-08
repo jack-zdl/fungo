@@ -138,7 +138,7 @@ public interface CommunityFeignClient {
      */
     @PostMapping("/ms/service/cmm/user/post/ids")
     ResultDto<List<String>> getRecommendMembersFromCmmPost(@RequestParam("ccnt") long ccnt, @RequestParam("limitSize") long limitSize,
-                                                                  @RequestParam("wathMbsSet") List<String> wathMbsSet);
+                                                           @RequestBody  List<String> wathMbsSet);
 
     /**
      * 分页查询 关注社区  数据

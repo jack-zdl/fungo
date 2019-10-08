@@ -122,7 +122,7 @@ public interface GamesFeignClient {
 
     @ApiOperation(value = "查询游戏评论表中发表评论大于X条，前Y名的用户", notes = "")
     @RequestMapping(value = "/ms/service/game/api/game/getRecommendMembersFromEvaluation", method = RequestMethod.POST)
-    ResultDto<List<String>> getRecommendMembersFromEvaluation(@RequestParam("x") Integer x, @RequestParam("y") Integer y, @RequestParam("wathMbsSet") List<String> wathMbsSet);
+    ResultDto<List<String>> getRecommendMembersFromEvaluation(@RequestParam("x") Integer x, @RequestParam("y") Integer y, @RequestBody List<String> wathMbsSet);
 
     @GetMapping("/ms/service/game/api/game/selectedGames")
     CardIndexBean selectedGames();

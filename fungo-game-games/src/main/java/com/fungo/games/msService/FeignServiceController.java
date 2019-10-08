@@ -988,7 +988,7 @@ public class FeignServiceController {
      */
     @ApiOperation(value = "查询游戏评论表中发表评论大于X条，前Y名的用户", notes = "")
     @RequestMapping(value = "/api/game/getRecommendMembersFromEvaluation", method = RequestMethod.POST)
-    ResultDto<List<String>> getRecommendMembersFromEvaluation(@RequestParam("x") Integer x, @RequestParam("y") Integer y, @RequestParam("wathMbsSet") List<String> wathMbsSet) {
+    ResultDto<List<String>> getRecommendMembersFromEvaluation(@RequestParam("x") Integer x, @RequestParam("y") Integer y, @RequestBody  List<String> wathMbsSet) {
         List<String> sendCommentMembers = gameEvaluationDao.getRecommendMembersFromEvaluation(x,
                 y, wathMbsSet);
         return ResultDto.success(sendCommentMembers);

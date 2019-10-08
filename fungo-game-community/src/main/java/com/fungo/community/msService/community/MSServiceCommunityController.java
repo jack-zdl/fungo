@@ -103,7 +103,7 @@ public class MSServiceCommunityController {
      */
     @PostMapping("/ms/service/cmm/user/post/ids")
     public ResultDto<List<String>> getRecommendMembersFromCmmPost(@RequestParam("ccnt") long ccnt, @RequestParam("limitSize") long limitSize,
-                                                                  @RequestParam("wathMbsSet") List<String> wathMbsSet) {
+                                                                  @RequestBody List<String> wathMbsSet) {
         ResultDto<List<String>> resultDto = new ResultDto<List<String>>();
         List<String> membersIdsList = imsServiceCommunityService.getRecommendMembersFromCmmPost(ccnt, limitSize, wathMbsSet);
         resultDto.setData(membersIdsList);
