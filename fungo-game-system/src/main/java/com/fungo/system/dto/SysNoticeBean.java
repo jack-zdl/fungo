@@ -31,7 +31,9 @@ public class SysNoticeBean {
     
     @ApiModelProperty(value="视频地址",example="")
     private String video;
-    
+	@ApiModelProperty(value="父级id",example="")
+    private String parentId;
+
 	public String getMsgId() {
 		return msgId;
 	}
@@ -104,6 +106,12 @@ public class SysNoticeBean {
 	public void setVideo(String video) {
 		this.video = video;
 	}
-	
-	
+
+	public String getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
+	}
 }

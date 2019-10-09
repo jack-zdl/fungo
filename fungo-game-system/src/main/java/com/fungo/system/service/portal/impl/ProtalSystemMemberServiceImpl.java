@@ -2,28 +2,22 @@ package com.fungo.system.service.portal.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.dao.BasNoticeDao;
-import com.fungo.system.dao.MemberDao;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
 import com.fungo.system.facede.IMemeberProxyService;
+import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.service.*;
 import com.fungo.system.service.portal.PortalSystemIMemberService;
 import com.game.common.api.InputPageDto;
-import com.game.common.bean.CollectionBean;
 import com.game.common.consts.FungoCoreApiConstant;
-import com.game.common.consts.Setting;
-import com.game.common.dto.StreamInfo;
 import com.game.common.dto.*;
 import com.game.common.dto.community.*;
 import com.game.common.dto.game.GameEvaluationDto;
-import com.game.common.dto.game.GameSurveyRelDto;
 import com.game.common.repo.cache.facade.*;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
@@ -68,6 +62,8 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
     private FungoCacheNotice fungoCacheNotice;
     @Autowired
     private DistributedLockByCurator distributedLockByCurator;
+    @Autowired
+    private GamesFeignClient gamesFeignClient;
 
 
     //消息
@@ -350,6 +346,14 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                         CmmPostDto post = iMemeberProxyService.selectCmmPost(map.get("targetId")); //postService.selectById(map.get("targetId"));
                         if (!CommonUtil.isNull(post.getVideo())) {
                             bean.setVideo(post.getVideo());
+                        }
+                    }else if(6 == targetType ){
+                        GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
+                        gameEvaluationDto.setId(map.get("targetId"));
+                        FungoPageResultDto<GameEvaluationDto> resultDto = gamesFeignClient.getGameEvaluationPage(gameEvaluationDto);
+                        if(resultDto != null && resultDto.getData()!= null && resultDto.getData().size() > 0){
+                            gameEvaluationDto = resultDto.getData().get(0);
+                            bean.setParentId(gameEvaluationDto.getGameId());
                         }
                     }
                     bean.setHref(map.get("href"));
