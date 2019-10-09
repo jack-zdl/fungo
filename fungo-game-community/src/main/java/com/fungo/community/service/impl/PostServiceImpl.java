@@ -550,6 +550,26 @@ public class PostServiceImpl implements IPostService {
         return resultDto;
     }
 
+    @Override
+    public ResultDto<String> checkVedioPost(PostInput postInput, String userId) throws Exception {
+        ResultDto<String> resultDto = null;
+        try {
+            //视频处理
+            if (!CommonUtil.isNull(postInput.getVideoId())) {
+                BasVideoJob videoJob = videoJobService.selectOne(new EntityWrapper<BasVideoJob>().eq("video_id", postInput.getVideoId()));
+                if (videoJob != null) {
+                    resultDto = ResultDto.ResultDtoFactory.buildSuccess( "阿里云视频已回调成功" );
+                } else {
+                    resultDto = ResultDto.ResultDtoFactory.buildError( "阿里云视频未回调" );
+                }
+            }
+        }catch (Exception e){
+            logger.error( "阿里云检查视频是否回调异常",e );
+            resultDto = ResultDto.ResultDtoFactory.buildError( "阿里云检查视频是否回调异常" );
+        }
+        return resultDto;
+    }
+
 
     //社区文章用户执行任务
     private void doExcTaskSendMQ(TaskDto taskDto) {

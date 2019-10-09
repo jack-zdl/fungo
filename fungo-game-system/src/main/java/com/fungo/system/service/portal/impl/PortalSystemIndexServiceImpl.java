@@ -377,8 +377,9 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
     //精选文章
     public CardIndexBean selectPosts(String type,int limit) {
         //2 6(视频) 7
+        // 2.5 需求  若未标记排序数，则同一位置的内容按照上线时间从当前到过去排序。
         ArrayList<CardDataBean> cl = new ArrayList<CardDataBean>();
-        List<Banner> videoBanners = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", type).eq("target_type", 1).eq("state", "0").orderBy("sort", false).last("limit "+limit));
+            List<Banner> videoBanners = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", type).eq("target_type", 1).eq("state", "0").orderBy("sort desc , release_time", false).last("limit "+limit));
         CardIndexBean cb = new CardIndexBean();
         if (videoBanners == null) {
             return null;

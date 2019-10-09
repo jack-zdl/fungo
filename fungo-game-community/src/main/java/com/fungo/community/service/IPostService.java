@@ -21,7 +21,15 @@ public interface IPostService {
 	 * @throws Exception
 	 */
 	public ResultDto<ObjectId> addPost(PostInput postInput, String userId) throws Exception;
-	
+
+	/**
+	 * 发帖前检查视频
+	 * 请求地址：http://{{host}}/api/content/post
+	 * @param userId
+	 * @throws Exception
+	 */
+	public ResultDto<String> checkVedioPost(PostInput postInput, String userId) throws Exception;
+
 	/**
 	 * 删帖
 	 * @param postId

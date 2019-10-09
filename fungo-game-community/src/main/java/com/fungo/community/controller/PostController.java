@@ -137,6 +137,26 @@ public class PostController {
     }
 
 
+    @ApiOperation(value = "发帖之前检查视频", notes = "")
+    @PostMapping(value = "/api/content/post/check")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "html", value = "html内容", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "community_id", value = "社区id", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "title", value = "标题", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "content", value = "帖子内容", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "images", value = "图片", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "origin", value = "文本", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "videoId", value = "视频id,  可选", paramType = "form", dataType = "string")
+    })
+    public ResultDto<String> checkVedioPost(MemberUserProfile memberUserPrefile, @RequestBody PostInput postInput) throws Exception {
+        if (StringUtil.isNull(postInput.getHtml()) || StringUtil.isNull(postInput.getTitle())) {
+            return ResultDto.error("-1", "文章内容或者标题不可为空");
+        }
+        String userId = memberUserPrefile.getLoginId();
+        return bsPostService.checkVedioPost(postInput, userId);
+    }
+
+
 
 
     @ApiOperation(value = "删帖", notes = "")
