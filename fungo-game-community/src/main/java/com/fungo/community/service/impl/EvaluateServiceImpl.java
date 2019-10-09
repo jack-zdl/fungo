@@ -1768,7 +1768,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
 
         if (memberDto != null) {
-            reply.setReplyName(memberDto.getUserName());
+            reply.setReplyName(FilterEmojiUtil.encodeEmoji(memberDto.getUserName()));
         }
 
 
