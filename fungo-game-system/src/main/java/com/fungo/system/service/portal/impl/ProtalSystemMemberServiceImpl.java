@@ -9,6 +9,7 @@ import com.fungo.system.dao.BasNoticeDao;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
 import com.fungo.system.facede.IMemeberProxyService;
+import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.service.*;
@@ -64,7 +65,8 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
     private DistributedLockByCurator distributedLockByCurator;
     @Autowired
     private GamesFeignClient gamesFeignClient;
-
+    @Autowired(required = false)
+    private CommunityFeignClient communityFeignClient;
 
     //消息
     @Override
@@ -238,6 +240,19 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                     map.put("msg_template", "评论了我的心情");
                 } else if (basNotice.getType() == 9) {
                     map.put("msg_template", "回复了我的心情评论");
+                    String moodId = (String) map.get("mood_id");
+                    if(moodId != null){
+                        MooMoodDto param = new MooMoodDto();
+                        param.setId(moodId);
+                        param.setState(null);
+                        FungoPageResultDto<MooMoodDto> resultDto = communityFeignClient.queryCmmMoodList(param);
+                        MooMoodDto mooMoodDto = (resultDto.getData() != null && resultDto.getData().size()>0) ? resultDto.getData().get(0) : null;
+                        if(mooMoodDto != null){
+                            Member member = memberService.selectById(mooMoodDto.getMemberId());
+                            map.put( "mooderName",member.getUserName());
+                        }
+
+                    }
                 } else if (basNotice.getType() == 12) {
                     map.put("msg_template", "回复了我的回复");
 
@@ -249,10 +264,40 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                             }
                         }
                         map.put("parentId", map.get("post_id"));
+                        CmmCommentDto  cmmCommentDto = new CmmCommentDto();
+                        cmmCommentDto.setId((String) map.get("comment_id"));
+                        cmmCommentDto.setState(null);
+                        FungoPageResultDto<CmmCommentDto>  cmmCommentDtoFungoPageResultDto = communityFeignClient.queryFirstLevelCmtList(cmmCommentDto);
+                        CmmCommentDto commentDto = (  cmmCommentDtoFungoPageResultDto.getData() != null  && cmmCommentDtoFungoPageResultDto.getData().size() > 0 ) ? cmmCommentDtoFungoPageResultDto.getData().get(0) : null;  //iMemeberProxyService.selectCmmPost((String) map.get("post_id"));   //postService.selectOne(Condition.create().setSqlSelect("id,video").eq("id", (String) map.get("post_id")));
+                        if (commentDto != null) {
+                            Member member = memberService.selectById(commentDto.getMemberId());
+                            map.put( "parentName",member.getUserName());
+                        }
+
                     }else if(map.get("mood_id") != null){
                         map.put("parentId", map.get("mood_id"));
+                        String  mooMessageId = (String) map.get("message_id");
+                        MooMessageDto mooMessageDto = new MooMessageDto();
+                        mooMessageDto.setId(mooMessageId);
+                        mooMessageDto.setState(null);
+                        FungoPageResultDto<MooMessageDto> resultDto = communityFeignClient.queryCmmMoodCommentList(mooMessageDto);
+                        MooMessageDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                        if (message != null) {
+                            Member member = memberService.selectById(message.getMemberId());
+                            map.put( "parentName",member.getUserName());
+                        }
+
                     }else if(map.get("game_id") != null){
                         map.put("parentId", map.get("game_id"));
+                        String evaluationId = (String) map.get("evaluation_id");
+                        GameEvaluationDto param = new GameEvaluationDto();
+                        param.setId(evaluationId);
+                        FungoPageResultDto<GameEvaluationDto>  resultDto = gamesFeignClient.getGameEvaluationPage(param);
+                        GameEvaluationDto gameEvaluationDto = (resultDto.getData() != null && resultDto.getData().size() > 0 ) ? resultDto.getData().get(0) : null;
+                        if(gameEvaluationDto != null){
+                            Member member = memberService.selectById(gameEvaluationDto.getMemberId());
+                            map.put( "parentName",member.getUserName());
+                        }
                     }
                 }
             } catch (Exception e) {

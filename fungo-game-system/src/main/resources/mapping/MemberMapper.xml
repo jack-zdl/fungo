@@ -148,7 +148,7 @@
     </select>
 
     <select id="getMemberList" resultType="java.lang.String">
-        SELECT  id FROM  t_member WHERE  state = '0' 
+        SELECT  id FROM  t_member WHERE  state = '0'
     </select>
 
     <select id="getEnableMemberList" resultType="com.fungo.system.entity.Member">

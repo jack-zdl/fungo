@@ -77,7 +77,7 @@ public class MemberSNSServiceImpl implements IMemberSNSService {
                 if (isBinded) {
                     return ResultDto.error("-1", "已经绑定第三方信息,如需重新绑定请先解绑");
                 } else {
-                    resultDto = new ResultDto<MemberSNSBindOutput>();
+                    resultDto = new ResultDto<>();
                     //2.若当前fungo账号没有绑定当前SNS平台账号，则执行绑定
                     //  a.先验证 当前SNS平台账号，是否已经在fungo平台被创建账号,且未绑定手机号
                     boolean isReged = isRegistered(mb_id, bindInput);
