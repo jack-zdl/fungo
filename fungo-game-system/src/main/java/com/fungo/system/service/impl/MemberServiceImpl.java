@@ -1412,12 +1412,11 @@ public class MemberServiceImpl implements IMemberService {
 
             blist.add(bean);
         }
+        blist = blist.stream().sorted( Comparator.comparing(MyPublishBean::getCreatedAt).reversed()).collect( Collectors.toList());
         re.setData(blist);
         PageTools.newPageToResultDto(re, resultDto.getCount(),resultDto.getPages(),input.getPage());
-
         //redis cache
         fungoCacheArticle.excIndexCache(true, keyPrefix, keySuffix, re);
-
         return re;
     }
 
@@ -1559,7 +1558,7 @@ public class MemberServiceImpl implements IMemberService {
             bean.setTargetId(commentBean.getTargetId());
             bean.setTargetType(commentBean.getTargetType());
             bean.setUpdatedAt(DateTools.fmtDate(commentBean.getUpdatedAt()));
-
+            bean.setCreatedAt( commentBean.getCreatedAt());
             //回复二级回复
             if (!CommonUtil.isNull(commentBean.getReplyToId()) && !CommonUtil.isNull(commentBean.getReplyContentId())) {
                 bean.setReplyToId(commentBean.getReplyToId());

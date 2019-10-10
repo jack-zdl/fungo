@@ -23,6 +23,8 @@ public class MyCommentBean {
 	private String targetId;
 	@ApiModelProperty(value="评论id",example="")
 	private String commentId;
+	@ApiModelProperty(value="創建时间",example="")
+	private String createdAt;
 	@ApiModelProperty(value="最后修改时间",example="")
 	private String updatedAt;
 	@ApiModelProperty(value="被回复用户id",example="")
@@ -76,6 +78,12 @@ public class MyCommentBean {
 	}
 	public void setCommentId(String commentId) {
 		this.commentId = commentId;
+	}
+	public String getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(String createdAt) {
+		this.createdAt = createdAt;
 	}
 	public String getUpdatedAt() {
 		return updatedAt;
