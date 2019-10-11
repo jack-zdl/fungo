@@ -620,7 +620,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 commentWrapper.orderBy("created_at", false);
             } else if (pageDto.getSort() == 3) {
                 commentWrapper.groupBy("id").orderBy("sum(like_num+reply_num)", true);//按照点赞数和回复数排序
-            } else if (pageDto.getSort() == 4) { // 默认的排序方式  热门排序 按照评论和点赞数倒序排序
+            } else if (pageDto.getSort() == 4) { // 默认的排序方式  热门排序 按照评论和点赞数倒序排序 不是按照热门类型排序
 //                commentWrapper.groupBy("id").orderBy("sum(like_num+reply_num)", false);
                 commentWrapper.groupBy("id").orderBy(" sum(like_num+reply_num) desc , created_at ", false); //.ne( "type","2" )
             }else if(pageDto.getSort() == 5){
@@ -629,7 +629,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
             Page<GameEvaluation> page = this.gameEvaluationService.selectPage(new Page<>(pageDto.getPage(), pageDto.getLimit()), commentWrapper);
             List<GameEvaluation> list = page.getRecords();
-            list = list.stream().filter( s ->(s.getType() != 2)).collect( Collectors.toList() );
+//            list = list.stream().filter( s ->(s.getType() != 2)).collect( Collectors.toList() );
 
             for (GameEvaluation cmmComment : list) {
                 EvaluationOutPageDto ctem = new EvaluationOutPageDto();
