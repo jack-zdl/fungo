@@ -36,6 +36,7 @@ import com.game.common.dto.community.*;
 import com.game.common.dto.community.StreamInfo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
+import com.game.common.enums.CommonEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.enums.PostTypeEnum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
@@ -560,7 +561,7 @@ public class PostServiceImpl implements IPostService {
                 if (videoJob != null) {
                     resultDto = ResultDto.ResultDtoFactory.buildSuccess( "阿里云视频已回调成功" );
                 } else {
-                    resultDto = ResultDto.ResultDtoFactory.buildError( "阿里云视频未回调" );
+                    resultDto = ResultDto.ResultDtoFactory.buildSuccess( CommonEnum.WARMING.code(),"阿里云视频未回调" );
                 }
             }
         }catch (Exception e){
