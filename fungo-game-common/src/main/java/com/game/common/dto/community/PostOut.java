@@ -19,6 +19,7 @@ public class PostOut {
 	private String updatedAt;
 	private String content;
 	private String html_origin;
+	private String pc_html_origin;
 	private String origin;
 	private String link_url;
 	private int comment_num;
@@ -281,5 +282,13 @@ public class PostOut {
 
 	public void setVideoList(List<StreamInfo> videoList) {
 		this.videoList = videoList;
+	}
+
+	public String getPc_html_origin() {
+		return pc_html_origin;
+	}
+
+	public void setPc_html_origin(String pc_html_origin) {
+		this.pc_html_origin = pc_html_origin;
 	}
 }

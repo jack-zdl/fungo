@@ -1158,6 +1158,8 @@ public class PostServiceImpl implements IPostService {
             /** pc已经不使用htmlOrigin修改为app相同逻辑**/
             out.setHtml_origin(origin);
 //            out.setHtml_origin(SerUtils.returnOriginHrml(SerUtils.getOriginImageContent(CommonUtils.filterWord(origin), out.getImages(), gameList)));
+            /**  提供给pc端展示使用 **/
+            out.setPc_html_origin(SerUtils.returnOriginHrml(SerUtils.getOriginImageContent(CommonUtils.filterWord(origin), out.getImages(), gameList)));
             out.setContent(origin);
             out.setTxt(CommonUtils.filterWord(cmmPost.getContent()));
         }
