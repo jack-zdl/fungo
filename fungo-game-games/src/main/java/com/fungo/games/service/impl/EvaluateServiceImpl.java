@@ -620,9 +620,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 commentWrapper.orderBy("created_at", false);
             } else if (pageDto.getSort() == 3) {
                 commentWrapper.groupBy("id").orderBy("sum(like_num+reply_num)", true);//按照点赞数和回复数排序
-            } else if (pageDto.getSort() == 4) {
+            } else if (pageDto.getSort() == 4) { // 默认的排序方式  热门排序 按照评论和点赞数倒序排序
 //                commentWrapper.groupBy("id").orderBy("sum(like_num+reply_num)", false);
-                commentWrapper.ne( "type","2" ).groupBy("id").orderBy("type DESC , sum(like_num+reply_num) desc , created_at", false);
+                commentWrapper.groupBy("id").orderBy(" sum(like_num+reply_num) desc , created_at ", false); //.ne( "type","2" )
             }else if(pageDto.getSort() == 5){
                 commentWrapper.groupBy("id").orderBy("type DESC , sum(like_num+reply_num) desc ,created_at", false);
             }

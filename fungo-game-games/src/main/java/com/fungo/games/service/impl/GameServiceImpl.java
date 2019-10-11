@@ -452,7 +452,7 @@ public class GameServiceImpl implements IGameService {
             //ends
 
             // 查询评论数量
-            int evaCount = gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", gameId).and("state != -1").ne( "type","2" ));
+            int evaCount = gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", gameId).and("state != -1")); //.ne( "type","2" )
             out.setEvaluation_num(evaCount);
 
             //2.4  平均分 每颗星占比 雷达图
