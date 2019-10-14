@@ -48,7 +48,7 @@ public class MemberPermRankedServiceImpl implements IMemberPermRankedService {
 				}
         		 
         	 };
-        	 FunGoEHCacheUtils.put(FunGoGameConsts.CACHE_EH_NAME, cacheKey, JSONObject.toJSONString(premRankedList,profilter));
+//        	 FunGoEHCacheUtils.put(FunGoGameConsts.CACHE_EH_NAME, cacheKey, JSONObject.toJSONString(premRankedList,profilter));
          }
 		
 		return premRankedList;
