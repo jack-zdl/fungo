@@ -7,12 +7,14 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.games.config.NacosFungoCircleConfig;
 import com.fungo.games.dao.BasTagDao;
 import com.fungo.games.dao.GameCollectionGroupDao;
 import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.*;
 import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.feign.CommunityFeignClient;
+import com.fungo.games.helper.es.ESDAOServiceImpl;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.bean.TagBean;
@@ -82,13 +84,16 @@ public class GameServiceImpl implements IGameService {
     private BasTagService basTagService;
     @Autowired
     private BasTagGroupService basTagGroupService;
-
     @Autowired
     private CommunityFeignClient communityFeignClient;
     @Autowired
     private GameCollectionGroupDao collectionGroupDao;
     @Autowired
     private BasTagDao dao;
+    @Autowired
+    private NacosFungoCircleConfig nacosFungoCircleConfig;
+    @Autowired
+    private ESDAOServiceImpl esdaoServiceImpl;
 
 
     @Override
@@ -934,119 +939,135 @@ public class GameServiceImpl implements IGameService {
         if (keyword == null || "".equals(keyword.replace(" ", "")) || keyword.contains("%")) {
             return FungoPageResultDto.error("13", "请输入正确的关键字格式");
         }
-        @SuppressWarnings("rawtypes")
-        Wrapper wrapper = Condition.create().setSqlSelect(
-                "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
-                .eq("state", 0).like("name", keyword);
-        if (tag != null && !"".equals(tag.replace(" ", ""))) {
-            wrapper.like("tags", tag);
-        }
-        Page<Game> gamePage = null;
-        List<Game> gameList = new ArrayList<>();
-        if (sort != null && !"".equals(sort.replace(" ", ""))) {
-            gamePage = gameService.selectPage(new Page<>(page, limit), wrapper.orderBy(sort));
-        } else {
-            gameList = gameService.selectList(wrapper);
-        }
-        if (gamePage != null) {
-            gameList = gamePage.getRecords();
-        } else {// 如果sort不存在,默认排序
-            if (gameList.size() == 0) {
-                return new FungoPageResultDto<GameSearchOut>();
+        FungoPageResultDto<GameSearchOut> re = new FungoPageResultDto<GameSearchOut>();
+        try {
+            Page<Game> gamePage = null;
+            List<Game> gameList = new ArrayList<>();
+            // 判断是否选择es
+            if(nacosFungoCircleConfig.isGameSearch()){
+                @SuppressWarnings("rawtypes")
+                Wrapper wrapper = Condition.create().setSqlSelect(
+                        "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
+                        .eq("state", 0).like("name", keyword);
+                if (tag != null && !"".equals(tag.replace(" ", ""))) {
+                    wrapper.like("tags", tag);
+                }
+
+                if (sort != null && !"".equals(sort.replace(" ", ""))) {
+                    gamePage = gameService.selectPage(new Page<>(page, limit), wrapper.orderBy(sort));
+                } else {
+                    gameList = gameService.selectList(wrapper);
+                }
+            }else {
+                if (sort != null && !"".equals(sort.replace(" ", ""))) {
+                    gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
+                } else {
+                    gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
+                    // @todo 
+                }
+                gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
+//            postPage =  esdaoService.getAllPosts(keyword,page,limit);
             }
 
-            if (gameList.size() > 1) {
-                Collections.sort(gameList, new Comparator<Game>() {
-                    @Override
-                    public int compare(Game g1, Game g2) {
-                        try {
-                            return (int) (calculate(g2) - calculate(g1));
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                            throw new RuntimeException("操作失败");
+            if (gamePage != null) {
+                gameList = gamePage.getRecords();
+            } else {// 如果sort不存在,默认排序
+                if (gameList.size() == 0) {
+                    return new FungoPageResultDto<GameSearchOut>();
+                }
+
+                if (gameList.size() > 1) {
+                    Collections.sort(gameList, new Comparator<Game>() {
+                        @Override
+                        public int compare(Game g1, Game g2) {
+                            try {
+                                return (int) (calculate(g2) - calculate(g1));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                                throw new RuntimeException("操作失败");
+                            }
                         }
-                    }
 
-                    public Double calculate(Game g) throws ParseException {
-                        SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
-                        Date t = format.parse("2017-01-01");
-                        Double A = 1.8;
-                        Integer R = g.getRecommendNum();
-                        Date at = g.getEditedAt();
-                        Date T = at != null ? at : g.getCreatedAt();
+                        public Double calculate(Game g) throws ParseException {
+                            SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                            Date t = format.parse("2017-01-01");
+                            Double A = 1.8;
+                            Integer R = g.getRecommendNum();
+                            Date at = g.getEditedAt();
+                            Date T = at != null ? at : g.getCreatedAt();
 
-                        return R + (T.getTime() - t.getTime()) * A;
-                    }
-                });
+                            return R + (T.getTime() - t.getTime()) * A;
+                        }
+                    });
+                }
+                gamePage = pageFormat(gameList, page, limit);
             }
-            gamePage = pageFormat(gameList, page, limit);
-        }
 
-        boolean m = false;
-        if (!CommonUtil.isNull(memberId)) {
-            m = true;
-        }
+            boolean m = false;
+            if (!CommonUtil.isNull(memberId)) {
+                m = true;
+            }
 
-        List<GameSearchOut> dataList = new ArrayList<>();
-        for (Game game : gamePage.getRecords()) {
-            //
-            GameSearchOut out = new GameSearchOut();
-            HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
-            if (rateData != null) {
-                if (rateData.get("avgRating") != null) {
-                    out.setRating(Double.parseDouble(rateData.get("avgRating").toString()));
+            List<GameSearchOut> dataList = new ArrayList<>();
+            for (Game game : gamePage.getRecords()) {
+                //
+                GameSearchOut out = new GameSearchOut();
+                HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
+                if (rateData != null) {
+                    if (rateData.get("avgRating") != null) {
+                        out.setRating(Double.parseDouble(rateData.get("avgRating").toString()));
+                    } else {
+                        out.setRating(0.0);
+                    }
                 } else {
                     out.setRating(0.0);
                 }
-            } else {
-                out.setRating(0.0);
-            }
-            out.setObjectId(game.getId());
-            out.setName(game.getName());
-            out.setTag(game.getTags());
-            out.setIcon(game.getIcon());
-            out.setCover_image(game.getCoverImage());
-            out.setIntro(game.getIntro());
-            out.setDeveloper(game.getDeveloper());
-            out.setLink_community(game.getCommunityId());
-            Integer reNum = game.getRecommendNum();
-            Integer unredNum = game.getUnrecommendNum();
+                out.setObjectId(game.getId());
+                out.setName(game.getName());
+                out.setTag(game.getTags());
+                out.setIcon(game.getIcon());
+                out.setCover_image(game.getCoverImage());
+                out.setIntro(game.getIntro());
+                out.setDeveloper(game.getDeveloper());
+                out.setLink_community(game.getCommunityId());
+                Integer reNum = game.getRecommendNum();
+                Integer unredNum = game.getUnrecommendNum();
 //			out.setRecommend_num(reNum);
 //			out.setUnrecommend_num(unredNum);
 //			out.setEvaluation_num(reNum + unredNum);
-            int evaCount = gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", game.getId()).and("state != -1"));
-            out.setEvaluation_num(evaCount);
-            out.setGame_size(game.getGameSize());
+                int evaCount = gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", game.getId()).and("state != -1"));
+                out.setEvaluation_num(evaCount);
+                out.setGame_size(game.getGameSize());
 
-            out.setAndroidPackageName(game.getAndroidPackageName() == null ? "" : game.getAndroidPackageName());
-            out.setAndroidState(game.getAndroidState());
-            out.setIosState(game.getIosState());
-            out.setItunesId(game.getItunesId());
-            out.setApkUrl(game.getApk() == null ? "" : game.getApk());
+                out.setAndroidPackageName(game.getAndroidPackageName() == null ? "" : game.getAndroidPackageName());
+                out.setAndroidState(game.getAndroidState());
+                out.setIosState(game.getIosState());
+                out.setItunesId(game.getItunesId());
+                out.setApkUrl(game.getApk() == null ? "" : game.getApk());
 
-            if (unredNum != 0) {
-                DecimalFormat df = new DecimalFormat("#.00");
-                out.setScore((reNum != null ? (int) Double.parseDouble(df.format((double) reNum / (reNum + unredNum) * 100)) : 0));
-            }
-            out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
-            out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
-
-            out.setCategory(game.getTags());
-            /**
-             * 功能描述: 添加游戏关联圈子
-             * @auther: dl.zhang
-             * @date: 2019/6/24 13:50
-             */
-            try {
-                CircleGamePostVo circleGamePostVo = new CircleGamePostVo(CircleGamePostVo.CircleGamePostTypeEnum.GAMESID.getKey(),game.getId(),"");
-                ResultDto<String> re = communityFeignClient.getCircleByGame(circleGamePostVo);
-                if (CommonEnum.SUCCESS.code().equals(String.valueOf(re.getStatus())) && !re.getData().equals("")) {
-                    out.setLink_circle(re.getData());
+                if (unredNum != 0) {
+                    DecimalFormat df = new DecimalFormat("#.00");
+                    out.setScore((reNum != null ? (int) Double.parseDouble(df.format((double) reNum / (reNum + unredNum) * 100)) : 0));
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.error("根据游戏id询圈子id异常,游戏id：" + game.getId(), e);
-            }
+                out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
+                out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
+
+                out.setCategory(game.getTags());
+                /**
+                 * 功能描述: 添加游戏关联圈子
+                 * @auther: dl.zhang
+                 * @date: 2019/6/24 13:50
+                 */
+                try {
+                    CircleGamePostVo circleGamePostVo = new CircleGamePostVo(CircleGamePostVo.CircleGamePostTypeEnum.GAMESID.getKey(),game.getId(),"");
+                    ResultDto<String> reString = communityFeignClient.getCircleByGame(circleGamePostVo);
+                    if (CommonEnum.SUCCESS.code().equals(String.valueOf(reString.getStatus())) && !reString.getData().equals("")) {
+                        out.setLink_circle(reString.getData());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.error("根据游戏id询圈子id异常,游戏id：" + game.getId(), e);
+                }
 //			if(m) {
 //				GameSurveyRel srel=this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", game.getId()).eq("phone_model", os));
 //				if(srel!=null) {
@@ -1055,12 +1076,14 @@ public class GameServiceImpl implements IGameService {
 //					out.setMake(true);
 //				}
 //			}
-            dataList.add(out);
+                dataList.add(out);
+            }
+            re.setData(dataList);
+            PageTools.pageToResultDto(re, gamePage);
+        }catch (Exception e){
+            logger.error( "搜索游戏异常,参数keyword"+keyword+"tag="+tag+"sort="+sort,e );
+            re= FungoPageResultDto.FungoPageResultDtoFactory.buildError( "搜索游戏异常" );
         }
-        FungoPageResultDto<GameSearchOut> re = new FungoPageResultDto<GameSearchOut>();
-        re.setData(dataList);
-        PageTools.pageToResultDto(re, gamePage);
-
         return re;
     }
 

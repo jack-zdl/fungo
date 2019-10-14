@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 @RefreshScope
 public class NacosFungoCircleConfig {
 
-
 //    @Value("#{'${nacos.cloud}'.split(',')}")
     @Value(value = "${nacos.cloud.basLog}")
     public String basLog;
@@ -23,6 +22,24 @@ public class NacosFungoCircleConfig {
 
     @Value(value = "${nacos.cloud.basLogtwo}")
     public String basLogtwo;
+
+    @Value(value = "${nacos.es.game.search:true}")
+    public boolean gameSearch;
+
+    @Value(value = "${es.cluster-nodes.ip}")
+    private String esHttpIp;
+
+    @Value(value = "${es.cluster-nodes.port}")
+    private int esHttpPort;
+
+    @Value(value = "${es.cluster-nodes.index}")
+    private String index;
+
+    @Value(value = "${nacos.es.search}")
+    private boolean searchPostType;
+
+    @Value( value = "${es.cluster-node.type}")
+    private String searchIndexType;
 
     public String getBasLog() {
         return basLog;
@@ -46,5 +63,53 @@ public class NacosFungoCircleConfig {
 
     public void setBasLogtwo(String basLogtwo) {
         this.basLogtwo = basLogtwo;
+    }
+
+    public boolean isGameSearch() {
+        return gameSearch;
+    }
+
+    public void setGameSearch(boolean gameSearch) {
+        this.gameSearch = gameSearch;
+    }
+
+    public String getEsHttpIp() {
+        return esHttpIp;
+    }
+
+    public void setEsHttpIp(String esHttpIp) {
+        this.esHttpIp = esHttpIp;
+    }
+
+    public int getEsHttpPort() {
+        return esHttpPort;
+    }
+
+    public void setEsHttpPort(int esHttpPort) {
+        this.esHttpPort = esHttpPort;
+    }
+
+    public String getIndex() {
+        return index;
+    }
+
+    public void setIndex(String index) {
+        this.index = index;
+    }
+
+    public boolean isSearchPostType() {
+        return searchPostType;
+    }
+
+    public void setSearchPostType(boolean searchPostType) {
+        this.searchPostType = searchPostType;
+    }
+
+    public String getSearchIndexType() {
+        return searchIndexType;
+    }
+
+    public void setSearchIndexType(String searchIndexType) {
+        this.searchIndexType = searchIndexType;
     }
 }
