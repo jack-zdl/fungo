@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.system.dao.GameCouponDao">
+  <resultMap id="BaseResultMap" type="com.fungo.system.entity.GameCoupon">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="coupon_no" jdbcType="VARCHAR" property="couponNo" />
+    <result column="isactive" jdbcType="CHAR" property="isactive" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, `type`, `name`, coupon_no as couponNo, isactive, created_at as createdAt, description
+  </sql>
+
+
+
+</mapper>

@@ -1772,6 +1772,17 @@ public class MemberServiceImpl implements IMemberService {
         return null;
     }
 
+    @Override
+    public ResultDto<String> checkAndUpdateUserRecommend() {
+        try {
+
+        }catch (Exception e){
+            logger.error("",e);
+
+        }
+        return null;
+    }
+
     /**
      * 如果您是新用户，在9月3日~9月16日期间注册
      * @todo

@@ -15,6 +15,8 @@ public class MsgInput extends InputDto {
 	private String code;
 	private String mobile;
 	private String password;
+	//邀请人id
+	private String recommendId;
 //	@ApiModelProperty(value="设备号",example="")
 	private String deviceId;
 	
@@ -69,6 +71,15 @@ public class MsgInput extends InputDto {
 	public void setOld_password(String old_password) {
 		this.old_password = old_password;
 	}
+
+	public String getRecommendId() {
+		return recommendId;
+	}
+
+	public void setRecommendId(String recommendId) {
+		this.recommendId = recommendId;
+	}
+
 	public String getType() {
 		return type;
 	}

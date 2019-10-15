@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.system.dao.MemberCouponDao">
+  <resultMap id="BaseResultMap" type="com.fungo.system.entity.MemberCoupon">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="member_type" jdbcType="INTEGER" property="memberType" />
+    <result column="member_id" jdbcType="VARCHAR" property="memberId" />
+    <result column="coupon_id" jdbcType="VARCHAR" property="couponId" />
+    <result column="isactive" jdbcType="CHAR" property="isactive" />
+    <result column="created_by" jdbcType="VARCHAR" property="createdBy" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_by" jdbcType="VARCHAR" property="updatedBy" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="rversion" jdbcType="INTEGER" property="rversion" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, member_type as memberType, member_id as memberId,  coupon_id as couponId, isactive, created_by as createdBy, created_at as createdAt ,
+    updated_by as updatedBy, updated_at as updatedAt, rversion, description
+  </sql>
+
+  <select id="getMemberCouponByRecommendId" resultType="">
+
+  </select>
+
+</mapper>

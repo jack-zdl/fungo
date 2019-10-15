@@ -87,6 +87,10 @@ public class MemberInfo extends Model<MemberInfo> {
     @TableField("description")
     private String description;
 
+    @TableField("parent_member_id")
+    private String parentMemberId;
+
+
     private static final long serialVersionUID = 1L;
 
     public String getId() {
@@ -169,6 +173,13 @@ public class MemberInfo extends Model<MemberInfo> {
         this.description = description == null ? null : description.trim();
     }
 
+    public String getParentMemberId() {
+        return parentMemberId;
+    }
+
+    public void setParentMemberId(String parentMemberId) {
+        this.parentMemberId = parentMemberId;
+    }
 
     @Override
     protected Serializable pkVal() {

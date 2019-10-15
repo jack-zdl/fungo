@@ -85,5 +85,7 @@ public interface IMemberService {
 	//查询当前用户的中秋抽奖权限
 	ResultDto<String> getLotteryPermission(String memberId);
 
+	ResultDto<String> checkAndUpdateUserRecommend();
+
 
 }

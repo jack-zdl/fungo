@@ -146,4 +146,24 @@ public class JobController {
         }
         return re;
     }
+
+
+    /**
+     * 功能描述: 定时更新邀请用户是否满足奖励条件
+     * @return: com.game.common.dto.ResultDto<java.lang.String>
+     * @auther: dl.zhang
+     * @date: 2019/7/29 16:42
+     */
+    @GetMapping("/user/recommend")
+    public ResultDto<String> checkUserRecommend(  ){
+        ResultDto<String> re = null;
+        try {
+            iMemberNoticeService.updateSystemByGame();
+            re = ResultDto.success("定时检查系统管控台系统消息定期任务执行成功");
+        }catch (Exception e){
+            LOGGER.error("定时检查系统管控台系统消息定期任务执行异常",e);
+            re = ResultDto.error("-1","定时检查系统管控台系统消息定期任务执行异常");
+        }
+        return re;
+    }
 }

@@ -98,6 +98,15 @@ public class ResultDto<T> extends AbstractResultDto {
          * @param msg 结果信息
          * @return RespJson
          */
+        public static ResultDto buildError(String code,String msg) {
+            return buildInfo(CommonEnum.ERROR.code(), code, msg, null);
+        }
+
+        /**
+         * 警告返回请求结果和结果信息的方法
+         * @param msg 结果信息
+         * @return RespJson
+         */
         public static ResultDto buildWarning(String code,String msg) {
             return buildInfo(CommonEnum.WARMING.code(), code, msg, null);
         }

@@ -1088,6 +1088,55 @@ public class GameServiceImpl implements IGameService {
     }
 
     /**
+     * 功能描述: 搜索时联想关键字
+     * @param:
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.search.GameSearchOut>
+     * @auther: dl.zhang
+     * @date: 2019/10/15 11:44
+     */
+    @Override
+    public FungoPageResultDto<String> searchGamesKeyword(int page, int limit, String keyword, String tag, String sort, String os, String memberId) {
+        if (keyword == null || "".equals(keyword.replace(" ", "")) || keyword.contains("%")) {
+            return FungoPageResultDto.error("13", "请输入正确的关键字格式");
+        }
+        FungoPageResultDto<String> re = new FungoPageResultDto<>();
+        try {
+            Page<Game> gamePage = null;
+            List<String> gameNameList = new ArrayList<>();
+            List<Game> gameList = null;
+            // 判断是否选择es
+            if(nacosFungoCircleConfig.isGameSearch()){
+                @SuppressWarnings("rawtypes")
+                Wrapper wrapper = Condition.create().setSqlSelect(
+                        "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
+                        .eq("state", 0).like("name", keyword);
+
+                if (sort != null && !"".equals(sort.replace(" ", ""))) {
+                    gamePage = gameService.selectPage(new Page<>(page, limit), wrapper.orderBy(sort));
+                } else {
+                    gamePage = gameService.selectPage(new Page<>(page, limit), wrapper);
+//                    gameList = gameService.selectList(wrapper);
+                }
+            }else {
+                if (sort != null && !"".equals(sort.replace(" ", ""))) {
+                    gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
+                } else {
+                    gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
+                }
+                gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
+            }
+            gameList = gameList != null ? gameList : gamePage.getRecords();
+            gameList.stream().forEach(s -> { String gameName = s.getName();gameNameList.add( gameName); });
+            re.setData(gameNameList);
+            PageTools.pageToResultDto(re, gamePage);
+        }catch (Exception e){
+            logger.error( "搜索游戏异常,参数keyword"+keyword+"tag="+tag+"sort="+sort,e );
+            re= FungoPageResultDto.FungoPageResultDtoFactory.buildError( "搜索游戏异常" );
+        }
+        return re;
+    }
+
+    /**
      * 根据游戏ID获取游戏标签列表
      *
      * @param gameId

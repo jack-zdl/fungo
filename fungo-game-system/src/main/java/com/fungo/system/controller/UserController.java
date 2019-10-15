@@ -17,12 +17,14 @@ import com.game.common.dto.user.MemberOutBean;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.framework.file.IFileService;
+import com.game.common.util.StringUtil;
 import com.game.common.util.ValidateUtils;
 import com.game.common.util.token.TokenService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +101,10 @@ public class UserController {
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
 
 
+    /**
+     * 功能描述: 这是提供给pc端使用
+     * @date: 2019/10/15 15:45
+     */
     @ApiOperation(value = "用户注册《pc用》", notes = "用户注册《pc用》")
     @RequestMapping(value = "/api/user/register", method = RequestMethod.POST)
     @ApiImplicitParams({
@@ -146,6 +152,10 @@ public class UserController {
         return re;
     }
 
+    /**
+     * 功能描述: app端直接手机号和验证码注册新用户
+     * @date: 2019/10/15 15:45
+     */
     @ApiOperation(value = "用户登录(2.4)", notes = "用户登录(2.4)")
     @RequestMapping(value = "/api/user/login", method = RequestMethod.POST)
     @ApiImplicitParams({
@@ -159,6 +169,33 @@ public class UserController {
 //		os = (String)request.getAttribute("os");
         String appversion = request.getHeader("appversion");
         ResultDto<LoginMemberBean> re = userService.login(msg.getMobile(), msg.getPassword(), msg.getCode(), appversion);
+        if (re.isSuccess()) {
+            LoginMemberBean bean = re.getData();
+            MemberUserProfile userPrefile = new MemberUserProfile();
+            userPrefile.setLoginId(bean.getObjectId());
+            userPrefile.setName(bean.getUsername());
+            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), 1000 * 60 * 60 * 60 * 24 * 30));
+        }
+        return re;
+    }
+
+    /**
+     * 功能描述: v2.6 被邀请人直接手机号和验证码注册新用户
+     * @date: 2019/10/15 15:45
+     */
+    @ApiOperation(value = "用户登录(2.4)", notes = "用户登录(2.4)")
+    @RequestMapping(value = "/api/user/login/recommend", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "mobile", value = "手机号", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "recommendId", value = "邀请人id", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "code", value = "验证码", paramType = "form", dataType = "string")
+    })
+    public ResultDto<LoginMemberBean> recommendLogin(HttpServletRequest request, @RequestBody MsgInput msg) throws JsonProcessingException, Exception {
+        String appversion = request.getHeader("appversion");
+        if(StringUtils.isBlank(msg.getCode()) || StringUtils.isBlank(msg.getRecommendId()) ){
+            return ResultDto.ResultDtoFactory.buildError(AbstractResultEnum.CODE_SYSTEM_FESTIVAL_NINE.getKey(),AbstractResultEnum.CODE_SYSTEM_FESTIVAL_NINE.getFailevalue());
+        }
+        ResultDto<LoginMemberBean> re = userService.recommendLogin(msg, appversion);
         if (re.isSuccess()) {
             LoginMemberBean bean = re.getData();
             MemberUserProfile userPrefile = new MemberUserProfile();
