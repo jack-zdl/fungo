@@ -32,13 +32,10 @@ public class NacosFungoCircleConfig {
     @Value(value = "${es.cluster-nodes.port}")
     private int esHttpPort;
 
-    @Value(value = "${es.cluster-nodes.index}")
+    @Value(value = "${es.cluster-nodes.game.index}")
     private String index;
 
-    @Value(value = "${nacos.es.search}")
-    private boolean searchPostType;
-
-    @Value( value = "${es.cluster-node.type}")
+    @Value( value = "${es.cluster-node.game.type}")
     private String searchIndexType;
 
     public String getBasLog() {
@@ -95,14 +92,6 @@ public class NacosFungoCircleConfig {
 
     public void setIndex(String index) {
         this.index = index;
-    }
-
-    public boolean isSearchPostType() {
-        return searchPostType;
-    }
-
-    public void setSearchPostType(boolean searchPostType) {
-        this.searchPostType = searchPostType;
     }
 
     public String getSearchIndexType() {
