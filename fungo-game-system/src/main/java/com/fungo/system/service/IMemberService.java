@@ -87,5 +87,7 @@ public interface IMemberService {
 
 	ResultDto<String> checkAndUpdateUserRecommend();
 
+	ResultDto<String> checkTwoUserRecommend();
+
 
 }

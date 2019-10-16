@@ -5,7 +5,9 @@ import com.fungo.system.job.FungoMallSeckillTaskService;
 import com.fungo.system.job.PushFunction;
 import com.fungo.system.mall.service.IFungoMallGoodsService;
 import com.fungo.system.service.IMemberNoticeService;
+import com.fungo.system.service.IMemberService;
 import com.fungo.system.service.ISeacherService;
+import com.fungo.system.service.MemberService;
 import com.game.common.dto.ResultDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,21 +32,18 @@ public class JobController {
 
     @Autowired
     private DTPTransactionMessageScheduledJob dtpTransactionMessageScheduledJob;
-
     @Autowired
     private FungoMallSeckillTaskService fungoMallSeckillTaskService;
-
     @Autowired
     private PushFunction pushFunction;
-
     @Autowired
     private ISeacherService iSeacherService;
-
     @Autowired
     private IFungoMallGoodsService iFungoMallGoodsService;
-
     @Autowired
     private IMemberNoticeService iMemberNoticeService;
+    @Autowired
+    private IMemberService memberServiceImpl;
 
    @GetMapping("/dtpTransactionMessageScheduledJob")
     public ResultDto<String> dtpTransactionMessageScheduledJob(){
@@ -158,11 +157,31 @@ public class JobController {
     public ResultDto<String> checkUserRecommend(  ){
         ResultDto<String> re = null;
         try {
-            iMemberNoticeService.updateSystemByGame();
-            re = ResultDto.success("定时检查系统管控台系统消息定期任务执行成功");
+            memberServiceImpl.checkAndUpdateUserRecommend();
+            re = ResultDto.success("定时更新邀请用户是否满足奖励条件执行成功");
         }catch (Exception e){
-            LOGGER.error("定时检查系统管控台系统消息定期任务执行异常",e);
-            re = ResultDto.error("-1","定时检查系统管控台系统消息定期任务执行异常");
+            LOGGER.error("定时更新邀请用户是否满足奖励条件执行异常",e);
+            re = ResultDto.error("-1","定时更新邀请用户是否满足奖励条件执行异常");
+        }
+        return re;
+    }
+
+
+    /**
+     * 功能描述: 定时更新邀请用户是否满足奖励条件
+     * @return: com.game.common.dto.ResultDto<java.lang.String>
+     * @auther: dl.zhang
+     * @date: 2019/7/29 16:42
+     */
+    @GetMapping("/user/checkTwo")
+    public ResultDto<String> checkTwoUserRecommend(  ){
+        ResultDto<String> re = null;
+        try {
+            memberServiceImpl.checkAndUpdateUserRecommend();
+            re = ResultDto.success("定时更新邀请用户是否满足奖励条件执行成功");
+        }catch (Exception e){
+            LOGGER.error("定时更新邀请用户是否满足奖励条件执行异常",e);
+            re = ResultDto.error("-1","定时更新邀请用户是否满足奖励条件执行异常");
         }
         return re;
     }

@@ -28,8 +28,8 @@ public class MemberCoupon extends Model<MemberCoupon> {
     @TableField("member_id")
     private String memberId;
 
-    @TableField("parent_member_id")
-    private String parentMemberId;
+    @TableField("invitee_id")
+    private String inviteeId;
 
     @TableField("coupon_id")
     private String couponId;
@@ -79,12 +79,12 @@ public class MemberCoupon extends Model<MemberCoupon> {
         this.memberId = memberId == null ? null : memberId.trim();
     }
 
-    public String getParentMemberId() {
-        return parentMemberId;
+    public String getInviteeId() {
+        return inviteeId;
     }
 
-    public void setParentMemberId(String parentMemberId) {
-        this.parentMemberId = parentMemberId == null ? null : parentMemberId.trim();
+    public void setInviteeId(String inviteeId) {
+        this.inviteeId = inviteeId;
     }
 
     public String getCouponId() {
@@ -160,7 +160,7 @@ public class MemberCoupon extends Model<MemberCoupon> {
         sb.append(", id=").append(id);
         sb.append(", memberType=").append(memberType);
         sb.append(", memberId=").append(memberId);
-        sb.append(", parentMemberId=").append(parentMemberId);
+        sb.append(", inviteeId=").append(inviteeId);
         sb.append(", couponId=").append(couponId);
         sb.append(", isactive=").append(isactive);
         sb.append(", createdBy=").append(createdBy);

@@ -64,6 +64,12 @@ public interface MemberDao extends  BaseMapper<Member> {
 
     List<Member> getEnableMemberList(@Param("ids") List<String> ids);
 
+    List<Member> getTwoMemberList(@Param("ids") List<String> ids,@Param("inviteeId")List<String> inviteeIds);
+
+    List<Member> getUnTwoMemberList();
+
      List<Member> getUnfollerMemberList(@Param("ids") List<String> ids,@Param("memberId") String memberId);
+
+     List<Member> selectListBylargess(@Param("level")String level,@Param("couponId")String couponId);
 
 }

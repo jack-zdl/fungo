@@ -20,6 +20,18 @@ import java.util.List;
 @Repository
 public interface MemberCouponDao extends BaseMapper<MemberCoupon> {
 
-    List<MemberCoupon> getMemberCouponByRecommendId(@Param("memberId") String memberId);
+    /**
+     * 功能描述: 查詢出被邀請人已經因爲邀請人滿足条件获取免费的优惠券的集合
+     * @return: java.util.List<com.fungo.system.entity.MemberCoupon>
+     * @date: 2019/10/16 10:06
+     */
+    List<MemberCoupon> getMemberCouponByRecommendId(@Param("memberId") String memberId, @Param("ids") List<String> ids , @Param("type") String type);
+
+    /**
+     * 功能描述: 查詢出被邀請人已經因爲邀請人滿足条件获取免费的优惠券的集合
+     * @return: java.util.List<com.fungo.system.entity.MemberCoupon>
+     * @date: 2019/10/16 10:06
+     */
+    List<MemberCoupon> getMemberCouponByInvitee( @Param("ids") List<String> ids , @Param("type") String type,@Param( "couponId" )String couponId);
 
 }

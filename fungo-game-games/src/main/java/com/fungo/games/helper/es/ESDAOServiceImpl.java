@@ -124,8 +124,9 @@ public class ESDAOServiceImpl {
 //                boolQueryBuilder.must(QueryBuilders.wildcardQuery("title",keyword));
 //                sourceBuilder.query(boolQueryBuilder);
                 MatchQueryBuilder matchQueryBuilder1 = QueryBuilders.matchQuery("state",1);
-                MatchQueryBuilder matchQueryBuilder2 = QueryBuilders.matchQuery("title",keyword);
-                MatchQueryBuilder matchQueryBuilder3 = QueryBuilders.matchQuery("content",keyword);
+                MatchQueryBuilder matchQueryBuilder2 = QueryBuilders.matchQuery("name",keyword);
+                MatchQueryBuilder matchQueryBuilder3 = QueryBuilders.matchQuery("intro",keyword);
+                MatchQueryBuilder matchQueryBuilder4 = QueryBuilders.matchQuery("google_deputy_name",keyword);
                 BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
                 BoolQueryBuilder childBoolQueryBuilder = new BoolQueryBuilder()
                         .should(matchQueryBuilder2)
@@ -143,17 +144,12 @@ public class ESDAOServiceImpl {
 
             //指定排序
             sourceBuilder.sort(new ScoreSortBuilder().order( SortOrder.DESC));
-            sourceBuilder.sort(new FieldSortBuilder("watch_num").order(SortOrder.DESC));
+//            sourceBuilder.sort(new FieldSortBuilder("score").order(SortOrder.DESC));
 
             //将请求体加入到请求中
             searchRequest.source(sourceBuilder);
-
-
             //3、发送请求
             SearchResponse searchResponse = client.search(searchRequest,RequestOptions.DEFAULT);
-
-
-
             //4、处理响应
             //搜索结果状态信息
             RestStatus status = searchResponse.status();

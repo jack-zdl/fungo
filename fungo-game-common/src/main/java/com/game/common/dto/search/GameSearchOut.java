@@ -2,6 +2,8 @@ package com.game.common.dto.search;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.List;
+
 public class GameSearchOut {
 
 	private String objectId;
@@ -34,7 +36,16 @@ public class GameSearchOut {
 	private String category;
 	@ApiModelProperty(value="游戏关联的圈子",example="")
 	private String link_circle;
-	
+
+	// 厂商
+	private String company;
+	// 地区
+	private String address;
+	// 是否可以加速
+	private boolean canFast;
+
+	private List<String> tags;
+
 //	@ApiModelProperty(value="是否同意条款",example="")
 //	private boolean isClause=false;
 //	@ApiModelProperty(value="是否绑定appleId",example="")
@@ -183,5 +194,49 @@ public class GameSearchOut {
 
 	public void setLink_circle(String link_circle) {
 		this.link_circle = link_circle;
+	}
+
+	public void setRecommend_num(int recommend_num) {
+		this.recommend_num = recommend_num;
+	}
+
+	public void setUnrecommend_num(int unrecommend_num) {
+		this.unrecommend_num = unrecommend_num;
+	}
+
+	public void setEvaluation_num(int evaluation_num) {
+		this.evaluation_num = evaluation_num;
+	}
+
+	public String getCompany() {
+		return company;
+	}
+
+	public void setCompany(String company) {
+		this.company = company;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public boolean isCanFast() {
+		return canFast;
+	}
+
+	public void setCanFast(boolean canFast) {
+		this.canFast = canFast;
+	}
+
+	public List<String> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<String> tags) {
+		this.tags = tags;
 	}
 }

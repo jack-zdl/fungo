@@ -934,7 +934,8 @@ public class GameServiceImpl implements IGameService {
      * @return
      */
     @Override
-    public FungoPageResultDto<GameSearchOut> searchGames(int page, int limit, String keyword, String tag, String sort, String os, String memberId)
+    public FungoPageResultDto<GameSearchOut>
+    searchGames(int page, int limit, String keyword, String tag, String sort, String os, String memberId)
             throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         if (keyword == null || "".equals(keyword.replace(" ", "")) || keyword.contains("%")) {
             return FungoPageResultDto.error("13", "请输入正确的关键字格式");
@@ -965,7 +966,7 @@ public class GameServiceImpl implements IGameService {
                     gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
                     // @todo
                 }
-                gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
+//                gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
 //            postPage =  esdaoService.getAllPosts(keyword,page,limit);
             }
 
@@ -1068,6 +1069,7 @@ public class GameServiceImpl implements IGameService {
                     e.printStackTrace();
                     logger.error("根据游戏id询圈子id异常,游戏id：" + game.getId(), e);
                 }
+//                out.setCompany( game.getC );
 //			if(m) {
 //				GameSurveyRel srel=this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", game.getId()).eq("phone_model", os));
 //				if(srel!=null) {

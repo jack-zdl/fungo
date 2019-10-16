@@ -45,6 +45,8 @@ public class NacosFungoCircleConfig {
     public String festivallinkUrl;
     @Value( value = "${fungo.cloud.festival.postId}")
     public String festivalPostId;
+//    @Value( value = "${fungo.cloud.invite.registerDate}")
+//    public String registerDateString;
 
     public String getBasLog() {
         return basLog;

@@ -1,14 +1,14 @@
 package com.fungo.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.config.NacosFungoCircleConfig;
-import com.fungo.system.dao.BasActionDao;
-import com.fungo.system.dao.BasNoticeDao;
-import com.fungo.system.dao.MemberDao;
+import com.fungo.system.dao.*;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
 import com.fungo.system.facede.ICommunityProxyService;
@@ -28,14 +28,12 @@ import com.game.common.dto.StreamInfo;
 import com.game.common.dto.community.*;
 import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.game.GameSurveyRelDto;
+import com.game.common.enums.AbstractResultEnum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.repo.cache.facade.FungoCacheMood;
-import com.game.common.util.CommonUtil;
-import com.game.common.util.CommonUtils;
-import com.game.common.util.PageTools;
-import com.game.common.util.StringUtil;
+import com.game.common.util.*;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import io.swagger.models.auth.In;
@@ -43,10 +41,16 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
+
 
 @Service
 public class MemberServiceImpl implements IMemberService {
@@ -99,9 +103,16 @@ public class MemberServiceImpl implements IMemberService {
     private CommunityFeignClient communityFeignClient;
     @Autowired
     private GamesFeignClient gamesFeignClient;
-
     @Autowired
     private NacosFungoCircleConfig nacosFungoCircleConfig;
+    @Autowired
+    private MemberInfoDao memberInfoDao;
+    @Autowired
+    private MemberCouponDao memberCouponDao;
+    @Autowired
+    private MemberNoticeDaoService memberNoticeDaoService;
+    @Value("${sys.config.fungo.cluster.index}")
+    private String clusterIndex;
 
 
     //
@@ -1772,17 +1783,251 @@ public class MemberServiceImpl implements IMemberService {
         return null;
     }
 
+    @Transactional
     @Override
     public ResultDto<String> checkAndUpdateUserRecommend() {
         try {
+            // 获取有邀请人的用户集合
+            List<MemberInfo> memberInfos =  memberInfoDao.selectListByRecommendId();
+            Map<String, List<MemberInfo>> parentMemberMap = memberInfos.stream().collect(groupingBy(MemberInfo::getParentMemberId));
+            for (Map.Entry<String,  List<MemberInfo>> entry : parentMemberMap.entrySet()) {
+                String parentMemberId = entry.getKey();
+                List<MemberInfo> memberInfoList = entry.getValue();
+                // 查询出邀请人获取的12小时的优惠券
+                List<Member>  memberList =  memberDao.getTwoMemberList(memberInfoList.stream().map(MemberInfo::getMdId).collect( Collectors.toList()),null);
+                List<String>  ids = memberList.stream().map( Member::getId ).collect( Collectors.toList());
+                //查询出邀请人获取的12小时的优惠券 查询出所有邀请人
+                List<MemberCoupon> memberCoupons = memberCouponDao.getMemberCouponByRecommendId(parentMemberId,null,"31");
+                List<String>  inviteeIds = memberCoupons.stream().map( MemberCoupon::getInviteeId ).collect( Collectors.toList());
+                List<String> twoMemberIds = memberInfoList.stream().map(MemberInfo::getMdId).collect( Collectors.toList());
+                List<Member>  otherMemberList =  memberDao.getTwoMemberList(twoMemberIds,inviteeIds);
+                if(memberList.size() > 0){
+                    // 查询达到2级的被邀请人数目是否等于邀请人获取的12小时的优惠券数目，大于的话给邀请人发送优惠券
+                    if( otherMemberList.size() > 0 ){
+                        for(Member member : otherMemberList ){
+                            MemberCoupon memberCoupon = new MemberCoupon();
+                            memberCoupon.setMemberType(31);
+                            memberCoupon.setMemberId( parentMemberId);
+                            memberCoupon.setInviteeId( member.getId());
+                            memberCoupon.setCouponId( "1" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+                            memberCoupon.setIsactive("1");
+                            memberCoupon.setCreatedAt( new Date());
+                            memberCoupon.setCreatedBy( "system");
+                            memberCoupon.setDescription( "被邀请人满足2级条件,邀请人获取12小时优惠券" );
+                            memberCoupon.insert();
+                            addNotice(parentMemberId, AbstractResultEnum.CODE_SYSTEM_INVITATION_DAY.getSuccessValue() );
+                        }
+                    }
+                    // 9折优惠券
+                    if(memberList.size() >= 5 && memberCouponDao.getMemberCouponByRecommendId(parentMemberId,null,"32").size() == 0 ){
+                        MemberCoupon memberCoupon = new MemberCoupon();
+                        memberCoupon.setMemberType(32);
+                        memberCoupon.setMemberId( parentMemberId);
+                        memberCoupon.setCouponId( "1" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+                        memberCoupon.setIsactive("1");
+                        memberCoupon.setCreatedAt( new Date());
+                        memberCoupon.setCreatedBy( "system");
+                        memberCoupon.setDescription( "被邀请人满足2级条件数目达到5人,,邀请人获取9折优惠券" );
+                        memberCoupon.insert();
+                        addNotice(parentMemberId, AbstractResultEnum.CODE_SYSTEM_INVITATION_NINE.getSuccessValue() );
+                    }
+                    // 8折优惠券
+                    if(memberList.size() >= 10 && memberCouponDao.getMemberCouponByRecommendId(parentMemberId,null,"33").size() == 0 ){
+                        MemberCoupon memberCoupon = new MemberCoupon();
+                        memberCoupon.setMemberType(33);
+                        memberCoupon.setMemberId( parentMemberId);
+                        memberCoupon.setCouponId( "1" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+                        memberCoupon.setIsactive("1");
+                        memberCoupon.setCreatedAt( new Date());
+                        memberCoupon.setCreatedBy( "system");
+                        memberCoupon.setDescription( "被邀请人满足2级条件数目达到10人,邀请人获取8折优惠券" );
+                        memberCoupon.insert();
+                        addNotice(parentMemberId, AbstractResultEnum.CODE_SYSTEM_INVITATION_NGIHT.getSuccessValue() );
+                    }
+                    // 7折优惠券
+                    if(memberList.size() >= 20 && memberCouponDao.getMemberCouponByRecommendId(parentMemberId,null,"34").size() == 0 ){
+                        MemberCoupon memberCoupon = new MemberCoupon();
+                        memberCoupon.setMemberType(34);
+                        memberCoupon.setMemberId( parentMemberId);
+                        memberCoupon.setCouponId( "1" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+                        memberCoupon.setIsactive("1");
+                        memberCoupon.setCreatedAt( new Date());
+                        memberCoupon.setCreatedBy( "system");
+                        memberCoupon.setDescription( "被邀请人满足2级条件数目达到20人,邀请人获取7折优惠券" );
+                        memberCoupon.insert();
+                        addNotice(parentMemberId, AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SEVEN.getSuccessValue() );
+                    }
+                    // 5天白金VIP专线
+                    // 查询被邀请人是否购买了一个月的线路
+                    List<MemberCoupon> memberCouponFiveList = memberCouponDao.getMemberCouponByInvitee(ids,"1","8");
+                    List<String> fiveIds = memberCouponFiveList.stream().map(MemberCoupon::getMemberId).collect( Collectors.toList());
+                    // 查询邀请人有没有获取指定奖励
+                    List<MemberCoupon> memberCouponsFiveList = memberCouponDao.getMemberCouponByRecommendId(parentMemberId,fiveIds,"35");
+                    for(MemberCoupon memberCou : memberCouponsFiveList){
+                        MemberCoupon memberCoupon = new MemberCoupon();
+                        memberCoupon.setMemberType(35);
+                        memberCoupon.setMemberId( parentMemberId);
+                        memberCoupon.setInviteeId( memberCou.getMemberId());
+                        memberCoupon.setCouponId( "1" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+                        memberCoupon.setIsactive("1");
+                        memberCoupon.setCreatedAt( new Date());
+                        memberCoupon.setCreatedBy( "system");
+                        memberCoupon.setDescription( "被邀请人充值一个月，邀请人获的5天VIP奖励," );
+                        memberCoupon.insert();
+                        addNotice(parentMemberId, AbstractResultEnum.CODE_SYSTEM_INVITATION_FIVEDAY.getSuccessValue() );
+                    }
+
+                    // 16天白金VIP专线
+
+                    List<MemberCoupon> memberCouponSixList = memberCouponDao.getMemberCouponByInvitee(ids,"1","9");
+                    List<String> sixIds = memberCouponSixList.stream().map(MemberCoupon::getMemberId).collect( Collectors.toList());
+                    // 查询邀请人有没有获取指定奖励
+                    List<MemberCoupon> memberCouponsSixList = memberCouponDao.getMemberCouponByRecommendId(parentMemberId,sixIds,"36");
+                    for(MemberCoupon memberCou : memberCouponsSixList){
+                        MemberCoupon memberCoupon = new MemberCoupon();
+                        memberCoupon.setMemberType(36);
+                        memberCoupon.setMemberId( parentMemberId);
+                        memberCoupon.setInviteeId( memberCou.getMemberId());
+                        memberCoupon.setCouponId( "1" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+                        memberCoupon.setIsactive("1");
+                        memberCoupon.setCreatedAt( new Date());
+                        memberCoupon.setCreatedBy( "system");
+                        memberCoupon.setDescription( "被邀请人充值三个月，邀请人获的16天VIP奖励," );
+                        memberCoupon.insert();
+                        addNotice(parentMemberId, AbstractResultEnum.CODE_SYSTEM_INVITATION_TENSIXDAY.getSuccessValue() );
+                    }
+                    // 66天白金VIP专线
+                    List<MemberCoupon> memberCouponTenList = memberCouponDao.getMemberCouponByInvitee(ids,"1","10");
+                    List<String> tenIds = memberCouponTenList.stream().map(MemberCoupon::getMemberId).collect( Collectors.toList());
+                    // 查询邀请人有没有获取指定奖励
+                    List<MemberCoupon> memberCouponsTenList = memberCouponDao.getMemberCouponByRecommendId(parentMemberId,tenIds,"37");
+                    for(MemberCoupon memberCou : memberCouponsTenList){
+                        MemberCoupon memberCoupon = new MemberCoupon();
+                        memberCoupon.setMemberType(36);
+                        memberCoupon.setMemberId( parentMemberId);
+                        memberCoupon.setInviteeId( memberCou.getMemberId());
+                        memberCoupon.setCouponId( "1" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+                        memberCoupon.setIsactive("1");
+                        memberCoupon.setCreatedAt( new Date());
+                        memberCoupon.setCreatedBy( "system");
+                        memberCoupon.setDescription( "被邀请人充值六个月以上，邀请人获的66天VIP奖励," );
+                        memberCoupon.insert();
+                        addNotice(parentMemberId, AbstractResultEnum.CODE_SYSTEM_INVITATION_SIXSIXDAY.getSuccessValue() );
+                    }
+                }
+            }
+
 
         }catch (Exception e){
-            logger.error("",e);
-
+            logger.error("检查邀请人是否获取奖励异常",e);
+            return ResultDto.ResultDtoFactory.buildError( "检查邀请人是否获取奖励异常" );
         }
-        return null;
+        return ResultDto.ResultDtoFactory.buildSuccess( "检查邀请人是否获取奖励并更新成功" );
     }
 
+    @Override
+    public ResultDto<String> checkTwoUserRecommend() {
+        ResultDto<String> resultDto = null;
+     try {
+         // 所有用户奖励5折券
+         List<Member> memberList = memberDao.selectListBylargess(null,"12");
+         memberList.stream().forEach( s -> {
+             MemberCoupon memberCoupon = new MemberCoupon();
+             memberCoupon.setMemberType(2);
+             memberCoupon.setMemberId( s.getId());
+             memberCoupon.setCouponId( "12" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+             memberCoupon.setIsactive("1");
+             memberCoupon.setCreatedAt( new Date());
+             memberCoupon.setCreatedBy( "system");
+             memberCoupon.setDescription( "所有用户奖励5折券" );
+             memberCoupon.insert();
+             // 需求没有添加5折的优惠消息
+//                addNotice(s.getId(), AbstractResultEnum.CODE_SYSTEM_INVITATION_SIXSIXDAY.getSuccessValue() );
+         });
+         // 所有用户达到LV2并获取奖励2天免费
+
+         memberList = memberDao.selectListBylargess("2","11");
+         memberList.stream().forEach( s -> {
+             MemberCoupon memberCoupon = new MemberCoupon();
+             memberCoupon.setMemberType(2);
+             memberCoupon.setMemberId( s.getId());
+             memberCoupon.setCouponId( "11" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+             memberCoupon.setIsactive("1");
+             memberCoupon.setCreatedAt( new Date());
+             memberCoupon.setCreatedBy( "system");
+             memberCoupon.setDescription( "所有用户奖励5折券" );
+             memberCoupon.insert();
+             // 需求没有添加5折的优惠消息
+             addNotice(s.getId(), AbstractResultEnum.CODE_SYSTEM_INVITATION_TWODAY.getSuccessValue() );
+         });
+         resultDto = ResultDto.ResultDtoFactory.buildSuccess( "检查所有用户的奖励成功" );
+     }catch (Exception e){
+         logger.error( "检查所有用户的奖励异常",e );
+         resultDto = ResultDto.ResultDtoFactory.buildError( "检查所有用户的奖励失败" );
+     }
+     return resultDto;
+    }
+
+
+    private boolean addNotice(String memberId,String content){
+        Map<String,String> dataMap = new HashMap<>();
+        dataMap.put("actionType","1");
+        dataMap.put("content", content );
+        dataMap.put("targetType","1");
+        dataMap.put("targetId","应该是券信息");
+        dataMap.put("userId", "0b8aba833f934452992a972b60e9ad10");
+        dataMap.put("userType", "1");
+        dataMap.put("userAvatar", "http://output-mingbo.oss-cn-beijing.aliyuncs.com/official.png");
+        dataMap.put("userName", "FunGo大助手");
+        dataMap.put("msgTime", DateTools.fmtDate(new Date()));
+        try {
+            EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
+            noticeEntityWrapper.eq( "mb_id", memberId );
+            noticeEntityWrapper.eq( "ntc_type", 7 );
+            noticeEntityWrapper.eq( "is_read", 2 );
+            List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
+            if (noticeListDB != null && noticeListDB.size() > 0) {
+                noticeListDB.parallelStream().forEach( x -> {
+                    String jsonString = x.getNtcData();
+                    JSONObject jsonObject = JSON.parseObject( jsonString );
+                    jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
+                    jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
+                    x.setNtcData( jsonObject.toJSONString());
+                    x.updateById();
+                } );
+            } else {
+                MemberNotice memberNotice = new MemberNotice();
+                int clusterIndex_i = Integer.parseInt( clusterIndex );
+                memberNotice.setId( PKUtil.getInstance( clusterIndex_i ).longPK() );
+                memberNotice.setIsRead( 2 );
+                memberNotice.setNtcType( 7 );
+                memberNotice.setMbId( memberId );
+                memberNotice.setCreatedAt( new Date() );
+                memberNotice.setUpdatedAt( new Date() );
+                Map map = new ConcurrentHashMap( 4 );
+                map.put( "count", 1 );
+                map.put( "like_count", 0 );
+                map.put( "comment_count", 0 );
+                map.put( "notice_count", 1 );
+                memberNotice.setNtcData( JSON.toJSONString( map ) );
+                memberNoticeDaoService.insert( memberNotice );
+            }
+            BasNotice basNotice = new BasNotice();
+            basNotice.setType( 6 );
+            basNotice.setChannel("");
+            basNotice.setIsRead( 0 );
+            basNotice.setIsPush( 0 );
+            basNotice.setMemberId( memberId );
+            basNotice.setCreatedAt( new Date() );
+            basNotice.setData( JSON.toJSONString( dataMap ) );
+            basNotice.insert();
+
+        }catch (Exception e){
+            logger.error( "增加消息异常" ,e);
+            return false;
+        }
+        return true;
+    }
     /**
      * 如果您是新用户，在9月3日~9月16日期间注册
      * @todo

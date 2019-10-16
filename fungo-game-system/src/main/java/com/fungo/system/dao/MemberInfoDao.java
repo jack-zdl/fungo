@@ -16,5 +16,5 @@ public interface MemberInfoDao extends BaseMapper<MemberInfo> {
      * @auther: dl.zhang
      * @date: 2019/10/15 19:45
      */
-    List<MemberInfo> selectListByRecommendId(@Param("memberId") String memberId);
+    List<MemberInfo> selectListByRecommendId();
 }
