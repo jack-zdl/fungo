@@ -3,11 +3,12 @@ package com.fungo.games.helper.es;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.games.config.AliESRestClient;
 import com.fungo.games.config.NacosFungoCircleConfig;
 import com.fungo.games.entity.Game;
 import com.fungo.games.entity.GameMarketSpy;
 import org.apache.http.HttpHost;
-import org.apache.lucene.search.TotalHits;
+//import org.apache.lucene.search.TotalHits;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
@@ -40,6 +41,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.*;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -167,8 +185,9 @@ public class ESDAOServiceImpl {
 
             //处理搜索命中文档结果
             SearchHits hits = searchResponse.getHits();
+//            hits.totalHits;
 
-            TotalHits totalHits = hits.getTotalHits();
+//            TotalHits totalHits = hits.getTotalHits();
             float maxScore = hits.getMaxScore();
 
             SearchHit[] searchHits = hits.getHits();
@@ -205,7 +224,7 @@ public class ESDAOServiceImpl {
                 String fragmentString = fragments[0].string();*/
             }
             postPage.setRecords(list);
-            postPage.setTotal(Long.valueOf(totalHits.value).intValue());
+            postPage.setTotal(Long.valueOf(hits.totalHits).intValue());
 
 
 
@@ -226,5 +245,37 @@ public class ESDAOServiceImpl {
         return postPage;
     }
 
+
+
+    public Page<Game> searchGame(){
+        try {
+            RestHighLevelClient highClient = AliESRestClient.getAliEsHighClient();
+            RequestOptions COMMON_OPTIONS = AliESRestClient.getCommonOptions();
+            // 创建request。
+            Map<String, Object> jsonMap = new HashMap<>();
+            // field_01、field_02为字段名，value_01、value_02为对应的值。
+            jsonMap.put("{field_01}", "{value_01}");
+            jsonMap.put("{field_02}", "{value_02}");
+            //index_name为索引名称；type_name为类型名称；doc_id为文档的id。
+            IndexRequest indexRequest = new IndexRequest("{index_name}", "{type_name}", "{doc_id}").source(jsonMap);
+
+            // 同步执行，并使用自定义RequestOptions（COMMON_OPTIONS）。
+            IndexResponse indexResponse = highClient.index(indexRequest, COMMON_OPTIONS);
+
+            long version = indexResponse.getVersion();
+
+            System.out.println("Index document successfully! " + version);
+            //index_name为索引名称；type_name为类型名称；doc_id为文档的id。与以上创建索引的名称和id相同。
+            DeleteRequest request = new DeleteRequest("{index_name}", "{type_name}", "{doc_id}");
+            DeleteResponse deleteResponse = highClient.delete(request, COMMON_OPTIONS);
+
+            System.out.println("Delete document successfully! \n" + deleteResponse.toString() + "\n" + deleteResponse.status());
+
+            highClient.close();
+        }catch (IOException e){
+            LOGGER.error( "haode",e );
+        }
+        return null;
+    }
 
 }

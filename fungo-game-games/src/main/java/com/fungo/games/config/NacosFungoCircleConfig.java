@@ -39,6 +39,10 @@ public class NacosFungoCircleConfig {
 
     @Value( value = "${es.cluster-node.game.type}")
     private String searchIndexType;
+    @Value( value = "${es.cluster-node.user}")
+    private String esUser;
+    @Value( value = "${es.cluster-node.password}")
+    private String esPassword;
 
     public String getBasLog() {
         return basLog;
@@ -110,5 +114,21 @@ public class NacosFungoCircleConfig {
 
     public void setSearchIndexType(String searchIndexType) {
         this.searchIndexType = searchIndexType;
+    }
+
+    public String getEsUser() {
+        return esUser;
+    }
+
+    public void setEsUser(String esUser) {
+        this.esUser = esUser;
+    }
+
+    public String getEsPassword() {
+        return esPassword;
+    }
+
+    public void setEsPassword(String esPassword) {
+        this.esPassword = esPassword;
     }
 }
