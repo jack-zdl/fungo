@@ -25,6 +25,8 @@ public class NacosFungoCircleConfig {
 
     @Value(value = "${nacos.es.game.search:true}")
     public boolean gameSearch;
+    @Value(value = "${nacos.es.game.associate.search}")
+    public boolean keywordGameSearch;
 
     @Value(value = "${es.cluster-nodes.ip}")
     private String esHttpIp;
@@ -68,6 +70,14 @@ public class NacosFungoCircleConfig {
 
     public void setGameSearch(boolean gameSearch) {
         this.gameSearch = gameSearch;
+    }
+
+    public boolean isKeywordGameSearch() {
+        return keywordGameSearch;
+    }
+
+    public void setKeywordGameSearch(boolean keywordGameSearch) {
+        this.keywordGameSearch = keywordGameSearch;
     }
 
     public String getEsHttpIp() {

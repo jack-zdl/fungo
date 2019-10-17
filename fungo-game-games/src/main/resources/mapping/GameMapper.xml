@@ -102,6 +102,19 @@
         <!--2019-05-28 补充遗漏的字段 lyc-->
         <result column="comment_num" property="commentNum"/>
         <result column="boom_download_num" property="boomDownloadNum"/>
+         <result column="game_idt_sn" jdbcType="BIGINT" property="gameIdtSn" />
+        <result column="tab_game_id" jdbcType="VARCHAR" property="tabGameId" />
+        <result column="google_game_id" jdbcType="VARCHAR" property="googleGameId" />
+        <result column="video_url_latest" jdbcType="BIT" property="videoUrlLatest" />
+        <result column="cost_free" jdbcType="BIT" property="costFree" />
+        <result column="company" jdbcType="VARCHAR" property="company" />
+        <result column="publisher" jdbcType="VARCHAR" property="publisher" />
+        <result column="android_status_desc" jdbcType="VARCHAR" property="androidStatusDesc" />
+        <result column="ios_status_desc" jdbcType="VARCHAR" property="iosStatusDesc" />
+        <result column="google_deputy_name" jdbcType="VARCHAR" property="googleDeputyName" />
+        <result column="can_fast" jdbcType="TINYINT" property="canFast" />
+        <result column="week_download_num" jdbcType="BIGINT" property="weekDownloadNum" />
+        <result column="score" jdbcType="DOUBLE" property="score" />
     </resultMap>
 
     <!-- 通用查询结果列 -->

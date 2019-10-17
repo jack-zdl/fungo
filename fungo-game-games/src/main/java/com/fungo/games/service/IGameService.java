@@ -109,6 +109,13 @@ public interface IGameService {
 
 	/**
 	 * 搜索游戏
+	 * @param keyword
+	 * @return
+	 */
+	FungoPageResultDto<GameSearchOut> searchGamesCount(String keyword) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException;
+
+	/**
+	 * 搜索游戏
 	 *
 	 */
 	FungoPageResultDto<String> searchGamesKeyword(int page, int limit, String keyword, String tag, String sort, String os, String memberId);

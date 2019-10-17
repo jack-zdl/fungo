@@ -20,6 +20,7 @@ import com.game.common.dto.evaluation.EvaluationInputPageDto;
 import com.game.common.dto.game.*;
 import com.game.common.dto.index.CardDataBean;
 import com.game.common.dto.index.CardIndexBean;
+import com.game.common.dto.search.GameSearchOut;
 import com.game.common.util.PageTools;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +30,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,48 +52,36 @@ public class FeignServiceController {
 
     @Autowired
     private IGameService iGameService;
-
     @Autowired
     private GameSurveyRelService gameSurveyRelService;
-
     @Autowired
     private GameInviteService gameInviteService;
-
     @Autowired
     private GameService gameService;
-
     @Autowired
     private GameEvaluationDao gameEvaluationDao;
-
     @Autowired
     private GameEvaluationServiceImap gameEvaluationServiceImap;
-
     @Autowired
     private GameReleaseLogService gameReleaseLogService;
-
     @Autowired
     private GameCollectionGroupService gameCollectionGroupService;
-
     @Autowired
     private GameCollectionItemService gameCollectionItemService;
-
     @Autowired
     private IEvaluateProxyService iEvaluateProxyService;
-
     @Autowired
     private GameDao gameDao;
-
     @Autowired
     private GameTagService gameTagService;
-
     @Autowired
     private BasTagService basTagService;
-
     @Autowired
     private GameEvaluationService gameEvaluationService;
-
     @Autowired
     private GameSurveyRelService gameSurveyRelServiceImap;
+    @Autowired
+    private IGameService gameServiceImpl;
 
     /****************************************************ActionController**********************************************************************/
 
@@ -825,7 +815,15 @@ public class FeignServiceController {
     @ApiOperation(value = "getGameSelectCountByLikeNameAndState", notes = "")
     @RequestMapping(value = "/api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.POST)
     int getGameSelectCountByLikeNameAndState(@RequestBody GameDto gameDto) {
-        return gameService.selectCount(new EntityWrapper<Game>().where("state = {0}", 0).like("name", gameDto.getName()));
+        try {
+            FungoPageResultDto<GameSearchOut> gameSearchOutFungoPageResultDto =   gameServiceImpl.searchGamesCount(gameDto.getName());
+//            return gameService.selectCount(new EntityWrapper<Game>().where("state = {0}", 0).like("name", gameDto.getName()));
+            return  gameSearchOutFungoPageResultDto.getCount();
+        } catch (Exception e) {
+            LOGGER.error( "根据游戏名称获取游戏总和异常",e );
+        }
+        return 0;
+
     }
 
     @ApiOperation(value = "getGameEvaluationSelectPageByTypeAndStateOrderByRAND", notes = "")

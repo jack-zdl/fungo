@@ -43,6 +43,8 @@ public class GameSearchOut {
 	private String address;
 	// 是否可以加速
 	private boolean canFast;
+	// 游戏状态
+	private String gameStatus;
 
 	private List<String> tags;
 
@@ -230,6 +232,14 @@ public class GameSearchOut {
 
 	public void setCanFast(boolean canFast) {
 		this.canFast = canFast;
+	}
+
+	public String getGameStatus() {
+		return gameStatus;
+	}
+
+	public void setGameStatus(String gameStatus) {
+		this.gameStatus = gameStatus;
 	}
 
 	public List<String> getTags() {

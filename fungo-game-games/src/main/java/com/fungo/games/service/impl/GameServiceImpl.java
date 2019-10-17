@@ -1,6 +1,7 @@
 package com.fungo.games.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.common.utils.StringUtils;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -11,6 +12,7 @@ import com.fungo.games.config.NacosFungoCircleConfig;
 import com.fungo.games.dao.BasTagDao;
 import com.fungo.games.dao.GameCollectionGroupDao;
 import com.fungo.games.dao.GameDao;
+import com.fungo.games.dao.GameTagDao;
 import com.fungo.games.entity.*;
 import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.feign.CommunityFeignClient;
@@ -94,7 +96,8 @@ public class GameServiceImpl implements IGameService {
     private NacosFungoCircleConfig nacosFungoCircleConfig;
     @Autowired
     private ESDAOServiceImpl esdaoServiceImpl;
-
+    @Autowired
+    private GameTagDao gameTagDao;
 
     @Override
     public FungoPageResultDto<GameOutPage> getGameList(GameInputPageDto gameInputDto, String memberId, String os) {
@@ -934,8 +937,7 @@ public class GameServiceImpl implements IGameService {
      * @return
      */
     @Override
-    public FungoPageResultDto<GameSearchOut>
-    searchGames(int page, int limit, String keyword, String tag, String sort, String os, String memberId)
+    public FungoPageResultDto<GameSearchOut> searchGames(int page, int limit, String keyword, String tag, String sort, String os, String memberId)
             throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         if (keyword == null || "".equals(keyword.replace(" ", "")) || keyword.contains("%")) {
             return FungoPageResultDto.error("13", "请输入正确的关键字格式");
@@ -1069,21 +1071,84 @@ public class GameServiceImpl implements IGameService {
                     e.printStackTrace();
                     logger.error("根据游戏id询圈子id异常,游戏id：" + game.getId(), e);
                 }
-//                out.setCompany( game.getC );
-//			if(m) {
-//				GameSurveyRel srel=this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", game.getId()).eq("phone_model", os));
-//				if(srel!=null) {
-//					out.setBinding(!StringUtils.isNullOrEmpty(srel.getAppleId()));
-//					out.setClause(1==srel.getAgree()?true:false);
-//					out.setMake(true);
-//				}
-//			}
+                out.setCompany( org.apache.commons.lang3.StringUtils.isNoneBlank(game.getCompany()) ? game.getCompany() : "" );
+                out.setAddress( game.getOrigin());
+                out.setCanFast(  game.getCanFast() != null ? game.getCanFast() : false );
+                String androidStatusDesc = game.getAndroidStatusDesc();
+                /**
+                 * 功能描述:
+                 *  {
+                 *      dsc:””,
+                 *      starDate:””,
+                 *      endDate:””
+                 *  }
+                 */
+                String starDate = null;
+                String endDate = null;
+                JSONObject jsonObject = JSON.parseObject( androidStatusDesc);
+                if(jsonObject != null){
+                    starDate =(String) jsonObject.get( "starDate" );
+                    endDate = (String) jsonObject.get( "endDate" );
+                    if( starDate == null || endDate == null ){
+                        out.setGameStatus( (String) jsonObject.get( "dsc" ) );
+                    }else {
+                        out.setGameStatus(  DateTools.betweenDate(new Date( starDate ),new Date( endDate ),new Date( )  ) ? (String) jsonObject.get( "dsc" ) : "" );
+                    }
+                }
+
+                List<String> gameTags = gameTagDao.selectGameTag( game.getId());
+                out.setTags(gameTags);
                 dataList.add(out);
             }
             re.setData(dataList);
             PageTools.pageToResultDto(re, gamePage);
         }catch (Exception e){
             logger.error( "搜索游戏异常,参数keyword"+keyword+"tag="+tag+"sort="+sort,e );
+            re= FungoPageResultDto.FungoPageResultDtoFactory.buildError( "搜索游戏异常" );
+        }
+        return re;
+    }
+
+    /**
+     * 搜索游戏
+     *
+     * @param page
+     * @param limit
+     * @param keyword
+     * @param tag
+     * @param sort
+     * @param os
+     * @param memberId
+     * @return
+     */
+    @Override
+    public FungoPageResultDto<GameSearchOut> searchGamesCount( String keyword)
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        if (keyword == null || "".equals(keyword.replace(" ", "")) || keyword.contains("%")) {
+            return FungoPageResultDto.error("13", "请输入正确的关键字格式");
+        }
+        FungoPageResultDto<GameSearchOut> re = new FungoPageResultDto<GameSearchOut>();
+        try {
+            Page<Game> gamePage = null;
+            List<Game> gameList = new ArrayList<>();
+            // 判断是否选择es
+            if(nacosFungoCircleConfig.isGameSearch()){
+                @SuppressWarnings("rawtypes")
+                Wrapper wrapper = Condition.create().setSqlSelect(
+                        "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
+                        .eq("state", 0).like("name", keyword);
+                    gamePage = gameService.selectPage(new Page<>(1, 10), wrapper);
+            }else {
+                    gamePage = esdaoServiceImpl.getAllPosts( 1,  10, keyword,  "",  "" );
+            }
+            if (gamePage != null) {
+                gameList = gamePage.getRecords();
+                re.setCount( gamePage.getCurrent());
+            } else {
+                re.setCount( 0);
+            }
+        }catch (Exception e){
+            logger.error( "搜索游戏异常,参数keyword"+keyword,e );
             re= FungoPageResultDto.FungoPageResultDtoFactory.buildError( "搜索游戏异常" );
         }
         return re;
@@ -1107,7 +1172,7 @@ public class GameServiceImpl implements IGameService {
             List<String> gameNameList = new ArrayList<>();
             List<Game> gameList = null;
             // 判断是否选择es
-            if(nacosFungoCircleConfig.isGameSearch()){
+            if(nacosFungoCircleConfig.isKeywordGameSearch()){
                 @SuppressWarnings("rawtypes")
                 Wrapper wrapper = Condition.create().setSqlSelect(
                         "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
