@@ -31,6 +31,8 @@ import com.game.common.enums.CommonEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.*;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,6 +86,9 @@ public class ActionServiceImpl implements IActionService {
     @Autowired
     private MemberService memberService;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger( ActionServiceImpl.class);
+
+
     //点赞
     @Transactional
     public ResultDto<String> like(String memberId, ActionInput inputDto, String appVersion) throws Exception {
@@ -122,6 +127,7 @@ public class ActionServiceImpl implements IActionService {
             //用户被点赞总次数
             int likeCount = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("member_id", targetMemberId).in("type", new Integer[]{0, 1, 2, 7, 11}));
 //			int likeCount = scoreLogService.selectCount(new EntityWrapper<ScoreLog>().eq("member_id", targetMemberId).eq("code_idt", 41));
+            LOGGER.info("like---点赞次数"+ likeCount);
             if (likeCount == 50) {//expTask.getData()
                 scoreLogService.updateRanked(targetMemberId, new ObjectMapper(), 31);
             } else if (likeCount == 100) {
