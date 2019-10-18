@@ -72,17 +72,21 @@ public class ESDAOServiceImpl {
 
     private RestHighLevelClient client;
 
+
+    @Autowired
+    private AliESRestClient aliESRestClient;
+
     @Autowired
     private NacosFungoCircleConfig nacosFungoCircleConfig;
 
-    @PostConstruct
-    public void init() {
-        client = new RestHighLevelClient(
-                RestClient.builder(
-                        new HttpHost(nacosFungoCircleConfig.getEsHttpIp(),   nacosFungoCircleConfig.getEsHttpPort(), "http")
-                        //        new HttpHost("localhost", 9201, "http")
-                ));
-    }
+//    @PostConstruct
+//    public void init() {
+//        client = new RestHighLevelClient(
+//                RestClient.builder(
+//                        new HttpHost(nacosFungoCircleConfig.getEsHttpIp(),   nacosFungoCircleConfig.getEsHttpPort(), "http")
+//                        //        new HttpHost("localhost", 9201, "http")
+//                ));
+//    }
 
     @PreDestroy
     public void destroy(){
@@ -129,11 +133,12 @@ public class ESDAOServiceImpl {
     // String keyword, int page, int limit
     public Page<Game> getAllPosts(int page, int limit, String keyword, String tag, String sort ) {
         Page<Game> postPage = new Page<>();
+        RestHighLevelClient highClient = aliESRestClient.getAliEsHighClient();
         try {
 
             // 1、创建search请求
             SearchRequest searchRequest = new SearchRequest(nacosFungoCircleConfig.getIndex());
-            searchRequest.types(nacosFungoCircleConfig.getSearchIndexType());
+//            searchRequest.types(nacosFungoCircleConfig.getSearchIndexType());
             // 2、用SearchSourceBuilder来构造查询请求体 ,请仔细查看它的方法，构造各种查询的方法都在这。
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
             if(keyword != null && !"".equals(keyword)){
@@ -167,7 +172,7 @@ public class ESDAOServiceImpl {
             //将请求体加入到请求中
             searchRequest.source(sourceBuilder);
             //3、发送请求
-            SearchResponse searchResponse = client.search(searchRequest,RequestOptions.DEFAULT);
+            SearchResponse searchResponse = highClient.search(searchRequest,RequestOptions.DEFAULT);
             //4、处理响应
             //搜索结果状态信息
             RestStatus status = searchResponse.status();
@@ -246,18 +251,17 @@ public class ESDAOServiceImpl {
     }
 
 
-
-    public Page<Game> searchGame(){
+    public Page<Game> searchGame(int page, int limit, String keyword ){
         try {
-            RestHighLevelClient highClient = AliESRestClient.getAliEsHighClient();
+            RestHighLevelClient highClient = aliESRestClient.getAliEsHighClient();
             RequestOptions COMMON_OPTIONS = AliESRestClient.getCommonOptions();
             // 创建request。
             Map<String, Object> jsonMap = new HashMap<>();
             // field_01、field_02为字段名，value_01、value_02为对应的值。
-            jsonMap.put("{field_01}", "{value_01}");
-            jsonMap.put("{field_02}", "{value_02}");
+            jsonMap.put("state", "1");
+            jsonMap.put("name", keyword);
             //index_name为索引名称；type_name为类型名称；doc_id为文档的id。
-            IndexRequest indexRequest = new IndexRequest("{index_name}", "{type_name}", "{doc_id}").source(jsonMap);
+            IndexRequest indexRequest = new IndexRequest("t_game", "", "").source(jsonMap);
 
             // 同步执行，并使用自定义RequestOptions（COMMON_OPTIONS）。
             IndexResponse indexResponse = highClient.index(indexRequest, COMMON_OPTIONS);
@@ -266,10 +270,10 @@ public class ESDAOServiceImpl {
 
             System.out.println("Index document successfully! " + version);
             //index_name为索引名称；type_name为类型名称；doc_id为文档的id。与以上创建索引的名称和id相同。
-            DeleteRequest request = new DeleteRequest("{index_name}", "{type_name}", "{doc_id}");
-            DeleteResponse deleteResponse = highClient.delete(request, COMMON_OPTIONS);
+//            DeleteRequest request = new DeleteRequest("{index_name}", "{type_name}", "{doc_id}");
+//            DeleteResponse deleteResponse = highClient.delete(request, COMMON_OPTIONS);
 
-            System.out.println("Delete document successfully! \n" + deleteResponse.toString() + "\n" + deleteResponse.status());
+//            System.out.println("Delete document successfully! \n" + deleteResponse.toString() + "\n" + deleteResponse.status());
 
             highClient.close();
         }catch (IOException e){

@@ -1,5 +1,6 @@
 package com.fungo.games.config;
 
+import org.checkerframework.checker.units.qual.A;
 import org.elasticsearch.client.HttpAsyncResponseConsumerFactory;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -11,6 +12,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 
 /**
@@ -19,12 +21,16 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @Author: dl.zhang
  * @Date: 2019/10/17
  */
+@Component
 public class AliESRestClient {
 
 
     private static final RequestOptions COMMON_OPTIONS;
 
     private static RestHighLevelClient highClient;
+
+    @Autowired
+    private NacosFungoCircleConfig nacosFungoCircleConfig ;
 
 
     static {
@@ -37,8 +43,8 @@ public class AliESRestClient {
         COMMON_OPTIONS = builder.build();
     }
 
-    public static void initClinet(){
-        NacosFungoCircleConfig nacosFungoCircleConfig = new NacosFungoCircleConfig();
+    public  void initClinet(){
+//        NacosFungoCircleConfig nacosFungoCircleConfig = new NacosFungoCircleConfig();
         // 阿里云ES集群需要basic auth验证。
         final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         //访问用户名和密码为您创建阿里云Elasticsearch实例时设置的用户名和密码，也是Kibana控制台的登录用户名和密码。
@@ -58,7 +64,7 @@ public class AliESRestClient {
 //        return highClient;
     }
 
-    public static RestHighLevelClient getAliEsHighClient(){
+    public  RestHighLevelClient getAliEsHighClient(){
         if(highClient != null){
             return highClient;
         }else {
