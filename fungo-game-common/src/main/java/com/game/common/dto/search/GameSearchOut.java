@@ -39,6 +39,8 @@ public class GameSearchOut {
 
 	// 厂商
 	private String company;
+	// 发行商
+	private String publisher;
 	// 地区
 	private String address;
 	// 是否可以加速
@@ -216,6 +218,14 @@ public class GameSearchOut {
 
 	public void setCompany(String company) {
 		this.company = company;
+	}
+
+	public String getPublisher() {
+		return publisher;
+	}
+
+	public void setPublisher(String publisher) {
+		this.publisher = publisher;
 	}
 
 	public String getAddress() {

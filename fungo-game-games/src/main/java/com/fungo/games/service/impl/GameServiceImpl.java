@@ -1071,7 +1071,9 @@ public class GameServiceImpl implements IGameService {
                     e.printStackTrace();
                     logger.error("根据游戏id询圈子id异常,游戏id：" + game.getId(), e);
                 }
+                // 琪琪说  有厂商展示厂商，没有厂商展示发行商
                 out.setCompany( org.apache.commons.lang3.StringUtils.isNoneBlank(game.getCompany()) ? game.getCompany() : "" );
+                out.setPublisher( org.apache.commons.lang3.StringUtils.isNoneBlank(game.getPublisher()) ? game.getPublisher() : "" );
                 out.setAddress( game.getOrigin());
                 out.setCanFast(  game.getCanFast() != null ? game.getCanFast() : false );
                 String androidStatusDesc = game.getAndroidStatusDesc();
