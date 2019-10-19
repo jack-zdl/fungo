@@ -16,6 +16,11 @@
     <result column="description" jdbcType="VARCHAR" property="description" />
   </resultMap>
 
+  <resultMap id="getCount" type="HashMap">
+    <result property="key" column="member_type" jdbcType="VARCHAR"/>
+    <result property="value" column="COUNT(*)" jdbcType="INTEGER"/>
+  </resultMap>
+
   <sql id="Base_Column_List">
     id, member_type as memberType, member_id as memberId, invitee_id AS inviteeId,  coupon_id as couponId, isactive, created_by as createdBy, created_at as createdAt ,
     updated_by as updatedBy, updated_at as updatedAt, rversion, description
@@ -24,7 +29,11 @@
   <select id="getMemberCouponByRecommendId" resultType="com.fungo.system.entity.MemberCoupon">
         SELECT  
          <include refid="Base_Column_List"></include>
-         FROM  t_member_coupon where  member_id = #{memberId} and member_type = #{type}
+         FROM  t_member_coupon where  member_id = #{memberId}
+         <if test="type != null">
+           and member_type = #{type}
+         </if>
+
          <if test="ids != null and ids.size() > 0">
             and invitee_id not in
            <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
@@ -41,6 +50,20 @@
     <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
       #{item}
     </foreach>
+  </select>
+
+  <select id="getMemberCouponByTypes" resultMap="getCount">
+    SELECT
+    member_type,COUNT(*)
+    FROM  t_member_coupon where  member_id = #{memberId}
+    <if test="types != null and types.size() > 0">
+      and member_type in
+      <foreach item="item" index="index" collection="types" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+      group by member_type
+    </if>
+
   </select>
 
 </mapper>

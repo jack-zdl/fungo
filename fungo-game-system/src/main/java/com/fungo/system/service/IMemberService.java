@@ -89,5 +89,7 @@ public interface IMemberService {
 
 	ResultDto<String> checkTwoUserRecommend();
 
+	ResultDto<InviteInfoVO> getInviteInfo(String memberId);
+
 
 }

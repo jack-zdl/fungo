@@ -223,7 +223,7 @@
          <if test="level != null">
              and m.`level` >=  #{level}
          </if>
-
+         limit 500
     </select>
 
     

@@ -38,15 +38,19 @@ import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import io.swagger.models.auth.In;
 import org.apache.commons.lang.StringUtils;
+import org.omg.PortableInterceptor.INACTIVE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StopWatch;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -1930,8 +1934,10 @@ public class MemberServiceImpl implements IMemberService {
         ResultDto<String> resultDto = null;
      try {
          // 所有用户奖励5折券
+         StopWatch watch = new StopWatch( "Stream效率测试" );
+         watch.start( "总时间" );
          List<Member> memberList = memberDao.selectListBylargess(null,"12");
-         memberList.stream().forEach( s -> {
+         memberList.parallelStream().forEach( s -> {
              MemberCoupon memberCoupon = new MemberCoupon();
              memberCoupon.setMemberType(2);
              memberCoupon.setMemberId( s.getId());
@@ -1947,7 +1953,7 @@ public class MemberServiceImpl implements IMemberService {
          // 所有用户达到LV2并获取奖励2天免费
 
          memberList = memberDao.selectListBylargess("2","11");
-         memberList.stream().forEach( s -> {
+         memberList.parallelStream().forEach( s -> {
              MemberCoupon memberCoupon = new MemberCoupon();
              memberCoupon.setMemberType(2);
              memberCoupon.setMemberId( s.getId());
@@ -1966,6 +1972,38 @@ public class MemberServiceImpl implements IMemberService {
          resultDto = ResultDto.ResultDtoFactory.buildError( "检查所有用户的奖励失败" );
      }
      return resultDto;
+    }
+
+    @Override
+    public ResultDto<InviteInfoVO> getInviteInfo(String memberId) {
+        ResultDto<InviteInfoVO> resultDto = null;
+        try {
+            /**
+             31 12小时获取
+             32 9折
+             33 8折
+             34 7折
+             35 5天
+             36 16天
+             37 66天
+             */
+            List<String> types = Arrays.asList( "31","32","33","34","35","36","37" );
+            List<Map<String, Integer>>  memberCouponMaps = memberCouponDao.getMemberCouponByTypes(memberId,types);
+            Map<String,String> memberCouponMap = new HashMap<>( );
+            memberCouponMaps.stream().forEach( s -> {
+                memberCouponMap.put( String.valueOf( s.get( "key" ) ), String.valueOf( s.get( "value" ) ));
+            } );
+            InviteInfoVO inviteInfoVO = new InviteInfoVO();
+            inviteInfoVO.setInviteUserNum(  memberCouponMap.get("31") == null ? 0 :  Long.valueOf( memberCouponMap.get("31")));
+            inviteInfoVO.setNewUserOneNum(  memberCouponMap.get("35") == null ? 0 :  Long.valueOf( memberCouponMap.get("35")));
+            inviteInfoVO.setNewUserThreeNum( memberCouponMap.get("36") == null ? 0 :  Long.valueOf( memberCouponMap.get("36")));
+            inviteInfoVO.setNewUserSixNum(  memberCouponMap.get("37") == null ? 0 :  Long.valueOf( memberCouponMap.get("37")));
+            resultDto = ResultDto.ResultDtoFactory.buildSuccess( inviteInfoVO );
+        }catch (Exception e){
+            logger.error( "查询邀请人礼品卡数目异常",e );
+            resultDto = ResultDto.ResultDtoFactory.buildError( "查询邀请人礼品卡数目异常" );
+        }
+        return resultDto;
     }
 
 

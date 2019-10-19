@@ -605,6 +605,15 @@ public class GameServiceImpl implements IGameService {
                 } );
                 out.setGameGroups( gameGroups );
             }
+            //
+            List<GameSurveyRel> surs = surveyRelService.selectList(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", gameId));
+            surs.stream().forEach( s ->{
+                if("Android".equals(s.getPhoneModel())){
+                    out.setUserAndroidState("1");
+                }else if("iOS".equals( s.getPhoneModel() )){
+                    out.setUserIosState("1");
+                }
+            } );
         }catch (Exception e){
             logger.error("游戏详情异常,游戏id="+gameId,e);
         }

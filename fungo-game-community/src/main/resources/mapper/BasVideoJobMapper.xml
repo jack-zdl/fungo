@@ -24,4 +24,13 @@
         id, biz_type AS bizType, biz_id AS bizId, status, created_at AS createdAt, updated_at AS updatedAt, video_id AS videoId, biz_video_url AS bizVideoUrl, re_video_url AS reVideoUrl
     </sql>
 
+	<select id="getBasVideoJobByPostIds" resultType="com.fungo.community.entity.BasVideoJob">
+		select  
+		<include refid="Base_Column_List"></include>
+		FROM t_bas_video_job
+		WHERE biz_type =  #{type} and biz_id in
+		<foreach  item="item" collection="postIds" index="index"  open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
 </mapper>

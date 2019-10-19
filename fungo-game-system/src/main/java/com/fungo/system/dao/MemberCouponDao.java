@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -34,4 +35,5 @@ public interface MemberCouponDao extends BaseMapper<MemberCoupon> {
      */
     List<MemberCoupon> getMemberCouponByInvitee( @Param("ids") List<String> ids , @Param("type") String type,@Param( "couponId" )String couponId);
 
+    List<Map<String, Integer>> getMemberCouponByTypes(@Param("memberId") String memberId, @Param("types")List<String> types);
 }
