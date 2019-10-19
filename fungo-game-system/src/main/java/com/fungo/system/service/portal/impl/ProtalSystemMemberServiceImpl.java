@@ -79,7 +79,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
         if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
             types = new String[]{"0", "1", "2", "7", "11"};
         } else {
-            types = new String[]{"0", "1", "2", "7","11"};
+            types = new String[]{"0", "1", "2","10","7","11"};
         }
 
         Page<BasNotice> basNoticePage = new Page<>(inputPage.getPage(), inputPage.getLimit());
@@ -129,6 +129,15 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                     map.put("msg_template", "赞了我的心情");
                 } else if (basNotice.getType() == 11) {
                     map.put("msg_template", "赞了我的心情评论");
+                }else if (basNotice.getType() == 10) {
+                    map.put("msg_template", "赞了我的评论");
+                    String replyId = (String) map.get("replyId");
+                    if(replyId != null){
+                        CmmCmtReplyDto cmmCmtReplyDto = new CmmCmtReplyDto();
+                        cmmCmtReplyDto.setId(replyId);
+                        FungoPageResultDto<CmmCmtReplyDto>  replyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto);
+                        CmmCmtReplyDto cmmCmtReplyDto1 =    (replyDtoFungoPageResultDto.getData() != null && replyDtoFungoPageResultDto.getData().size() >0 ) ? replyDtoFungoPageResultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                    }
                 }
 
                 if (basNotice.getIsRead() == 0 || basNotice.getIsPush() == 0) {

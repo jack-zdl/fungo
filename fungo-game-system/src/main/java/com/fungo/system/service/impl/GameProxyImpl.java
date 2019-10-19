@@ -136,12 +136,13 @@ public class GameProxyImpl implements IGameProxy {
 			FungoPageResultDto<CmmCmtReplyDto> cmmCmtReplyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto);
 			if(cmmCmtReplyDtoFungoPageResultDto != null && cmmCmtReplyDtoFungoPageResultDto.getData() != null && cmmCmtReplyDtoFungoPageResultDto.getData().size() > 0 ){
 				CmmCmtReplyDto cmmCmtReplyDto1  = cmmCmtReplyDtoFungoPageResultDto.getData().get(0);
-				date.put("replyContent", information);
+				notiveMemberId = cmmCmtReplyDto1.getMemberId();
+				date.put("replyContent", cmmCmtReplyDto1.getContent());
 				date.put("type", 10);
 				date.put("replyId", target_id);
 				msgType = 10;//消息类型
 			}
-		}else if(Setting.ACTION_TYPE_COMMENT == eventType){// 评论帖子
+		} else if(Setting.ACTION_TYPE_COMMENT == eventType){// 评论帖子
 			//// @todo 社区帖子的
 			CmmPostDto cmmPostParam = new CmmPostDto();cmmPostParam.setId(target_id);
 			cmmPostParam.setState(1);
