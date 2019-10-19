@@ -13,6 +13,7 @@ import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.service.*;
+import com.fungo.system.service.impl.MemberNoticeServiceImpl;
 import com.fungo.system.service.portal.PortalSystemIMemberService;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
@@ -67,6 +68,8 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
     private GamesFeignClient gamesFeignClient;
     @Autowired(required = false)
     private CommunityFeignClient communityFeignClient;
+    @Autowired
+    private MemberNoticeServiceImpl memberNoticeService;
 
     //消息
     @Override
@@ -137,9 +140,11 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                         cmmCmtReplyDto.setId(replyId);
                         FungoPageResultDto<CmmCmtReplyDto>  replyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto);
                         CmmCmtReplyDto cmmCmtReplyDto1 =    (replyDtoFungoPageResultDto.getData() != null && replyDtoFungoPageResultDto.getData().size() >0 ) ? replyDtoFungoPageResultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                        if(cmmCmtReplyDto1 != null){
+                            memberNoticeService.updateNotice(cmmCmtReplyDto1,map);
+                        }
                     }
                 }
-
                 if (basNotice.getIsRead() == 0 || basNotice.getIsPush() == 0) {
                     basNotice.setIsRead(1);
                     basNotice.setIsPush(1);
