@@ -223,12 +223,17 @@ public class FungoMallScanOrderWithSeckillService {
                                         MallVirtualCard vCardNewWithOrderGoods = null;
                                         switch (goods.getGoodsType().intValue()) {
                                             case 21:
+                                                // @todo
                                                 vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
                                                 break;
                                             case 22:
                                                 vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
                                                 break;
                                             case 23:
+                                                vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
+                                                break;
+                                            case 26:
+                                                // @todo
                                                 vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
                                                 break;
                                             case 3:

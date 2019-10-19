@@ -122,6 +122,12 @@ public class MallOrderOutBean implements Serializable {
      */
     private String updatedTime;
 
+    /**
+     * 功能描述: 商品类型 21 零卡游戏VIP和白金VIP  26 谷歌游戏账号
+     * @date: 2019/10/19 16:04
+     */
+    private int goodType;
+
 
     public String getOrderId() {
         return orderId;
@@ -289,6 +295,14 @@ public class MallOrderOutBean implements Serializable {
 
     public void setSucMsg(String sucMsg) {
         this.sucMsg = sucMsg;
+    }
+
+    public int getGoodType() {
+        return goodType;
+    }
+
+    public void setGoodType(int goodType) {
+        this.goodType = goodType;
     }
 
     @Override

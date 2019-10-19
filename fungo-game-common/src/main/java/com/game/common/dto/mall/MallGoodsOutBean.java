@@ -132,6 +132,8 @@ public class MallGoodsOutBean implements Serializable {
     private String orderId;
 
 
+
+
     public String getValidPeriodIntro() {
         return validPeriodIntro;
     }

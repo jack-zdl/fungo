@@ -168,6 +168,8 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                     seckill_price_vcy = FungoAESUtil.decrypt(seckill_price_vcy,
                             aESSecretKey + FungoMallSeckillConsts.AES_SALT);
 
+                    MallGoods mallGoods = mallGoodsDaoService.selectById( goodsId );
+
 
                     //剩余库存解析
                     String residue_stock = (String) objectMap.get("residue_stock");
@@ -189,6 +191,9 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                     goodsOutBean.setId(String.valueOf(goodsId));
                     goodsOutBean.setGoodsName(goods_name);
                     goodsOutBean.setSeckillPriceVcy(seckill_price_vcy);
+//                    if(21 == goodsType || 26 == goodsType){
+//
+//                    }
                     goodsOutBean.setResidueStock(residue_stock);
                     goodsOutBean.setMainImg(main_img);
                     goodsOutBean.setSort(sort);
@@ -542,10 +547,11 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             //  4.1 若fungo币可用余额 足够秒杀当前商品，则下单
             //  4.2 同时直接扣除可用余额，到冻结余额
             boolean isFullMbFungo = false;
-
+            MallGoods mallGoods = mallGoodsDaoService.selectById(orderInput.getGoodsId());
             IncentAccountCoin incentAccountCoin = isFullMbFungo(orderInput.getMbId());
             if (null == incentAccountCoin) {
                 resultMap.put("seckillStatus", 3);
+                resultMap.put( "goodsType",mallGoods.getGoodsType() );
                 logger.info("秒杀商品失败--用户id:{}--商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "用户fungo币不足");
                 return resultMap;
             }
@@ -554,6 +560,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             BigDecimal coinUsable = incentAccountCoin.getCoinUsable();
             if (null == coinUsable) {
                 resultMap.put("seckillStatus", 3);
+                resultMap.put( "goodsType",mallGoods.getGoodsType() );
                 logger.info("秒杀商品失败--用户id:{}--商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "用户fungo币不足");
                 return resultMap;
             }
@@ -561,6 +568,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             int isHaveCoin = coinUsable.compareTo(BigDecimal.ZERO);
             if (0 == isHaveCoin || -1 == isHaveCoin) {
                 resultMap.put("seckillStatus", 3);
+                resultMap.put( "goodsType",mallGoods.getGoodsType() );
                 logger.info("秒杀商品失败--用户id:{}--商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "用户fungo币不足");
                 return resultMap;
             }
@@ -584,6 +592,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
             if (!isFullMbFungo) {
                 resultMap.put("seckillStatus", 3);
+                resultMap.put( "goodsType",mallGoods.getGoodsType() );
                 logger.info("秒杀商品失败--用户id:{}--商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "用户fungo币不足");
                 return resultMap;
             }
@@ -1069,6 +1078,11 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                     csgAddress = tradeSuccessOrder.getCsgAddress();
                     csgMobile = tradeSuccessOrder.getCsgMobile();
                 }
+            }
+            if (null != orderGoodsList && !orderGoodsList.isEmpty()) {
+                MallOrderGoods mallOrderGoods =  orderGoodsList.get( 0 );
+                MallGoods mallGoods = mallGoodsDaoService.selectById( mallOrderGoods.getGoodsId());
+                orderOutBean.setGoodType(mallGoods.getGoodsType());
             }
         }
 

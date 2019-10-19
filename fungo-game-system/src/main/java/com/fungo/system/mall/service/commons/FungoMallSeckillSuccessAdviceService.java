@@ -85,7 +85,7 @@ public class FungoMallSeckillSuccessAdviceService {
             switch (goodsType) {
                 //零卡
                 case 21:
-                    msgDataContent = FungoMallSeckillConsts.MSG_SECKILL_SUCCESS_LINGKA;
+                    msgDataContent = FungoMallSeckillConsts.MSG_SECKILL_SUCCESS_LINGKA_BAIJINVIP;
                     msgDataContent = msgDataContent.replace("{", cardSn);
                     msgContentMap.put("actionType", "2");
                     break;
@@ -109,6 +109,12 @@ public class FungoMallSeckillSuccessAdviceService {
                 case 25:
                     msgDataContent = FungoMallSeckillConsts.FESTIVAL_GOODS_SUCCESS_lv2;
                     msgDataContent = msgDataContent.replace("$", goodsName).replace("{", cardSn).replace("}", cardPwd);
+                    msgContentMap.put("actionType", "2");
+                    break;
+                //零卡 谷歌
+                case 26:
+                    msgDataContent = FungoMallSeckillConsts.MSG_SECKILL_SUCCESS_LINGKA_GOOGLE;
+                    msgDataContent = msgDataContent.replace("{", cardSn);
                     msgContentMap.put("actionType", "2");
                     break;
                 case 1:
