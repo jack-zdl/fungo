@@ -135,10 +135,10 @@ public class ESDAOServiceImpl {
         Page<Game> postPage = new Page<>();
         RestHighLevelClient highClient = aliESRestClient.getAliEsHighClient();
         try {
-
+//            searchGame(page,limit, keyword);
             // 1、创建search请求
             SearchRequest searchRequest = new SearchRequest(nacosFungoCircleConfig.getIndex());
-//            searchRequest.types(nacosFungoCircleConfig.getSearchIndexType());
+            searchRequest.types(nacosFungoCircleConfig.getSearchIndexType());
             // 2、用SearchSourceBuilder来构造查询请求体 ,请仔细查看它的方法，构造各种查询的方法都在这。
             SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
             if(keyword != null && !"".equals(keyword)){
@@ -146,14 +146,15 @@ public class ESDAOServiceImpl {
                 //普通模糊匹配
 //                boolQueryBuilder.must(QueryBuilders.wildcardQuery("title",keyword));
 //                sourceBuilder.query(boolQueryBuilder);
-                MatchQueryBuilder matchQueryBuilder1 = QueryBuilders.matchQuery("state",1);
+                MatchQueryBuilder matchQueryBuilder1 = QueryBuilders.matchQuery("state",0);
                 MatchQueryBuilder matchQueryBuilder2 = QueryBuilders.matchQuery("name",keyword);
                 MatchQueryBuilder matchQueryBuilder3 = QueryBuilders.matchQuery("intro",keyword);
                 MatchQueryBuilder matchQueryBuilder4 = QueryBuilders.matchQuery("google_deputy_name",keyword);
                 BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
                 BoolQueryBuilder childBoolQueryBuilder = new BoolQueryBuilder()
                         .should(matchQueryBuilder2)
-                        .should(matchQueryBuilder3);
+                        .should(matchQueryBuilder3)
+                        .should(matchQueryBuilder4);
                 boolQueryBuilder.must(childBoolQueryBuilder);
                 boolQueryBuilder.must(matchQueryBuilder1);
                 sourceBuilder.query(boolQueryBuilder);
@@ -197,7 +198,7 @@ public class ESDAOServiceImpl {
 
             SearchHit[] searchHits = hits.getHits();
 
-            List<Game> list = new ArrayList<>();
+             List<Game> list = new ArrayList<>();
             for (SearchHit hit : searchHits) {
                 // do something with the SearchHit
 
@@ -261,7 +262,7 @@ public class ESDAOServiceImpl {
             jsonMap.put("state", "1");
             jsonMap.put("name", keyword);
             //index_name为索引名称；type_name为类型名称；doc_id为文档的id。
-            IndexRequest indexRequest = new IndexRequest("t_game", "", "").source(jsonMap);
+            IndexRequest indexRequest = new IndexRequest("dev_game", "dev_game").source(jsonMap);
 
             // 同步执行，并使用自定义RequestOptions（COMMON_OPTIONS）。
             IndexResponse indexResponse = highClient.index(indexRequest, COMMON_OPTIONS);

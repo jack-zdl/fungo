@@ -960,7 +960,7 @@ public class GameServiceImpl implements IGameService {
                 @SuppressWarnings("rawtypes")
                 Wrapper wrapper = Condition.create().setSqlSelect(
                         "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
-                        .eq("state", 0).like("name", keyword);
+                        .eq("state", 0).like("name", keyword).or().like("google_deputy_name", keyword).or().like( "intro",keyword );
                 if (tag != null && !"".equals(tag.replace(" ", ""))) {
                     wrapper.like("tags", tag);
                 }
@@ -1147,7 +1147,7 @@ public class GameServiceImpl implements IGameService {
                 @SuppressWarnings("rawtypes")
                 Wrapper wrapper = Condition.create().setSqlSelect(
                         "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
-                        .eq("state", 0).like("name", keyword);
+                        .eq("state", 0).like("name", keyword).or().like( "google_deputy_name like ", keyword ).or().like( "intro",keyword );
                     gamePage = gameService.selectPage(new Page<>(1, 10), wrapper);
             }else {
                     gamePage = esdaoServiceImpl.getAllPosts( 1,  10, keyword,  "",  "" );
@@ -1187,7 +1187,7 @@ public class GameServiceImpl implements IGameService {
                 @SuppressWarnings("rawtypes")
                 Wrapper wrapper = Condition.create().setSqlSelect(
                         "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
-                        .eq("state", 0).like("name", keyword);
+                        .eq("state", 0).like("name", keyword).or().like( "google_deputy_name like ", keyword ).or().like( "intro",keyword );
 
                 if (sort != null && !"".equals(sort.replace(" ", ""))) {
                     gamePage = gameService.selectPage(new Page<>(page, limit), wrapper.orderBy(sort));
@@ -1201,7 +1201,6 @@ public class GameServiceImpl implements IGameService {
                 } else {
                     gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
                 }
-                gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
             }
             gameList = gameList != null ? gameList : gamePage.getRecords();
             gameList.stream().forEach(s -> { String gameName = s.getName();gameNameList.add( gameName); });
