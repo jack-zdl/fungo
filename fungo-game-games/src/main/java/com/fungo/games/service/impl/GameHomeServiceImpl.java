@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * <p></p>
@@ -38,19 +37,14 @@ public class GameHomeServiceImpl implements GameHomeService {
 
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
-
     @Autowired
     private HomePageService homePageService;
-
     @Autowired
     private NewGameDao newGameDao;
-
     @Autowired
     private FindCollectionGroupService findCollectionGroupService;
-
     @Autowired
     private FindCollectionItemService findCollectionItemService;
-
     @Autowired
     private FindCollectionGroupDao findCollectionGroupDao;
 

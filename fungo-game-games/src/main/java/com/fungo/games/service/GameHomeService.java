@@ -7,7 +7,6 @@ import com.game.common.bean.AdminCollectionGroup;
 import com.game.common.bean.NewGameBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
-import com.game.common.dto.index.CardIndexBean;
 import com.game.common.vo.AdminCollectionVo;
 
 import java.util.List;
