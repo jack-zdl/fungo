@@ -18,29 +18,29 @@ import java.util.Date;
 @TableName("t_find_collection_group")
 public class FindCollectionGroup extends Model<FindCollectionGroup> {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	private String id;
-    /**
-     * 游戏集合名称
-     */
+	/**
+	 * 游戏集合名称
+	 */
 	private String name;
-    /**
-     * 状态
-     */
+	/**
+	 * 状态
+	 */
 	private Integer state;
 	/**
 	 * 合集介绍
 	 */
 	private String detail;
-    /**
-     * 是否上线 -1:下线 0:上线
-     */
+	/**
+	 * 是否上线 -1:下线 0:上线
+	 */
 	@TableField("is_online")
 	private String isOnline;
-    /**
-     * 合集封面地址
-     */
+	/**
+	 * 合集封面地址
+	 */
 	@TableField("cover_picture")
 	private String coverPicture;
 	/**
@@ -53,16 +53,29 @@ public class FindCollectionGroup extends Model<FindCollectionGroup> {
 	 */
 	@TableField("updated_at")
 	private Date updatedAt;
-    /**
-     * 创建人
-     */
+	/**
+	 * 创建人
+	 */
 	@TableField("created_by")
 	private String createdBy;
-    /**
-     * 修改人
-     */
+	/**
+	 * 修改人
+	 */
 	@TableField("updated_by")
 	private String updatedBy;
+	/**
+	 * 排序号
+	 */
+	@TableField("sort")
+	private Integer sort;
+
+	public Integer getSort() {
+		return sort;
+	}
+
+	public void setSort(Integer sort) {
+		this.sort = sort;
+	}
 
 	public String getDetail() {
 		return detail;

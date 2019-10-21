@@ -4,10 +4,13 @@ import com.fungo.games.entity.HomePage;
 import com.fungo.games.service.GameHomeService;
 import com.fungo.games.service.IIndexService;
 import com.game.common.api.InputPageDto;
+import com.game.common.bean.AdminCollectionGroup;
+import com.game.common.bean.NewGameBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
-import com.game.common.dto.index.CardIndexBean;
+import com.game.common.dto.ResultDto;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.vo.AdminCollectionVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -16,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 游戏
@@ -37,32 +41,46 @@ public class HomePageController {
 
 
 
-    @ApiOperation(value = "首页(v2.6)", notes = "")
-    @RequestMapping(value = "/api/recommend/home", method = RequestMethod.GET)
-    public FungoPageResultDto<HomePage> recommendHomeList(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request) {
-        //首页信息查询
-        return gameHomeService.index();
+    @ApiOperation(value = "首页查询(v2.6)", notes = "")
+    @RequestMapping(value = "/api/games/queryHomePage", method = RequestMethod.GET)
+    @ApiImplicitParams({})
+    public FungoPageResultDto<HomePage> queryHomePage(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request) {
+        LOGGER.info("首页信息查询**************queryHomePage");
+        return gameHomeService.queryHomePage();
     }
 
 
 
 
 
-    @ApiOperation(value = "首页(v2.4)", notes = "")
-    @RequestMapping(value = "/api/recommend", method = RequestMethod.POST)
+    @ApiOperation(value = "新游信息查询(v2.6)", notes = "")
+    @RequestMapping(value = "/api/games/queryNewGame", method = RequestMethod.GET)
     @ApiImplicitParams({})
-    public FungoPageResultDto<CardIndexBean> recommendList(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPageDto) {
-        //iOS渠道
-        String iosChannel = "";
-        String os = "";
-        os = (String) request.getAttribute("os");
-        if (request.getHeader("iosChannel") != null) {
-            iosChannel = request.getHeader("iosChannel");
+    public ResultDto<List<NewGameBean>> queryNewGame(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request) {
+        LOGGER.info("首页信息查询**************queryNewGame");
+        return gameHomeService.queryNewGame();
+    }
+
+
+    @ApiOperation(value = "查看往期新游信息(v2.6)", notes = "")
+    @RequestMapping(value = "/api/games/queryOldGame", method = RequestMethod.POST)
+    @ApiImplicitParams({})
+    public ResultDto<List<NewGameBean>> queryOldGame(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPageDto) {
+        LOGGER.info("首页信息查询**************queryNewGame");
+        return gameHomeService.queryOldGame(inputPageDto);
+    }
+
+
+
+    @ApiOperation(value="合集信息查询", notes="")
+    @RequestMapping(value="/api/games/queryCollectionGroup", method= RequestMethod.POST)
+    @ApiImplicitParams({ })
+    public ResultDto<List<AdminCollectionGroup>> queryCollectionGroup(MemberUserProfile memberUserPrefile, @RequestBody AdminCollectionVo input) {
+        String loginId = "";
+        if(memberUserPrefile != null) {
+            loginId = memberUserPrefile.getLoginId();
         }
-        //app渠道编码
-        String app_channel = request.getHeader("appChannel");
-        String appVersion = request.getHeader("appVersion");
-        return gameHomeService.index(inputPageDto, os, iosChannel, app_channel, appVersion);
+        return gameHomeService.queryCollectionGroup(input);
     }
 
 

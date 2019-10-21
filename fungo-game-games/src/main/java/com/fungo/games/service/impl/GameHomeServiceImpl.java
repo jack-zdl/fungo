@@ -1,22 +1,28 @@
 package com.fungo.games.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.mapper.Wrapper;
+import com.fungo.games.dao.FindCollectionGroupDao;
+import com.fungo.games.dao.NewGameDao;
+import com.fungo.games.entity.FindCollectionGroup;
 import com.fungo.games.entity.HomePage;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
-import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.bean.AdminCollectionGroup;
+import com.game.common.bean.CollectionItemBean;
+import com.game.common.bean.NewGameBean;
 import com.game.common.dto.FungoPageResultDto;
-import com.game.common.dto.index.CardIndexBean;
+import com.game.common.dto.ResultDto;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
+import com.game.common.vo.AdminCollectionVo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p></p>
@@ -36,10 +42,26 @@ public class GameHomeServiceImpl implements GameHomeService {
     @Autowired
     private HomePageService homePageService;
 
+    @Autowired
+    private NewGameDao newGameDao;
+
+    @Autowired
+    private FindCollectionGroupService findCollectionGroupService;
+
+    @Autowired
+    private FindCollectionItemService findCollectionItemService;
+
+    @Autowired
+    private FindCollectionGroupDao findCollectionGroupDao;
 
 
+
+    /**
+     * 首页显示内容
+     * @return
+     */
     @Override
-    public FungoPageResultDto<HomePage> index() {
+    public FungoPageResultDto<HomePage> queryHomePage() {
         FungoPageResultDto<HomePage> re = new FungoPageResultDto<HomePage>();
         //查询有制顶标识的数据
         List<HomePage> topList =  homePageService.selectList(new EntityWrapper<HomePage>().eq("state",3));
@@ -48,6 +70,7 @@ public class GameHomeServiceImpl implements GameHomeService {
         entityWrapper.eq("state",0);
         entityWrapper.orderBy("updated_at",false);
         List<HomePage> list =  homePageService.selectList(entityWrapper);
+        //排序规则未开发***********************************************
         if(!topList.isEmpty()){
 
         }
@@ -57,105 +80,126 @@ public class GameHomeServiceImpl implements GameHomeService {
 
 
 
-
+    /**
+     * 新游信息查询
+     * @return
+     */
     @Override
-    public FungoPageResultDto<CardIndexBean> index(InputPageDto input, String os, String iosChannel, String app_channel, String appVersion) {
-
-        FungoPageResultDto<CardIndexBean> re = null;
-        //先从Redis获取
-        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX;
-        String keySuffix = JSON.toJSONString(input) + os + iosChannel;
-        if (StringUtils.isNotBlank(app_channel)) {
-            keySuffix += app_channel;
-        }
-        re = (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
-        if (null != re && null != re.getData() && re.getData().size() > 0) {
-            return re;
-        }
-        if (os == null) {
-            os = "";
-        }
-        re = new FungoPageResultDto<>();
-        List<CardIndexBean> clist = new ArrayList<CardIndexBean>();
-        int page = input.getPage();
-
-        //在ios平台下首页是否关闭部分功能
-        boolean isCloseIndexSection = true;
-
-        LOGGER.info("-----------在ios平台下首页是否关闭部分功能----os:{},------app_channel:{}------appVersion:{}-----isCloseIndexSection:{}", os, app_channel, appVersion,
-                isCloseIndexSection);
-
-        //int count = postService.selectCount(new EntityWrapper<CmmPost>().eq("type", 3));
-        Page<CardIndexBean> pageBean = null;
-        //第一页
-        if (1 == page) {
-            //ios 当前版本是否 隐藏
-            if (!isCloseIndexSection) {
-                //本周精选(游戏)
-                CardIndexBean hotGames = null;
-                if (hotGames != null) {
-                    clist.add(hotGames);
+    public ResultDto<List<NewGameBean>> queryNewGame() {
+        //查询选择日期字段在今天开始往后30天内的所有数据，先根据时间排序，在对每天内的排序号(sort)进行排序
+        ResultDto<List<NewGameBean>> re = new ResultDto<List<NewGameBean>>();
+//        Date date=new Date();//此时date为当前的时间
+//        SimpleDateFormat dateFormat=new SimpleDateFormat("YYYY-MM-dd");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        //查询有制顶标识的数据
+        NewGameBean bean = new NewGameBean();
+        bean.setChooseDate(calendar.getTime());
+        //查询有制顶标识的数据
+        List<NewGameBean> list = newGameDao.getNewGameAll(bean);
+        for(NewGameBean newGameBean:list){
+            if(StringUtils.isNotBlank(newGameBean.getTags())){
+                List<String> labels = Arrays.asList(newGameBean.getTags().split(","));
+                if(!labels.isEmpty()){
+                    newGameBean.setLabels(labels);
                 }
             }
-            //position 3 游戏攻略(精选文章)
-            CardIndexBean postHost = null;
-            if (postHost != null) {
-                clist.add(postHost);
-            }
-            //position 4 安利墙
-            //安利墙 ios 当前版本是否 隐藏
-            if (!isCloseIndexSection) {
-                CardIndexBean anliWall = null;
-                if (anliWall != null) {
-                    clist.add(anliWall);
-                }
-            } else {
-                ///position 5 精选文章 视频(position_code 0007)
-                CardIndexBean postVidoe = null;
-                if (postVidoe != null) {
-                    clist.add(postVidoe);
-                }
-            }
-            re.setAfter(2);
-            re.setBefore(1);
-            //第二页
-        } else if (page == 2) {
-            //安利墙
-            //安利墙 ios 当前版本是否 隐藏
-            if (!isCloseIndexSection) {
-                CardIndexBean postVidoe = null;
-                if (postVidoe != null) {
-                    clist.add(postVidoe);
-                }
-            }
-            //精选文章 (视频)
-            CardIndexBean postFine = null;
-            if (postFine != null) {
-                clist.add(postFine);
-            }
-            //大家都在玩
-            //大家都在玩 ios 当前版本是否 隐藏
-            if (!isCloseIndexSection) {
-                CardIndexBean selectedGames = null;
-                if (selectedGames != null) {
-                    clist.add(selectedGames);
-                }
-            }
-            re.setAfter(3);
-            re.setBefore(1);
-        } else {
-            page = page - 2;
-            ArrayList<CardIndexBean> topicPosts = null;
-            clist.addAll(topicPosts);
-            if (topicPosts.size() == 0) {
-                re.setAfter(-1);
-            } else {
-                re.setAfter(page + 3);
+            if(null!=newGameBean.getChooseDate()){
+                newGameBean.setTime(newGameBean.getChooseDate().getTime());
             }
         }
-        re.setData(clist);
-        fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
+        re.setData(list);
         return re;
     }
+
+
+
+
+    /**
+     * 查看往期新游信息
+     * @return
+     */
+    @Override
+    public ResultDto<List<NewGameBean>> queryOldGame(InputPageDto inputPageDto) {
+        //查询选择日期字段在今天开始往后30天内的所有数据，先根据时间排序，在对每天内的排序号(sort)进行排序
+        ResultDto<List<NewGameBean>> re = new ResultDto<List<NewGameBean>>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        //查询分页列表startOffset
+        int startOffset = (inputPageDto.getPage() - 1) * inputPageDto.getLimit();
+        //查询有制顶标识的数据
+        NewGameBean bean = new NewGameBean();
+        bean.setStartOffset(startOffset);
+        bean.setChooseDate(calendar.getTime());
+        bean.setPageSize(inputPageDto.getLimit());
+        List<NewGameBean> list = newGameDao.queryOldGame(bean);
+        for(NewGameBean newGameBean:list){
+            if(StringUtils.isNotBlank(newGameBean.getTags())){
+                List<String> labels = Arrays.asList(newGameBean.getTags().split(","));
+                if(!labels.isEmpty()){
+                    newGameBean.setLabels(labels);
+                }
+            }
+            if(null!=newGameBean.getChooseDate()){
+                newGameBean.setTime(newGameBean.getChooseDate().getTime());
+            }
+        }
+        re.setData(list);
+        return re;
+    }
+
+
+
+
+    /**
+     * 合集信息查询
+     * @return
+     */
+    @Override
+    @Transactional
+    public ResultDto<List<AdminCollectionGroup>> queryCollectionGroup(AdminCollectionVo input) {
+        ResultDto<List<AdminCollectionGroup>> re = new ResultDto<List<AdminCollectionGroup>>();
+        List<AdminCollectionGroup> colLists = new ArrayList<>();
+        Wrapper<FindCollectionGroup> wrapper = new EntityWrapper<FindCollectionGroup>();
+        if(StringUtils.isNotBlank(input.getId())){
+            wrapper.eq("id", input.getId());
+        }
+        wrapper.eq("state", 0);
+        wrapper.eq("is_online", 0);
+        wrapper.orderBy("sort",false);
+        List<FindCollectionGroup> collectionList = findCollectionGroupService.selectList(wrapper);
+        if(!collectionList.isEmpty()){
+            AdminCollectionGroup adminCollectionGroup = null;
+            for(FindCollectionGroup findCollectionGroup : collectionList){
+                adminCollectionGroup = new AdminCollectionGroup();
+                adminCollectionGroup.setCoverPicture(findCollectionGroup.getCoverPicture());
+                adminCollectionGroup.setSort(findCollectionGroup.getSort());
+                adminCollectionGroup.setName(findCollectionGroup.getName());
+                adminCollectionGroup.setDetail(findCollectionGroup.getDetail());
+                adminCollectionGroup.setId(findCollectionGroup.getId());
+                List<CollectionItemBean> itemList = findCollectionGroupDao.getCollectionItemAll(findCollectionGroup.getId());
+                for(CollectionItemBean collectionItemBean:itemList){
+                    if(StringUtils.isNotBlank(collectionItemBean.getTags())){
+                        collectionItemBean.setLabels(Arrays.asList(collectionItemBean.getTags().split(",")));
+                    }
+                }
+                adminCollectionGroup.setList(itemList);
+                colLists.add(adminCollectionGroup);
+            }
+        }
+        re.setData(colLists);
+        return re;
+    }
+
+
+
 
 }

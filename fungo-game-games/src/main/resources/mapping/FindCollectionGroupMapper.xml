@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.games.dao.FindCollectionGroupDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.game.common.bean.CollectionItemBean">
+		<id column="id" property="id" />
+		<result column="group_id" property="groupId" />
+		<result column="game_id" property="gameId" />
+		<result column="detail" property="detail" />
+		<result column="ios_state" property="iosState" />
+		<result column="android_state" property="androidState" />
+		<result column="name" property="name" />
+		<result column="icon" property="icon" />
+		<result column="score" property="score" />
+		<result column="tags" property="tags" />
+		<result column="sort" property="sort" />
+		<result column="updated_at" property="updatedAt" />
+		<result column="updated_by" property="updatedBy" />
+	</resultMap>
+    
+    <!-- 新游信息查询 -->
+    <select id="getCollectionItemAll" resultMap="BaseResultMap" >
+    	select
+		t1.id,
+		t1.group_id,
+		t1.detail,
+		t1.game_id,
+		t2.ios_state,
+		t2.android_state,
+		t2.name,
+		t2.score,
+		t2.icon,
+		t2.tags
+		from t_find_collection_item t1 left join t_game t2 on t1.game_id=t2.id
+		where t1.group_id=#{groupId}
+    	order by t1.sort desc
+    </select>
+
+
+</mapper>

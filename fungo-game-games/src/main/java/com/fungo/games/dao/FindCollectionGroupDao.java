@@ -2,6 +2,10 @@ package com.fungo.games.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.fungo.games.entity.FindCollectionGroup;
+import com.game.common.bean.CollectionItemBean;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +17,6 @@ import com.fungo.games.entity.FindCollectionGroup;
  */
 public interface FindCollectionGroupDao extends BaseMapper<FindCollectionGroup> {
 
+    //管控台新游信息查询
+    public List<CollectionItemBean> getCollectionItemAll(@Param("groupId")String groupId);
 }

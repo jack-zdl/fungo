@@ -3,8 +3,14 @@ package com.fungo.games.service;
 
 import com.fungo.games.entity.HomePage;
 import com.game.common.api.InputPageDto;
+import com.game.common.bean.AdminCollectionGroup;
+import com.game.common.bean.NewGameBean;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.index.CardIndexBean;
+import com.game.common.vo.AdminCollectionVo;
+
+import java.util.List;
 
 public interface GameHomeService {
 
@@ -13,18 +19,27 @@ public interface GameHomeService {
 	 * 首页显示内容
 	 * @return
 	 */
-	FungoPageResultDto<HomePage> index();
+	FungoPageResultDto<HomePage> queryHomePage();
 
 
 	/**
-	 * 首页显示内容
-	 * @param input 入参
-	 * @param os app 平台类型
-	 * @param iosChannel ios渠道标识
-	 * @param app_channel app渠道编码
-	 * @param appVersion app release版本号
+	 * 新游信息查询
 	 * @return
 	 */
-	FungoPageResultDto<CardIndexBean> index(InputPageDto input, String os, String iosChannel, String app_channel, String appVersion);
+	ResultDto<List<NewGameBean>> queryNewGame();
+
+
+	/**
+	 * 查看往期新游信息
+	 * @return
+	 */
+	ResultDto<List<NewGameBean>> queryOldGame(InputPageDto inputPageDto);
+
+	/**
+	 * 合集信息查询
+	 * @return
+	 */
+	public ResultDto<List<AdminCollectionGroup>> queryCollectionGroup(AdminCollectionVo input);
+
 
 }

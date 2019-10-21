@@ -53,6 +53,11 @@ public class NewGame extends Model<NewGame> {
 	@TableField("end_time")
 	private Date endTime;
 	/**
+	 * 选择日期
+	 */
+	@TableField("choose_date")
+	private Date chooseDate;
+	/**
 	 * 创建时间
 	 */
 	@TableField("created_at")
@@ -72,6 +77,14 @@ public class NewGame extends Model<NewGame> {
      */
 	@TableField("updated_by")
 	private String updatedBy;
+
+	public Date getChooseDate() {
+		return chooseDate;
+	}
+
+	public void setChooseDate(Date chooseDate) {
+		this.chooseDate = chooseDate;
+	}
 
 	public String getDetail() {
 		return detail;
