@@ -1,3 +1,4 @@
+
 package com.fungo.games.entity;
 
 import com.baomidou.mybatisplus.activerecord.Model;
@@ -770,3 +771,4 @@ public class Game extends Model<Game> {
 	}
 
 }
+

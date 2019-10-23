@@ -1,5 +1,5 @@
-package com.fungo.games.service;
 
+package com.fungo.games.service;
 
 import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
@@ -169,4 +169,7 @@ public interface IGameService {
     ResultDto<List<GameOutPage>> viewGames(String memberId);
 
     ResultDto<List<GameOut>> listGameByids(String gameIds);
+
+	ResultDto<List<GameKuDto>> listGameByTags(TagGameDto tagGameDto);
 }
+

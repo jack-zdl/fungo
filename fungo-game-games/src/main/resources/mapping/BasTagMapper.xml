@@ -39,5 +39,12 @@
 		<!-- ]]> -->
 	</select>
 
+	<select id="listGroupTagOrderBySortAndDownLoad" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select t_bas_tag.* from t_bas_tag  left join t_game_tag on t_bas_tag.id = t_game_tag.tag_id
+        where group_id = #{groupId}
+        group by t_bas_tag.id
+        order by t_bas_tag.sort desc ,count(t_game_tag.id) desc
+	</select>
+
 
 </mapper>
