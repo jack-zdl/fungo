@@ -33,4 +33,15 @@ public class UserFunVO {
      * @date: 2019/9/25 10:09
      */
     private int number;
+
+    /**
+     * 功能描述: 是否管控台 1 是管控台
+     * @date: 2019/10/22
+     */
+    private int type;
+    /**
+     * 功能描述:  删除的内容是什么类型  1 文章  2  心情  3 评论 4  心情评论
+     * @date: 2019/10/22
+     */
+    private int contentType;
 }

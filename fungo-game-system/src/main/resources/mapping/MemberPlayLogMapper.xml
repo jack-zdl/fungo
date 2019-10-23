@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.system.dao.MemberPlayLogMapper">
+  <resultMap id="BaseResultMap" type="com.fungo.system.entity.MemberPlayLog">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="member_phone" jdbcType="VARCHAR" property="memberPhone" />
+    <result column="play_id" jdbcType="VARCHAR" property="playId" />
+    <result column="business_id" jdbcType="VARCHAR" property="businessId" />
+    <result column="coupon_type" jdbcType="VARCHAR" property="couponType" />
+    <result column="coupon_id" jdbcType="VARCHAR" property="couponId" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="isactive" jdbcType="CHAR" property="isactive" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="rversion" jdbcType="INTEGER" property="rversion" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, member_phone as memberPhone, play_id as playId, business_id as businessId , coupon_type as couponType, coupon_id as couponId, `type`, isactive,
+    created_at as createdAt, updated_at as updatedAt, rversion, description
+  </sql>
+
+</mapper>

@@ -2041,7 +2041,7 @@ public class MemberServiceImpl implements IMemberService {
     }
 
 
-    private boolean addNotice(String memberId,String content){
+    public boolean addNotice(String memberId,String content){
         Map<String,String> dataMap = new HashMap<>();
         dataMap.put("actionType","1");
         dataMap.put("content", content );
