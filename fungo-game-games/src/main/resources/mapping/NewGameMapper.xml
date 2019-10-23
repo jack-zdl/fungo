@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.games.dao.NewGameDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.game.common.bean.NewGameBean">
+        <id column="id" property="id"/>
+        <result column="choose_date" property="chooseDate"/>
+        <result column="android_state" property="androidState"/>
+        <result column="name" property="name"/>
+        <result column="sort" property="sort"/>
+        <result column="game_id" property="gameId"/>
+        <result column="region" property="region"/>
+        <result column="circle" property="circle"/>
+        <result column="detail" property="detail"/>
+        <result column="icon" property="icon"/>
+        <result column="vpn" property="vpn"/>
+        <result column="circle_name" property="circleName"/>
+        <result column="tags" property="tags"/>
+        <result column="rating" property="rating"/>
+    </resultMap>
+
+    <!-- 新游信息查询 -->
+    <select id="getNewGameAll" resultMap="BaseResultMap" parameterType="com.game.common.bean.NewGameBean">
+        select
+        t1.id,
+        t1.choose_date,
+        t1.game_id,
+        t1.detail,
+        t2.name,
+        t2.origin as region,
+        t2.icon,
+        t2.tags,
+        t2.score as rating,
+        t2.can_fast as vpn,
+        t2.android_state,
+        CASE WHEN t3.circle_name is null THEN '0' ELSE '1' END circle
+        from t_new_game t1
+        left join t_game t2 on t1.game_id=t2.id
+        left join t_cmm_circle t3 on t1.game_id=t3.game_id
+        <where>
+            <if test=" chooseDate!= null">
+                t1.choose_date <![CDATA[ >= ]]> #{chooseDate}
+            </if>
+        </where>
+        order by t1.choose_date desc,t1.sort desc
+    </select>
+
+
+    <!-- 新游信息查看往期 -->
+    <select id="queryOldGame" resultMap="BaseResultMap" parameterType="com.game.common.bean.NewGameBean">
+        SELECT
+        t1.id,
+        t1.choose_date,
+        t1.game_id,
+        t1.detail,
+        t2.id as game_id,
+        t2.icon,
+        t2.name,
+        t2.origin as region,
+        t2.tags
+        from t_new_game t1
+        left join t_game t2 on t1.game_id=t2.id
+        left join t_cmm_circle t3 on t1.game_id=t3.game_id
+        <where>
+            <if test=" chooseDate!= null">
+                t1.choose_date <![CDATA[ < ]]> #{chooseDate}
+            </if>
+        </where>
+        order by t1.choose_date desc,t1.sort desc
+        LIMIT #{startOffset} ,#{pageSize}
+    </select>
+
+
+</mapper>

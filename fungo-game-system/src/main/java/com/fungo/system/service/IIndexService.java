@@ -1,7 +1,9 @@
 package com.fungo.system.service;
 
+import com.fungo.system.entity.Banner;
 import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.index.CardIndexBean;
 
 import java.util.Map;
@@ -38,5 +40,17 @@ public interface IIndexService {
 	 * @return
 	 */
 	FungoPageResultDto<CardIndexBean> index(InputPageDto input);
+
+
+
+	/**
+	 * 首页显示内容
+	 * @param os app 平台类型
+	 * @param iosChannel ios渠道标识
+	 * @param app_channel app渠道编码
+	 * @param appVersion app release版本号
+	 * @return
+	 */
+	ResultDto<Banner> queryHomePage(String os, String iosChannel, String app_channel, String appVersion);
 
 }

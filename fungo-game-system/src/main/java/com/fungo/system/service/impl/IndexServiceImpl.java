@@ -73,7 +73,6 @@ public class IndexServiceImpl implements IIndexService {
     private CommunityFeignClient communityFeignClient;
 
 
-
     @Override
     public FungoPageResultDto<CardIndexBean> index(InputPageDto input, String os, String iosChannel, String app_channel, String appVersion) {
 
@@ -230,6 +229,7 @@ public class IndexServiceImpl implements IIndexService {
 
     /**
      * 功能描述: 获取圈子页面上广告位
+     *
      * @param: [input, os, iosChannel, app_channel, appVersion]
      * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
      * @auther: dl.zhang
@@ -246,7 +246,7 @@ public class IndexServiceImpl implements IIndexService {
                 keySuffix += app_channel;
             }
             //@todo
-            re =  (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+            re = (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
 
             if (null != re && null != re.getData() && re.getData().size() > 0) {
                 return re;
@@ -286,7 +286,7 @@ public class IndexServiceImpl implements IIndexService {
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("获取圈子页面上广告位", e);
-            re = FungoPageResultDto.FungoPageResultDtoFactory.buildError( "获取圈子页面上广告位失败,请联系管理员");
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildError("获取圈子页面上广告位失败,请联系管理员");
         }
         return re;
     }
@@ -537,7 +537,7 @@ public class IndexServiceImpl implements IIndexService {
 
     public CardIndexBean activities() {
         //banner
-        List<Banner> bl = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0005")
+        List<Banner> bl = bannerService.selectList(new EntityWrapper<Banner>().in("position_code", "0005,0010")
                 .eq("state", "0").orderBy("sort", false).last("limit 1"));
         CardIndexBean indexBean = new CardIndexBean();
         if (bl.size() == 0) {
@@ -687,16 +687,16 @@ public class IndexServiceImpl implements IIndexService {
             CmmCommunityDto communityParam = new CmmCommunityDto();
             communityParam.setId(post.getCommunityId());
             //communityService.selectById(post.getCommunityId());
-            CircleGamePostVo circleGamePostVo = new CircleGamePostVo(CircleGamePostVo.CircleGamePostTypeEnum.POSTID.getKey(),"",post.getId());
-            ResultDto<CmmCircleDto> resultDto =  communityFeignClient.getCircleByPost(circleGamePostVo);
+            CircleGamePostVo circleGamePostVo = new CircleGamePostVo(CircleGamePostVo.CircleGamePostTypeEnum.POSTID.getKey(), "", post.getId());
+            ResultDto<CmmCircleDto> resultDto = communityFeignClient.getCircleByPost(circleGamePostVo);
 //            CmmCommunityDto community = iMemeberProxyService.selectCmmCommunityById(communityParam);
 
             if (resultDto != null && resultDto.getData() != null) {
-                dataBean.setLowerRightCorner( resultDto.getData().getCircleName());
+                dataBean.setLowerRightCorner(resultDto.getData().getCircleName());
             }
 
             if (!CommonUtil.isNull(post.getVideo()) && CommonUtil.isNull(videoBanner.getCoverImage())) {
-                if ( resultDto.getData() != null) {
+                if (resultDto.getData() != null) {
                     dataBean.setImageUrl(resultDto.getData().getCircleIcon());
                 }
             }
@@ -744,10 +744,11 @@ public class IndexServiceImpl implements IIndexService {
 
     /**
      * 是否关闭本周精选、安利墙、大家都在玩三个功能
-     *  配合ios审核隐藏和显示设置
-     * @param os 移动端系统类型  Android/iOS
-     * @param app_channel  app渠道编码
-     * @param appVersion app端版本号
+     * 配合ios审核隐藏和显示设置
+     *
+     * @param os          移动端系统类型  Android/iOS
+     * @param app_channel app渠道编码
+     * @param appVersion  app端版本号
      * @return true关闭这些功能，false不关闭
      */
     private boolean isCloseIndexSection(String os, String app_channel, String appVersion) {
@@ -805,5 +806,24 @@ public class IndexServiceImpl implements IIndexService {
         }
     }
 
-    //----------
+
+    /**
+     * 功能描述: app端获取管控台设置的活动列表及详情
+     *
+     * @param: [memberUserPrefile, request, inputPageDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: Carlos
+     * @date: 2019/10/11 11:01
+     */
+    @Override
+    public ResultDto<Banner> queryHomePage(String os, String iosChannel, String app_channel, String appVersion) {
+        ResultDto<Banner> re = new ResultDto<>();
+        Banner banner = bannerService.selectOne(new EntityWrapper<Banner>()
+                .in("position_code","0009,0010")
+                .eq("state", "0")
+                .orderBy("updated_at", false)
+                .last("limit 1"));
+        re.setData(banner);
+        return re;
+    }
 }

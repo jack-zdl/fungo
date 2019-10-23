@@ -1,5 +1,6 @@
 package com.fungo.system.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -18,6 +19,9 @@ import com.game.common.util.exception.BusinessException;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.FunGoEHCacheUtils;
 import com.game.common.util.PKUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -71,6 +75,9 @@ public class ScoreLogServiceImap extends ServiceImpl<ScoreLogDao, ScoreLog> impl
     private String clusterIndex;
 
     private static ObjectMapper mapper = new ObjectMapper();
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( ScoreLogServiceImap.class);
+
 
 
     @Override
@@ -749,13 +756,11 @@ public class ScoreLogServiceImap extends ServiceImpl<ScoreLogDao, ScoreLog> impl
                     incentRanked.setCurrentRankId(rankRule.getId());
                     incentRanked.setCurrentRankName(rankRule.getRankName());
                     incentRanked.setRankType(rankRule.getRankType());
-
                     //?
                     //incentRanked.setRankType(rankRule.getRankFlag());
-
                     incentRanked.setUpdatedAt(new Date());
-
                     incentRanked.updateById();
+                    LOGGER.info("like---点赞次数"+ JSON.toJSONString(incentRanked));
                     addRankLog(userId, rankRule);
                 }
             }
