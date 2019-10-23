@@ -69,5 +69,7 @@ public interface IMemberNoticeService {
 
     ResultDto<String> delMbNotices(DelObjectListVO noticeInput);
 
+    ResultDto<String> addUserGiftcardNotice(DelObjectListVO delObjectListVO);
+
 
 }

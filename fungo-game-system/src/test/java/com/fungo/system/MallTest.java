@@ -34,7 +34,6 @@ public class MallTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
 

@@ -38,6 +38,7 @@ import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import io.swagger.models.auth.In;
 import org.apache.commons.lang.StringUtils;
+import org.apache.curator.shaded.com.google.common.collect.Lists;
 import org.omg.PortableInterceptor.INACTIVE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1970,6 +1971,11 @@ public class MemberServiceImpl implements IMemberService {
          // 所有用户奖励5折券
          StopWatch watch = new StopWatch( "Stream效率测试" );
          watch.start( "总时间" );
+        // 创建二个线程
+         CountDownLatch countDownLatch = new CountDownLatch(2);
+         Executor executorService = CommonUtil.createThread(2);
+         countDownLatch.countDown();
+         countDownLatch.await();
          List<Member> memberList = memberDao.selectListBylargess(null,"12");
          memberList.parallelStream().forEach( s -> {
              MemberCoupon memberCoupon = new MemberCoupon();

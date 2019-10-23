@@ -26,9 +26,6 @@ public interface MemberDao extends  BaseMapper<Member> {
     //我的动态 - 我的评论
     public List<CommentBean> getAllComments(Page<CommentBean> page, String userId);
 
-
-
-
     /**
      * 查询游戏评论表中发表评论大于14条，
      * 前10名的用户
@@ -36,7 +33,6 @@ public interface MemberDao extends  BaseMapper<Member> {
      * @return
      */
     public List<String> getRecommendMembersFromEvaluation(@Param("ecnt") long ecnt, @Param("limitSize") long limitSize, @Param("wathMbsSet") List<String> wathMbsSet);
-
 
     /**
      *  查询文章表中发表文章大于10条
@@ -60,7 +56,7 @@ public interface MemberDao extends  BaseMapper<Member> {
     public List<Member> queryMbWithoutLevelFungoImgs();
 
 
-     List<String> getMemberList();
+    List<String> getMemberList();
 
     List<Member> getEnableMemberList(@Param("ids") List<String> ids);
 
@@ -72,4 +68,6 @@ public interface MemberDao extends  BaseMapper<Member> {
 
      List<Member> selectListBylargess(@Param("level")String level,@Param("couponId")String couponId);
 
+
+    List<String> getMemberIdList(@Param("phones")List<String> phones);
 }
