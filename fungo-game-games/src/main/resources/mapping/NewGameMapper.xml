@@ -26,6 +26,7 @@
         t1.id,
         t1.choose_date,
         t1.game_id,
+        t1.detail,
         t2.name,
         t2.origin as region,
         t2.icon,

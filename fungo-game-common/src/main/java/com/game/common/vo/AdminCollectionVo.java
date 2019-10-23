@@ -1,88 +1,52 @@
 package com.game.common.vo;
 
 
-import com.game.common.bean.CollectionItemBean;
+import com.game.common.dto.InputDto;
+import com.game.common.validate.an.Min;
+import io.swagger.annotations.ApiModelProperty;
+import java.io.Serializable;
 
-import java.util.Date;
-import java.util.List;
-
-public class AdminCollectionVo {
+public class AdminCollectionVo extends InputDto implements Serializable {
 
     /**
      * 合集id
      */
     private String id;
-     /**
-     * 游戏集合名称
-     */
-    private String name;
-    /**
-     * 合集封面
-     */
-    private String coverPicture;
-    /**
-     * 合集介绍
-     */
-    private String detail;
-    /**
-     * 排序号
-     */
-    private Integer sort;
-    /**
-     * 状态
-     */
-    private Integer state;
-    /**
-     * 游戏有效时间开始
-     */
-    private Date startTime;
-    /**
-     * 游戏有效时间结束
-     */
-    private Date endTime;
-    /**
-     * 修改人
-     */
-    private String updatedBy;
-    /**
-     * 是否上线 -1:下线 0:上线
-     */
-    private String isOnline;
-    /**
-     * 游戏信息列表
-     */
-    private List<CollectionItemBean> list;
 
-    public String getIsOnline() {
-        return isOnline;
+    @ApiModelProperty(allowEmptyValue = false, required = true, value = "当前页码")
+    @Min(1)
+    private int pageNum = 1;
+
+    @ApiModelProperty(allowEmptyValue = false, required = true, value = "页大小")
+    @Min(1)
+    private int pageSize = 10;
+
+    private int limit=10;//等同pageSize
+    private int page=1;//pageNum
+
+    public int getPageNum() {
+        return pageNum;
     }
-
-    public void setIsOnline(String isOnline) {
-        this.isOnline = isOnline;
+    public void setPageNum(int pageNum) {
+        this.pageNum = pageNum;
     }
-
-    public Date getStartTime() {
-        return startTime;
+    public int getPageSize() {
+        return pageSize;
     }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
     }
-
-    public Date getEndTime() {
-        return endTime;
+    public int getLimit() {
+        return limit;
     }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
+    public void setLimit(int limit) {
+        this.limit = limit;
     }
-
-    public String getUpdatedBy() {
-        return updatedBy;
+    public int getPage() {
+        return page;
     }
-
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
+    public void setPage(int page) {
+        this.page = page;
     }
 
     public String getId() {
@@ -91,53 +55,5 @@ public class AdminCollectionVo {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCoverPicture() {
-        return coverPicture;
-    }
-
-    public void setCoverPicture(String coverPicture) {
-        this.coverPicture = coverPicture;
-    }
-
-    public String getDetail() {
-        return detail;
-    }
-
-    public void setDetail(String detail) {
-        this.detail = detail;
-    }
-
-    public Integer getSort() {
-        return sort;
-    }
-
-    public void setSort(Integer sort) {
-        this.sort = sort;
-    }
-
-    public Integer getState() {
-        return state;
-    }
-
-    public void setState(Integer state) {
-        this.state = state;
-    }
-
-    public List<CollectionItemBean> getList() {
-        return list;
-    }
-
-    public void setList(List<CollectionItemBean> list) {
-        this.list = list;
     }
 }

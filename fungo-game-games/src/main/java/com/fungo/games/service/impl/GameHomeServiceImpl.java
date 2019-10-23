@@ -11,7 +11,6 @@ import com.game.common.api.InputPageDto;
 import com.game.common.bean.AdminCollectionGroup;
 import com.game.common.bean.CollectionItemBean;
 import com.game.common.bean.NewGameBean;
-import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.vo.AdminCollectionVo;
@@ -55,8 +54,8 @@ public class GameHomeServiceImpl implements GameHomeService {
      * @return
      */
     @Override
-    public FungoPageResultDto<HomePage> queryHomePage() {
-        FungoPageResultDto<HomePage> re = new FungoPageResultDto<HomePage>();
+    public ResultDto<List<HomePage>> queryHomePage(InputPageDto inputPageDto) {
+        ResultDto<List<HomePage>> re = new ResultDto<>();
         //查询有制顶标识的数据
         List<HomePage> topList =  homePageService.selectList(new EntityWrapper<HomePage>().eq("state",3));
         //查询正常的数据，并按修改时间排序
@@ -79,7 +78,7 @@ public class GameHomeServiceImpl implements GameHomeService {
      * @return
      */
     @Override
-    public ResultDto<List<NewGameBean>> queryNewGame() {
+    public ResultDto<List<NewGameBean>> queryNewGame(InputPageDto inputPageDto) {
         //查询选择日期字段在今天开始往后30天内的所有数据，先根据时间排序，在对每天内的排序号(sort)进行排序
         ResultDto<List<NewGameBean>> re = new ResultDto<List<NewGameBean>>();
 //        Date date=new Date();//此时date为当前的时间

@@ -18,14 +18,14 @@ public interface GameHomeService {
 	 * 首页显示内容
 	 * @return
 	 */
-	FungoPageResultDto<HomePage> queryHomePage();
+	ResultDto<List<HomePage>> queryHomePage(InputPageDto inputPageDto);
 
 
 	/**
 	 * 新游信息查询
 	 * @return
 	 */
-	ResultDto<List<NewGameBean>> queryNewGame();
+	ResultDto<List<NewGameBean>> queryNewGame(InputPageDto inputPageDto);
 
 
 	/**

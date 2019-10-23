@@ -154,4 +154,9 @@ public class PCBannerDto {
      * @date: 2019/7/23 11:25
      */
     private String bannerImage;
+
+    /**
+     * 显示平台
+     */
+    private Integer displayPlatform;
 }

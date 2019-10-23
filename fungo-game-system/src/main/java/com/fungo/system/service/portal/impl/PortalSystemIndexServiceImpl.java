@@ -308,7 +308,7 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
     //活动
     public CardIndexBean activities() {
         //banner
-        List<Banner> bl = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0005").eq("state", "0").orderBy("sort", false).last("limit 1"));
+        List<Banner> bl = bannerService.selectList(new EntityWrapper<Banner>().in("position_code", "0005,0010").eq("state", "0").orderBy("sort", false).last("limit 1"));
         CardIndexBean indexBean = new CardIndexBean();
         if (bl.size() == 0) {
             return null;
