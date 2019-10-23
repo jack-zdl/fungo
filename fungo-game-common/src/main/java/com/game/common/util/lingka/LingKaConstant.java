@@ -3,33 +3,33 @@ package com.game.common.util.lingka;
 /**
  *  零卡对接相关常量
  */
-class LingKaConstant {
+public class LingKaConstant {
 
-    static final String URL = "https://www.lyn.cash/";
+   public static final String URL = "https://www.lyn.cash/";
     /**
      *  登陸接口
      */
-    static final String LINGKA_LOGIN_URL = URL+"api/home/login";
+    public static final String LINGKA_LOGIN_URL = URL+"api/home/login";
 
     /**
      *  礼品绑定接口
      */
-    static final String LINGKA_GIFTCARD_BIND = URL+"api/admin/giftcard/bind";
+    public static final String LINGKA_GIFTCARD_BIND = URL+"api/admin/giftcard/bind";
 
     /**
      *  礼品绑定接口
      */
-    static final String LINGKA_PAY_LOG = URL+"MingboService/listTapGames";
+    public static final String LINGKA_PAY_LOG = URL+"MingboService/listTapGames";
 
     /**
     * 功能描述   管理員邮箱
      * @date: 2019/10/21 18:11
      */
-    static final String ADMIN_EMAIL = "mingbo@lyn.cash";
+    public static final String ADMIN_EMAIL = "mingbo@lyn.cash";
 
     /**
      * 功能描述   管理員密码
      * @date: 2019/10/21 18:11
      */
-    static final String ADMIN_PASSWORD = "123456";
+    public static final String ADMIN_PASSWORD = "123456";
 }

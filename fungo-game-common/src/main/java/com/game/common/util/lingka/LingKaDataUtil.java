@@ -48,10 +48,10 @@ public class LingKaDataUtil {
      * 功能描述: 登陆获取session
      * @date: 2019/10/21 18:08
      */
-    public static void getSession(){
+    public static void getSession(String userPhone){
         try {
             HashMap<String, Object> paramMap = new HashMap<>();
-            paramMap.put("email", ADMIN_EMAIL);
+            paramMap.put("phone", userPhone);
             paramMap.put("password", ADMIN_PASSWORD);
             String s = listTabGame(LINGKA_LOGIN_URL,paramMap);
             JSONObject jsonObject = JSON.parseObject( s );
@@ -86,8 +86,8 @@ public class LingKaDataUtil {
     }
 
     public static void main(String[] args) {
-        LingKaDataUtil.getSession();
-//        LingKaDataUtil.bindGiftCard();
+        LingKaDataUtil.getSession("18221537170");
+        LingKaDataUtil.bindGiftCard("18221537170","1","1");
     }
 
 
