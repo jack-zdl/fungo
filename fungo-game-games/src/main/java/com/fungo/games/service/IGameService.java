@@ -157,4 +157,6 @@ public interface IGameService {
     ResultDto<List<GameOutPage>> viewGames(String memberId);
 
     ResultDto<List<GameOut>> listGameByids(String gameIds);
+
+    ResultDto<List<GameKuDto>> listGameByTags(TagGameDto tagGameDto);
 }

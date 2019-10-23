@@ -1779,6 +1779,11 @@ public class GameServiceImpl implements IGameService {
         return ResultDto.success(gameOuts);
     }
 
+    @Override
+    public ResultDto<List<GameKuDto>> listGameByTags(TagGameDto tagGameDto) {
+        return null;
+    }
+
     //可修改
     private ResultDto<List<Map<String, Object>>> getTagByGameId(String gameId, List<String> TagIdList) {
         //获得全部分类以及标签，在选中的打勾

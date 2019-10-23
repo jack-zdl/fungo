@@ -102,6 +102,19 @@
         <!--2019-05-28 补充遗漏的字段 lyc-->
         <result column="comment_num" property="commentNum"/>
         <result column="boom_download_num" property="boomDownloadNum"/>
+        <!--2019-10-23 零卡新增字段-->
+        <result column="tab_game_id" property="tabGameId"/>
+        <result column="google_game_id" property="googleGameId"/>
+        <result column="video_url_latest" property="videoUrlLatest"/>
+        <result column="cost_free" property="costFree"/>
+        <result column="company" property="company"/>
+        <result column="publisher" property="publisher"/>
+        <result column="android_status_desc" property="androidStatusDesc"/>
+        <result column="ios_status_desc" property="iosStatusDesc"/>
+        <result column="google_deputy_name" property="googleDeputyName"/>
+        <result column="can_fast" property="canFast"/>
+        <result column="week_download_num" property="weekDownloadNum"/>
+        <result column="score" property="score"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->

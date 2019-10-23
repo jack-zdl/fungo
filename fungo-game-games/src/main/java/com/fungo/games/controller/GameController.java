@@ -325,5 +325,10 @@ public class GameController {
         return 1;
     }
 
+    public ResultDto<List<GameKuDto>> listGameByTags(@RequestBody TagGameDto tagGameDto){
+
+        return gameService.listGameByTags(tagGameDto);
+    }
+
 
 }
