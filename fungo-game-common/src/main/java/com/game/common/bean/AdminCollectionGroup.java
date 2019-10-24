@@ -49,10 +49,6 @@ public class AdminCollectionGroup {
 	 */
 	private Integer sort;
 	/**
-	 * 游戏名称拼接
-	 */
-	private String gameName;
-	/**
 	 * 游戏数量
 	 */
 	private Integer number;
@@ -67,14 +63,6 @@ public class AdminCollectionGroup {
 
 	public void setUpdatedBy(String updatedBy) {
 		this.updatedBy = updatedBy;
-	}
-
-	public String getGameName() {
-		return gameName;
-	}
-
-	public void setGameName(String gameName) {
-		this.gameName = gameName;
 	}
 
 	public Integer getNumber() {

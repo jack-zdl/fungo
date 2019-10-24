@@ -23,37 +23,17 @@ public class CollectionItemBean implements Serializable {
 	 */
 	private String name;
 	/**
-	 * 标签
-	 */
-	private List<String> labels;
-	/**
 	 * 评分
 	 */
 	private String score;
 	/**
-	 * 游戏介绍(合集项表)
+	 * 游戏介绍(游戏表android_status_desc字段)
 	 */
-	private String detail;
+	private String androidStatusDesc;
 	/**
 	 * 排序号
 	 */
 	private Integer sort;
-	/**
-	 * 创建时间
-	 */
-	private Date createdAt;
-	/**
-	 * 更新时间
-	 */
-	private Date updatedAt;
-	/**
-	 * 创建人
-	 */
-	private String createdBy;
-	/**
-	 * 修改人
-	 */
-	private String updatedBy;
 	/**
 	 * 'IOS状态 0:待开启，1预约。2.测试，3已上线,4：可下载'
 	 */
@@ -74,6 +54,18 @@ public class CollectionItemBean implements Serializable {
 	 * 游戏图标
 	 */
 	private String icon;
+	/**
+	 * 预约标识
+	 */
+	private Boolean mark;
+
+	public Boolean getMark() {
+		return mark;
+	}
+
+	public void setMark(Boolean mark) {
+		this.mark = mark;
+	}
 
 	public String getIcon() {
 		return icon;
@@ -139,12 +131,12 @@ public class CollectionItemBean implements Serializable {
 		this.gameId = gameId;
 	}
 
-	public String getDetail() {
-		return detail;
+	public String getAndroidStatusDesc() {
+		return androidStatusDesc;
 	}
 
-	public void setDetail(String detail) {
-		this.detail = detail;
+	public void setAndroidStatusDesc(String androidStatusDesc) {
+		this.androidStatusDesc = androidStatusDesc;
 	}
 
 	public Integer getSort() {
@@ -155,38 +147,6 @@ public class CollectionItemBean implements Serializable {
 		this.sort = sort;
 	}
 
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public Date getUpdatedAt() {
-		return updatedAt;
-	}
-
-	public void setUpdatedAt(Date updatedAt) {
-		this.updatedAt = updatedAt;
-	}
-
-	public String getCreatedBy() {
-		return createdBy;
-	}
-
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
-
-	public String getUpdatedBy() {
-		return updatedBy;
-	}
-
-	public void setUpdatedBy(String updatedBy) {
-		this.updatedBy = updatedBy;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -195,13 +155,6 @@ public class CollectionItemBean implements Serializable {
 		this.name = name;
 	}
 
-	public List<String> getLabels() {
-		return labels;
-	}
-
-	public void setLabels(List<String> labels) {
-		this.labels = labels;
-	}
 
 	public String getScore() {
 		return score;
