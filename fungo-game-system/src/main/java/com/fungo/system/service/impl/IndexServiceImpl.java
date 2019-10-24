@@ -826,4 +826,5 @@ public class IndexServiceImpl implements IIndexService {
         re.setData(banner);
         return re;
     }
+
 }

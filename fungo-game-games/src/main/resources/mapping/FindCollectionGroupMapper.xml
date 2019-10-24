@@ -7,7 +7,7 @@
 		<id column="id" property="id" />
 		<result column="group_id" property="groupId" />
 		<result column="game_id" property="gameId" />
-		<result column="detail" property="detail" />
+		<result column="android_status_desc" property="androidStatusDesc" />
 		<result column="ios_state" property="iosState" />
 		<result column="android_state" property="androidState" />
 		<result column="name" property="name" />
@@ -24,9 +24,9 @@
     	select
 		t1.id,
 		t1.group_id,
-		t1.detail,
 		t1.game_id,
 		t2.ios_state,
+		t2.android_status_desc,
 		t2.android_state,
 		t2.name,
 		t2.score,
