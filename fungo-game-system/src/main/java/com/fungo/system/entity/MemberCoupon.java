@@ -16,44 +16,102 @@ public class MemberCoupon extends Model<MemberCoupon> {
     private String id;
 
     /**
-     * 功能描述: 
-     * @param: 1 普通用户类型购买 2 邀请人类型 3 被邀请人类型
-     * @return: 
-     * @auther: dl.zhang
+     * 功能描述:  1 普通用户类型购买 2 邀请人类型 3 被邀请人类型
      * @date: 2019/10/15 16:56
      */
     @TableField("member_type")
     private Integer memberType;
 
+    /**
+     * 功能描述: 用户id
+     * @date: 2019/10/15 16:56
+     */
     @TableField("member_id")
     private String memberId;
 
+    /**
+     * 功能描述: 邀请人id主要针对type为3的
+     * @date: 2019/10/15 16:56
+     */
     @TableField("invitee_id")
     private String inviteeId;
 
+    /**
+     * 功能描述: 优惠券id
+     * @date: 2019/10/15 16:56
+     */
     @TableField("coupon_id")
     private String couponId;
 
+    /**
+     * 功能描述: 是否有效
+     * @date: 2019/10/15 16:56
+     */
     @TableField("isactive")
     private String isactive;
 
+    /**
+     * 功能描述: 创建人
+     * @date: 2019/10/15 16:56
+     */
     @TableField("created_by")
     private String createdBy;
 
+    /**
+     * 功能描述:  创建时间
+     * @date: 2019/10/15 16:56
+     */
     @TableField("created_at")
     private Date createdAt;
 
+    /**
+     * 功能描述: 修改人
+     * @date: 2019/10/15 16:56
+     */
     @TableField("updated_by")
     private String updatedBy;
 
+    /**
+     * 功能描述: 修改时间
+     * @date: 2019/10/15 16:56
+     */
     @TableField("updated_at")
     private Date updatedAt;
 
+    /**
+     * 功能描述: 版本
+     * @date: 2019/10/15 16:56
+     */
     @TableField("rversion")
     private Integer rversion;
 
+    /**
+     * 功能描述: 描述
+     * @date: 2019/10/15 16:56
+     */
     @TableField("description")
     private String description;
+
+    /**
+     * 功能描述:  发送状态 0  未发送 1 发送成功 2 发送失败
+     * @date: 2019/10/15 16:56
+     */
+    @TableField("state")
+    private int state;
+
+    /**
+     * 功能描述: 发送时间
+     * @date: 2019/10/15 16:56
+     */
+    @TableField("send_date")
+    private Date sendDate;
+
+    /**
+     * 功能描述: 用于记录零卡返回数据
+     * @date: 2019/10/15 16:56
+     */
+    @TableField("send_log")
+    private String sendLog;
 
     public String getId() {
         return id;
@@ -149,6 +207,30 @@ public class MemberCoupon extends Model<MemberCoupon> {
 
     public void setDescription(String description) {
         this.description = description == null ? null : description.trim();
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    public Date getSendDate() {
+        return sendDate;
+    }
+
+    public void setSendDate(Date sendDate) {
+        this.sendDate = sendDate;
+    }
+
+    public String getSendLog() {
+        return sendLog;
+    }
+
+    public void setSendLog(String sendLog) {
+        this.sendLog = sendLog;
     }
 
     @Override

@@ -21,6 +21,8 @@ import java.util.Map;
 @Repository
 public interface MemberCouponDao extends BaseMapper<MemberCoupon> {
 
+
+    boolean updateByRversion(MemberCoupon memberCoupon);
     /**
      * 功能描述: 查詢出被邀請人已經因爲邀請人滿足条件获取免费的优惠券的集合
      * @return: java.util.List<com.fungo.system.entity.MemberCoupon>
@@ -36,4 +38,5 @@ public interface MemberCouponDao extends BaseMapper<MemberCoupon> {
     List<MemberCoupon> getMemberCouponByInvitee( @Param("ids") List<String> ids , @Param("type") String type,@Param( "couponId" )String couponId);
 
     List<Map<String, Integer>> getMemberCouponByTypes(@Param("memberId") String memberId, @Param("types")List<String> types);
+
 }
