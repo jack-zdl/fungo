@@ -48,17 +48,18 @@ public class LingKaDataUtil {
      * 功能描述: 登陆获取session
      * @date: 2019/10/21 18:08
      */
-    public static void getSession(String userPhone){
+    public static boolean getSession(String userPhone){
         try {
             HashMap<String, Object> paramMap = new HashMap<>();
             paramMap.put("phone", userPhone);
             paramMap.put("password", ADMIN_PASSWORD);
             String s = listTabGame(LINGKA_LOGIN_URL,paramMap);
             JSONObject jsonObject = JSON.parseObject( s );
-            System.out.println(jsonObject.toJSONString());
+            return jsonObject.get( "type" ) != null ;
         }catch (Exception e){
             LOGGER.error( "登陆获取session",e );
         }
+        return false;
     }
 
     /**

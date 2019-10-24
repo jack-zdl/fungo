@@ -36,10 +36,10 @@ import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
-import com.game.common.buriedpoint.analysysjavasdk.AnalysysJavaSdk;
 import com.game.common.vo.CircleGamePostVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -1929,9 +1929,113 @@ public class GameServiceImpl implements IGameService {
     }
 
     @Override
-    public ResultDto<List<GameKuDto>> listGameByTags(TagGameDto tagGameDto) {
-        return null;
+    public FungoPageResultDto<GameKuDto> listGameByTags(TagGameDto tagGameDto) {
+        int page = tagGameDto.getPage();
+        int limit = tagGameDto.getLimit();
+        // 计算 sql limit 偏移量
+        int offset = (page-1) * limit;
+        tagGameDto.setOffset(offset);
+        int tootal =  gameService.countGameByTags(tagGameDto);
+
+        FungoPageResultDto<GameKuDto> fungoPageResultDto = new FungoPageResultDto<>();
+        ArrayList<GameKuDto> gameKuDtos = new ArrayList<>();
+
+        // 优化没有数据情况
+        if(tootal == 0 || offset > tootal){
+            // 结果封装为客户端通用格式
+            PageTools.pageToResultDto(fungoPageResultDto,tootal,limit,page);
+            fungoPageResultDto.setData(gameKuDtos);
+        }else {
+            List<Game> games = gameService.listGameByTags(tagGameDto);
+           /* // 远程服务调用 获取游戏对应的圈子id
+            List<String> gameIds = getGameIds(games);
+            Map<String,String> gameCircleMap = null;*/
+            for (Game game : games) {
+                GameKuDto gameKuDto = transGameToGameKuDto(game);
+                gameKuDtos.add(gameKuDto);
+            }
+            // 结果封装为客户端通用格式
+            fungoPageResultDto.setData(gameKuDtos);
+            PageTools.pageToResultDto(fungoPageResultDto,tootal,limit,page);
+        }
+
+        return fungoPageResultDto;
     }
+
+    private List<String> getGameIds(List<Game> games ){
+        List<String> list = new ArrayList<>();
+        for (Game game : games) {
+            list.add(game.getId());
+        }
+        return list;
+    }
+
+    /**
+     *  实体转化
+     * @param game 游戏实体
+     * @param gameCircleMap key为游戏id 值为圈子id的map
+     * @return 转化后的展示实体
+     */
+    private GameKuDto transGameToGameKuDto(Game game){
+        GameKuDto gameKuDto = new GameKuDto();
+        BeanUtils.copyProperties(game,gameKuDto);
+        // 处理 描述展示和圈子标识展示
+        gameKuDto.setAndroidStatusDesc(gameStatusDesc(gameKuDto.getAndroidStatusDesc()));
+        gameKuDto.setIosStatusDesc(gameStatusDesc(gameKuDto.getIosStatusDesc()));
+
+        // 可优化 -- 看上线效果
+        CircleGamePostVo circleGamePostVo = new CircleGamePostVo(CircleGamePostVo.CircleGamePostTypeEnum.GAMESID.getKey(),game.getId(),"");
+        ResultDto<String> re = communityFeignClient.getCircleByGame(circleGamePostVo);
+        if (CommonEnum.SUCCESS.code().equals(String.valueOf(re.getStatus())) && !re.getData().equals("")) {
+            gameKuDto.setCircleId(re.getData());
+        }else {
+            gameKuDto.setCircleId(null);
+        }
+
+        // 处理加速
+        String origin = gameKuDto.getOrigin();
+        Boolean canFast = gameKuDto.getCanFast();
+        if(canFast == null){
+            canFast = true;
+        }
+        gameKuDto.setCanFast(origin.equals("中国")?false:canFast);
+        gameKuDto.setOrigin(origin.equals("中国")?null:origin);
+        return gameKuDto;
+    }
+
+    /**
+     *  游戏状态描述 格式  {"dsc":"开启时间待通知","starDate":1571812315000,"endDate":1571985115000}
+     * @param databaseDesc 数据库中描述
+     */
+    private String gameStatusDesc(String databaseDesc){
+       if(CommonUtil.isNull(databaseDesc)){
+           return null;
+       }
+       try {
+           JSONObject jsonObject = JSONObject.parseObject(databaseDesc);
+           String dsc = jsonObject.getString("dsc");
+           if(CommonUtil.isNull(dsc)){
+               return null;
+           }
+           long currentTime = System.currentTimeMillis();
+
+           Long starDate = jsonObject.getLong("starDate");
+
+           Long endDate = jsonObject.getLong("endDate");
+
+           if(starDate == null && endDate == null){
+               return dsc;
+           }
+
+           if(currentTime>=starDate && currentTime<= endDate ){
+               return dsc;
+           }
+       }catch (Exception e){
+           logger.error("转换游戏状态描述错误",e);
+       }
+       return null;
+    }
+
 
     //可修改
     private ResultDto<List<Map<String, Object>>> getTagByGameId(String gameId, List<String> TagIdList) {

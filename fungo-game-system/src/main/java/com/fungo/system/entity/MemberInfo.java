@@ -87,8 +87,19 @@ public class MemberInfo extends Model<MemberInfo> {
     @TableField("description")
     private String description;
 
+    /**
+     * 功能描述: 邀请人id,如果没有邀请人就为空
+     * @date: 2019/10/24 11:34
+     */
     @TableField("parent_member_id")
     private String parentMemberId;
+
+    /**
+     * 功能描述: 状态 1 正常 0 未绑定微信
+     * @date: 2019/10/24 11:34
+     */
+    @TableField("parent_member_id")
+    private int  state;
 
 
     private static final long serialVersionUID = 1L;
@@ -179,6 +190,14 @@ public class MemberInfo extends Model<MemberInfo> {
 
     public void setParentMemberId(String parentMemberId) {
         this.parentMemberId = parentMemberId;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 
     @Override

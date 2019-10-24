@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 public class MyThreadLocal {
     private static ThreadLocal<String> tokenClass = new ThreadLocal<>();
 
+    private static ThreadLocal<String> lingkaSession  = new ThreadLocal<>();
+
     public static String getToken() {
         return tokenClass.get();
     }
@@ -20,4 +22,11 @@ public class MyThreadLocal {
         tokenClass.set(token);
     }
 
+    public static String getLingkaSession() {
+        return lingkaSession.get();
+    }
+
+    public static void setLingkaSession(String session) {
+        lingkaSession.set( session );
+    }
 }

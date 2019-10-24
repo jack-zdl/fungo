@@ -11,6 +11,8 @@ package com.game.common.util.lingka;
  */
 public class BindGiftcardDto {
 
+    private boolean result;
+
     private String  success;
 
     private String status;
@@ -18,6 +20,14 @@ public class BindGiftcardDto {
     private  int cardId;
 
     private String password;
+
+    public boolean isResult() {
+        return result;
+    }
+
+    public void setResult(boolean result) {
+        this.result = result;
+    }
 
     public String getSuccess() {
         return success;

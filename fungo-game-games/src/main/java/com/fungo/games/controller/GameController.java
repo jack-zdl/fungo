@@ -325,10 +325,39 @@ public class GameController {
         return 1;
     }
 
-    public ResultDto<List<GameKuDto>> listGameByTags(@RequestBody TagGameDto tagGameDto){
-
+    @PostMapping("/api/game/listGameByTags")
+    public FungoPageResultDto<GameKuDto> listGameByTags(@RequestBody TagGameDto tagGameDto){
+        List<String> tags = tagGameDto.getTags();
+        if(tags == null||tags.isEmpty()){
+            tagGameDto.setTagIds(null);
+            tagGameDto.setSize(0);
+        }else{
+            tagGameDto.setTagIds(getTagString(tags));
+            tagGameDto.setSize(tags.size());
+        }
         return gameService.listGameByTags(tagGameDto);
     }
 
+
+    private String getTagString(List<String> tags){
+        if(tags == null||tags.isEmpty()){
+            return null;
+        }
+        StringBuilder builder = new StringBuilder();
+        int size = tags.size();
+        for(int i = 0;i< size;i++){
+            String tag = tags.get(i);
+            if(i == (size -1)){
+                builder.append("'").append(tag).append("'");
+            }else {
+                builder.append("'").append(tag).append("'").append(",");
+            }
+        }
+        String tagIds = builder.toString();
+        if(CommonUtil.isNull(tagIds)){
+            return null;
+        }
+        return tagIds;
+    }
 
 }

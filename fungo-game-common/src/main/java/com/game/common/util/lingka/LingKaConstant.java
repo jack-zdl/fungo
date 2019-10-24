@@ -14,7 +14,7 @@ public class LingKaConstant {
     /**
      *  礼品绑定接口
      */
-    public static final String LINGKA_GIFTCARD_BIND = URL+"api/admin/giftcard/bind";
+    public static final String LINGKA_GIFTCARD_BIND = URL+"api/admin/giftcard/send";
 
     /**
      *  礼品绑定接口

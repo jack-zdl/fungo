@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.entity.Game;
 import com.game.common.bean.HotValue;
+import com.game.common.dto.game.TagGameDto;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -41,5 +42,7 @@ public interface GameDao extends BaseMapper<Game> {
     Game getGameByEvaluateId(String evaluateId);
     List<Game> getGameList(@Param("ids") List<String> ids);
 
+    int countGameByTags(TagGameDto tagGameDto);
 
+    List<Game> listGameByTags(TagGameDto tagGameDto);
 }

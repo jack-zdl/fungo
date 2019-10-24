@@ -207,4 +207,22 @@ public class JobController {
         return re;
     }
 
+    /**
+     * 功能描述: 定时更新邀请用户是否满足奖励条件
+     * @return: com.game.common.dto.ResultDto<java.lang.String>
+     * @auther: dl.zhang
+     * @date: 2019/7/29 16:42
+     */
+    @GetMapping("/user/checkList")
+    public ResultDto<String> checkListUserRecommend(  ){
+        ResultDto<String> re = null;
+        try {
+            re = ResultDto.success("定时更新邀请用户是否满足奖励条件执行成功");
+        }catch (Exception e){
+            LOGGER.error("定时更新邀请用户是否满足奖励条件执行异常",e);
+            re = ResultDto.error("-1","定时更新邀请用户是否满足奖励条件执行异常");
+        }
+        return re;
+    }
+
 }
