@@ -6,7 +6,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.system.dao.MemberDao;
 import com.fungo.system.entity.IncentAccountCoin;
+import com.fungo.system.entity.Member;
+import com.fungo.system.entity.MemberCoupon;
+import com.fungo.system.helper.lingka.LingKaHelper;
 import com.fungo.system.mall.daoService.MallOrderDaoService;
 import com.fungo.system.mall.daoService.MallOrderGoodsDaoService;
 import com.fungo.system.mall.daoService.MallSeckillDaoService;
@@ -25,12 +29,14 @@ import com.game.common.consts.FunGoGameConsts;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.mall.MallGoodsInput;
+import com.game.common.enums.AbstractResultEnum;
 import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.FunGoEHCacheUtils;
 import com.game.common.util.FungoAESUtil;
 import com.game.common.util.FungoCRC32Util;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
+import com.game.common.util.lingka.BindGiftcardDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +96,10 @@ public class FungoMallScanOrderWithSeckillService {
 
     @Autowired
     private FungoCacheTask fungoCacheTask;
+    @Autowired
+    private LingKaHelper lingKaHelper;
+    @Autowired
+    private MemberDao memberDao;
 
     /**
      * 扫描订单表
@@ -238,6 +248,14 @@ public class FungoMallScanOrderWithSeckillService {
                                                 break;
                                             case 3:
                                                 vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods,31);
+                                                break;
+                                            case 27:
+                                                // @todo
+                                                vCardNewWithOrderGoods = updateOrderGoodsInfoWithLingKaVCard(27,mb_id, orderId, goods);
+                                                break;
+                                            case 28:
+                                                // @todo
+                                                vCardNewWithOrderGoods = updateOrderGoodsInfoWithLingKaVCard(28,mb_id, orderId, goods);
                                                 break;
                                             default:
                                                 break;
@@ -441,7 +459,74 @@ public class FungoMallScanOrderWithSeckillService {
     }
 
 
+    /**
+     * 类型为21，零卡商品需要
+     * @param mb_Id 用户ID
+     * @param orderId 订单ID
+     * @param orderGoods 订单商品关系表实体
+     * @return
+     */
+    public MallVirtualCard updateOrderGoodsInfoWithLingKaVCard(int goodsType,String mb_Id, Long orderId, MallOrderGoods orderGoods) {
 
+        String goodsAttJson = orderGoods.getGoodsAtt();
+
+        //保存商品本身信息和兑换卡信息 {"goodsInfo":"" , "cardInfo:"}
+        Map<String, Object> goodsAttMap = new HashMap<String, Object>();
+        String goodsInfo = "";
+        if (StringUtils.isNoneBlank(goodsAttJson)) {
+            JSONObject jsonObject = JSONObject.parseObject(goodsAttJson);
+            goodsInfo = jsonObject.getString("goodsInfo");
+        }
+
+        goodsAttMap.put("goodsInfo", goodsInfo);
+        goodsAttMap.put("cardInfo", "零卡套餐");
+
+
+        MallOrderGoods orderGoodsNew = new MallOrderGoods();
+        orderGoodsNew.setGoodsAtt(JSON.toJSONString(goodsAttMap));
+        orderGoodsNew.setUpdatedAt(new Date());
+
+        EntityWrapper<MallOrderGoods> orderGoodsEntityWrapper = new EntityWrapper<MallOrderGoods>();
+        orderGoodsEntityWrapper.eq("id", orderGoods.getId());
+        Member member = memberDao.selectById( mb_Id );
+        boolean orderGoodsUpdateOK = mallOrderGoodsDaoService.update(orderGoodsNew, orderGoodsEntityWrapper);
+        if(goodsType == 27){
+            MemberCoupon memberCoupon = new MemberCoupon();
+            memberCoupon.setMemberType(1);
+            memberCoupon.setMemberId( mb_Id);
+            memberCoupon.setCouponId( "13" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+            memberCoupon.setIsactive("1");
+            memberCoupon.setCreatedAt( new Date());
+            memberCoupon.setCreatedBy( "system");
+            memberCoupon.setDescription( "被邀请人满足2级条件数目达到20人,邀请人获取7折优惠券" );
+            memberCoupon.insert();
+            // 同步到零卡绑定券
+            BindGiftcardDto bindGiftcardDto  = lingKaHelper.sendGiftCardToLingka(member,"1",memberCoupon.getId());
+            memberCoupon.setState( bindGiftcardDto.isResult() ? 1 : 0 );
+            memberCoupon.setSendDate(new Date());
+            memberCoupon.setRversion( memberCoupon.getRversion()+1 );
+            memberCoupon.setSendLog(JSON.toJSONString( bindGiftcardDto)  );
+            memberCoupon.updateById();
+        }else if(goodsType == 28){
+            MemberCoupon memberCoupon = new MemberCoupon();
+            memberCoupon.setMemberType(1);
+            memberCoupon.setMemberId( mb_Id);
+            memberCoupon.setCouponId( "14" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+            memberCoupon.setIsactive("1");
+            memberCoupon.setCreatedAt( new Date());
+            memberCoupon.setCreatedBy( "system");
+            memberCoupon.setDescription( "被邀请人满足2级条件数目达到20人,邀请人获取7折优惠券" );
+            memberCoupon.insert();
+            // 同步到零卡绑定券
+            BindGiftcardDto bindGiftcardDto  = lingKaHelper.sendGiftCardToLingka(member,"1",memberCoupon.getId());
+            memberCoupon.setState( bindGiftcardDto.isResult() ? 1 : 0 );
+            memberCoupon.setSendDate(new Date());
+            memberCoupon.setRversion( memberCoupon.getRversion()+1 );
+            memberCoupon.setSendLog(JSON.toJSONString( bindGiftcardDto)  );
+            memberCoupon.updateById();
+        }
+        return null;
+    }
 
 
     /**
