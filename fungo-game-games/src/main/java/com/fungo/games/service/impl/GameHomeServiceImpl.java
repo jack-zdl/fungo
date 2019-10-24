@@ -4,10 +4,8 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.dao.FindCollectionGroupDao;
 import com.fungo.games.dao.NewGameDao;
-import com.fungo.games.entity.FindCollectionGroup;
-import com.fungo.games.entity.Game;
-import com.fungo.games.entity.GameSurveyRel;
-import com.fungo.games.entity.HomePage;
+import com.fungo.games.entity.*;
+import com.fungo.games.feign.CommunityFeignClient;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.bean.AdminCollectionGroup;
@@ -17,14 +15,17 @@ import com.game.common.bean.NewGameBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
+import com.game.common.util.PageTools;
 import com.game.common.util.exception.BusinessException;
 import com.game.common.vo.AdminCollectionVo;
+import com.game.common.vo.CircleGamePostVo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,6 +56,10 @@ public class GameHomeServiceImpl implements GameHomeService {
     private GameSurveyRelService surveyRelService;
     @Autowired
     private GameService gameService;
+    @Autowired
+    private CommunityFeignClient communityFeignClient;
+    @Autowired
+    private NewGameService newGameService;
 
 
     /**
@@ -65,21 +70,32 @@ public class GameHomeServiceImpl implements GameHomeService {
     @Override
     public FungoPageResultDto<HomePageBean> queryHomePage(InputPageDto inputPageDto, String memberId, String os) {
         FungoPageResultDto<HomePageBean> re = new FungoPageResultDto<>();
-        if(inputPageDto.getPage()<1){
+        if (inputPageDto.getPage() < 1) {
             re.setMessage("传入页数必须大于等于1");
             re.setAfter(1);
             re.setBefore(0);
             return re;
         }
-        re.setAfter((inputPageDto.getPage() + 1));
         List<HomePage> result = new ArrayList<>();
         //查询制顶和正常的全部数据
         Page<HomePage> totalPage = homePageService.selectPage(new Page<HomePage>(1, 1),
                 new EntityWrapper<HomePage>().in("state", "0,3").orderBy("updated_at", false));
-        List<HomePage> totalList = totalPage.getRecords();
+        List<HomePage> totalListPage = totalPage.getRecords();
         //查询数据按时间排序
         Page<HomePage> page = homePageService.selectPage(new Page<HomePage>(inputPageDto.getPage(), inputPageDto.getLimit()),
                 new EntityWrapper<HomePage>().eq("state", 0).orderBy("updated_at", false));
+        //获取前一页后一页数据
+        FungoPageResultDto<HomePage> fungoPageResultDto = new FungoPageResultDto<>();
+        //查询总数据
+        List<HomePage> homePageList = homePageService.selectList(new EntityWrapper<HomePage>().eq("state", 0));
+        Page<HomePage> pages = new Page();
+        pages.setTotal(homePageList.size());
+        pages.setSize(inputPageDto.getLimit());
+        pages.setCurrent(inputPageDto.getPage());
+        fungoPageResultDto.setData(homePageList);
+        PageTools.pageToResultDto(fungoPageResultDto, pages);
+        re.setBefore(fungoPageResultDto.getBefore());
+        re.setAfter(fungoPageResultDto.getAfter());
         List<HomePage> pageList = page.getRecords();
         if (1 == inputPageDto.getPage()) {
             //置顶标识首页数据
@@ -90,10 +106,10 @@ public class GameHomeServiceImpl implements GameHomeService {
                 result = pageList;
             }
             //第一条即是制定也是最新更新的
-            if(flag){
-                if (!totalList.get(0).getId().equals(pageList.get(0).getId())) {
-                    result.add(totalList.get(0));
-                    topList = topList.stream().filter(s -> !s.getId().equals(totalList.get(0).getId())).collect(Collectors.toList());
+            if (flag) {
+                if (!totalListPage.get(0).getId().equals(pageList.get(0).getId())) {
+                    result.add(totalListPage.get(0));
+                    topList = topList.stream().filter(s -> !s.getId().equals(totalListPage.get(0).getId())).collect(Collectors.toList());
                     if (topList.size() == 1) {
                         result.add(topList.get(0));
                     } else if (topList.size() > 1) {
@@ -115,8 +131,8 @@ public class GameHomeServiceImpl implements GameHomeService {
             result = page.getRecords();
         }
         List<HomePageBean> homePageBeanList = new ArrayList<>();
-        HomePageBean  homePageBean = null;
-        for(HomePage homePage:result){
+        HomePageBean homePageBean = null;
+        for (HomePage homePage : result) {
             Game game = gameService.selectById(homePage.getGameId());
             homePageBean = new HomePageBean();
             homePageBean.setId(homePage.getId());
@@ -131,11 +147,21 @@ public class GameHomeServiceImpl implements GameHomeService {
             homePageBean.setRmdReason(homePage.getRmdReason());
             homePageBean.setVideo(homePage.getVideo());
             homePageBean.setAppImages(homePage.getAppImages());
+            homePageBean.setIcon(game.getIcon());
             if (StringUtils.isNotBlank(memberId)) {
                 GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", homePage.getGameId()).eq("phone_model", os).eq("state", 0));
                 if (srel != null) {
                     homePageBean.setMark(true);
                 }
+            }
+            CircleGamePostVo circleGamePostVo = new CircleGamePostVo();
+            circleGamePostVo.setGameId(homePage.getGameId());
+            circleGamePostVo.setType(1);
+            ResultDto<String> dto = communityFeignClient.getCircleByGame(circleGamePostVo);
+            if (null == dto) {
+                homePageBean.setCircleId(null);
+            } else {
+                homePageBean.setCircleId(dto.getData());
             }
             homePageBeanList.add(homePageBean);
         }
@@ -153,13 +179,12 @@ public class GameHomeServiceImpl implements GameHomeService {
     public FungoPageResultDto<NewGameBean> queryNewGame(InputPageDto inputPageDto, String memberId, String os) {
         //查询选择日期字段在今天开始往后30天内的所有数据，先根据时间排序，在对每天内的排序号(sort)进行排序
         FungoPageResultDto<NewGameBean> re = new FungoPageResultDto<>();
-        if(inputPageDto.getPage()<1){
+        if (inputPageDto.getPage() < 1) {
             re.setMessage("传入页数必须大于等于1");
             re.setAfter(1);
             re.setBefore(0);
             return re;
         }
-        re.setAfter((inputPageDto.getPage() + 1));
         Calendar startCalendar = Calendar.getInstance();
         startCalendar.setTime(new Date());
         startCalendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -184,6 +209,17 @@ public class GameHomeServiceImpl implements GameHomeService {
         bean.setPageSize(inputPageDto.getLimit());
         //查询有制顶标识的数据
         List<NewGameBean> list = newGameDao.getNewGameAll(bean);
+        //获取前一页后一页标识
+        List<NewGame> totalList = newGameService.selectList(new EntityWrapper<NewGame>().ge("choose_date", startCalendar.getTime()).lt("choose_date", endCalendar.getTime()).eq("state", "0"));
+        FungoPageResultDto<NewGameBean> fungoPageResultDto = new FungoPageResultDto<>();
+        Page<HomePage> pages = new Page();
+        pages.setTotal(totalList.size());
+        pages.setSize(inputPageDto.getLimit());
+        pages.setCurrent(inputPageDto.getPage());
+        fungoPageResultDto.setData(list);
+        PageTools.pageToResultDto(fungoPageResultDto, pages);
+        re.setBefore(fungoPageResultDto.getBefore());
+        re.setAfter(fungoPageResultDto.getAfter());
         for (NewGameBean newGameBean : list) {
             newGameBean.setMark(false);
             if (StringUtils.isNotBlank(memberId)) {
@@ -194,6 +230,15 @@ public class GameHomeServiceImpl implements GameHomeService {
             }
             if (null != newGameBean.getChooseDate()) {
                 newGameBean.setTime(newGameBean.getChooseDate().getTime());
+            }
+            CircleGamePostVo circleGamePostVo = new CircleGamePostVo();
+            circleGamePostVo.setGameId(newGameBean.getGameId());
+            circleGamePostVo.setType(1);
+            ResultDto<String> dto = communityFeignClient.getCircleByGame(circleGamePostVo);
+            if (null == dto) {
+                newGameBean.setCircleId(null);
+            } else {
+                newGameBean.setCircleId(dto.getData());
             }
         }
         re.setData(list);
@@ -210,7 +255,7 @@ public class GameHomeServiceImpl implements GameHomeService {
     public FungoPageResultDto<NewGameBean> queryOldGame(InputPageDto inputPageDto) {
         //查询选择日期字段在今天开始往后30天内的所有数据，先根据时间排序，在对每天内的排序号(sort)进行排序
         FungoPageResultDto<NewGameBean> re = new FungoPageResultDto<>();
-        if(inputPageDto.getPage()<1){
+        if (inputPageDto.getPage() < 1) {
             re.setMessage("传入页数必须大于等于1");
             re.setAfter(1);
             re.setBefore(0);
@@ -231,6 +276,17 @@ public class GameHomeServiceImpl implements GameHomeService {
         bean.setChooseDate(calendar.getTime());
         bean.setPageSize(inputPageDto.getLimit());
         List<NewGameBean> list = newGameDao.queryOldGame(bean);
+        //获取前一页后一页标识
+        List<NewGame> totalList = newGameService.selectList(new EntityWrapper<NewGame>().lt("choose_date", calendar.getTime()).eq("state", "0"));
+        FungoPageResultDto<NewGameBean> fungoPageResultDto = new FungoPageResultDto<>();
+        Page<HomePage> pages = new Page();
+        pages.setTotal(totalList.size());
+        pages.setSize(inputPageDto.getLimit());
+        pages.setCurrent(inputPageDto.getPage());
+        fungoPageResultDto.setData(list);
+        PageTools.pageToResultDto(fungoPageResultDto, pages);
+        re.setBefore(fungoPageResultDto.getBefore());
+        re.setAfter(fungoPageResultDto.getAfter());
         for (NewGameBean newGameBean : list) {
             if (null != newGameBean.getChooseDate()) {
                 newGameBean.setTime(newGameBean.getChooseDate().getTime());
@@ -248,18 +304,28 @@ public class GameHomeServiceImpl implements GameHomeService {
      */
     @Override
     @Transactional
-    public FungoPageResultDto<AdminCollectionGroup> queryCollectionGroup(AdminCollectionVo input) {
+    public FungoPageResultDto<AdminCollectionGroup> queryCollectionGroup(AdminCollectionVo inputPageDto) {
         FungoPageResultDto<AdminCollectionGroup> re = new FungoPageResultDto<>();
-        if(input.getPage()<1){
+        if (inputPageDto.getPage() < 1) {
             re.setMessage("传入页数必须大于等于1");
             re.setAfter(1);
             re.setBefore(0);
             return re;
         }
-        re.setAfter((input.getPage() + 1));
         List<AdminCollectionGroup> colLists = new ArrayList<>();
-        Page<FindCollectionGroup> page = findCollectionGroupService.selectPage(new Page<FindCollectionGroup>(input.getPage(), input.getLimit()),
+        Page<FindCollectionGroup> page = findCollectionGroupService.selectPage(new Page<FindCollectionGroup>(inputPageDto.getPage(), inputPageDto.getLimit()),
                 new EntityWrapper<FindCollectionGroup>().eq("state", 0).eq("is_online", 0).orderBy("sort desc, updated_at", false));
+        //获取前一页后一页标识
+        List<FindCollectionGroup> totalList = findCollectionGroupService.selectList(new EntityWrapper<FindCollectionGroup>().eq("state", "0").eq("is_online", 0));
+        FungoPageResultDto<FindCollectionGroup> fungoPageResultDto = new FungoPageResultDto<>();
+        Page<HomePage> pages = new Page();
+        pages.setTotal(totalList.size());
+        pages.setSize(inputPageDto.getLimit());
+        pages.setCurrent(inputPageDto.getPage());
+        fungoPageResultDto.setData(page.getRecords());
+        PageTools.pageToResultDto(fungoPageResultDto, pages);
+        re.setBefore(fungoPageResultDto.getBefore());
+        re.setAfter(fungoPageResultDto.getAfter());
         List<FindCollectionGroup> collectionList = page.getRecords();
         if (!collectionList.isEmpty()) {
             AdminCollectionGroup adminCollectionGroup = null;
@@ -278,9 +344,6 @@ public class GameHomeServiceImpl implements GameHomeService {
     }
 
 
-
-
-
     /**
      * 合集项信息查询
      *
@@ -288,7 +351,7 @@ public class GameHomeServiceImpl implements GameHomeService {
      */
     @Override
     @Transactional
-    public ResultDto<AdminCollectionGroup> queryCollectionItem(AdminCollectionVo input,String memberId, String os) {
+    public ResultDto<AdminCollectionGroup> queryCollectionItem(AdminCollectionVo input, String memberId, String os) {
         ResultDto<AdminCollectionGroup> re = new ResultDto<>();
         AdminCollectionGroup adminCollectionGroup = new AdminCollectionGroup();
         if (StringUtils.isBlank(input.getId())) {
@@ -301,13 +364,22 @@ public class GameHomeServiceImpl implements GameHomeService {
         adminCollectionGroup.setDetail(findCollectionGroup.getDetail());
         adminCollectionGroup.setId(findCollectionGroup.getId());
         List<CollectionItemBean> itemList = findCollectionGroupDao.getCollectionItemAll(findCollectionGroup.getId());
-        for(CollectionItemBean collectionItemBean:itemList){
+        for (CollectionItemBean collectionItemBean : itemList) {
             collectionItemBean.setMark(false);
             if (StringUtils.isNotBlank(memberId)) {
                 GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", collectionItemBean.getGameId()).eq("phone_model", os).eq("state", 0));
                 if (srel != null) {
                     collectionItemBean.setMark(true);
                 }
+            }
+            CircleGamePostVo circleGamePostVo = new CircleGamePostVo();
+            circleGamePostVo.setGameId(collectionItemBean.getGameId());
+            circleGamePostVo.setType(1);
+            ResultDto<String> dto = communityFeignClient.getCircleByGame(circleGamePostVo);
+            if (null == dto) {
+                collectionItemBean.setCircleId(null);
+            } else {
+                collectionItemBean.setCircleId(dto.getData());
             }
         }
         adminCollectionGroup.setList(itemList);

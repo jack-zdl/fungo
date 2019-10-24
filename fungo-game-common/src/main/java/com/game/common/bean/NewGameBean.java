@@ -18,17 +18,13 @@ public class NewGameBean {
 	 */
 	private String name;
 	/**
-	 * 状态
-	 */
-	private Integer state;
-	/**
 	 * 游戏说明(游戏表)
 	 */
 	private String androidStatusDesc;
 	/**
 	 * 是否是圈子
 	 */
-	private boolean circleName;
+	private String circleId;
 	/**
 	 * 安卓状态  '安卓状态 0:待开启，1预约。2.测试，3已上线',
 	 */
@@ -187,14 +183,6 @@ public class NewGameBean {
 		this.name = name;
 	}
 
-	public Integer getState() {
-		return state;
-	}
-
-	public void setState(Integer state) {
-		this.state = state;
-	}
-
 	public Integer getSort() {
 		return sort;
 	}
@@ -227,12 +215,12 @@ public class NewGameBean {
 		this.chooseDate = chooseDate;
 	}
 
-	public boolean isCircleName() {
-		return circleName;
+	public String getCircleId() {
+		return circleId;
 	}
 
-	public void setCircleName(boolean circleName) {
-		this.circleName = circleName;
+	public void setCircleId(String circleId) {
+		this.circleId = circleId;
 	}
 
 	public String getOrigin() {

@@ -48,6 +48,10 @@ public class HomePageBean {
 	 */
 	private boolean  mark;
 	/**
+	 * '游戏图标'
+	 */
+	private String  icon;
+	/**
 	 * 'IOS状态 0:待开启，1预约。2.测试，3已上线,4：可下载
 	 */
 	private Integer iosState;
@@ -55,6 +59,26 @@ public class HomePageBean {
 	 * '安卓状态 0:待开启，1预约。2.测试，3已上线
 	 */
 	private Integer androidState;
+	/**
+	 * 圈子主键
+	 */
+	private String circleId;
+
+	public String getCircleId() {
+		return circleId;
+	}
+
+	public void setCircleId(String circleId) {
+		this.circleId = circleId;
+	}
+
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
 
 	public Integer getIosState() {
 		return iosState;
