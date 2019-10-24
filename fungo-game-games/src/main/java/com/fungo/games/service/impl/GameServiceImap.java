@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.fungo.games.dao.GameDao;
 import com.fungo.games.entity.Game;
 import com.fungo.games.service.GameService;
+import com.game.common.dto.game.TagGameDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,5 +32,15 @@ public class GameServiceImap extends ServiceImpl<GameDao, Game> implements GameS
             return  map;
         }
         return gameDao.listGame(ids);
+    }
+
+    @Override
+    public int countGameByTags(TagGameDto tagGameDto) {
+        return gameDao.countGameByTags(tagGameDto);
+    }
+
+    @Override
+    public List<Game> listGameByTags(TagGameDto tagGameDto) {
+        return gameDao.listGameByTags(tagGameDto);
     }
 }

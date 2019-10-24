@@ -115,7 +115,7 @@ public class TagController {
 
 	//  v2.6 标签改版
 	@ApiOperation(value="获取所有分类及其下标签", notes="")
-	@RequestMapping(value="/api/tag/listAllGroupAndTag", method= RequestMethod.GET)
+	@RequestMapping(value="/api/game/tag/listAllGroupAndTag", method= RequestMethod.GET)
 	public ResultDto<List<BasTagGroupDto>> listAllGroupAndTag() {
 		return iTagService.listAllGroupAndTag();
 	}
