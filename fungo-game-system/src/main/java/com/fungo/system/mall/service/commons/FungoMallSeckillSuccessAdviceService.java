@@ -2,6 +2,7 @@ package com.fungo.system.mall.service.commons;
 
 
 import com.alibaba.fastjson.JSON;
+import com.fungo.system.mall.entity.MallVirtualCard;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
 import com.fungo.system.service.IFungoAdvicePushService;
 import com.fungo.system.service.IPushService;
@@ -50,7 +51,7 @@ public class FungoMallSeckillSuccessAdviceService {
      * @param period
      * @return
      */
-    public boolean pushMsgToMember(String mb_id, String goodsName, Integer goodsType, String cardSn, String cardPwd, String period) {
+    public boolean pushMsgToMember(String mb_id, String goodsName, Integer goodsType, String cardSn, String cardPwd, String period, MallVirtualCard vCard) {
 
         try {
 
@@ -115,6 +116,8 @@ public class FungoMallSeckillSuccessAdviceService {
                 case 26:
                     msgDataContent = FungoMallSeckillConsts.MSG_SECKILL_SUCCESS_LINGKA_GOOGLE;
                     msgDataContent = msgDataContent.replace("{", cardSn);
+                    msgDataContent = msgDataContent.replace("}", cardPwd);
+                    msgDataContent = msgDataContent.replace("+", vCard.getExt1()); //当虚拟商品的类型为26时，ext1就为辅助邮箱
                     msgContentMap.put("actionType", "2");
                     break;
                 case 1:

@@ -38,6 +38,7 @@
         <result column="sort" property="sort" />
         <result column="type" property="type" />
         <result column="isFollowed" property="isFollowed" />
+        <result column="register_lingka" property="registerLingka" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -224,6 +225,13 @@
              and m.`level` >=  #{level}
          </if>
          limit 500
+    </select>
+
+    <select id="getMemberIdList" resultType="java.lang.String">
+        SELECT id FROM t_member WHERE mobile_phone_num in
+        <foreach item="item" index="index" collection="phones" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
 
     

@@ -195,6 +195,11 @@ public class Member extends Model<Member> {
 	@TableField("register_platform")
 	private String registerPlatform;
 
+	/**
+	 * 是否注册零卡 1 已注册零卡 0 未注册零卡
+	 */
+	@TableField("register_lingka")
+	private int registerLingka;
 
 
 
@@ -490,6 +495,14 @@ public class Member extends Model<Member> {
 
 	public void setRegisterPlatform(String registerPlatform) {
 		this.registerPlatform = registerPlatform;
+	}
+
+	public int getRegisterLingka() {
+		return registerLingka;
+	}
+
+	public void setRegisterLingka(int registerLingka) {
+		this.registerLingka = registerLingka;
 	}
 
 	@Override

@@ -16,7 +16,17 @@ import java.util.List;
 @ToString
 public class DelObjectListVO {
 
+    /**
+     * 功能描述: 提醒的用户集合
+     * @date: 2019/10/23 14:33
+     */
     private List<String> commentIds;
+
+    /**
+     * 功能描述: 剩余天数
+     * @date: 2019/10/23 14:32
+     */
+    private int days;
 
     private int type;
 
@@ -25,7 +35,10 @@ public class DelObjectListVO {
         COMMENTEVALUATE (2,"心情评论"),
         POSTREPLY(3,"文章回复"),
         COMMENTREPLY(4,"心情回复"),
-        GAMEREPLY(5,"游戏回复");
+        GAMEREPLY(5,"游戏回复"),
+        GAMEVIP(11,"游戏VIP"),
+        BAIJINVIP(12,"白金VIP")
+        ;
 
         int key;
         String value;

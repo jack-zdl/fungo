@@ -80,7 +80,7 @@ public class DistributedLockByCurator implements InitializingBean {
     }
 
     /**
-     * 创建 watcher 事件
+     * 创建 watcher 事件  监听事件
      */
     private void addWatcher(String path) throws Exception {
         String keyPath;

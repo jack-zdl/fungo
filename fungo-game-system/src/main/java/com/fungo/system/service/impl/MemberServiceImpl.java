@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.config.NacosFungoCircleConfig;
@@ -17,6 +16,7 @@ import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IMemeberProxyService;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
+import com.fungo.system.helper.lingka.LingKaHelper;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
 import com.fungo.system.service.*;
 import com.game.common.api.InputPageDto;
@@ -36,8 +36,11 @@ import com.game.common.repo.cache.facade.FungoCacheMood;
 import com.game.common.util.*;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
+import com.game.common.util.lingka.BindGiftcardDto;
+import com.game.common.util.lingka.LingKaDataUtil;
 import io.swagger.models.auth.In;
 import org.apache.commons.lang.StringUtils;
+import org.apache.curator.shaded.com.google.common.collect.Lists;
 import org.omg.PortableInterceptor.INACTIVE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,6 +120,8 @@ public class MemberServiceImpl implements IMemberService {
     private MemberNoticeDaoService memberNoticeDaoService;
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
+    @Autowired
+    private LingKaHelper lingKaHelper;
 
 
     //
@@ -1830,6 +1835,7 @@ public class MemberServiceImpl implements IMemberService {
             Map<String, List<MemberInfo>> parentMemberMap = memberInfos.stream().collect(groupingBy(MemberInfo::getParentMemberId));
             for (Map.Entry<String,  List<MemberInfo>> entry : parentMemberMap.entrySet()) {
                 String parentMemberId = entry.getKey();
+                Member parentMember = memberDao.selectById( parentMemberId);
                 List<MemberInfo> memberInfoList = entry.getValue();
                 // 查询出邀请人获取的12小时的优惠券
                 List<Member>  memberList =  memberDao.getTwoMemberList(memberInfoList.stream().map(MemberInfo::getMdId).collect( Collectors.toList()),null);
@@ -1854,6 +1860,13 @@ public class MemberServiceImpl implements IMemberService {
                             memberCoupon.setDescription( "被邀请人满足2级条件,邀请人获取12小时优惠券" );
                             memberCoupon.insert();
                             addNotice(parentMemberId, AbstractResultEnum.CODE_SYSTEM_INVITATION_DAY.getSuccessValue() );
+                            // 同步到零卡绑定券
+                            BindGiftcardDto bindGiftcardDto  = lingKaHelper.sendGiftCardToLingka(parentMember,"1",memberCoupon.getId());
+                            memberCoupon.setState( bindGiftcardDto.isResult() ? 1 : 0 );
+                            memberCoupon.setSendDate(new Date());
+                            memberCoupon.setRversion( memberCoupon.getRversion()+1 );
+                            memberCoupon.setSendLog(JSON.toJSONString( bindGiftcardDto)  );
+                            memberCoupon.updateById();
                         }
                     }
                     // 9折优惠券
@@ -1861,39 +1874,60 @@ public class MemberServiceImpl implements IMemberService {
                         MemberCoupon memberCoupon = new MemberCoupon();
                         memberCoupon.setMemberType(32);
                         memberCoupon.setMemberId( parentMemberId);
-                        memberCoupon.setCouponId( "1" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+                        memberCoupon.setCouponId( "2" ); //这个是t_game_coupon数据库里12小时的优惠券主键
                         memberCoupon.setIsactive("1");
                         memberCoupon.setCreatedAt( new Date());
                         memberCoupon.setCreatedBy( "system");
                         memberCoupon.setDescription( "被邀请人满足2级条件数目达到5人,,邀请人获取9折优惠券" );
                         memberCoupon.insert();
                         addNotice(parentMemberId, AbstractResultEnum.CODE_SYSTEM_INVITATION_NINE.getSuccessValue() );
+                        // 同步到零卡绑定券
+                        BindGiftcardDto bindGiftcardDto  = lingKaHelper.sendGiftCardToLingka(parentMember,"1",memberCoupon.getId());
+                        memberCoupon.setState( bindGiftcardDto.isResult() ? 1 : 0 );
+                        memberCoupon.setSendDate(new Date());
+                        memberCoupon.setRversion( memberCoupon.getRversion()+1 );
+                        memberCoupon.setSendLog(JSON.toJSONString( bindGiftcardDto)  );
+                        memberCoupon.updateById();
                     }
                     // 8折优惠券
                     if(memberList.size() >= 10 && memberCouponDao.getMemberCouponByRecommendId(parentMemberId,null,"33").size() == 0 ){
                         MemberCoupon memberCoupon = new MemberCoupon();
                         memberCoupon.setMemberType(33);
                         memberCoupon.setMemberId( parentMemberId);
-                        memberCoupon.setCouponId( "1" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+                        memberCoupon.setCouponId( "3" ); //这个是t_game_coupon数据库里12小时的优惠券主键
                         memberCoupon.setIsactive("1");
                         memberCoupon.setCreatedAt( new Date());
                         memberCoupon.setCreatedBy( "system");
                         memberCoupon.setDescription( "被邀请人满足2级条件数目达到10人,邀请人获取8折优惠券" );
                         memberCoupon.insert();
                         addNotice(parentMemberId, AbstractResultEnum.CODE_SYSTEM_INVITATION_NGIHT.getSuccessValue() );
+                        // 同步到零卡绑定券
+                        BindGiftcardDto bindGiftcardDto  = lingKaHelper.sendGiftCardToLingka(parentMember,"1",memberCoupon.getId());
+                        memberCoupon.setState( bindGiftcardDto.isResult() ? 1 : 0 );
+                        memberCoupon.setSendDate(new Date());
+                        memberCoupon.setRversion( memberCoupon.getRversion()+1 );
+                        memberCoupon.setSendLog(JSON.toJSONString( bindGiftcardDto)  );
+                        memberCoupon.updateById();
                     }
                     // 7折优惠券
                     if(memberList.size() >= 20 && memberCouponDao.getMemberCouponByRecommendId(parentMemberId,null,"34").size() == 0 ){
                         MemberCoupon memberCoupon = new MemberCoupon();
                         memberCoupon.setMemberType(34);
                         memberCoupon.setMemberId( parentMemberId);
-                        memberCoupon.setCouponId( "1" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+                        memberCoupon.setCouponId( "4" ); //这个是t_game_coupon数据库里12小时的优惠券主键
                         memberCoupon.setIsactive("1");
                         memberCoupon.setCreatedAt( new Date());
                         memberCoupon.setCreatedBy( "system");
                         memberCoupon.setDescription( "被邀请人满足2级条件数目达到20人,邀请人获取7折优惠券" );
                         memberCoupon.insert();
                         addNotice(parentMemberId, AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SEVEN.getSuccessValue() );
+                        // 同步到零卡绑定券
+                        BindGiftcardDto bindGiftcardDto  = lingKaHelper.sendGiftCardToLingka(parentMember,"1",memberCoupon.getId());
+                        memberCoupon.setState( bindGiftcardDto.isResult() ? 1 : 0 );
+                        memberCoupon.setSendDate(new Date());
+                        memberCoupon.setRversion( memberCoupon.getRversion()+1 );
+                        memberCoupon.setSendLog(JSON.toJSONString( bindGiftcardDto)  );
+                        memberCoupon.updateById();
                     }
                     // 5天白金VIP专线
                     // 查询被邀请人是否购买了一个月的线路
@@ -1906,13 +1940,20 @@ public class MemberServiceImpl implements IMemberService {
                         memberCoupon.setMemberType(35);
                         memberCoupon.setMemberId( parentMemberId);
                         memberCoupon.setInviteeId( memberCou.getMemberId());
-                        memberCoupon.setCouponId( "1" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+                        memberCoupon.setCouponId( "5" ); //这个是t_game_coupon数据库里12小时的优惠券主键
                         memberCoupon.setIsactive("1");
                         memberCoupon.setCreatedAt( new Date());
                         memberCoupon.setCreatedBy( "system");
                         memberCoupon.setDescription( "被邀请人充值一个月，邀请人获的5天VIP奖励," );
                         memberCoupon.insert();
                         addNotice(parentMemberId, AbstractResultEnum.CODE_SYSTEM_INVITATION_FIVEDAY.getSuccessValue() );
+                        // 同步到零卡绑定券
+                        BindGiftcardDto bindGiftcardDto  = lingKaHelper.sendGiftCardToLingka(parentMember,"1",memberCoupon.getId());
+                        memberCoupon.setState( bindGiftcardDto.isResult() ? 1 : 0 );
+                        memberCoupon.setSendDate(new Date());
+                        memberCoupon.setRversion( memberCoupon.getRversion()+1 );
+                        memberCoupon.setSendLog(JSON.toJSONString( bindGiftcardDto)  );
+                        memberCoupon.updateById();
                     }
 
                     // 16天白金VIP专线
@@ -1926,13 +1967,20 @@ public class MemberServiceImpl implements IMemberService {
                         memberCoupon.setMemberType(36);
                         memberCoupon.setMemberId( parentMemberId);
                         memberCoupon.setInviteeId( memberCou.getMemberId());
-                        memberCoupon.setCouponId( "1" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+                        memberCoupon.setCouponId( "6" ); //这个是t_game_coupon数据库里12小时的优惠券主键
                         memberCoupon.setIsactive("1");
                         memberCoupon.setCreatedAt( new Date());
                         memberCoupon.setCreatedBy( "system");
                         memberCoupon.setDescription( "被邀请人充值三个月，邀请人获的16天VIP奖励," );
                         memberCoupon.insert();
                         addNotice(parentMemberId, AbstractResultEnum.CODE_SYSTEM_INVITATION_TENSIXDAY.getSuccessValue() );
+                        // 同步到零卡绑定券
+                        BindGiftcardDto bindGiftcardDto  =  lingKaHelper.sendGiftCardToLingka(parentMember,"1",memberCoupon.getId());
+                        memberCoupon.setState( bindGiftcardDto.isResult() ? 1 : 0 );
+                        memberCoupon.setSendDate(new Date());
+                        memberCoupon.setRversion( memberCoupon.getRversion()+1 );
+                        memberCoupon.setSendLog(JSON.toJSONString( bindGiftcardDto)  );
+                        memberCoupon.updateById();
                     }
                     // 66天白金VIP专线
                     List<MemberCoupon> memberCouponTenList = memberCouponDao.getMemberCouponByInvitee(ids,"1","10");
@@ -1944,15 +1992,23 @@ public class MemberServiceImpl implements IMemberService {
                         memberCoupon.setMemberType(36);
                         memberCoupon.setMemberId( parentMemberId);
                         memberCoupon.setInviteeId( memberCou.getMemberId());
-                        memberCoupon.setCouponId( "1" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+                        memberCoupon.setCouponId( "7" ); //这个是t_game_coupon数据库里12小时的优惠券主键
                         memberCoupon.setIsactive("1");
                         memberCoupon.setCreatedAt( new Date());
                         memberCoupon.setCreatedBy( "system");
                         memberCoupon.setDescription( "被邀请人充值六个月以上，邀请人获的66天VIP奖励," );
                         memberCoupon.insert();
                         addNotice(parentMemberId, AbstractResultEnum.CODE_SYSTEM_INVITATION_SIXSIXDAY.getSuccessValue() );
+                        // 同步到零卡绑定券
+                        BindGiftcardDto bindGiftcardDto  = lingKaHelper.sendGiftCardToLingka(parentMember,"1",memberCoupon.getId());
+                        memberCoupon.setState( bindGiftcardDto.isResult() ? 1 : 0 );
+                        memberCoupon.setSendDate(new Date());
+                        memberCoupon.setRversion( memberCoupon.getRversion()+1 );
+                        memberCoupon.setSendLog(JSON.toJSONString( bindGiftcardDto)  );
+                        memberCoupon.updateById();
                     }
                 }
+
             }
 
 
@@ -1967,39 +2023,82 @@ public class MemberServiceImpl implements IMemberService {
     public ResultDto<String> checkTwoUserRecommend() {
         ResultDto<String> resultDto = null;
      try {
+         test();
          // 所有用户奖励5折券
          StopWatch watch = new StopWatch( "Stream效率测试" );
          watch.start( "总时间" );
-         List<Member> memberList = memberDao.selectListBylargess(null,"12");
-         memberList.parallelStream().forEach( s -> {
-             MemberCoupon memberCoupon = new MemberCoupon();
-             memberCoupon.setMemberType(2);
-             memberCoupon.setMemberId( s.getId());
-             memberCoupon.setCouponId( "12" ); //这个是t_game_coupon数据库里12小时的优惠券主键
-             memberCoupon.setIsactive("1");
-             memberCoupon.setCreatedAt( new Date());
-             memberCoupon.setCreatedBy( "system");
-             memberCoupon.setDescription( "所有用户奖励5折券" );
-             memberCoupon.insert();
-             // 需求没有添加5折的优惠消息
-//                addNotice(s.getId(), AbstractResultEnum.CODE_SYSTEM_INVITATION_SIXSIXDAY.getSuccessValue() );
-         });
-         // 所有用户达到LV2并获取奖励2天免费
+        // 创建二个线程
+         CountDownLatch countDownLatch = new CountDownLatch(2);
+         Executor executorService = CommonUtil.createThread(2);
 
-         memberList = memberDao.selectListBylargess("2","11");
-         memberList.parallelStream().forEach( s -> {
-             MemberCoupon memberCoupon = new MemberCoupon();
-             memberCoupon.setMemberType(2);
-             memberCoupon.setMemberId( s.getId());
-             memberCoupon.setCouponId( "11" ); //这个是t_game_coupon数据库里12小时的优惠券主键
-             memberCoupon.setIsactive("1");
-             memberCoupon.setCreatedAt( new Date());
-             memberCoupon.setCreatedBy( "system");
-             memberCoupon.setDescription( "所有用户奖励5折券" );
-             memberCoupon.insert();
-             // 需求没有添加5折的优惠消息
-             addNotice(s.getId(), AbstractResultEnum.CODE_SYSTEM_INVITATION_TWODAY.getSuccessValue() );
+         executorService.execute( new Runnable() {
+             @Override
+             public void run() {
+                 List<Member> memberList = memberDao.selectListBylargess(null,"12");
+                 System.out.println("sw.prettyPrint()~~~~~~~~~~~~~~~~~"+memberList.size());
+                 memberList.stream().forEach( s -> {
+                     MemberCoupon memberCoupon = new MemberCoupon();
+                     memberCoupon.setMemberType(2);
+                     memberCoupon.setMemberId( s.getId());
+                     memberCoupon.setCouponId( "12" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+                     memberCoupon.setIsactive("1");
+                     memberCoupon.setRversion( 1 );
+                     memberCoupon.setCreatedAt( new Date());
+                     memberCoupon.setCreatedBy( "system");
+                     memberCoupon.setDescription( "所有用户奖励5折券" );
+                     memberCoupon.insert();
+                     // 需求没有添加5折的优惠消息
+//                addNotice(s.getId(), AbstractResultEnum.CODE_SYSTEM_INVITATION_SIXSIXDAY.getSuccessValue() );
+                     // 同步到零卡绑定券
+                     BindGiftcardDto bindGiftcardDto  = lingKaHelper.sendGiftCardToLingka(s,"12",memberCoupon.getId());
+                     memberCoupon.setState( bindGiftcardDto.isResult() ? 1 : 0 );
+                     memberCoupon.setSendDate(new Date());
+                     memberCoupon.setRversion( memberCoupon.getRversion()+1 );
+                     memberCoupon.setSendLog(JSON.toJSONString( bindGiftcardDto)  );
+                     memberCoupon.updateById();
+                 });
+                 countDownLatch.countDown();
+             }
+         } );
+         watch.stop();
+         watch.start("task2");
+
+         executorService.execute( new Runnable() {
+
+             @Override
+             public void run() {
+
+                 // 所有用户达到LV2并获取奖励2天免费
+                 List<Member> memberLists = memberDao.selectListBylargess("2","11");
+                 System.out.println("sw.prettyPrint()~~~~~~~~~~~~~~~~~"+memberLists.size());
+                 memberLists.stream().forEach( s -> {
+                     MemberCoupon memberCoupon = new MemberCoupon();
+                     memberCoupon.setMemberType(2);
+                     memberCoupon.setMemberId( s.getId());
+                     memberCoupon.setCouponId( "11" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+                     memberCoupon.setIsactive("1");
+                     memberCoupon.setRversion( 1 );
+                     memberCoupon.setCreatedAt( new Date());
+                     memberCoupon.setCreatedBy( "system");
+                     memberCoupon.setDescription( "所有用户奖励5折券" );
+                     memberCoupon.insert();
+                     // 需求没有添加5折的优惠消息
+                     addNotice(s.getId(), AbstractResultEnum.CODE_SYSTEM_INVITATION_TWODAY.getSuccessValue() );
+                     // 同步到零卡绑定券
+                     BindGiftcardDto bindGiftcardDto  =  lingKaHelper.sendGiftCardToLingka(s,"11",memberCoupon.getId());
+                     memberCoupon.setState( bindGiftcardDto.isResult() ? 1 : 0 );
+                     memberCoupon.setSendDate(new Date());
+                     memberCoupon.setRversion( memberCoupon.getRversion()+1 );
+                     memberCoupon.setSendLog(JSON.toJSONString( bindGiftcardDto)  );
+                     memberCoupon.updateById();
+                 });
+                 countDownLatch.countDown();
+             }
          });
+         watch.stop();
+//         countDownLatch.await();
+         System.out.println("sw.prettyPrint()~~~~~~~~~~~~~~~~~");
+         System.out.println(watch.prettyPrint());
          resultDto = ResultDto.ResultDtoFactory.buildSuccess( "检查所有用户的奖励成功" );
      }catch (Exception e){
          logger.error( "检查所有用户的奖励异常",e );
@@ -2007,6 +2106,94 @@ public class MemberServiceImpl implements IMemberService {
      }
      return resultDto;
     }
+
+
+    public ResultDto<String> test() {
+        ResultDto<String> resultDto = null;
+        try {
+            // 所有用户奖励5折券
+            StopWatch stopWatch = new StopWatch( "Stream效率测试" );
+            stopWatch.start( "总时间1" );
+            // 创建二个线程
+//            CountDownLatch countDownLatch = new CountDownLatch(2);
+//            Executor executorService = CommonUtil.createThread(2);
+//
+//            executorService.execute( new Runnable() {
+//                @Override
+//                public void run() {
+                    List<Member> memberList = memberDao.selectListBylargess(null,"12");
+            System.out.println("sw.prettyPrint()~~~~~~~~~~~~~~~~~"+memberList.size());
+                    memberList.parallelStream().forEach( s -> {
+                        MemberCoupon memberCoupon = new MemberCoupon();
+                        memberCoupon.setMemberType(2);
+                        memberCoupon.setMemberId( s.getId());
+                        memberCoupon.setCouponId( "12" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+                        memberCoupon.setIsactive("1");
+                        memberCoupon.setRversion( 1 );
+                        memberCoupon.setCreatedAt( new Date());
+                        memberCoupon.setCreatedBy( "system");
+                        memberCoupon.setDescription( "所有用户奖励5折券" );
+                        memberCoupon.insert();
+                        // 需求没有添加5折的优惠消息
+//                addNotice(s.getId(), AbstractResultEnum.CODE_SYSTEM_INVITATION_SIXSIXDAY.getSuccessValue() );
+                        // 同步到零卡绑定券
+                        BindGiftcardDto bindGiftcardDto = lingKaHelper.sendGiftCardToLingka(s,"12",memberCoupon.getId());
+                        memberCoupon.setState( bindGiftcardDto.isResult() ? 1 : 0 );
+                        memberCoupon.setSendDate(new Date());
+                        memberCoupon.setRversion( memberCoupon.getRversion()+1 );
+                        memberCoupon.setSendLog(JSON.toJSONString( bindGiftcardDto)  );
+                        memberCoupon.updateById();
+                    });
+//                    countDownLatch.countDown();
+//                }
+//            } );
+            stopWatch.stop();
+            stopWatch.start("task211");
+//
+//            executorService.execute( new Runnable() {
+//
+//                @Override
+//                public void run() {
+                    System.out.println("sw.prettyPrint()~~~~~~~~~~~~~~~~~");
+                    // 所有用户达到LV2并获取奖励2天免费
+                    List<Member> memberLists = memberDao.selectListBylargess("2","11");
+            System.out.println("sw.prettyPrint()~~~~~~~~~~~~~~~~~"+memberLists.size());
+            memberLists.parallelStream().forEach( s -> {
+                        MemberCoupon memberCoupon = new MemberCoupon();
+                        memberCoupon.setMemberType(2);
+                        memberCoupon.setMemberId( s.getId());
+                        memberCoupon.setCouponId( "11" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+                        memberCoupon.setIsactive("1");
+                        memberCoupon.setRversion( 1 );
+                        memberCoupon.setCreatedAt( new Date());
+                        memberCoupon.setCreatedBy( "system");
+                        memberCoupon.setDescription( "所有用户奖励5折券" );
+                        memberCoupon.insert();
+                        // 需求没有添加5折的优惠消息
+                        addNotice(s.getId(), AbstractResultEnum.CODE_SYSTEM_INVITATION_TWODAY.getSuccessValue() );
+                        // 同步到零卡绑定券
+                        BindGiftcardDto bindGiftcardDto =  lingKaHelper.sendGiftCardToLingka(s,"11",memberCoupon.getId());
+                        memberCoupon.setState( bindGiftcardDto.isResult() ? 1 : 0 );
+                        memberCoupon.setSendDate(new Date());
+                        memberCoupon.setRversion( memberCoupon.getRversion()+1 );
+                        memberCoupon.setSendLog(JSON.toJSONString( bindGiftcardDto)  );
+                        memberCoupon.updateById();
+                    });
+//                    countDownLatch.countDown();
+//                }
+//            });
+            stopWatch.stop();
+//         countDownLatch.await();
+            System.out.println("sw.prettyPrint()~~~~~~~~~~~~~~~~~");
+            System.out.println(stopWatch.prettyPrint());
+            resultDto = ResultDto.ResultDtoFactory.buildSuccess( "检查所有用户的奖励成功" );
+        }catch (Exception e){
+            logger.error( "检查所有用户的奖励异常",e );
+            resultDto = ResultDto.ResultDtoFactory.buildError( "检查所有用户的奖励失败" );
+        }
+        return resultDto;
+    }
+
 
     @Override
     public ResultDto<InviteInfoVO> getInviteInfo(String memberId) {
