@@ -19,6 +19,7 @@ import com.fungo.system.service.IMemberNoticeService;
 import com.fungo.system.service.MemberNoticeDaoService;
 import com.fungo.system.service.MemberNoticeDaoServiceImpl;
 import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.consts.MessageConstants;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
@@ -556,6 +557,89 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
         }catch (Exception e){
             logger.error( "删除个人消息delMbNotices方法异常id="+JSON.toJSONString( noticeInput) ,e);
             resultDto = ResultDto.error( "-1","删除个人消息失败" );
+        }
+        return resultDto;
+    }
+
+    /**
+     * 功能描述: 新增个人的礼品卡消息
+     * @auther: dl.zhang
+     * @date: 2019/10/23 14:36
+     */
+    @Override
+    public ResultDto<String> addUserGiftcardNotice(DelObjectListVO delObjectListVO) {
+        ResultDto<String> resultDto = null;
+        try {
+            String message = "";
+            if(DelObjectListVO.TypeEnum.GAMEVIP.getKey() == delObjectListVO.getType()){
+                message = delObjectListVO.getDays() == 0 ? MessageConstants.SYSTEM_NOTICE_GAMEVIP_ZERO : delObjectListVO.getDays() == 2 ? MessageConstants.SYSTEM_NOTICE_GAMEVIP_TWO : "";
+            }else if(DelObjectListVO.TypeEnum.BAIJINVIP.getKey() == delObjectListVO.getType()){
+                message = delObjectListVO.getDays() == 0 ? MessageConstants.SYSTEM_NOTICE_BAIJINVIP_ZERO : delObjectListVO.getDays() == 2 ? MessageConstants.SYSTEM_NOTICE_BAIJINVIP_TWO : "";
+            }
+            List<String> memberPhoneList = delObjectListVO.getCommentIds();
+            List<String> listString = memberDao.getMemberIdList(memberPhoneList);
+            String finalMessage = message;
+            listString.parallelStream().forEach( s -> {
+//                try {
+                    Map<String,String> dataMap = new HashMap<>();
+                    dataMap.put("actionType","1");
+                    dataMap.put("targetType","1");
+                    dataMap.put("userId", "0b8aba833f934452992a972b60e9ad10");
+                    dataMap.put("userType", "1");
+                    dataMap.put("userAvatar", "http://output-mingbo.oss-cn-beijing.aliyuncs.com/official.png");
+                    dataMap.put("userName", "FunGo大助手");
+                    dataMap.put("content", finalMessage );
+                    dataMap.put("targetId","");
+                    dataMap.put("targetType","11"); // 表明跳转位置
+                    dataMap.put("msgTime", DateTools.fmtDate(new Date()));
+                    //从DB查
+                    EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
+                    noticeEntityWrapper.eq( "mb_id", s );
+                    noticeEntityWrapper.eq( "ntc_type", 7 );
+                    noticeEntityWrapper.eq( "is_read", 2 );
+                    List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
+                    if (noticeListDB != null && noticeListDB.size() > 0) {
+                        noticeListDB.parallelStream().forEach( x -> {
+                            String jsonString = x.getNtcData();
+                            JSONObject jsonObject = JSON.parseObject( jsonString );
+                            jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
+                            jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
+                            x.setNtcData( jsonObject.toJSONString() );
+                            x.updateById();
+                        } );
+                    } else {
+                        MemberNotice memberNotice = new MemberNotice();
+                        int clusterIndex_i = Integer.parseInt( clusterIndex );
+                        memberNotice.setId( PKUtil.getInstance( clusterIndex_i ).longPK() );
+                        memberNotice.setIsRead( 2 );
+                        memberNotice.setNtcType( 7 );
+                        memberNotice.setMbId( s );
+                        memberNotice.setCreatedAt( new Date() );
+                        memberNotice.setUpdatedAt( new Date() );
+                        Map map = new ConcurrentHashMap( 4 );
+                        map.put( "count", 1 );
+                        map.put( "like_count", 0 );
+                        map.put( "comment_count", 0 );
+                        map.put( "notice_count", 1 );
+                        memberNotice.setNtcData( JSON.toJSONString( map ) );
+                        memberNoticeDaoService.insert( memberNotice );
+                    }
+                    BasNotice basNotice = new BasNotice();
+                    basNotice.setType( 6 );
+                    basNotice.setIsRead( 0 );
+                    basNotice.setIsPush( 0 );
+                    basNotice.setMemberId( s );
+                    basNotice.setCreatedAt( new Date() );
+                    basNotice.setData( JSON.toJSONString(dataMap));
+                    basNotice.insert();
+//                } catch (Exception e) {
+//                    logger.error( "新增个人的礼品卡消息异常", e );
+//                }
+            } );
+            resultDto = ResultDto.ResultDtoFactory.buildSuccess( "新增个人的礼品卡消息成功" );
+        }catch (Exception e){
+            logger.error( "新增个人的礼品卡消息异常",e);
+            resultDto = ResultDto.ResultDtoFactory.buildError( "新增个人的礼品卡消息异常" );
         }
         return resultDto;
     }

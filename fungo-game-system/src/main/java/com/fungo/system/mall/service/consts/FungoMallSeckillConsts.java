@@ -137,12 +137,14 @@ public class FungoMallSeckillConsts {
     /**
      *  零卡商品消息
      */
-    public static final String MSG_SECKILL_SUCCESS_LINGKA_BAIJINVIP = "恭喜您获得“<span style='color:#242529'> { </span>”！您可在我的-礼包乐园-我的礼包查询你的兑换记录。感谢支持小Fun,要天天开心哦~";
+    public static final String MSG_SECKILL_SUCCESS_LINGKA_BAIJINVIP = "恭喜您获得“<span style='color:#242529'> { </span>”！您可在启动-福利-体验券查看并使用您的礼品。感谢支持小Fun,要天天开心哦~";
 
 
     //"恭喜你！兑换成功∩_∩请在我的消息-通知栏查看您的谷歌账号密码";
     /**
      *  零卡谷歌商品消息
      */
-    public static final String MSG_SECKILL_SUCCESS_LINGKA_GOOGLE = "恭喜您获得“<span style='color:#242529'> { </span>”！您可在启动-福利-体验券查看并使用您的礼品。感谢支持小Fun,要天天开心哦~";
+    public static final String MSG_SECKILL_SUCCESS_LINGKA_GOOGLE = "恭喜您兑换得“谷歌账号“，账号为：{ ，密码为：}，辅助邮箱为：+ ， 您可在我的-礼包乐园-我的礼品查看您的兑换记录。感谢支持小Fun，要天天开心哦～";
+//            "恭喜您获得“<span style='color:#242529'> { </span>”！您可在我的-礼包乐园-我的礼包查询你的兑换记录。感谢支持小Fun,要天天开心哦~";
+
 }

@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.game.common.util.lingka.LingKaConstant.*;
+
 /**
  *  统一获取零卡响应数据工具
  *  ysx
@@ -46,12 +48,12 @@ public class LingKaDataUtil {
      * 功能描述: 登陆获取session
      * @date: 2019/10/21 18:08
      */
-    public static void getSession(){
+    public static void getSession(String userPhone){
         try {
             HashMap<String, Object> paramMap = new HashMap<>();
-            paramMap.put("email", LingKaConstant.ADMIN_EMAIL);
-            paramMap.put("password", LingKaConstant.ADMIN_PASSWORD);
-            String s = listTabGame(LingKaConstant.LINGKA_LOGIN_URL,paramMap);
+            paramMap.put("phone", userPhone);
+            paramMap.put("password", ADMIN_PASSWORD);
+            String s = listTabGame(LINGKA_LOGIN_URL,paramMap);
             JSONObject jsonObject = JSON.parseObject( s );
             System.out.println(jsonObject.toJSONString());
         }catch (Exception e){
@@ -60,22 +62,32 @@ public class LingKaDataUtil {
     }
 
     /**
-     * 功能描述: 登陆获取session
-     * @date: 2019/10/21 18:08
+     * 功能描述:  用户绑定套餐或者券
+     * @param: userPhone 用户手机号
+     * @Param  type 套餐类型
+     * @Param  serverId 业务id 用于零卡那边记录我这日志
+     * @return: void
+     * @auther: dl.zhang
+     * @date: 2019/10/23 17:09
      */
-    public static void bindGiftCard(){
+    public static BindGiftcardDto bindGiftCard(String userPhone,String type,String serverId){
+        BindGiftcardDto bindGiftcardDto = null;
         try {
-            String s = HttpUtil.get("https://www.lyn.cash/api/admin/giftcard/list");
-            JSONObject jsonObject = JSON.parseObject( s );
-            System.out.println(jsonObject.toJSONString());
+            HashMap<String, Object> paramMap = new HashMap<>();
+            paramMap.put("user", userPhone);
+            paramMap.put("type", type);
+            paramMap.put("serverId", serverId);
+            String s = HttpUtil.post(LINGKA_GIFTCARD_BIND,paramMap);
+            bindGiftcardDto = JSON.parseObject( s,BindGiftcardDto.class );
         }catch (Exception e){
-            LOGGER.error( "登陆获取session",e );
+            LOGGER.error( "用户绑定套餐或者券异常",e );
         }
+        return bindGiftcardDto;
     }
 
     public static void main(String[] args) {
-        LingKaDataUtil.getSession();
-        LingKaDataUtil.bindGiftCard();
+        LingKaDataUtil.getSession("18221537170");
+        LingKaDataUtil.bindGiftCard("18221537170","1","1");
     }
 
 

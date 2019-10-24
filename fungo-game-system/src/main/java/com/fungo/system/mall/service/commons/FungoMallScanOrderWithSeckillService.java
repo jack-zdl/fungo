@@ -352,7 +352,7 @@ public class FungoMallScanOrderWithSeckillService {
             validPeriodIntro = vCard.getValidPeriodIntro();
         }
         fungoMallSeckillSuccessAdviceService.pushMsgToMember(mb_Id, goodsName,
-                goodsType, cardSn, cardPwd, validPeriodIntro);
+                goodsType, cardSn, cardPwd, validPeriodIntro,vCard);
 
     }
 
@@ -512,6 +512,7 @@ public class FungoMallScanOrderWithSeckillService {
         vCardNewWithOrderGoods.setValidPeriodIntro(validPeriodIntro);
         vCardNewWithOrderGoods.setValueRmb(valueRmb);
         vCardNewWithOrderGoods.setCardType(cardType);
+        vCardNewWithOrderGoods.setExt1( virtualCard.getExt1());
 
         boolean updateOrderGoodsResult = updateOrderGoodsInfoWithScan(orderGoods, vCardNewWithOrderGoods);
         logger.info("更新用户订单商品信息--结果:{}", updateOrderGoodsResult);

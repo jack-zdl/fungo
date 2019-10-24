@@ -41,6 +41,9 @@ public class FungoVMallGoodsExcelParserService {
     //excel文件路径
     private static String excelPath = "F:/vCard.xlsx";
 
+    //excel文件路径
+    private static String googleexcelPath = "D:/workspace/a2.6/file/谷歌账号样式.xls";
+
 
     @Autowired
     private MallVirtualCardDaoService mallVirtualCardDaoService;
@@ -54,7 +57,7 @@ public class FungoVMallGoodsExcelParserService {
     public  void excuteParserToVCard() {
 
         try {
-            File excel = new File(excelPath);
+            File excel = new File(googleexcelPath);
 
             if (excel.isFile() && excel.exists()) {
 
@@ -77,7 +80,7 @@ public class FungoVMallGoodsExcelParserService {
 
 
                 //开始解析  //读取sheet 0
-                Sheet sheet = wb.getSheetAt(2);
+                Sheet sheet = wb.getSheetAt(0);
                 //第一行是列名，所以不读
                 int firstRowIndex = sheet.getFirstRowNum() + 1;
                 int lastRowIndex = sheet.getLastRowNum();
@@ -88,8 +91,8 @@ public class FungoVMallGoodsExcelParserService {
                     Row row = sheet.getRow(rIndex);
                     if (row != null) {
 
-                        Cell goodIdCell = row.getCell(0);
-                        String goodId = goodIdCell.toString();
+//                        Cell goodIdCell = row.getCell(0);
+//                        String goodId = goodIdCell.toString();
                         //面额
                        // Cell valueCell = row.getCell(1);
                         //String valueData = valueCell.toString();
@@ -99,13 +102,16 @@ public class FungoVMallGoodsExcelParserService {
 
 
                         //卡号
-                        Cell cardSnCell = row.getCell(3);
+                        Cell cardSnCell = row.getCell(0);
                         String cardSnData = cardSnCell.toString();
 
                         //密码
-                        //Cell pwdCell = row.getCell(1);
-                        //String pwdData = pwdCell.toString();
-                        String pwdData = "";
+                        Cell pwdCell = row.getCell(1);
+                        String pwdData = pwdCell.toString();
+
+                        //密码
+                        Cell emailCell = row.getCell(2);
+                        String emailData = emailCell.toString();
 
                        // DecimalFormat df = new DecimalFormat("#");
 
@@ -144,7 +150,7 @@ public class FungoVMallGoodsExcelParserService {
                         if (StringUtils.isNoneBlank(cardSnData)) {
 
                             logger.info("cardSnData:" + cardSnData );
-                            addVCardToDB(cardSnData, "", "", 0);
+                            addVCardToDB(cardSnData, pwdData, "", 0,emailData);
 
                         }
                     }
@@ -158,8 +164,11 @@ public class FungoVMallGoodsExcelParserService {
 
     }
 
-
-    private   void addVCardToDB (String cardSn ,String cardPwd ,String validPeriodIntro , Integer valueRmb) {
+    /**
+     * 功能描述: 1 现在是给谷歌游戏添加账号
+     * @date: 2019/10/23 13:56
+     */
+    private   void addVCardToDB (String cardSn ,String cardPwd ,String validPeriodIntro , Integer valueRmb,String email) {
 
         MallVirtualCard virtualCard = new MallVirtualCard();
 
@@ -168,9 +177,9 @@ public class FungoVMallGoodsExcelParserService {
         // 喜加一Lv.2  2019090410403036092
         // 喜加一Lv.3  2019090410404753342
         // 随机大作    2019090410405561072
+        // 谷歌账号   2019102213190244711
 //        virtualCard.setGoodsId(2019011810120065413L);
-        virtualCard.setGoodsId(2019090410404753342L);
-
+        virtualCard.setGoodsId(2019102213190244711L);
         String cardSnEncrypt = FungoAESUtil.encrypt( cardSn,
                 aESSecretKey + FungoMallSeckillConsts.AES_SALT);
 
@@ -188,12 +197,10 @@ public class FungoVMallGoodsExcelParserService {
 
         long cardCrc32Validate = FungoCRC32Util.getInstance().encrypt(cardSn + cardPwd);
         virtualCard.setCardCrc32(cardCrc32Validate);
-
-        virtualCard.setCardType(24);
-
+        virtualCard.setCardType(26);
         virtualCard.setCreatedAt(new Date());
         virtualCard.setUpdatedAt(new Date());
-
+        virtualCard.setExt1(email  );
         mallVirtualCardDaoService.insert(virtualCard);
     }
 
