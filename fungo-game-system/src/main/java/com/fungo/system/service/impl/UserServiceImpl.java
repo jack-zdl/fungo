@@ -280,7 +280,6 @@ public class UserServiceImpl implements IUserService {
         bean.setObjectId(member.getId());
         rest.setData(bean);
 
-
         //记录登录用户
         memberLoginedStatisticsService.addLoginToBucket(member.getId(), appVersion);
         return rest;

@@ -490,11 +490,11 @@ public class FungoMallScanOrderWithSeckillService {
         orderGoodsEntityWrapper.eq("id", orderGoods.getId());
         Member member = memberDao.selectById( mb_Id );
         boolean orderGoodsUpdateOK = mallOrderGoodsDaoService.update(orderGoodsNew, orderGoodsEntityWrapper);
-        if(goodsType == 27){
+        if(goodsType == 27){  // 白金VIP
             MemberCoupon memberCoupon = new MemberCoupon();
             memberCoupon.setMemberType(1);
             memberCoupon.setMemberId( mb_Id);
-            memberCoupon.setCouponId( "13" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+            memberCoupon.setCouponId( "13" ); // 白金VIP
             memberCoupon.setIsactive("1");
             memberCoupon.setCreatedAt( new Date());
             memberCoupon.setCreatedBy( "system");
@@ -507,11 +507,11 @@ public class FungoMallScanOrderWithSeckillService {
             memberCoupon.setRversion( memberCoupon.getRversion()+1 );
             memberCoupon.setSendLog(JSON.toJSONString( bindGiftcardDto)  );
             memberCoupon.updateById();
-        }else if(goodsType == 28){
+        }else if(goodsType == 28){ // 游戏VIP
             MemberCoupon memberCoupon = new MemberCoupon();
             memberCoupon.setMemberType(1);
             memberCoupon.setMemberId( mb_Id);
-            memberCoupon.setCouponId( "14" ); //这个是t_game_coupon数据库里12小时的优惠券主键
+            memberCoupon.setCouponId( "14" ); // 游戏VIP
             memberCoupon.setIsactive("1");
             memberCoupon.setCreatedAt( new Date());
             memberCoupon.setCreatedBy( "system");
