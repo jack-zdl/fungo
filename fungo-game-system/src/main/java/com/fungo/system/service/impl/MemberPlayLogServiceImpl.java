@@ -93,7 +93,7 @@ public class MemberPlayLogServiceImpl implements MemberPlayLogService {
             memberPlayLog.setCreatedAt( new Date());
             memberPlayLog.setUpdatedAt(new Date());
             memberPlayLog.setRversion(1);
-            memberPlayLog.setDescription("");
+            memberPlayLog.setDescription(JSON.toJSONString( alipayMap ));
             memberPlayLog.insert();
             resultDto = ResultDto.ResultDtoFactory.buildSuccess( "保存用户支付日志" );
         }catch (Exception e){
