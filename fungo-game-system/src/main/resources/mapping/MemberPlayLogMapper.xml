@@ -28,7 +28,7 @@
     <result column="rversion" jdbcType="INTEGER" property="rversion" />
     <result column="description" jdbcType="VARCHAR" property="description" />
   </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.ceying.chx.cpi.base.rm.base.dto.MemberPlayLog">
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.fungo.system.entity.MemberPlayLog">
     <result column="content" jdbcType="LONGVARCHAR" property="content" />
     <result column="money_content" jdbcType="LONGVARCHAR" property="moneyContent" />
     <result column="header_content" jdbcType="LONGVARCHAR" property="headerContent" />
@@ -44,7 +44,7 @@
     content, money_content, header_content
   </sql>
 
-  <insert id="insertSelective" parameterType="com.ceying.chx.cpi.base.rm.base.dto.MemberPlayLog">
+  <insert id="insertSelective" parameterType="com.fungo.system.entity.MemberPlayLog">
     insert into t_member_play_log
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -221,7 +221,7 @@
   </insert>
 
 
-  <update id="updateByPrimaryKeySelective" parameterType="com.ceying.chx.cpi.base.rm.base.dto.MemberPlayLog">
+  <update id="updateByPrimaryKeySelective" parameterType="com.fungo.system.entity.MemberPlayLog">
     update t_member_play_log
     <set>
       <if test="memberPhone != null">
