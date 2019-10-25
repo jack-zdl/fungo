@@ -184,7 +184,10 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
             GameDto gameParam = new GameDto();
             gameParam.setId(gameEvaluation.getGameId());
             GameDto game = iGameProxyService.selectGameById(gameParam);    //this.gameService.selectById(gameEvaluation.getGameId());
-
+            if(game == null){
+                LOGGER.error( "系统微服务无法访问游戏微服务getGamePage接口" );
+                return null;
+            }
             bean.setMainTitle(game.getName());
             if (gameEvaluation.getRating() != null) {
                 bean.setSubtitle(gameEvaluation.getRating().toString());

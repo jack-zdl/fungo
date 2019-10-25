@@ -5,6 +5,8 @@ import com.fungo.system.entity.Member;
 import com.game.common.dto.ResultDto;
 import com.game.common.vo.MemberPlayLogVO;
 
+import java.util.Map;
+
 /**
  * <p></p>
  *
@@ -13,5 +15,5 @@ import com.game.common.vo.MemberPlayLogVO;
  */
 public interface MemberPlayLogService {
 
-    ResultDto<String> saveMemberPalyLog(MemberPlayLogVO memberPlayLogVO);
+    ResultDto<String> saveMemberPalyLog(Map map);
 }
