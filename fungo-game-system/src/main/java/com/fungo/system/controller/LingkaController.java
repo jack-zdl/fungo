@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
@@ -36,9 +38,20 @@ public class LingkaController {
      * @date: 2019/10/25 10:34
      */
     @PostMapping(value = "/api/system/alipay")
-    public ResultDto<String> saveAlipay( @RequestBody JSONObject alipayJson){
+    public ResultDto<String> saveAlipay( HttpServletRequest request , @RequestBody JSONObject alipayJson){
         ResultDto<String> resultDto = null;
-        resultDto = memberPlayLogService.saveMemberPalyLog( alipayJson);
+        resultDto = memberPlayLogService.saveMemberPalyLog(request, alipayJson);
+        return  resultDto;
+    }
+
+    /**
+     * 功能描述: 支付宝回调接口
+     * @date: 2019/10/25 10:34
+     */
+    @PostMapping(value = "/api/system/weixinpay")
+    public ResultDto<String> saveWeiXinpay( HttpServletRequest request, HttpServletResponse response){
+        ResultDto<String> resultDto = null;
+        resultDto = memberPlayLogService.saveWeiXinMemberPalyLog( request,response);
         return  resultDto;
     }
 }

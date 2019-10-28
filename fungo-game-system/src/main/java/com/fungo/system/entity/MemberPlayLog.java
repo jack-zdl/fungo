@@ -111,7 +111,7 @@ public class MemberPlayLog extends Model<MemberPlayLog> {
      * @date: 2019/10/25 14:05
      */
     @TableField("receipt_amount")
-    private double receiptAmount;
+    private String receiptAmount;
 //    /**
 //     * 功能描述:  开票金额
 //     * @date: 2019/10/25 14:05
@@ -123,7 +123,7 @@ public class MemberPlayLog extends Model<MemberPlayLog> {
      * @date: 2019/10/25 14:05
      */
     @TableField("buyer_pay_amount")
-    private double buyerPayAmount;
+    private String buyerPayAmount;
 
 //    /**
 //     * 功能描述:  集分宝金额
@@ -138,7 +138,7 @@ public class MemberPlayLog extends Model<MemberPlayLog> {
      * @date: 2019/10/25 14:05
      */
     @TableField("refund_fee")
-    private double refundFee;
+    private String refundFee;
 
     /**
      * 功能描述: subject  订单标题  body  商品描述,fund_bill_list 支付金额信息,passback_params 回传参数,voucher_detail_list 优惠券信息
@@ -152,7 +152,7 @@ public class MemberPlayLog extends Model<MemberPlayLog> {
      * @date: 2019/10/25 14:05
      */
     @TableField("gmt_payment")
-    private Date gmtPayment;
+    private String gmtPayment;
 
     /**
      * 功能描述:  交易退款时间
@@ -181,7 +181,15 @@ public class MemberPlayLog extends Model<MemberPlayLog> {
     @TableField("header_content")
     private String headerContent;
 
+    @TableField("response_content")
+    private String responseContent;
 
+    /**
+     * 功能描述: 状态 1 已发送零卡 0 未发送零卡
+     * @date: 2019/10/28 10:12
+     */
+    @TableField("state")
+    private String state;
 
     @TableField("isactive")
     private String isactive;
@@ -304,27 +312,27 @@ public class MemberPlayLog extends Model<MemberPlayLog> {
         this.tradeStatus = tradeStatus;
     }
 
-    public double getReceiptAmount() {
+    public String getReceiptAmount() {
         return receiptAmount;
     }
 
-    public void setReceiptAmount(double receiptAmount) {
+    public void setReceiptAmount(String receiptAmount) {
         this.receiptAmount = receiptAmount;
     }
 
-    public double getBuyerPayAmount() {
+    public String getBuyerPayAmount() {
         return buyerPayAmount;
     }
 
-    public void setBuyerPayAmount(double buyerPayAmount) {
+    public void setBuyerPayAmount(String buyerPayAmount) {
         this.buyerPayAmount = buyerPayAmount;
     }
 
-    public double getRefundFee() {
+    public String getRefundFee() {
         return refundFee;
     }
 
-    public void setRefundFee(double refundFee) {
+    public void setRefundFee(String refundFee) {
         this.refundFee = refundFee;
     }
 
@@ -336,11 +344,11 @@ public class MemberPlayLog extends Model<MemberPlayLog> {
         this.content = content;
     }
 
-    public Date getGmtPayment() {
+    public String getGmtPayment() {
         return gmtPayment;
     }
 
-    public void setGmtPayment(Date gmtPayment) {
+    public void setGmtPayment(String gmtPayment) {
         this.gmtPayment = gmtPayment;
     }
 
@@ -374,6 +382,14 @@ public class MemberPlayLog extends Model<MemberPlayLog> {
 
     public void setHeaderContent(String headerContent) {
         this.headerContent = headerContent;
+    }
+
+    public String getResponseContent() {
+        return responseContent;
+    }
+
+    public void setResponseContent(String responseContent) {
+        this.responseContent = responseContent;
     }
 
     public String getIsactive() {
@@ -414,6 +430,14 @@ public class MemberPlayLog extends Model<MemberPlayLog> {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     @Override

@@ -46,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
@@ -2020,7 +2021,8 @@ public class MemberServiceImpl implements IMemberService {
     }
 
     @Override
-    public ResultDto<String> checkTwoUserRecommend() {
+    @Async
+    public void checkTwoUserRecommend() {
         ResultDto<String> resultDto = null;
      try {
          // 所有用户奖励5折券
@@ -2054,6 +2056,7 @@ public class MemberServiceImpl implements IMemberService {
                      memberCoupon.updateById();
                  });
                  countDownLatch.countDown();
+                 memberList = null;
              }
          } );
          executorService.execute( new Runnable() {
@@ -2083,6 +2086,7 @@ public class MemberServiceImpl implements IMemberService {
                      memberCoupon.updateById();
                  });
                  countDownLatch.countDown();
+                 memberLists = null;
              }
          });
          countDownLatch.await();
@@ -2093,7 +2097,6 @@ public class MemberServiceImpl implements IMemberService {
          logger.error( "检查所有用户的奖励异常",e );
          resultDto = ResultDto.ResultDtoFactory.buildError( "检查所有用户的奖励失败" );
      }
-     return resultDto;
     }
 
     @Override

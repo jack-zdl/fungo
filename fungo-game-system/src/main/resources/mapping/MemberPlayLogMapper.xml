@@ -11,17 +11,18 @@
     <result column="pay_type" jdbcType="VARCHAR" property="payType" />
     <result column="pay_state" jdbcType="VARCHAR" property="payState" />
     <result column="app_id" jdbcType="VARCHAR" property="appId" />
-    <result column="out_trade_no" jdbcType="VARCHAR" property="outTradeNo" />
     <result column="out_biz_no" jdbcType="VARCHAR" property="outBizNo" />
     <result column="buyer_logon_id" jdbcType="VARCHAR" property="buyerLogonId" />
     <result column="seller_email" jdbcType="VARCHAR" property="sellerEmail" />
     <result column="trade_status" jdbcType="VARCHAR" property="tradeStatus" />
-    <result column="receipt_amount" jdbcType="DOUBLE" property="receiptAmount" />
-    <result column="buyer_pay_amount" jdbcType="DOUBLE" property="buyerPayAmount" />
-    <result column="refund_fee" jdbcType="DOUBLE" property="refundFee" />
-    <result column="gmt_payment" jdbcType="TIMESTAMP" property="gmtPayment" />
+    <result column="receipt_amount" jdbcType="VARCHAR" property="receiptAmount" />
+    <result column="buyer_pay_amount" jdbcType="VARCHAR" property="buyerPayAmount" />
+    <result column="refund_fee" jdbcType="VARCHAR" property="refundFee" />
+    <result column="gmt_payment" jdbcType="VARCHAR" property="gmtPayment" />
     <result column="gmt_refund" jdbcType="TIMESTAMP" property="gmtRefund" />
     <result column="date_content" jdbcType="VARCHAR" property="dateContent" />
+    <result column="response_content" jdbcType="VARCHAR" property="responseContent" />
+    <result column="state" jdbcType="CHAR" property="state" />
     <result column="isactive" jdbcType="CHAR" property="isactive" />
     <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
     <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
@@ -35,278 +36,22 @@
   </resultMap>
 
   <sql id="Base_Column_List">
-    id, member_phone, play_id, business_id, coupon_type, coupon_id, pay_type, pay_state, 
-    app_id, out_trade_no, out_biz_no, buyer_logon_id, seller_email, trade_status, receipt_amount, 
-    buyer_pay_amount, refund_fee, gmt_payment, gmt_refund, date_content, isactive, created_at, 
-    updated_at, rversion, description
+    id, member_phone as memberPhone , play_id as playId , business_id as businessId , coupon_type as couponType ,
+    coupon_id as  couponId , pay_type as  payType, pay_state as  payState,
+    app_id  as  appId , out_biz_no  as  outBizNo , buyer_logon_id  as  buyerLogonId,
+    seller_email  as  sellerEmail , trade_status  as  tradeStatus , receipt_amount  as  receiptAmount,
+    buyer_pay_amount  as  buyerPayAmount , refund_fee  as  refundFee , gmt_payment  as  gmtPayment , gmt_refund  as  gmtRefund ,
+    date_content  as  dateContent , isactive  as  isactive , created_at  as  createdAt,
+    updated_at  as  updatedAt , rversion  as  rversion , description  as  description ,content  as  content , money_content  as  moneyContent , header_content  as  headerContent
   </sql>
   <sql id="Blob_Column_List">
     content, money_content, header_content
   </sql>
 
-  <insert id="insertSelective" parameterType="com.fungo.system.entity.MemberPlayLog">
-    insert into t_member_play_log
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="memberPhone != null">
-        member_phone,
-      </if>
-      <if test="playId != null">
-        play_id,
-      </if>
-      <if test="businessId != null">
-        business_id,
-      </if>
-      <if test="couponType != null">
-        coupon_type,
-      </if>
-      <if test="couponId != null">
-        coupon_id,
-      </if>
-      <if test="payType != null">
-        pay_type,
-      </if>
-      <if test="payState != null">
-        pay_state,
-      </if>
-      <if test="appId != null">
-        app_id,
-      </if>
-      <if test="outTradeNo != null">
-        out_trade_no,
-      </if>
-      <if test="outBizNo != null">
-        out_biz_no,
-      </if>
-      <if test="buyerLogonId != null">
-        buyer_logon_id,
-      </if>
-      <if test="sellerEmail != null">
-        seller_email,
-      </if>
-      <if test="tradeStatus != null">
-        trade_status,
-      </if>
-      <if test="receiptAmount != null">
-        receipt_amount,
-      </if>
-      <if test="buyerPayAmount != null">
-        buyer_pay_amount,
-      </if>
-      <if test="refundFee != null">
-        refund_fee,
-      </if>
-      <if test="gmtPayment != null">
-        gmt_payment,
-      </if>
-      <if test="gmtRefund != null">
-        gmt_refund,
-      </if>
-      <if test="dateContent != null">
-        date_content,
-      </if>
-      <if test="isactive != null">
-        isactive,
-      </if>
-      <if test="createdAt != null">
-        created_at,
-      </if>
-      <if test="updatedAt != null">
-        updated_at,
-      </if>
-      <if test="rversion != null">
-        rversion,
-      </if>
-      <if test="description != null">
-        description,
-      </if>
-      <if test="content != null">
-        content,
-      </if>
-      <if test="moneyContent != null">
-        money_content,
-      </if>
-      <if test="headerContent != null">
-        header_content,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=VARCHAR},
-      </if>
-      <if test="memberPhone != null">
-        #{memberPhone,jdbcType=VARCHAR},
-      </if>
-      <if test="playId != null">
-        #{playId,jdbcType=VARCHAR},
-      </if>
-      <if test="businessId != null">
-        #{businessId,jdbcType=VARCHAR},
-      </if>
-      <if test="couponType != null">
-        #{couponType,jdbcType=VARCHAR},
-      </if>
-      <if test="couponId != null">
-        #{couponId,jdbcType=VARCHAR},
-      </if>
-      <if test="payType != null">
-        #{payType,jdbcType=VARCHAR},
-      </if>
-      <if test="payState != null">
-        #{payState,jdbcType=VARCHAR},
-      </if>
-      <if test="appId != null">
-        #{appId,jdbcType=VARCHAR},
-      </if>
-      <if test="outTradeNo != null">
-        #{outTradeNo,jdbcType=VARCHAR},
-      </if>
-      <if test="outBizNo != null">
-        #{outBizNo,jdbcType=VARCHAR},
-      </if>
-      <if test="buyerLogonId != null">
-        #{buyerLogonId,jdbcType=VARCHAR},
-      </if>
-      <if test="sellerEmail != null">
-        #{sellerEmail,jdbcType=VARCHAR},
-      </if>
-      <if test="tradeStatus != null">
-        #{tradeStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="receiptAmount != null">
-        #{receiptAmount,jdbcType=DOUBLE},
-      </if>
-      <if test="buyerPayAmount != null">
-        #{buyerPayAmount,jdbcType=DOUBLE},
-      </if>
-      <if test="refundFee != null">
-        #{refundFee,jdbcType=DOUBLE},
-      </if>
-      <if test="gmtPayment != null">
-        #{gmtPayment,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtRefund != null">
-        #{gmtRefund,jdbcType=TIMESTAMP},
-      </if>
-      <if test="dateContent != null">
-        #{dateContent,jdbcType=VARCHAR},
-      </if>
-      <if test="isactive != null">
-        #{isactive,jdbcType=CHAR},
-      </if>
-      <if test="createdAt != null">
-        #{createdAt,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updatedAt != null">
-        #{updatedAt,jdbcType=TIMESTAMP},
-      </if>
-      <if test="rversion != null">
-        #{rversion,jdbcType=INTEGER},
-      </if>
-      <if test="description != null">
-        #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="content != null">
-        #{content,jdbcType=LONGVARCHAR},
-      </if>
-      <if test="moneyContent != null">
-        #{moneyContent,jdbcType=LONGVARCHAR},
-      </if>
-      <if test="headerContent != null">
-        #{headerContent,jdbcType=LONGVARCHAR},
-      </if>
-    </trim>
-  </insert>
-
-
-  <update id="updateByPrimaryKeySelective" parameterType="com.fungo.system.entity.MemberPlayLog">
-    update t_member_play_log
-    <set>
-      <if test="memberPhone != null">
-        member_phone = #{memberPhone,jdbcType=VARCHAR},
-      </if>
-      <if test="playId != null">
-        play_id = #{playId,jdbcType=VARCHAR},
-      </if>
-      <if test="businessId != null">
-        business_id = #{businessId,jdbcType=VARCHAR},
-      </if>
-      <if test="couponType != null">
-        coupon_type = #{couponType,jdbcType=VARCHAR},
-      </if>
-      <if test="couponId != null">
-        coupon_id = #{couponId,jdbcType=VARCHAR},
-      </if>
-      <if test="payType != null">
-        pay_type = #{payType,jdbcType=VARCHAR},
-      </if>
-      <if test="payState != null">
-        pay_state = #{payState,jdbcType=VARCHAR},
-      </if>
-      <if test="appId != null">
-        app_id = #{appId,jdbcType=VARCHAR},
-      </if>
-      <if test="outTradeNo != null">
-        out_trade_no = #{outTradeNo,jdbcType=VARCHAR},
-      </if>
-      <if test="outBizNo != null">
-        out_biz_no = #{outBizNo,jdbcType=VARCHAR},
-      </if>
-      <if test="buyerLogonId != null">
-        buyer_logon_id = #{buyerLogonId,jdbcType=VARCHAR},
-      </if>
-      <if test="sellerEmail != null">
-        seller_email = #{sellerEmail,jdbcType=VARCHAR},
-      </if>
-      <if test="tradeStatus != null">
-        trade_status = #{tradeStatus,jdbcType=VARCHAR},
-      </if>
-      <if test="receiptAmount != null">
-        receipt_amount = #{receiptAmount,jdbcType=DOUBLE},
-      </if>
-      <if test="buyerPayAmount != null">
-        buyer_pay_amount = #{buyerPayAmount,jdbcType=DOUBLE},
-      </if>
-      <if test="refundFee != null">
-        refund_fee = #{refundFee,jdbcType=DOUBLE},
-      </if>
-      <if test="gmtPayment != null">
-        gmt_payment = #{gmtPayment,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtRefund != null">
-        gmt_refund = #{gmtRefund,jdbcType=TIMESTAMP},
-      </if>
-      <if test="dateContent != null">
-        date_content = #{dateContent,jdbcType=VARCHAR},
-      </if>
-      <if test="isactive != null">
-        isactive = #{isactive,jdbcType=CHAR},
-      </if>
-      <if test="createdAt != null">
-        created_at = #{createdAt,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updatedAt != null">
-        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
-      </if>
-      <if test="rversion != null">
-        rversion = #{rversion,jdbcType=INTEGER},
-      </if>
-      <if test="description != null">
-        description = #{description,jdbcType=VARCHAR},
-      </if>
-      <if test="content != null">
-        content = #{content,jdbcType=LONGVARCHAR},
-      </if>
-      <if test="moneyContent != null">
-        money_content = #{moneyContent,jdbcType=LONGVARCHAR},
-      </if>
-      <if test="headerContent != null">
-        header_content = #{headerContent,jdbcType=LONGVARCHAR},
-      </if>
-    </set>
-    where id = #{id,jdbcType=VARCHAR}
-  </update>
+  <select id="getAllByState" resultType="com.fungo.system.entity.MemberPlayLog" parameterType="java.lang.String">
+    SELECT
+    <include refid="Base_Column_List"></include>
+    FROM t_member_play_log  WHERE  state = #{state}
+  </select>
 
 </mapper>
