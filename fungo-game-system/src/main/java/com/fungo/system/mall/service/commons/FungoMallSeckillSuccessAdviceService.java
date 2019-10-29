@@ -156,7 +156,6 @@ public class FungoMallSeckillSuccessAdviceService {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
         return false;
     }
 
