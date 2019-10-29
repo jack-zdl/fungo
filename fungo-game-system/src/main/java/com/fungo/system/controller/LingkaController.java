@@ -10,11 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,7 +24,7 @@ import java.util.Set;
  * @Author: dl.zhang
  * @Date: 2019/10/22
  */
-@RestController
+@Controller
 public class LingkaController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LingkaController.class);
@@ -48,9 +46,11 @@ public class LingkaController {
      * @date: 2019/10/25 10:34
      */
     @PostMapping(value = "/api/system/alipay")
-    public Object  saveAlipay( HttpServletRequest request , @RequestBody JSONObject alipayJson){
+    @ResponseBody
+    public Object  saveAlipay( HttpServletRequest request , String out_trade_no,String trade_no,String trade_status ,String total_amount, @RequestBody JSONObject alipayJson){
         System.out.println( "-------------------Post请求方式的/api/system/alipay" );
         LOGGER.error( "-------------------Post请求方式的/api/system/alipay" );
+        System.out.println( "-------------------Post请求方式的/api/system/alipay參數参数="+out_trade_no+"1==="+trade_no+"1==="+trade_status+"1==="+total_amount);
         ResultDto<String> resultDto = null;
         resultDto = memberPlayLogService.saveMemberPalyLog(request, alipayJson);
         if(resultDto.getStatus() == 1){
@@ -64,6 +64,7 @@ public class LingkaController {
      * @date: 2019/10/25 10:34
      */
     @RequestMapping(value = "/api/system/alipay")
+    @ResponseBody
     public Object  alipayCallback( HttpServletRequest request){
         System.out.println( "+++++++++++++++++這是是get请求方式的/api/system/alipay" );
         LOGGER.error( "+++++++++++++++這是是get请求方式的/api/system/alipay" );
