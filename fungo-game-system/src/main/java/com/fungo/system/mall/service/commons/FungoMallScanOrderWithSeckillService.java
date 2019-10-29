@@ -479,7 +479,7 @@ public class FungoMallScanOrderWithSeckillService {
         }
 
         goodsAttMap.put("goodsInfo", goodsInfo);
-        goodsAttMap.put("cardInfo", "零卡套餐");
+//        goodsAttMap.put("cardInfo", "零卡套餐");
 
 
         MallOrderGoods orderGoodsNew = new MallOrderGoods();
@@ -498,6 +498,7 @@ public class FungoMallScanOrderWithSeckillService {
             memberCoupon.setIsactive("1");
             memberCoupon.setCreatedAt( new Date());
             memberCoupon.setCreatedBy( "system");
+            memberCoupon.setRversion(1);
             memberCoupon.setDescription( "被邀请人满足2级条件数目达到20人,邀请人获取7折优惠券" );
             memberCoupon.insert();
             // 同步到零卡绑定券
@@ -513,6 +514,7 @@ public class FungoMallScanOrderWithSeckillService {
             memberCoupon.setMemberId( mb_Id);
             memberCoupon.setCouponId( "14" ); // 游戏VIP
             memberCoupon.setIsactive("1");
+            memberCoupon.setRversion(1);
             memberCoupon.setCreatedAt( new Date());
             memberCoupon.setCreatedBy( "system");
             memberCoupon.setDescription( "被邀请人满足2级条件数目达到20人,邀请人获取7折优惠券" );
