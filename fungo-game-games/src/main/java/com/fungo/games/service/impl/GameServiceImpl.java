@@ -1147,7 +1147,7 @@ public class GameServiceImpl implements IGameService {
                 dataList.add(out);
             }
             re.setData(dataList);
-            PageTools.pageToResultDto(re, gamePage);
+            PageTools.pageToResultDto(re, gamePage.getTotal(),limit,page);
         }catch (Exception e){
             logger.error( "搜索游戏异常,参数keyword"+keyword+"tag="+tag+"sort="+sort,e );
             re= FungoPageResultDto.FungoPageResultDtoFactory.buildError( "搜索游戏异常" );
