@@ -48,7 +48,10 @@ public class GameSearchOut {
 	// 游戏状态
 	private String gameStatus;
 
-	private List<String> tags;
+	private String tags;
+
+	// 用户是否预约 1 已预约  0 未预约
+	private int bespeak;
 
 //	@ApiModelProperty(value="是否同意条款",example="")
 //	private boolean isClause=false;
@@ -252,11 +255,19 @@ public class GameSearchOut {
 		this.gameStatus = gameStatus;
 	}
 
-	public List<String> getTags() {
+	public String getTags() {
 		return tags;
 	}
 
-	public void setTags(List<String> tags) {
+	public void setTags(String tags) {
 		this.tags = tags;
+	}
+
+	public int getBespeak() {
+		return bespeak;
+	}
+
+	public void setBespeak(int bespeak) {
+		this.bespeak = bespeak;
 	}
 }

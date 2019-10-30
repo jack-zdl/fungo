@@ -1107,7 +1107,14 @@ public class GameServiceImpl implements IGameService {
                 }
 
                 List<String> gameTags = gameTagDao.selectGameTag( game.getId());
-                out.setTags(gameTags);
+                out.setTags(String.join(",", gameTags));
+
+                if(!CommonUtil.isNull(memberId)){
+                    List<GameSurveyRel> gameSurveyRels = gameSurveyRelService.selectList( new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0).eq( "game_id",game.getId()));
+                    if(gameSurveyRels != null && gameSurveyRels.size() >0){
+                        out.setBespeak(1);
+                    }
+                }
                 dataList.add(out);
             }
             re.setData(dataList);
