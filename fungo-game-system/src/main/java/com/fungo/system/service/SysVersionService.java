@@ -2,6 +2,7 @@ package com.fungo.system.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.fungo.system.entity.SysVersion;
+import com.game.common.dto.ResultDto;
 
 import java.util.HashMap;
 
@@ -22,6 +23,8 @@ public interface SysVersionService extends IService<SysVersion> {
      * @param channel_code app渠道编码，详见接口文档
      * @return
      */
-    public HashMap<String, Object> queryAppVersionInfo(String version, String mobile_type, String channel_code);
-	
+    HashMap<String, Object> queryAppVersionInfo(String version, String mobile_type, String channel_code);
+
+    ResultDto<HashMap<String, Object>> getVipHide(String version, String mobile_type);
+
 }
