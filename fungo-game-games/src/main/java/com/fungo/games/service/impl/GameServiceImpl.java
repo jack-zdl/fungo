@@ -342,7 +342,14 @@ public class GameServiceImpl implements IGameService {
             out.setGame_size(formatGameSize(game.getGameSize()));
             out.setImage_height(height);
             out.setImage_width(width);
-            out.setVersion(game.getVersionMain() + "." + game.getVersionChild());
+            String versionChild = game.getVersionChild();
+            if(CommonUtil.isNull(versionChild)){
+                out.setVersion(game.getVersionMain() );
+            }else {
+                out.setVersion(game.getVersionMain()+"."+versionChild);
+            }
+
+
             out.setFungoTalk(game.getFungoTalk());
 
             //游戏编号
@@ -382,12 +389,26 @@ public class GameServiceImpl implements IGameService {
             out.setItunes_id(game.getItunesId());
             out.setObjectId(game.getId());
             out.setLink_community(game.getCommunityId());
-            out.setOrigin(game.getOrigin());
+            String origin1 = game.getOrigin();
+            out.setOrigin(origin1.equals("中国")?null:origin1);
+            out.setGoogleDeputyName(game.getGoogleDeputyName());
             out.setRelease_image(game.getReleaseImage());
             out.setState(game.getState());
             out.setUpdate_log(game.getUpdateLog());
             out.setVersion_child(game.getVersionChild());
             out.setVersion_main(game.getVersionMain());
+            out.setCompany(game.getCompany());
+            out.setPublisher(game.getPublisher());
+
+            // 处理加速
+            String origin = origin1;
+            Boolean canFast = game.getCanFast();
+            if(canFast == null){
+                canFast = true;
+            }
+            out.setCanFast(origin.equals("中国")?false:canFast);
+            // 处理描述
+            out.setAndroidStatusDesc(gameStatusDesc(game.getAndroidStatusDesc()));
 
             // 生成推荐相关数据
             //fix bug: 修改排序规则 按时间升序 [by mxf 2019-03-01]
@@ -528,7 +549,14 @@ public class GameServiceImpl implements IGameService {
                 out.setRatingList(rateFormat(perMap));
 
             }
-            List<TagBean> tags = dao.getGameTags(gameId);
+            String tags = game.getTags();
+            if(CommonUtil.isNull(tags)){
+                out.setTags(new ArrayList<>());
+            }else{
+                out.setTags(Arrays.asList(tags.split(",")));
+            }
+
+           /* List<TagBean> tags = dao.getGameTags(gameId);
             // 查询游戏标签
             List<GameTag> gameTagList = gameTagService.selectList(new EntityWrapper<GameTag>().eq("game_id", gameId).eq("type", 2));
             //andNew("type = {0}",1).or("like_num > {0}",5).orderBy("like_num", false).last("LIMIT 5"));
@@ -542,7 +570,7 @@ public class GameServiceImpl implements IGameService {
                     //gameMap.put("tags", tagNames);
                     out.setTags(tagNames);
                 }
-            }
+            }*/
 
             out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
             out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
@@ -1935,7 +1963,7 @@ public class GameServiceImpl implements IGameService {
         // 计算 sql limit 偏移量
         int offset = (page-1) * limit;
         tagGameDto.setOffset(offset);
-        int tootal =  gameService.countGameByTags(tagGameDto);
+        Integer tootal =  gameService.countGameByTags(tagGameDto);
 
         FungoPageResultDto<GameKuDto> fungoPageResultDto = new FungoPageResultDto<>();
         ArrayList<GameKuDto> gameKuDtos = new ArrayList<>();
@@ -1943,8 +1971,8 @@ public class GameServiceImpl implements IGameService {
         // 优化没有数据情况
         if(tootal == 0 || offset > tootal){
             // 结果封装为客户端通用格式
-            PageTools.pageToResultDto(fungoPageResultDto,tootal,limit,page);
             fungoPageResultDto.setData(gameKuDtos);
+            PageTools.pageToResultDto(fungoPageResultDto,tootal,limit,page);
         }else {
             List<Game> games = gameService.listGameByTags(tagGameDto);
            /* // 远程服务调用 获取游戏对应的圈子id
@@ -1959,6 +1987,39 @@ public class GameServiceImpl implements IGameService {
             PageTools.pageToResultDto(fungoPageResultDto,tootal,limit,page);
         }
 
+        return fungoPageResultDto;
+    }
+
+    @Override
+    public FungoPageResultDto<GameKuDto> listGameByBang(BangGameDto bangGameDto) {
+        int page = bangGameDto.getPage();
+        int limit = bangGameDto.getLimit();
+        // 计算 sql limit 偏移量
+        int offset = (page-1) * limit;
+        bangGameDto.setOffset(offset);
+        Integer tootal =  gameService.countBangBySortType(bangGameDto.getSortType());
+
+        FungoPageResultDto<GameKuDto> fungoPageResultDto = new FungoPageResultDto<>();
+        ArrayList<GameKuDto> gameKuDtos = new ArrayList<>();
+
+        // 优化没有数据情况
+        if(tootal == 0 || offset > tootal){
+            // 结果封装为客户端通用格式
+            fungoPageResultDto.setData(gameKuDtos);
+            PageTools.pageToResultDto(fungoPageResultDto,tootal,limit,page);
+        }else {
+            List<Game> games = gameService.listBangBySortType(bangGameDto);
+           /* // 远程服务调用 获取游戏对应的圈子id
+            List<String> gameIds = getGameIds(games);
+            Map<String,String> gameCircleMap = null;*/
+            for (Game game : games) {
+                GameKuDto gameKuDto = transGameToGameKuDto(game);
+                gameKuDtos.add(gameKuDto);
+            }
+            // 结果封装为客户端通用格式
+            fungoPageResultDto.setData(gameKuDtos);
+            PageTools.pageToResultDto(fungoPageResultDto,tootal,limit,page);
+        }
         return fungoPageResultDto;
     }
 
@@ -2000,6 +2061,16 @@ public class GameServiceImpl implements IGameService {
         }
         gameKuDto.setCanFast(origin.equals("中国")?false:canFast);
         gameKuDto.setOrigin(origin.equals("中国")?null:origin);
+
+        // 处理 版本问题
+        String versionChild = game.getVersionChild();
+        String versionMain = game.getVersionMain();
+        if(!CommonUtil.isNull(versionChild)){
+            gameKuDto.setVersion(versionMain+"."+versionChild);
+        }else{
+            gameKuDto.setVersion(versionMain);
+        }
+
         return gameKuDto;
     }
 

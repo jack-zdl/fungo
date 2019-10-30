@@ -74,5 +74,8 @@ public class GameKuDto  {
     private String circleId;
 
 
+    private  String apk;
+
+    private String version;
 
 }
