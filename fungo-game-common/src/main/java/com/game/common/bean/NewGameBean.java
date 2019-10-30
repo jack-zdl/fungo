@@ -2,7 +2,6 @@ package com.game.common.bean;
 
 
 import java.util.Date;
-import java.util.List;
 
 public class NewGameBean {
 
@@ -19,29 +18,13 @@ public class NewGameBean {
 	 */
 	private String name;
 	/**
-	 * 状态
+	 * 游戏说明(游戏表)
 	 */
-	private Integer state;
-	/**
-	 * 游戏说明
-	 */
-	private String detail;
+	private String androidStatusDesc;
 	/**
 	 * 是否是圈子
 	 */
-	private boolean circle;
-	/**
-	 * 游戏状态(安卓状态  [安卓状态 0:待开启，1预约。2.测试，3已上线'] [IOS状态 0:待开启，1预约。2.测试，3已上线,4：可下载'])
-	 */
-	private Integer status;
-	/**
-	 * 标签
-	 */
-	private List<String> labels;
-	/**
-	 * 游戏评分
-	 */
-	private String rating;
+	private String circleId;
 	/**
 	 * 安卓状态  '安卓状态 0:待开启，1预约。2.测试，3已上线',
 	 */
@@ -49,11 +32,15 @@ public class NewGameBean {
 	/**
 	 * 地区
 	 */
-	private String region;
+	private String origin;
+	/**
+	 * 评分
+	 */
+	private String score;
 	/**
 	 * 是否支持加速
 	 */
-	private boolean vpn;
+	private boolean canFast;
 	/**
 	 * 排序号
 	 */
@@ -72,7 +59,7 @@ public class NewGameBean {
 	private Date chooseDate;
 
 	/**
-	 * IOS状态
+	 * IOS状态 0:待开启，1预约。2.测试，3已上线,4：可下载'
 	 */
 	private Integer iosState;
 	/**
@@ -94,6 +81,19 @@ public class NewGameBean {
 	 * @return
 	 */
 	private String icon;
+	/**
+	 *   预约标识
+	 * @return
+	 */
+	private Boolean mark;
+
+	public Boolean getMark() {
+		return mark;
+	}
+
+	public void setMark(Boolean mark) {
+		this.mark = mark;
+	}
 
 	public String getIcon() {
 		return icon;
@@ -103,12 +103,12 @@ public class NewGameBean {
 		this.icon = icon;
 	}
 
-	public String getDetail() {
-		return detail;
+	public String getAndroidStatusDesc() {
+		return androidStatusDesc;
 	}
 
-	public void setDetail(String detail) {
-		this.detail = detail;
+	public void setAndroidStatusDesc(String androidStatusDesc) {
+		this.androidStatusDesc = androidStatusDesc;
 	}
 
 	public int getStartOffset() {
@@ -135,60 +135,12 @@ public class NewGameBean {
 		this.time = time;
 	}
 
-	public boolean isCircle() {
-		return circle;
-	}
-
-	public void setCircle(boolean circle) {
-		this.circle = circle;
-	}
-
-	public Integer getStatus() {
-		return status;
-	}
-
-	public void setStatus(Integer status) {
-		this.status = status;
-	}
-
 	public String getTags() {
 		return tags;
 	}
 
 	public void setTags(String tags) {
 		this.tags = tags;
-	}
-
-	public String getRegion() {
-		return region;
-	}
-
-	public void setRegion(String region) {
-		this.region = region;
-	}
-
-	public boolean isVpn() {
-		return vpn;
-	}
-
-	public void setVpn(boolean vpn) {
-		this.vpn = vpn;
-	}
-
-	public List<String> getLabels() {
-		return labels;
-	}
-
-	public void setLabels(List<String> labels) {
-		this.labels = labels;
-	}
-
-	public String getRating() {
-		return rating;
-	}
-
-	public void setRating(String rating) {
-		this.rating = rating;
 	}
 
 	public Integer getIosState() {
@@ -231,14 +183,6 @@ public class NewGameBean {
 		this.name = name;
 	}
 
-	public Integer getState() {
-		return state;
-	}
-
-	public void setState(Integer state) {
-		this.state = state;
-	}
-
 	public Integer getSort() {
 		return sort;
 	}
@@ -269,5 +213,37 @@ public class NewGameBean {
 
 	public void setChooseDate(Date chooseDate) {
 		this.chooseDate = chooseDate;
+	}
+
+	public String getCircleId() {
+		return circleId;
+	}
+
+	public void setCircleId(String circleId) {
+		this.circleId = circleId;
+	}
+
+	public String getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(String origin) {
+		this.origin = origin;
+	}
+
+	public String getScore() {
+		return score;
+	}
+
+	public void setScore(String score) {
+		this.score = score;
+	}
+
+	public boolean isCanFast() {
+		return canFast;
+	}
+
+	public void setCanFast(boolean canFast) {
+		this.canFast = canFast;
 	}
 }

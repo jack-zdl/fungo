@@ -1000,10 +1000,9 @@ public class GameServiceImpl implements IGameService {
                 }
             }else {
                 if (sort != null && !"".equals(sort.replace(" ", ""))) {
-                    gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
+                    gamePage = esdaoServiceImpl.getGameByES( page,  limit, keyword,  tag,  sort );
                 } else {
-                    gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
-                    // @todo
+                    gamePage = esdaoServiceImpl.getGameByES( page,  limit, keyword,  tag,  sort );
                 }
 //                gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
 //            postPage =  esdaoService.getAllPosts(keyword,page,limit);
@@ -1136,7 +1135,14 @@ public class GameServiceImpl implements IGameService {
                 }
 
                 List<String> gameTags = gameTagDao.selectGameTag( game.getId());
-                out.setTags(gameTags);
+                out.setTags(String.join(",", gameTags));
+
+                if(!CommonUtil.isNull(memberId)){
+                    List<GameSurveyRel> gameSurveyRels = gameSurveyRelService.selectList( new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0).eq( "game_id",game.getId()));
+                    if(gameSurveyRels != null && gameSurveyRels.size() >0){
+                        out.setBespeak(1);
+                    }
+                }
                 dataList.add(out);
             }
             re.setData(dataList);
@@ -1178,7 +1184,7 @@ public class GameServiceImpl implements IGameService {
                         .eq("state", 0).like("name", keyword).or().like( "google_deputy_name like ", keyword ).or().like( "intro",keyword );
                     gamePage = gameService.selectPage(new Page<>(1, 10), wrapper);
             }else {
-                    gamePage = esdaoServiceImpl.getAllPosts( 1,  10, keyword,  "",  "" );
+                    gamePage = esdaoServiceImpl.getGameByES( 1,  10, keyword,  "",  "" );
             }
             if (gamePage != null) {
                 gameList = gamePage.getRecords();
@@ -1225,9 +1231,9 @@ public class GameServiceImpl implements IGameService {
                 }
             }else {
                 if (sort != null && !"".equals(sort.replace(" ", ""))) {
-                    gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
+                    gamePage = esdaoServiceImpl.getGameByES( page,  limit, keyword,  tag,  sort );
                 } else {
-                    gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
+                    gamePage = esdaoServiceImpl.getGameByES( page,  limit, keyword,  tag,  sort );
                 }
             }
             gameList = gameList != null ? gameList : gamePage.getRecords();

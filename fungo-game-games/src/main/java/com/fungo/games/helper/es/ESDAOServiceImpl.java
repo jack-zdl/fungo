@@ -131,7 +131,7 @@ public class ESDAOServiceImpl {
     }
 
     // String keyword, int page, int limit
-    public Page<Game> getAllPosts(int page, int limit, String keyword, String tag, String sort ) {
+    public Page<Game> getGameByES(int page, int limit, String keyword, String tag, String sort ) {
         Page<Game> postPage = new Page<>();
         RestHighLevelClient highClient = aliESRestClient.getAliEsHighClient();
         try {

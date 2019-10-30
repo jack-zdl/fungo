@@ -7,17 +7,16 @@
         <id column="id" property="id"/>
         <result column="choose_date" property="chooseDate"/>
         <result column="android_state" property="androidState"/>
+        <result column="android_status_desc" property="androidStatusDesc"/>
         <result column="name" property="name"/>
         <result column="sort" property="sort"/>
         <result column="game_id" property="gameId"/>
-        <result column="region" property="region"/>
-        <result column="circle" property="circle"/>
-        <result column="detail" property="detail"/>
+        <result column="origin" property="origin"/>
         <result column="icon" property="icon"/>
-        <result column="vpn" property="vpn"/>
-        <result column="circle_name" property="circleName"/>
+        <result column="can_fast" property="canFast"/>
+        <result column="circle_id" property="circle_id"/>
         <result column="tags" property="tags"/>
-        <result column="rating" property="rating"/>
+        <result column="score" property="score"/>
     </resultMap>
 
     <!-- 新游信息查询 -->
@@ -26,24 +25,27 @@
         t1.id,
         t1.choose_date,
         t1.game_id,
-        t1.detail,
+        t2.android_status_desc,
         t2.name,
-        t2.origin as region,
+        t2.origin,
         t2.icon,
         t2.tags,
-        t2.score as rating,
-        t2.can_fast as vpn,
-        t2.android_state,
-        CASE WHEN t3.circle_name is null THEN '0' ELSE '1' END circle
+        t2.score,
+        t2.can_fast,
+        t2.android_state
         from t_new_game t1
         left join t_game t2 on t1.game_id=t2.id
-        left join t_cmm_circle t3 on t1.game_id=t3.game_id
         <where>
-            <if test=" chooseDate!= null">
-                t1.choose_date <![CDATA[ >= ]]> #{chooseDate}
+            <if test=" startTime!= null">
+                t1.choose_date <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test=" endTime!= null">
+                and t1.choose_date <![CDATA[ < ]]> #{endTime}
             </if>
         </where>
+        and t1.state=0
         order by t1.choose_date desc,t1.sort desc
+        LIMIT #{startOffset} ,#{pageSize}
     </select>
 
 
@@ -53,7 +55,8 @@
         t1.id,
         t1.choose_date,
         t1.game_id,
-        t1.detail,
+        t2.android_state,
+        t2.android_status_desc,
         t2.id as game_id,
         t2.icon,
         t2.name,
@@ -61,12 +64,12 @@
         t2.tags
         from t_new_game t1
         left join t_game t2 on t1.game_id=t2.id
-        left join t_cmm_circle t3 on t1.game_id=t3.game_id
         <where>
             <if test=" chooseDate!= null">
                 t1.choose_date <![CDATA[ < ]]> #{chooseDate}
             </if>
         </where>
+        and t1.state=0
         order by t1.choose_date desc,t1.sort desc
         LIMIT #{startOffset} ,#{pageSize}
     </select>

@@ -599,7 +599,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                     noticeEntityWrapper.eq( "is_read", 2 );
                     List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
                     if (noticeListDB != null && noticeListDB.size() > 0) {
-                        noticeListDB.parallelStream().forEach( x -> {
+                        noticeListDB.stream().forEach( x -> {
                             String jsonString = x.getNtcData();
                             JSONObject jsonObject = JSON.parseObject( jsonString );
                             jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
@@ -632,9 +632,6 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                     basNotice.setCreatedAt( new Date() );
                     basNotice.setData( JSON.toJSONString(dataMap));
                     basNotice.insert();
-//                } catch (Exception e) {
-//                    logger.error( "新增个人的礼品卡消息异常", e );
-//                }
             } );
             resultDto = ResultDto.ResultDtoFactory.buildSuccess( "新增个人的礼品卡消息成功" );
         }catch (Exception e){

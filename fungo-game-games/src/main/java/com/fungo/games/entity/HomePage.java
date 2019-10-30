@@ -59,7 +59,13 @@ public class HomePage extends Model<HomePage> {
 	/**
 	 * 图片
 	 */
-	private String images;
+	@TableField("app_images")
+	private String appImages;
+	/**
+	 * 图片
+	 */
+	@TableField("pc_images")
+	private String pcImages;
     /**
      * '状态 -1:删除 0:正常'
      */
@@ -182,12 +188,20 @@ public class HomePage extends Model<HomePage> {
 		this.video = video;
 	}
 
-	public String getImages() {
-		return images;
+	public String getAppImages() {
+		return appImages;
 	}
 
-	public void setImages(String images) {
-		this.images = images;
+	public void setAppImages(String appImages) {
+		this.appImages = appImages;
+	}
+
+	public String getPcImages() {
+		return pcImages;
+	}
+
+	public void setPcImages(String pcImages) {
+		this.pcImages = pcImages;
 	}
 
 	public String getCreatedBy() {
