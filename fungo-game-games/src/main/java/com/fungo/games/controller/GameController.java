@@ -338,6 +338,11 @@ public class GameController {
         return gameService.listGameByTags(tagGameDto);
     }
 
+    @PostMapping("/api/game/listGameByBang")
+    public FungoPageResultDto<GameKuDto> listGameByBang(@RequestBody BangGameDto bangGameDto){
+        return gameService.listGameByBang(bangGameDto);
+    }
+
 
     private String getTagString(List<String> tags){
         if(tags == null||tags.isEmpty()){
