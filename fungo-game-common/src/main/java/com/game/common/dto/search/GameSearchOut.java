@@ -51,7 +51,9 @@ public class GameSearchOut {
 	private String tags;
 
 	// 用户是否预约 1 已预约  0 未预约
-	private int bespeak;
+	private int make;
+
+	private String version;
 
 //	@ApiModelProperty(value="是否同意条款",example="")
 //	private boolean isClause=false;
@@ -263,11 +265,19 @@ public class GameSearchOut {
 		this.tags = tags;
 	}
 
-	public int getBespeak() {
-		return bespeak;
-	}
+    public int getMake() {
+        return make;
+    }
 
-	public void setBespeak(int bespeak) {
-		this.bespeak = bespeak;
-	}
+    public void setMake(int make) {
+        this.make = make;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
 }
