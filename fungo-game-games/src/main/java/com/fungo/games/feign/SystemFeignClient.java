@@ -9,6 +9,8 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.game.BasTagDto;
 import com.game.common.dto.game.BasTagGroupDto;
+import com.game.common.dto.index.BannerBean;
+import com.game.common.dto.mall.MallBannersInput;
 import com.game.common.dto.mall.MallGoodsInput;
 import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.dto.system.TaskDto;
@@ -190,4 +192,15 @@ public interface SystemFeignClient {
      */
 //    @GetMapping(value = "/deleteMsg", produces = "application/json;charset=UTF-8")
 //    ResultDto deleteMessageByMessageId(@RequestParam("messageId") Long messageId);
+
+    /**
+     * 功能描述: 根据合集id查询点赞数据
+     * @auther: Carlos
+     * @date: 2019/6/11 11:01
+     */
+    @ApiOperation(value = "v2.5", notes = "")
+    @RequestMapping(value = "/mall/game/queryCollection", method = RequestMethod.POST)
+    @ApiImplicitParams({})
+    public ResultDto<BannerBean> queryCollection(@RequestBody MallBannersInput mallBannersInput);
+
 }

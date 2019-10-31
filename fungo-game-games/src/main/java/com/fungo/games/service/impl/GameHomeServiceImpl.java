@@ -6,6 +6,7 @@ import com.fungo.games.dao.FindCollectionGroupDao;
 import com.fungo.games.dao.NewGameDao;
 import com.fungo.games.entity.*;
 import com.fungo.games.feign.CommunityFeignClient;
+import com.fungo.games.feign.SystemFeignClient;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.bean.AdminCollectionGroup;
@@ -14,6 +15,8 @@ import com.game.common.bean.HomePageBean;
 import com.game.common.bean.NewGameBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.index.BannerBean;
+import com.game.common.dto.mall.MallBannersInput;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.PageTools;
 import com.game.common.util.exception.BusinessException;
@@ -60,6 +63,8 @@ public class GameHomeServiceImpl implements GameHomeService {
     private CommunityFeignClient communityFeignClient;
     @Autowired
     private NewGameService newGameService;
+    @Autowired
+    private SystemFeignClient systemFeignClient;
 
 
     /**
@@ -147,11 +152,20 @@ public class GameHomeServiceImpl implements GameHomeService {
             homePageBean.setRmdReason(homePage.getRmdReason());
             homePageBean.setVideo(homePage.getVideo());
             homePageBean.setAppImages(homePage.getAppImages());
+            homePageBean.setApk(game.getApk());
+            if(null==game.getVersionChild()){
+                homePageBean.setVersion(game.getVersionMain());
+            }else if(null!=game.getVersionMain() && null!=game.getVersionChild()){
+                homePageBean.setVersion(game.getVersionMain()+"."+game.getVersionChild());
+            }
+            homePageBean.setGameSize(game.getGameSize());
+            homePageBean.setAndroidPackageName(game.getAndroidPackageName());
             homePageBean.setIcon(game.getIcon());
             if (StringUtils.isNotBlank(memberId)) {
                 GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", homePage.getGameId()).eq("phone_model", os).eq("state", 0));
                 if (srel != null) {
-                    homePageBean.setMark(true);
+                    homePageBean.setMake(true);
+                    homePageBean.setClause(1 == srel.getAgree() ? true : false);
                 }
             }
             CircleGamePostVo circleGamePostVo = new CircleGamePostVo();
@@ -207,7 +221,6 @@ public class GameHomeServiceImpl implements GameHomeService {
         int startOffset = (inputPageDto.getPage() - 1) * inputPageDto.getLimit();
         bean.setStartOffset(startOffset);
         bean.setPageSize(inputPageDto.getLimit());
-        //查询有制顶标识的数据
         List<NewGameBean> list = newGameDao.getNewGameAll(bean);
         //获取前一页后一页标识
         List<NewGame> totalList = newGameService.selectList(new EntityWrapper<NewGame>().ge("choose_date", startCalendar.getTime()).lt("choose_date", endCalendar.getTime()).eq("state", "0"));
@@ -221,11 +234,20 @@ public class GameHomeServiceImpl implements GameHomeService {
         re.setBefore(fungoPageResultDto.getBefore());
         re.setAfter(fungoPageResultDto.getAfter());
         for (NewGameBean newGameBean : list) {
-            newGameBean.setMark(false);
+            if(null==newGameBean.getVersionChild()){
+                newGameBean.setVersion(newGameBean.getVersionMain());
+            }else if(null!=newGameBean.getVersionMain() && null!=newGameBean.getVersionChild()){
+                newGameBean.setVersion(newGameBean.getVersionMain()+"."+newGameBean.getVersionChild());
+            }
+            if (null == newGameBean.getScore()) {
+                newGameBean.setScore(0.0);
+            }
+            newGameBean.setMake(false);
             if (StringUtils.isNotBlank(memberId)) {
                 GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", newGameBean.getGameId()).eq("phone_model", os).eq("state", 0));
                 if (srel != null) {
-                    newGameBean.setMark(true);
+                    newGameBean.setMake(true);
+                    newGameBean.setClause(1 == srel.getAgree() ? true : false);
                 }
             }
             if (null != newGameBean.getChooseDate()) {
@@ -288,6 +310,14 @@ public class GameHomeServiceImpl implements GameHomeService {
         re.setBefore(fungoPageResultDto.getBefore());
         re.setAfter(fungoPageResultDto.getAfter());
         for (NewGameBean newGameBean : list) {
+            if(null==newGameBean.getVersionChild()){
+                newGameBean.setVersion(newGameBean.getVersionMain());
+            }else if(null!=newGameBean.getVersionMain() && null!=newGameBean.getVersionChild()){
+                newGameBean.setVersion(newGameBean.getVersionMain()+"."+newGameBean.getVersionChild());
+            }
+            if (null == newGameBean.getScore()) {
+                newGameBean.setScore(0.0);
+            }
             if (null != newGameBean.getChooseDate()) {
                 newGameBean.setTime(newGameBean.getChooseDate().getTime());
             }
@@ -336,12 +366,14 @@ public class GameHomeServiceImpl implements GameHomeService {
                 adminCollectionGroup.setName(findCollectionGroup.getName());
                 adminCollectionGroup.setDetail(findCollectionGroup.getDetail());
                 adminCollectionGroup.setId(findCollectionGroup.getId());
+                adminCollectionGroup.setList(Arrays.asList());
                 colLists.add(adminCollectionGroup);
             }
         }
         re.setData(colLists);
         return re;
     }
+
 
 
     /**
@@ -365,11 +397,20 @@ public class GameHomeServiceImpl implements GameHomeService {
         adminCollectionGroup.setId(findCollectionGroup.getId());
         List<CollectionItemBean> itemList = findCollectionGroupDao.getCollectionItemAll(findCollectionGroup.getId());
         for (CollectionItemBean collectionItemBean : itemList) {
-            collectionItemBean.setMark(false);
+            if(null==collectionItemBean.getVersionChild()){
+                collectionItemBean.setVersion(collectionItemBean.getVersionMain());
+            }else if(null!=collectionItemBean.getVersionMain() && null!=collectionItemBean.getVersionChild()){
+                collectionItemBean.setVersion(collectionItemBean.getVersionMain()+"."+collectionItemBean.getVersionChild());
+            }
+            if (null == collectionItemBean.getScore()) {
+                collectionItemBean.setScore(0.0);
+            }
+            collectionItemBean.setMake(false);
             if (StringUtils.isNotBlank(memberId)) {
                 GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", collectionItemBean.getGameId()).eq("phone_model", os).eq("state", 0));
                 if (srel != null) {
-                    collectionItemBean.setMark(true);
+                    collectionItemBean.setMake(true);
+                    collectionItemBean.setClause(1 == srel.getAgree() ? true : false);
                 }
             }
             CircleGamePostVo circleGamePostVo = new CircleGamePostVo();
@@ -383,6 +424,14 @@ public class GameHomeServiceImpl implements GameHomeService {
             }
         }
         adminCollectionGroup.setList(itemList);
+        MallBannersInput mallBannersInput = new MallBannersInput();
+        mallBannersInput.setTarget_id(input.getId());
+        mallBannersInput.setLogin_id(memberId);
+        ResultDto<BannerBean> reBanner = systemFeignClient.queryCollection(mallBannersInput);
+        if(null!=reBanner && null!=reBanner.getData()){
+            BannerBean bannerBean = reBanner.getData();
+            adminCollectionGroup.setCount(bannerBean.getCount());
+        }
         re.setData(adminCollectionGroup);
         return re;
     }

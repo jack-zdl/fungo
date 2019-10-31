@@ -9,6 +9,8 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.game.BasTagDto;
 import com.game.common.dto.game.BasTagGroupDto;
+import com.game.common.dto.index.BannerBean;
+import com.game.common.dto.mall.MallBannersInput;
 import com.game.common.dto.mall.MallGoodsInput;
 import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.dto.system.TaskDto;
@@ -18,6 +20,7 @@ import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.HashMap;
 import java.util.List;
@@ -129,6 +132,12 @@ public class SystemFacedeHystrixService implements FallbackFactory<SystemFeignCl
 
             @Override
             public FungoPageResultDto<String> gameListMineDownload(CircleFollowVo circleFollowVo) {
+                logger.error("--------------------gameListMineDownload--启动熔断:{}", "gameListMineDownload");
+                return null;
+            }
+
+            @Override
+            public ResultDto<BannerBean> queryCollection(@RequestBody MallBannersInput mallBannersInput) {
                 logger.error("--------------------gameListMineDownload--启动熔断:{}", "gameListMineDownload");
                 return null;
             }

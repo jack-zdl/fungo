@@ -15,7 +15,7 @@ import java.util.Date;
  * @author Carlos
  * @since 2018-06-28
  */
-@TableName("t_find_collection_group")
+@TableName("t_game_collection_form")
 public class FindCollectionGroup extends Model<FindCollectionGroup> {
 
 	private static final long serialVersionUID = 1L;
