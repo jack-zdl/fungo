@@ -219,12 +219,15 @@
 
     <select id="selectListBylargess" resultType="com.fungo.system.entity.Member">
         select
-        <include refid="Base_Column_List"><property name="alias" value="m"/></include>
-        FROM  t_member m left join t_member_coupon mc  on m.id != mc.member_id and  mc.member_type = 2 and mc.coupon_id = #{couponId}
+        m.id,m.mobile_phone_num   AS mobilePhoneNum
+        FROM  t_member m  where    m.id not in  (
+        SELECT member_id FROM t_member_coupon mc WHERE mc.member_type = 2 and mc.state = 1
+        and mc.coupon_id = #{couponId}
+        )
          <if test="level != null">
              and m.`level` >=  #{level}
          </if>
-         limit 500
+         limit 1000
     </select>
 
     <select id="getMemberIdList" resultType="java.lang.String">

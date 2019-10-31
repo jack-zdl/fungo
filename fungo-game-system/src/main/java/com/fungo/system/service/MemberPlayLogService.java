@@ -5,6 +5,10 @@ import com.fungo.system.entity.Member;
 import com.game.common.dto.ResultDto;
 import com.game.common.vo.MemberPlayLogVO;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
+
 /**
  * <p></p>
  *
@@ -13,5 +17,9 @@ import com.game.common.vo.MemberPlayLogVO;
  */
 public interface MemberPlayLogService {
 
-    ResultDto<String> saveMemberPalyLog(MemberPlayLogVO memberPlayLogVO);
+    ResultDto<String> saveMemberPalyLog(HttpServletRequest request , Map map);
+
+    ResultDto<String> saveWeiXinMemberPalyLog(HttpServletRequest request, HttpServletResponse response);
+
+    void checkAllALiPay();
 }

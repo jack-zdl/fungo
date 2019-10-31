@@ -148,7 +148,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
              *                       -1 已删除 ，1 已 下架  ，  2 已 上架
              */
             List<String> goods_types = new ArrayList<>();
-            goods_types.add("1");goods_types.add("2");goods_types.add("21");goods_types.add("22");goods_types.add("23");goods_types.add("26");
+            goods_types.add("1");goods_types.add("2");goods_types.add("21");goods_types.add("22");goods_types.add("23");goods_types.add("26");goods_types.add("27");goods_types.add("28");
             List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(queryStartDate, queryEndDate, goods_types, 2);
             if (null != goodsMapList && !goodsMapList.isEmpty()) {
                 goodsOutBeanList = new ArrayList<MallGoodsOutBean>();
@@ -1543,6 +1543,16 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
             case 23:
                 orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+
+            case 26:
+                orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+                break;
+
+            case 27:
+                orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+                break;
+            case 28:
+                orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
                 break;
             default:
                 break;
@@ -1744,7 +1754,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                 Date currentDatte = new Date();
                 logsDto.setCreatedAt(currentDatte);
                 logsDto.setUpdatedAt(currentDatte);
-                if(values != null){
+                if(values != null && values.length > 0){
                     logsDto.setUserType( values[0]);
                     logsDto.setChannelType( values[1]);
                 }

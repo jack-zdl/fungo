@@ -4,10 +4,7 @@ import com.fungo.system.job.DTPTransactionMessageScheduledJob;
 import com.fungo.system.job.FungoMallSeckillTaskService;
 import com.fungo.system.job.PushFunction;
 import com.fungo.system.mall.service.IFungoMallGoodsService;
-import com.fungo.system.service.IMemberNoticeService;
-import com.fungo.system.service.IMemberService;
-import com.fungo.system.service.ISeacherService;
-import com.fungo.system.service.MemberService;
+import com.fungo.system.service.*;
 import com.game.common.dto.ResultDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +41,8 @@ public class JobController {
     private IMemberNoticeService iMemberNoticeService;
     @Autowired
     private IMemberService memberServiceImpl;
+    @Autowired
+    private MemberPlayLogService memberPlayLogService;
 
    @GetMapping("/dtpTransactionMessageScheduledJob")
     public ResultDto<String> dtpTransactionMessageScheduledJob(){
@@ -208,19 +207,18 @@ public class JobController {
     }
 
     /**
-     * 功能描述: 定时更新邀请用户是否满足奖励条件
-     * @return: com.game.common.dto.ResultDto<java.lang.String>
-     * @auther: dl.zhang
+     * 功能描述: 檢查所有的未完成回調的支付寶回調
      * @date: 2019/7/29 16:42
      */
-    @GetMapping("/user/checkList")
-    public ResultDto<String> checkListUserRecommend(  ){
+    @GetMapping("/user/checkAliPay")
+    public ResultDto<String> checkAllALiPay(  ){
         ResultDto<String> re = null;
         try {
-            re = ResultDto.success("定时更新邀请用户是否满足奖励条件执行成功");
+            memberPlayLogService.checkAllALiPay();
+            re = ResultDto.success("檢查所有的未完成回調的支付寶回調执行成功");
         }catch (Exception e){
-            LOGGER.error("定时更新邀请用户是否满足奖励条件执行异常",e);
-            re = ResultDto.error("-1","定时更新邀请用户是否满足奖励条件执行异常");
+            LOGGER.error("檢查所有的未完成回調的支付寶回調执行异常",e);
+            re = ResultDto.error("-1","檢查所有的未完成回調的支付寶回調执行异常");
         }
         return re;
     }

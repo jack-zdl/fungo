@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.fungo.system.dao.MemberPlayLogMapper">
+<mapper namespace="com.fungo.system.dao.MemberPlayLogDao">
   <resultMap id="BaseResultMap" type="com.fungo.system.entity.MemberPlayLog">
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="member_phone" jdbcType="VARCHAR" property="memberPhone" />
@@ -8,17 +8,50 @@
     <result column="business_id" jdbcType="VARCHAR" property="businessId" />
     <result column="coupon_type" jdbcType="VARCHAR" property="couponType" />
     <result column="coupon_id" jdbcType="VARCHAR" property="couponId" />
-    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="pay_type" jdbcType="VARCHAR" property="payType" />
+    <result column="pay_state" jdbcType="VARCHAR" property="payState" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
+    <result column="out_biz_no" jdbcType="VARCHAR" property="outBizNo" />
+    <result column="buyer_logon_id" jdbcType="VARCHAR" property="buyerLogonId" />
+    <result column="seller_email" jdbcType="VARCHAR" property="sellerEmail" />
+    <result column="trade_status" jdbcType="VARCHAR" property="tradeStatus" />
+    <result column="receipt_amount" jdbcType="VARCHAR" property="receiptAmount" />
+    <result column="buyer_pay_amount" jdbcType="VARCHAR" property="buyerPayAmount" />
+    <result column="refund_fee" jdbcType="VARCHAR" property="refundFee" />
+    <result column="gmt_payment" jdbcType="VARCHAR" property="gmtPayment" />
+    <result column="gmt_refund" jdbcType="TIMESTAMP" property="gmtRefund" />
+    <result column="date_content" jdbcType="VARCHAR" property="dateContent" />
+    <result column="response_content" jdbcType="VARCHAR" property="responseContent" />
+    <result column="state" jdbcType="CHAR" property="state" />
     <result column="isactive" jdbcType="CHAR" property="isactive" />
     <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
     <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
     <result column="rversion" jdbcType="INTEGER" property="rversion" />
     <result column="description" jdbcType="VARCHAR" property="description" />
   </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.fungo.system.entity.MemberPlayLog">
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+    <result column="money_content" jdbcType="LONGVARCHAR" property="moneyContent" />
+    <result column="header_content" jdbcType="LONGVARCHAR" property="headerContent" />
+  </resultMap>
 
   <sql id="Base_Column_List">
-    id, member_phone as memberPhone, play_id as playId, business_id as businessId , coupon_type as couponType, coupon_id as couponId, `type`, isactive,
-    created_at as createdAt, updated_at as updatedAt, rversion, description
+    id, member_phone as memberPhone , play_id as playId , business_id as businessId , coupon_type as couponType ,
+    coupon_id as  couponId , pay_type as  payType, pay_state as  payState,
+    app_id  as  appId , out_biz_no  as  outBizNo , buyer_logon_id  as  buyerLogonId,
+    seller_email  as  sellerEmail , trade_status  as  tradeStatus , receipt_amount  as  receiptAmount,
+    buyer_pay_amount  as  buyerPayAmount , refund_fee  as  refundFee , gmt_payment  as  gmtPayment , gmt_refund  as  gmtRefund ,
+    date_content  as  dateContent , isactive  as  isactive , created_at  as  createdAt,
+    updated_at  as  updatedAt , rversion  as  rversion , description  as  description ,content  as  content , money_content  as  moneyContent , header_content  as  headerContent
   </sql>
+  <sql id="Blob_Column_List">
+    content, money_content, header_content
+  </sql>
+
+  <select id="getAllByState" resultType="com.fungo.system.entity.MemberPlayLog" parameterType="java.lang.String">
+    SELECT
+    <include refid="Base_Column_List"></include>
+    FROM t_member_play_log  WHERE  state = #{state}
+  </select>
 
 </mapper>

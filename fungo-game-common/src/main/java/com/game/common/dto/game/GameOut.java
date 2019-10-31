@@ -95,6 +95,73 @@ public class GameOut {
    private List<GameGroup> gameGroups;
 
 
+   // --- v2.6----
+    /**
+     *  国内游戏不做判断 海外游戏 - 为null 默认true
+     */
+    private Boolean canFast;
+
+    /**
+     *  安卓状态描述
+     */
+    private String androidStatusDesc;
+
+    /**
+     *  谷歌游戏副名称
+     */
+    private String googleDeputyName;
+
+
+    /**
+     * 厂商
+     */
+    private String company;
+    /**
+     * 发行商
+     */
+    private String publisher;
+
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public Boolean getCanFast() {
+        return canFast;
+    }
+
+    public void setCanFast(Boolean canFast) {
+        this.canFast = canFast;
+    }
+
+    public String getAndroidStatusDesc() {
+        return androidStatusDesc;
+    }
+
+    public void setAndroidStatusDesc(String androidStatusDesc) {
+        this.androidStatusDesc = androidStatusDesc;
+    }
+
+    public String getGoogleDeputyName() {
+        return googleDeputyName;
+    }
+
+    public void setGoogleDeputyName(String googleDeputyName) {
+        this.googleDeputyName = googleDeputyName;
+    }
+
     public int getDownload_num() {
         return download_num;
     }
