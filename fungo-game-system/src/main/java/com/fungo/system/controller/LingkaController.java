@@ -135,20 +135,23 @@ public class LingkaController {
      * 功能描述: 支付宝回调接口
      * @date: 2019/10/25 10:34
      */
-    @GetMapping(value = "/api/system/vip/hide")
+    @PostMapping(value = "/api/system/vip/hide")
     @ResponseBody
-    public ResultDto<HashMap<String, Object>> getVipHide(HttpServletRequest request){
+    public ResultDto<HashMap<String, Object>> getVipHide(HttpServletRequest request,@RequestBody Map<String,Object> hashMap){
 
         String appVersion = "2.5.1";
-        if(StringUtils.isNoneBlank(request.getHeader("appversion"))){
-            appVersion = request.getHeader("appversion");
+        if(StringUtils.isNoneBlank( (String) hashMap.get("appversion") )){
+            appVersion = (String) hashMap.get("appversion");
         }
         String os = request.getHeader("os");
         if(os == null){
             os = "";
         }
         //app渠道编码
-        String app_channel = request.getHeader("appChannel");
+        String app_channel = null;
+        if(StringUtils.isNoneBlank( (String) hashMap.get("appChannel") )){
+            app_channel = (String) hashMap.get("appChannel");
+        }
        return sysVersionService.getVipHide(appVersion,os,app_channel );
     }
 }
