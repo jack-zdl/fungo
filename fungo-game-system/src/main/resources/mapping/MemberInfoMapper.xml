@@ -13,6 +13,7 @@
     <result column="rversion" jdbcType="INTEGER" property="rversion" />
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="parent_member_id" jdbcType="VARCHAR" property="parentMemberId" />
+    <result column="state" jdbcType="INTEGER" property="state" />
   </resultMap>
 
   <sql id="Base_Column_List">

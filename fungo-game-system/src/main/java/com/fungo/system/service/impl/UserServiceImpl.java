@@ -285,6 +285,7 @@ public class UserServiceImpl implements IUserService {
         return rest;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultDto<LoginMemberBean> recommendLogin(MsgInput msgInput, String appVersion) throws Exception {
         ResultDto<LoginMemberBean> rest = null;
@@ -329,6 +330,7 @@ public class UserServiceImpl implements IUserService {
                   memberInfo.setCreatedAt( new Date());
                   memberInfo.setCreatedBy( member.getId());
                   memberInfo.setParentMemberId( msgInput.getRecommendId());
+                  memberInfo.setState(1);
                   memberInfo.insert();
                 } else {
                     return ResultDto.error(re.getCode(), re.getMessage());
