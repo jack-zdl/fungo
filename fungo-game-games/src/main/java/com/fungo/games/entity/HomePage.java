@@ -15,7 +15,7 @@ import java.util.Date;
  * @author Carlos
  * @since 2018-06-28
  */
-@TableName("t_home_page")
+@TableName("t_game_page")
 public class HomePage extends Model<HomePage> {
 
     private static final long serialVersionUID = 1L;

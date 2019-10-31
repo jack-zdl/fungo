@@ -1,8 +1,15 @@
 package com.game.common.bean;
 
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.util.Date;
 
+@Getter
+@Setter
+@ToString
 public class NewGameBean {
 
 	private String id;
@@ -36,7 +43,7 @@ public class NewGameBean {
 	/**
 	 * 评分
 	 */
-	private String score;
+	private Double score;
 	/**
 	 * 是否支持加速
 	 */
@@ -77,173 +84,49 @@ public class NewGameBean {
 	private int pageSize;
 
 	/**
-	 *   游戏图标
+	 * 游戏图标
 	 * @return
 	 */
 	private String icon;
 	/**
-	 *   预约标识
+	 *  预约标识
 	 * @return
 	 */
-	private Boolean mark;
+	private Boolean make;
+	/**
+	 * 'isClause标识'
+	 */
+	private boolean isClause;
 
-	public Boolean getMark() {
-		return mark;
-	}
+	/**
+	 *  安卓下载地址
+	 * @return
+	 */
+	private String apk;
+	/**
+	 *  游戏大小
+	 * @return
+	 */
+	private String gameSize;
+	/**
+	 *  安卓包名
+	 * @return
+	 */
+	private String androidPackageName;
+	/**
+	 *  版本号
+	 * @return
+	 */
+	private String version;
+	/**
+	 *  主版本号
+	 * @return
+	 */
+	private String versionMain;
+	/**
+	 *  子版本号
+	 * @return
+	 */
+	private String versionChild;
 
-	public void setMark(Boolean mark) {
-		this.mark = mark;
-	}
-
-	public String getIcon() {
-		return icon;
-	}
-
-	public void setIcon(String icon) {
-		this.icon = icon;
-	}
-
-	public String getAndroidStatusDesc() {
-		return androidStatusDesc;
-	}
-
-	public void setAndroidStatusDesc(String androidStatusDesc) {
-		this.androidStatusDesc = androidStatusDesc;
-	}
-
-	public int getStartOffset() {
-		return startOffset;
-	}
-
-	public void setStartOffset(int startOffset) {
-		this.startOffset = startOffset;
-	}
-
-	public int getPageSize() {
-		return pageSize;
-	}
-
-	public void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
-	}
-
-	public long getTime() {
-		return time;
-	}
-
-	public void setTime(long time) {
-		this.time = time;
-	}
-
-	public String getTags() {
-		return tags;
-	}
-
-	public void setTags(String tags) {
-		this.tags = tags;
-	}
-
-	public Integer getIosState() {
-		return iosState;
-	}
-
-	public void setIosState(Integer iosState) {
-		this.iosState = iosState;
-	}
-
-	public Integer getAndroidState() {
-		return androidState;
-	}
-
-	public void setAndroidState(Integer androidState) {
-		this.androidState = androidState;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getGameId() {
-		return gameId;
-	}
-
-	public void setGameId(String gameId) {
-		this.gameId = gameId;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Integer getSort() {
-		return sort;
-	}
-
-	public void setSort(Integer sort) {
-		this.sort = sort;
-	}
-
-	public Date getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(Date startTime) {
-		this.startTime = startTime;
-	}
-
-	public Date getEndTime() {
-		return endTime;
-	}
-
-	public void setEndTime(Date endTime) {
-		this.endTime = endTime;
-	}
-
-	public Date getChooseDate() {
-		return chooseDate;
-	}
-
-	public void setChooseDate(Date chooseDate) {
-		this.chooseDate = chooseDate;
-	}
-
-	public String getCircleId() {
-		return circleId;
-	}
-
-	public void setCircleId(String circleId) {
-		this.circleId = circleId;
-	}
-
-	public String getOrigin() {
-		return origin;
-	}
-
-	public void setOrigin(String origin) {
-		this.origin = origin;
-	}
-
-	public String getScore() {
-		return score;
-	}
-
-	public void setScore(String score) {
-		this.score = score;
-	}
-
-	public boolean isCanFast() {
-		return canFast;
-	}
-
-	public void setCanFast(boolean canFast) {
-		this.canFast = canFast;
-	}
 }

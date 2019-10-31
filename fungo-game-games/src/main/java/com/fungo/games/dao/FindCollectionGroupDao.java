@@ -18,5 +18,5 @@ import java.util.List;
 public interface FindCollectionGroupDao extends BaseMapper<FindCollectionGroup> {
 
     //管控台新游信息查询
-    public List<CollectionItemBean> getCollectionItemAll(@Param("groupId")String groupId);
+    public List<CollectionItemBean> getCollectionItemAll(@Param("formId")String formId);
 }

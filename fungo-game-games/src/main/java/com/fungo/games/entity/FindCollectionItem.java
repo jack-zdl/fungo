@@ -15,7 +15,7 @@ import java.util.Date;
  * @author Carlos
  * @since 2018-06-28
  */
-@TableName("t_find_collection_item")
+@TableName("t_game_collection_term")
 public class FindCollectionItem extends Model<FindCollectionItem> {
 
     private static final long serialVersionUID = 1L;
@@ -24,8 +24,8 @@ public class FindCollectionItem extends Model<FindCollectionItem> {
     /**
      * 合集ID
      */
-	@TableField("group_id")
-	private String groupId;
+	@TableField("form_id")
+	private String formId;
 
 	/**
 	 * 游戏id
@@ -66,12 +66,12 @@ public class FindCollectionItem extends Model<FindCollectionItem> {
 	 */
 	private Integer state;
 
-	public String getGroupId() {
-		return groupId;
+	public String getFormId() {
+		return formId;
 	}
 
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
+	public void setFormId(String formId) {
+		this.formId = formId;
 	}
 
 	public String getGameId() {

@@ -7,6 +7,7 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.index.CardIndexBean;
+import com.game.common.dto.index.CircleCardDataBean;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * <p></p>
@@ -71,7 +73,7 @@ public class CircleController {
 
 
     /**
-     * 功能描述: app端获取管控台设置的活动列表及详情
+     * 功能描述: 首页活动位banner数据接口
      *
      * @param: [memberUserPrefile, request, inputPageDto]
      * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
@@ -81,8 +83,8 @@ public class CircleController {
     @ApiOperation(value = "v2.6", notes = "")
     @RequestMapping(value = "/api/system/circle/event/homePage", method = RequestMethod.GET)
     @ApiImplicitParams({})
-    public ResultDto<Banner> queryHomePage(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request) {
-        ResultDto<Banner> re = null;
+    public ResultDto<CircleCardDataBean> queryHomePage(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request) {
+        ResultDto<CircleCardDataBean> re = null;
         //iOS渠道
         String iosChannel = "";
         String os = "";
@@ -94,6 +96,63 @@ public class CircleController {
         String app_channel = request.getHeader("appChannel");
         String appVersion = request.getHeader("appVersion");
         re = indexService.queryHomePage(os, iosChannel, app_channel, appVersion);
+        return re;
+    }
+
+
+
+    /**
+     * 功能描述: app端获取管控台设置的启动页banner
+     *
+     * @param: [memberUserPrefile, request, inputPageDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: Carlos
+     * @date: 2019/10/11 11:01
+     */
+    @ApiOperation(value = "v2.6", notes = "")
+    @RequestMapping(value = "/api/system/circle/event/queryStartUp", method = RequestMethod.GET)
+    @ApiImplicitParams({})
+    public ResultDto<List<CircleCardDataBean>> queryStartUp(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request) {
+        ResultDto<List<CircleCardDataBean>> re = null;
+        //iOS渠道
+        String iosChannel = "";
+        String os = "";
+        os = (String) request.getAttribute("os");
+        if (request.getHeader("iosChannel") != null) {
+            iosChannel = request.getHeader("iosChannel");
+        }
+        //app渠道编码
+        String app_channel = request.getHeader("appChannel");
+        String appVersion = request.getHeader("appVersion");
+        re = indexService.queryStartUp(os, iosChannel, app_channel, appVersion);
+        return re;
+    }
+
+
+    /**
+     * 功能描述: app端获取管控台设置的开屏页banner
+     *
+     * @param: [memberUserPrefile, request, inputPageDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: Carlos
+     * @date: 2019/10/11 11:01
+     */
+    @ApiOperation(value = "v2.6", notes = "")
+    @RequestMapping(value = "/api/system/circle/event/queryOpenScreen", method = RequestMethod.GET)
+    @ApiImplicitParams({})
+    public ResultDto<CircleCardDataBean> queryOpenScreen(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request) {
+        ResultDto<CircleCardDataBean> re = null;
+        //iOS渠道
+        String iosChannel = "";
+        String os = "";
+        os = (String) request.getAttribute("os");
+        if (request.getHeader("iosChannel") != null) {
+            iosChannel = request.getHeader("iosChannel");
+        }
+        //app渠道编码
+        String app_channel = request.getHeader("appChannel");
+        String appVersion = request.getHeader("appVersion");
+        re = indexService.queryOpenScreen(os, iosChannel, app_channel, appVersion);
         return re;
     }
 

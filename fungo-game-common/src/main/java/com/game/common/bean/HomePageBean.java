@@ -1,5 +1,13 @@
 package com.game.common.bean;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
 public class HomePageBean {
 
 	private String id;
@@ -46,7 +54,11 @@ public class HomePageBean {
 	/**
 	 * 'mark标识'
 	 */
-	private boolean  mark;
+	private boolean  make;
+	/**
+	 * 'isClause标识'
+	 */
+	private boolean isClause;
 	/**
 	 * '游戏图标'
 	 */
@@ -64,132 +76,36 @@ public class HomePageBean {
 	 */
 	private String circleId;
 
-	public String getCircleId() {
-		return circleId;
-	}
+	/**
+	 *  安卓下载地址
+	 * @return
+	 */
+	private String apk;
+	/**
+	 *  游戏大小
+	 * @return
+	 */
+	private Long gameSize;
+	/**
+	 *  安卓包名
+	 * @return
+	 */
+	private String androidPackageName;
+	/**
+	 *  版本号
+	 * @return
+	 */
+	private String version;
+	/**
+	 *  主版本号
+	 * @return
+	 */
+	private String versionMain;
+	/**
+	 *  子版本号
+	 * @return
+	 */
+	private String versionChild;
 
-	public void setCircleId(String circleId) {
-		this.circleId = circleId;
-	}
-
-	public String getIcon() {
-		return icon;
-	}
-
-	public void setIcon(String icon) {
-		this.icon = icon;
-	}
-
-	public Integer getIosState() {
-		return iosState;
-	}
-
-	public void setIosState(Integer iosState) {
-		this.iosState = iosState;
-	}
-
-	public Integer getAndroidState() {
-		return androidState;
-	}
-
-	public void setAndroidState(Integer androidState) {
-		this.androidState = androidState;
-	}
-
-	public boolean isMark() {
-		return mark;
-	}
-
-	public void setMark(boolean mark) {
-		this.mark = mark;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getGameId() {
-		return gameId;
-	}
-
-	public void setGameId(String gameId) {
-		this.gameId = gameId;
-	}
-
-	public String getTags() {
-		return tags;
-	}
-
-	public void setTags(String tags) {
-		this.tags = tags;
-	}
-
-	public String getOrigin() {
-		return origin;
-	}
-
-	public void setOrigin(String origin) {
-		this.origin = origin;
-	}
-
-	public Double getScore() {
-		return score;
-	}
-
-	public void setScore(Double score) {
-		this.score = score;
-	}
-
-	public String getRmdLag() {
-		return rmdLag;
-	}
-
-	public void setRmdLag(String rmdLag) {
-		this.rmdLag = rmdLag;
-	}
-
-	public String getRmdReason() {
-		return rmdReason;
-	}
-
-	public void setRmdReason(String rmdReason) {
-		this.rmdReason = rmdReason;
-	}
-
-	public String getVideo() {
-		return video;
-	}
-
-	public void setVideo(String video) {
-		this.video = video;
-	}
-
-	public String getAppImages() {
-		return appImages;
-	}
-
-	public void setAppImages(String appImages) {
-		this.appImages = appImages;
-	}
-
-	public String getPcImages() {
-		return pcImages;
-	}
-
-	public void setPcImages(String pcImages) {
-		this.pcImages = pcImages;
-	}
 
 }

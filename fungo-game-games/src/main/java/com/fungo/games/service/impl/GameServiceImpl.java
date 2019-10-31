@@ -158,6 +158,7 @@ public class GameServiceImpl implements IGameService {
             out.setName(game.getName());
             out.setIcon(game.getIcon());
 
+
             //游戏编号
             out.setGameIdtSn(game.getGameIdtSn());
 
@@ -172,6 +173,9 @@ public class GameServiceImpl implements IGameService {
                 game.setApk("");
             }
             out.setApkUrl(game.getApk());
+            out.setTags(game.getTags());
+            out.setAndroidStatusDesc(game.getAndroidStatusDesc());
+            out.setIosStatusDesc(game.getIosStatusDesc());
             out.setItunesId(game.getItunesId());
             out.setAndroidPackageName(game.getAndroidPackageName());
             out.setGame_size((long) game.getGameSize());
@@ -797,7 +801,9 @@ public class GameServiceImpl implements IGameService {
                 it.setName(game.getName());
                 it.setIosState(game.getIosState() == null ? -1 : game.getIosState());
                 it.setItunesId(game.getItunesId());
-
+                it.setTags(game.getTags());
+                it.setAndroidStatusDesc(game.getAndroidStatusDesc());
+                it.setIosStatusDesc(game.getIosStatusDesc());
                 HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
                 if (rateData != null) {
                     if (rateData.get("avgRating") != null) {

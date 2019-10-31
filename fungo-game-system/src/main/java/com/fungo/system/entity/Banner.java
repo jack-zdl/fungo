@@ -153,19 +153,19 @@ public class Banner extends Model<Banner> {
 	@TableField("game_name")
 	private String gameName;
 
-//	/**
-//	 * 显示平台
-//	 */
-//	@TableField("display_platform")
-//	private Integer displayPlatform;
-//
-//	public Integer getDisplayPlatform() {
-//		return displayPlatform;
-//	}
-//
-//	public void setDisplayPlatform(Integer displayPlatform) {
-//		this.displayPlatform = displayPlatform;
-//	}
+	/**
+	 * 显示平台 0:全部,1:PC,2:APP,3:Android,4:ios
+	 */
+	@TableField("display_platform")
+	private Integer displayPlatform;
+
+	public Integer getDisplayPlatform() {
+		return displayPlatform;
+	}
+
+	public void setDisplayPlatform(Integer displayPlatform) {
+		this.displayPlatform = displayPlatform;
+	}
 
 	public String getId() {
 		return id;

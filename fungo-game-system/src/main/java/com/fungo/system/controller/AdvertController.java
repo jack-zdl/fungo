@@ -152,13 +152,11 @@ public class AdvertController {
     public ResultDto<List<Map<String, String>>> discover(@Anonymous MemberUserProfile memberUserPrefile) {
 
         ResultDto<List<Map<String, String>>> re = new ResultDto<>();
-        List<Map<String, String>> listResult = (List<Map<String, String>>) fungoCacheAdvert.getIndexCache(FUNGO_CORE_API_ADVERT_RECOMMEND_DISCOVER,
-                "");
+        List<Map<String, String>> listResult = (List<Map<String, String>>) fungoCacheAdvert.getIndexCache(FUNGO_CORE_API_ADVERT_RECOMMEND_DISCOVER, "");
         if (null != listResult && !listResult.isEmpty()) {
             re.setData(listResult);
             return re;
         }
-
         List<Map<String, String>> list = new ArrayList<>();
         //获取广告位
         List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0002").eq("state", 0).orderBy("sort", false));
@@ -166,6 +164,7 @@ public class AdvertController {
 //            Map<String, BigDecimal> rateData = indexProxyService.getRateData(banner.getTargetId());  //gameDao.getRateData(banner.getTargetId());
             Map<String, String> map1 = new HashMap<>();
 //				 map1.put("rating",rateData.get("avgRating").toString());
+            //1：帖子，3：游戏，4:合集
             if (1 == banner.getTargetType()) {
                 CmmPostDto cmmPostParam = new CmmPostDto();
                 cmmPostParam.setId(banner.getTargetId());
@@ -174,16 +173,19 @@ public class AdvertController {
                 if (post != null) {
                     map1.put("video", post.getVideo());
                 }
-            }else {
+            }else if(3 == banner.getTargetType()){
                 GameDto gameDto = new GameDto();
                 gameDto.setId(banner.getTargetId());
 //                gameDto.setState(1);
                 gameDto = iGameProxyService.selectGameById(gameDto);
-                map1.put( "gameName",gameDto.getName());
+                if(null!=gameDto){
+                    map1.put( "gameName",gameDto.getName());
+                }
             }
             map1.put("objectId", banner.getTargetId());
             map1.put("cover_image", banner.getCoverImage());
             map1.put("type", String.valueOf(banner.getTargetType()));
+            map1.put("tag",banner.getTag());
 
             list.add(map1);
         }
