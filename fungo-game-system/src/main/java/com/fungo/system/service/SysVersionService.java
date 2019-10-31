@@ -25,6 +25,6 @@ public interface SysVersionService extends IService<SysVersion> {
      */
     HashMap<String, Object> queryAppVersionInfo(String version, String mobile_type, String channel_code);
 
-    ResultDto<HashMap<String, Object>> getVipHide(String version, String mobile_type);
+    ResultDto<HashMap<String, Object>> getVipHide(String version, String mobile_type,String appChannel);
 
 }

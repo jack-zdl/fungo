@@ -147,6 +147,8 @@ public class LingkaController {
         if(os == null){
             os = "";
         }
-       return sysVersionService.getVipHide(appVersion,os );
+        //app渠道编码
+        String app_channel = request.getHeader("appChannel");
+       return sysVersionService.getVipHide(appVersion,os,app_channel );
     }
 }

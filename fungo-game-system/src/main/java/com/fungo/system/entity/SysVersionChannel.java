@@ -50,6 +50,13 @@ public class SysVersionChannel extends Model<SysVersionChannel> {
 	@TableField("is_force")
 	private Integer isForce;
 
+	/**
+	 * 此渠道是否隐藏白金VIP 1 关闭 0 开启
+	 * @date: 2019/10/31 11:00
+	 */
+	@TableField("is_hide")
+	private Integer isHide;
+
 
 	public String getId() {
 		return id;
@@ -113,6 +120,14 @@ public class SysVersionChannel extends Model<SysVersionChannel> {
 
 	public void setIsForce(Integer isForce) {
 		this.isForce = isForce;
+	}
+
+	public Integer getIsHide() {
+		return isHide;
+	}
+
+	public void setIsHide(Integer isHide) {
+		this.isHide = isHide;
 	}
 
 	@Override
