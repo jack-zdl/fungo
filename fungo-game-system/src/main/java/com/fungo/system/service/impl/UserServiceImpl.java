@@ -320,6 +320,8 @@ public class UserServiceImpl implements IUserService {
                         memberService.insert(member);
 //                        LOGGER.info("用户注册-手机验证-初始化数据  memberId : {}, phoneNumber:{}", member.getId(), mobile);
                         this.initUserRank(member.getId());
+                    }else {
+                        return ResultDto.error("-1", "该用户不是新用户");
                     }
                     messageCodeService.updateCheckCodeSuccess(re.getData());//更新验证成功
 
