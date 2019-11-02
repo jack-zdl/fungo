@@ -140,10 +140,12 @@ public class CommunityTSMQService {
                     String bodyStr = mqResultDto.getBody().toString();
                     CmmPost cmmPostDto  = JSON.parseObject(bodyStr, CmmPost.class);
                     cmmPostDaoServiceImap.updateById(cmmPostDto);
+                    return true;
                 }else if(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_MOOD_UPDATE.getCode() == mqResultDto.getType()){
                     String bodyStr = mqResultDto.getBody().toString();
                     MooMood mooMood  = JSON.parseObject(bodyStr, MooMood.class);
                     mooMoodDaoServiceImpl.updateById(mooMood);
+                    return true;
                 }
             }
         return false;
