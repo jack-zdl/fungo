@@ -15,7 +15,7 @@ import java.util.Date;
  * @author Carlos
  * @since 2018-06-28
  */
-@TableName("t_new_game")
+@TableName("t_game_new")
 public class NewGame extends Model<NewGame> {
 
     private static final long serialVersionUID = 1L;
@@ -42,16 +42,6 @@ public class NewGame extends Model<NewGame> {
 	 * 排序号
 	 */
 	private Integer sort;
-	/**
-	 * 游戏有效时间开始
-	 */
-	@TableField("start_time")
-	private Date startTime;
-	/**
-	 * 游戏有效时间结束
-	 */
-	@TableField("end_time")
-	private Date endTime;
 	/**
 	 * 选择日期
 	 */
@@ -148,22 +138,6 @@ public class NewGame extends Model<NewGame> {
 
 	public void setSort(Integer sort) {
 		this.sort = sort;
-	}
-
-	public Date getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(Date startTime) {
-		this.startTime = startTime;
-	}
-
-	public Date getEndTime() {
-		return endTime;
-	}
-
-	public void setEndTime(Date endTime) {
-		this.endTime = endTime;
 	}
 
 	public String getCreatedBy() {

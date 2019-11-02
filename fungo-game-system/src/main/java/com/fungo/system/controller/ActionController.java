@@ -4,6 +4,8 @@ import com.fungo.system.service.IActionService;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.index.BannerBean;
+import com.game.common.dto.mall.MallBannersInput;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 
 
 /**
@@ -165,6 +168,43 @@ public class ActionController {
     })
     public ResultDto<String> whetherIsDone(MemberUserProfile memberUserPrefile,@RequestBody ActionInput inputDto) throws Exception {
         return actionService.whetherIsDone(memberUserPrefile.getLoginId(), inputDto);
+    }
+
+
+
+    @ApiOperation(value="合集点赞", notes="")
+    @PostMapping(value="/api/action/collectionLike")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "target_id",value = "目标对象",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
+    })
+    public ResultDto<String> collectionLike(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody ActionInput inputDto) throws Exception {
+        String appVersion = "";
+        appVersion = request.getHeader("appversion");
+        return actionService.collectionLike(memberUserPrefile.getLoginId(), inputDto,appVersion);
+    }
+
+
+    @ApiOperation(value="合集取消赞", notes="")
+    @RequestMapping(value="/api/action/unCollectionLike", method= RequestMethod.DELETE)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "target_id",value = "目标对象",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string"),
+    })
+    public ResultDto<String> unCollectionLike(MemberUserProfile memberUserPrefile,@RequestBody ActionInput inputDto) throws Exception {
+        return actionService.unCollectionLike(memberUserPrefile.getLoginId(), inputDto);
+    }
+
+
+    @ApiOperation(value="查询合集点赞总数", notes="")
+    @RequestMapping(value="/api/action/queryCollectionLike", method= RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "target_id",value = "目标对象",paramType = "form",dataType = "string")
+    })
+    public ResultDto<BannerBean> queryCollectionLike(MemberUserProfile memberUserPrefile, @RequestBody MallBannersInput mallBannersInput) throws Exception {
+        mallBannersInput.setLogin_id(memberUserPrefile.getLoginId());
+        return actionService.queryCollectionLike(mallBannersInput);
     }
 
 

@@ -3,9 +3,11 @@ package com.fungo.system.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fungo.system.service.MemberPlayLogService;
+import com.fungo.system.service.SysVersionService;
 import com.game.common.dto.ResultDto;
 import com.game.common.vo.MemberPlayLogVO;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,9 +32,10 @@ public class LingkaController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LingkaController.class);
 
-
     @Autowired
     private MemberPlayLogService memberPlayLogService;
+    @Autowired
+    private SysVersionService sysVersionService;
 
     @PostMapping(value = "/api/system/member/log")
     public ResultDto<String> saveLingkaMemeberPlayLog(@Validated @RequestBody MemberPlayLogVO memberPlayLogVO){
@@ -125,5 +129,29 @@ public class LingkaController {
         ResultDto<String> resultDto = null;
         resultDto = memberPlayLogService.saveWeiXinMemberPalyLog( request,response);
         return  resultDto;
+    }
+
+    /**
+     * 功能描述: 支付宝回调接口
+     * @date: 2019/10/25 10:34
+     */
+    @PostMapping(value = "/api/system/vip/hide")
+    @ResponseBody
+    public ResultDto<HashMap<String, Object>> getVipHide(HttpServletRequest request,@RequestBody Map<String,Object> hashMap){
+
+        String appVersion = "2.5.1";
+        if(StringUtils.isNoneBlank( (String) hashMap.get("appversion") )){
+            appVersion = (String) hashMap.get("appversion");
+        }
+        String os = request.getHeader("os");
+        if(os == null){
+            os = "";
+        }
+        //app渠道编码
+        String app_channel = null;
+        if(StringUtils.isNoneBlank( (String) hashMap.get("appChannel") )){
+            app_channel = (String) hashMap.get("appChannel");
+        }
+       return sysVersionService.getVipHide(appVersion,os,app_channel );
     }
 }

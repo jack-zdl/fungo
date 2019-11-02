@@ -2,6 +2,7 @@ package com.fungo.system.service.impl;
 
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.constts.CommonlyConst;
 import com.fungo.system.dao.BasActionDao;
@@ -27,9 +28,14 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.*;
 import com.game.common.dto.game.GameEvaluationDto;
+import com.game.common.dto.index.BannerBean;
+import com.game.common.dto.mall.MallBannersInput;
+import com.game.common.dto.mall.MallGoodsInput;
 import com.game.common.enums.CommonEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.*;
+import com.game.common.util.exception.BusinessException;
+import io.swagger.models.auth.In;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +83,9 @@ public class ActionServiceImpl implements IActionService {
 
     @Autowired
     private ICommunityProxyService iCommunityProxyService;
+    @Autowired
+    private BasActionService basActionService;
+
 
 
     //用户成长业务
@@ -86,7 +95,7 @@ public class ActionServiceImpl implements IActionService {
     @Autowired
     private MemberService memberService;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( ActionServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActionServiceImpl.class);
 
 
     //点赞
@@ -100,7 +109,7 @@ public class ActionServiceImpl implements IActionService {
 
             //点赞他人内容 点赞他人游戏评价 被点赞
 //			gameProxy.addScore(Setting.ACTION_TYPE_LIKE, memberId, inputDto.getTarget_id(), inputDto.getTarget_type());
-            gameProxy.addNotice(Setting.ACTION_TYPE_LIKE, memberId, inputDto.getTarget_id(), inputDto.getTarget_type(), inputDto.getInformation(), appVersion, "","","","");
+            gameProxy.addNotice(Setting.ACTION_TYPE_LIKE, memberId, inputDto.getTarget_id(), inputDto.getTarget_type(), inputDto.getInformation(), appVersion, "", "", "", "");
 
             //完成任务
             if (Setting.RES_TYPE_EVALUATION == inputDto.getTarget_type()) {//点赞游戏评价
@@ -127,7 +136,7 @@ public class ActionServiceImpl implements IActionService {
             //用户被点赞总次数
             int likeCount = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("member_id", targetMemberId).in("type", new Integer[]{0, 1, 2, 7, 11}));
 //			int likeCount = scoreLogService.selectCount(new EntityWrapper<ScoreLog>().eq("member_id", targetMemberId).eq("code_idt", 41));
-            LOGGER.info("like---点赞次数"+ likeCount);
+            LOGGER.info("like---点赞次数" + likeCount);
             if (likeCount == 50) {//expTask.getData()
                 scoreLogService.updateRanked(targetMemberId, new ObjectMapper(), 31);
             } else if (likeCount == 100) {
@@ -140,11 +149,11 @@ public class ActionServiceImpl implements IActionService {
             likeModel.setDistinctId(memberId);
             likeModel.setPlatForm(BuriedPointUtils.getPlatForm());
             likeModel.setEventName(BuriedPointEventConstant.EVENT_KEY_LIKE);
-            if(targetMemberId!=null){
+            if (targetMemberId != null) {
                 likeModel.setNickname(Optional.ofNullable(memberService.selectById(targetMemberId)).map(Member::getUserName).orElse(null));
             }
             likeModel.setType(getBuriedPointLikeType(inputDto.getTarget_type()));
-            likeModel.setChannel(getChannal(inputDto.getTarget_type(),inputDto.getTarget_id()));
+            likeModel.setChannel(getChannal(inputDto.getTarget_type(), inputDto.getTarget_id()));
             BuriedPointUtils.publishBuriedPointEvent(likeModel);
         } else {//点赞记录存在
             if (-1 == action.getState()) {
@@ -177,20 +186,20 @@ public class ActionServiceImpl implements IActionService {
 
     private List<String> getChannal(int target_type, String target_id) {
         //只有文章类型才有圈子概念
-        if(target_type == Setting.RES_TYPE_POST){
+        if (target_type == Setting.RES_TYPE_POST) {
             // 根据文章id 获取圈子集合
             List<String> list = iCommunityProxyService.listCircleNameByPost(target_id);
-            return list.size()>0?list:null;
-        }else if(target_type == Setting.RES_TYPE_COMMENT){
+            return list.size() > 0 ? list : null;
+        } else if (target_type == Setting.RES_TYPE_COMMENT) {
             // 根据文章评论id 获取圈子名称集合
             List<String> list = iCommunityProxyService.listCircleNameByComment(target_id);
-            return list.size()>0?list:null;
+            return list.size() > 0 ? list : null;
         }
         return null;
     }
 
-    private String getBuriedPointLikeType(int targetType ){
-        if(targetType == Setting.RES_TYPE_POST || targetType == Setting.RES_TYPE_EVALUATION || targetType == Setting.RES_TYPE_MOOD){
+    private String getBuriedPointLikeType(int targetType) {
+        if (targetType == Setting.RES_TYPE_POST || targetType == Setting.RES_TYPE_EVALUATION || targetType == Setting.RES_TYPE_MOOD) {
             return BuriedPointCommunityConstant.COMMUNITY_LIKE_TYPE_AUTHOR;
         }
         return BuriedPointCommunityConstant.COMMUNITY_LIKE_TYPE_OBSERVER;
@@ -570,64 +579,64 @@ public class ActionServiceImpl implements IActionService {
             action = this.buildAction(memberId, Setting.ACTION_TYPE_REPORT, inputDto);
             this.actionService.insert(action);
             String reportMemberId = null;
-            if(1 == inputDto.getTarget_type()){
+            if (1 == inputDto.getTarget_type()) {
                 CmmPostDto cmmPostDto = new CmmPostDto();
                 cmmPostDto.setId(inputDto.getTarget_id());
-                FungoPageResultDto<CmmPostDto>  cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(cmmPostDto);
-                if(cmmPostDtoFungoPageResultDto != null && CommonEnum.SUCCESS.code().equals( String.valueOf(cmmPostDtoFungoPageResultDto.getStatus()))
-                    && cmmPostDtoFungoPageResultDto.getData().size() > 0){
+                FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(cmmPostDto);
+                if (cmmPostDtoFungoPageResultDto != null && CommonEnum.SUCCESS.code().equals(String.valueOf(cmmPostDtoFungoPageResultDto.getStatus()))
+                        && cmmPostDtoFungoPageResultDto.getData().size() > 0) {
                     cmmPostDto = cmmPostDtoFungoPageResultDto.getData().get(0);
                     reportMemberId = cmmPostDto.getMemberId();
                 }
-            }else if(2 == inputDto.getTarget_type()){
+            } else if (2 == inputDto.getTarget_type()) {
                 MooMoodDto mooMoodDto = new MooMoodDto();
                 mooMoodDto.setId(inputDto.getTarget_id());
                 FungoPageResultDto<MooMoodDto> mooMoodDtoFungoPageResultDto = communityFeignClient.queryCmmMoodList(mooMoodDto);
-                if(mooMoodDtoFungoPageResultDto != null && CommonEnum.SUCCESS.code().equals( String.valueOf(mooMoodDtoFungoPageResultDto.getStatus()))
-                        && mooMoodDtoFungoPageResultDto.getData().size() > 0){
+                if (mooMoodDtoFungoPageResultDto != null && CommonEnum.SUCCESS.code().equals(String.valueOf(mooMoodDtoFungoPageResultDto.getStatus()))
+                        && mooMoodDtoFungoPageResultDto.getData().size() > 0) {
                     mooMoodDto = mooMoodDtoFungoPageResultDto.getData().get(0);
                     reportMemberId = mooMoodDto.getMemberId();
                 }
-            }else if(5 == inputDto.getTarget_type()){
+            } else if (5 == inputDto.getTarget_type()) {
                 CmmCommentDto cmmCommentDto = new CmmCommentDto();
                 cmmCommentDto.setId(inputDto.getTarget_id());
                 FungoPageResultDto<CmmCommentDto> cmmCommentDtoFungoPageResultDto = communityFeignClient.queryFirstLevelCmtList(cmmCommentDto);
-                if(cmmCommentDtoFungoPageResultDto != null && CommonEnum.SUCCESS.code().equals( String.valueOf(cmmCommentDtoFungoPageResultDto.getStatus()))
-                        && cmmCommentDtoFungoPageResultDto.getData().size() > 0){
+                if (cmmCommentDtoFungoPageResultDto != null && CommonEnum.SUCCESS.code().equals(String.valueOf(cmmCommentDtoFungoPageResultDto.getStatus()))
+                        && cmmCommentDtoFungoPageResultDto.getData().size() > 0) {
                     cmmCommentDto = cmmCommentDtoFungoPageResultDto.getData().get(0);
                     reportMemberId = cmmCommentDto.getMemberId();
                 }
-            }else if(6 == inputDto.getTarget_type()){
+            } else if (6 == inputDto.getTarget_type()) {
                 GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
                 gameEvaluationDto.setId(inputDto.getTarget_id());
-                FungoPageResultDto<GameEvaluationDto> gameEvaluationPage =  gamesFeignClient.getGameEvaluationPage( gameEvaluationDto);
-                if(gameEvaluationPage != null && CommonEnum.SUCCESS.code().equals( String.valueOf(gameEvaluationPage.getStatus()))
-                        && gameEvaluationPage.getData().size() > 0){
+                FungoPageResultDto<GameEvaluationDto> gameEvaluationPage = gamesFeignClient.getGameEvaluationPage(gameEvaluationDto);
+                if (gameEvaluationPage != null && CommonEnum.SUCCESS.code().equals(String.valueOf(gameEvaluationPage.getStatus()))
+                        && gameEvaluationPage.getData().size() > 0) {
                     gameEvaluationDto = gameEvaluationPage.getData().get(0);
                     reportMemberId = gameEvaluationDto.getMemberId();
                 }
-            }else if(7 == inputDto.getTarget_type()){
+            } else if (7 == inputDto.getTarget_type()) {
                 CmmCmtReplyDto cmmCmtReplyDto = new CmmCmtReplyDto();
                 cmmCmtReplyDto.setId(inputDto.getTarget_id());
                 FungoPageResultDto<CmmCmtReplyDto> cmmCmtReplyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto);
-                if(cmmCmtReplyDtoFungoPageResultDto != null && CommonEnum.SUCCESS.code().equals( String.valueOf(cmmCmtReplyDtoFungoPageResultDto.getStatus()))
-                        && cmmCmtReplyDtoFungoPageResultDto.getData().size() > 0){
+                if (cmmCmtReplyDtoFungoPageResultDto != null && CommonEnum.SUCCESS.code().equals(String.valueOf(cmmCmtReplyDtoFungoPageResultDto.getStatus()))
+                        && cmmCmtReplyDtoFungoPageResultDto.getData().size() > 0) {
                     cmmCmtReplyDto = cmmCmtReplyDtoFungoPageResultDto.getData().get(0);
                     reportMemberId = cmmCmtReplyDto.getMemberId();
                 }
-            }else if(8 == inputDto.getTarget_type()){
+            } else if (8 == inputDto.getTarget_type()) {
                 MooMessageDto mooMessageDto = new MooMessageDto();
                 mooMessageDto.setId(inputDto.getTarget_id());
-                FungoPageResultDto<MooMessageDto> mooMessageDtoFungoPageResultDto =  communityFeignClient.queryCmmMoodCommentList( mooMessageDto);
-                if(mooMessageDtoFungoPageResultDto != null && CommonEnum.SUCCESS.code().equals( String.valueOf(mooMessageDtoFungoPageResultDto.getStatus()))
-                        && mooMessageDtoFungoPageResultDto.getData().size() > 0){
+                FungoPageResultDto<MooMessageDto> mooMessageDtoFungoPageResultDto = communityFeignClient.queryCmmMoodCommentList(mooMessageDto);
+                if (mooMessageDtoFungoPageResultDto != null && CommonEnum.SUCCESS.code().equals(String.valueOf(mooMessageDtoFungoPageResultDto.getStatus()))
+                        && mooMessageDtoFungoPageResultDto.getData().size() > 0) {
                     mooMessageDto = mooMessageDtoFungoPageResultDto.getData().get(0);
                     reportMemberId = mooMessageDto.getMemberId();
                 }
             }
-            if(reportMemberId != null){
-                Member member = memberDao.selectById( reportMemberId);
-                member.setReportNum(member.getReportNum()+1);
+            if (reportMemberId != null) {
+                Member member = memberDao.selectById(reportMemberId);
+                member.setReportNum(member.getReportNum() + 1);
                 memberDao.updateById(member);
             }
 //			gameProxy.addScore(Setting.ACTION_TYPE_REPORT, memberId, inputDto.getTarget_id(), inputDto.getTarget_type());
@@ -889,7 +898,7 @@ public class ActionServiceImpl implements IActionService {
             return "t_moo_message";
         } else if (type == 9) {
             return "t_bas_feedback";
-        } else if(type == 11){
+        } else if (type == 11) {
             return "t_cmm_circle";
         }
         return null;
@@ -927,4 +936,68 @@ public class ActionServiceImpl implements IActionService {
         action.insert();
         return ResultDto.success("");
     }
+
+
+    //合集点赞
+    @Transactional
+    public ResultDto<String> collectionLike(String memberId, ActionInput inputDto, String appVersion) throws Exception {
+        BasAction action = this.getAction(memberId, Setting.ACTION_TYPE_COLLECTION, inputDto);
+        if (action == null) {
+            action = this.buildAction(memberId, Setting.ACTION_TYPE_COLLECTION, inputDto);
+            actionService.insert(action);
+        } else {
+            if (-1 == action.getState()) {
+                action.setState(0);
+                action.setUpdatedAt(new Date());
+                this.addCounter(memberId, Setting.ACTION_TYPE_COLLECTION, inputDto);
+                this.actionService.updateById(action);
+            }
+        }
+        return ResultDto.success("点赞成功");
+    }
+
+    //合集取消点赞
+    @Transactional
+    public ResultDto<String> unCollectionLike(String memberId, ActionInput inputDto) {
+        BasAction action = this.getAction(memberId, Setting.ACTION_TYPE_COLLECTION, inputDto);
+        if (action != null && 0 == action.getState()) {
+            action.setState(-1);
+            action.updateById();
+            this.subCounter(memberId, Setting.ACTION_TYPE_COLLECTION, inputDto);
+        }
+        return ResultDto.success("取消成功");
+    }
+
+
+    //查询合集点赞总数
+    @Transactional
+    public ResultDto<BannerBean> queryCollectionLike(MallBannersInput mallBannersInput) {
+        ResultDto<BannerBean> re = null;
+        if(StringUtils.isBlank(mallBannersInput.getTarget_id())){
+            return re;
+        }
+        re = new ResultDto<>();
+        BannerBean bannerBean = new BannerBean();
+        Wrapper<BasAction> wrapper = new EntityWrapper<BasAction>();
+        wrapper.eq("target_id",mallBannersInput.getTarget_id());
+        wrapper.eq("target_type",Setting.ACTION_TYPE_COLLECTION);
+        wrapper.eq("state","0");
+        List<BasAction> list = basActionService.selectList(wrapper);
+        boolean flag = false;
+        if(!list.isEmpty()){
+            for(BasAction basAction:list){
+                if(StringUtils.isNotBlank(mallBannersInput.getLogin_id()) && mallBannersInput.getLogin_id().equals(basAction.getMemberId())){
+                    flag = true;
+                }
+            }
+            bannerBean.setCount(list.size());
+        }else{
+            bannerBean.setCount(0);
+        }
+        bannerBean.setIsClick(flag);
+        re.setData(bannerBean);
+        return re;
+    }
+
+
 }

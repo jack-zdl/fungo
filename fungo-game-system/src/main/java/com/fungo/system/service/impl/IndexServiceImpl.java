@@ -537,7 +537,7 @@ public class IndexServiceImpl implements IIndexService {
 
     public CardIndexBean activities() {
         //banner
-        List<Banner> bl = bannerService.selectList(new EntityWrapper<Banner>().in("position_code", "0005,0010")
+        List<Banner> bl = bannerService.selectList(new EntityWrapper<Banner>().in("position_code", "0005,0010").in("position_code", "0005,0010")
                 .eq("state", "0").orderBy("sort", false).last("limit 1"));
         CardIndexBean indexBean = new CardIndexBean();
         if (bl.size() == 0) {
@@ -816,15 +816,107 @@ public class IndexServiceImpl implements IIndexService {
      * @date: 2019/10/11 11:01
      */
     @Override
-    public ResultDto<Banner> queryHomePage(String os, String iosChannel, String app_channel, String appVersion) {
-        ResultDto<Banner> re = new ResultDto<>();
+    public ResultDto<CircleCardDataBean> queryHomePage(String os, String iosChannel, String app_channel, String appVersion) {
+        ResultDto<CircleCardDataBean> re = new ResultDto<>();
         Banner banner = bannerService.selectOne(new EntityWrapper<Banner>()
                 .in("position_code","0009,0010")
+                .in("display_platform", "0,2")
                 .eq("state", "0")
-                .orderBy("updated_at", false)
+                .orderBy("sort desc,updated_at", false)
                 .last("limit 1"));
-        re.setData(banner);
+        CircleCardDataBean b1 = new CircleCardDataBean();
+        b1.setBannerId(banner.getId());
+        b1.setMainTitle(banner.getGeneralizeTitle());
+        b1.setImageUrl(banner.getCoverImage());
+        b1.setImageUrlNew(banner.getCoverImgNew());
+        b1.setContent(banner.getIntro());
+        b1.setHref(banner.getHref());
+        b1.setActionType(String.valueOf(banner.getActionType()));
+        b1.setTargetType(banner.getTargetType());
+        b1.setTargetId(banner.getTargetId());
+        b1.setStartDate(DateTools.fmtDate(banner.getBeginDate()));
+        b1.setEndDate(DateTools.fmtDate(banner.getEndDate()));
+        re.setData(b1);
         return re;
     }
+
+
+
+    /**
+     * 功能描述: app端获取管控台设置的启动页banner
+     *
+     * @param: [memberUserPrefile, request, inputPageDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: Carlos
+     * @date: 2019/10/11 11:01
+     */
+    @Override
+    public ResultDto<List<CircleCardDataBean>> queryStartUp(String os, String iosChannel, String app_channel, String appVersion) {
+        ResultDto<List<CircleCardDataBean>> re = new ResultDto<>();
+        List<Banner> list = bannerService.selectList(new EntityWrapper<Banner>()
+                .eq("position_code","0011")
+                .eq("state", "0")
+                .orderBy("sort desc,updated_at", false));
+        ArrayList<CircleCardDataBean> resultList = new ArrayList<>();
+        for (Banner b : list) {
+            CircleCardDataBean b1 = new CircleCardDataBean();
+            b1.setBannerId(b.getId());
+            b1.setMainTitle(b.getGeneralizeTitle());
+            b1.setImageUrl(b.getCoverImage());
+            b1.setImageUrlNew(b.getCoverImgNew());
+            b1.setContent(b.getIntro());
+            b1.setHref(b.getHref());
+            b1.setActionType(String.valueOf(b.getActionType()));
+            b1.setTargetType(b.getTargetType());
+            b1.setTargetId(b.getTargetId());
+            b1.setStartDate(DateTools.fmtDate(b.getBeginDate()));
+            b1.setEndDate(DateTools.fmtDate(b.getEndDate()));
+            resultList.add(b1);
+        }
+        re.setData(resultList);
+        return re;
+    }
+
+
+
+    /**
+     * 功能描述: app端获取管控台设置的开屏页banner
+     *
+     * @param: [memberUserPrefile, request, inputPageDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: Carlos
+     * @date: 2019/10/11 11:01
+     */
+    @Override
+    public ResultDto<CircleCardDataBean> queryOpenScreen(String os, String iosChannel, String app_channel, String appVersion) {
+        ResultDto<CircleCardDataBean> re = new ResultDto<>();
+        EntityWrapper<Banner> wrapper = new EntityWrapper<>();
+
+        if(StringUtils.isNotBlank(iosChannel)){
+            wrapper.in("display_platform","0,4");
+        }else{
+            wrapper.in("display_platform","0,3");
+        }
+        wrapper.eq("position_code","0012").eq("state", "0").orderBy("updated_at", false);
+        Banner banner = bannerService.selectOne(wrapper);
+        CircleCardDataBean b1 = null;
+        if(null!=banner){
+            b1 = new CircleCardDataBean();
+            b1.setBannerId(banner.getId());
+            b1.setMainTitle(banner.getGeneralizeTitle());
+            b1.setImageUrl(banner.getCoverImage());
+            b1.setImageUrlNew(banner.getCoverImgNew());
+            b1.setContent(banner.getIntro());
+            b1.setHref(banner.getHref());
+            b1.setActionType(String.valueOf(banner.getActionType()));
+            b1.setTargetType(banner.getTargetType());
+            b1.setTargetId(banner.getTargetId());
+            b1.setStartDate(DateTools.fmtDate(banner.getBeginDate()));
+            b1.setEndDate(DateTools.fmtDate(banner.getEndDate()));
+        }
+        re.setData(b1);
+        return re;
+    }
+
 
 }

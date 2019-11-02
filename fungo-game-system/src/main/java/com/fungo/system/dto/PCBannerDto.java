@@ -156,7 +156,8 @@ public class PCBannerDto {
     private String bannerImage;
 
     /**
-     * 显示平台
+     * 显示平台 0:全部,1:PC,2:APP,3:Android,4:ios
      */
     private Integer displayPlatform;
+
 }

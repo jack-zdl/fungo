@@ -40,6 +40,12 @@ public class GameOutPage {
 	private boolean isMake;
 
 	private Long gameIdtSn;
+	//安卓状态描述
+	private String androidStatusDesc;
+	//ios状态描述
+	private String iosStatusDesc;
+	//ios状态描述
+	private String tags;
 	
 	public String getObjectId() {
 		return objectId;
@@ -170,5 +176,29 @@ public class GameOutPage {
 
 	public void setGameIdtSn(Long gameIdtSn) {
 		this.gameIdtSn = gameIdtSn;
+	}
+
+	public String getAndroidStatusDesc() {
+		return androidStatusDesc;
+	}
+
+	public void setAndroidStatusDesc(String androidStatusDesc) {
+		this.androidStatusDesc = androidStatusDesc;
+	}
+
+	public String getIosStatusDesc() {
+		return iosStatusDesc;
+	}
+
+	public void setIosStatusDesc(String iosStatusDesc) {
+		this.iosStatusDesc = iosStatusDesc;
+	}
+
+	public String getTags() {
+		return tags;
+	}
+
+	public void setTags(String tags) {
+		this.tags = tags;
 	}
 }

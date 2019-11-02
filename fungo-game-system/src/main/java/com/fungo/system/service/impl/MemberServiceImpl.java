@@ -338,7 +338,7 @@ public class MemberServiceImpl implements IMemberService {
         String[] types = null;
         //版本不同获取的内容不同
         if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
-            types = new String[]{"0", "1", "2", "7", "11"};
+            types = new String[]{"0", "1", "2", "7" ,"10","11"};
         } else {
 //            types = new String[]{"0", "1", "2", "7"};
               types = new String[]{"0", "1", "2", "7","10","11"};

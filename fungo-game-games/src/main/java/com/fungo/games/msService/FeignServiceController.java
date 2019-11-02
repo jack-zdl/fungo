@@ -616,8 +616,6 @@ public class FeignServiceController {
         } catch (Exception ex) {
             LOGGER.error("/ms/service/game/api/geme/getGamePage--getGamePage-出现异常:", ex);
         }
-//        Page<GameDto> gameDtoPage = new Page<>();
-//        gameDtoPage.setRecords(gameList);
         fungoPageResultDto.setData(gameList);
         PageTools.pageToResultDto(fungoPageResultDto, gamePageSelect);
         return fungoPageResultDto;

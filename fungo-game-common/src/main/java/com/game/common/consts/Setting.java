@@ -29,6 +29,7 @@ public class Setting {
 	public static final int ACTION_TYPE_BOOK = 17;//预约
 	public static final int ACTION_TYPE_BIND_APPLE = 18;//绑定appleId
 	public static final int ACTION_TYPE_BIND_THIRDPARTY = 19;//绑定第三方
+	public static final int ACTION_TYPE_COLLECTION = 20;  //合集点赞
 	
 	public static final int ACTION_TYPE_AVATAR = 41;//修改用户头像
 	public static final int ACTION_TYPE_NICKNAME = 42;//修改用户昵称

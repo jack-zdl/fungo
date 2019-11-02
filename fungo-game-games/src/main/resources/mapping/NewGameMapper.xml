@@ -17,6 +17,11 @@
         <result column="circle_id" property="circle_id"/>
         <result column="tags" property="tags"/>
         <result column="score" property="score"/>
+        <result column="apk" property="apk"/>
+        <result column="version_main" property="versionMain"/>
+        <result column="version_child" property="versionChild"/>
+        <result column="game_size" property="gameSize"/>
+        <result column="android_package_name" property="androidPackageName"/>
     </resultMap>
 
     <!-- 新游信息查询 -->
@@ -32,8 +37,13 @@
         t2.tags,
         t2.score,
         t2.can_fast,
-        t2.android_state
-        from t_new_game t1
+        t2.android_state,
+        t2.apk,
+        t2.version_main,
+        t2.version_child,
+        t2.game_size,
+        t2.android_package_name
+        from t_game_new t1
         left join t_game t2 on t1.game_id=t2.id
         <where>
             <if test=" startTime!= null">
@@ -61,8 +71,13 @@
         t2.icon,
         t2.name,
         t2.origin as region,
-        t2.tags
-        from t_new_game t1
+        t2.tags,
+        t2.apk,
+        t2.version_main,
+        t2.version_child,
+        t2.game_size,
+        t2.android_package_name
+        from t_game_new t1
         left join t_game t2 on t1.game_id=t2.id
         <where>
             <if test=" chooseDate!= null">

@@ -17,6 +17,9 @@ import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.index.BannerBean;
+import com.game.common.dto.mall.MallBannersInput;
+import com.game.common.dto.mall.MallGoodsInput;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.*;
@@ -242,6 +245,21 @@ public class ProtalSystemActionServiceImpl implements IActionService {
     }
 
     @Override
+    public ResultDto<String> collectionLike(String memberId, ActionInput inputDto, String appVersion) throws Exception {
+        return null;
+    }
+
+    @Override
+    public ResultDto<String> unCollectionLike(String memberId, ActionInput inputDto) throws Exception {
+        return null;
+    }
+
+    @Override
+    public ResultDto<BannerBean> queryCollectionLike(MallBannersInput mallBannersInput) throws Exception {
+        return null;
+    }
+
+    @Override
     public ResultDto<String> downLoad(String memberId, ActionInput inputDto) throws Exception {
         return null;
     }
@@ -337,5 +355,8 @@ public class ProtalSystemActionServiceImpl implements IActionService {
         }
         return null;
     }
+
+
+
 
 }
