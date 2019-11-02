@@ -331,7 +331,7 @@
         <if test="sortType gte 10">
             tg.google_game_id = tl.third_game_id
         </if>-->
-        where tl.sort_type = #{sortType} and tl.status = 1
+        where tl.sort_type = #{sortType} and tl.status = 1 and tg.state = 0
     </select>
 
     <select id="listBangBySortType" parameterType="com.game.common.dto.game.BangGameDto" resultMap="BaseResultMap">
@@ -352,4 +352,10 @@
         limit #{offset},#{limit}
     </select>
 
+    <select id="getGmaePage" resultType="com.fungo.games.entity.Game" >
+        select
+        <include refid="Base_Column_List"></include>
+        from  t_game
+        where  state = 0  and ( name LIKE  concat(concat('%',#{keyword}),'%')OR google_deputy_name LIKE concat(concat('%',#{keyword}),'%') OR intro LIKE  concat(concat('%',#{keyword}),'%') )
+    </select>
 </mapper>

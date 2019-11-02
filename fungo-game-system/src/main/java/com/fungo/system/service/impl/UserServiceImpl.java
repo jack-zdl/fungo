@@ -289,6 +289,7 @@ public class UserServiceImpl implements IUserService {
         return rest;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultDto<LoginMemberBean> recommendLogin(MsgInput msgInput, String appVersion) throws Exception {
         ResultDto<LoginMemberBean> rest = null;
@@ -323,6 +324,8 @@ public class UserServiceImpl implements IUserService {
                         memberService.insert(member);
 //                        LOGGER.info("用户注册-手机验证-初始化数据  memberId : {}, phoneNumber:{}", member.getId(), mobile);
                         this.initUserRank(member.getId());
+                    }else {
+                        return ResultDto.error("-1", "该用户不是新用户");
                     }
                     messageCodeService.updateCheckCodeSuccess(re.getData());//更新验证成功
 
@@ -333,6 +336,7 @@ public class UserServiceImpl implements IUserService {
                   memberInfo.setCreatedAt( new Date());
                   memberInfo.setCreatedBy( member.getId());
                   memberInfo.setParentMemberId( msgInput.getRecommendId());
+                  memberInfo.setState(1);
                   memberInfo.insert();
                 } else {
                     return ResultDto.error(re.getCode(), re.getMessage());

@@ -987,23 +987,25 @@ public class GameServiceImpl implements IGameService {
         }
         FungoPageResultDto<GameSearchOut> re = new FungoPageResultDto<GameSearchOut>();
         try {
-            Page<Game> gamePage = null;
-            List<Game> gameList = new ArrayList<>();
+            Page<Game> gamePage = new Page<>(page, limit);
+            List<Game> gameList = null;
             // 判断是否选择es
             if(nacosFungoCircleConfig.isGameSearch()){
-                @SuppressWarnings("rawtypes")
-                Wrapper wrapper = Condition.create().setSqlSelect(
-                        "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
-                        .eq("state", 0).like("name", keyword).or().like("google_deputy_name", keyword).or().like( "intro",keyword );
-                if (tag != null && !"".equals(tag.replace(" ", ""))) {
-                    wrapper.like("tags", tag);
-                }
+//                @SuppressWarnings("rawtypes")
+//                Wrapper<Game> wrapper = Condition.create().setSqlSelect(
+//                        "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
+//                        .eq("state", 0);
+//                wrapper.and().like("name", keyword);//.like("name", ).or().like("google_deputy_name", keyword).or().like( "intro",keyword );
+                 gameList = gameDao.getGmaePage( gamePage,keyword );
+//                if (tag != null && !"".equals(tag.replace(" ", ""))) {
+//                    wrapper.like("tags", tag);
+//                }
 
-                if (sort != null && !"".equals(sort.replace(" ", ""))) {
-                    gamePage = gameService.selectPage(new Page<>(page, limit), wrapper.orderBy(sort));
-                } else {
-                    gameList = gameService.selectList(wrapper);
-                }
+//                if (sort != null && !"".equals(sort.replace(" ", ""))) {
+//                    gamePage = gameService.selectPage(new Page<>(page, limit), wrapper.orderBy(sort));
+//                } else {
+//                    gameList = gameService.selectList(wrapper);
+//                }
             }else {
                 if (sort != null && !"".equals(sort.replace(" ", ""))) {
                     gamePage = esdaoServiceImpl.getGameByES( page,  limit, keyword,  tag,  sort );
@@ -1014,7 +1016,7 @@ public class GameServiceImpl implements IGameService {
 //            postPage =  esdaoService.getAllPosts(keyword,page,limit);
             }
 
-            if (gamePage != null) {
+            if (gameList == null) {
                 gameList = gamePage.getRecords();
             } else {// 如果sort不存在,默认排序
                 if (gameList.size() == 0) {
@@ -1181,23 +1183,24 @@ public class GameServiceImpl implements IGameService {
         }
         FungoPageResultDto<GameSearchOut> re = new FungoPageResultDto<GameSearchOut>();
         try {
-            Page<Game> gamePage = null;
+            Page<Game> gamePage = new Page( 1,10 );
             List<Game> gameList = new ArrayList<>();
             // 判断是否选择es
             if(nacosFungoCircleConfig.isGameSearch()){
-                @SuppressWarnings("rawtypes")
-                Wrapper wrapper = Condition.create().setSqlSelect(
-                        "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
-                        .eq("state", 0).like("name", keyword).or().like( "google_deputy_name like ", keyword ).or().like( "intro",keyword );
-                    gamePage = gameService.selectPage(new Page<>(1, 10), wrapper);
+//                @SuppressWarnings("rawtypes")
+//                Wrapper wrapper = Condition.create().setSqlSelect(
+//                        "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
+//                        .eq("state", 0).and().or().like("name", keyword).or().like( "google_deputy_name  ", keyword ).or().like( "intro",keyword );
+//                    gamePage = gameService.selectPage(new Page<>(1, 10), wrapper);
+                gameList = gameDao.getGmaePage(gamePage,keyword);
             }else {
                     gamePage = esdaoServiceImpl.getGameByES( 1,  10, keyword,  "",  "" );
             }
             if (gamePage != null) {
                 gameList = gamePage.getRecords();
-                re.setCount( gamePage.getCurrent());
+                re.setCount( gamePage.getTotal());
             } else {
-                re.setCount( 0);
+                re.setCount( gameList.size());
             }
         }catch (Exception e){
             logger.error( "搜索游戏异常,参数keyword"+keyword,e );
@@ -2052,6 +2055,7 @@ public class GameServiceImpl implements IGameService {
      */
     private GameKuDto transGameToGameKuDto(Game game){
         GameKuDto gameKuDto = new GameKuDto();
+        gameKuDto.setGameId(game.getId());
         BeanUtils.copyProperties(game,gameKuDto);
         // 处理 描述展示和圈子标识展示
         gameKuDto.setAndroidStatusDesc(gameStatusDesc(gameKuDto.getAndroidStatusDesc()));

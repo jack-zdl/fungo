@@ -98,7 +98,7 @@ public class MemberInfo extends Model<MemberInfo> {
      * 功能描述: 状态 1 正常 0 未绑定微信
      * @date: 2019/10/24 11:34
      */
-    @TableField("parent_member_id")
+    @TableField("state")
     private int  state;
 
 
