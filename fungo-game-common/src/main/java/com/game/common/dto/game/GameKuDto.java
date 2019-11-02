@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class GameKuDto  {
 
-    private String id;
+    private String gameId;
     /**
      * 标签  形如 文字,推理,解谜,悬疑  标签以逗号隔开
      */
@@ -72,7 +72,6 @@ public class GameKuDto  {
      *  为 null 说明没有圈子
      */
     private String circleId;
-
 
     private  String apk;
 

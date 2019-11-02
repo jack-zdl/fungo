@@ -331,7 +331,7 @@
         <if test="sortType gte 10">
             tg.google_game_id = tl.third_game_id
         </if>-->
-        where tl.sort_type = #{sortType} and tl.status = 1
+        where tl.sort_type = #{sortType} and tl.status = 1 and tg.state = 0
     </select>
 
     <select id="listBangBySortType" parameterType="com.game.common.dto.game.BangGameDto" resultMap="BaseResultMap">

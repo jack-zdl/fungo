@@ -2045,6 +2045,7 @@ public class GameServiceImpl implements IGameService {
      */
     private GameKuDto transGameToGameKuDto(Game game){
         GameKuDto gameKuDto = new GameKuDto();
+        gameKuDto.setGameId(game.getId());
         BeanUtils.copyProperties(game,gameKuDto);
         // 处理 描述展示和圈子标识展示
         gameKuDto.setAndroidStatusDesc(gameStatusDesc(gameKuDto.getAndroidStatusDesc()));
