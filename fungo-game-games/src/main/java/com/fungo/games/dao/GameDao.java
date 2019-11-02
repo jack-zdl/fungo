@@ -52,5 +52,5 @@ public interface GameDao extends BaseMapper<Game> {
 
     Integer countBangBySortType(@Param("sortType") Integer sortType);
 
-    List<Game>  getGmaePage( @Param("keyword") String keyword);
+    List<Game>  getGmaePage( Page page,@Param("keyword") String keyword);
 }
