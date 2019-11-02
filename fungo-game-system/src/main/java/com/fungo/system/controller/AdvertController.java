@@ -152,11 +152,11 @@ public class AdvertController {
     public ResultDto<List<Map<String, String>>> discover(@Anonymous MemberUserProfile memberUserPrefile) {
 
         ResultDto<List<Map<String, String>>> re = new ResultDto<>();
-        List<Map<String, String>> listResult = (List<Map<String, String>>) fungoCacheAdvert.getIndexCache(FUNGO_CORE_API_ADVERT_RECOMMEND_DISCOVER, "");
-        if (null != listResult && !listResult.isEmpty()) {
-            re.setData(listResult);
-            return re;
-        }
+//        List<Map<String, String>> listResult = (List<Map<String, String>>) fungoCacheAdvert.getIndexCache(FUNGO_CORE_API_ADVERT_RECOMMEND_DISCOVER, "");
+//        if (null != listResult && !listResult.isEmpty()) {
+//            re.setData(listResult);
+//            return re;
+//        }
         List<Map<String, String>> list = new ArrayList<>();
         //获取广告位
         List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0002").eq("state", 0).orderBy("sort", false));
@@ -164,8 +164,8 @@ public class AdvertController {
 //            Map<String, BigDecimal> rateData = indexProxyService.getRateData(banner.getTargetId());  //gameDao.getRateData(banner.getTargetId());
             Map<String, String> map1 = new HashMap<>();
 //				 map1.put("rating",rateData.get("avgRating").toString());
-            //1：帖子，3：游戏，4:合集
-            if (1 == banner.getTargetType()) {
+            //actionType(1:app内部页面 2:第三方外链) targetType(1:文章 3游戏:)
+            if(1 == banner.getActionType() && 1 == banner.getTargetType()){
                 CmmPostDto cmmPostParam = new CmmPostDto();
                 cmmPostParam.setId(banner.getTargetId());
                 cmmPostParam.setState(1);
@@ -173,7 +173,8 @@ public class AdvertController {
                 if (post != null) {
                     map1.put("video", post.getVideo());
                 }
-            }else if(3 == banner.getTargetType()){
+                map1.put("type", String.valueOf(banner.getTargetType()));
+            }else if(1 == banner.getActionType() && 3 == banner.getTargetType()){
                 GameDto gameDto = new GameDto();
                 gameDto.setId(banner.getTargetId());
 //                gameDto.setState(1);
@@ -181,12 +182,14 @@ public class AdvertController {
                 if(null!=gameDto){
                     map1.put( "gameName",gameDto.getName());
                 }
+                map1.put("type", String.valueOf(banner.getTargetType()));
+            }else if(2 == banner.getActionType()){
+                map1.put("href", banner.getHref());
+                map1.put("type", "2");
             }
             map1.put("objectId", banner.getTargetId());
             map1.put("cover_image", banner.getCoverImage());
-            map1.put("type", String.valueOf(banner.getTargetType()));
             map1.put("tag",banner.getTag());
-
             list.add(map1);
         }
         re.setData(list);

@@ -824,18 +824,21 @@ public class IndexServiceImpl implements IIndexService {
                 .eq("state", "0")
                 .orderBy("sort desc,updated_at", false)
                 .last("limit 1"));
-        CircleCardDataBean b1 = new CircleCardDataBean();
-        b1.setBannerId(banner.getId());
-        b1.setMainTitle(banner.getGeneralizeTitle());
-        b1.setImageUrl(banner.getCoverImage());
-        b1.setImageUrlNew(banner.getCoverImgNew());
-        b1.setContent(banner.getIntro());
-        b1.setHref(banner.getHref());
-        b1.setActionType(String.valueOf(banner.getActionType()));
-        b1.setTargetType(banner.getTargetType());
-        b1.setTargetId(banner.getTargetId());
-        b1.setStartDate(DateTools.fmtDate(banner.getBeginDate()));
-        b1.setEndDate(DateTools.fmtDate(banner.getEndDate()));
+        CircleCardDataBean b1 = null;
+        if(null!=banner){
+            b1 = new CircleCardDataBean();
+            b1.setBannerId(banner.getId());
+            b1.setMainTitle(banner.getGeneralizeTitle());
+            b1.setImageUrl(banner.getCoverImage());
+            b1.setImageUrlNew(banner.getCoverImgNew());
+            b1.setContent(banner.getIntro());
+            b1.setHref(banner.getHref());
+            b1.setActionType(String.valueOf(banner.getActionType()));
+            b1.setTargetType(banner.getTargetType());
+            b1.setTargetId(banner.getTargetId());
+            b1.setStartDate(DateTools.fmtDate(banner.getBeginDate()));
+            b1.setEndDate(DateTools.fmtDate(banner.getEndDate()));
+        }
         re.setData(b1);
         return re;
     }
@@ -858,8 +861,9 @@ public class IndexServiceImpl implements IIndexService {
                 .eq("state", "0")
                 .orderBy("sort desc,updated_at", false));
         ArrayList<CircleCardDataBean> resultList = new ArrayList<>();
+        CircleCardDataBean b1 = null;
         for (Banner b : list) {
-            CircleCardDataBean b1 = new CircleCardDataBean();
+            b1 = new CircleCardDataBean();
             b1.setBannerId(b.getId());
             b1.setMainTitle(b.getGeneralizeTitle());
             b1.setImageUrl(b.getCoverImage());

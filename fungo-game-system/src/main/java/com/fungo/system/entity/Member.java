@@ -200,8 +200,16 @@ public class Member extends Model<Member> {
 	 */
 	@TableField("register_lingka")
 	private int registerLingka;
-
-
+	/**
+	 * 设备编码
+	 */
+	@TableField("device_id")
+	private String deviceId;
+	/**
+	 * 登录注册平台
+	 */
+	@TableField("channel")
+	private String channel;
 
 	public String getId() {
 		return id;
@@ -503,6 +511,22 @@ public class Member extends Model<Member> {
 
 	public void setRegisterLingka(int registerLingka) {
 		this.registerLingka = registerLingka;
+	}
+
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
+	}
+
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
 	}
 
 	@Override
