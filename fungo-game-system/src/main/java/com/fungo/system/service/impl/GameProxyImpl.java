@@ -66,13 +66,15 @@ public class GameProxyImpl implements IGameProxy {
 			CmmPostDto cmmPostParam = new CmmPostDto();cmmPostParam.setId(target_id);
 			cmmPostParam.setState(1);
 			CmmPostDto post =   iGameProxyService.selectCmmPostById(cmmPostParam);  //this.postService.selectById(target_id);
-			notiveMemberId = post.getMemberId();
-			date.put("post_title",post.getTitle() );
-			date.put("post_content",reduceString(post.getContent()));
-			date.put("post_id", target_id);
-			date.put("type", 0);
-			date.put("createdAt", DateTools.fmtDate(post.getCreatedAt()));
-			msgType = 0;
+			if(post != null){
+				notiveMemberId = post.getMemberId();
+				date.put("post_title",post.getTitle() );
+				date.put("post_content",reduceString(post.getContent()));
+				date.put("post_id", target_id);
+				date.put("type", 0);
+				date.put("createdAt", DateTools.fmtDate(post.getCreatedAt()));
+				msgType = 0;
+			}
 		}else if(Setting.ACTION_TYPE_LIKE == eventType && Setting.RES_TYPE_COMMENT==target_type){// 点赞评论
 			// @todo 社区一级评论
 			CmmCommentDto comment= iGameProxyService.selectCmmCommentById(target_id); //this.commentService.selectById(target_id);
@@ -85,9 +87,11 @@ public class GameProxyImpl implements IGameProxy {
 			CmmPostDto cmmPostParam = new CmmPostDto();cmmPostParam.setId(comment.getPostId());
 			cmmPostParam.setState(null);
 			CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostParam);  //this.postService.selectById(comment.getPostId());
-			date.put("post_title",post.getTitle() );
-			date.put("post_content",reduceString(post.getContent()));
-			msgType = 1;
+			if(post != null){
+				date.put("post_title",post.getTitle() );
+				date.put("post_content",reduceString(post.getContent()));
+				msgType = 1;
+			}
 		}else if(Setting.ACTION_TYPE_LIKE == eventType && Setting.RES_TYPE_EVALUATION==target_type){// 点赞游戏评价
 			// @todo 游戏评价
 			GameEvaluationDto gameEvaluationDto = new GameEvaluationDto();
@@ -181,9 +185,11 @@ public class GameProxyImpl implements IGameProxy {
 			cmmPostDto.setId(comment.getPostId());
 			cmmPostDto.setState(null);
 			CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto);//this.postService.selectById(comment.getPostId());
-			date.put("post_title",post.getTitle() );
-			date.put("post_content",post.getContent() );
-			msgType=4;//消息类型
+			if(post != null){
+				date.put("post_title",post.getTitle() );
+				date.put("post_content",post.getContent() );
+				msgType=4;//消息类型
+			}
 		}else if(Setting.MSG_TYPE_REPLAY_GAME == eventType && Setting.RES_TYPE_EVALUATION==target_type){//回复游戏评论
 			//@todo 游戏评价
 			GameEvaluationDto param = new GameEvaluationDto();
@@ -236,10 +242,12 @@ public class GameProxyImpl implements IGameProxy {
 			cmmPostDto.setId(comment.getPostId());
 			cmmPostDto.setState(null);
 			CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto); //this.postService.selectById(comment.getPostId());
-			date.put("post_title",post.getTitle() );
-			date.put("post_content",post.getContent() );
-			msgType=12;//消息类型
-			push = CommonUtils.versionAdapte(appVersion, "2.4.4");
+			if(post != null){
+				date.put("post_title",post.getTitle() );
+				date.put("post_content",post.getContent() );
+				msgType=12;//消息类型
+				push = CommonUtils.versionAdapte(appVersion, "2.4.4");
+			}
 		}else if(Setting.MSG_TYPE_REPLAY_RE == eventType && Setting.RES_TYPE_EVALUATION==target_type) {//回复二级回复-游戏评论
 			//@todo 回复二级回复-游戏评论
 			GameEvaluationDto param = new GameEvaluationDto();
