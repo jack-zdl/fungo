@@ -210,7 +210,10 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             logger.error("获取秒杀商品列表出现异常", ex);
             ex.printStackTrace();
         }
-        List<MallGoodsOutBean> list = goodsOutBeanList.stream().sorted((e1, e2) -> Long.valueOf(e1.getSeckillPriceVcy()).compareTo(Long.valueOf(e2.getSeckillPriceVcy())) ).collect( Collectors.toList());
+        List<MallGoodsOutBean> list = new ArrayList<>();
+        if(null!=goodsOutBeanList && !goodsOutBeanList.isEmpty()){
+            list = goodsOutBeanList.stream().sorted((e1, e2) -> Long.valueOf(e1.getSeckillPriceVcy()).compareTo(Long.valueOf(e2.getSeckillPriceVcy())) ).collect( Collectors.toList());
+        }
         String goodsResultJSON = "";
         if (null != list && !list.isEmpty()) {
             goodsResultJSON = JSON.toJSONString(list);
