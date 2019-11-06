@@ -3,6 +3,7 @@ package com.fungo.games.dao;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.entity.Game;
+import com.fungo.games.entity.GameReleaseLog;
 import com.game.common.bean.HotValue;
 import com.game.common.dto.game.BangGameDto;
 import com.game.common.dto.game.TagGameDto;
@@ -51,8 +52,12 @@ public interface GameDao extends BaseMapper<Game> {
 
     Integer countBangBySortType(@Param("sortType") Integer sortType);
 
+
     /**
      *  更新下载量
      */
     void addDownLoadNum(@Param("gameId") String gameId,@Param("boomDownloadNum") Long boomDownloadNum);
+
+    List<Game>  getGmaePage( Page page,@Param("keyword") String keyword);
+
 }

@@ -208,7 +208,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public ResultDto<LoginMemberBean> login(String mobile, String password, String code, String appVersion) throws Exception {
+    public ResultDto<LoginMemberBean> login(String mobile, String password, String code, String appVersion,String deviceId,String channel) throws Exception {
         ResultDto<LoginMemberBean> rest = new ResultDto<LoginMemberBean>();
         Member member = null;
         if (!CommonUtil.isNull(password)) {//密码登录
@@ -225,9 +225,13 @@ public class UserServiceImpl implements IUserService {
                 member = memberService.selectOne(new EntityWrapper<Member>().eq("mobile_phone_num", mobile));
                 if (member == null) {//如果第一次进行会员注册
                     member = new Member();
-
                     member.setId(UUIDUtils.getUUID());
-
+                    if(StringUtils.isNotBlank(deviceId)){
+                        member.setDeviceId(deviceId);
+                    }
+                    if(StringUtils.isNotBlank(channel)){
+                        member.setChannel(channel);
+                    }
                     member.setUserName(geUserName(mobile));
                     member.setMobilePhoneNum(mobile);
                     member.setMobilePhoneVerified("1");
@@ -238,23 +242,23 @@ public class UserServiceImpl implements IUserService {
                     member.setComplete("0");//未完成
                     member.setLevel(1);
                     member.setState(0);
-
                     //fix bug:修改会员编号出现的重复的情况 修改用户的member_no用户编号 [by mxf 2019-03-06]
                     String mb_no = iPKNoService.genUniqueMbNo(member.getId());
                     member.setMemberNo(mb_no);
-                    //end
-
                     //添加用户数据
                     memberService.insert(member);
-
-                    //fix bug:修改会员编号出现的重复的情况 修改用户的member_no用户编号 [by mxf 2019-03-06]
-                    //memberNoService.getMemberNoAndForUpdate(member);
-                    //end
-
                     LOGGER.info("用户注册-手机验证-初始化数据  memberId : {}, phoneNumber:{}", member.getId(), mobile);
                     this.initUserRank(member.getId());
+                }else{
+                    if(StringUtils.isNotBlank(deviceId)){
+                        member.setDeviceId(deviceId);
+                    }
+                    if(StringUtils.isNotBlank(channel)){
+                        member.setChannel(channel);
+                    }
+                    //修改用户信息
+                    memberService.updateById(member);
                 }
-
                 messageCodeService.updateCheckCodeSuccess(re.getData());//更新验证成功
             } else {
                 return ResultDto.error(re.getCode(), re.getMessage());

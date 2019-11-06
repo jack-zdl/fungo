@@ -51,7 +51,7 @@ public class GameProxyServiceImpl implements IGameProxyService {
 //    @HystrixCommand(fallbackMethod = "hystrixSelectCmmPostById", ignoreExceptions = {Exception.class})
     @Override
     public CmmPostDto selectCmmPostById(CmmPostDto param) {
-        CmmPostDto re = new CmmPostDto();
+        CmmPostDto re = null;
         FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(param);
         if (Integer.valueOf(CommonEnum.SUCCESS.code()).equals(cmmPostDtoFungoPageResultDto.getStatus()) && cmmPostDtoFungoPageResultDto.getData().size() > 0) {
             re = cmmPostDtoFungoPageResultDto.getData().get(0);

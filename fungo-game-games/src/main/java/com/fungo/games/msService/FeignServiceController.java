@@ -821,7 +821,6 @@ public class FeignServiceController {
             LOGGER.error( "根据游戏名称获取游戏总和异常",e );
         }
         return 0;
-
     }
 
     @ApiOperation(value = "getGameEvaluationSelectPageByTypeAndStateOrderByRAND", notes = "")

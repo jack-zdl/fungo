@@ -168,7 +168,9 @@ public class UserController {
 //		String os = "";
 //		os = (String)request.getAttribute("os");
         String appversion = request.getHeader("appversion");
-        ResultDto<LoginMemberBean> re = userService.login(msg.getMobile(), msg.getPassword(), msg.getCode(), appversion);
+        String deviceId = request.getHeader("deviceId");
+        String channel = request.getHeader("os");
+        ResultDto<LoginMemberBean> re = userService.login(msg.getMobile(), msg.getPassword(), msg.getCode(), appversion,deviceId,channel);
         if (re.isSuccess()) {
             LoginMemberBean bean = re.getData();
             MemberUserProfile userPrefile = new MemberUserProfile();

@@ -310,7 +310,7 @@
         AND state != -1
 
         <if test="keyword != null and keyword !=''">
-            AND ( title LIKE concat(concat('%',#{keyword}),'%')
+            AND ( title LIKE  concat(concat('%',#{keyword}),'%')
                  OR content LIKE concat(concat('%',#{keyword}),'%')
             )
         </if>

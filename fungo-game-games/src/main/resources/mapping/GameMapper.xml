@@ -353,8 +353,17 @@
         limit #{offset},#{limit}
     </select>
 
+
     <update id="addDownLoadNum" >
       update t_game set download_num = download_num+1 ,week_download_num = week_download_num +1,boom_download_num = #{boomDownloadNum} WHERE id = #{gameId};
     </update>
+
+
+    <select id="getGmaePage" resultType="com.fungo.games.entity.Game" >
+        select
+        <include refid="Base_Column_List"></include>
+        from  t_game
+        where  state = 0  and ( name LIKE  concat(concat('%',#{keyword}),'%')OR google_deputy_name LIKE concat(concat('%',#{keyword}),'%') OR intro LIKE  concat(concat('%',#{keyword}),'%') )
+    </select>
 
 </mapper>
