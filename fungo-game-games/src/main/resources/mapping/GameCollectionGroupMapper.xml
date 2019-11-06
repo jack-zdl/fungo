@@ -23,6 +23,6 @@
     </sql>
 
 	<select id="selectGameCollectionGroupByGameId" resultType="com.fungo.games.entity.GameCollectionGroup" >
-		SELECT * FROM t_game_collection_group gcg left join t_game_collection_item gci  on gcg.id = gci.group_id WHERE  gci.state = 0 and   gci.game_id =    #{gameId}
+		SELECT * FROM t_game_collection_group gcg left join t_game_collection_item gci  on gcg.id = gci.group_id WHERE  gci.state = 0 and gcg.state = 0 and   gci.game_id =    #{gameId}
 	</select>
 </mapper>

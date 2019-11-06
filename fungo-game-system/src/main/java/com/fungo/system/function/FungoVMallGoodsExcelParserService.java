@@ -42,6 +42,9 @@ public class FungoVMallGoodsExcelParserService {
     private static String excelPath = "F:/vCard.xlsx";
 
     //excel文件路径
+    private static String jingdongexcelPath = "D:/workspace/a2.6/file/秒杀活动虚拟卡11.xlsx";
+
+    //excel文件路径
     private static String googleexcelPath = "D:/workspace/a2.6/file/谷歌账号样式.xls";
 
 
@@ -57,7 +60,7 @@ public class FungoVMallGoodsExcelParserService {
     public  void excuteParserToVCard() {
 
         try {
-            File excel = new File(googleexcelPath);
+            File excel = new File(jingdongexcelPath);
 
             if (excel.isFile() && excel.exists()) {
 
@@ -102,16 +105,16 @@ public class FungoVMallGoodsExcelParserService {
 
 
                         //卡号
-                        Cell cardSnCell = row.getCell(0);
+                        Cell cardSnCell = row.getCell(1);
                         String cardSnData = cardSnCell.toString();
 
                         //密码
-                        Cell pwdCell = row.getCell(1);
+                        Cell pwdCell = row.getCell(2);
                         String pwdData = pwdCell.toString();
 
                         //密码
-                        Cell emailCell = row.getCell(2);
-                        String emailData = emailCell.toString();
+//                        Cell emailCell = row.getCell(3);
+//                        String emailData = emailCell.toString();
 
                        // DecimalFormat df = new DecimalFormat("#");
 
@@ -141,8 +144,8 @@ public class FungoVMallGoodsExcelParserService {
                         }*/
 
                         //有效期
-                        //Cell validateCell = row.getCell(4);
-                        //String validateData = validateCell.toString();
+                        Cell validateCell = row.getCell(3);
+                        String validateData = validateCell.toString();
 
 
                         //logger.info("valueData:{}---cardSnData:{}---pwdData:{}---validateData:{}", value_i, cardSnData , pwdData,validateData);
@@ -150,7 +153,7 @@ public class FungoVMallGoodsExcelParserService {
                         if (StringUtils.isNoneBlank(cardSnData)) {
 
                             logger.info("cardSnData:" + cardSnData );
-                            addVCardToDB(cardSnData, pwdData, "", 0,emailData);
+                            addVCardToDB(cardSnData, pwdData, validateData, 10,"");
 
                         }
                     }
@@ -165,7 +168,8 @@ public class FungoVMallGoodsExcelParserService {
     }
 
     /**
-     * 功能描述: 1 现在是给谷歌游戏添加账号
+     * 功能描述: 1 现在是给谷歌游戏添加账号   2019/10/23 13:56
+     *          2 京东卡添加虚拟账号  2019/11/06 10:56
      * @date: 2019/10/23 13:56
      */
     private   void addVCardToDB (String cardSn ,String cardPwd ,String validPeriodIntro , Integer valueRmb,String email) {
@@ -179,7 +183,8 @@ public class FungoVMallGoodsExcelParserService {
         // 随机大作    2019090410405561072
         // 谷歌账号   2019102213190244711
 //        virtualCard.setGoodsId(2019011810120065413L);
-        virtualCard.setGoodsId(2019102213190244711L);
+        // 京东卡  2019011810161808013
+        virtualCard.setGoodsId(2019011810161808013L);
         String cardSnEncrypt = FungoAESUtil.encrypt( cardSn,
                 aESSecretKey + FungoMallSeckillConsts.AES_SALT);
 
@@ -192,15 +197,15 @@ public class FungoVMallGoodsExcelParserService {
         virtualCard.setCardPwd(cardPwdEncrypt);
 
         virtualCard.setValidPeriodIntro(validPeriodIntro);
-        //virtualCard.setValueRmb(valueRmb);
+        virtualCard.setValueRmb(valueRmb);
         virtualCard.setIsSaled(-1);
 
         long cardCrc32Validate = FungoCRC32Util.getInstance().encrypt(cardSn + cardPwd);
         virtualCard.setCardCrc32(cardCrc32Validate);
-        virtualCard.setCardType(26);
+        virtualCard.setCardType(22);
         virtualCard.setCreatedAt(new Date());
         virtualCard.setUpdatedAt(new Date());
-        virtualCard.setExt1(email  );
+//        virtualCard.setExt1(email  );
         mallVirtualCardDaoService.insert(virtualCard);
     }
 
