@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface IThirdPartyService {
 	//第三方登录
-	public ResultDto<LoginMemberBean> thirdPartyLogin(ThirdLoginInput input, String channel, String appVersion) throws Exception;
+	public ResultDto<LoginMemberBean> thirdPartyLogin(ThirdLoginInput input, String channel, String appVersion ,String deviceId) throws Exception;
 
 	//绑定第三方账号
 	public ResultDto<String> thirdUserBind(String userId, ThirdLoginInput input, String channel) throws Exception;
