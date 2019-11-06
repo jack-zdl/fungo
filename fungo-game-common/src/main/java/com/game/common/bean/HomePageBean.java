@@ -106,6 +106,11 @@ public class HomePageBean {
 	 * @return
 	 */
 	private String versionChild;
+	/**
+	 *  是否加速
+	 * @return
+	 */
+	private Boolean canFast;
 
 
 }

@@ -144,6 +144,7 @@ public class GameHomeServiceImpl implements GameHomeService {
             homePageBean.setGameId(homePage.getGameId());
             homePageBean.setName(game.getName());
             homePageBean.setTags(game.getTags());
+            homePageBean.setCanFast(game.getCanFast());
             homePageBean.setOrigin(game.getOrigin());
             homePageBean.setScore(game.getScore());
             homePageBean.setIosState(game.getIosState());
