@@ -285,6 +285,9 @@ public class Game extends Model<Game> {
 	@TableField("can_fast")
 	private Boolean canFast;
 
+	@TableField("previous_week_download_num")
+	private Long previousWeekDownloadNum;
+
 	@TableField("week_download_num")
 	private Long weekDownloadNum;
 
@@ -763,6 +766,14 @@ public class Game extends Model<Game> {
 
 	public void setScore(double score) {
 		this.score = score;
+	}
+
+	public Long getPreviousWeekDownloadNum() {
+		return previousWeekDownloadNum;
+	}
+
+	public void setPreviousWeekDownloadNum(Long previousWeekDownloadNum) {
+		this.previousWeekDownloadNum = previousWeekDownloadNum;
 	}
 
 	@Override

@@ -113,6 +113,7 @@
         <result column="ios_status_desc" jdbcType="VARCHAR" property="iosStatusDesc" />
         <result column="google_deputy_name" jdbcType="VARCHAR" property="googleDeputyName" />
         <result column="can_fast" jdbcType="TINYINT" property="canFast" />
+        <result column="previous_week_download_num" jdbcType="BIGINT" property="previousWeekDownloadNum" />
         <result column="week_download_num" jdbcType="BIGINT" property="weekDownloadNum" />
         <result column="score" jdbcType="DOUBLE" property="score" />
     </resultMap>
@@ -310,7 +311,7 @@
         where g.state = 0
         order by
         <if test="sortType == 0 ">
-            g.week_download_num desc
+            g.previous_week_download_num desc
         </if>
         <if test="sortType == 1 ">
             g.score desc
@@ -351,5 +352,9 @@
         order by tl.sort
         limit #{offset},#{limit}
     </select>
+
+    <update id="addDownLoadNum" >
+      update t_game set download_num = download_num+1 ,week_download_num = week_download_num +1,boom_download_num = #{boomDownloadNum} WHERE id = #{gameId};
+    </update>
 
 </mapper>
