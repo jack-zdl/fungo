@@ -63,7 +63,7 @@ public class PortalSystemThirdPartyController {
         String os = "";
         os = (String) request.getHeader("os");
         String appversion = request.getHeader("appversion");
-        ResultDto<LoginMemberBean> re = thirdLoginService.thirdPartyLogin(input, os, appversion);
+        ResultDto<LoginMemberBean> re = thirdLoginService.thirdPartyLogin(input, os, appversion,null);
         if (re.isSuccess()) {
             LoginMemberBean bean = re.getData();
             MemberUserProfile userPrefile = new MemberUserProfile();
@@ -176,7 +176,7 @@ public class PortalSystemThirdPartyController {
             return ResultDto.error("-1", thirdRe.getMessage());
         }
 
-        ResultDto<LoginMemberBean> re = thirdLoginService.thirdPartyLogin(thirdRe.getData(), "pc", appversion);
+        ResultDto<LoginMemberBean> re = thirdLoginService.thirdPartyLogin(thirdRe.getData(), "pc", appversion,null);
         if (re.isSuccess()) {
             LoginMemberBean bean = re.getData();
             MemberUserProfile userPrefile = new MemberUserProfile();

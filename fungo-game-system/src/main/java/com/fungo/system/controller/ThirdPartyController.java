@@ -60,10 +60,11 @@ public class ThirdPartyController {
     @ApiImplicitParams({})
     @RequestMapping(value = "/api/user/login/thirdparty", method = RequestMethod.POST)
     public ResultDto<LoginMemberBean> thirdUserBind(HttpServletRequest request, @RequestBody ThirdLoginInput input) throws Exception {
-        String os = "";
-        os = (String) request.getHeader("os");
+        String channel = "";
+        channel = (String) request.getHeader("os");
         String appversion = request.getHeader("appversion");
-        ResultDto<LoginMemberBean> re = thirdLoginService.thirdPartyLogin(input, os, appversion);
+        String deviceId = request.getHeader("deviceId");
+        ResultDto<LoginMemberBean> re = thirdLoginService.thirdPartyLogin(input, channel, appversion,deviceId);
         if (re.isSuccess()) {
             LoginMemberBean bean = re.getData();
             MemberUserProfile userPrefile = new MemberUserProfile();
@@ -176,7 +177,7 @@ public class ThirdPartyController {
             return ResultDto.error("-1", thirdRe.getMessage());
         }
 
-        ResultDto<LoginMemberBean> re = thirdLoginService.thirdPartyLogin(thirdRe.getData(), "pc", appversion);
+        ResultDto<LoginMemberBean> re = thirdLoginService.thirdPartyLogin(thirdRe.getData(), "pc", appversion,null);
         if (re.isSuccess()) {
             LoginMemberBean bean = re.getData();
             MemberUserProfile userPrefile = new MemberUserProfile();

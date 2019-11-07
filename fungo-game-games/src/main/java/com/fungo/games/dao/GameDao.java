@@ -52,5 +52,12 @@ public interface GameDao extends BaseMapper<Game> {
 
     Integer countBangBySortType(@Param("sortType") Integer sortType);
 
+
+    /**
+     *  更新下载量
+     */
+    void addDownLoadNum(@Param("gameId") String gameId,@Param("boomDownloadNum") Long boomDownloadNum);
+
     List<Game>  getGmaePage( Page page,@Param("keyword") String keyword);
+
 }
