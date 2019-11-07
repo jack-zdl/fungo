@@ -65,7 +65,7 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
         String description  = userFunVO.getDescription();
         Member member = memberService.selectById( memberId);
         try {
-            distributedLockByCurator.acquireDistributedLock( member.getId() );
+//
             EntityWrapper<IncentAccountCoin> mbAccountCoinEntityWrapper = new EntityWrapper<IncentAccountCoin>();
             Map<String, Object> criteriaMap = new HashMap<String, Object>();
             criteriaMap.put("mb_id", memberId);
@@ -129,9 +129,10 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
         }catch (Exception e){
             logger.error( "扣除用户fun异常",e );
             resultDto = ResultDto.ResultDtoFactory.buildSuccess( "-1","扣除用户fun异常" );
-        }finally {
-            distributedLockByCurator.releaseDistributedLock( member.getId() );
         }
+//        finally {
+//            distributedLockByCurator.releaseDistributedLock( member.getId() );
+//        }
         //扫描处理订单-清除缓存的用户fun币消耗
         fungoCacheTask.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + memberId, "", null);
         // 个人信息缓存
