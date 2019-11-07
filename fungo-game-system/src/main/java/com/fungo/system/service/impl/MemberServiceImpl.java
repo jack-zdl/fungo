@@ -927,9 +927,9 @@ public class MemberServiceImpl implements IMemberService {
         Integer[] types = null;
         //版本不同获取的内容不同
         if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
-            types = new Integer[]{0, 1, 2, 7, 11};
+            types = new Integer[]{0, 1, 2, 7,10, 11};
         } else {
-            types = new Integer[]{0, 1, 2, 7, 11};
+            types = new Integer[]{0, 1, 2, 7,10, 11};
         }
         int like_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).in("type", types));
 
