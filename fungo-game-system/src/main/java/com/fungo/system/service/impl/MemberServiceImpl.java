@@ -555,7 +555,7 @@ public class MemberServiceImpl implements IMemberService {
 
             map.put("statusImg", userService.getStatusImage((String) map.get("user_id")));
             map.put("createdAt", DateTools.fmtDate(basNotice.getCreatedAt()));
-
+            map.put( "reply_content",map.get("replyContent") != null ? map.get("replyContent") : null );
             list.add(map);
         }
 
