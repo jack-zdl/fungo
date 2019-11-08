@@ -129,7 +129,7 @@ public class PortalSystemThirdPartyController {
     public ResultDto<LoginMemberBean> thirdUserBindPhoneNo(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody MsgInput msg) throws Exception {
         String mobile = msg.getMobile();
         String code = msg.getCode();
-        ResultDto<LoginMemberBean> re = userService.bindingPhoneNo(code, mobile, msg.getToken());
+        ResultDto<LoginMemberBean> re = userService.bindingPhoneNo(code, mobile, msg.getToken(),null,null);
         if (re.isSuccess()) {
             LoginMemberBean bean = re.getData();
             MemberUserProfile userPrefile = new MemberUserProfile();

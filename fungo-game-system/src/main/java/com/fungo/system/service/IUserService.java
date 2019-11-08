@@ -18,7 +18,7 @@ public interface IUserService {
      * 请求地址：http://{{host}}/api/user/mobile/thirdparty
      * 返回会员信息
      */
-    ResultDto<LoginMemberBean> bindingPhoneNo(String code, String mobile, String token);
+    ResultDto<LoginMemberBean> bindingPhoneNo(String code, String mobile, String token,String channel,String deviceId);
 
     /**
      * 用户登录
