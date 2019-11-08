@@ -17,6 +17,7 @@ import com.fungo.system.facede.IMemeberProxyService;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.helper.lingka.LingKaHelper;
+import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
 import com.fungo.system.service.*;
 import com.game.common.api.InputPageDto;
@@ -123,6 +124,8 @@ public class MemberServiceImpl implements IMemberService {
     private String clusterIndex;
     @Autowired
     private LingKaHelper lingKaHelper;
+    @Autowired
+    private DistributedLockByCurator distributedLockByCurator;
 
 
     //
@@ -449,12 +452,15 @@ public class MemberServiceImpl implements IMemberService {
                         CmmCmtReplyDto cmmCmtReplyDto1 =    (replyDtoFungoPageResultDto.getData() != null && replyDtoFungoPageResultDto.getData().size() >0 ) ? replyDtoFungoPageResultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                         if (cmmCmtReplyDto1 != null) {
                             map.put( "one_level_deltype",cmmCmtReplyDto1.getState()  == -1 ? -1 : 0 );
-                            if(cmmCmtReplyDto1.getReplayToId() != null){
-                                cmmCmtReplyDto.setId(cmmCmtReplyDto1.getReplayToId());
+                            if(!CommonUtil.isNull(cmmCmtReplyDto1.getReplayToId())){
+                                cmmCmtReplyDto.setId(cmmCmtReplyDto1.getReplyToContentId());
                                 replyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto);
                                 cmmCmtReplyDto1 =    (replyDtoFungoPageResultDto.getData() != null && replyDtoFungoPageResultDto.getData().size() >0 ) ? replyDtoFungoPageResultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                                 if (cmmCmtReplyDto1 != null) {
                                     map.put( "two_level_deltype",cmmCmtReplyDto1.getState()  == -1 ? -1 : 0 );
+                                    map.put( "parentId",cmmCmtReplyDto1.getId() );
+                                    map.put( "parentContent", cmmCmtReplyDto1.getContent());
+                                    map.put( "parentType",20 );
                                 }
                             }else if(cmmCmtReplyDto1.getTargetType() == 5){ //社区一级评论t_cmm_message 5
                                 CmmCommentDto cmmCommentDto = new CmmCommentDto();
@@ -464,6 +470,9 @@ public class MemberServiceImpl implements IMemberService {
                                 CmmCommentDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                                 if (message != null) {
                                     map.put( "two_level_deltype",message.getState()  == -1 ? -1 : 0 );
+                                    map.put( "parentId",message.getId() );
+                                    map.put( "parentContent", message.getContent());
+                                    map.put( "parentType", 5  );
                                 }
                             }else if(cmmCmtReplyDto1.getTargetType() == 6){  //游戏评测 t_game_evation 6
                                 GameEvaluationDto param = new GameEvaluationDto();
@@ -472,6 +481,9 @@ public class MemberServiceImpl implements IMemberService {
                                 GameEvaluationDto gameEvaluationDto = (resultDto.getData() != null && resultDto.getData().size() > 0 ) ? resultDto.getData().get(0) : null;
                                 if(gameEvaluationDto != null){
                                     map.put( "two_level_deltype",gameEvaluationDto.getState() == -1 ? -1 : 0 );
+                                    map.put( "parentId",gameEvaluationDto.getId() );
+                                    map.put( "parentContent", gameEvaluationDto.getContent());
+                                    map.put( "parentType",6 );
                                 }
                             }else if(cmmCmtReplyDto1.getTargetType() == 8){ //心情评论  t_moo_message 8
                                 MooMessageDto mooMessageDto = new MooMessageDto();
@@ -481,6 +493,9 @@ public class MemberServiceImpl implements IMemberService {
                                 MooMessageDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                                 if (message != null) {
                                     map.put( "two_level_deltype",message.getState()  == -1 ? -1 : 0   );
+                                    map.put( "parentId",message.getId());
+                                    map.put( "parentContent", message.getContent());
+                                    map.put( "parentType",8 );
                                 }
                             }
                         }
@@ -927,9 +942,9 @@ public class MemberServiceImpl implements IMemberService {
         Integer[] types = null;
         //版本不同获取的内容不同
         if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
-            types = new Integer[]{0, 1, 2, 7, 11};
+            types = new Integer[]{0, 1, 2, 7,10, 11};
         } else {
-            types = new Integer[]{0, 1, 2, 7, 11};
+            types = new Integer[]{0, 1, 2, 7,10, 11};
         }
         int like_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).in("type", types));
 
@@ -2149,6 +2164,7 @@ public class MemberServiceImpl implements IMemberService {
             noticeEntityWrapper.eq( "ntc_type", 7 );
             noticeEntityWrapper.eq( "is_read", 2 );
             List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
+            distributedLockByCurator.acquireDistributedLock( memberId );
             if (noticeListDB != null && noticeListDB.size() > 0) {
                 noticeListDB.parallelStream().forEach( x -> {
                     String jsonString = x.getNtcData();
@@ -2188,6 +2204,8 @@ public class MemberServiceImpl implements IMemberService {
         }catch (Exception e){
             logger.error( "增加消息异常" ,e);
             return false;
+        }    finally {
+            distributedLockByCurator.releaseDistributedLock( memberId );
         }
         return true;
     }

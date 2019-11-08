@@ -94,7 +94,7 @@ public class DistributedLockByCurator implements InitializingBean {
         cache.getListenable().addListener((client, event) -> {
             if (event.getType().equals( PathChildrenCacheEvent.Type.CHILD_REMOVED)) {
                 String oldPath = event.getData().getPath();
-                logger.info("监听事件 systyem success to release lock for path:{}", oldPath);
+                logger.info("监听事件-删除节点 :{}", oldPath);
                 if (oldPath.contains(path)) {
                     //释放计数器，让当前的请求获取锁
                     countDownLatch.countDown();

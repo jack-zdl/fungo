@@ -2,6 +2,7 @@ package com.fungo.community.service.impl;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
@@ -24,6 +25,8 @@ import com.fungo.community.function.SerUtils;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IPostService;
 import com.fungo.community.service.IVideoService;
+import com.game.common.aliyun.green.AliAcsCheck;
+import com.game.common.aliyun.green.MyIAcsClient;
 import com.game.common.buriedpoint.BuriedPointUtils;
 import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
 import com.game.common.buriedpoint.model.BuriedPointPostModel;
@@ -113,6 +116,8 @@ public class PostServiceImpl implements IPostService {
     private BasVideoJobDao basVideoJobDao;
     @Autowired
     private MooMoodDao mooMoodDao;
+    @Autowired
+    private AliAcsCheck myIAcsClient;
 
     @Override
     @Transactional
@@ -121,6 +126,7 @@ public class PostServiceImpl implements IPostService {
         if (postInput == null) {
             return ResultDto.error("222", "不存在的帖子内容");
         }
+        JSONObject jsonObject = myIAcsClient.checkText();
 //		if(CommonUtil.isNull(postInput.getContent())) {
 //			return ResultDto.error("-1", "请发布内容!");
 //		}

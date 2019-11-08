@@ -7,6 +7,7 @@ import com.fungo.system.dao.IncentAccountCoinDao;
 import com.fungo.system.entity.IncentAccountCoin;
 import com.fungo.system.entity.Member;
 import com.fungo.system.entity.MessageCode;
+import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.mall.service.commons.FungoMallScanOrderWithSeckillService;
 import com.fungo.system.service.IncentAccountCoinDaoService;
 import com.fungo.system.service.MemberService;
@@ -52,6 +53,8 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
     private FungoCacheTask fungoCacheTask;
     @Autowired
     private MemberServiceImpl memberServiceImpl;
+    @Autowired
+    private DistributedLockByCurator distributedLockByCurator;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -62,6 +65,7 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
         String description  = userFunVO.getDescription();
         Member member = memberService.selectById( memberId);
         try {
+//
             EntityWrapper<IncentAccountCoin> mbAccountCoinEntityWrapper = new EntityWrapper<IncentAccountCoin>();
             Map<String, Object> criteriaMap = new HashMap<String, Object>();
             criteriaMap.put("mb_id", memberId);
@@ -126,6 +130,9 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
             logger.error( "扣除用户fun异常",e );
             resultDto = ResultDto.ResultDtoFactory.buildSuccess( "-1","扣除用户fun异常" );
         }
+//        finally {
+//            distributedLockByCurator.releaseDistributedLock( member.getId() );
+//        }
         //扫描处理订单-清除缓存的用户fun币消耗
         fungoCacheTask.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + memberId, "", null);
         // 个人信息缓存
