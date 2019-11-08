@@ -26,7 +26,6 @@ import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IPostService;
 import com.fungo.community.service.IVideoService;
 import com.game.common.aliyun.green.AliAcsCheck;
-import com.game.common.aliyun.green.MyIAcsClient;
 import com.game.common.buriedpoint.BuriedPointUtils;
 import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
 import com.game.common.buriedpoint.model.BuriedPointPostModel;
@@ -41,7 +40,6 @@ import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.CommonEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
-import com.game.common.enums.PostTypeEnum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
@@ -59,7 +57,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -118,6 +115,8 @@ public class PostServiceImpl implements IPostService {
     private MooMoodDao mooMoodDao;
     @Autowired
     private AliAcsCheck myIAcsClient;
+    @Autowired
+    private ContentGreenDao contentGreenDao;
 
     @Override
     @Transactional
@@ -126,7 +125,10 @@ public class PostServiceImpl implements IPostService {
         if (postInput == null) {
             return ResultDto.error("222", "不存在的帖子内容");
         }
-        JSONObject jsonObject = myIAcsClient.checkText();
+//        JSONObject jsonObject = myIAcsClient.checkText( postInput.getHtml());
+//        if((boolean)jsonObject.get("result")){
+//            postInput.setHtml( (String) jsonObject.get("text") );
+//        }
 //		if(CommonUtil.isNull(postInput.getContent())) {
 //			return ResultDto.error("-1", "请发布内容!");
 //		}
@@ -546,6 +548,21 @@ public class PostServiceImpl implements IPostService {
         //不存在圈子信息 设为null
         model.setChannel(circleNames.size()>0?circleNames:null);
         BuriedPointUtils.publishBuriedPointEvent(model);
+
+        // 添加内容安全
+//        try {
+//            if((boolean)jsonObject.get("result")){
+//                postInput.setContent( (String) jsonObject.get("text") );
+//                ContentGreen contentGreen = new ContentGreen();
+//                contentGreen.setType(1);
+//                contentGreen.setContentId( post.getId());
+//                contentGreen.setFilterType(1);
+//                contentGreen.setFilterContent(jsonObject.toJSONString());
+//                contentGreen.insert();
+//            }
+//        }catch (Exception e){
+//            logger.error( "内容安全",e );
+//        }
         return resultDto;
     }
 
