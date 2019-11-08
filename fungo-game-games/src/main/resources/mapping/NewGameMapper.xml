@@ -70,7 +70,7 @@
         t2.id as game_id,
         t2.icon,
         t2.name,
-        t2.origin as region,
+        t2.origin,
         t2.tags,
         t2.apk,
         t2.version_main,

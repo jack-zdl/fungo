@@ -127,10 +127,12 @@ public class ThirdPartyController {
     @ApiOperation(value = "第三方绑定手机号", httpMethod = "POST")
     @ApiImplicitParams({})
     @RequestMapping(value = "/api/user/mobile/thirdparty", method = RequestMethod.POST)
-    public ResultDto<LoginMemberBean> thirdUserBindPhoneNo(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody MsgInput msg) throws Exception {
+    public ResultDto<LoginMemberBean> thirdUserBindPhoneNo(HttpServletRequest request,@Anonymous MemberUserProfile memberUserPrefile, @RequestBody MsgInput msg) throws Exception {
         String mobile = msg.getMobile();
         String code = msg.getCode();
-        ResultDto<LoginMemberBean> re = userService.bindingPhoneNo(code, mobile, msg.getToken());
+        String channel =  request.getHeader("os");
+        String deviceId = request.getHeader("deviceId");
+        ResultDto<LoginMemberBean> re = userService.bindingPhoneNo(code, mobile, msg.getToken(),channel,deviceId);
         if (re.isSuccess()) {
             LoginMemberBean bean = re.getData();
             MemberUserProfile userPrefile = new MemberUserProfile();

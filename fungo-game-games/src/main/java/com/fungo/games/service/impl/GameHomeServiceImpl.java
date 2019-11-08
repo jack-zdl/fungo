@@ -145,7 +145,11 @@ public class GameHomeServiceImpl implements GameHomeService {
             homePageBean.setName(game.getName());
             homePageBean.setTags(game.getTags());
             homePageBean.setCanFast(game.getCanFast());
-            homePageBean.setOrigin(game.getOrigin());
+            if(StringUtils.isNotBlank(game.getOrigin()) && "中国".equals(game.getOrigin())){
+                homePageBean.setOrigin(null);
+            }else{
+                homePageBean.setOrigin(game.getOrigin());
+            }
             homePageBean.setScore(game.getScore());
             homePageBean.setIosState(game.getIosState());
             homePageBean.setAndroidState(game.getAndroidState());
@@ -243,6 +247,9 @@ public class GameHomeServiceImpl implements GameHomeService {
             if (null == newGameBean.getScore()) {
                 newGameBean.setScore(0.0);
             }
+            if(StringUtils.isNotBlank(newGameBean.getOrigin()) && "中国".equals(newGameBean.getOrigin())){
+                newGameBean.setOrigin(null);
+            }
             newGameBean.setMake(false);
             if (StringUtils.isNotBlank(memberId)) {
                 GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", newGameBean.getGameId()).eq("phone_model", os).eq("state", 0));
@@ -311,6 +318,9 @@ public class GameHomeServiceImpl implements GameHomeService {
         re.setBefore(fungoPageResultDto.getBefore());
         re.setAfter(fungoPageResultDto.getAfter());
         for (NewGameBean newGameBean : list) {
+            if(StringUtils.isNotBlank(newGameBean.getOrigin()) && "中国".equals(newGameBean.getOrigin())){
+                newGameBean.setOrigin(null);
+            }
             if(null==newGameBean.getVersionChild()){
                 newGameBean.setVersion(newGameBean.getVersionMain());
             }else if(null!=newGameBean.getVersionMain() && null!=newGameBean.getVersionChild()){

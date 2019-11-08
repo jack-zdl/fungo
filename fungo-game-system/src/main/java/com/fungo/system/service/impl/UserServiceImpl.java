@@ -99,7 +99,7 @@ public class UserServiceImpl implements IUserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
-    public ResultDto<LoginMemberBean> bindingPhoneNo(String code, String mobile, String token) {
+    public ResultDto<LoginMemberBean> bindingPhoneNo(String code, String mobile, String token,String channel,String deviceId) {
         ResultDto<LoginMemberBean> re1 = new ResultDto<LoginMemberBean>();
         Member member = memberService.selectOne(new EntityWrapper<Member>().eq("sesion_token", token));
         if (member == null) {
@@ -112,6 +112,12 @@ public class UserServiceImpl implements IUserService {
                 member.setSesionToken("");
                 member.setMobilePhoneNum(mobile);
                 member.setMobilePhoneVerified("1");
+                if(StringUtils.isNotBlank(channel)){
+                    member.setChannel(channel);
+                }
+                if(StringUtils.isNotBlank(deviceId)){
+                    member.setDeviceId(deviceId);
+                }
                 member.updateById();
                 LoginMemberBean bean = new LoginMemberBean();
                 bean.setCreatedAt(DateTools.fmtDate(member.getCreatedAt()));
@@ -249,15 +255,6 @@ public class UserServiceImpl implements IUserService {
                     memberService.insert(member);
                     LOGGER.info("用户注册-手机验证-初始化数据  memberId : {}, phoneNumber:{}", member.getId(), mobile);
                     this.initUserRank(member.getId());
-                }else{
-                    if(StringUtils.isNotBlank(deviceId)){
-                        member.setDeviceId(deviceId);
-                    }
-                    if(StringUtils.isNotBlank(channel)){
-                        member.setChannel(channel);
-                    }
-                    //修改用户信息
-                    memberService.updateById(member);
                 }
                 messageCodeService.updateCheckCodeSuccess(re.getData());//更新验证成功
             } else {
@@ -271,7 +268,13 @@ public class UserServiceImpl implements IUserService {
 //		dein.setDeviceId(deviceId);
 //		dein.setPhoneModel(os);
 //		pushService.bindDevice(member.getId(),dein);
-
+        if(null!=member){
+            Member dCosmember = new Member();
+            dCosmember.setId(member.getId());
+            dCosmember.setDeviceId(deviceId);
+            dCosmember.setChannel(channel);
+            memberService.updateById(dCosmember);
+        }
         LoginMemberBean bean = new LoginMemberBean();
         bean.setCreatedAt(DateTools.fmtDate(member.getCreatedAt()));
         bean.setUpdatedAt(DateTools.fmtDate(member.getUpdatedAt()));
