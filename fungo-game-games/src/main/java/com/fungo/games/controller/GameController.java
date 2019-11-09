@@ -153,15 +153,17 @@ public class GameController {
         if (!CommonUtil.isNull(intro.getGameId()) && !CommonUtil.isNull(intro.getPackageName())) {
             Game game = gameServicer.selectById(intro.getGameId());
             if (game != null) {
-                if (CommonUtil.isNull(game.getAndroidPackageName())) {
+                String androidPackageName = game.getAndroidPackageName();
+                // 包名不一致才做更新
+                if(!Objects.equals(androidPackageName,intro.getPackageName())){
                     game.setAndroidPackageName(intro.getPackageName());
                     gameServicer.updateAllColumnById(game);
                 }
             }
         }
-
         return ResultDto.success();
     }
+
 
     @ApiOperation(value = "获取最近评论的游戏(2.4.3)", notes = "")
     @RequestMapping(value = "/api/content/game/recenteva", method = RequestMethod.POST)
