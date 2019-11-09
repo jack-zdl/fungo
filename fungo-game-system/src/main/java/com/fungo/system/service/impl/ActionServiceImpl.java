@@ -941,7 +941,12 @@ public class ActionServiceImpl implements IActionService {
     //合集点赞
     @Transactional
     public ResultDto<String> collectionLike(String memberId, ActionInput inputDto, String appVersion) throws Exception {
-        BasAction action = this.getAction(memberId, Setting.ACTION_TYPE_COLLECTION, inputDto);
+        BasAction action = this.actionService.selectOne(new EntityWrapper<BasAction>()
+                .eq("member_id", memberId)
+                .eq("target_id", inputDto.getTarget_id())
+                .eq("target_type", inputDto.getTarget_type())
+                .eq("type", Setting.ACTION_TYPE_COLLECTION)
+                .eq("state", 0));
         if (action == null) {
             action = this.buildAction(memberId, Setting.ACTION_TYPE_COLLECTION, inputDto);
             actionService.insert(action);
@@ -949,7 +954,6 @@ public class ActionServiceImpl implements IActionService {
             if (-1 == action.getState()) {
                 action.setState(0);
                 action.setUpdatedAt(new Date());
-                this.addCounter(memberId, Setting.ACTION_TYPE_COLLECTION, inputDto);
                 this.actionService.updateById(action);
             }
         }
@@ -959,11 +963,13 @@ public class ActionServiceImpl implements IActionService {
     //合集取消点赞
     @Transactional
     public ResultDto<String> unCollectionLike(String memberId, ActionInput inputDto) {
-        BasAction action = this.getAction(memberId, Setting.ACTION_TYPE_COLLECTION, inputDto);
-        if (action != null && 0 == action.getState()) {
+        BasAction action = basActionService.selectOne(new EntityWrapper<BasAction>().eq("member_id", memberId)
+                .eq("target_id", inputDto.getTarget_id())
+                .eq("target_type", Setting.ACTION_TYPE_COLLECTION)
+                .eq("state", 0));
+        if (action != null) {
             action.setState(-1);
             action.updateById();
-            this.subCounter(memberId, Setting.ACTION_TYPE_COLLECTION, inputDto);
         }
         return ResultDto.success("取消成功");
     }
