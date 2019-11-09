@@ -118,6 +118,7 @@ public class GameHomeServiceImpl implements GameHomeService {
                     if (topList.size() == 1) {
                         result.add(topList.get(0));
                     } else if (topList.size() > 1) {
+                        //取置顶数据的随机一个
                         result.add(topList.get(new Random().nextInt((topList.size()))));
                     }
                     for (int i = 0; i < pageList.size(); i++) {
