@@ -1148,7 +1148,7 @@ public class GameServiceImpl implements IGameService {
                 if(!CommonUtil.isNull(memberId)){
                     List<GameSurveyRel> gameSurveyRels = gameSurveyRelService.selectList( new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0).eq( "game_id",game.getId()));
                     if(gameSurveyRels != null && gameSurveyRels.size() >0){
-                        out.setMake(1);
+                        out.setMake(true);
                     }
                 }
                 out.setVersion( CommonUtil.isNull(game.getVersionChild()) ? game.getVersionMain() : game.getVersionMain()+"."+game.getVersionChild() );

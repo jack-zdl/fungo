@@ -51,7 +51,7 @@ public class GameSearchOut {
 	private String tags;
 
 	// 用户是否预约 1 已预约  0 未预约
-	private int make;
+	private boolean make;
 
 	private String version;
 
@@ -265,15 +265,15 @@ public class GameSearchOut {
 		this.tags = tags;
 	}
 
-    public int getMake() {
-        return make;
-    }
+	public boolean isMake() {
+		return make;
+	}
 
-    public void setMake(int make) {
-        this.make = make;
-    }
+	public void setMake(boolean make) {
+		this.make = make;
+	}
 
-    public String getVersion() {
+	public String getVersion() {
         return version;
     }
 

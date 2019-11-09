@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,6 +62,24 @@ public class LingkaController {
         LOGGER.error( "-------------------Post请求方式的/api/system/alipay" );
         System.out.println( "-------------------Post请求方式的/api/system/alipay參數参数="+out_trade_no+"1==="+trade_no+"1==="+trade_status+"1==="+total_amount);
         ResultDto<String> resultDto = null;
+//        BufferedReader br = null;
+//        StringBuilder sb = new StringBuilder("");
+//        try
+//        {
+//            br = request.getReader();
+//            String str;
+//            while ((str = br.readLine()) != null)
+//            {
+//                sb.append(str);
+//            }
+//            br.close();
+//        }
+//        catch (IOException e)
+//        {
+//            e.printStackTrace();
+//        }
+//        System.out.println("++++++++++++++++++++++++++++++"+sb);
+//        LOGGER.error("++++++++++++++++++++++++++++++"+sb);
         resultDto = memberPlayLogService.saveMemberPalyLog(request, alipayJson);
         if(resultDto.getStatus() == 1){
             return "success";
@@ -125,7 +145,7 @@ public class LingkaController {
     }
 
     /**
-     * 功能描述: 支付宝回调接口
+     * 功能描述: 微信回调接口
      * @date: 2019/10/25 10:34
      */
     @PostMapping(value = "/api/system/weixinpay")
@@ -136,7 +156,7 @@ public class LingkaController {
     }
 
     /**
-     * 功能描述: 支付宝回调接口
+     * 功能描述: vip是否隐藏接口
      * @date: 2019/10/25 10:34
      */
     @PostMapping(value = "/api/system/vip/hide")
