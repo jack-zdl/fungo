@@ -173,11 +173,11 @@ public class ActionController {
 
 
     @ApiOperation(value="合集点赞", notes="")
-    @PostMapping(value="/api/action/collectionLike")
+    @RequestMapping(value="/api/action/collectionLike", method= RequestMethod.POST)
+//    @PostMapping(value="/api/action/collectionLike")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "target_id",value = "目标对象",paramType = "form",dataType = "string"),
-            @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string"),
-            @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
+            @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string")
     })
     public ResultDto<String> collectionLike(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody ActionInput inputDto) throws Exception {
         String appVersion = "";
@@ -187,7 +187,7 @@ public class ActionController {
 
 
     @ApiOperation(value="合集取消赞", notes="")
-    @RequestMapping(value="/api/action/unCollectionLike", method= RequestMethod.DELETE)
+    @RequestMapping(value="/api/action/unCollectionLike", method= RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "target_id",value = "目标对象",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string"),
