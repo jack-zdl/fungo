@@ -21,7 +21,7 @@
 
 	<select id="selectGameTag" resultType="java.lang.String" >
 		select   bt.name from  t_game_tag gt , t_bas_tag bt
- 		WHERE  gt.tag_id = bt.id  and gt.game_id = #{gameId} order  by gt.sort desc
+ 		WHERE  gt.tag_id = bt.id  and gt.game_id = #{gameId} order  by gt.sort
 	</select>
 
 </mapper>

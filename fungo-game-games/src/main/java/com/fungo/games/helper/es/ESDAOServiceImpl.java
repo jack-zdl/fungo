@@ -147,7 +147,7 @@ public class ESDAOServiceImpl {
 //                boolQueryBuilder.must(QueryBuilders.wildcardQuery("title",keyword));
 //                sourceBuilder.query(boolQueryBuilder);
                 MatchQueryBuilder matchQueryBuilder1 = QueryBuilders.matchQuery("state",0);
-                MatchQueryBuilder matchQueryBuilder2 = QueryBuilders.matchQuery("name",keyword);
+                MatchQueryBuilder matchQueryBuilder2 = QueryBuilders.matchQuery("name",keyword).boost(10);
                 MatchQueryBuilder matchQueryBuilder3 = QueryBuilders.matchQuery("intro",keyword);
                 MatchQueryBuilder matchQueryBuilder4 = QueryBuilders.matchQuery("google_deputy_name",keyword);
                 BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
@@ -155,8 +155,10 @@ public class ESDAOServiceImpl {
                         .should(matchQueryBuilder2)
                         .should(matchQueryBuilder3)
                         .should(matchQueryBuilder4);
-                boolQueryBuilder.must(childBoolQueryBuilder);
                 boolQueryBuilder.must(matchQueryBuilder1);
+//                boolQueryBuilder.must(matchQueryBuilder2);
+                boolQueryBuilder.must(childBoolQueryBuilder);
+
                 sourceBuilder.query(boolQueryBuilder);
             }
 //            sourceBuilder.query( QueryBuilders.termQuery("title", keyword));
@@ -168,7 +170,7 @@ public class ESDAOServiceImpl {
 
             //指定排序
             sourceBuilder.sort(new ScoreSortBuilder().order( SortOrder.DESC));
-//            sourceBuilder.sort(new FieldSortBuilder("score").order(SortOrder.DESC));
+//            sourceBuilder.sort(new FieldSortBuilder("_id").order(SortOrder.DESC));
 
             //将请求体加入到请求中
             searchRequest.source(sourceBuilder);

@@ -52,25 +52,6 @@ public class MemberPlayLogServiceImpl implements MemberPlayLogService {
         try {
             System.out.println("-----------------------------"+JSON.toJSONString( alipayMap ));
             LOGGER.error( "----------------------- " +JSON.toJSONString( alipayMap ));
-
-            BufferedReader br = null;
-            StringBuilder sb = new StringBuilder("");
-            try
-            {
-                br = request.getReader();
-                String str;
-                while ((str = br.readLine()) != null)
-                {
-                    sb.append(str);
-                }
-                br.close();
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-            System.out.println("++++++++++++++++++++++++++++++"+sb);
-            LOGGER.error("++++++++++++++++++++++++++++++"+sb);
             String str = JSON.toJSONString(alipayMap);// java对象转为jsonString
             ALiPayAsynResultDTO aLiPayAsynResultDTO = JSON.parseObject(str, ALiPayAsynResultDTO.class);// jsonString转为java对象
 
@@ -79,6 +60,7 @@ public class MemberPlayLogServiceImpl implements MemberPlayLogService {
             MemberPlayLog memberPlay = memberPlayLogDao.selectOne( param);
             if(memberPlay != null && StringUtils.isNotBlank(memberPlay.getId())){
                 resultDto = ResultDto.ResultDtoFactory.buildSuccess( "用户支付日志重复记录" );
+                LOGGER.error( "用户支付日志重复记录,主键id="+aLiPayAsynResultDTO.getTrade_no());
                 return resultDto;
             }
             MemberPlayLog memberPlayLog = new MemberPlayLog();
