@@ -1,7 +1,6 @@
 package com.game.common.util.emoji;
 
 import com.vdurmont.emoji.EmojiParser;
-
 import java.util.List;
 
 /**

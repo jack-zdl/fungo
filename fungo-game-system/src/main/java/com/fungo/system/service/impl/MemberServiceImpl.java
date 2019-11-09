@@ -461,6 +461,42 @@ public class MemberServiceImpl implements IMemberService {
                                     map.put( "parentId",cmmCmtReplyDto1.getId() );
                                     map.put( "parentContent", cmmCmtReplyDto1.getContent());
                                     map.put( "parentType",20 );
+                                    if(cmmCmtReplyDto1.getTargetType() == 5){ //社区一级评论t_cmm_message 5
+                                        CmmCommentDto cmmCommentDto = new CmmCommentDto();
+                                        cmmCommentDto.setId(cmmCmtReplyDto1.getTargetId());
+                                        cmmCommentDto.setState(null);
+                                        FungoPageResultDto<CmmCommentDto> resultDto = communityFeignClient.queryFirstLevelCmtList(cmmCommentDto);
+                                        CmmCommentDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                                        if (message != null) {
+//                                            map.put( "two_level_deltype",message.getState()  == -1 ? -1 : 0 );
+                                            map.put( "topId",message.getId() );
+//                                            map.put( "topContent", message.getContent());
+                                            map.put( "topType", 5  );
+                                        }
+                                    }else if(cmmCmtReplyDto1.getTargetType() == 6){  //游戏评测 t_game_evation 6
+                                        GameEvaluationDto param = new GameEvaluationDto();
+                                        param.setId(cmmCmtReplyDto1.getTargetId());
+                                        FungoPageResultDto<GameEvaluationDto>  resultDto = gamesFeignClient.getGameEvaluationPage(param);
+                                        GameEvaluationDto gameEvaluationDto = (resultDto.getData() != null && resultDto.getData().size() > 0 ) ? resultDto.getData().get(0) : null;
+                                        if(gameEvaluationDto != null){
+//                                            map.put( "two_level_deltype",gameEvaluationDto.getState() == -1 ? -1 : 0 );
+                                            map.put( "topId",gameEvaluationDto.getId() );
+//                                            map.put( "parentContent", gameEvaluationDto.getContent());
+                                            map.put( "topType",6 );
+                                        }
+                                    }else if(cmmCmtReplyDto1.getTargetType() == 8){ //心情评论  t_moo_message 8
+                                        MooMessageDto mooMessageDto = new MooMessageDto();
+                                        mooMessageDto.setId(cmmCmtReplyDto1.getTargetId());
+                                        mooMessageDto.setState(null);
+                                        FungoPageResultDto<MooMessageDto> resultDto = communityFeignClient.queryCmmMoodCommentList(mooMessageDto);
+                                        MooMessageDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                                        if (message != null) {
+//                                            map.put( "two_level_deltype",message.getState()  == -1 ? -1 : 0   );
+                                            map.put( "topId",message.getId());
+//                                            map.put( "parentContent", message.getContent());
+                                            map.put( "topType",8 );
+                                        }
+                                    }
                                 }
                             }else if(cmmCmtReplyDto1.getTargetType() == 5){ //社区一级评论t_cmm_message 5
                                 CmmCommentDto cmmCommentDto = new CmmCommentDto();
@@ -484,6 +520,8 @@ public class MemberServiceImpl implements IMemberService {
                                     map.put( "parentId",gameEvaluationDto.getId() );
                                     map.put( "parentContent", gameEvaluationDto.getContent());
                                     map.put( "parentType",6 );
+                                    map.put( "game_id",gameEvaluationDto.getGameId() );
+                                    map.put( "game_name",gameEvaluationDto.getGameName() );
                                 }
                             }else if(cmmCmtReplyDto1.getTargetType() == 8){ //心情评论  t_moo_message 8
                                 MooMessageDto mooMessageDto = new MooMessageDto();
