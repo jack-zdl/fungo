@@ -638,7 +638,9 @@ public class GameServiceImpl implements IGameService {
                 out.setGameGroups( gameGroups );
             }
             //
-            List<GameSurveyRel> surs = surveyRelService.selectList(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", gameId));
+            out.setUserAndroidState("0");
+            out.setUserIosState("0");
+            List<GameSurveyRel> surs = surveyRelService.selectList(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", gameId).eq( "state","0" ));
             surs.stream().forEach( s ->{
                 if("Android".equals(s.getPhoneModel())){
                     out.setUserAndroidState("1");
