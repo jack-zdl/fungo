@@ -638,7 +638,9 @@ public class GameServiceImpl implements IGameService {
                 out.setGameGroups( gameGroups );
             }
             //
-            List<GameSurveyRel> surs = surveyRelService.selectList(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", gameId));
+            out.setUserAndroidState("0");
+            out.setUserIosState("0");
+            List<GameSurveyRel> surs = surveyRelService.selectList(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", gameId).eq( "state","0" ));
             surs.stream().forEach( s ->{
                 if("Android".equals(s.getPhoneModel())){
                     out.setUserAndroidState("1");
@@ -1071,7 +1073,9 @@ public class GameServiceImpl implements IGameService {
                 }
                 out.setObjectId(game.getId());
                 out.setName(game.getName());
-                out.setTag(game.getTags());
+                List<String> gameTags = gameTagDao.selectGameTag( game.getId());
+                String gameTagStrs = String.join(",", gameTags);
+                out.setTag(gameTagStrs);
                 out.setIcon(game.getIcon());
                 out.setCover_image(game.getCoverImage());
                 out.setIntro(game.getIntro());
@@ -1099,7 +1103,7 @@ public class GameServiceImpl implements IGameService {
                 out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
                 out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
 
-                out.setCategory(game.getTags());
+                out.setCategory(gameTagStrs);
                 /**
                  * 功能描述: 添加游戏关联圈子
                  * @auther: dl.zhang
@@ -1142,8 +1146,7 @@ public class GameServiceImpl implements IGameService {
                     }
                 }
 
-                List<String> gameTags = gameTagDao.selectGameTag( game.getId());
-                out.setTags(String.join(",", gameTags));
+                out.setTags(gameTagStrs);
 
                 if(!CommonUtil.isNull(memberId)){
                     List<GameSurveyRel> gameSurveyRels = gameSurveyRelService.selectList( new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0).eq( "game_id",game.getId()));

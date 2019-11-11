@@ -143,7 +143,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                         if (cmmCmtReplyDto1 != null) {
                             map.put( "one_level_deltype",cmmCmtReplyDto1.getState()  == -1 ? -1 : 0 );
                             if(cmmCmtReplyDto1.getReplayToId() != null){
-                                cmmCmtReplyDto.setId(cmmCmtReplyDto1.getReplayToId());
+                                cmmCmtReplyDto.setId(cmmCmtReplyDto1.getReplyToContentId());
                                 replyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto);
                                 cmmCmtReplyDto1 =    (replyDtoFungoPageResultDto.getData() != null && replyDtoFungoPageResultDto.getData().size() >0 ) ? replyDtoFungoPageResultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                                 if (cmmCmtReplyDto1 != null) {
@@ -162,6 +162,9 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                                             if (message != null) {
                                                 map.put( "parentType",5);
                                                 map.put( "parentId",message.getPostId() );
+                                                Member member = memberService.selectById(message.getMemberId());
+                                                map.put( "parentMemberId",member.getId() );
+                                                map.put( "parentMemberName",member.getUserName() );
                                             }
                                         }else if(cmmCmtReply1.getTargetType() == 6){  //游戏评测 t_game_evation 6
                                             GameEvaluationDto param = new GameEvaluationDto();
@@ -171,6 +174,9 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                                             if(gameEvaluationDto != null){
                                                 map.put( "parentType",6);
                                                 map.put( "parentId",gameEvaluationDto.getGameId() );
+                                                Member member = memberService.selectById(gameEvaluationDto.getMemberId());
+                                                map.put( "parentMemberId",member.getId() );
+                                                map.put( "parentMemberName",member.getUserName() );
                                             }
                                         }else if(cmmCmtReply1.getTargetType() == 8){ //心情评论  t_moo_message 8
                                             MooMessageDto mooMessageDto = new MooMessageDto();
@@ -181,6 +187,9 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                                             if (message != null) {
                                                 map.put( "parentType",8);
                                                 map.put( "parentId",message.getMoodId()  );
+                                                Member member = memberService.selectById(message.getMemberId());
+                                                map.put( "parentMemberId",member.getId() );
+                                                map.put( "parentMemberName",member.getUserName() );
                                             }
                                         }
                                     }
@@ -194,6 +203,9 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                                 if (message != null) {
                                     map.put( "parentType",5);
                                     map.put( "parentId",message.getPostId() );
+                                    Member member = memberService.selectById(message.getMemberId());
+                                    map.put( "parentMemberId",member.getId() );
+                                    map.put( "parentMemberName",member.getUserName() );
                                 }
                             }else if(cmmCmtReplyDto1.getTargetType() == 6){  //游戏评测 t_game_evation 6
                                 GameEvaluationDto param = new GameEvaluationDto();
@@ -203,6 +215,9 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                                 if(gameEvaluationDto != null){
                                     map.put( "parentType",6);
                                     map.put( "parentId",gameEvaluationDto.getGameId() );
+                                    Member member = memberService.selectById(gameEvaluationDto.getMemberId());
+                                    map.put( "parentMemberId",member.getId() );
+                                    map.put( "parentMemberName",member.getUserName() );
                                 }
                             }else if(cmmCmtReplyDto1.getTargetType() == 8){ //心情评论  t_moo_message 8
                                 MooMessageDto mooMessageDto = new MooMessageDto();
@@ -213,6 +228,9 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                                 if (message != null) {
                                     map.put( "parentType",8);
                                     map.put( "parentId",message.getMoodId()  );
+                                    Member member = memberService.selectById(message.getMemberId());
+                                    map.put( "parentMemberId",member.getId() );
+                                    map.put( "parentMemberName",member.getUserName() );
                                 }
                             }
                         }
