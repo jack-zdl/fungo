@@ -91,5 +91,7 @@ public interface IMemberService {
 
 	ResultDto<InviteInfoVO> getInviteInfo(String memberId);
 
+	boolean addNotice(String memberId,String content);
+
 
 }

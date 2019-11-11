@@ -9,6 +9,7 @@ import com.fungo.system.entity.Member;
 import com.fungo.system.entity.MessageCode;
 import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.mall.service.commons.FungoMallScanOrderWithSeckillService;
+import com.fungo.system.service.IMemberService;
 import com.fungo.system.service.IncentAccountCoinDaoService;
 import com.fungo.system.service.MemberService;
 import com.game.common.buriedpoint.BuriedPointUtils;
@@ -51,8 +52,10 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
     private MemberService memberService;
     @Autowired
     private FungoCacheTask fungoCacheTask;
+//    @Autowired
+//    private MemberServiceImpl memberServiceImpl;
     @Autowired
-    private MemberServiceImpl memberServiceImpl;
+    private IMemberService iMemberService;
     @Autowired
     private DistributedLockByCurator distributedLockByCurator;
 
@@ -123,7 +126,7 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
             if(1 == userFunVO.getType()){
                 int contentType = userFunVO.getContentType();
                 String message =contentType == 1 ? "文章" :  (contentType == 2 ? "心情" : (  contentType ==  3 ? "评论" : (contentType == 4 ? "游戏评测" : "" )));
-                memberServiceImpl.addNotice(memberId,  MessageConstants.SYSTEM_NOTICE_DELETE.replace("{",message));
+                iMemberService.addNotice(memberId,  MessageConstants.SYSTEM_NOTICE_DELETE.replace("{",message));
             }
             //
         }catch (Exception e){
