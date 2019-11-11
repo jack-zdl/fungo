@@ -22,7 +22,7 @@ public class LingKaDataUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(LingKaDataUtil.class);
 
 
-    private int connectTimeout = 120000;//连接超时时间
+    private static int connectTimeout = 5000;//连接超时时间
     private int connectionRequestTimeout = 10000;//从连接池获取连接超时时间
     private static int socketTimeout = 5000;//获取数据超时时间
     private String charset = "utf-8";
@@ -49,7 +49,7 @@ public class LingKaDataUtil {
         // 获取条件
         // 请求数据
 //        String result = HttpUtil.post(url, hashMap);
-        String result = HttpRequest.post(url).body( hashMap.toString() ).timeout( socketTimeout ).execute().body();
+        String result = HttpRequest.post(url).setConnectionTimeout( connectTimeout ).body( hashMap.toString() ).timeout( socketTimeout ).execute().body();
         // 解析数据并响应
         return result;
     }

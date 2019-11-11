@@ -1129,12 +1129,12 @@ public class GameServiceImpl implements IGameService {
                  *      endDate:””
                  *  }
                  */
-                String starDate = null;
-                String endDate = null;
+                Long starDate = null;
+                Long endDate = null;
                 JSONObject jsonObject = JSON.parseObject( androidStatusDesc);
                 if(jsonObject != null){
-                    starDate =(String) jsonObject.get( "starDate" );
-                    endDate = (String) jsonObject.get( "endDate" );
+                    starDate = (Long) jsonObject.get( "starDate" );
+                    endDate = (Long) jsonObject.get( "endDate" );
                     if( starDate == null || endDate == null ){
                         out.setGameStatus( (String) jsonObject.get( "dsc" ) );
                     }else {
