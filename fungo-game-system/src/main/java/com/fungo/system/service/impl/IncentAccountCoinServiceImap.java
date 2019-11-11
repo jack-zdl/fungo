@@ -55,9 +55,9 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
 //    @Autowired
 //    private MemberServiceImpl memberServiceImpl;
     @Autowired
-    private IMemberService iMemberService;
-    @Autowired
-    private DistributedLockByCurator distributedLockByCurator;
+    private IMemberService memberServiceImpl;
+//    @Autowired
+//    private DistributedLockByCurator distributedLockByCurator;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -126,7 +126,7 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
             if(1 == userFunVO.getType()){
                 int contentType = userFunVO.getContentType();
                 String message =contentType == 1 ? "文章" :  (contentType == 2 ? "心情" : (  contentType ==  3 ? "评论" : (contentType == 4 ? "游戏评测" : "" )));
-                iMemberService.addNotice(memberId,  MessageConstants.SYSTEM_NOTICE_DELETE.replace("{",message));
+                memberServiceImpl.addNotice(memberId,  MessageConstants.SYSTEM_NOTICE_DELETE.replace("{",message));
             }
             //
         }catch (Exception e){
