@@ -17,9 +17,9 @@ import java.util.Map;
  */
 public interface MemberPlayLogService {
 
-    ResultDto<String> saveMemberPalyLog(HttpServletRequest request , Map map);
+    ResultDto<String> saveAliMemberPalyLog(HttpServletRequest request , Map map) throws Exception;
 
-    ResultDto<String> saveWeiXinMemberPalyLog(HttpServletRequest request, HttpServletResponse response);
+    void saveWeChatMemberPalyLog(Map<String,String> map,HttpServletRequest request, HttpServletResponse response) throws Exception;
 
     void checkAllALiPay();
 }

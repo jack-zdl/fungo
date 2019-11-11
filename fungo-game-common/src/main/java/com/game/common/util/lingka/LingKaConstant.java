@@ -17,9 +17,15 @@ public class LingKaConstant {
     public static final String LINGKA_GIFTCARD_BIND = URL+"api/admin/giftcard/send";
 
     /**
-     *  支付回調接口
+     *  支付宝支付回調接口
      */
-    public static final String LINGKA_PAY_LOG = URL+"api/mingbo/alipay/callback";
+    public static final String LINGKA_ALI_PAY_LOG = URL+"api/mingbo/alipay/callback";
+
+    /**
+     *  支付宝支付回調接口
+     */
+    public static final String LINGKA_WECHAT_PAY_LOG = URL+"api/mingbo/wechatPay/callback";
+
 
     /**
     * 功能描述   管理員邮箱

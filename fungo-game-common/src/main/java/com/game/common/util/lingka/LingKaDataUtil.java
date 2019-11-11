@@ -1,11 +1,13 @@
 package com.game.common.util.lingka;
 
+import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.http.client.config.RequestConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.apache.http.client.config.RequestConfig.Builder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +20,13 @@ import static com.game.common.util.lingka.LingKaConstant.*;
 public class LingKaDataUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LingKaDataUtil.class);
+
+
+    private int connectTimeout = 120000;//连接超时时间
+    private int connectionRequestTimeout = 10000;//从连接池获取连接超时时间
+    private static int socketTimeout = 5000;//获取数据超时时间
+    private String charset = "utf-8";
+
 
     /**
      *  根据条件获取Tab游戏列表
@@ -39,7 +48,8 @@ public class LingKaDataUtil {
     public static  String listTabGame( String url, Map hashMap){
         // 获取条件
         // 请求数据
-        String result = HttpUtil.post(url, hashMap);
+//        String result = HttpUtil.post(url, hashMap);
+        String result = HttpRequest.post(url).body( hashMap.toString() ).timeout( socketTimeout ).execute().body();
         // 解析数据并响应
         return result;
     }

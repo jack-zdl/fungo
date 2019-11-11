@@ -51,6 +51,15 @@
                     ${alias}.weibo_open_id AS weiboOpenId
     </sql>
 
+    <sql id="Base_List">
+        id,  salt,  last_visit AS lastVisit,  email,  sesion_token AS sesionToken,  password, exp,  user_name AS userName,  state,
+           has_password AS hasPassword,  level,  email_verified AS emailVerified,  mobile_phone_num AS mobilePhoneNum,  avatar,
+              complete,  gender,  auth_data AS authData,  import_from_parse AS importFromParse,  mobile_phone_verified AS mobilePhoneVerified,
+                followee_num AS followeeNum,  publish_num AS publishNum,  follower_num AS followerNum,  report_num AS reportNum,  created_at AS createdAt,
+                 updated_at AS updatedAt,  sign,  member_no AS memberNo,  qq_open_id AS qqOpenId,  weixin_open_id AS weixinOpenId,
+                   weibo_open_id AS weiboOpenId
+    </sql>
+
 
 
 
@@ -195,7 +204,7 @@
 
     <select id="getUnfollerMemberList" resultType="com.fungo.system.entity.Member" >
         SELECT  
-        <include refid="Base_Column_List"></include>
+        <include refid="Base_List"></include>
          FROM  t_member where
         id in
         <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
