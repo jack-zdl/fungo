@@ -174,8 +174,8 @@ public class GameServiceImpl implements IGameService {
             }
             out.setApkUrl(game.getApk());
             out.setTags(game.getTags());
-            out.setAndroidStatusDesc(game.getAndroidStatusDesc());
-            out.setIosStatusDesc(game.getIosStatusDesc());
+            out.setAndroidStatusDesc(gameStatusDesc(game.getAndroidStatusDesc()));
+            out.setIosStatusDesc(gameStatusDesc(game.getIosStatusDesc()));
             out.setItunesId(game.getItunesId());
             out.setAndroidPackageName(game.getAndroidPackageName());
             out.setGame_size((long) game.getGameSize());
@@ -802,8 +802,8 @@ public class GameServiceImpl implements IGameService {
                 it.setIosState(game.getIosState() == null ? -1 : game.getIosState());
                 it.setItunesId(game.getItunesId());
                 it.setTags(game.getTags());
-                it.setAndroidStatusDesc(game.getAndroidStatusDesc());
-                it.setIosStatusDesc(game.getIosStatusDesc());
+                it.setAndroidStatusDesc(gameStatusDesc(game.getAndroidStatusDesc()));
+                it.setIosStatusDesc(gameStatusDesc(game.getIosStatusDesc()));
                 HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
                 if (rateData != null) {
                     if (rateData.get("avgRating") != null) {

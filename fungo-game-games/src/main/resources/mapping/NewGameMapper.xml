@@ -54,7 +54,7 @@
             </if>
         </where>
         and t1.state=0
-        order by t1.choose_date desc,t1.sort desc
+        order by t1.choose_date asc,t1.sort desc
         LIMIT #{startOffset} ,#{pageSize}
     </select>
 

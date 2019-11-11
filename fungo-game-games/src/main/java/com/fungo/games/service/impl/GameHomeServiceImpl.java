@@ -1,5 +1,6 @@
 package com.fungo.games.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.dao.FindCollectionGroupDao;
@@ -18,6 +19,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.index.BannerBean;
 import com.game.common.dto.mall.MallBannersInput;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
+import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
 import com.game.common.util.exception.BusinessException;
 import com.game.common.vo.AdminCollectionVo;
@@ -31,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.game.common.util.GameStatusDescUtil.gameStatusDesc;
 
 /**
  * <p></p>
@@ -262,6 +266,7 @@ public class GameHomeServiceImpl implements GameHomeService {
             if (null != newGameBean.getChooseDate()) {
                 newGameBean.setTime(newGameBean.getChooseDate().getTime());
             }
+            newGameBean.setAndroidStatusDesc(gameStatusDesc(newGameBean.getAndroidStatusDesc()));
             CircleGamePostVo circleGamePostVo = new CircleGamePostVo();
             circleGamePostVo.setGameId(newGameBean.getGameId());
             circleGamePostVo.setType(1);
@@ -333,6 +338,7 @@ public class GameHomeServiceImpl implements GameHomeService {
             if (null != newGameBean.getChooseDate()) {
                 newGameBean.setTime(newGameBean.getChooseDate().getTime());
             }
+            newGameBean.setAndroidStatusDesc(gameStatusDesc(newGameBean.getAndroidStatusDesc()));
         }
         re.setData(list);
         return re;
@@ -434,6 +440,7 @@ public class GameHomeServiceImpl implements GameHomeService {
             } else {
                 collectionItemBean.setCircleId(dto.getData());
             }
+            collectionItemBean.setAndroidStatusDesc(gameStatusDesc(collectionItemBean.getAndroidStatusDesc()));
         }
         adminCollectionGroup.setList(itemList);
         MallBannersInput mallBannersInput = new MallBannersInput();
@@ -447,6 +454,8 @@ public class GameHomeServiceImpl implements GameHomeService {
         re.setData(adminCollectionGroup);
         return re;
     }
+
+
 
 
 }
