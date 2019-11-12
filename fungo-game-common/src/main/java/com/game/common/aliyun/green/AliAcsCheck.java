@@ -93,16 +93,23 @@ public class AliAcsCheck {
 //                                        List<String> contexts =
                                         JSONArray detailsJson = ((JSONArray)((JSONObject) sceneResult).get("details"));
                                         if(!CommonUtil.isNull(detailsJson) && detailsJson.size() > 0 ){
-                                            StringBuffer contextString = new StringBuffer();
+                                            List<String> contextString = new ArrayList<>();
                                             JSONArray contextsArray =  ((JSONObject)detailsJson.get(0)).getJSONArray("contexts");
                                             if(!CommonUtil.isNull( contextsArray )){
                                                 contextsArray.stream().forEach( s -> {
                                                     JSONObject o = (JSONObject) s;
-                                                    String context = o.get( "context")+",";
-                                                    contextString.append(context)  ;
+                                                    String context = (String) o.get( "context");
+                                                    contextString.add(context)  ;
                                                 } );
                                             }
+                                            String textString = (String)result.get("text");
                                             result.put( "contexts",contextString.toString());
+                                            for (String line : contextString){
+                                                String newTextString = textString.replaceAll(line,"***");
+                                                textString = newTextString;
+                                                result.put( "replace",true);
+                                            }
+                                            result.put( "text",textString);
                                         }
                                         result.put( "result",true);
                                         result.put( "label",label);

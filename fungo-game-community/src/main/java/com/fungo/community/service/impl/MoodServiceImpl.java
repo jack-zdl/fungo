@@ -1,6 +1,7 @@
 package com.fungo.community.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +14,7 @@ import com.fungo.community.facede.SystemFacedeService;
 import com.fungo.community.facede.TSMQFacedeService;
 import com.fungo.community.service.IMoodService;
 import com.fungo.community.service.IVideoService;
+import com.game.common.aliyun.green.AliAcsCheck;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.dto.AuthorBean;
@@ -25,6 +27,7 @@ import com.game.common.dto.community.MoodInput;
 import com.game.common.dto.community.StreamInfo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
+import com.game.common.enums.AliGreenLabelEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheMood;
@@ -75,12 +78,12 @@ public class MoodServiceImpl implements IMoodService {
 
     @Autowired
     private GameFacedeService gameFacedeService;
-
     @Autowired
     private SystemFacedeService systemFacedeService;
-
     @Autowired
     private TSMQFacedeService tSMQFacedeService;
+    @Autowired
+    private AliAcsCheck myIAcsClient;
 
 
     @Override
@@ -92,6 +95,15 @@ public class MoodServiceImpl implements IMoodService {
 //        if(CommonUtil.isNull(content)) {
 //        	return ResultDto.error("-1", "内容不能为空!");
 //        }
+        JSONObject titleJsonObject = myIAcsClient.checkText( input.getContent());
+        if((boolean)titleJsonObject.get("result")){
+            if(titleJsonObject.get("replace") != null ){
+                input.setContent( (String) titleJsonObject.get("text") );
+            }else {
+                return ResultDto.error("-1", "内容涉及"+ AliGreenLabelEnum.getValueByKey( (String) titleJsonObject.get("label") )+",请您修改" );
+            }
+        }
+
 
         //!fixme 获取用户数据
         //Member member = memberService.selectById(memberId);

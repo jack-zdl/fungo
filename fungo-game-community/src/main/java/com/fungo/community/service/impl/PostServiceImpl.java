@@ -38,6 +38,7 @@ import com.game.common.dto.community.*;
 import com.game.common.dto.community.StreamInfo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
+import com.game.common.enums.AliGreenLabelEnum;
 import com.game.common.enums.CommonEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
@@ -125,10 +126,22 @@ public class PostServiceImpl implements IPostService {
         if (postInput == null) {
             return ResultDto.error("222", "不存在的帖子内容");
         }
-//        JSONObject jsonObject = myIAcsClient.checkText( postInput.getHtml());
-//        if((boolean)jsonObject.get("result")){
-//            postInput.setHtml( (String) jsonObject.get("text") );
-//        }
+        JSONObject titleJsonObject = myIAcsClient.checkText( postInput.getTitle());
+        if((boolean)titleJsonObject.get("result")){
+            if(titleJsonObject.get("replace") != null ){
+                postInput.setTitle( (String) titleJsonObject.get("text") );
+            }else {
+                return ResultDto.error("-1", "帖子标题涉及"+ AliGreenLabelEnum.getValueByKey( (String) titleJsonObject.get("label") )+",请您修改" );
+            }
+        }
+        JSONObject textJsonObject = myIAcsClient.checkText( postInput.getHtml());
+        if((boolean)textJsonObject.get("result")){
+            if(textJsonObject.get("replace") != null ){
+                postInput.setHtml( (String) textJsonObject.get("text") );
+            }else {
+                return ResultDto.error("222", "帖子内容涉及"+ AliGreenLabelEnum.getValueByKey( (String) textJsonObject.get("label") )+",请您修改");
+            }
+        }
 //		if(CommonUtil.isNull(postInput.getContent())) {
 //			return ResultDto.error("-1", "请发布内容!");
 //		}

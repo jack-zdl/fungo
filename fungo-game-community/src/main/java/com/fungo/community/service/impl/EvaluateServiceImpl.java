@@ -1,6 +1,7 @@
 package com.fungo.community.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -19,6 +20,7 @@ import com.fungo.community.facede.TSMQFacedeService;
 import com.fungo.community.helper.MQProduct;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IEvaluateService;
+import com.game.common.aliyun.green.AliAcsCheck;
 import com.game.common.buriedpoint.BuriedPointUtils;
 import com.game.common.buriedpoint.constants.BuriedPointCommunityConstant;
 import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
@@ -35,6 +37,7 @@ import com.game.common.dto.community.*;
 import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
+import com.game.common.enums.AliGreenLabelEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheComment;
@@ -105,9 +108,10 @@ public class EvaluateServiceImpl implements IEvaluateService {
     private MooMessageDao mooMessageDao;
     @Autowired
     private MQProduct mqProduct;
-
     @Autowired
     private CmmCircleMapper cmmCircleMapper;
+    @Autowired
+    private AliAcsCheck myIAcsClient;
 
 
 
@@ -121,6 +125,14 @@ public class EvaluateServiceImpl implements IEvaluateService {
         String targetMemberId = "";
         if (CommonUtil.isNull(commentInput.getContent())) {
             return ResultDto.error("-1", "内容不能为空!");
+        }
+        JSONObject titleJsonObject = myIAcsClient.checkText( commentInput.getContent());
+        if((boolean)titleJsonObject.get("result")){
+            if(titleJsonObject.get("replace") != null ){
+                commentInput.setContent( (String) titleJsonObject.get("text") );
+            }else {
+                return ResultDto.error("-1", "内容涉及"+ AliGreenLabelEnum.getValueByKey( (String) titleJsonObject.get("label") )+",请您修改" );
+            }
         }
         Map<String, Object> noticeMap = null;
         if (1 == commentInput.getTarget_type()) {//文章评论
@@ -1725,6 +1737,14 @@ public class EvaluateServiceImpl implements IEvaluateService {
     public ResultDto<ReplyOutBean> addReply(String memberId, ReplyInputBean replyInput, String appVersion) throws Exception {
         if (CommonUtil.isNull(replyInput.getContent())) {
             return ResultDto.error("-1", "内容不能为空!");
+        }
+        JSONObject titleJsonObject = myIAcsClient.checkText( replyInput.getContent());
+        if((boolean)titleJsonObject.get("result")){
+            if(titleJsonObject.get("replace") != null ){
+                replyInput.setContent( (String) titleJsonObject.get("text") );
+            }else {
+                return ResultDto.error("-1", "内容涉及"+ AliGreenLabelEnum.getValueByKey( (String) titleJsonObject.get("label") )+",请您修改" );
+            }
         }
         // 埋点使用
         String targetMemberId =null;

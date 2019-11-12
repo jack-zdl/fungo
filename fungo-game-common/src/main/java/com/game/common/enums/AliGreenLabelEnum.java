@@ -35,4 +35,33 @@ public enum AliGreenLabelEnum implements BaseEnum<AliGreenLabelEnum,String>{
     public String getValue() {
         return value;
     }
+
+    public static String getValueByKey(String key){
+        String value = "";
+        if(AliGreenLabelEnum.NORMAL.key.equals( key )){
+            value = AliGreenLabelEnum.NORMAL.value;
+        }else if(AliGreenLabelEnum.SPAM.key.equals( key )){
+            value = AliGreenLabelEnum.SPAM.value;
+        }else if(AliGreenLabelEnum.AD.key.equals( key )){
+            value = AliGreenLabelEnum.AD.value;
+        }else if(AliGreenLabelEnum.POLITICS.key.equals( key )){
+            value = AliGreenLabelEnum.POLITICS.value;
+        }else if(AliGreenLabelEnum.TERRORISM.key.equals( key )){
+            value = AliGreenLabelEnum.TERRORISM.value;
+        }else if(AliGreenLabelEnum.ABUSE.key.equals( key )){
+            value = AliGreenLabelEnum.ABUSE.value;
+        }else if(AliGreenLabelEnum.PORN.key.equals( key )){
+            value = AliGreenLabelEnum.PORN.value;
+        }else if(AliGreenLabelEnum.FLOOD.key.equals( key )){
+            value = AliGreenLabelEnum.FLOOD.value;
+        }else if(AliGreenLabelEnum.CONTRABAND.key.equals( key )){
+            value = AliGreenLabelEnum.CONTRABAND.value;
+        }else if(AliGreenLabelEnum.MEANINGLESS.key.equals( key )){
+            value = AliGreenLabelEnum.MEANINGLESS.value;
+        }else if(AliGreenLabelEnum.CUSTOMIZED.key.equals( key )){
+            value = AliGreenLabelEnum.CUSTOMIZED.value;
+        }
+        return value;
+
+    }
 }
