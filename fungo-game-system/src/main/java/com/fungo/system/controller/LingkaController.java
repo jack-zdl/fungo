@@ -1,8 +1,6 @@
 package com.fungo.system.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alipay.api.internal.util.AlipaySignature;
 import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.facede.impl.GameProxyServiceImpl;
 import com.fungo.system.helper.mq.MQProduct;
