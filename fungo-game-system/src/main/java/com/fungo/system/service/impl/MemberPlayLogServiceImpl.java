@@ -122,6 +122,7 @@ public class MemberPlayLogServiceImpl implements MemberPlayLogService {
                     memberPlayLog.setMemberPhone( (String) hashMap.get("phone") );
                     memberPlayLog.setResponseContent( JSON.toJSONString( hashMap));
                     memberPlayLog.setUpdatedAt(new Date());
+                    memberPlayLog.setResponseContent( JSONObject.toJSONString(hashMap) );
                     memberPlayLog.updateById();
                  }
                  resultDto = ResultDto.ResultDtoFactory.buildSuccess( "保存用户支付日志" );

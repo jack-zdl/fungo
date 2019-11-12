@@ -22,10 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -210,26 +207,98 @@ public class LingkaController {
     }
 
 
-    @Autowired
-    private GameProxyServiceImpl gameProxyServiceImpl;
+    @PostMapping("/api/system/vip/aliPayAuthCallBack")
+    public String aliPayAuthCallBack(HttpServletRequest request) {
+//        RedissonClient redisson = RedissonUtil.getRedissonInstance();
+//        RLock lock = null;
+        try {
+            Map<String, String> params = new HashMap<String, String>(16);
+            Map<String, String[]> requestParams = request.getParameterMap();
+            for (Iterator<String> iter = requestParams.keySet().iterator(); iter.hasNext();) {
+                String name = (String) iter.next();
+                String[] values = (String[]) requestParams.get(name);
+                String valueStr = "";
+                for (int i = 0; i < values.length; i++) {
+                    valueStr = (i == values.length - 1) ? valueStr + values[i] : valueStr + values[i] + ",";
+                }
+                params.put(name, valueStr);
+            }
+            String outTradeNo = request.getParameter("out_trade_no");
+//            lock = redisson.getLock("aliPay:lock:" + outTradeNo);
+//            boolean res = lock.tryLock();
+            if (1 == 1) {
+                String tradeNo = request.getParameter("trade_no");// 支付宝交易号
+                String tradeStatus = request.getParameter("trade_status");// 交易状态
+                String status = "success"; //userRechargeRecordService.updateUserAliRechargeRecord(params, tradeNo, tradeStatus,
+                        //outTradeNo);
+                return status;
+            }
+            return "fail";
+        } catch (final Exception e) {
+//            logger.error("支付宝回调地址", e);
+            return "fail";
+        } finally {
+//            lock.unlock();
+        }
+    }
 
-    @Autowired
-    private MQProduct mqProduct;
 
-    @GetMapping("/api/system/test")
-    public void test(){
+    @PostMapping("/api/system/vip/wxPaymentNotify")
+    public String wxPaymentNotify(HttpServletRequest request, HttpServletResponse response) {
 
-        CmmPostDto postParam = new CmmPostDto();
-        postParam.setId("0009701ab56b4b4197992e4c63abe69b");
-        postParam.setState(1);
-        CmmPostDto post = gameProxyServiceImpl.selectCmmPostById(postParam);
-        post.setVideoCoverImage("http://outin-d8556079df3311e89ef400163e1c8a9c.oss-cn-beijing.aliyuncs.com/283ba9f7dc424be898d9e8c29106e435/snapshots/08f3503ab15e42a29e345b132df3dcef-00003.jpg");
-        post.setVideo("http://outin-d8556079df3311e89ef400163e1c8a9c.oss-cn-beijing.aliyuncs.com/283ba9f7dc424be898d9e8c29106e435/3a725df6c6c64fa6aa73fce21095bc1c-624bb34fa1dcbd916cad9c298da6787c-sd.mp4");
-        post.setState(1);
-        post.setUpdatedAt(new Date());
-        post.setVideoUrls("[{\"format\":\"mp4\",\"duration\":58,\"encrypt\":false,\"fps\":25,\"bitrate\":1688,\"width\":1920,\"status\":\"success\",\"height\":1080,\"fileUrl\":\"http://outin-d8556079df3311e89ef400163e1c8a9c.oss-cn-beijing.aliyuncs.com/283ba9f7dc424be898d9e8c29106e435/3a725df6c6c64fa6aa73fce21095bc1c-624bb34fa1dcbd916cad9c298da6787c-sd.mp4\",\"definition\":\"SD\",\"size\":12311141}]");
-        // @todo
-        //                postService.updateById(post);
-        mqProduct.postUpdate(post);
+//        RedissonClient redisson = RedissonUtil.getRedissonInstance();
+//        RLock lock = null;
+        Map<String, String> returnData = new HashMap<>();
+        try {
+//            logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<微信支付回调>>>>>>>>>>>>>>>>>>>>>>");
+
+            InputStream inStream = request.getInputStream();
+            ByteArrayOutputStream outSteam = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int len = 0;
+            while ((len = inStream.read(buffer)) != -1) {
+                outSteam.write(buffer, 0, len);
+            }
+
+
+            String resultxml = new String(outSteam.toByteArray(), "utf-8");
+            outSteam.close();
+            inStream.close();
+
+
+//            WeChatConfig config = new WeChatConfig();
+//            WXPay wxpay = new WXPay(config);
+
+
+            Map<String, String> notifyMap = WXPayUtil.xmlToMap(resultxml); // 转换成map
+//            logger.info("###################################", JSONObject.toJSONString(notifyMap));
+
+
+//            if (wxpay.isPayResultNotifySignatureValid(notifyMap)) {
+//                String outTradeNo = notifyMap.get("out_trade_no");
+//                lock = redisson.getLock("wxPay:lock:" + outTradeNo);
+//                boolean res = lock.tryLock();
+//                if (res) {
+//                    String status = userRechargeRecordService.updateUserWxRechargeRecord(notifyMap);
+//                    return status;
+//                }
+//            } else {
+                returnData.put("return_code", "FAIL");
+                returnData.put("return_msg", "签名验证失败");
+                return WXPayUtil.mapToXml(returnData);
+//            }
+        } catch (final Exception e) {
+            try {
+//                logger.error("微信通知回调地址", e);
+                returnData.put("return_code", "FAIL");
+                returnData.put("return_msg", "异常不正确");
+                return WXPayUtil.mapToXml(returnData);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+        } finally {
+//            lock.unlock();
+        }
+        return null;
     }
 }

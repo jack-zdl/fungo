@@ -1137,13 +1137,22 @@ public class GameServiceImpl implements IGameService {
                 Long endDate = null;
                 JSONObject jsonObject = JSON.parseObject( androidStatusDesc);
                 if(jsonObject != null){
-                    starDate = (Long) jsonObject.get( "starDate" );
-                    endDate = (Long) jsonObject.get( "endDate" );
-                    if( starDate == null || endDate == null ){
-                        out.setGameStatus( (String) jsonObject.get( "dsc" ) );
-                    }else {
-                        out.setGameStatus(  DateTools.betweenDate(new Date( starDate ),new Date( endDate ),new Date( )  ) ? (String) jsonObject.get( "dsc" ) : "" );
+                    String dsc = jsonObject.getString("dsc");
+                    out.setGameStatus( (String) jsonObject.get( "dsc" ) );
+                    try {
+                        if(!CommonUtil.isNull(dsc)){
+                            starDate = (Long) jsonObject.get( "starDate" );
+                            endDate = (Long) jsonObject.get( "endDate" );
+                            if( starDate == null || endDate == null ){
+                                out.setGameStatus( (String) jsonObject.get( "dsc" ) );
+                            }else {
+                                out.setGameStatus(  DateTools.betweenDate(new Date( starDate ),new Date( endDate ),new Date( )  ) ? (String) jsonObject.get( "dsc" ) : "" );
+                            }
+                        }
+                    }catch (Exception e){
+                        logger.error( "androidStatusDesc转换失败",e );
                     }
+
                 }
 
                 out.setTags(gameTagStrs);
