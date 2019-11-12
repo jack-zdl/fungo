@@ -48,6 +48,7 @@
 		t2.android_package_name
 		from t_game_collection_term t1 left join t_game t2 on t1.game_id=t2.id
 		where t1.form_id=#{formId}
+		and t1.state=0
     	order by t1.sort desc
     </select>
 
