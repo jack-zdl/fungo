@@ -129,9 +129,7 @@ public class WXPayUtil {
      */
     public static boolean isCorrectSign(SortedMap<String, String> params, String key){
         String sign = createSign(params,key);
-
         String weixinPaySign = params.get("sign").toUpperCase();
-
         return weixinPaySign.equals(sign);
     }
 

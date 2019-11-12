@@ -2,6 +2,8 @@ package com.fungo.system.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alipay.api.internal.util.AlipaySignature;
+import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.facede.impl.GameProxyServiceImpl;
 import com.fungo.system.helper.mq.MQProduct;
 import com.fungo.system.service.MemberPlayLogService;
@@ -42,6 +44,8 @@ public class LingkaController {
     private MemberPlayLogService memberPlayLogService;
     @Autowired
     private SysVersionService sysVersionService;
+    @Autowired
+    private NacosFungoCircleConfig nacosFungoCircleConfig;
 
     @PostMapping(value = "/api/system/member/log")
     public ResultDto<String> saveLingkaMemeberPlayLog(@Validated @RequestBody MemberPlayLogVO memberPlayLogVO){
@@ -103,7 +107,7 @@ public class LingkaController {
         try {
             if(paramObject != null && paramObject.size() > 0){
                 params = paramObject;
-                LOGGER.error("]]]]]]]]]]]]]+"+ JSON.toJSONString(params));
+                LOGGER.error("body体返回的数据"+ JSON.toJSONString(params));
             }else {
                 Map<String, String[]> parameterMap = request.getParameterMap();
                 Set<Map.Entry<String, String[]>> entries = parameterMap.entrySet();
@@ -116,7 +120,7 @@ public class LingkaController {
                     }
                     params.put(key, valueStr);
                 }
-                LOGGER.error("]]]]]]]]]]]]]+"+ JSON.toJSONString(params));
+                LOGGER.error("request返回的数据"+ JSON.toJSONString(params));
             }
 
             /**
@@ -125,8 +129,11 @@ public class LingkaController {
              * 同时，在进行验签的时候，要特别注意我们的签名类型是RSA2
              */
             //非常重要，需要验证回调是不是支付宝发出的，防止被恶意攻击，同时也要避免支付宝的重复通知
-    //        boolean signVerified = AlipaySignature.rsaCheckV1(params, AlipayConfig.alipay_public_key, AlipayConfig.charset, AlipayConfig.sign_type); //调用SDK验证签名
-            ResultDto<String> resultDto =  memberPlayLogService.saveAliMemberPalyLog(request, params);
+            boolean signVerified = true;
+//            signVerified = AlipaySignature.rsaCheckV1(params, nacosFungoCircleConfig.getAlipayPublicKey(), nacosFungoCircleConfig.getAlipayCharset(), nacosFungoCircleConfig.getAlipaySignType()); //调用SDK验证签名
+            if(signVerified){
+                ResultDto<String> resultDto =  memberPlayLogService.saveAliMemberPalyLog(request, params);
+            }
         } catch (Exception e) {
             LOGGER.error("支付宝回调验证异常", e);
             return "failed";
@@ -160,11 +167,17 @@ public class LingkaController {
             //3、转为有序的map
             SortedMap<String,String> sortedMap = WXPayUtil.getSortedMap(callbackMap);
             //4、判断签名是否正确
-//            if(WXPayUtil.isCorrectSign(sortedMap,weChatConfig.getKey())){
-//            }
-            memberPlayLogService.saveWeChatMemberPalyLog( sortedMap,request,response);
-            response.setContentType("text/xml");
-            response.getWriter().println("success");
+            boolean isValidate = true;
+//            isValidate = WXPayUtil.isCorrectSign(sortedMap,nacosFungoCircleConfig.getWechatAppKey());
+            if(isValidate){
+                memberPlayLogService.saveWeChatMemberPalyLog( sortedMap,request,response);
+                response.setContentType("text/xml");
+                response.getWriter().println("success");
+            }else {
+                LOGGER.error("微信异步回调接口验签失败");
+                response.setContentType("text/xml");
+                response.getWriter().println("fail");
+            }
         }catch (Exception e){
             LOGGER.error( "微信异步回调接口异常",e);
             //7、通知微信订单处理失败

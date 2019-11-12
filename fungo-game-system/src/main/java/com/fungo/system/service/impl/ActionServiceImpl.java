@@ -768,8 +768,9 @@ public class ActionServiceImpl implements IActionService {
             re.show(tips);
             re.setData(tips);
         } else {
-            re.show("下载成功");
-            re.setData("下载成功");
+            // 2019-11-12 吴亮说开始下载不展示
+//            re.show("开始下载成功");
+//            re.setData("下载成功");
         }
 
         //清除Redis cache
