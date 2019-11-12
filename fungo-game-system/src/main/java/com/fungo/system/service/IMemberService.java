@@ -93,5 +93,7 @@ public interface IMemberService {
 
 	boolean addNotice(String memberId,String content);
 
+	boolean addActionTypeNotice(String memberId,String content,String actionType);
+
 
 }

@@ -2247,6 +2247,69 @@ public class MemberServiceImpl implements IMemberService {
         }
         return true;
     }
+
+    public boolean addActionTypeNotice(String memberId,String content,String actionType){
+        Map<String,String> dataMap = new HashMap<>();
+        dataMap.put("actionType",actionType);
+        dataMap.put("content", content );
+        dataMap.put("targetType","1");
+        dataMap.put("targetId","应该是券信息");
+        dataMap.put("userId", "0b8aba833f934452992a972b60e9ad10");
+        dataMap.put("userType", "1");
+        dataMap.put("userAvatar", "http://output-mingbo.oss-cn-beijing.aliyuncs.com/official.png");
+        dataMap.put("userName", "FunGo大助手");
+        dataMap.put("msgTime", DateTools.fmtDate(new Date()));
+        try {
+            EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
+            noticeEntityWrapper.eq( "mb_id", memberId );
+            noticeEntityWrapper.eq( "ntc_type", 7 );
+            noticeEntityWrapper.eq( "is_read", 2 );
+            List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
+            distributedLockByCurator.acquireDistributedLock( memberId );
+            if (noticeListDB != null && noticeListDB.size() > 0) {
+                noticeListDB.parallelStream().forEach( x -> {
+                    String jsonString = x.getNtcData();
+                    JSONObject jsonObject = JSON.parseObject( jsonString );
+                    jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
+                    jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
+                    x.setNtcData( jsonObject.toJSONString());
+                    x.updateById();
+                } );
+            } else {
+                MemberNotice memberNotice = new MemberNotice();
+                int clusterIndex_i = Integer.parseInt( clusterIndex );
+                memberNotice.setId( PKUtil.getInstance( clusterIndex_i ).longPK() );
+                memberNotice.setIsRead( 2 );
+                memberNotice.setNtcType( 7 );
+                memberNotice.setMbId( memberId );
+                memberNotice.setCreatedAt( new Date() );
+                memberNotice.setUpdatedAt( new Date() );
+                Map map = new ConcurrentHashMap( 4 );
+                map.put( "count", 1 );
+                map.put( "like_count", 0 );
+                map.put( "comment_count", 0 );
+                map.put( "notice_count", 1 );
+                memberNotice.setNtcData( JSON.toJSONString( map ) );
+                memberNoticeDaoService.insert( memberNotice );
+            }
+            BasNotice basNotice = new BasNotice();
+            basNotice.setType( 6 );
+            basNotice.setChannel("");
+            basNotice.setIsRead( 0 );
+            basNotice.setIsPush( 0 );
+            basNotice.setMemberId( memberId );
+            basNotice.setCreatedAt( new Date() );
+            basNotice.setData( JSON.toJSONString( dataMap ) );
+            basNotice.insert();
+
+        }catch (Exception e){
+            logger.error( "增加消息异常" ,e);
+            return false;
+        }    finally {
+            distributedLockByCurator.releaseDistributedLock( memberId );
+        }
+        return true;
+    }
     /**
      * 如果您是新用户，在9月3日~9月16日期间注册
      * @todo
