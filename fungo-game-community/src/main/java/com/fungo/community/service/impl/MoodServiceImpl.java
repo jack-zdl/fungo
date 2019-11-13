@@ -100,7 +100,9 @@ public class MoodServiceImpl implements IMoodService {
             if(titleJsonObject.get("replace") != null ){
                 input.setContent( (String) titleJsonObject.get("text") );
             }else {
-                return ResultDto.error("-1", "内容涉及"+ AliGreenLabelEnum.getValueByKey( (String) titleJsonObject.get("label") )+",请您修改" );
+                ResultDto<ObjectId> resultDto = ResultDto.error("0", "内容涉及"+ AliGreenLabelEnum.getValueByKey( (String) titleJsonObject.get("label") )+",请您修改" );
+                resultDto.setShowState(1);
+                return resultDto;
             }
         }
 

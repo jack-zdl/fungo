@@ -28,6 +28,7 @@ import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ObjectId;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.CmmCmtReplyDto;
@@ -118,7 +119,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
             if(titleJsonObject.get("replace") != null ){
                 commentInput.setContent( (String) titleJsonObject.get("text") );
             }else {
-                return ResultDto.error("-1", "内容涉及"+ AliGreenLabelEnum.getValueByKey( (String) titleJsonObject.get("label") )+",请您修改" );
+                ResultDto<EvaluationBean> resultDto = ResultDto.error("0","帖子内容涉及"+ AliGreenLabelEnum.getValueByKey( (String) titleJsonObject.get("label") )+",请您修改" );
+                resultDto.setShowState(1);
+                return resultDto;
             }
         }
         GameEvaluation evaluation = gameEvaluationService.selectOne(new EntityWrapper<GameEvaluation>().eq("member_id", memberId).eq("game_id", commentInput.getTarget_id()).eq("state", 0));

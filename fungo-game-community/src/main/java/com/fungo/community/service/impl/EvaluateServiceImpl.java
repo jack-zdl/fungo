@@ -28,10 +28,7 @@ import com.game.common.buriedpoint.model.BuriedPointReplyModel;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
-import com.game.common.dto.AuthorBean;
-import com.game.common.dto.FungoPageResultDto;
-import com.game.common.dto.GameDto;
-import com.game.common.dto.ResultDto;
+import com.game.common.dto.*;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.*;
 import com.game.common.dto.game.GameEvaluationDto;
@@ -131,7 +128,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
             if(titleJsonObject.get("replace") != null ){
                 commentInput.setContent( (String) titleJsonObject.get("text") );
             }else {
-                return ResultDto.error("-1", "内容涉及"+ AliGreenLabelEnum.getValueByKey( (String) titleJsonObject.get("label") )+",请您修改" );
+                ResultDto<CommentOut> resultDto = ResultDto.error("0", "内容涉及"+ AliGreenLabelEnum.getValueByKey( (String) titleJsonObject.get("label") )+",请您修改" );
+                resultDto.setShowState(1);
+                return resultDto;
             }
         }
         Map<String, Object> noticeMap = null;
@@ -1743,7 +1742,9 @@ public class EvaluateServiceImpl implements IEvaluateService {
             if(titleJsonObject.get("replace") != null ){
                 replyInput.setContent( (String) titleJsonObject.get("text") );
             }else {
-                return ResultDto.error("-1", "内容涉及"+ AliGreenLabelEnum.getValueByKey( (String) titleJsonObject.get("label") )+",请您修改" );
+                ResultDto<ReplyOutBean> resultDto = ResultDto.error("0","帖子内容涉及"+ AliGreenLabelEnum.getValueByKey( (String) titleJsonObject.get("label") )+",请您修改" );
+                resultDto.setShowState(1);
+                return resultDto;
             }
         }
         // 埋点使用

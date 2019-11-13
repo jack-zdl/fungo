@@ -131,15 +131,19 @@ public class PostServiceImpl implements IPostService {
             if(titleJsonObject.get("replace") != null ){
                 postInput.setTitle( (String) titleJsonObject.get("text") );
             }else {
-                return ResultDto.error("-1", "帖子标题涉及"+ AliGreenLabelEnum.getValueByKey( (String) titleJsonObject.get("label") )+",请您修改" );
+                ResultDto<ObjectId> resultDto = ResultDto.error("0","帖子标题涉及"+ AliGreenLabelEnum.getValueByKey( (String) titleJsonObject.get("label") )+",请您修改" );
+                resultDto.setShowState(1);
+                return resultDto;
             }
         }
-        JSONObject textJsonObject = myIAcsClient.checkText( postInput.getHtml());
+        JSONObject textJsonObject = myIAcsClient.checkText( postInput.getHtml().replace( "<p>","" ).replace( "</p>","" ));
         if((boolean)textJsonObject.get("result")){
             if(textJsonObject.get("replace") != null ){
-                postInput.setHtml( (String) textJsonObject.get("text") );
+                postInput.setHtml( "<p>"+(String) textJsonObject.get("text") +"</p>");
             }else {
-                return ResultDto.error("222", "帖子内容涉及"+ AliGreenLabelEnum.getValueByKey( (String) textJsonObject.get("label") )+",请您修改");
+                ResultDto<ObjectId> resultDto = ResultDto.error("0","帖子内容涉及"+ AliGreenLabelEnum.getValueByKey( (String) textJsonObject.get("label") )+",请您修改" );
+                resultDto.setShowState(1);
+                return resultDto;
             }
         }
 //		if(CommonUtil.isNull(postInput.getContent())) {
@@ -2050,15 +2054,15 @@ public class PostServiceImpl implements IPostService {
                                 CmmPost post = cmmPostDao.selectById( s.getBizId());
                                 post.setVideoUrls(s.getVideoUrls());
                                 post.setVideo(s.getReVideoUrl());
-                                String coverImg = vdoService.getVideoImgInfo(s.getVideoId());
-                                post.setVideoCoverImage(coverImg);
+//                                String coverImg = vdoService.getVideoImgInfo(s.getVideoId());
+                                post.setVideoCoverImage(s.getVideoCoverImage());
                                 post.updateById();
                                 post.setState(1);
                                 post.updateById();
-                } );
+                });
             }
 
-            List<MooMood> mooMoods = mooMoodDao.selectList(new EntityWrapper<MooMood>().eq("state", 0)  );
+            List<MooMood> mooMoods = mooMoodDao.selectList(new EntityWrapper<MooMood>().eq("state", 1)  );
             List<String> moodMoodIds = mooMoods.stream().map( MooMood::getId ).collect( Collectors.toList());
             if(moodMoodIds != null && moodMoodIds.size() >0 ){
                 List<BasVideoJob> basVideoJobs = basVideoJobDao.getBasVideoJobByPostIds("2",moodMoodIds);
@@ -2066,10 +2070,10 @@ public class PostServiceImpl implements IPostService {
                     MooMood mooMood = mooMoodDao.selectById( s.getBizId());
                     mooMood.setVideoUrls(s.getVideoUrls());
                     mooMood.setVideo(s.getReVideoUrl());
-                    String coverImg = vdoService.getVideoImgInfo(s.getVideoId());
-                    mooMood.setVideoCoverImage(coverImg);
+//                    String coverImg = vdoService.getVideoImgInfo(s.getVideoId());
+                    mooMood.setVideoCoverImage(s.getVideoCoverImage());
                     mooMood.updateById();
-                    mooMood.setState(1);
+                    mooMood.setState(0);
                     mooMood.updateById();
                 } );
             }
