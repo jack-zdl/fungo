@@ -35,7 +35,7 @@ public class LingKaHelper {
 
             String session =MyThreadLocal.getLingkaSession();
             if(CommonUtil.isNull( session )){
-                boolean resultBoolean = LingKaDataUtil.getSession( LingKaConstant.ADMIN_EMAIL );
+                boolean resultBoolean = LingKaDataUtil.getAdminSession( LingKaConstant.ADMIN_EMAIL );
                 if(resultBoolean){
                     MyThreadLocal.setLingkaSession("true");
                 }
@@ -65,7 +65,7 @@ public class LingKaHelper {
         try {
             String session =MyThreadLocal.getLingkaSession();
             if(CommonUtil.isNull( session )){
-                boolean resultBoolean = LingKaDataUtil.getSession( LingKaConstant.ADMIN_EMAIL );
+                boolean resultBoolean = LingKaDataUtil.getAdminSession( LingKaConstant.ADMIN_EMAIL );
                 if(resultBoolean){
                     MyThreadLocal.setLingkaSession("true");
                 }else {
