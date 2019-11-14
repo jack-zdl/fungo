@@ -48,8 +48,8 @@ public class LingKaDataUtil {
     public static  String listTabGame( String url, Map hashMap){
         // 获取条件
         // 请求数据
-//        String result = HttpUtil.post(url, hashMap);
-        String result = HttpRequest.post(url).setConnectionTimeout( connectTimeout ).body( hashMap.toString() ).timeout( socketTimeout ).execute().body();
+       String result = HttpUtil.post(url, hashMap);
+//       result = HttpRequest.post(url).setConnectionTimeout( connectTimeout ).body( hashMap.toString() ).timeout( socketTimeout ).execute().body();
         // 解析数据并响应
         return result;
     }
@@ -62,6 +62,23 @@ public class LingKaDataUtil {
         try {
             HashMap<String, Object> paramMap = new HashMap<>();
             paramMap.put("phone", userPhone);
+            paramMap.put("password", ADMIN_PASSWORD);
+            String s = listTabGame(LINGKA_LOGIN_URL,paramMap);
+            JSONObject jsonObject = JSON.parseObject( s );
+            return jsonObject.get( "type" ) != null ;
+        }catch (Exception e){
+            LOGGER.error( "登陆获取session",e );
+        }
+        return false;
+    }
+    /**
+     * 功能描述: 登陆获取session
+     * @date: 2019/10/21 18:08
+     */
+    public static boolean getAdminSession(String userPhone){
+        try {
+            HashMap<String, Object> paramMap = new HashMap<>();
+            paramMap.put("email", userPhone);
             paramMap.put("password", ADMIN_PASSWORD);
             String s = listTabGame(LINGKA_LOGIN_URL,paramMap);
             JSONObject jsonObject = JSON.parseObject( s );
