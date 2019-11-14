@@ -42,10 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
@@ -818,14 +815,34 @@ public class IndexServiceImpl implements IIndexService {
     @Override
     public ResultDto<CircleCardDataBean> queryHomePage(String os, String iosChannel, String app_channel, String appVersion) {
         ResultDto<CircleCardDataBean> re = new ResultDto<>();
-        Banner banner = bannerService.selectOne(new EntityWrapper<Banner>()
+        List<Banner> list = bannerService.selectList(new EntityWrapper<Banner>()
                 .in("position_code","0009,0010")
                 .in("display_platform", "0,2")
                 .eq("state", "0")
-                .orderBy("sort desc,updated_at", false)
-                .last("limit 1"));
+                .orderBy("sort desc,updated_at", false));
+        Date nowDate = new Date();
+        nowDate.getTime();
+        List<Banner> bannerList = new ArrayList<>();
+        for(Banner banner : list){
+            if(null!=banner.getBeginDate() && null!=banner.getEndDate()){
+                if(nowDate.getTime()>=banner.getBeginDate().getTime() && nowDate.getTime()<=banner.getEndDate().getTime()){
+                    bannerList.add(banner);
+                }
+            }else if(null==banner.getBeginDate() && null!=banner.getEndDate()){
+                if( nowDate.getTime()<=banner.getEndDate().getTime()){
+                    bannerList.add(banner);
+                }
+            }else if(null!=banner.getBeginDate() && null==banner.getEndDate()){
+                if(nowDate.getTime()>=banner.getBeginDate().getTime()){
+                    bannerList.add(banner);
+                }
+            }else{
+                bannerList.add(banner);
+            }
+        }
         CircleCardDataBean b1 = null;
-        if(null!=banner){
+        if(!bannerList.isEmpty()){
+            Banner banner = bannerList.get(0);
             b1 = new CircleCardDataBean();
             b1.setBannerId(banner.getId());
             b1.setMainTitle(banner.getGeneralizeTitle());

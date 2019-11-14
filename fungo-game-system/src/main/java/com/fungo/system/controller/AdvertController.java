@@ -183,7 +183,9 @@ public class AdvertController {
                     map1.put( "gameName",gameDto.getName());
                 }
                 map1.put("type", String.valueOf(banner.getTargetType()));
-            }else if(2 == banner.getActionType()){
+            }else if(1 == banner.getActionType() && 4 == banner.getTargetType()){
+                map1.put("type", String.valueOf(banner.getTargetType()));
+            } else if(2 == banner.getActionType()){
                 map1.put("href", banner.getHref());
                 map1.put("type", "2");
             }

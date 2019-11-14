@@ -137,11 +137,11 @@ public class ActionServiceImpl implements IActionService {
             int likeCount = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("member_id", targetMemberId).in("type", new Integer[]{0, 1, 2, 7, 11}));
 //			int likeCount = scoreLogService.selectCount(new EntityWrapper<ScoreLog>().eq("member_id", targetMemberId).eq("code_idt", 41));
             LOGGER.info("like---点赞次数" + likeCount);
-            if (likeCount == 50) {//expTask.getData()
+            if (likeCount >= 50 && likeCount < 100) {//expTask.getData()
                 scoreLogService.updateRanked(targetMemberId, new ObjectMapper(), 31);
-            } else if (likeCount == 100) {
+            } else if (likeCount >= 100 && likeCount < 300) {
                 scoreLogService.updateRanked(targetMemberId, new ObjectMapper(), 32);
-            } else if (likeCount == 300) {
+            } else if (likeCount >= 300) {
                 scoreLogService.updateRanked(targetMemberId, new ObjectMapper(), 33);
             }
             //----添加埋点点赞数据----------
