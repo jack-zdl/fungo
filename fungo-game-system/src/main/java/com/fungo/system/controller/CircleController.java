@@ -63,7 +63,7 @@ public class CircleController {
             //app渠道编码
             String app_channel = request.getHeader("appChannel");
             String appVersion = request.getHeader("appVersion");
-            re = indexService.circleEventList(inputPageDto, os, iosChannel, app_channel, appVersion);
+            re = indexService.appCircleEventList(inputPageDto, os, iosChannel, app_channel, appVersion);
         } catch (Exception e) {
             LOGGER.error("获取活动列表异常", e);
             re = FungoPageResultDto.error("-1", "获取活动列表异常，请联系管理员");

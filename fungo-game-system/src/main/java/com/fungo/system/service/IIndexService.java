@@ -77,4 +77,17 @@ public interface IIndexService {
 	 */
 	ResultDto<CircleCardDataBean> queryOpenScreen(String os, String iosChannel, String app_channel, String appVersion);
 
+
+
+	/**
+	 * 首页显示内容
+	 * @param input 入参
+	 * @param os app 平台类型
+	 * @param iosChannel ios渠道标识
+	 * @param app_channel app渠道编码
+	 * @param appVersion app release版本号
+	 * @return
+	 */
+	FungoPageResultDto<CardIndexBean> appCircleEventList(InputPageDto input, String os, String iosChannel, String app_channel, String appVersion);
+
 }

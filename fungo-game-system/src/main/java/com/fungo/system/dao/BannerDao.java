@@ -60,4 +60,19 @@ public interface BannerDao extends BaseMapper<Banner> {
 	 * @date: 2019/7/16 19:26
 	 */
 	List<PCBannerDto> getPCBannerByIndex();
+
+	/**
+	 * 功能描述: 获取至今为止仍在进行的运营活动
+	 * @auther: dl.zhang
+	 * @date: 2019/6/12 10:30
+	 */
+	List<Banner> appBeforeNewDateBanner(Pagination page);
+
+	/**
+	 * 功能描述: 获取至今为止已过期的运营活动
+	 * @return: java.util.List<com.fungo.system.entity.Banner>
+	 * @auther: dl.zhang
+	 * @date: 2019/6/12 10:30
+	 */
+	List<Banner> appAfterNewDateBanner(Pagination   page);
 }

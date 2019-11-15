@@ -92,4 +92,20 @@
 		LEFT  JOIN  t_banner_images  bi on b.id = bi.banner_id WHERE b.position_code = '0001' AND b.state = 0  GROUP BY b.id  ORDER  BY sort DESC
 	</select>
 
+
+	<select id="appBeforeNewDateBanner" resultType="com.fungo.system.entity.Banner" >
+		select
+		<include refid="Base_Column_List"></include>
+		from t_banner where (end_date > now()  or date_type  = 1 ) and position_code in('0005','0010')  and state = '0'
+		and display_platform in(0,2)
+		order by sort desc, updated_at desc
+	</select>
+
+	<select id="appAfterNewDateBanner" resultType="com.fungo.system.entity.Banner" >
+		select
+		<include refid="Base_Column_List"></include>
+		from t_banner where position_code in('0005','0010') and state = '0' and display_platform in(0,2) and
+		(  now() > end_date   and  date_type  = 2 ) order by sort desc , updated_at desc
+	</select>
+
 </mapper>

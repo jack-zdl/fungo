@@ -940,4 +940,73 @@ public class IndexServiceImpl implements IIndexService {
     }
 
 
+
+
+    /**
+     * 功能描述: 获取圈子页面上广告位（app端）
+     *
+     * @param: [input, os, iosChannel, app_channel, appVersion]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: dl.zhang
+     * @date: 2019/6/11 11:05
+     */
+    @Override
+    public FungoPageResultDto<CardIndexBean> appCircleEventList(InputPageDto input, String os, String iosChannel, String app_channel, String appVersion) {
+        FungoPageResultDto<CardIndexBean> re = new FungoPageResultDto<>();
+        //先从Redis获取
+        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_EVENT_INDEX;
+        String keySuffix = JSON.toJSONString(input) + os + iosChannel;
+        try {
+            if (StringUtils.isNotBlank(app_channel)) {
+                keySuffix += app_channel;
+            }
+            //@todo
+            re = (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
+
+            if (null != re && null != re.getData() && re.getData().size() > 0) {
+                return re;
+            }
+            List<CardIndexBean> clist = new ArrayList<>();
+            /****/
+            List<Banner> bl = new ArrayList<>();
+            Page<Banner> page = new Page<>(input.getPage(), input.getLimit());
+
+            if (BannnerEnum.lving.getValue().equals(input.getFilter())) {
+                bl = bannerDao.appBeforeNewDateBanner(page);
+            } else if (BannnerEnum.past.getValue().equals(input.getFilter())) {
+                bl = bannerDao.appAfterNewDateBanner(page);
+            }
+
+//            CardIndexBean indexBean = new CardIndexBean();
+            if (bl.size() == 0) {
+                return FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(CommonEnum.HTTP_WARNING_EMPTY.code(), CommonEnum.HTTP_WARNING_EMPTY.message());
+            }
+            ArrayList<CircleCardDataBean> list = new ArrayList<>();
+            for (Banner b : bl) {
+                CircleCardDataBean b1 = new CircleCardDataBean();
+                b1.setBannerId(b.getId());
+                b1.setMainTitle(b.getGeneralizeTitle());
+                b1.setImageUrl(b.getCoverImage());
+                b1.setImageUrlNew(b.getCoverImgNew());
+                b1.setContent(b.getIntro());
+                b1.setHref(b.getHref());
+                b1.setActionType(String.valueOf(b.getActionType()));
+                b1.setTargetType(b.getTargetType());
+                b1.setTargetId(b.getTargetId());
+                b1.setStartDate(DateTools.fmtDate(b.getBeginDate()));
+                b1.setEndDate(DateTools.fmtDate(b.getEndDate()));
+                list.add(b1);
+            }
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(list, input.getPage() - 1, page);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("获取圈子页面上广告位", e);
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildError("获取圈子页面上广告位失败,请联系管理员");
+        }
+        return re;
+    }
+
+
+
+
 }

@@ -86,16 +86,14 @@ public class GameHomeServiceImpl implements GameHomeService {
             return re;
         }
         List<HomePage> result = new ArrayList<>();
-        //查询制顶和正常的全部数据
-        Page<HomePage> totalPage = homePageService.selectPage(new Page<HomePage>(1, 1),
-                new EntityWrapper<HomePage>().in("state", "0,3").orderBy("updated_at", false));
-        List<HomePage> totalListPage = totalPage.getRecords();
+        //查询正常和置顶全部数据
+        List<HomePage> totalListPage = homePageService.selectList(new EntityWrapper<HomePage>().in("state", "0,3").orderBy("updated_at", false));
         //查询数据按时间排序
         Page<HomePage> page = homePageService.selectPage(new Page<HomePage>(inputPageDto.getPage(), inputPageDto.getLimit()),
                 new EntityWrapper<HomePage>().eq("state", 0).orderBy("updated_at", false));
         //获取前一页后一页数据
         FungoPageResultDto<HomePage> fungoPageResultDto = new FungoPageResultDto<>();
-        //查询总数据
+        //查询正常的总数据
         List<HomePage> homePageList = homePageService.selectList(new EntityWrapper<HomePage>().eq("state", 0));
         Page<HomePage> pages = new Page();
         pages.setTotal(homePageList.size());
