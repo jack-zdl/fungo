@@ -909,11 +909,11 @@ public class IndexServiceImpl implements IIndexService {
      * @date: 2019/10/11 11:01
      */
     @Override
-    public ResultDto<CircleCardDataBean> queryOpenScreen(String os, String iosChannel, String app_channel, String appVersion) {
+    public ResultDto<CircleCardDataBean> queryOpenScreen(String os) {
         ResultDto<CircleCardDataBean> re = new ResultDto<>();
         EntityWrapper<Banner> wrapper = new EntityWrapper<>();
 
-        if(StringUtils.isNotBlank(iosChannel)){
+        if(StringUtils.isNotBlank(os) && os.equals("iOS")){
             wrapper.in("display_platform","0,4");
         }else{
             wrapper.in("display_platform","0,3");

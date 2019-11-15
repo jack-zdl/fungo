@@ -15,6 +15,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.objenesis.instantiator.android.Android10Instantiator;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -142,17 +143,10 @@ public class CircleController {
     @ApiImplicitParams({})
     public ResultDto<CircleCardDataBean> queryOpenScreen(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request) {
         ResultDto<CircleCardDataBean> re = null;
-        //iOS渠道
-        String iosChannel = "";
+        //Android  iOS
         String os = "";
         os = (String) request.getAttribute("os");
-        if (request.getHeader("iosChannel") != null) {
-            iosChannel = request.getHeader("iosChannel");
-        }
-        //app渠道编码
-        String app_channel = request.getHeader("appChannel");
-        String appVersion = request.getHeader("appVersion");
-        re = indexService.queryOpenScreen(os, iosChannel, app_channel, appVersion);
+        re = indexService.queryOpenScreen(os);
         return re;
     }
 
