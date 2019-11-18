@@ -147,10 +147,10 @@ public class ESDAOServiceImpl {
 //                boolQueryBuilder.must(QueryBuilders.wildcardQuery("title",keyword));
 //                sourceBuilder.query(boolQueryBuilder);
                 MatchQueryBuilder matchQueryBuilder1 = QueryBuilders.matchQuery("state",0);
-                MatchQueryBuilder matchQueryBuilder2 = QueryBuilders.matchQuery("name",keyword).boost(10);
+                MatchQueryBuilder matchQueryBuilder2 = QueryBuilders.matchQuery("name",keyword); //.boost(10)
                 // bug 2865 只从名称和副标题的搜索
 //                MatchQueryBuilder matchQueryBuilder3 = QueryBuilders.matchQuery("intro",keyword);
-                MatchQueryBuilder matchQueryBuilder4 = QueryBuilders.matchQuery("google_deputy_name",keyword);
+                MatchQueryBuilder matchQueryBuilder4 = QueryBuilders.matchQuery("google_deputy_name",keyword); //.boost(5)
                 BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
                 BoolQueryBuilder childBoolQueryBuilder = new BoolQueryBuilder()
                         .should(matchQueryBuilder2)
