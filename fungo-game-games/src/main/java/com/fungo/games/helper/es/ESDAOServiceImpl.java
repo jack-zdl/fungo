@@ -166,7 +166,7 @@ public class ESDAOServiceImpl {
             // 结果开始处
             sourceBuilder.from((page-1)*limit);//            sourceBuilder.from(0);
             // 查询结果终止处
-            sourceBuilder.size(page*limit);// sourceBuilder.size(10);
+            sourceBuilder.size(limit);// sourceBuilder.size(10);
             sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
 
             //指定排序
