@@ -19,6 +19,7 @@
         <result column="code" property="code" />
         <result column="new_version" property="newVersion" />
         <result column="is_auth" property="isAuth" />
+        <result column="is_hide" property="isHide" />
     </resultMap>
 
     <!-- 通用查询结果列 -->

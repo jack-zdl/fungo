@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.community.dao.mapper.ContentGreenDao">
+  <resultMap id="BaseResultMap" type="com.fungo.community.entity.ContentGreen">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="content_id" jdbcType="VARCHAR" property="contentId" />
+    <result column="filter_type" jdbcType="INTEGER" property="filterType" />
+    <result column="filter_content" jdbcType="VARCHAR" property="filterContent" />
+    <result column="isactive" jdbcType="CHAR" property="isactive" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, `type`, content_id as contentId,filter_type as filterType , filter_content as filterContent, isactive, created_at as createdAt, description
+  </sql>
+
+</mapper>

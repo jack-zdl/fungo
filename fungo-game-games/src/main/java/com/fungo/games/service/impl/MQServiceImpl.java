@@ -13,14 +13,11 @@ import com.game.common.dto.GameDto;
 import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.game.GameReleaseLogDto;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -157,9 +154,11 @@ public class MQServiceImpl implements IMQService {
                     downNumNew = gameDB.getBoomDownloadNum();
                 }
                 downNumNew = FungoLivelyCalculateUtils.calcViewAndDownloadCount(downNumNew);
-                gameDB.setBoomDownloadNum(downNumNew);
-                gameDB.setDownloadNum(gameDB.getDownloadNum() + 1);
-                return gameDB.updateById();
+              /*  gameDB.setBoomDownloadNum(downNumNew);
+                gameDB.setDownloadNum(gameDB.getDownloadNum() + 1);*/
+                gameDao.addDownLoadNum(game_id,downNumNew);
+                //gameDB.setWeekDownloadNum(gameDB.getWeekDownloadNum()+1);
+                return true;
             }
         }
         return false;

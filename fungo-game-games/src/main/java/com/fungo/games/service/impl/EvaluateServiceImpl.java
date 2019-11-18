@@ -1,6 +1,7 @@
 package com.fungo.games.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -16,6 +17,7 @@ import com.fungo.games.feign.MQFeignClient;
 import com.fungo.games.helper.MQProduct;
 import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.service.*;
+import com.game.common.aliyun.green.AliAcsCheck;
 import com.game.common.api.InputPageDto;
 import com.game.common.buriedpoint.BuriedPointUtils;
 import com.game.common.buriedpoint.constants.BuriedPointCommunityConstant;
@@ -26,6 +28,7 @@ import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ObjectId;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.CmmCmtReplyDto;
@@ -35,6 +38,7 @@ import com.game.common.dto.evaluation.*;
 import com.game.common.dto.game.TraitBean;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.AbstractResultEnum;
+import com.game.common.enums.AliGreenLabelEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheGame;
@@ -100,6 +104,8 @@ public class EvaluateServiceImpl implements IEvaluateService {
     private MQFeignClient mqFeignClient;
     @Autowired
     private MQDataReceiveService mqDataReceiveService;
+    @Autowired
+    private AliAcsCheck myIAcsClient;
 
 
     @Override
@@ -108,6 +114,16 @@ public class EvaluateServiceImpl implements IEvaluateService {
 
         ResultDto<EvaluationBean> re = new ResultDto<EvaluationBean>();
         EvaluationBean evaluationBean = new EvaluationBean();
+        JSONObject titleJsonObject = myIAcsClient.checkText( commentInput.getContent());
+        if((boolean)titleJsonObject.get("result")){
+            if(titleJsonObject.get("replace") != null ){
+                commentInput.setContent( (String) titleJsonObject.get("text") );
+            }else {
+                ResultDto<EvaluationBean> resultDto = ResultDto.error("0","帖子内容涉及"+ AliGreenLabelEnum.getValueByKey( (String) titleJsonObject.get("label") )+",请您修改" );
+                resultDto.setShowState(1);
+                return resultDto;
+            }
+        }
         GameEvaluation evaluation = gameEvaluationService.selectOne(new EntityWrapper<GameEvaluation>().eq("member_id", memberId).eq("game_id", commentInput.getTarget_id()).eq("state", 0));
 
         //int times = -1;

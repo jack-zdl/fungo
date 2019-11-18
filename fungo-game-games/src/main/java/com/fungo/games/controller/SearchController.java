@@ -34,6 +34,44 @@ public class SearchController {
 
 
 
+    @ApiOperation(value = "联想游戏", notes = "联想出搜索内容其余关键字")
+    @RequestMapping(value = "/api/search/games/keyword", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "页数号", paramType = "form", dataType = "int"),
+            @ApiImplicitParam(name = "limit", value = "每页显示数", paramType = "form", dataType = "int"),
+            @ApiImplicitParam(name = "key_word", value = "关键字", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "tag", value = "游戏分类", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "sort", value = "排序字段（‘+，- ，表示返回顺序）", paramType = "form", dataType = "string")
+    })
+    public FungoPageResultDto<String> searchGamesKeyword(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto, HttpServletRequest request) {
+        int page = searchInputDto.getPage();
+
+        //fix: 页码 小于1 返回空 [by mxf 2019-01-30]
+        if (page < 1) {
+            return new FungoPageResultDto<String>();
+        }
+
+        int limit = searchInputDto.getLimit();
+        String keyword = searchInputDto.getKey_word();
+        if (StringUtils.isNotBlank(keyword)) {
+            keyword = keyword.trim();
+        }
+        String tag = searchInputDto.getTag();
+        String sort = searchInputDto.getSorts();
+        String os = "";
+        os = (String) request.getAttribute("os");
+        String memberId = "";
+        if (memberUserPrefile != null) {
+            memberId = memberUserPrefile.getLoginId();
+        }
+        try {
+            return gameService.searchGamesKeyword(page, limit, keyword, tag, sort, os, memberId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return FungoPageResultDto.error("-1", "操作失败");
+        }
+    }
+
 
     @ApiOperation(value = "搜索游戏", notes = "")
     @RequestMapping(value = "/api/search/games", method = RequestMethod.POST)

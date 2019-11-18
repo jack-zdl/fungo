@@ -6,13 +6,17 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.fungo.system.dao.IncentAccountCoinDao;
 import com.fungo.system.entity.IncentAccountCoin;
 import com.fungo.system.entity.Member;
+import com.fungo.system.entity.MessageCode;
+import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.mall.service.commons.FungoMallScanOrderWithSeckillService;
+import com.fungo.system.service.IMemberService;
 import com.fungo.system.service.IncentAccountCoinDaoService;
 import com.fungo.system.service.MemberService;
 import com.game.common.buriedpoint.BuriedPointUtils;
 import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
 import com.game.common.buriedpoint.model.BuriedPointConsumeModel;
 import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.consts.MessageConstants;
 import com.game.common.dto.ResultDto;
 import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.vo.UserFunVO;
@@ -48,6 +52,12 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
     private MemberService memberService;
     @Autowired
     private FungoCacheTask fungoCacheTask;
+//    @Autowired
+//    private MemberServiceImpl memberServiceImpl;
+    @Autowired
+    private IMemberService memberServiceImpl;
+//    @Autowired
+//    private DistributedLockByCurator distributedLockByCurator;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -58,6 +68,7 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
         String description  = userFunVO.getDescription();
         Member member = memberService.selectById( memberId);
         try {
+//
             EntityWrapper<IncentAccountCoin> mbAccountCoinEntityWrapper = new EntityWrapper<IncentAccountCoin>();
             Map<String, Object> criteriaMap = new HashMap<String, Object>();
             criteriaMap.put("mb_id", memberId);
@@ -72,11 +83,12 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
             BigDecimal goodsPriceVcyDB = new BigDecimal(funNumber);
 
             int usableCompResult = coinUsable.compareTo(goodsPriceVcyDB);
+            BigDecimal coinUsableNew = BigDecimal.ZERO;
             //账户冻结余额 大于等于 商品价格
             if (0 == usableCompResult || 1 == usableCompResult) {
 
                 //账户冻结额 - 被冻结的商品价格 = 新的账户冻结余额
-                BigDecimal coinUsableNew = BigDecimal.ZERO;
+
                 coinUsableNew = coinUsableNew.add(coinUsable.subtract(goodsPriceVcyDB));
 
                 IncentAccountCoin incentAccountCoinNew = new IncentAccountCoin();
@@ -94,7 +106,6 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
                         description);
             }else {
                 //账户冻结额 - 被冻结的商品价格 = 新的账户冻结余额
-                BigDecimal coinUsableNew = BigDecimal.ZERO;
 //                coinUsableNew = coinUsableNew.add(coinUsable.subtract(goodsPriceVcyDB));
 
                 IncentAccountCoin incentAccountCoinNew = new IncentAccountCoin();
@@ -112,10 +123,19 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
                     fungoMallScanOrderWithSeckillServiceImpl.addFungoPayLogs(memberId, member.getMobilePhoneNum(), member.getUserName(), String.valueOf(coinUsable), description);
                 }
             }
+            if(1 == userFunVO.getType()){
+                int contentType = userFunVO.getContentType();
+                String message =contentType == 1 ? "文章" :  (contentType == 2 ? "心情" : (  contentType ==  3 ? "评论" : (contentType == 4 ? "游戏评测" : "" )));
+                memberServiceImpl.addActionTypeNotice(memberId,  MessageConstants.SYSTEM_NOTICE_DELETE.replace("{",message),"2");
+            }
+            //
         }catch (Exception e){
             logger.error( "扣除用户fun异常",e );
             resultDto = ResultDto.ResultDtoFactory.buildSuccess( "-1","扣除用户fun异常" );
         }
+//        finally {
+//            distributedLockByCurator.releaseDistributedLock( member.getId() );
+//        }
         //扫描处理订单-清除缓存的用户fun币消耗
         fungoCacheTask.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + memberId, "", null);
         // 个人信息缓存

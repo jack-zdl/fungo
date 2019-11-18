@@ -38,17 +38,33 @@
         <result column="sort" property="sort" />
         <result column="type" property="type" />
         <result column="isFollowed" property="isFollowed" />
+        <result column="register_lingka" property="registerLingka" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, salt, last_visit AS lastVisit, email, sesion_token AS sesionToken, password, exp, user_name AS userName, state, has_password AS hasPassword, level, email_verified AS emailVerified, mobile_phone_num AS mobilePhoneNum, avatar, complete, gender, auth_data AS authData, import_from_parse AS importFromParse, mobile_phone_verified AS mobilePhoneVerified, followee_num AS followeeNum, publish_num AS publishNum, follower_num AS followerNum, report_num AS reportNum, created_at AS createdAt, updated_at AS updatedAt, sign, member_no AS memberNo, qq_open_id AS qqOpenId, weixin_open_id AS weixinOpenId, weibo_open_id AS weiboOpenId
+          ${alias}.id,   ${alias}.salt,   ${alias}.last_visit AS lastVisit,   ${alias}.email,   ${alias}.sesion_token AS sesionToken,   ${alias}.password, exp,   ${alias}.user_name AS userName,   ${alias}.state,
+            ${alias}.has_password AS hasPassword,   ${alias}.level,   ${alias}.email_verified AS emailVerified,   ${alias}.mobile_phone_num AS mobilePhoneNum,   ${alias}.avatar,
+               ${alias}.complete,   ${alias}.gender,   ${alias}.auth_data AS authData,   ${alias}.import_from_parse AS importFromParse,   ${alias}.mobile_phone_verified AS mobilePhoneVerified,
+                 ${alias}.followee_num AS followeeNum,   ${alias}.publish_num AS publishNum,   ${alias}.follower_num AS followerNum,   ${alias}.report_num AS reportNum,   ${alias}.created_at AS createdAt,
+                  ${alias}.updated_at AS updatedAt,   ${alias}.sign,   ${alias}.member_no AS memberNo,   ${alias}.qq_open_id AS qqOpenId,   ${alias}.weixin_open_id AS weixinOpenId,
+                    ${alias}.weibo_open_id AS weiboOpenId
+    </sql>
+
+    <sql id="Base_List">
+        id,  salt,  last_visit AS lastVisit,  email,  sesion_token AS sesionToken,  password, exp,  user_name AS userName,  state,
+           has_password AS hasPassword,  level,  email_verified AS emailVerified,  mobile_phone_num AS mobilePhoneNum,  avatar,
+              complete,  gender,  auth_data AS authData,  import_from_parse AS importFromParse,  mobile_phone_verified AS mobilePhoneVerified,
+                followee_num AS followeeNum,  publish_num AS publishNum,  follower_num AS followerNum,  report_num AS reportNum,  created_at AS createdAt,
+                 updated_at AS updatedAt,  sign,  member_no AS memberNo,  qq_open_id AS qqOpenId,  weixin_open_id AS weixinOpenId,
+                   weibo_open_id AS weiboOpenId
     </sql>
 
 
 
 
-	<!-- 我的动态 - 我的评论 -->
+
+    <!-- 我的动态 - 我的评论 -->
     <select id="getAllComments" resultType="com.game.common.bean.CommentBean" parameterType="String">
         <!--   	<![CDATA[
                   (select id,content,5 as type,1 as targetType,post_id as targetId,date_format(updated_at, '%Y-%c-%d %H:%i:%s' ) as updatedAt, '' as replyToId, '' as replyContentId from t_cmm_comment where member_id = #{userId} and state = 0)
@@ -167,9 +183,28 @@
         )
     </select>
 
+
+
+    <select id="getTwoMemberList" resultType="com.fungo.system.entity.Member">
+        SELECT  * FROM  t_member where
+        state = 0 and level >= 2
+        and         id in
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+        <if test="inviteeId != null and inviteeId.size() > 0  ">
+            and  id not in
+            <foreach item="item" index="index" collection="inviteeId" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+    </select>
+
     <select id="getUnfollerMemberList" resultType="com.fungo.system.entity.Member" >
         SELECT  
-        <include refid="Base_Column_List"></include>
+        <include refid="Base_List"></include>
          FROM  t_member where
         id in
         <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
@@ -189,6 +224,26 @@
             #{item}
         </foreach>
         )
+    </select>
+
+    <select id="selectListBylargess" resultType="com.fungo.system.entity.Member">
+        select
+        m.id,m.mobile_phone_num   AS mobilePhoneNum
+        FROM  t_member m  where    m.id not in  (
+        SELECT member_id FROM t_member_coupon mc WHERE mc.member_type = 2 and mc.state = 1
+        and mc.coupon_id = #{couponId}
+        )
+         <if test="level != null">
+             and m.`level` >=  #{level}
+         </if>
+         limit 1000
+    </select>
+
+    <select id="getMemberIdList" resultType="java.lang.String">
+        SELECT id FROM t_member WHERE mobile_phone_num in
+        <foreach item="item" index="index" collection="phones" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
 
     

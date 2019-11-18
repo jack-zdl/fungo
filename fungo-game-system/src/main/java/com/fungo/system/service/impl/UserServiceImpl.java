@@ -99,7 +99,7 @@ public class UserServiceImpl implements IUserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
-    public ResultDto<LoginMemberBean> bindingPhoneNo(String code, String mobile, String token) {
+    public ResultDto<LoginMemberBean> bindingPhoneNo(String code, String mobile, String token,String channel,String deviceId) {
         ResultDto<LoginMemberBean> re1 = new ResultDto<LoginMemberBean>();
         Member member = memberService.selectOne(new EntityWrapper<Member>().eq("sesion_token", token));
         if (member == null) {
@@ -112,6 +112,12 @@ public class UserServiceImpl implements IUserService {
                 member.setSesionToken("");
                 member.setMobilePhoneNum(mobile);
                 member.setMobilePhoneVerified("1");
+                if(StringUtils.isNotBlank(channel)){
+                    member.setChannel(channel);
+                }
+                if(StringUtils.isNotBlank(deviceId)){
+                    member.setDeviceId(deviceId);
+                }
                 member.updateById();
                 LoginMemberBean bean = new LoginMemberBean();
                 bean.setCreatedAt(DateTools.fmtDate(member.getCreatedAt()));
@@ -208,7 +214,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public ResultDto<LoginMemberBean> login(String mobile, String password, String code, String appVersion) throws Exception {
+    public ResultDto<LoginMemberBean> login(String mobile, String password, String code, String appVersion,String deviceId,String channel) throws Exception {
         ResultDto<LoginMemberBean> rest = new ResultDto<LoginMemberBean>();
         Member member = null;
         if (!CommonUtil.isNull(password)) {//密码登录
@@ -225,9 +231,13 @@ public class UserServiceImpl implements IUserService {
                 member = memberService.selectOne(new EntityWrapper<Member>().eq("mobile_phone_num", mobile));
                 if (member == null) {//如果第一次进行会员注册
                     member = new Member();
-
                     member.setId(UUIDUtils.getUUID());
-
+                    if(StringUtils.isNotBlank(deviceId)){
+                        member.setDeviceId(deviceId);
+                    }
+                    if(StringUtils.isNotBlank(channel)){
+                        member.setChannel(channel);
+                    }
                     member.setUserName(geUserName(mobile));
                     member.setMobilePhoneNum(mobile);
                     member.setMobilePhoneVerified("1");
@@ -238,23 +248,14 @@ public class UserServiceImpl implements IUserService {
                     member.setComplete("0");//未完成
                     member.setLevel(1);
                     member.setState(0);
-
                     //fix bug:修改会员编号出现的重复的情况 修改用户的member_no用户编号 [by mxf 2019-03-06]
                     String mb_no = iPKNoService.genUniqueMbNo(member.getId());
                     member.setMemberNo(mb_no);
-                    //end
-
                     //添加用户数据
                     memberService.insert(member);
-
-                    //fix bug:修改会员编号出现的重复的情况 修改用户的member_no用户编号 [by mxf 2019-03-06]
-                    //memberNoService.getMemberNoAndForUpdate(member);
-                    //end
-
                     LOGGER.info("用户注册-手机验证-初始化数据  memberId : {}, phoneNumber:{}", member.getId(), mobile);
                     this.initUserRank(member.getId());
                 }
-
                 messageCodeService.updateCheckCodeSuccess(re.getData());//更新验证成功
             } else {
                 return ResultDto.error(re.getCode(), re.getMessage());
@@ -267,7 +268,13 @@ public class UserServiceImpl implements IUserService {
 //		dein.setDeviceId(deviceId);
 //		dein.setPhoneModel(os);
 //		pushService.bindDevice(member.getId(),dein);
-
+        if(null!=member){
+            Member dCosmember = new Member();
+            dCosmember.setId(member.getId());
+            dCosmember.setDeviceId(deviceId);
+            dCosmember.setChannel(channel);
+            memberService.updateById(dCosmember);
+        }
         LoginMemberBean bean = new LoginMemberBean();
         bean.setCreatedAt(DateTools.fmtDate(member.getCreatedAt()));
         bean.setUpdatedAt(DateTools.fmtDate(member.getUpdatedAt()));
@@ -280,9 +287,84 @@ public class UserServiceImpl implements IUserService {
         bean.setObjectId(member.getId());
         rest.setData(bean);
 
-
         //记录登录用户
         memberLoginedStatisticsService.addLoginToBucket(member.getId(), appVersion);
+        return rest;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public ResultDto<LoginMemberBean> recommendLogin(MsgInput msgInput, String appVersion) throws Exception {
+        ResultDto<LoginMemberBean> rest = null;
+        try {
+            Member member = null;
+            String code = msgInput.getCode();
+            String mobile = msgInput.getMobile();
+            if (!CommonUtil.isNull(code)) {//手机验证码
+                if (CommonUtil.isNull(mobile)) {
+                    return ResultDto.error("210", "手机号不能为空");
+                }
+                ResultDto<String> re = messageCodeService.checkCode(GameConstant.MSG_TYPE_USER_LOGIN, mobile, code);//验证短信
+                if (re.isSuccess()) {
+                    member = memberService.selectOne(new EntityWrapper<Member>().eq("mobile_phone_num", mobile));
+                    if (member == null) {//如果第一次进行会员注册
+                        member = new Member();
+                        member.setId(UUIDUtils.getUUID());
+                        member.setUserName(geUserName(mobile));
+                        member.setMobilePhoneNum(mobile);
+                        member.setMobilePhoneVerified("1");
+                        member.setHasPassword("0");//没设置密码
+                        member.setLastVisit(new Date());
+                        member.setCreatedAt(new Date());
+                        member.setUpdatedAt(new Date());
+                        member.setComplete("0");//未完成
+                        member.setLevel(1);
+                        member.setState(0);
+                        //fix bug:修改会员编号出现的重复的情况 修改用户的member_no用户编号 [by mxf 2019-03-06]
+                        String mb_no = iPKNoService.genUniqueMbNo(member.getId());
+                        member.setMemberNo(mb_no);
+                        //添加用户数据
+                        memberService.insert(member);
+//                        LOGGER.info("用户注册-手机验证-初始化数据  memberId : {}, phoneNumber:{}", member.getId(), mobile);
+                        this.initUserRank(member.getId());
+                    }else {
+                        return ResultDto.error("-1", "该用户不是新用户");
+                    }
+                    messageCodeService.updateCheckCodeSuccess(re.getData());//更新验证成功
+
+                  MemberInfo memberInfo = new MemberInfo();
+                  memberInfo.setMdId( member.getId());
+                  memberInfo.setShareType(2); //是否有邀请人
+                  memberInfo.setIsactive("1");
+                  memberInfo.setCreatedAt( new Date());
+                  memberInfo.setCreatedBy( member.getId());
+                  memberInfo.setParentMemberId( msgInput.getRecommendId());
+                  memberInfo.setState(1);
+                  memberInfo.insert();
+                } else {
+                    return ResultDto.error(re.getCode(), re.getMessage());
+                }
+            } else {
+                return ResultDto.error("13", "请求参数错误");
+            }
+            LoginMemberBean bean = new LoginMemberBean();
+            bean.setCreatedAt(DateTools.fmtDate(member.getCreatedAt()));
+            bean.setUpdatedAt(DateTools.fmtDate(member.getUpdatedAt()));
+            bean.setEmailVerified(false);
+            bean.setMobilePhoneNumber(member.getMobilePhoneNum());
+            bean.setUsername(member.getUserName());
+            bean.setAvatar(member.getAvatar());
+            bean.setMobilePhoneVerified(member.getMobilePhoneVerified().equals("1") ? true : false);
+            bean.setHas_password(member.getHasPassword().equals("1") ? true : false);
+            bean.setObjectId(member.getId());
+            rest =  new ResultDto<>();
+            rest.setData(bean);
+            //记录登录用户
+            memberLoginedStatisticsService.addLoginToBucket(member.getId(), appVersion);
+        }catch (Exception e){
+            LOGGER.error( "邀请形式下注册用户",e);
+            rest = ResultDto.ResultDtoFactory.buildError( "注册用户失败" );
+        }
         return rest;
     }
 

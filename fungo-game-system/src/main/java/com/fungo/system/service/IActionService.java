@@ -2,6 +2,11 @@ package com.fungo.system.service;
 
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.index.BannerBean;
+import com.game.common.dto.mall.MallBannersInput;
+import com.game.common.dto.mall.MallGoodsInput;
+
+import java.util.HashMap;
 
 public interface IActionService {
     public ResultDto<String> like(String memberId, ActionInput inputDto, String appVersion)throws Exception;//点赞
@@ -12,6 +17,11 @@ public interface IActionService {
     public ResultDto<String>  follow(String memberId,ActionInput inputDto)throws Exception;//关注
     public ResultDto<String>  unFollow(String memberId,ActionInput inputDto)throws Exception;//取消关注
     public ResultDto<String>  report(String memberId,ActionInput inputDto)throws Exception;//举报
+    public ResultDto<String> collectionLike(String memberId, ActionInput inputDto, String appVersion)throws Exception;//合集点赞
+    public ResultDto<String>  unCollectionLike(String memberId,ActionInput inputDto)throws Exception;//合集取消点赞
+    public ResultDto<BannerBean>  queryCollectionLike(MallBannersInput mallBannersInput)throws Exception;//查询合集点赞总数
+
+
 
     /**
      *  游戏包下载次数记录

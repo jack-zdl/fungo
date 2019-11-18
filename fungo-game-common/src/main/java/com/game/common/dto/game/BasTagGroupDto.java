@@ -2,7 +2,9 @@ package com.game.common.dto.game;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -32,4 +34,8 @@ public class BasTagGroupDto {
      * 更新时间
      */
     private Date updatedAt;
+
+    private List<BasTagDto> tags = new ArrayList<>();
+
+
 }

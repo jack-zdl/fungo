@@ -21,4 +21,6 @@ public interface BasTagDao extends BaseMapper<BasTag> {
 
     //获取游戏后台分类标签
     public List<TagBean> getSortTags(String gameId);
+
+    List<BasTag> listGroupTagOrderBySortAndDownLoad(String groupId);
 }

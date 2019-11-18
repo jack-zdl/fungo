@@ -55,6 +55,7 @@ public interface IMemberNoticeService {
     void updateSystemByGame() throws Exception;
 
 
+
     void insertSystemNotice(String mobileType, String memberId,String data) throws Exception;
 
     void insertSystemVersionNotice(String mobileType, String data) throws Exception;
@@ -67,6 +68,8 @@ public interface IMemberNoticeService {
     List<Map<String,Object>> insertMbNotices(MemberNoticeInput noticeInput);
 
     ResultDto<String> delMbNotices(DelObjectListVO noticeInput);
+
+    ResultDto<String> addUserGiftcardNotice(DelObjectListVO delObjectListVO);
 
 
 }

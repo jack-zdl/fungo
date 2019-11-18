@@ -45,6 +45,9 @@ public class BasTagGroup extends Model<BasTagGroup> {
 	@TableField("updated_at")
 	private Date updatedAt;
 
+	@TableField("sort")
+	private Integer sort;
+
 
 	public String getId() {
 		return id;
@@ -92,6 +95,14 @@ public class BasTagGroup extends Model<BasTagGroup> {
 
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public Integer getSort() {
+		return sort;
+	}
+
+	public void setSort(Integer sort) {
+		this.sort = sort;
 	}
 
 	@Override

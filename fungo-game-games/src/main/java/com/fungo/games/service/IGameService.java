@@ -1,5 +1,5 @@
-package com.fungo.games.service;
 
+package com.fungo.games.service;
 
 import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
@@ -108,6 +108,18 @@ public interface IGameService {
     FungoPageResultDto<GameSearchOut> searchGames(int page, int limit, String keyword, String tag, String sort, String os, String memberId) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException;
 
 	/**
+	 * 搜索游戏
+	 * @param keyword
+	 * @return
+	 */
+	FungoPageResultDto<GameSearchOut> searchGamesCount(String keyword) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException;
+
+	/**
+	 * 搜索游戏
+	 *
+	 */
+	FungoPageResultDto<String> searchGamesKeyword(int page, int limit, String keyword, String tag, String sort, String os, String memberId);
+	/**
 	 * 根据游戏ID获取游戏标签列表
 	 * @param gameId
 	 * @param userId
@@ -157,4 +169,9 @@ public interface IGameService {
     ResultDto<List<GameOutPage>> viewGames(String memberId);
 
     ResultDto<List<GameOut>> listGameByids(String gameIds);
+
+	FungoPageResultDto<GameKuDto> listGameByTags(String memberId, TagGameDto tagGameDto);
+
+    FungoPageResultDto<GameKuDto> listGameByBang(String memberId, BangGameDto sortType);
 }
+

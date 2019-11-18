@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.games.dao.FindCollectionGroupDao">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.game.common.bean.CollectionItemBean">
+		<id column="id" property="id" />
+		<result column="form_id" property="formId" />
+		<result column="game_id" property="gameId" />
+		<result column="android_status_desc" property="androidStatusDesc" />
+		<result column="detail" property="detail" />
+		<result column="ios_state" property="iosState" />
+		<result column="android_state" property="androidState" />
+		<result column="name" property="name" />
+		<result column="icon" property="icon" />
+		<result column="score" property="score" />
+		<result column="can_fast" property="canFast"/>
+		<result column="tags" property="tags" />
+		<result column="sort" property="sort" />
+		<result column="updated_at" property="updatedAt" />
+		<result column="updated_by" property="updatedBy" />
+		<result column="apk" property="apk"/>
+		<result column="version_main" property="versionMain"/>
+		<result column="version_child" property="versionChild"/>
+		<result column="game_size" property="gameSize"/>
+		<result column="android_package_name" property="androidPackageName"/>
+	</resultMap>
+    
+    <!-- 新游信息查询 -->
+    <select id="getCollectionItemAll" resultMap="BaseResultMap" >
+    	select
+		t1.id,
+		t1.form_id,
+		t1.game_id,
+		t1.detail,
+		t2.ios_state,
+		t2.android_status_desc,
+		t2.android_state,
+		t2.name,
+		t2.score,
+		t2.icon,
+		t2.can_fast,
+		t2.tags,
+		t2.apk,
+		t2.version_main,
+		t2.version_child,
+		t2.game_size,
+		t2.android_package_name
+		from t_game_collection_term t1 left join t_game t2 on t1.game_id=t2.id
+		where t1.form_id=#{formId}
+		and t1.state=0
+    	order by t1.sort desc
+    </select>
+
+
+</mapper>

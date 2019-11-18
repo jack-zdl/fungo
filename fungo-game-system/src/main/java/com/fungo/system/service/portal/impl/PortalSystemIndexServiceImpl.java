@@ -184,7 +184,10 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
             GameDto gameParam = new GameDto();
             gameParam.setId(gameEvaluation.getGameId());
             GameDto game = iGameProxyService.selectGameById(gameParam);    //this.gameService.selectById(gameEvaluation.getGameId());
-
+            if(game == null){
+                LOGGER.error( "系统微服务无法访问游戏微服务getGamePage接口" );
+                return null;
+            }
             bean.setMainTitle(game.getName());
             if (gameEvaluation.getRating() != null) {
                 bean.setSubtitle(gameEvaluation.getRating().toString());
@@ -308,7 +311,7 @@ public class PortalSystemIndexServiceImpl implements PortalSystemIIndexService {
     //活动
     public CardIndexBean activities() {
         //banner
-        List<Banner> bl = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0005").eq("state", "0").orderBy("sort", false).last("limit 1"));
+        List<Banner> bl = bannerService.selectList(new EntityWrapper<Banner>().in("position_code", "0005,0010").eq("state", "0").orderBy("sort", false).last("limit 1"));
         CardIndexBean indexBean = new CardIndexBean();
         if (bl.size() == 0) {
             return null;

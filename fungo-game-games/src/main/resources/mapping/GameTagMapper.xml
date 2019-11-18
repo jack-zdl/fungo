@@ -19,4 +19,10 @@
         id, game_id AS gameId, type, like_num AS likeNum, dislike_num AS dislikeNum, tag_id AS tagId, created_at AS createdAt, updated_at AS updatedAt
     </sql>
 
+	<select id="selectGameTag" resultType="java.lang.String" >
+		select t.name as groupId
+		from t_game_tag gt,t_game g,t_bas_tag t
+		where g.id = #{gameId} and gt.game_id = g.id and gt.tag_id = t.id  order by gt.sort
+	</select>
+
 </mapper>

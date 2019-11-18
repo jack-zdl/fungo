@@ -31,7 +31,16 @@ public enum AbstractResultEnum {
     CODE_SYSTEM_FIVE("3005","","用户信息异常"),
     CODE_SYSTEM_SIX("3006","","好遗憾，你的Fun币不够哦，快去做任务攒Fun币吧～"),
     CODE_SYSTEM_SEVEN("3007","","抱歉,中秋抽奖库存已无!"),
-    CODE_SYSTEM_FESTIVAL_EIGHT("3008","分享成功!","抱歉你已经分享过了");
+    CODE_SYSTEM_FESTIVAL_EIGHT("3008","分享成功!","抱歉你已经分享过了"),
+    CODE_SYSTEM_FESTIVAL_NINE("3009","","参数有误"),
+    CODE_SYSTEM_INVITATION_DAY("3010","你获得一张全局线路0.5天的免费体验券,赶紧去“福利”页面去点击使用吧","参数有误"),
+    CODE_SYSTEM_INVITATION_TWODAY("3011","恭喜你到达LV2,系统赠送一张2天免费体验游戏线路的券,快去“福利”页面看看!","参数有误"),
+    CODE_SYSTEM_INVITATION_FIVEDAY("3012","5天免费使用的全局线路体验券已到账，快去“福利”页面查看！","参数有误"),
+    CODE_SYSTEM_INVITATION_TENSIXDAY("3013","16天免费使用的全局线路体验券已到账，快去“福利”页面查看！","参数有误"),
+    CODE_SYSTEM_INVITATION_SIXSIXDAY("3014","66天免费使用的全局线路体验券已到账，快去“福利”页面查看！","参数有误"),
+    CODE_SYSTEM_INVITATION_NINE("3015","您获得了一张九折加速器优惠券，快去“福利”页面点击使用吧！赶紧去邀请更多的用户，八折和七折券等你来拿哦~","参数有误"),
+    CODE_SYSTEM_INVITATION_NGIHT("3016","您获得了一张八折加速器优惠券，快去“福利”页面点击使用吧！赶紧去邀请更多的用户，七折券等你来拿哦~","参数有误"),
+    CODE_SYSTEM_FESTIVAL_SEVEN("3017","您获得了一张七折加速器优惠券，快去“福利”页面点击使用吧！","参数有误");
 
     String key;
     String successValue;

@@ -65,14 +65,15 @@
 	<select id="beforeNewDateBanner" resultType="com.fungo.system.entity.Banner" >
   		select
 		<include refid="Base_Column_List"></include>
-  		 from t_banner where (end_date > now()  or date_type  = 1 ) and position_code = '0005' and state = '0'
+  		 from t_banner where (end_date > now()  or date_type  = 1 ) and position_code in('0005','0010')  and state = '0'
+		  and display_platform in(0,1)
   		  order by sort desc, updated_at desc
    </select>
 
 	<select id="afterNewDateBanner" resultType="com.fungo.system.entity.Banner" >
   		select
 		<include refid="Base_Column_List"></include>
-  		 from t_banner where position_code = '0005' and state = '0' and
+  		 from t_banner where position_code in('0005','0010') and state = '0' and display_platform in(0,1) and
 		(  now() > end_date   and  date_type  = 2 ) order by sort desc , updated_at desc
    </select>
 
@@ -89,6 +90,22 @@
 			<include refid="Base_Column__Banner_List"><property name="alias" value="b"/></include>,bi.banner_image AS  bannerImage
 		FROM t_banner b
 		LEFT  JOIN  t_banner_images  bi on b.id = bi.banner_id WHERE b.position_code = '0001' AND b.state = 0  GROUP BY b.id  ORDER  BY sort DESC
+	</select>
+
+
+	<select id="appBeforeNewDateBanner" resultType="com.fungo.system.entity.Banner" >
+		select
+		<include refid="Base_Column_List"></include>
+		from t_banner where (end_date > now()  or date_type  = 1 ) and position_code in('0005','0010')  and state = '0'
+		and display_platform in(0,2)
+		order by sort desc, updated_at desc
+	</select>
+
+	<select id="appAfterNewDateBanner" resultType="com.fungo.system.entity.Banner" >
+		select
+		<include refid="Base_Column_List"></include>
+		from t_banner where position_code in('0005','0010') and state = '0' and display_platform in(0,2) and
+		(  now() > end_date   and  date_type  = 2 ) order by sort desc , updated_at desc
 	</select>
 
 </mapper>

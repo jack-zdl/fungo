@@ -10,6 +10,7 @@ import com.fungo.system.entity.BasNotice;
 import com.fungo.system.entity.Member;
 import com.fungo.system.entity.MemberApple;
 import com.fungo.system.entity.MemberNotice;
+import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.helper.mq.MQProduct;
 import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
@@ -18,9 +19,14 @@ import com.fungo.system.service.IMemberNoticeService;
 import com.fungo.system.service.MemberNoticeDaoService;
 import com.fungo.system.service.MemberNoticeDaoServiceImpl;
 import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.consts.MessageConstants;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.CmmCmtReplyDto;
+import com.game.common.dto.community.CmmCommentDto;
+import com.game.common.dto.community.MooMessageDto;
+import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.game.GameOut;
 import com.game.common.dto.game.GameSurveyRelDto;
 import com.game.common.enums.SystemTypeEnum;
@@ -70,6 +76,8 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
     private MemberDao memberDao;
     @Autowired
     private MemberAppleServiceImap memberAppleServiceImap;
+    @Autowired(required = false)
+    private CommunityFeignClient communityFeignClient;
 
     @Override
     public List<Map<String, Object>> queryMbNotices(String os,MemberNoticeInput noticeInput) {
@@ -553,6 +561,86 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
         return resultDto;
     }
 
+    /**
+     * 功能描述: 新增个人的礼品卡消息
+     * @auther: dl.zhang
+     * @date: 2019/10/23 14:36
+     */
+    @Override
+    public ResultDto<String> addUserGiftcardNotice(DelObjectListVO delObjectListVO) {
+        ResultDto<String> resultDto = null;
+        try {
+            String message = "";
+            if(DelObjectListVO.TypeEnum.GAMEVIP.getKey() == delObjectListVO.getType()){
+                message = delObjectListVO.getDays() == 0 ? MessageConstants.SYSTEM_NOTICE_GAMEVIP_ZERO : delObjectListVO.getDays() == 2 ? MessageConstants.SYSTEM_NOTICE_GAMEVIP_TWO : "";
+            }else if(DelObjectListVO.TypeEnum.BAIJINVIP.getKey() == delObjectListVO.getType()){
+                message = delObjectListVO.getDays() == 0 ? MessageConstants.SYSTEM_NOTICE_BAIJINVIP_ZERO : delObjectListVO.getDays() == 2 ? MessageConstants.SYSTEM_NOTICE_BAIJINVIP_TWO : "";
+            }
+            List<String> memberPhoneList = delObjectListVO.getCommentIds();
+            List<String> listString = memberDao.getMemberIdList(memberPhoneList);
+            String finalMessage = message;
+            listString.parallelStream().forEach( s -> {
+//                try {
+                    Map<String,String> dataMap = new HashMap<>();
+                    dataMap.put("actionType","1");
+                    dataMap.put("targetType","1");
+                    dataMap.put("userId", "0b8aba833f934452992a972b60e9ad10");
+                    dataMap.put("userType", "1");
+                    dataMap.put("userAvatar", "http://output-mingbo.oss-cn-beijing.aliyuncs.com/official.png");
+                    dataMap.put("userName", "FunGo大助手");
+                    dataMap.put("content", finalMessage );
+                    dataMap.put("targetId","");
+                    dataMap.put("targetType","11"); // 表明跳转位置
+                    dataMap.put("msgTime", DateTools.fmtDate(new Date()));
+                    //从DB查
+                    EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
+                    noticeEntityWrapper.eq( "mb_id", s );
+                    noticeEntityWrapper.eq( "ntc_type", 7 );
+                    noticeEntityWrapper.eq( "is_read", 2 );
+                    List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
+                    if (noticeListDB != null && noticeListDB.size() > 0) {
+                        noticeListDB.stream().forEach( x -> {
+                            String jsonString = x.getNtcData();
+                            JSONObject jsonObject = JSON.parseObject( jsonString );
+                            jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
+                            jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
+                            x.setNtcData( jsonObject.toJSONString() );
+                            x.updateById();
+                        } );
+                    } else {
+                        MemberNotice memberNotice = new MemberNotice();
+                        int clusterIndex_i = Integer.parseInt( clusterIndex );
+                        memberNotice.setId( PKUtil.getInstance( clusterIndex_i ).longPK() );
+                        memberNotice.setIsRead( 2 );
+                        memberNotice.setNtcType( 7 );
+                        memberNotice.setMbId( s );
+                        memberNotice.setCreatedAt( new Date() );
+                        memberNotice.setUpdatedAt( new Date() );
+                        Map map = new ConcurrentHashMap( 4 );
+                        map.put( "count", 1 );
+                        map.put( "like_count", 0 );
+                        map.put( "comment_count", 0 );
+                        map.put( "notice_count", 1 );
+                        memberNotice.setNtcData( JSON.toJSONString( map ) );
+                        memberNoticeDaoService.insert( memberNotice );
+                    }
+                    BasNotice basNotice = new BasNotice();
+                    basNotice.setType( 6 );
+                    basNotice.setIsRead( 0 );
+                    basNotice.setIsPush( 0 );
+                    basNotice.setMemberId( s );
+                    basNotice.setCreatedAt( new Date() );
+                    basNotice.setData( JSON.toJSONString(dataMap));
+                    basNotice.insert();
+            } );
+            resultDto = ResultDto.ResultDtoFactory.buildSuccess( "新增个人的礼品卡消息成功" );
+        }catch (Exception e){
+            logger.error( "新增个人的礼品卡消息异常",e);
+            resultDto = ResultDto.ResultDtoFactory.buildError( "新增个人的礼品卡消息异常" );
+        }
+        return resultDto;
+    }
+
     public void updateNotice( String channel, List<String> memberList,String data){
         StopWatch watch = new StopWatch( "Stream效率测试" );
         watch.start( "parallelStream start" );
@@ -610,6 +698,55 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
         } );
         watch.stop();
         logger.error("系统版本通知"+watch.prettyPrint() );
+    }
+
+    public void  updateNotice(CmmCmtReplyDto cmmCmtReplyDto1,  Map<String, Object>  map){
+        CmmCmtReplyDto cmmCmtReplyDto = new CmmCmtReplyDto();
+        FungoPageResultDto<CmmCmtReplyDto>  replyDtoFungoPageResultDto = null;
+        if (cmmCmtReplyDto1 != null) {
+            map.put( "one_level_deltype",cmmCmtReplyDto1.getState()  == -1 ? -1 : 0 );
+            if(StringUtils.isNotBlank(cmmCmtReplyDto1.getReplyToContentId())){
+                cmmCmtReplyDto.setId(cmmCmtReplyDto1.getReplyToContentId());
+                replyDtoFungoPageResultDto = communityFeignClient.querySecondLevelCmtList(cmmCmtReplyDto);
+                cmmCmtReplyDto1 =    (replyDtoFungoPageResultDto.getData() != null && replyDtoFungoPageResultDto.getData().size() >0 ) ? replyDtoFungoPageResultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                if (cmmCmtReplyDto1 != null && StringUtils.isNotBlank(cmmCmtReplyDto1.getId()) ) {
+                    updateNotice( cmmCmtReplyDto1,map);
+                    map.put("two_level_deltype", cmmCmtReplyDto1.getState() == -1 ? -1 : 0);
+                }
+            }else if(cmmCmtReplyDto1.getTargetType() == 5){ //社区一级评论t_cmm_message 5
+                CmmCommentDto cmmCommentDto = new CmmCommentDto();
+                cmmCommentDto.setId(cmmCmtReplyDto1.getTargetId());
+                cmmCommentDto.setState(null);
+                FungoPageResultDto<CmmCommentDto> resultDto = communityFeignClient.queryFirstLevelCmtList(cmmCommentDto);
+                CmmCommentDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                if (message != null) {
+                    map.put( "parentType",cmmCmtReplyDto1.getTargetType()  );
+                    map.put( "parentId",message.getPostId());
+                    map.put("two_level_deltype", message.getState() == -1 ? -1 : 0);
+                }
+            }else if(cmmCmtReplyDto1.getTargetType() == 6){  //游戏评测 t_game_evation 6
+                GameEvaluationDto param = new GameEvaluationDto();
+                param.setId(cmmCmtReplyDto1.getTargetId());
+                FungoPageResultDto<GameEvaluationDto>  resultDto = gamesFeignClient.getGameEvaluationPage(param);
+                GameEvaluationDto gameEvaluationDto = (resultDto.getData() != null && resultDto.getData().size() > 0 ) ? resultDto.getData().get(0) : null;
+                if(gameEvaluationDto != null){
+                    map.put( "parentType",cmmCmtReplyDto1.getTargetType()  );
+                    map.put( "parentId",gameEvaluationDto.getGameId() );
+                    map.put("two_level_deltype", gameEvaluationDto.getState() == -1 ? -1 : 0);
+                }
+            }else if(cmmCmtReplyDto1.getTargetType() == 8){ //心情评论  t_moo_message 8
+                MooMessageDto mooMessageDto = new MooMessageDto();
+                mooMessageDto.setId(cmmCmtReplyDto1.getTargetId());
+                mooMessageDto.setState(null);
+                FungoPageResultDto<MooMessageDto> resultDto = communityFeignClient.queryCmmMoodCommentList(mooMessageDto);
+                MooMessageDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
+                if (message != null) {
+                    map.put( "parentType",cmmCmtReplyDto1.getTargetType()  );
+                    map.put( "parentId",message.getMoodId()  );
+                    map.put("two_level_deltype", message.getState() == -1 ? -1 : 0);
+                }
+            }
+        }
     }
 
 

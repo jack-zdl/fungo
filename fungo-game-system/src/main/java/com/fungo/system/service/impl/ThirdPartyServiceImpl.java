@@ -63,7 +63,7 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
      * 第三方登录,判断是哪方登录 判断用户是否存在 判断有无绑定用户 如有,直接切换 如无,新建用户(第三方用户绑定功能) 用户登录,memberProfile
      */
     @Override
-    public ResultDto<LoginMemberBean> thirdPartyLogin(ThirdLoginInput input, String channel, String appVersion) throws Exception {
+    public ResultDto<LoginMemberBean> thirdPartyLogin(ThirdLoginInput input, String channel, String appVersion,String deviceId) throws Exception {
 
         LOGGER.info("第三方登录入参-input:{}---channel:{}", JSON.toJSONString(input), channel);
         Integer platform = input.getPlatformType();
@@ -103,25 +103,21 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
         //微博 [微博只有uid，没有unionid]
         if (platform == 0) {
 
-            List<Member> memberList = memberService
-                    .selectList(new EntityWrapper<Member>().eq("weibo_open_id", unionid).and("state != {0}", -1));
+            List<Member> memberList = memberService.selectList(new EntityWrapper<Member>().eq("weibo_open_id", unionid).and("state != {0}", -1));
             member = getMemberWithSNSLogin(memberList);
 
             //微信
         } else if (platform == 1) {
 
             //先用 unionid
-            List<Member> memberList = memberService
-                    .selectList(new EntityWrapper<Member>().eq("weixin_open_id", unionid).and("state != {0}", -1));
+            List<Member> memberList = memberService.selectList(new EntityWrapper<Member>().eq("weixin_open_id", unionid).and("state != {0}", -1));
             member = getMemberWithSNSLogin(memberList);
             if (null == member) {
                 //获取openId ，把用户的历史openid更新为 unionid
                 String wxOpenId = input.getOpenid();
                 if (StringUtils.isNotBlank(wxOpenId)) {
 
-                    List<Member> memberListWX = memberService
-                            .selectList(new EntityWrapper<Member>().eq("weixin_open_id", wxOpenId).and("state != {0}", -1));
-
+                    List<Member> memberListWX = memberService.selectList(new EntityWrapper<Member>().eq("weixin_open_id", wxOpenId).and("state != {0}", -1));
                     member = getMemberWithSNSLogin(memberListWX);
 
                     if (null != member) {
@@ -136,17 +132,14 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
             //qq
         } else if (platform == 4) {
 
-            List<Member> memberList = memberService
-                    .selectList(new EntityWrapper<Member>().eq("qq_open_id", unionid).and("state != {0}", -1));
+            List<Member> memberList = memberService.selectList(new EntityWrapper<Member>().eq("qq_open_id", unionid).and("state != {0}", -1));
             member = getMemberWithSNSLogin(memberList);
             if (null == member) {
                 //获取openId 把用户的历史openid更新为 unionid
                 String qqOpenId = input.getOpenid();
                 if (StringUtils.isNotBlank(qqOpenId)) {
 
-                    List<Member> memberListQQ = memberService
-                            .selectList(new EntityWrapper<Member>().eq("qq_open_id", qqOpenId).and("state != {0}", -1));
-
+                    List<Member> memberListQQ = memberService.selectList(new EntityWrapper<Member>().eq("qq_open_id", qqOpenId).and("state != {0}", -1));
                     member = getMemberWithSNSLogin(memberListQQ);
 
                     if (null != member) {
@@ -159,7 +152,14 @@ public class ThirdPartyServiceImpl implements IThirdPartyService {
                 }
             }
         }
-
+        //记录member登录设备号和信息
+        if(null!= member && StringUtils.isNotBlank(channel) && StringUtils.isNotBlank(deviceId)){
+           Member chaAndDe = new Member();
+            chaAndDe.setId(member.getId());
+            chaAndDe.setDeviceId(deviceId);
+            chaAndDe.setChannel(channel);
+            chaAndDe.updateById();
+        }
         //******************************************已注册*********************************************************
         ResultDto<LoginMemberBean> rest = new ResultDto<LoginMemberBean>();
         // 如有 切换为当前用户，登录

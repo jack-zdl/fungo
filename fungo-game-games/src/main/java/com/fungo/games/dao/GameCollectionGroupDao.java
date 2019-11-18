@@ -18,6 +18,10 @@ import java.util.List;
 @Repository
 public interface GameCollectionGroupDao extends BaseMapper<GameCollectionGroup> {
 
+    /**
+     * 功能描述: 新增游戏合集是否被删除 and gcg.state = 0
+     * @date: 2019/11/6 10:29
+     */
     List<GameCollectionGroup> selectGameCollectionGroupByGameId(@Param("gameId") String gameId);
 
 }

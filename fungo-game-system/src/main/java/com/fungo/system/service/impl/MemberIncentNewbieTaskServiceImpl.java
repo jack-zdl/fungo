@@ -120,7 +120,7 @@ public class MemberIncentNewbieTaskServiceImpl implements IMemberIncentNewbieTas
 
         logger.info("---member-mb_id:{}--执行新手任务--task_type:{}----task_code_idt:{}", mb_id, task_type, task_code_idt);
 
-        Map<String, Object> resMap = new IdentityHashMap<String, Object>();
+        Map<String, Object> resMap = new IdentityHashMap<>();
         resMap.put("success", true);
         resMap.put("msg", task_code_idt + "任务,执行成功");
 
@@ -830,10 +830,11 @@ public class MemberIncentNewbieTaskServiceImpl implements IMemberIncentNewbieTas
         IncentTaskedOut tasked = iMemberIncentTaskedService.getTasked(mb_id, task_type, task_id);
         if (null == tasked) {
             //从任务日志库查询是否有记录
-            List<ScoreLog> scoreLogList = scoreLogService.getScoreLogWithMbAndTask(mb_id, task_type, task_code_idt);
-            if (null != scoreLogList && !scoreLogList.isEmpty()) {
-                isAddEq = false;
-            }
+            // 2019-11-06 为了解决生产用户绑定QQ无法完成任务。查看发现有日志记录。没有完成任务
+//            List<ScoreLog> scoreLogList = scoreLogService.getScoreLogWithMbAndTask(mb_id, task_type, task_code_idt);
+//            if (null != scoreLogList && !scoreLogList.isEmpty()) {
+//                isAddEq = false;
+//            }
         } else {
             isAddEq = false;
         }

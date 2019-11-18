@@ -327,5 +327,52 @@ public class GameController {
         return 1;
     }
 
+    @PostMapping("/api/game/listGameByTags")
+    public FungoPageResultDto<GameKuDto> listGameByTags(@Anonymous MemberUserProfile memberUserPrefile,@RequestBody TagGameDto tagGameDto){
+        List<String> tags = tagGameDto.getTags();
+        if(tags == null||tags.isEmpty()){
+            tagGameDto.setTagIds(null);
+            tagGameDto.setSize(0);
+        }else{
+            tagGameDto.setTagIds(getTagString(tags));
+            tagGameDto.setSize(tags.size());
+        }
+        String memberId = null;
+        if(memberUserPrefile!=null){
+            memberId = memberUserPrefile.getLoginId();
+        }
+        return gameService.listGameByTags(memberId,tagGameDto);
+    }
+
+    @PostMapping("/api/game/listGameByBang")
+    public FungoPageResultDto<GameKuDto> listGameByBang(@Anonymous MemberUserProfile memberUserPrefile,@RequestBody BangGameDto bangGameDto){
+        String memberId = null;
+        if(memberUserPrefile!=null){
+            memberId = memberUserPrefile.getLoginId();
+        }
+        return gameService.listGameByBang(memberId,bangGameDto);
+    }
+
+
+    private String getTagString(List<String> tags){
+        if(tags == null||tags.isEmpty()){
+            return null;
+        }
+        StringBuilder builder = new StringBuilder();
+        int size = tags.size();
+        for(int i = 0;i< size;i++){
+            String tag = tags.get(i);
+            if(i == (size -1)){
+                builder.append("'").append(tag).append("'");
+            }else {
+                builder.append("'").append(tag).append("'").append(",");
+            }
+        }
+        String tagIds = builder.toString();
+        if(CommonUtil.isNull(tagIds)){
+            return null;
+        }
+        return tagIds;
+    }
 
 }

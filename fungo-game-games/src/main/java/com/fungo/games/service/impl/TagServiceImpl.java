@@ -10,7 +10,10 @@ import com.fungo.games.entity.BasTagGroup;
 import com.fungo.games.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.game.BasTagDto;
+import com.game.common.dto.game.BasTagGroupDto;
 import com.game.common.repo.cache.facade.FungoCacheGame;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,6 +106,29 @@ public class TagServiceImpl implements ITagService {
         BasTagGroup basTagGroup = basTagGroupService.selectOne(new EntityWrapper<BasTagGroup>().eq("type",2));
         List<BasTag> basTags = basTagService.selectList(new EntityWrapper<BasTag>().eq("group_id", basTagGroup.getId()).orderBy("sort",true));
         return ResultDto.success(basTags);
+    }
+
+    @Override
+    public ResultDto<List<BasTagGroupDto>> listAllGroupAndTag() {
+        // 查询出所有的分类
+        List<BasTagGroup> basTagGroups = basTagGroupService.selectList(new EntityWrapper<BasTagGroup>().isNull("type").orderBy("sort",false));
+        ArrayList<BasTagGroupDto> basTagGroupDtos = new ArrayList<>();
+        for (BasTagGroup basTagGroup : basTagGroups) {
+            BasTagGroupDto basTagGroupDto = new BasTagGroupDto();
+            // Bean 转换
+            BeanUtils.copyProperties(basTagGroup,basTagGroupDto);
+            // 获取分主下，所有标签，优先按照sort排序，次先按照标签下游戏数
+            List<BasTag> basTags = basTagService.listGroupTagOrderBySortAndDownLoad(basTagGroup.getId());
+            List<BasTagDto> tags = basTagGroupDto.getTags();
+            for (BasTag basTag : basTags) {
+                BasTagDto basTagDto = new BasTagDto();
+                basTagDto.setId(basTag.getId());
+                basTagDto.setName(basTag.getName());
+                tags.add(basTagDto);
+            }
+            basTagGroupDtos.add(basTagGroupDto);
+        }
+        return ResultDto.success(basTagGroupDtos);
     }
 
 

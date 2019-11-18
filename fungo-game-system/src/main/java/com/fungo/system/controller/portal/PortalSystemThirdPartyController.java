@@ -63,7 +63,7 @@ public class PortalSystemThirdPartyController {
         String os = "";
         os = (String) request.getHeader("os");
         String appversion = request.getHeader("appversion");
-        ResultDto<LoginMemberBean> re = thirdLoginService.thirdPartyLogin(input, os, appversion);
+        ResultDto<LoginMemberBean> re = thirdLoginService.thirdPartyLogin(input, os, appversion,null);
         if (re.isSuccess()) {
             LoginMemberBean bean = re.getData();
             MemberUserProfile userPrefile = new MemberUserProfile();
@@ -129,7 +129,7 @@ public class PortalSystemThirdPartyController {
     public ResultDto<LoginMemberBean> thirdUserBindPhoneNo(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody MsgInput msg) throws Exception {
         String mobile = msg.getMobile();
         String code = msg.getCode();
-        ResultDto<LoginMemberBean> re = userService.bindingPhoneNo(code, mobile, msg.getToken());
+        ResultDto<LoginMemberBean> re = userService.bindingPhoneNo(code, mobile, msg.getToken(),null,null);
         if (re.isSuccess()) {
             LoginMemberBean bean = re.getData();
             MemberUserProfile userPrefile = new MemberUserProfile();
@@ -176,7 +176,7 @@ public class PortalSystemThirdPartyController {
             return ResultDto.error("-1", thirdRe.getMessage());
         }
 
-        ResultDto<LoginMemberBean> re = thirdLoginService.thirdPartyLogin(thirdRe.getData(), "pc", appversion);
+        ResultDto<LoginMemberBean> re = thirdLoginService.thirdPartyLogin(thirdRe.getData(), "pc", appversion,null);
         if (re.isSuccess()) {
             LoginMemberBean bean = re.getData();
             MemberUserProfile userPrefile = new MemberUserProfile();

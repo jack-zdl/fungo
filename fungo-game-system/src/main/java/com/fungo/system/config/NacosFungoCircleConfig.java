@@ -45,6 +45,21 @@ public class NacosFungoCircleConfig {
     public String festivallinkUrl;
     @Value( value = "${fungo.cloud.festival.postId}")
     public String festivalPostId;
+//    @Value( value = "${fungo.cloud.invite.registerDate}")
+//    public String registerDateString;
+    @Value( value = "${fungo.cloud.alipay.publickey}")
+    public String alipayPublicKey;
+    @Value( value = "${fungo.cloud.alipay.charset}")
+    public String alipayCharset;
+    @Value( value = "${fungo.cloud.alipay.signType}")
+    public String alipaySignType;
+    // 微信appid
+    @Value( value = "${fungo.cloud.wechat.appid}")
+    public String wechatAppId;
+
+    // 微信appid
+    @Value( value = "${fungo.cloud.wechat.appKey}")
+    public String wechatAppKey;
 
     public String getBasLog() {
         return basLog;
@@ -148,5 +163,45 @@ public class NacosFungoCircleConfig {
 
     public void setFestivalPostId(String festivalPostId) {
         this.festivalPostId = festivalPostId;
+    }
+
+    public String getAlipayPublicKey() {
+        return alipayPublicKey;
+    }
+
+    public void setAlipayPublicKey(String alipayPublicKey) {
+        this.alipayPublicKey = alipayPublicKey;
+    }
+
+    public String getAlipayCharset() {
+        return alipayCharset;
+    }
+
+    public void setAlipayCharset(String alipayCharset) {
+        this.alipayCharset = alipayCharset;
+    }
+
+    public String getAlipaySignType() {
+        return alipaySignType;
+    }
+
+    public void setAlipaySignType(String alipaySignType) {
+        this.alipaySignType = alipaySignType;
+    }
+
+    public String getWechatAppId() {
+        return wechatAppId;
+    }
+
+    public void setWechatAppId(String wechatAppId) {
+        this.wechatAppId = wechatAppId;
+    }
+
+    public String getWechatAppKey() {
+        return wechatAppKey;
+    }
+
+    public void setWechatAppKey(String wechatAppKey) {
+        this.wechatAppKey = wechatAppKey;
     }
 }

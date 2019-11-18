@@ -1,3 +1,4 @@
+
 package com.fungo.games.entity;
 
 import com.baomidou.mybatisplus.activerecord.Model;
@@ -235,6 +236,63 @@ public class Game extends Model<Game> {
 	 */
 	@TableField("game_idt_sn")
 	private Long gameIdtSn;
+
+	//----------------------零卡接入新加字段------------------
+	@TableField("tab_game_id")
+	private String tabGameId;
+
+	@TableField("google_game_id")
+	private String googleGameId;
+
+	/**
+	 *  视频连接是否最新
+	 */
+	@TableField("video_url_latest")
+	private Boolean videoUrlLatest;
+
+	/**
+	 *  是否免费
+	 */
+	@TableField("cost_free")
+	private Boolean costFree;
+	/**
+	 * 厂商
+	 */
+	private String company;
+	/**
+	 * 发行商
+	 */
+	private String publisher;
+
+	/**
+	 *  安卓状态描述
+	 */
+	@TableField("android_status_desc")
+	private String androidStatusDesc;
+	/**
+	 * ios 状态描述
+	 */
+	@TableField("ios_status_desc")
+	private String iosStatusDesc;
+
+
+	/**
+	 *  谷歌游戏副名称
+	 */
+	@TableField("google_deputy_name")
+	private String googleDeputyName;
+
+	@TableField("can_fast")
+	private Boolean canFast;
+
+	@TableField("previous_week_download_num")
+	private Long previousWeekDownloadNum;
+
+	@TableField("week_download_num")
+	private Long weekDownloadNum;
+
+	@TableField("score")
+	private double score;
 
 
 	public String getId() {
@@ -614,9 +672,114 @@ public class Game extends Model<Game> {
 		this.gameIdtSn = gameIdtSn;
 	}
 
+	public String getTabGameId() {
+		return tabGameId;
+	}
+
+	public void setTabGameId(String tabGameId) {
+		this.tabGameId = tabGameId;
+	}
+
+	public String getGoogleGameId() {
+		return googleGameId;
+	}
+
+	public void setGoogleGameId(String googleGameId) {
+		this.googleGameId = googleGameId;
+	}
+
+	public Boolean getVideoUrlLatest() {
+		return videoUrlLatest;
+	}
+
+	public void setVideoUrlLatest(Boolean videoUrlLatest) {
+		this.videoUrlLatest = videoUrlLatest;
+	}
+
+	public Boolean getCostFree() {
+		return costFree;
+	}
+
+	public void setCostFree(Boolean costFree) {
+		this.costFree = costFree;
+	}
+
+	public String getCompany() {
+		return company;
+	}
+
+	public void setCompany(String company) {
+		this.company = company;
+	}
+
+	public String getPublisher() {
+		return publisher;
+	}
+
+	public void setPublisher(String publisher) {
+		this.publisher = publisher;
+	}
+
+	public String getAndroidStatusDesc() {
+		return androidStatusDesc;
+	}
+
+	public void setAndroidStatusDesc(String androidStatusDesc) {
+		this.androidStatusDesc = androidStatusDesc;
+	}
+
+	public String getIosStatusDesc() {
+		return iosStatusDesc;
+	}
+
+	public void setIosStatusDesc(String iosStatusDesc) {
+		this.iosStatusDesc = iosStatusDesc;
+	}
+
+	public String getGoogleDeputyName() {
+		return googleDeputyName;
+	}
+
+	public void setGoogleDeputyName(String googleDeputyName) {
+		this.googleDeputyName = googleDeputyName;
+	}
+
+	public Boolean getCanFast() {
+		return canFast;
+	}
+
+	public void setCanFast(Boolean canFast) {
+		this.canFast = canFast;
+	}
+
+	public Long getWeekDownloadNum() {
+		return weekDownloadNum;
+	}
+
+	public void setWeekDownloadNum(Long weekDownloadNum) {
+		this.weekDownloadNum = weekDownloadNum;
+	}
+
+	public double getScore() {
+		return score;
+	}
+
+	public void setScore(double score) {
+		this.score = score;
+	}
+
+	public Long getPreviousWeekDownloadNum() {
+		return previousWeekDownloadNum;
+	}
+
+	public void setPreviousWeekDownloadNum(Long previousWeekDownloadNum) {
+		this.previousWeekDownloadNum = previousWeekDownloadNum;
+	}
+
 	@Override
 	protected Serializable pkVal() {
 		return this.id;
 	}
 
 }
+

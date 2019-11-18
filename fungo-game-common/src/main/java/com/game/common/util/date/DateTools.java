@@ -271,7 +271,7 @@ public class DateTools {
     }
 
     /**
-     * 时间相减得到天数
+     * 判断当前时间是否在时间段内
      * @param beginDate 开始时间
      * @param endDateStr 结束时间
      * @param newDate 当前时间

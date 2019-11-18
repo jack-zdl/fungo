@@ -88,7 +88,79 @@ public class GameOut {
 
     private Long gameIdtSn;
 
+    /* 用户安卓手机版本游戏状态*/
+    private String userAndroidState;
+    /* 用户苹果手机版本游戏状态*/
+    private String userIosState;
    private List<GameGroup> gameGroups;
+
+
+   // --- v2.6----
+    /**
+     *  国内游戏不做判断 海外游戏 - 为null 默认true
+     */
+    private Boolean canFast;
+
+    /**
+     *  安卓状态描述
+     */
+    private String androidStatusDesc;
+
+    /**
+     *  谷歌游戏副名称
+     */
+    private String googleDeputyName;
+
+
+    /**
+     * 厂商
+     */
+    private String company;
+    /**
+     * 发行商
+     */
+    private String publisher;
+
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public Boolean getCanFast() {
+        return canFast;
+    }
+
+    public void setCanFast(Boolean canFast) {
+        this.canFast = canFast;
+    }
+
+    public String getAndroidStatusDesc() {
+        return androidStatusDesc;
+    }
+
+    public void setAndroidStatusDesc(String androidStatusDesc) {
+        this.androidStatusDesc = androidStatusDesc;
+    }
+
+    public String getGoogleDeputyName() {
+        return googleDeputyName;
+    }
+
+    public void setGoogleDeputyName(String googleDeputyName) {
+        this.googleDeputyName = googleDeputyName;
+    }
 
     public int getDownload_num() {
         return download_num;
@@ -517,6 +589,66 @@ public class GameOut {
 
     public void setGameGroups(List<GameGroup> gameGroups) {
         this.gameGroups = gameGroups;
+    }
+
+    public String getCategory_tag() {
+        return category_tag;
+    }
+
+    public void setCategory_tag(String category_tag) {
+        this.category_tag = category_tag;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    public void setImage_ratio(int image_ratio) {
+        this.image_ratio = image_ratio;
+    }
+
+    public void setImage_width(int image_width) {
+        this.image_width = image_width;
+    }
+
+    public void setImage_height(int image_height) {
+        this.image_height = image_height;
+    }
+
+    public void setRecent_day_count(int recent_day_count) {
+        this.recent_day_count = recent_day_count;
+    }
+
+    public void setRecommend_total_count(int recommend_total_count) {
+        this.recommend_total_count = recommend_total_count;
+    }
+
+    public void setRecommend_recent_count(int recommend_recent_count) {
+        this.recommend_recent_count = recommend_recent_count;
+    }
+
+    public boolean isIs_download() {
+        return is_download;
+    }
+
+    public void setIs_download(boolean is_download) {
+        this.is_download = is_download;
+    }
+
+    public String getUserAndroidState() {
+        return userAndroidState;
+    }
+
+    public void setUserAndroidState(String userAndroidState) {
+        this.userAndroidState = userAndroidState;
+    }
+
+    public String getUserIosState() {
+        return userIosState;
+    }
+
+    public void setUserIosState(String userIosState) {
+        this.userIosState = userIosState;
     }
 
     public static class  GameGroup{

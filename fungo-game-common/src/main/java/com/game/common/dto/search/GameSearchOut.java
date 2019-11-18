@@ -2,6 +2,8 @@ package com.game.common.dto.search;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.List;
+
 public class GameSearchOut {
 
 	private String objectId;
@@ -34,7 +36,25 @@ public class GameSearchOut {
 	private String category;
 	@ApiModelProperty(value="游戏关联的圈子",example="")
 	private String link_circle;
-	
+
+	// 厂商
+	private String company;
+	// 发行商
+	private String publisher;
+	// 地区
+	private String address;
+	// 是否可以加速
+	private boolean canFast;
+	// 游戏状态
+	private String gameStatus;
+
+	private String tags;
+
+	// 用户是否预约 1 已预约  0 未预约
+	private boolean make;
+
+	private String version;
+
 //	@ApiModelProperty(value="是否同意条款",example="")
 //	private boolean isClause=false;
 //	@ApiModelProperty(value="是否绑定appleId",example="")
@@ -184,4 +204,80 @@ public class GameSearchOut {
 	public void setLink_circle(String link_circle) {
 		this.link_circle = link_circle;
 	}
+
+	public void setRecommend_num(int recommend_num) {
+		this.recommend_num = recommend_num;
+	}
+
+	public void setUnrecommend_num(int unrecommend_num) {
+		this.unrecommend_num = unrecommend_num;
+	}
+
+	public void setEvaluation_num(int evaluation_num) {
+		this.evaluation_num = evaluation_num;
+	}
+
+	public String getCompany() {
+		return company;
+	}
+
+	public void setCompany(String company) {
+		this.company = company;
+	}
+
+	public String getPublisher() {
+		return publisher;
+	}
+
+	public void setPublisher(String publisher) {
+		this.publisher = publisher;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public boolean isCanFast() {
+		return canFast;
+	}
+
+	public void setCanFast(boolean canFast) {
+		this.canFast = canFast;
+	}
+
+	public String getGameStatus() {
+		return gameStatus;
+	}
+
+	public void setGameStatus(String gameStatus) {
+		this.gameStatus = gameStatus;
+	}
+
+	public String getTags() {
+		return tags;
+	}
+
+	public void setTags(String tags) {
+		this.tags = tags;
+	}
+
+	public boolean isMake() {
+		return make;
+	}
+
+	public void setMake(boolean make) {
+		this.make = make;
+	}
+
+	public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
 }

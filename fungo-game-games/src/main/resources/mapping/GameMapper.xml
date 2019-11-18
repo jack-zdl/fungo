@@ -48,10 +48,6 @@
             <result column="issue_id" property="issueId" />
         </resultMap>
      -->
-    <!-- 通用查询结果列 -->
-    <!--   <sql id="Base_Column_List">
-          id, recommend_num AS recommendNum, tags, video, update_log AS updateLog, unrecommend_num AS unrecommendNum, apk, download_num AS downloadNum, itunes_id AS itunesId, compatibility, version_child AS versionChild, images, game_size AS gameSize, release_image AS releaseImage, name, cover_image AS coverImage, state, image_ratio AS imageRatio, icon, edited_at AS editedAt, community_id AS communityId, member_id AS memberId, origin, intro, developer, version_main AS versionMain, isbn_id AS isbnId, detail, created_at AS createdAt, updated_at AS updatedAt, created_by AS createdBy, updated_by AS updatedBy, ios_state AS iosState, android_state AS androidState, developer_id AS developerId, test_number AS testNumber, tset_date AS tsetDate, isbn_image AS isbnImage, copyright_id AS copyrightId, copyright_image AS copyrightImage, credentials, issue_id AS issueId
-      </sql> -->
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.fungo.games.entity.Game">
@@ -102,11 +98,34 @@
         <!--2019-05-28 补充遗漏的字段 lyc-->
         <result column="comment_num" property="commentNum"/>
         <result column="boom_download_num" property="boomDownloadNum"/>
+         <result column="game_idt_sn" jdbcType="BIGINT" property="gameIdtSn" />
+        <result column="tab_game_id" jdbcType="VARCHAR" property="tabGameId" />
+        <result column="google_game_id" jdbcType="VARCHAR" property="googleGameId" />
+        <result column="video_url_latest" jdbcType="BIT" property="videoUrlLatest" />
+        <result column="cost_free" jdbcType="BIT" property="costFree" />
+        <result column="company" jdbcType="VARCHAR" property="company" />
+        <result column="publisher" jdbcType="VARCHAR" property="publisher" />
+        <result column="android_status_desc" jdbcType="VARCHAR" property="androidStatusDesc" />
+        <result column="ios_status_desc" jdbcType="VARCHAR" property="iosStatusDesc" />
+        <result column="google_deputy_name" jdbcType="VARCHAR" property="googleDeputyName" />
+        <result column="can_fast" jdbcType="TINYINT" property="canFast" />
+        <result column="previous_week_download_num" jdbcType="BIGINT" property="previousWeekDownloadNum" />
+        <result column="week_download_num" jdbcType="BIGINT" property="weekDownloadNum" />
+        <result column="score" jdbcType="DOUBLE" property="score" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, tags, video, update_log AS updateLog, apk, download_num AS downloadNum, itunes_id AS itunesId, compatibility, version_child AS versionChild, images, game_size AS gameSize, release_image AS releaseImage, name, cover_image AS coverImage, image_ratio AS imageRatio, icon, edited_at AS editedAt, community_id AS communityId, member_id AS memberId, origin, recommend_num AS recommendNum, unrecommend_num AS unrecommendNum, state, intro, developer, version_main AS versionMain, isbn_id AS isbnId, detail, created_at AS createdAt, updated_at AS updatedAt, created_by AS createdBy, updated_by AS updatedBy, ios_state AS iosState, android_state AS androidState, developer_id AS developerId, test_number AS testNumber, tset_date AS tsetDate, isbn_image AS isbnImage, copyright_id AS copyrightId, copyright_image AS copyrightImage, credentials, issue_id AS issueId, android_package_name AS androidPackageName
+    </sql>
+
+
+    <sql id="Base_Game_List">
+        id, tags, video, update_log, fungo_talk, apk, download_num, itunes_id, compatibility, version_child, images, game_size, release_image,
+        name, cover_image, image_ratio, icon, edited_at, community_id, member_id, origin, recommend_num, unrecommend_num, state, intro, developer,
+        version_main, isbn_id, detail, updated_at, updated_by, ios_state, android_state, developer_id, test_number, tset_date, isbn_image, copyright_id, copyright_image,
+        credentials, issue_id, android_package_name, comment_num, boom_download_num, game_idt_sn, tab_game_id, google_game_id, video_url_latest, cost_free, company,
+        publisher, android_status_desc, ios_status_desc, google_deputy_name, can_fast, previous_week_download_num, week_download_num, score
     </sql>
 
 
@@ -117,8 +136,10 @@
         </foreach>
     </select>
 
-    <select id="getGameList" resultType="com.fungo.games.entity.Game">
-        select * from t_game where id in
+    <select id="getGameList"  parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Game_List"></include>
+        from t_game where id in
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
@@ -262,5 +283,94 @@
         SELECT  * FROM  t_game tg LEFT JOIN t_game_evaluation tge ON tg.id = tge.game_id WHERE  tge.id = #{evaluateId}
     </select>
 
+    <select id="countGameByTags" parameterType="com.game.common.dto.game.TagGameDto" resultType="java.lang.Integer">
+        select count(*)
+        from t_game g
+        <if test="tagIds !=null">
+        inner join
+        (
+        select game_id from t_game_tag
+            WHERE tag_id
+            in (${tagIds})
+            GROUP BY game_id
+            HAVING count(game_id) >= #{size}
+        ) t
+        on g.id = t.game_id
+        </if>
+      where g.state = 0
+    </select>
+
+    <select id="listGameByTags" parameterType="com.game.common.dto.game.TagGameDto" resultMap="BaseResultMap">
+        select  g.id,g.version_child,g.apk,g.tags,g.game_size,g.name,g.icon,g.origin,g.version_main,g.ios_state,g.android_state,g.android_package_name,g.android_status_desc,g.ios_status_desc
+        ,g.can_fast,g.score
+        from t_game g
+        <if test="tagIds !=null">
+            inner join
+            (
+            select game_id from t_game_tag
+            WHERE tag_id
+            in (${tagIds})
+            GROUP BY game_id
+            HAVING count(game_id) >= #{size}
+            ) t
+            on g.id = t.game_id
+        </if>
+        where g.state = 0
+        order by
+        <if test="sortType == 0 ">
+            g.previous_week_download_num desc
+        </if>
+        <if test="sortType == 1 ">
+            g.score desc
+        </if>
+        <if test="sortType == 2 ">
+            g.updated_at desc
+        </if>
+        limit #{offset},#{limit}
+    </select>
+
+    <select id="countBangBySortType" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(*) from t_game tg inner join t_game_list tl
+        on
+        tg.id = tl.game_id
+       <!-- <if test="sortType lt 10">
+            tg.tab_game_id = tl.third_game_id
+        </if>
+        <if test="sortType gte 10">
+            tg.google_game_id = tl.third_game_id
+        </if>-->
+        where tl.sort_type = #{sortType} and tl.status = 1 and tg.state = 0
+    </select>
+
+    <select id="listBangBySortType" parameterType="com.game.common.dto.game.BangGameDto" resultMap="BaseResultMap">
+        select
+        g.id,g.version_child,g.apk,g.tags,g.game_size,g.name,g.icon,g.origin,g.version_main,g.ios_state,g.android_state,g.android_package_name,g.android_status_desc,g.ios_status_desc
+        ,g.can_fast,g.score
+        from t_game g inner join t_game_list tl
+        on
+        g.id = tl.game_id
+       <!-- <if test="sortType lt 10">
+            g.tab_game_id = tl.third_game_id
+        </if>
+        <if test="sortType gte 10">
+            g.google_game_id = tl.third_game_id
+        </if>-->
+        where tl.sort_type = #{sortType} and tl.status = 1 and g.state = 0
+        order by tl.sort
+        limit #{offset},#{limit}
+    </select>
+
+
+    <update id="addDownLoadNum" >
+      update t_game set download_num = download_num+1 ,week_download_num = week_download_num +1,boom_download_num = #{boomDownloadNum} WHERE id = #{gameId};
+    </update>
+
+
+    <select id="getGmaePage" resultType="com.fungo.games.entity.Game" >
+        select
+        <include refid="Base_Column_List"></include>
+        from  t_game
+        where  state = 0  and ( name LIKE  concat(concat('%',#{keyword}),'%')OR google_deputy_name LIKE concat(concat('%',#{keyword}),'%') OR intro LIKE  concat(concat('%',#{keyword}),'%') )
+    </select>
 
 </mapper>

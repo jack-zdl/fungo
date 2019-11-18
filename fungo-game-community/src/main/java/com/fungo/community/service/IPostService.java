@@ -1,7 +1,6 @@
 package com.fungo.community.service;
 
 
-import com.game.common.api.InputPageDto;
 import com.game.common.dto.*;
 import com.game.common.dto.community.PostInput;
 import com.game.common.dto.community.PostInputPageDto;
@@ -20,7 +19,7 @@ public interface IPostService {
 	 * @param userId
 	 * @throws Exception
 	 */
-	public ResultDto<ObjectId> addPost(PostInput postInput, String userId) throws Exception;
+	ResultDto<ObjectId> addPost(PostInput postInput, String userId) throws Exception;
 
 	/**
 	 * 发帖前检查视频
@@ -28,7 +27,7 @@ public interface IPostService {
 	 * @param userId
 	 * @throws Exception
 	 */
-	public ResultDto<String> checkVedioPost(PostInput postInput, String userId) throws Exception;
+	ResultDto<String> checkVedioPost(PostInput postInput, String userId) throws Exception;
 
 	/**
 	 * 删帖
@@ -36,7 +35,7 @@ public interface IPostService {
 	 * http://{{host}}/api/content/post/:post_id
 	 * @param userId 
 	 */
-	public ResultDto<String> deletePost(String postId, String userId);
+	ResultDto<String> deletePost(String postId, String userId);
 	
 	/**
 	 * 修改帖子
@@ -46,7 +45,7 @@ public interface IPostService {
 	 * @param userId
 	 * @throws Exception 
 	 */
-	public ResultDto<String> editPost(PostInput postInput, String userId, String os) throws Exception;
+	ResultDto<String> editPost(PostInput postInput, String userId, String os) throws Exception;
 
 	/**
 	 * 帖子详情
@@ -57,7 +56,7 @@ public interface IPostService {
 	 * @throws IllegalAccessException
 	 * @throws Exception
 	 */
-	public ResultDto getPostDetails(String postId, String userId, String os) throws Exception;
+	ResultDto getPostDetails(String postId, String userId, String os) throws Exception;
 	
 	/**
 	 * 帖子列表
@@ -71,11 +70,11 @@ public interface IPostService {
 	 * @throws IllegalAccessException 
 	 * @throws Exception 
 	 */
-	public FungoPageResultDto<PostOutBean> getPostList(String userId, PostInputPageDto postInputPageDto) throws Exception;
+	FungoPageResultDto<PostOutBean> getPostList(String userId, PostInputPageDto postInputPageDto) throws Exception;
 
-	public FungoPageResultDto<Map<String, String>> getTopicPosts(String communityId);
+	FungoPageResultDto<Map<String, String>> getTopicPosts(String communityId);
 
-	public FungoPageResultDto<PostOutBean> getTopicPosts(MemberUserProfile memberUserPrefile,  PostInputPageDto inputPageDto);
+	FungoPageResultDto<PostOutBean> getTopicPosts(MemberUserProfile memberUserPrefile,  PostInputPageDto inputPageDto);
 
 
 
@@ -87,7 +86,7 @@ public interface IPostService {
 	 * @param endDate
 	 * @return
 	 */
-	public Set<String> getArticleRecomAndTopCount(String mb_id, String startDate, String endDate);
+	Set<String> getArticleRecomAndTopCount(String mb_id, String startDate, String endDate);
 
 
 	/**
@@ -98,8 +97,7 @@ public interface IPostService {
 	 * @return
 	 * @throws Exception
 	 */
-	public FungoPageResultDto<Map<String, Object>> searchPosts(String keyword,int page,int limit) throws Exception;
-
+	FungoPageResultDto<Map<String, Object>> searchPosts(String keyword,int page,int limit) throws Exception;
 
 
 
@@ -112,6 +110,14 @@ public interface IPostService {
 	 * @param limit
 	 * @return
 	 */
-	public FungoPageResultDto<GameDto> queryCmmPostRefGameIds(String keyword, int page, int limit);
+	FungoPageResultDto<GameDto> queryCmmPostRefGameIds(String keyword, int page, int limit);
+
+
+	/**
+	 * 功能描述: 定时任务检查vedio和文章关联
+	 * @param: []
+	 * @return: com.game.common.dto.ResultDto<java.lang.String>
+	 */
+	ResultDto<String> checkAndUpdateVideoPost();
 
 }

@@ -142,12 +142,13 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                                        21 零卡
                                        22 京东卡
                                        23 QB卡
+                                       26 谷歌账号
                                     3 游戏礼包
              * goods_status 产品状态 :
              *                       -1 已删除 ，1 已 下架  ，  2 已 上架
              */
             List<String> goods_types = new ArrayList<>();
-            goods_types.add("1");goods_types.add("2");goods_types.add("21");goods_types.add("22");goods_types.add("23");
+            goods_types.add("1");goods_types.add("2");goods_types.add("21");goods_types.add("22");goods_types.add("23");goods_types.add("26");goods_types.add("27");goods_types.add("28");
             List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(queryStartDate, queryEndDate, goods_types, 2);
             if (null != goodsMapList && !goodsMapList.isEmpty()) {
                 goodsOutBeanList = new ArrayList<MallGoodsOutBean>();
@@ -167,6 +168,8 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                     String seckill_price_vcy = (String) objectMap.get("seckill_price_vcy");
                     seckill_price_vcy = FungoAESUtil.decrypt(seckill_price_vcy,
                             aESSecretKey + FungoMallSeckillConsts.AES_SALT);
+
+                    MallGoods mallGoods = mallGoodsDaoService.selectById( goodsId );
 
 
                     //剩余库存解析
@@ -189,6 +192,9 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                     goodsOutBean.setId(String.valueOf(goodsId));
                     goodsOutBean.setGoodsName(goods_name);
                     goodsOutBean.setSeckillPriceVcy(seckill_price_vcy);
+//                    if(21 == goodsType || 26 == goodsType){
+//
+//                    }
                     goodsOutBean.setResidueStock(residue_stock);
                     goodsOutBean.setMainImg(main_img);
                     goodsOutBean.setSort(sort);
@@ -204,7 +210,10 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             logger.error("获取秒杀商品列表出现异常", ex);
             ex.printStackTrace();
         }
-        List<MallGoodsOutBean> list = goodsOutBeanList.stream().sorted((e1, e2) -> Long.valueOf(e1.getSeckillPriceVcy()).compareTo(Long.valueOf(e2.getSeckillPriceVcy())) ).collect( Collectors.toList());
+        List<MallGoodsOutBean> list = new ArrayList<>();
+        if(null!=goodsOutBeanList && !goodsOutBeanList.isEmpty()){
+            list = goodsOutBeanList.stream().sorted((e1, e2) -> Long.valueOf(e1.getSeckillPriceVcy()).compareTo(Long.valueOf(e2.getSeckillPriceVcy())) ).collect( Collectors.toList());
+        }
         String goodsResultJSON = "";
         if (null != list && !list.isEmpty()) {
             goodsResultJSON = JSON.toJSONString(list);
@@ -542,10 +551,11 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             //  4.1 若fungo币可用余额 足够秒杀当前商品，则下单
             //  4.2 同时直接扣除可用余额，到冻结余额
             boolean isFullMbFungo = false;
-
+            MallGoods mallGoods = mallGoodsDaoService.selectById(orderInput.getGoodsId());
             IncentAccountCoin incentAccountCoin = isFullMbFungo(orderInput.getMbId());
             if (null == incentAccountCoin) {
                 resultMap.put("seckillStatus", 3);
+                resultMap.put( "goodsType",mallGoods.getGoodsType() );
                 logger.info("秒杀商品失败--用户id:{}--商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "用户fungo币不足");
                 return resultMap;
             }
@@ -554,6 +564,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             BigDecimal coinUsable = incentAccountCoin.getCoinUsable();
             if (null == coinUsable) {
                 resultMap.put("seckillStatus", 3);
+                resultMap.put( "goodsType",mallGoods.getGoodsType() );
                 logger.info("秒杀商品失败--用户id:{}--商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "用户fungo币不足");
                 return resultMap;
             }
@@ -561,6 +572,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             int isHaveCoin = coinUsable.compareTo(BigDecimal.ZERO);
             if (0 == isHaveCoin || -1 == isHaveCoin) {
                 resultMap.put("seckillStatus", 3);
+                resultMap.put( "goodsType",mallGoods.getGoodsType() );
                 logger.info("秒杀商品失败--用户id:{}--商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "用户fungo币不足");
                 return resultMap;
             }
@@ -584,6 +596,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
             if (!isFullMbFungo) {
                 resultMap.put("seckillStatus", 3);
+                resultMap.put( "goodsType",mallGoods.getGoodsType() );
                 logger.info("秒杀商品失败--用户id:{}--商品id:{}--msg:{}", orderInput.getMbId(), orderInput.getGoodsId(), "用户fungo币不足");
                 return resultMap;
             }
@@ -1070,6 +1083,11 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                     csgMobile = tradeSuccessOrder.getCsgMobile();
                 }
             }
+            if (null != orderGoodsList && !orderGoodsList.isEmpty()) {
+                MallOrderGoods mallOrderGoods =  orderGoodsList.get( 0 );
+                MallGoods mallGoods = mallGoodsDaoService.selectById( mallOrderGoods.getGoodsId());
+                orderOutBean.setGoodType(mallGoods.getGoodsType());
+            }
         }
 
         if (null != mallOrder.getCreateTime()) {
@@ -1528,6 +1546,16 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
             case 23:
                 orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+
+            case 26:
+                orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+                break;
+
+            case 27:
+                orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+                break;
+            case 28:
+                orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
                 break;
             default:
                 break;
@@ -1729,7 +1757,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                 Date currentDatte = new Date();
                 logsDto.setCreatedAt(currentDatte);
                 logsDto.setUpdatedAt(currentDatte);
-                if(values != null){
+                if(values != null && values.length > 0){
                     logsDto.setUserType( values[0]);
                     logsDto.setChannelType( values[1]);
                 }

@@ -139,6 +139,9 @@ public class CommunityTSMQService {
                 }else if(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_POST_UPDATE.getCode() == mqResultDto.getType()){
                     String bodyStr = mqResultDto.getBody().toString();
                     CmmPost cmmPostDto  = JSON.parseObject(bodyStr, CmmPost.class);
+//                    cmmPostDto.setTitle(null);
+//                    cmmPostDto.setContent(null);
+//                    cmmPostDto.setHtmlOrigin(null);
                     cmmPostDaoServiceImap.updateById(cmmPostDto);
                     return true;
                 }else if(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_MOOD_UPDATE.getCode() == mqResultDto.getType()){

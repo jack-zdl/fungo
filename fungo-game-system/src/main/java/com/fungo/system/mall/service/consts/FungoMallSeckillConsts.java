@@ -133,4 +133,18 @@ public class FungoMallSeckillConsts {
     public static final String FESTIVAL_GOODS_SUCCESS_lv7 = "恭喜获得“小米蓝牙耳机”！正确填写收货信息我们将在3个工作日内为您邮寄！";
     public static final String FESTIVAL_GOODS_SUCCESS_lv8 = "恭喜您获得“100QB”，兑换码为：XXXXXXXXXX 请至官网：https://pay.qq.com/进行兑换";
 
+    //恭喜您! 兑换成功∩_∩请在启动-福利-体验券查看或使用该礼品
+    /**
+     *  零卡商品消息
+     */
+    public static final String MSG_SECKILL_SUCCESS_LINGKA_BAIJINVIP = "恭喜您获得“<span style='color:#242529'> { </span>”！您可在启动-福利-体验券查看并使用您的礼品。感谢支持小Fun,要天天开心哦~";
+
+
+    //"恭喜你！兑换成功∩_∩请在我的消息-通知栏查看您的谷歌账号密码";
+    /**
+     *  零卡谷歌商品消息
+     */
+    public static final String MSG_SECKILL_SUCCESS_LINGKA_GOOGLE = "恭喜您兑换得“谷歌账号“，账号为：{ ，密码为：}，辅助邮箱为：+ ， 您可在我的-礼包乐园-我的礼品查看您的兑换记录。感谢支持小Fun，要天天开心哦～";
+//            "恭喜您获得“<span style='color:#242529'> { </span>”！您可在我的-礼包乐园-我的礼包查询你的兑换记录。感谢支持小Fun,要天天开心哦~";
+
 }

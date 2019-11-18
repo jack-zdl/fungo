@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.system.dao.MemberCouponDao">
+  <resultMap id="BaseResultMap" type="com.fungo.system.entity.MemberCoupon">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="member_type" jdbcType="INTEGER" property="memberType" />
+    <result column="member_id" jdbcType="VARCHAR" property="memberId" />
+    <result column="invitee_id" jdbcType="VARCHAR" property="inviteeId" />
+    <result column="coupon_id" jdbcType="VARCHAR" property="couponId" />
+    <result column="isactive" jdbcType="CHAR" property="isactive" />
+    <result column="created_by" jdbcType="VARCHAR" property="createdBy" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_by" jdbcType="VARCHAR" property="updatedBy" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="rversion" jdbcType="INTEGER" property="rversion" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="send_date" jdbcType="TIMESTAMP" property="sendDate" />
+    <result column="send_log" jdbcType="VARCHAR" property="sendLog" />
+  </resultMap>
+
+  <resultMap id="getCount" type="HashMap">
+    <result property="key" column="member_type" jdbcType="VARCHAR"/>
+    <result property="value" column="COUNT(*)" jdbcType="INTEGER"/>
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, member_type as memberType, member_id as memberId, invitee_id AS inviteeId,  coupon_id as couponId, isactive, created_by as createdBy, created_at as createdAt ,
+    updated_by as updatedBy, updated_at as updatedAt, rversion, description
+  </sql>
+
+
+  <select id="getMemberCouponByRecommendId" resultType="com.fungo.system.entity.MemberCoupon">
+        SELECT  
+         <include refid="Base_Column_List"></include>
+         FROM  t_member_coupon where  member_id = #{memberId}
+         <if test="type != null">
+           and member_type = #{type}
+         </if>
+
+         <if test="ids != null and ids.size() > 0">
+            and invitee_id not in
+           <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+             #{item}
+           </foreach>
+         </if>
+  </select>
+
+  <select id="getMemberCouponByInvitee" resultType="com.fungo.system.entity.MemberCoupon">
+    SELECT
+    <include refid="Base_Column_List"></include>
+    FROM  t_member_coupon where member_type = #{type} and  coupon_id = #{couponId} and
+    member_id in
+    <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
+
+  <select id="getMemberCouponByTypes" resultMap="getCount">
+    SELECT
+    member_type,COUNT(*)
+    FROM  t_member_coupon where  member_id = #{memberId}
+    <if test="types != null and types.size() > 0">
+      and member_type in
+      <foreach item="item" index="index" collection="types" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+      group by member_type
+    </if>
+
+  </select>
+
+  <update id="updateByRversion" parameterType="com.fungo.system.entity.MemberCoupon">
+  </update>
+
+</mapper>

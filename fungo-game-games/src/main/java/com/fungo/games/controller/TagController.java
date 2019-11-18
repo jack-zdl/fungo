@@ -7,6 +7,7 @@ import com.fungo.games.service.IGameService;
 import com.fungo.games.service.ITagService;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.game.BasTagGroupDto;
 import com.game.common.dto.game.TagInput;
 import com.game.common.dto.game.TagSelectOut;
 import com.game.common.util.annotation.Anonymous;
@@ -110,5 +111,16 @@ public class TagController {
 	public ResultDto<List<BasTag>> listPostTag() {
 		return iTagService.listPostTag();
 	}
+
+
+	//  v2.6 标签改版
+	@ApiOperation(value="获取所有分类及其下标签", notes="")
+	@RequestMapping(value="/api/game/tag/listAllGroupAndTag", method= RequestMethod.GET)
+	public ResultDto<List<BasTagGroupDto>> listAllGroupAndTag() {
+		return iTagService.listAllGroupAndTag();
+	}
+
+
+
 	
 }

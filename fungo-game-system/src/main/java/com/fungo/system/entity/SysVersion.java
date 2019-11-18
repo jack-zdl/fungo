@@ -69,6 +69,12 @@ public class SysVersion extends Model<SysVersion> {
 	@TableField("is_auth")
 	private Integer isAuth;
 
+	/**
+	 * 是否隐藏VIP
+	 */
+	@TableField("is_hide")
+	private Integer isHide;
+
 	public String getId() {
 		return id;
 	}
@@ -188,6 +194,14 @@ public class SysVersion extends Model<SysVersion> {
 
 	public void setIsAuth(Integer isAuth) {
 		this.isAuth = isAuth;
+	}
+
+	public Integer getIsHide() {
+		return isHide;
+	}
+
+	public void setIsHide(Integer isHide) {
+		this.isHide = isHide;
 	}
 
 	@Override

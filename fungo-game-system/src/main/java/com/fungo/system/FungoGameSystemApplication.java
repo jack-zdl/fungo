@@ -16,6 +16,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.servlet.MultipartConfigElement;
@@ -32,6 +33,7 @@ import javax.servlet.MultipartConfigElement;
 @EnableConfigurationProperties(MyProperties.class)
 @EnableRedisHttpSession
 @Import(SpringUtils.class)
+@EnableAsync
 public class FungoGameSystemApplication {
 
 	public static void main(String[] args) {

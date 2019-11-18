@@ -1,21 +1,25 @@
 package com.fungo.games.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.common.utils.StringUtils;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.games.config.NacosFungoCircleConfig;
 import com.fungo.games.dao.BasTagDao;
 import com.fungo.games.dao.GameCollectionGroupDao;
 import com.fungo.games.dao.GameDao;
+import com.fungo.games.dao.GameTagDao;
 import com.fungo.games.entity.*;
 import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.feign.CommunityFeignClient;
+import com.fungo.games.helper.es.ESDAOServiceImpl;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
-import com.game.common.bean.TagBean;
+import com.game.common.buriedpoint.BuriedPointUtils;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.Setting;
 import com.game.common.dto.FungoPageResultDto;
@@ -30,12 +34,13 @@ import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
+import com.game.common.util.StringUtil;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
-import com.game.common.buriedpoint.analysysjavasdk.AnalysysJavaSdk;
 import com.game.common.vo.CircleGamePostVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,14 +87,18 @@ public class GameServiceImpl implements IGameService {
     private BasTagService basTagService;
     @Autowired
     private BasTagGroupService basTagGroupService;
-
     @Autowired
     private CommunityFeignClient communityFeignClient;
     @Autowired
     private GameCollectionGroupDao collectionGroupDao;
     @Autowired
     private BasTagDao dao;
-
+    @Autowired
+    private NacosFungoCircleConfig nacosFungoCircleConfig;
+    @Autowired
+    private ESDAOServiceImpl esdaoServiceImpl;
+    @Autowired
+    private GameTagDao gameTagDao;
 
     @Override
     public FungoPageResultDto<GameOutPage> getGameList(GameInputPageDto gameInputDto, String memberId, String os) {
@@ -150,6 +159,7 @@ public class GameServiceImpl implements IGameService {
             out.setName(game.getName());
             out.setIcon(game.getIcon());
 
+
             //游戏编号
             out.setGameIdtSn(game.getGameIdtSn());
 
@@ -164,6 +174,9 @@ public class GameServiceImpl implements IGameService {
                 game.setApk("");
             }
             out.setApkUrl(game.getApk());
+            out.setTags(game.getTags());
+            out.setAndroidStatusDesc(gameStatusDesc(game.getAndroidStatusDesc()));
+            out.setIosStatusDesc(gameStatusDesc(game.getIosStatusDesc()));
             out.setItunesId(game.getItunesId());
             out.setAndroidPackageName(game.getAndroidPackageName());
             out.setGame_size((long) game.getGameSize());
@@ -248,29 +261,36 @@ public class GameServiceImpl implements IGameService {
         return traitList;
     }
 
+    /**
+     *  2019-11-17 修回原来的顺序
+     *  trait 1 画面
+     *  trait 5  玩法
+     * @param key
+     * @return
+     */
     public String transKey(String key) {
-    //        if (key.contains("1")) {
-    //            return "画面";
-    //        } else if (key.contains("2")) {
-    //            return "音乐";
-    //        } else if (key.contains("3")) {
-    //            return "氪金";
-    //        } else if (key.contains("4")) {
-    //            return "剧情";
-    //        } else if (key.contains("5")) {
-    //            return "玩法";
-    //        }
-        if (key.contains("1")) {
-            return "玩法";
-        } else if (key.contains("2")) {
-            return "氪金";
-        } else if (key.contains("3")) {
-            return "音乐";
-        } else if (key.contains("4")) {
-            return "画面";
-        } else if (key.contains("5")) {
-            return "剧情";
-        }
+            if (key.contains("1")) {
+                return "画面";
+            } else if (key.contains("2")) {
+                return "音乐";
+            } else if (key.contains("3")) {
+                return "氪金";
+            } else if (key.contains("4")) {
+                return "剧情";
+            } else if (key.contains("5")) {
+                return "玩法";
+            }
+//        if (key.contains("1")) {
+//            return "玩法";
+//        } else if (key.contains("2")) {
+//            return "氪金";
+//        } else if (key.contains("3")) {
+//            return "音乐";
+//        } else if (key.contains("4")) {
+//            return "画面";
+//        } else if (key.contains("5")) {
+//            return "剧情";
+//        }
         return "";
     }
 
@@ -334,7 +354,14 @@ public class GameServiceImpl implements IGameService {
             out.setGame_size(formatGameSize(game.getGameSize()));
             out.setImage_height(height);
             out.setImage_width(width);
-            out.setVersion(game.getVersionMain() + "." + game.getVersionChild());
+            String versionChild = game.getVersionChild();
+            if(CommonUtil.isNull(versionChild)){
+                out.setVersion(game.getVersionMain() );
+            }else {
+                out.setVersion(game.getVersionMain()+"."+versionChild);
+            }
+
+
             out.setFungoTalk(game.getFungoTalk());
 
             //游戏编号
@@ -374,12 +401,26 @@ public class GameServiceImpl implements IGameService {
             out.setItunes_id(game.getItunesId());
             out.setObjectId(game.getId());
             out.setLink_community(game.getCommunityId());
-            out.setOrigin(game.getOrigin());
+            String origin1 = game.getOrigin();
+            out.setOrigin(origin1.equals("中国")?null:origin1);
+            out.setGoogleDeputyName(game.getGoogleDeputyName());
             out.setRelease_image(game.getReleaseImage());
             out.setState(game.getState());
             out.setUpdate_log(game.getUpdateLog());
             out.setVersion_child(game.getVersionChild());
             out.setVersion_main(game.getVersionMain());
+            out.setCompany(game.getCompany());
+            out.setPublisher(game.getPublisher());
+
+            // 处理加速
+            String origin = origin1;
+            Boolean canFast = game.getCanFast();
+            if(canFast == null){
+                canFast = true;
+            }
+            out.setCanFast(origin.equals("中国")?false:canFast);
+            // 处理描述
+            out.setAndroidStatusDesc(gameStatusDesc(game.getAndroidStatusDesc()));
 
             // 生成推荐相关数据
             //fix bug: 修改排序规则 按时间升序 [by mxf 2019-03-01]
@@ -520,7 +561,14 @@ public class GameServiceImpl implements IGameService {
                 out.setRatingList(rateFormat(perMap));
 
             }
-            List<TagBean> tags = dao.getGameTags(gameId);
+            String tags = game.getTags();
+            if(CommonUtil.isNull(tags)){
+                out.setTags(new ArrayList<>());
+            }else{
+                out.setTags(Arrays.asList(tags.split(",")));
+            }
+
+           /* List<TagBean> tags = dao.getGameTags(gameId);
             // 查询游戏标签
             List<GameTag> gameTagList = gameTagService.selectList(new EntityWrapper<GameTag>().eq("game_id", gameId).eq("type", 2));
             //andNew("type = {0}",1).or("like_num > {0}",5).orderBy("like_num", false).last("LIMIT 5"));
@@ -534,7 +582,7 @@ public class GameServiceImpl implements IGameService {
                     //gameMap.put("tags", tagNames);
                     out.setTags(tagNames);
                 }
-            }
+            }*/
 
             out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
             out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
@@ -597,6 +645,17 @@ public class GameServiceImpl implements IGameService {
                 } );
                 out.setGameGroups( gameGroups );
             }
+            //
+            out.setUserAndroidState("0");
+            out.setUserIosState("0");
+            List<GameSurveyRel> surs = surveyRelService.selectList(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", gameId).eq( "state","0" ));
+            surs.stream().forEach( s ->{
+                if("Android".equals(s.getPhoneModel())){
+                    out.setUserAndroidState("1");
+                }else if("iOS".equals( s.getPhoneModel() )){
+                    out.setUserIosState("1");
+                }
+            } );
         }catch (Exception e){
             logger.error("游戏详情异常,游戏id="+gameId,e);
         }
@@ -752,7 +811,9 @@ public class GameServiceImpl implements IGameService {
                 it.setName(game.getName());
                 it.setIosState(game.getIosState() == null ? -1 : game.getIosState());
                 it.setItunesId(game.getItunesId());
-
+                it.setTags(game.getTags());
+                it.setAndroidStatusDesc(gameStatusDesc(game.getAndroidStatusDesc()));
+                it.setIosStatusDesc(gameStatusDesc(game.getIosStatusDesc()));
                 HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
                 if (rateData != null) {
                     if (rateData.get("avgRating") != null) {
@@ -934,133 +995,285 @@ public class GameServiceImpl implements IGameService {
         if (keyword == null || "".equals(keyword.replace(" ", "")) || keyword.contains("%")) {
             return FungoPageResultDto.error("13", "请输入正确的关键字格式");
         }
-        @SuppressWarnings("rawtypes")
-        Wrapper wrapper = Condition.create().setSqlSelect(
-                "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
-                .eq("state", 0).like("name", keyword);
-        if (tag != null && !"".equals(tag.replace(" ", ""))) {
-            wrapper.like("tags", tag);
-        }
-        Page<Game> gamePage = null;
-        List<Game> gameList = new ArrayList<>();
-        if (sort != null && !"".equals(sort.replace(" ", ""))) {
-            gamePage = gameService.selectPage(new Page<>(page, limit), wrapper.orderBy(sort));
-        } else {
-            gameList = gameService.selectList(wrapper);
-        }
-        if (gamePage != null) {
-            gameList = gamePage.getRecords();
-        } else {// 如果sort不存在,默认排序
-            if (gameList.size() == 0) {
-                return new FungoPageResultDto<GameSearchOut>();
+        FungoPageResultDto<GameSearchOut> re = new FungoPageResultDto<GameSearchOut>();
+        try {
+            Page<Game> gamePage = new Page<>(page, limit);
+            List<Game> gameList = null;
+            // 判断是否选择es
+            if(nacosFungoCircleConfig.isGameSearch()){
+//                @SuppressWarnings("rawtypes")
+//                Wrapper<Game> wrapper = Condition.create().setSqlSelect(
+//                        "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
+//                        .eq("state", 0);
+//                wrapper.and().like("name", keyword);//.like("name", ).or().like("google_deputy_name", keyword).or().like( "intro",keyword );
+                 gameList = gameDao.getGmaePage( gamePage,keyword );
+//                if (tag != null && !"".equals(tag.replace(" ", ""))) {
+//                    wrapper.like("tags", tag);
+//                }
+
+//                if (sort != null && !"".equals(sort.replace(" ", ""))) {
+//                    gamePage = gameService.selectPage(new Page<>(page, limit), wrapper.orderBy(sort));
+//                } else {
+//                    gameList = gameService.selectList(wrapper);
+//                }
+            }else {
+                if (sort != null && !"".equals(sort.replace(" ", ""))) {
+                    gamePage = esdaoServiceImpl.getGameByES( page,  limit, keyword,  tag,  sort );
+                } else {
+                    gamePage = esdaoServiceImpl.getGameByES( page,  limit, keyword,  tag,  sort );
+                }
+//                gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
+//            postPage =  esdaoService.getAllPosts(keyword,page,limit);
             }
 
-            if (gameList.size() > 1) {
-                Collections.sort(gameList, new Comparator<Game>() {
-                    @Override
-                    public int compare(Game g1, Game g2) {
-                        try {
-                            return (int) (calculate(g2) - calculate(g1));
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                            throw new RuntimeException("操作失败");
+            if (gameList == null) {
+                gameList = gamePage.getRecords();
+            } else {// 如果sort不存在,默认排序
+                if (gameList.size() == 0) {
+                    return new FungoPageResultDto<GameSearchOut>();
+                }
+
+                if (gameList.size() > 1) {
+                    Collections.sort(gameList, new Comparator<Game>() {
+                        @Override
+                        public int compare(Game g1, Game g2) {
+                            try {
+                                return (int) (calculate(g2) - calculate(g1));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                                throw new RuntimeException("操作失败");
+                            }
                         }
-                    }
 
-                    public Double calculate(Game g) throws ParseException {
-                        SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
-                        Date t = format.parse("2017-01-01");
-                        Double A = 1.8;
-                        Integer R = g.getRecommendNum();
-                        Date at = g.getEditedAt();
-                        Date T = at != null ? at : g.getCreatedAt();
+                        public Double calculate(Game g) throws ParseException {
+                            SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                            Date t = format.parse("2017-01-01");
+                            Double A = 1.8;
+                            Integer R = g.getRecommendNum();
+                            Date at = g.getEditedAt();
+                            Date T = at != null ? at : g.getCreatedAt();
 
-                        return R + (T.getTime() - t.getTime()) * A;
-                    }
-                });
+                            return R + (T.getTime() - t.getTime()) * A;
+                        }
+                    });
+                }
+                gamePage = pageFormat(gameList, page, limit);
             }
-            gamePage = pageFormat(gameList, page, limit);
-        }
 
-        boolean m = false;
-        if (!CommonUtil.isNull(memberId)) {
-            m = true;
-        }
+            boolean m = false;
+            if (!CommonUtil.isNull(memberId)) {
+                m = true;
+            }
 
-        List<GameSearchOut> dataList = new ArrayList<>();
-        for (Game game : gamePage.getRecords()) {
-            //
-            GameSearchOut out = new GameSearchOut();
-            HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
-            if (rateData != null) {
-                if (rateData.get("avgRating") != null) {
-                    out.setRating(Double.parseDouble(rateData.get("avgRating").toString()));
+            List<GameSearchOut> dataList = new ArrayList<>();
+            for (Game game : gamePage.getRecords()) {
+                //
+                GameSearchOut out = new GameSearchOut();
+                HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
+                if (rateData != null) {
+                    if (rateData.get("avgRating") != null) {
+                        out.setRating(Double.parseDouble(rateData.get("avgRating").toString()));
+                    } else {
+                        out.setRating(0.0);
+                    }
                 } else {
                     out.setRating(0.0);
                 }
-            } else {
-                out.setRating(0.0);
-            }
-            out.setObjectId(game.getId());
-            out.setName(game.getName());
-            out.setTag(game.getTags());
-            out.setIcon(game.getIcon());
-            out.setCover_image(game.getCoverImage());
-            out.setIntro(game.getIntro());
-            out.setDeveloper(game.getDeveloper());
-            out.setLink_community(game.getCommunityId());
-            Integer reNum = game.getRecommendNum();
-            Integer unredNum = game.getUnrecommendNum();
+                out.setObjectId(game.getId());
+                out.setName(game.getName());
+                List<String> gameTags = gameTagDao.selectGameTag( game.getId());
+                String gameTagStrs = String.join(",", gameTags);
+                out.setTag(gameTagStrs);
+                out.setIcon(game.getIcon());
+                out.setCover_image(game.getCoverImage());
+                out.setIntro(game.getIntro());
+                out.setDeveloper(game.getDeveloper());
+                out.setLink_community(game.getCommunityId());
+                Integer reNum = game.getRecommendNum();
+                Integer unredNum = game.getUnrecommendNum();
 //			out.setRecommend_num(reNum);
 //			out.setUnrecommend_num(unredNum);
 //			out.setEvaluation_num(reNum + unredNum);
-            int evaCount = gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", game.getId()).and("state != -1"));
-            out.setEvaluation_num(evaCount);
-            out.setGame_size(game.getGameSize());
+                int evaCount = gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", game.getId()).and("state != -1"));
+                out.setEvaluation_num(evaCount);
+                out.setGame_size(game.getGameSize());
 
-            out.setAndroidPackageName(game.getAndroidPackageName() == null ? "" : game.getAndroidPackageName());
-            out.setAndroidState(game.getAndroidState());
-            out.setIosState(game.getIosState());
-            out.setItunesId(game.getItunesId());
-            out.setApkUrl(game.getApk() == null ? "" : game.getApk());
+                out.setAndroidPackageName(game.getAndroidPackageName() == null ? "" : game.getAndroidPackageName());
+                out.setAndroidState(game.getAndroidState());
+                out.setIosState(game.getIosState());
+                out.setItunesId(game.getItunesId());
+                out.setApkUrl(game.getApk() == null ? "" : game.getApk());
 
-            if (unredNum != 0) {
-                DecimalFormat df = new DecimalFormat("#.00");
-                out.setScore((reNum != null ? (int) Double.parseDouble(df.format((double) reNum / (reNum + unredNum) * 100)) : 0));
-            }
-            out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
-            out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
-
-            out.setCategory(game.getTags());
-            /**
-             * 功能描述: 添加游戏关联圈子
-             * @auther: dl.zhang
-             * @date: 2019/6/24 13:50
-             */
-            try {
-                CircleGamePostVo circleGamePostVo = new CircleGamePostVo(CircleGamePostVo.CircleGamePostTypeEnum.GAMESID.getKey(),game.getId(),"");
-                ResultDto<String> re = communityFeignClient.getCircleByGame(circleGamePostVo);
-                if (CommonEnum.SUCCESS.code().equals(String.valueOf(re.getStatus())) && !re.getData().equals("")) {
-                    out.setLink_circle(re.getData());
+                if (unredNum != 0) {
+                    DecimalFormat df = new DecimalFormat("#.00");
+                    out.setScore((reNum != null ? (int) Double.parseDouble(df.format((double) reNum / (reNum + unredNum) * 100)) : 0));
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.error("根据游戏id询圈子id异常,游戏id：" + game.getId(), e);
+                out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
+                out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
+
+                out.setCategory(gameTagStrs);
+                /**
+                 * 功能描述: 添加游戏关联圈子
+                 * @auther: dl.zhang
+                 * @date: 2019/6/24 13:50
+                 */
+                try {
+                    CircleGamePostVo circleGamePostVo = new CircleGamePostVo(CircleGamePostVo.CircleGamePostTypeEnum.GAMESID.getKey(),game.getId(),"");
+                    ResultDto<String> reString = communityFeignClient.getCircleByGame(circleGamePostVo);
+                    if (CommonEnum.SUCCESS.code().equals(String.valueOf(reString.getStatus())) && !reString.getData().equals("")) {
+                        out.setLink_circle(reString.getData());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.error("根据游戏id询圈子id异常,游戏id：" + game.getId(), e);
+                }
+                // 琪琪说  有厂商展示厂商，没有厂商展示发行商
+                out.setCompany( org.apache.commons.lang3.StringUtils.isNoneBlank(game.getCompany()) ? game.getCompany() : "" );
+                out.setPublisher( org.apache.commons.lang3.StringUtils.isNoneBlank(game.getPublisher()) ? game.getPublisher() : "" );
+                out.setAddress( game.getOrigin());
+                out.setCanFast(  game.getCanFast() != null ? game.getCanFast() : false );
+                String androidStatusDesc = game.getAndroidStatusDesc();
+                /**
+                 * 功能描述:
+                 *  {
+                 *      dsc:””,
+                 *      starDate:””,
+                 *      endDate:””
+                 *  }
+                 */
+                Long starDate = null;
+                Long endDate = null;
+                JSONObject jsonObject = JSON.parseObject( androidStatusDesc);
+                if(jsonObject != null){
+                    String dsc = jsonObject.getString("dsc");
+                    out.setGameStatus( (String) jsonObject.get( "dsc" ) );
+                    try {
+                        if(!CommonUtil.isNull(dsc)){
+                            starDate = (Long) jsonObject.get( "starDate" );
+                            endDate = (Long) jsonObject.get( "endDate" );
+                            if( starDate == null || endDate == null ){
+                                out.setGameStatus( (String) jsonObject.get( "dsc" ) );
+                            }else {
+                                out.setGameStatus(  DateTools.betweenDate(new Date( starDate ),new Date( endDate ),new Date( )  ) ? (String) jsonObject.get( "dsc" ) : "" );
+                            }
+                        }
+                    }catch (Exception e){
+                        logger.error( "androidStatusDesc转换失败",e );
+                    }
+
+                }
+
+                out.setTags(gameTagStrs);
+
+                if(!CommonUtil.isNull(memberId)){
+                    List<GameSurveyRel> gameSurveyRels = gameSurveyRelService.selectList( new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0).eq( "game_id",game.getId()));
+                    if(gameSurveyRels != null && gameSurveyRels.size() >0){
+                        out.setMake(true);
+                    }
+                }
+                out.setVersion( CommonUtil.isNull(game.getVersionChild()) ? game.getVersionMain() : game.getVersionMain()+"."+game.getVersionChild() );
+                dataList.add(out);
             }
-//			if(m) {
-//				GameSurveyRel srel=this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", game.getId()).eq("phone_model", os));
-//				if(srel!=null) {
-//					out.setBinding(!StringUtils.isNullOrEmpty(srel.getAppleId()));
-//					out.setClause(1==srel.getAgree()?true:false);
-//					out.setMake(true);
-//				}
-//			}
-            dataList.add(out);
+            re.setData(dataList);
+            PageTools.pageToResultDto(re, gamePage.getTotal(),limit,page);
+        }catch (Exception e){
+            logger.error( "搜索游戏异常,参数keyword"+keyword+"tag="+tag+"sort="+sort,e );
+            re= FungoPageResultDto.FungoPageResultDtoFactory.buildError( "搜索游戏异常" );
+        }
+        return re;
+    }
+
+    /**
+     * 搜索游戏
+     *
+     * @param page
+     * @param limit
+     * @param keyword
+     * @param tag
+     * @param sort
+     * @param os
+     * @param memberId
+     * @return
+     */
+    @Override
+    public FungoPageResultDto<GameSearchOut> searchGamesCount( String keyword)
+            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        if (keyword == null || "".equals(keyword.replace(" ", "")) || keyword.contains("%")) {
+            return FungoPageResultDto.error("13", "请输入正确的关键字格式");
         }
         FungoPageResultDto<GameSearchOut> re = new FungoPageResultDto<GameSearchOut>();
-        re.setData(dataList);
-        PageTools.pageToResultDto(re, gamePage);
+        try {
+            Page<Game> gamePage = new Page( 1,10 );
+            List<Game> gameList = new ArrayList<>();
+            // 判断是否选择es
+            if(nacosFungoCircleConfig.isGameSearch()){
+//                @SuppressWarnings("rawtypes")
+//                Wrapper wrapper = Condition.create().setSqlSelect(
+//                        "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
+//                        .eq("state", 0).and().or().like("name", keyword).or().like( "google_deputy_name  ", keyword ).or().like( "intro",keyword );
+//                    gamePage = gameService.selectPage(new Page<>(1, 10), wrapper);
+                gameList = gameDao.getGmaePage(gamePage,keyword);
+            }else {
+                    gamePage = esdaoServiceImpl.getGameByES( 1,  10, keyword,  "",  "" );
+            }
+            if (gamePage != null) {
+                gameList = gamePage.getRecords();
+                re.setCount( gamePage.getTotal());
+            } else {
+                re.setCount( gameList.size());
+            }
+        }catch (Exception e){
+            logger.error( "搜索游戏异常,参数keyword"+keyword,e );
+            re= FungoPageResultDto.FungoPageResultDtoFactory.buildError( "搜索游戏异常" );
+        }
+        return re;
+    }
 
+    /**
+     * 功能描述: 搜索时联想关键字
+     * @param:
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.search.GameSearchOut>
+     * @auther: dl.zhang
+     * @date: 2019/10/15 11:44
+     */
+    @Override
+    public FungoPageResultDto<String> searchGamesKeyword(int page, int limit, String keyword, String tag, String sort, String os, String memberId) {
+        if (keyword == null || "".equals(keyword.replace(" ", "")) || keyword.contains("%")) {
+            return FungoPageResultDto.error("13", "请输入正确的关键字格式");
+        }
+        FungoPageResultDto<String> re = new FungoPageResultDto<>();
+        try {
+            Page<Game> gamePage = null;
+            List<String> gameNameList = new ArrayList<>();
+            List<Game> gameList = null;
+            // 判断是否选择es
+            if(nacosFungoCircleConfig.isKeywordGameSearch()){
+                @SuppressWarnings("rawtypes")
+                Wrapper wrapper = Condition.create().setSqlSelect(
+                        "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
+                        .eq("state", 0).like("name", keyword).or().like( "google_deputy_name like ", keyword ); //.or().like( "intro",keyword )
+
+                if (sort != null && !"".equals(sort.replace(" ", ""))) {
+                    gamePage = gameService.selectPage(new Page<>(page, limit), wrapper.orderBy(sort));
+                } else {
+                    gamePage = gameService.selectPage(new Page<>(page, limit), wrapper);
+//                    gameList = gameService.selectList(wrapper);
+                }
+            }else {
+                if (sort != null && !"".equals(sort.replace(" ", ""))) {
+                    gamePage = esdaoServiceImpl.getGameByES( page,  limit, keyword,  tag,  sort );
+                } else {
+                    gamePage = esdaoServiceImpl.getGameByES( page,  limit, keyword,  tag,  sort );
+                }
+            }
+            gameList = gameList != null ? gameList : gamePage.getRecords();
+            gameList.stream().forEach(s -> { String gameName = s.getName();gameNameList.add( gameName); });
+            re.setData(gameNameList);
+            PageTools.pageToResultDto(re, gamePage);
+        }catch (Exception e){
+            logger.error( "搜索游戏异常,参数keyword"+keyword+"tag="+tag+"sort="+sort,e );
+            re= FungoPageResultDto.FungoPageResultDtoFactory.buildError( "搜索游戏异常" );
+        }
         return re;
     }
 
@@ -1778,6 +1991,170 @@ public class GameServiceImpl implements IGameService {
         }
         return ResultDto.success(gameOuts);
     }
+
+    @Override
+    public FungoPageResultDto<GameKuDto> listGameByTags(String memberId, TagGameDto tagGameDto) {
+        int page = tagGameDto.getPage();
+        int limit = tagGameDto.getLimit();
+        // 计算 sql limit 偏移量
+        int offset = (page-1) * limit;
+        tagGameDto.setOffset(offset);
+        Integer tootal =  gameService.countGameByTags(tagGameDto);
+
+        FungoPageResultDto<GameKuDto> fungoPageResultDto = new FungoPageResultDto<>();
+        ArrayList<GameKuDto> gameKuDtos = new ArrayList<>();
+
+        // 优化没有数据情况
+        if(tootal == 0 || offset > tootal){
+            // 结果封装为客户端通用格式
+            fungoPageResultDto.setData(gameKuDtos);
+            PageTools.pageToResultDto(fungoPageResultDto,tootal,limit,page);
+        }else {
+            List<Game> games = gameService.listGameByTags(tagGameDto);
+           /* // 远程服务调用 获取游戏对应的圈子id
+            List<String> gameIds = getGameIds(games);
+            Map<String,String> gameCircleMap = null;*/
+            for (Game game : games) {
+                GameKuDto gameKuDto = transGameToGameKuDto(memberId,game);
+                gameKuDtos.add(gameKuDto);
+            }
+            // 结果封装为客户端通用格式
+            fungoPageResultDto.setData(gameKuDtos);
+            PageTools.pageToResultDto(fungoPageResultDto,tootal,limit,page);
+        }
+
+        return fungoPageResultDto;
+    }
+
+    @Override
+    public FungoPageResultDto<GameKuDto> listGameByBang(String memberId, BangGameDto bangGameDto) {
+        int page = bangGameDto.getPage();
+        int limit = bangGameDto.getLimit();
+        // 计算 sql limit 偏移量
+        int offset = (page-1) * limit;
+        bangGameDto.setOffset(offset);
+        Integer tootal =  gameService.countBangBySortType(bangGameDto.getSortType());
+
+        FungoPageResultDto<GameKuDto> fungoPageResultDto = new FungoPageResultDto<>();
+        ArrayList<GameKuDto> gameKuDtos = new ArrayList<>();
+
+        // 优化没有数据情况
+        if(tootal == 0 || offset > tootal){
+            // 结果封装为客户端通用格式
+            fungoPageResultDto.setData(gameKuDtos);
+            PageTools.pageToResultDto(fungoPageResultDto,tootal,limit,page);
+        }else {
+            List<Game> games = gameService.listBangBySortType(bangGameDto);
+           /* // 远程服务调用 获取游戏对应的圈子id
+            List<String> gameIds = getGameIds(games);
+            Map<String,String> gameCircleMap = null;*/
+            for (Game game : games) {
+                GameKuDto gameKuDto = transGameToGameKuDto(memberId, game);
+                gameKuDtos.add(gameKuDto);
+            }
+            // 结果封装为客户端通用格式
+            fungoPageResultDto.setData(gameKuDtos);
+            PageTools.pageToResultDto(fungoPageResultDto,tootal,limit,page);
+        }
+        return fungoPageResultDto;
+    }
+
+    private List<String> getGameIds(List<Game> games ){
+        List<String> list = new ArrayList<>();
+        for (Game game : games) {
+            list.add(game.getId());
+        }
+        return list;
+    }
+
+    /**
+     *  实体转化
+     * @param gameCircleMap key为游戏id 值为圈子id的map
+     * @param memberId
+     * @param game 游戏实体
+     * @return 转化后的展示实体
+     */
+    private GameKuDto transGameToGameKuDto(String memberId, Game game){
+        GameKuDto gameKuDto = new GameKuDto();
+        gameKuDto.setGameId(game.getId());
+        BeanUtils.copyProperties(game,gameKuDto);
+        // 处理 描述展示和圈子标识展示
+        gameKuDto.setAndroidStatusDesc(gameStatusDesc(gameKuDto.getAndroidStatusDesc()));
+        gameKuDto.setIosStatusDesc(gameStatusDesc(gameKuDto.getIosStatusDesc()));
+
+        // 可优化 -- 看上线效果
+        CircleGamePostVo circleGamePostVo = new CircleGamePostVo(CircleGamePostVo.CircleGamePostTypeEnum.GAMESID.getKey(),game.getId(),"");
+        ResultDto<String> re = communityFeignClient.getCircleByGame(circleGamePostVo);
+        if (CommonEnum.SUCCESS.code().equals(String.valueOf(re.getStatus())) && !re.getData().equals("")) {
+            gameKuDto.setCircleId(re.getData());
+        }else {
+            gameKuDto.setCircleId(null);
+        }
+
+        // 处理加速
+        String origin = gameKuDto.getOrigin();
+        Boolean canFast = gameKuDto.getCanFast();
+        if(canFast == null){
+            canFast = true;
+        }
+        gameKuDto.setCanFast(origin.equals("中国")?false:canFast);
+        gameKuDto.setOrigin(origin.equals("中国")?null:origin);
+
+        // 处理 版本问题
+        String versionChild = game.getVersionChild();
+        String versionMain = game.getVersionMain();
+        if(!CommonUtil.isNull(versionChild)){
+            gameKuDto.setVersion(versionMain+"."+versionChild);
+        }else{
+            gameKuDto.setVersion(versionMain);
+        }
+        Integer androidState = game.getAndroidState();
+
+        // 处理预约状态
+        if(StringUtil.isNotNull(memberId)&&androidState!=null&&androidState == 1){
+            // 查询当前登录用户是否预约
+            String platForm = BuriedPointUtils.getPlatForm();
+            GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", game.getId()).eq("phone_model", platForm).eq("state", 0));
+            gameKuDto.setMake(srel!=null);
+        }else{
+            gameKuDto.setMake(false);
+        }
+        return gameKuDto;
+    }
+
+    /**
+     *  游戏状态描述 格式  {"dsc":"开启时间待通知","starDate":1571812315000,"endDate":1571985115000}
+     * @param databaseDesc 数据库中描述
+     */
+    private String gameStatusDesc(String databaseDesc){
+       if(CommonUtil.isNull(databaseDesc)){
+           return null;
+       }
+       try {
+           JSONObject jsonObject = JSONObject.parseObject(databaseDesc);
+           String dsc = jsonObject.getString("dsc");
+           if(CommonUtil.isNull(dsc)){
+               return null;
+           }
+           long currentTime = System.currentTimeMillis();
+
+           Long starDate = jsonObject.getLong("starDate");
+
+           Long endDate = jsonObject.getLong("endDate");
+
+           if(starDate == null && endDate == null){
+               return dsc;
+           }
+
+           if(currentTime>=starDate && currentTime<= endDate ){
+               return dsc;
+           }
+       }catch (Exception e){
+           logger.error("转换游戏状态描述错误",e);
+       }
+       return null;
+    }
+
 
     //可修改
     private ResultDto<List<Map<String, Object>>> getTagByGameId(String gameId, List<String> TagIdList) {

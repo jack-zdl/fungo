@@ -155,7 +155,7 @@ public class PortalSystemUserController {
 //		String os = "";
 //		os = (String)request.getAttribute("os");
         String appversion = request.getHeader("appversion");
-        ResultDto<LoginMemberBean> re = userService.login(msg.getMobile(), msg.getPassword(), msg.getCode(), appversion);
+        ResultDto<LoginMemberBean> re = userService.login(msg.getMobile(), msg.getPassword(), msg.getCode(), appversion,null,null);
         if (re.isSuccess()) {
             LoginMemberBean bean = re.getData();
             MemberUserProfile userPrefile = new MemberUserProfile();

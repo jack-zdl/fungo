@@ -2,6 +2,7 @@ package com.fungo.community.service.impl;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
@@ -24,6 +25,7 @@ import com.fungo.community.function.SerUtils;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IPostService;
 import com.fungo.community.service.IVideoService;
+import com.game.common.aliyun.green.AliAcsCheck;
 import com.game.common.buriedpoint.BuriedPointUtils;
 import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
 import com.game.common.buriedpoint.model.BuriedPointPostModel;
@@ -36,9 +38,9 @@ import com.game.common.dto.community.*;
 import com.game.common.dto.community.StreamInfo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.MemberDto;
+import com.game.common.enums.AliGreenLabelEnum;
 import com.game.common.enums.CommonEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
-import com.game.common.enums.PostTypeEnum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
@@ -56,11 +58,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 
 @EnableAsync
@@ -71,29 +73,22 @@ public class PostServiceImpl implements IPostService {
 
     @Autowired
     private CmmPostDaoService postService;
-
     @Autowired
     private CmmPostDao cmmPostDao;
-
     @Autowired
     private CmmCommunityDaoService communityService;
-
     @Autowired
     private ICounterService iCountService;
-
     @Autowired
     private BasVideoJobDaoService videoJobService;
-
     @Autowired
     private IVideoService vdoService;
     @Autowired
     private CmmCommunityDao communityDao;
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
-
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
-
     @Autowired
     private NacosFungoCircleConfig nacosFungoCircleConfig;
     //依赖系统和用户微服务
@@ -104,23 +99,25 @@ public class PostServiceImpl implements IPostService {
     private GameFacedeService gameFacedeService;
     @Autowired
     private TSMQFacedeService tSMQFacedeService;
-
     @Autowired
     private CmmPostCircleMapper cmmPostCircleMapper;
-
     @Autowired
     private CmmPostGameMapper cmmPostGameMapper;
-
     @Autowired
     private CmmCircleMapper cmmCircleMapper;
-
     //依赖系统和用户微服务
     @Autowired(required = false)
     private SystemFeignClient systemFeignClient;
-
     @Autowired
     private ESDAOServiceImpl esdaoService;
-
+    @Autowired
+    private BasVideoJobDao basVideoJobDao;
+    @Autowired
+    private MooMoodDao mooMoodDao;
+    @Autowired
+    private AliAcsCheck myIAcsClient;
+    @Autowired
+    private ContentGreenDao contentGreenDao;
 
     @Override
     @Transactional
@@ -128,6 +125,26 @@ public class PostServiceImpl implements IPostService {
 
         if (postInput == null) {
             return ResultDto.error("222", "不存在的帖子内容");
+        }
+        JSONObject titleJsonObject = myIAcsClient.checkText( postInput.getTitle());
+        if((boolean)titleJsonObject.get("result")){
+            if(titleJsonObject.get("replace") != null ){
+                postInput.setTitle( (String) titleJsonObject.get("text") );
+            }else {
+                ResultDto<ObjectId> resultDto = ResultDto.error("0","帖子标题涉及"+ AliGreenLabelEnum.getValueByKey( (String) titleJsonObject.get("label") )+",请您修改" );
+                resultDto.setShowState(1);
+                return resultDto;
+            }
+        }
+        JSONObject textJsonObject = myIAcsClient.checkText( postInput.getHtml().replace( "<p>","" ).replace( "</p>","" ));
+        if((boolean)textJsonObject.get("result")){
+            if(textJsonObject.get("replace") != null ){
+                postInput.setHtml( "<p>"+(String) textJsonObject.get("text") +"</p>");
+            }else {
+                ResultDto<ObjectId> resultDto = ResultDto.error("0","帖子内容涉及"+ AliGreenLabelEnum.getValueByKey( (String) textJsonObject.get("label") )+",请您修改" );
+                resultDto.setShowState(1);
+                return resultDto;
+            }
         }
 //		if(CommonUtil.isNull(postInput.getContent())) {
 //			return ResultDto.error("-1", "请发布内容!");
@@ -548,6 +565,21 @@ public class PostServiceImpl implements IPostService {
         //不存在圈子信息 设为null
         model.setChannel(circleNames.size()>0?circleNames:null);
         BuriedPointUtils.publishBuriedPointEvent(model);
+
+        // 添加内容安全
+//        try {
+//            if((boolean)jsonObject.get("result")){
+//                postInput.setContent( (String) jsonObject.get("text") );
+//                ContentGreen contentGreen = new ContentGreen();
+//                contentGreen.setType(1);
+//                contentGreen.setContentId( post.getId());
+//                contentGreen.setFilterType(1);
+//                contentGreen.setFilterContent(jsonObject.toJSONString());
+//                contentGreen.insert();
+//            }
+//        }catch (Exception e){
+//            logger.error( "内容安全",e );
+//        }
         return resultDto;
     }
 
@@ -2008,6 +2040,50 @@ public class PostServiceImpl implements IPostService {
         }
 
         return resultDto;
+    }
+
+    @Override
+    public ResultDto<String> checkAndUpdateVideoPost() {
+        ResultDto<String> resultDto = null;
+        try {
+            List<CmmPost> cmmPosts = cmmPostDao.selectList( new EntityWrapper<CmmPost>().eq("state", 0));
+            List<String> postIds = cmmPosts.stream().map( CmmPost::getId ).collect( Collectors.toList());
+            if(postIds != null && postIds.size() > 0){
+                List<BasVideoJob> basVideoJobs = basVideoJobDao.getBasVideoJobByPostIds("1",postIds);
+                basVideoJobs.stream().forEach( s  ->{
+                                CmmPost post = cmmPostDao.selectById( s.getBizId());
+                                post.setVideoUrls(s.getVideoUrls());
+                                post.setVideo(s.getReVideoUrl());
+//                                String coverImg = vdoService.getVideoImgInfo(s.getVideoId());
+                                post.setVideoCoverImage(s.getVideoCoverImage());
+                                post.updateById();
+                                post.setState(1);
+                                post.updateById();
+                });
+            }
+
+            List<MooMood> mooMoods = mooMoodDao.selectList(new EntityWrapper<MooMood>().eq("state", 1)  );
+            List<String> moodMoodIds = mooMoods.stream().map( MooMood::getId ).collect( Collectors.toList());
+            if(moodMoodIds != null && moodMoodIds.size() >0 ){
+                List<BasVideoJob> basVideoJobs = basVideoJobDao.getBasVideoJobByPostIds("2",moodMoodIds);
+                basVideoJobs.stream().forEach( s  ->{
+                    MooMood mooMood = mooMoodDao.selectById( s.getBizId());
+                    mooMood.setVideoUrls(s.getVideoUrls());
+                    mooMood.setVideo(s.getReVideoUrl());
+//                    String coverImg = vdoService.getVideoImgInfo(s.getVideoId());
+                    mooMood.setVideoCoverImage(s.getVideoCoverImage());
+                    mooMood.updateById();
+                    mooMood.setState(0);
+                    mooMood.updateById();
+                } );
+            }
+            resultDto = ResultDto.ResultDtoFactory.buildSuccess( "检查vedio和文章心情关联" );
+        }catch (Exception e){
+            logger.error( "定时任务检查vedio和文章关联异常",e );
+            resultDto = ResultDto.ResultDtoFactory.buildError( "检查vedio和文章心情关联异常" );
+        }
+        return  resultDto;
+
     }
 
     /**
