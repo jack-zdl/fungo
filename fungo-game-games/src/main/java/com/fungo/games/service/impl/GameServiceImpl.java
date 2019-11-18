@@ -1022,8 +1022,6 @@ public class GameServiceImpl implements IGameService {
                 } else {
                     gamePage = esdaoServiceImpl.getGameByES( page,  limit, keyword,  tag,  sort );
                 }
-//                gamePage = esdaoServiceImpl.getAllPosts( page,  limit, keyword,  tag,  sort );
-//            postPage =  esdaoService.getAllPosts(keyword,page,limit);
             }
 
             if (gameList == null) {
@@ -1131,7 +1129,7 @@ public class GameServiceImpl implements IGameService {
                 out.setCompany( org.apache.commons.lang3.StringUtils.isNoneBlank(game.getCompany()) ? game.getCompany() : "" );
                 out.setPublisher( org.apache.commons.lang3.StringUtils.isNoneBlank(game.getPublisher()) ? game.getPublisher() : "" );
                 out.setAddress( game.getOrigin());
-                out.setCanFast(  game.getCanFast() != null ? game.getCanFast() : false );
+                out.setCanFast(  "中国".equals( game.getOrigin())? false: game.getCanFast() != null ? game.getCanFast() : false );
                 String androidStatusDesc = game.getAndroidStatusDesc();
                 /**
                  * 功能描述:
