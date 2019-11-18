@@ -918,7 +918,7 @@ public class IndexServiceImpl implements IIndexService {
         }else{
             wrapper.in("display_platform","0,3");
         }
-        wrapper.eq("position_code","0012").eq("state", "0").orderBy("updated_at", false);
+        wrapper.eq("position_code","0012").eq("state", "0").orderBy("sort desc,updated_at", false);
         Banner banner = bannerService.selectOne(wrapper);
         CircleCardDataBean b1 = null;
         if(null!=banner){
