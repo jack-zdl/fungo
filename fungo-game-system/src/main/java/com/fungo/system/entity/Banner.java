@@ -159,6 +159,20 @@ public class Banner extends Model<Banner> {
 	@TableField("display_platform")
 	private Integer displayPlatform;
 
+	/**
+	 * 首页图片
+	 */
+	@TableField("page_image")
+	private String pageImage;
+
+	public String getPageImage() {
+		return pageImage;
+	}
+
+	public void setPageImage(String pageImage) {
+		this.pageImage = pageImage;
+	}
+
 	public Integer getDisplayPlatform() {
 		return displayPlatform;
 	}
