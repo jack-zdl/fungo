@@ -19,7 +19,7 @@ import com.fungo.games.feign.CommunityFeignClient;
 import com.fungo.games.helper.es.ESDAOServiceImpl;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
-import com.game.common.bean.TagBean;
+import com.game.common.buriedpoint.BuriedPointUtils;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.Setting;
 import com.game.common.dto.FungoPageResultDto;
@@ -34,6 +34,7 @@ import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
+import com.game.common.util.StringUtil;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
 import com.game.common.vo.CircleGamePostVo;
@@ -1992,7 +1993,7 @@ public class GameServiceImpl implements IGameService {
     }
 
     @Override
-    public FungoPageResultDto<GameKuDto> listGameByTags(TagGameDto tagGameDto) {
+    public FungoPageResultDto<GameKuDto> listGameByTags(String memberId, TagGameDto tagGameDto) {
         int page = tagGameDto.getPage();
         int limit = tagGameDto.getLimit();
         // 计算 sql limit 偏移量
@@ -2014,7 +2015,7 @@ public class GameServiceImpl implements IGameService {
             List<String> gameIds = getGameIds(games);
             Map<String,String> gameCircleMap = null;*/
             for (Game game : games) {
-                GameKuDto gameKuDto = transGameToGameKuDto(game);
+                GameKuDto gameKuDto = transGameToGameKuDto(memberId,game);
                 gameKuDtos.add(gameKuDto);
             }
             // 结果封装为客户端通用格式
@@ -2026,7 +2027,7 @@ public class GameServiceImpl implements IGameService {
     }
 
     @Override
-    public FungoPageResultDto<GameKuDto> listGameByBang(BangGameDto bangGameDto) {
+    public FungoPageResultDto<GameKuDto> listGameByBang(String memberId, BangGameDto bangGameDto) {
         int page = bangGameDto.getPage();
         int limit = bangGameDto.getLimit();
         // 计算 sql limit 偏移量
@@ -2048,7 +2049,7 @@ public class GameServiceImpl implements IGameService {
             List<String> gameIds = getGameIds(games);
             Map<String,String> gameCircleMap = null;*/
             for (Game game : games) {
-                GameKuDto gameKuDto = transGameToGameKuDto(game);
+                GameKuDto gameKuDto = transGameToGameKuDto(memberId, game);
                 gameKuDtos.add(gameKuDto);
             }
             // 结果封装为客户端通用格式
@@ -2068,11 +2069,12 @@ public class GameServiceImpl implements IGameService {
 
     /**
      *  实体转化
-     * @param game 游戏实体
      * @param gameCircleMap key为游戏id 值为圈子id的map
+     * @param memberId
+     * @param game 游戏实体
      * @return 转化后的展示实体
      */
-    private GameKuDto transGameToGameKuDto(Game game){
+    private GameKuDto transGameToGameKuDto(String memberId, Game game){
         GameKuDto gameKuDto = new GameKuDto();
         gameKuDto.setGameId(game.getId());
         BeanUtils.copyProperties(game,gameKuDto);
@@ -2106,7 +2108,17 @@ public class GameServiceImpl implements IGameService {
         }else{
             gameKuDto.setVersion(versionMain);
         }
+        Integer androidState = game.getAndroidState();
 
+        // 处理预约状态
+        if(StringUtil.isNotNull(memberId)&&androidState!=null&&androidState == 1){
+            // 查询当前登录用户是否预约
+            String platForm = BuriedPointUtils.getPlatForm();
+            GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", game.getId()).eq("phone_model", platForm).eq("state", 0));
+            gameKuDto.setMake(srel!=null);
+        }else{
+            gameKuDto.setMake(false);
+        }
         return gameKuDto;
     }
 

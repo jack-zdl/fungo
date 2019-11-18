@@ -328,7 +328,7 @@ public class GameController {
     }
 
     @PostMapping("/api/game/listGameByTags")
-    public FungoPageResultDto<GameKuDto> listGameByTags(@RequestBody TagGameDto tagGameDto){
+    public FungoPageResultDto<GameKuDto> listGameByTags(@Anonymous MemberUserProfile memberUserPrefile,@RequestBody TagGameDto tagGameDto){
         List<String> tags = tagGameDto.getTags();
         if(tags == null||tags.isEmpty()){
             tagGameDto.setTagIds(null);
@@ -337,12 +337,20 @@ public class GameController {
             tagGameDto.setTagIds(getTagString(tags));
             tagGameDto.setSize(tags.size());
         }
-        return gameService.listGameByTags(tagGameDto);
+        String memberId = null;
+        if(memberUserPrefile!=null){
+            memberId = memberUserPrefile.getLoginId();
+        }
+        return gameService.listGameByTags(memberId,tagGameDto);
     }
 
     @PostMapping("/api/game/listGameByBang")
-    public FungoPageResultDto<GameKuDto> listGameByBang(@RequestBody BangGameDto bangGameDto){
-        return gameService.listGameByBang(bangGameDto);
+    public FungoPageResultDto<GameKuDto> listGameByBang(@Anonymous MemberUserProfile memberUserPrefile,@RequestBody BangGameDto bangGameDto){
+        String memberId = null;
+        if(memberUserPrefile!=null){
+            memberId = memberUserPrefile.getLoginId();
+        }
+        return gameService.listGameByBang(memberId,bangGameDto);
     }
 
 

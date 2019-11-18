@@ -77,4 +77,7 @@ public class GameKuDto  {
 
     private String version;
 
+    private Boolean make;
+
+
 }
