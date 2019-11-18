@@ -260,29 +260,36 @@ public class GameServiceImpl implements IGameService {
         return traitList;
     }
 
+    /**
+     *  2019-11-17 修回原来的顺序
+     *  trait 1 画面
+     *  trait 5  玩法
+     * @param key
+     * @return
+     */
     public String transKey(String key) {
-    //        if (key.contains("1")) {
-    //            return "画面";
-    //        } else if (key.contains("2")) {
-    //            return "音乐";
-    //        } else if (key.contains("3")) {
-    //            return "氪金";
-    //        } else if (key.contains("4")) {
-    //            return "剧情";
-    //        } else if (key.contains("5")) {
-    //            return "玩法";
-    //        }
-        if (key.contains("1")) {
-            return "玩法";
-        } else if (key.contains("2")) {
-            return "氪金";
-        } else if (key.contains("3")) {
-            return "音乐";
-        } else if (key.contains("4")) {
-            return "画面";
-        } else if (key.contains("5")) {
-            return "剧情";
-        }
+            if (key.contains("1")) {
+                return "画面";
+            } else if (key.contains("2")) {
+                return "音乐";
+            } else if (key.contains("3")) {
+                return "氪金";
+            } else if (key.contains("4")) {
+                return "剧情";
+            } else if (key.contains("5")) {
+                return "玩法";
+            }
+//        if (key.contains("1")) {
+//            return "玩法";
+//        } else if (key.contains("2")) {
+//            return "氪金";
+//        } else if (key.contains("3")) {
+//            return "音乐";
+//        } else if (key.contains("4")) {
+//            return "画面";
+//        } else if (key.contains("5")) {
+//            return "剧情";
+//        }
         return "";
     }
 
@@ -1243,7 +1250,7 @@ public class GameServiceImpl implements IGameService {
                 @SuppressWarnings("rawtypes")
                 Wrapper wrapper = Condition.create().setSqlSelect(
                         "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
-                        .eq("state", 0).like("name", keyword).or().like( "google_deputy_name like ", keyword ).or().like( "intro",keyword );
+                        .eq("state", 0).like("name", keyword).or().like( "google_deputy_name like ", keyword ); //.or().like( "intro",keyword )
 
                 if (sort != null && !"".equals(sort.replace(" ", ""))) {
                     gamePage = gameService.selectPage(new Page<>(page, limit), wrapper.orderBy(sort));
