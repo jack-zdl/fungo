@@ -109,4 +109,10 @@ public class CollectionItemBean implements Serializable {
 	 * @return
 	 */
 	private String versionChild;
+	/**
+	 * 是否支持加速
+	 */
+	private String origin;
+
+
 }

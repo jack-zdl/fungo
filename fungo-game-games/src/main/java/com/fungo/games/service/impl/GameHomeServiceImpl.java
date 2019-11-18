@@ -151,30 +151,28 @@ public class GameHomeServiceImpl implements GameHomeService {
             homePageBean = new HomePageBean();
             homePageBean.setId(homePage.getId());
             homePageBean.setGameId(homePage.getGameId());
-            homePageBean.setName(game.getName());
-            homePageBean.setTags(game.getTags());
-            homePageBean.setCanFast(game.getCanFast());
-            if(StringUtils.isNotBlank(game.getOrigin()) && "中国".equals(game.getOrigin())){
-                homePageBean.setOrigin(null);
-            }else{
-                homePageBean.setOrigin(game.getOrigin());
+            if(null!=game){
+                homePageBean.setName(game.getName());
+                homePageBean.setTags(game.getTags());
+                homePageBean.setCanFast("中国".equals(game.getOrigin())?false:game.getCanFast());
+                if(StringUtils.isNotBlank(game.getOrigin()) && "中国".equals(game.getOrigin())){
+                    homePageBean.setOrigin(null);
+                }else{
+                    homePageBean.setOrigin(game.getOrigin());
+                }
+                homePageBean.setScore(game.getScore());
+                homePageBean.setIosState(game.getIosState());
+                homePageBean.setAndroidState(game.getAndroidState());
+                homePageBean.setApk(game.getApk());
+                if(null==game.getVersionChild()){
+                    homePageBean.setVersion(game.getVersionMain());
+                }else if(null!=game.getVersionMain() && null!=game.getVersionChild()){
+                    homePageBean.setVersion(game.getVersionMain()+"."+game.getVersionChild());
+                }
+                homePageBean.setGameSize(game.getGameSize());
+                homePageBean.setAndroidPackageName(game.getAndroidPackageName());
+                homePageBean.setIcon(game.getIcon());
             }
-            homePageBean.setScore(game.getScore());
-            homePageBean.setIosState(game.getIosState());
-            homePageBean.setAndroidState(game.getAndroidState());
-            homePageBean.setRmdLag(homePage.getRmdLag());
-            homePageBean.setRmdReason(homePage.getRmdReason());
-            homePageBean.setVideo(homePage.getVideo());
-            homePageBean.setAppImages(homePage.getAppImages());
-            homePageBean.setApk(game.getApk());
-            if(null==game.getVersionChild()){
-                homePageBean.setVersion(game.getVersionMain());
-            }else if(null!=game.getVersionMain() && null!=game.getVersionChild()){
-                homePageBean.setVersion(game.getVersionMain()+"."+game.getVersionChild());
-            }
-            homePageBean.setGameSize(game.getGameSize());
-            homePageBean.setAndroidPackageName(game.getAndroidPackageName());
-            homePageBean.setIcon(game.getIcon());
             if (StringUtils.isNotBlank(memberId)) {
                 GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", homePage.getGameId()).eq("phone_model", os).eq("state", 0));
                 if (srel != null) {
@@ -182,6 +180,10 @@ public class GameHomeServiceImpl implements GameHomeService {
                     homePageBean.setClause(1 == srel.getAgree() ? true : false);
                 }
             }
+            homePageBean.setRmdLag(homePage.getRmdLag());
+            homePageBean.setRmdReason(homePage.getRmdReason());
+            homePageBean.setVideo(homePage.getVideo());
+            homePageBean.setAppImages(homePage.getAppImages());
             CircleGamePostVo circleGamePostVo = new CircleGamePostVo();
             circleGamePostVo.setGameId(homePage.getGameId());
             circleGamePostVo.setType(1);
@@ -248,6 +250,7 @@ public class GameHomeServiceImpl implements GameHomeService {
         re.setBefore(fungoPageResultDto.getBefore());
         re.setAfter(fungoPageResultDto.getAfter());
         for (NewGameBean newGameBean : list) {
+            newGameBean.setCanFast("中国".equals(newGameBean.getOrigin())?false:newGameBean.isCanFast());
             if(null==newGameBean.getVersionChild()){
                 newGameBean.setVersion(newGameBean.getVersionMain());
             }else if(null!=newGameBean.getVersionMain() && null!=newGameBean.getVersionChild()){
@@ -328,7 +331,7 @@ public class GameHomeServiceImpl implements GameHomeService {
         re.setBefore(fungoPageResultDto.getBefore());
         re.setAfter(fungoPageResultDto.getAfter());
         for (NewGameBean newGameBean : list) {
-            if(StringUtils.isNotBlank(newGameBean.getOrigin()) && "中国".equals(newGameBean.getOrigin())){
+            if(StringUtils.isNotBlank(newGameBean.getOrigin()) && "中国".equals(newGameBean.isCanFast())){
                 newGameBean.setOrigin(null);
             }
             if(null==newGameBean.getVersionChild()){
@@ -427,6 +430,7 @@ public class GameHomeServiceImpl implements GameHomeService {
             if (null == collectionItemBean.getScore()) {
                 collectionItemBean.setScore(0.0);
             }
+            collectionItemBean.setCanFast("中国".equals(collectionItemBean.getOrigin())?false:collectionItemBean.isCanFast());
             collectionItemBean.setMake(false);
             if (StringUtils.isNotBlank(memberId)) {
                 GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", collectionItemBean.getGameId()).eq("phone_model", os).eq("state", 0));
