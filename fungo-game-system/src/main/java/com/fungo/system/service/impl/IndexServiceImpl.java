@@ -847,7 +847,7 @@ public class IndexServiceImpl implements IIndexService {
             b1.setBannerId(banner.getId());
             b1.setMainTitle(banner.getGeneralizeTitle());
             b1.setImageUrl(banner.getCoverImage());
-            b1.setImageUrlNew(banner.getCoverImgNew());
+            b1.setImageUrlNew(banner.getPageImage());
             b1.setContent(banner.getIntro());
             b1.setHref(banner.getHref());
             b1.setActionType(String.valueOf(banner.getActionType()));
