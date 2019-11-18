@@ -2378,14 +2378,14 @@ public class EvaluateServiceImpl implements IEvaluateService {
             }else if(DelObjectListVO.TypeEnum.GAMEREPLY.getKey() == type){
                 userFunVO.setDescription( "删除游戏回复" );
                 commentIds.stream().forEach(s ->{
+                    Reply reply = replyService.selectById(s);
                     Map<String, String> map = new HashMap<>();
                     map.put("tableName", "t_game_evaluation");
                     map.put("fieldName", "reply_num");
-                    map.put("id",s);
+                    map.put("id",reply.getTargetId());
                     map.put("type", "sub");
                     mqProduct.updateCounter(map);
                     // @todo 游戏评测
-                    Reply reply = new Reply();
                     reply.setId(s);
                     reply.setState(-1);
                     istrue.set(replyService.updateById(reply));
