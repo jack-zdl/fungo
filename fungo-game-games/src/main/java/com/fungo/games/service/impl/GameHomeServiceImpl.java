@@ -410,54 +410,57 @@ public class GameHomeServiceImpl implements GameHomeService {
     @Transactional
     public ResultDto<AdminCollectionGroup> queryCollectionItem(AdminCollectionVo input, String memberId, String os) {
         ResultDto<AdminCollectionGroup> re = new ResultDto<>();
-        AdminCollectionGroup adminCollectionGroup = new AdminCollectionGroup();
+        AdminCollectionGroup adminCollectionGroup = null;
         if (StringUtils.isBlank(input.getId())) {
             throw new BusinessException("请输入查询主键");
         }
         FindCollectionGroup findCollectionGroup = findCollectionGroupService.selectById(input.getId());
-        adminCollectionGroup.setCoverPicture(findCollectionGroup.getCoverPicture());
-        adminCollectionGroup.setSort(findCollectionGroup.getSort());
-        adminCollectionGroup.setName(findCollectionGroup.getName());
-        adminCollectionGroup.setDetail(findCollectionGroup.getDetail());
-        adminCollectionGroup.setId(findCollectionGroup.getId());
-        List<CollectionItemBean> itemList = findCollectionGroupDao.getCollectionItemAll(findCollectionGroup.getId());
-        for (CollectionItemBean collectionItemBean : itemList) {
-            if(null==collectionItemBean.getVersionChild()){
-                collectionItemBean.setVersion(collectionItemBean.getVersionMain());
-            }else if(null!=collectionItemBean.getVersionMain() && null!=collectionItemBean.getVersionChild()){
-                collectionItemBean.setVersion(collectionItemBean.getVersionMain()+"."+collectionItemBean.getVersionChild());
-            }
-            if (null == collectionItemBean.getScore()) {
-                collectionItemBean.setScore(0.0);
-            }
-            collectionItemBean.setCanFast("中国".equals(collectionItemBean.getOrigin())?false:collectionItemBean.isCanFast());
-            collectionItemBean.setMake(false);
-            if (StringUtils.isNotBlank(memberId)) {
-                GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", collectionItemBean.getGameId()).eq("phone_model", os).eq("state", 0));
-                if (srel != null) {
-                    collectionItemBean.setMake(true);
-                    collectionItemBean.setClause(1 == srel.getAgree() ? true : false);
+        if(null!=findCollectionGroup){
+            adminCollectionGroup = new AdminCollectionGroup();
+            adminCollectionGroup.setCoverPicture(findCollectionGroup.getCoverPicture());
+            adminCollectionGroup.setSort(findCollectionGroup.getSort());
+            adminCollectionGroup.setName(findCollectionGroup.getName());
+            adminCollectionGroup.setDetail(findCollectionGroup.getDetail());
+            adminCollectionGroup.setId(findCollectionGroup.getId());
+            List<CollectionItemBean> itemList = findCollectionGroupDao.getCollectionItemAll(findCollectionGroup.getId());
+            for (CollectionItemBean collectionItemBean : itemList) {
+                if(null==collectionItemBean.getVersionChild()){
+                    collectionItemBean.setVersion(collectionItemBean.getVersionMain());
+                }else if(null!=collectionItemBean.getVersionMain() && null!=collectionItemBean.getVersionChild()){
+                    collectionItemBean.setVersion(collectionItemBean.getVersionMain()+"."+collectionItemBean.getVersionChild());
                 }
+                if (null == collectionItemBean.getScore()) {
+                    collectionItemBean.setScore(0.0);
+                }
+                collectionItemBean.setCanFast("中国".equals(collectionItemBean.getOrigin())?false:collectionItemBean.isCanFast());
+                collectionItemBean.setMake(false);
+                if (StringUtils.isNotBlank(memberId)) {
+                    GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", collectionItemBean.getGameId()).eq("phone_model", os).eq("state", 0));
+                    if (srel != null) {
+                        collectionItemBean.setMake(true);
+                        collectionItemBean.setClause(1 == srel.getAgree() ? true : false);
+                    }
+                }
+                CircleGamePostVo circleGamePostVo = new CircleGamePostVo();
+                circleGamePostVo.setGameId(collectionItemBean.getGameId());
+                circleGamePostVo.setType(1);
+                ResultDto<String> dto = communityFeignClient.getCircleByGame(circleGamePostVo);
+                if (null == dto) {
+                    collectionItemBean.setCircleId(null);
+                } else {
+                    collectionItemBean.setCircleId(dto.getData());
+                }
+                collectionItemBean.setAndroidStatusDesc(gameStatusDesc(collectionItemBean.getAndroidStatusDesc()));
             }
-            CircleGamePostVo circleGamePostVo = new CircleGamePostVo();
-            circleGamePostVo.setGameId(collectionItemBean.getGameId());
-            circleGamePostVo.setType(1);
-            ResultDto<String> dto = communityFeignClient.getCircleByGame(circleGamePostVo);
-            if (null == dto) {
-                collectionItemBean.setCircleId(null);
-            } else {
-                collectionItemBean.setCircleId(dto.getData());
+            adminCollectionGroup.setList(itemList);
+            MallBannersInput mallBannersInput = new MallBannersInput();
+            mallBannersInput.setTarget_id(input.getId());
+            mallBannersInput.setLogin_id(memberId);
+            ResultDto<BannerBean> reBanner = systemFeignClient.queryCollection(mallBannersInput);
+            if(null!=reBanner && null!=reBanner.getData()){
+                BannerBean bannerBean = reBanner.getData();
+                adminCollectionGroup.setCount(bannerBean.getCount());
             }
-            collectionItemBean.setAndroidStatusDesc(gameStatusDesc(collectionItemBean.getAndroidStatusDesc()));
-        }
-        adminCollectionGroup.setList(itemList);
-        MallBannersInput mallBannersInput = new MallBannersInput();
-        mallBannersInput.setTarget_id(input.getId());
-        mallBannersInput.setLogin_id(memberId);
-        ResultDto<BannerBean> reBanner = systemFeignClient.queryCollection(mallBannersInput);
-        if(null!=reBanner && null!=reBanner.getData()){
-            BannerBean bannerBean = reBanner.getData();
-            adminCollectionGroup.setCount(bannerBean.getCount());
         }
         re.setData(adminCollectionGroup);
         return re;
