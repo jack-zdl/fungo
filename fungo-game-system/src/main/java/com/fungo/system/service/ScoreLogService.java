@@ -139,4 +139,13 @@ public interface ScoreLogService extends IService<ScoreLog> {
 	 */
 	public List<ScoreLog> getScoreLogWithMbAndTask(String mb_id, int task_type, int task_code_idt, String startDate, String endDate) throws Exception ;
 
+
+	/**
+	 * 点赞勋章
+	 * @return
+	 * @throws Exception
+	 */
+	public void updateRankedMedal(String userId ,int rankidt) throws IOException;
+
+
 }
