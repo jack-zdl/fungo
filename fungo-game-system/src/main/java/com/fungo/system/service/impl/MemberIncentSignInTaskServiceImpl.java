@@ -406,7 +406,6 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
 //            updateRanked(mb_id, mapper, 35);
             scoreLogService.updateRankedMedal(mb_id,35);
         } else {
-
             int signInCount = 0;
 
             //查询log日志 获取用户签到累计天数
