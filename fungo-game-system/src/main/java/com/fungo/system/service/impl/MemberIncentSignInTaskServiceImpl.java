@@ -422,7 +422,6 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
 //                updateRanked(mb_id, mapper, 36);
             }
         }
-        scoreLogService.updateRankedMedal(mb_id,36);
         return ResultDto.success("签到成功");
     }
 
