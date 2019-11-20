@@ -856,6 +856,12 @@ public class ScoreLogServiceImap extends ServiceImpl<ScoreLogDao, ScoreLog> impl
             rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24,31,32"));
         } else if (rankidt == FungoRankConstants.LIKE_THIRTY_THREE) { //累计收到点赞300次
             rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24,31,32,33"));
+        }else if (rankidt == FungoRankConstants.SIGN_THIRTY_FOUR) { //累计签到7天
+            rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24,34"));
+        } else if (rankidt == FungoRankConstants.SIGN_THIRTY_FIVE) { //累计签到30天
+            rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24,34,35"));
+        } else if (rankidt == FungoRankConstants.SIGN_THIRTY_SIX) { //累计签到100天
+            rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24,34,35,36"));
         }
         if (!rankRuleList.isEmpty()) {
             String key = "1";

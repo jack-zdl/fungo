@@ -138,11 +138,14 @@ public class ActionServiceImpl implements IActionService {
 //			int likeCount = scoreLogService.selectCount(new EntityWrapper<ScoreLog>().eq("member_id", targetMemberId).eq("code_idt", 41));
             LOGGER.info("like---点赞次数" + likeCount);
             if (likeCount >= 50 && likeCount < 100) {//expTask.getData()
-                scoreLogService.updateRanked(targetMemberId, new ObjectMapper(), 31);
+//                scoreLogService.updateRanked(targetMemberId, new ObjectMapper(), 31);
+                scoreLogService.updateRankedMedal(targetMemberId,31);
             } else if (likeCount >= 100 && likeCount < 300) {
-                scoreLogService.updateRanked(targetMemberId, new ObjectMapper(), 32);
+//                scoreLogService.updateRanked(targetMemberId, new ObjectMapper(), 32);
+                scoreLogService.updateRankedMedal(targetMemberId,32);
             } else if (likeCount >= 300) {
-                scoreLogService.updateRanked(targetMemberId, new ObjectMapper(), 33);
+//                scoreLogService.updateRanked(targetMemberId, new ObjectMapper(), 33);
+                scoreLogService.updateRankedMedal(targetMemberId,33);
             }
             //----添加埋点点赞数据----------
             BuriedPointLikeModel likeModel = new BuriedPointLikeModel();
