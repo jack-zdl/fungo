@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.games.dao.HomePageDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.fungo.games.entity.HomePage">
+        <id column="id" property="id"/>
+        <result column="game_id" property="gameId"/>
+        <result column="rmd_lag" property="rmdLag"/>
+        <result column="rmd_reason" property="rmdReason"/>
+        <result column="video" property="video"/>
+        <result column="app_images" property="appImages"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="state" property="state"/>
+        <result column="pc_images" property="pcImages"/>
+    </resultMap>
+
+
+    <!-- 查询正常和置顶总数据 -->
+    <select id="queryList" resultMap="BaseResultMap" parameterType="com.fungo.games.dao.HomePageDao">
+        select
+        t1.id,
+        t1.game_id,
+        t1.rmd_lag,
+        t1.rmd_reason,
+        t1.video,
+        t1.origin,
+        t1.app_images,
+        t1.updated_at,
+        t1.state,
+        t1.pc_images
+        from t_game_page t1
+        left join t_game t2 on t1.game_id=t2.id
+        <where>
+            <if test="states != null and states.size() > 0 ">
+                and t1.state in
+                <foreach item="state" index="index" collection="states" open="(" separator="," close=")">
+                    #{state}
+                </foreach>
+            </if>
+            and t2.state=0
+        </where>
+        order by t1.updated_at desc
+    </select>
+
+
+
+    <!-- 根据分页数查询数据 -->
+    <select id="queryListByPage" resultMap="BaseResultMap" parameterType="com.fungo.games.dao.HomePageDao">
+        select
+        t1.id,
+        t1.game_id,
+        t1.rmd_lag,
+        t1.rmd_reason,
+        t1.video,
+        t1.origin,
+        t1.app_images,
+        t1.updated_at,
+        t1.state,
+        t1.pc_images
+        from t_game_page t1
+        left join t_game t2 on t1.game_id=t2.id
+        <where>
+            <if test="states != null and states.size() > 0 ">
+                and t1.state in
+                <foreach item="state" index="index" collection="states" open="(" separator="," close=")">
+                    #{state}
+                </foreach>
+            </if>
+            and t2.state=0
+        </where>
+        order by t1.updated_at desc
+        LIMIT #{startOffset} ,#{pageSize}
+    </select>
+
+
+</mapper>

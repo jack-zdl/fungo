@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.dao.FindCollectionGroupDao;
+import com.fungo.games.dao.HomePageDao;
 import com.fungo.games.dao.NewGameDao;
 import com.fungo.games.entity.*;
 import com.fungo.games.feign.CommunityFeignClient;
@@ -15,6 +16,7 @@ import com.game.common.bean.CollectionItemBean;
 import com.game.common.bean.HomePageBean;
 import com.game.common.bean.NewGameBean;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.HomePageDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.index.BannerBean;
 import com.game.common.dto.mall.MallBannersInput;
@@ -69,6 +71,9 @@ public class GameHomeServiceImpl implements GameHomeService {
     private NewGameService newGameService;
     @Autowired
     private SystemFeignClient systemFeignClient;
+    @Autowired
+    private HomePageDao homePageDao;
+
 
 
     /**
@@ -87,14 +92,25 @@ public class GameHomeServiceImpl implements GameHomeService {
         }
         List<HomePage> result = new ArrayList<>();
         //查询正常和置顶全部数据
-        List<HomePage> totalListPage = homePageService.selectList(new EntityWrapper<HomePage>().in("state", "0,3").orderBy("updated_at", false));
+        HomePageDto homePageDto = new HomePageDto();
+        List<String> states = new ArrayList<>();
+        states.add("0");
+        states.add("3");
+        homePageDto.setStates(states);
+        List<HomePage> totalListPage = homePageDao.queryList(homePageDto);
         //查询数据按时间排序
-        Page<HomePage> page = homePageService.selectPage(new Page<HomePage>(inputPageDto.getPage(), inputPageDto.getLimit()),
-                new EntityWrapper<HomePage>().eq("state", 0).orderBy("updated_at", false));
+        //查询分页列表startOffset
+        int startOffset = (inputPageDto.getPage() - 1) * inputPageDto.getLimit();
+        homePageDto.setStartOffset(startOffset);
+        homePageDto.setPageSize(inputPageDto.getLimit());
+        states = new ArrayList<>();
+        states.add("0");
+        homePageDto.setStates(states);
+        List<HomePage> pageList = homePageDao.queryListByPage(homePageDto);
         //获取前一页后一页数据
         FungoPageResultDto<HomePage> fungoPageResultDto = new FungoPageResultDto<>();
         //查询正常的总数据
-        List<HomePage> homePageList = homePageService.selectList(new EntityWrapper<HomePage>().eq("state", 0));
+        List<HomePage> homePageList = homePageDao.queryList(homePageDto);
         Page<HomePage> pages = new Page();
         pages.setTotal(homePageList.size());
         pages.setSize(inputPageDto.getLimit());
@@ -103,17 +119,19 @@ public class GameHomeServiceImpl implements GameHomeService {
         PageTools.pageToResultDto(fungoPageResultDto, pages);
         re.setBefore(fungoPageResultDto.getBefore());
         re.setAfter(fungoPageResultDto.getAfter());
-        List<HomePage> pageList = page.getRecords();
         if (1 == inputPageDto.getPage()) {
             //置顶标识首页数据
-            List<HomePage> topList = homePageService.selectList(new EntityWrapper<HomePage>().eq("state", 3));
+            states = new ArrayList<>();
+            states.add("3");
+            homePageDto.setStates(states);
+            List<HomePage> topList = homePageDao.queryList(homePageDto);
             boolean flag = true;
             if (topList.isEmpty()) {
                 flag = false;
                 result = pageList;
             }
-            //第一条即是制定也是最新更新的
             if (flag) {
+                //第一条即是制定也是最新更新的
                 if (!totalListPage.get(0).getId().equals(pageList.get(0).getId())) {
                     result.add(totalListPage.get(0));
                     topList = topList.stream().filter(s -> !s.getId().equals(totalListPage.get(0).getId())).collect(Collectors.toList());
@@ -142,7 +160,7 @@ public class GameHomeServiceImpl implements GameHomeService {
                 }
             }
         } else {
-            result = page.getRecords();
+            result = pageList;
         }
         List<HomePageBean> homePageBeanList = new ArrayList<>();
         HomePageBean homePageBean = null;
