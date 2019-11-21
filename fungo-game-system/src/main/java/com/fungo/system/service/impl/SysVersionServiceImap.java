@@ -49,13 +49,15 @@ public class SysVersionServiceImap extends ServiceImpl<SysVersionDao, SysVersion
     @Override
     public ResultDto<HashMap<String, Object>> getVipHide(String version, String mobile_type,String appChannel) {
         ResultDto<HashMap<String, Object>> resultDto = ResultDto.ResultDtoFactory.buildError( "没有查询到数据" );
+        HashMap<String, Object> hashMap = new HashMap<>( );
         try {
             if(CommonUtil.isNull( appChannel )){
                 List<SysVersion> sysVersions = selectList( new EntityWrapper<SysVersion>().eq( "version",version ).eq( "mobile_type",mobile_type ) );
                 if(sysVersions != null && sysVersions.size()>0){
-                    HashMap<String, Object> hashMap = new HashMap<>( );
                     hashMap.put( "hide",sysVersions.get(0).getIsHide() == 1 ? true : false );
                     resultDto = ResultDto.ResultDtoFactory.buildSuccess( hashMap);
+                }else {
+                    hashMap.put( "hide",false );
                 }
             }else {
                 List<SysVersion> sysVersions = selectList( new EntityWrapper<SysVersion>().eq( "version",version ).eq( "mobile_type",mobile_type ) );
@@ -63,10 +65,13 @@ public class SysVersionServiceImap extends ServiceImpl<SysVersionDao, SysVersion
                     String versionId = sysVersions.get(0).getId();
                     List<SysVersionChannel> sysVersionChannels = sysVersionChannelService.selectList( new EntityWrapper<SysVersionChannel>().eq( "version_id",versionId ).eq( "channel_code",appChannel ) );
                     if(sysVersionChannels != null && sysVersionChannels.size()>0){
-                        HashMap<String, Object> hashMap = new HashMap<>( );
                         hashMap.put( "hide",sysVersionChannels.get(0).getIsHide() == 1 ? true : false );
                         resultDto = ResultDto.ResultDtoFactory.buildSuccess( hashMap);
+                    }else {
+                        hashMap.put( "hide",false );
                     }
+                }else {
+                    hashMap.put( "hide",false );
                 }
             }
         }catch (Exception e){

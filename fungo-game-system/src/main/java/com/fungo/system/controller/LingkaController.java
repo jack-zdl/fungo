@@ -191,8 +191,8 @@ public class LingkaController {
     public ResultDto<HashMap<String, Object>> getVipHide(HttpServletRequest request,@RequestBody Map<String,Object> hashMap){
 
         String appVersion = "2.5.1";
-        if(StringUtils.isNoneBlank( (String) hashMap.get("appversion") )){
-            appVersion = (String) hashMap.get("appversion");
+        if(StringUtils.isNoneBlank( (String) hashMap.get("version") )){
+            appVersion = (String) hashMap.get("version");
         }
         String os = request.getHeader("os");
         if(os == null){
@@ -200,8 +200,8 @@ public class LingkaController {
         }
         //app渠道编码
         String app_channel = null;
-        if(StringUtils.isNoneBlank( (String) hashMap.get("appChannel") )){
-            app_channel = (String) hashMap.get("appChannel");
+        if(StringUtils.isNoneBlank( (String) hashMap.get("channelCode") )){
+            app_channel = (String) hashMap.get("channelCode");
         }
        return sysVersionService.getVipHide(appVersion,os,app_channel );
     }
