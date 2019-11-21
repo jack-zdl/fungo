@@ -396,16 +396,16 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
         ObjectMapper mapper = new ObjectMapper();
         String mb_id = member.getId();
 
-        if (signInCountDays_i == 7) {
+        if (signInCountDays_i >= 7 && signInCountDays_i < 30) {
 
-            updateRanked(mb_id, mapper, 34);
+//            updateRanked(mb_id, mapper, 34);
+            scoreLogService.updateRankedMedal(mb_id,34);
 
-        } else if (signInCountDays_i == 30) {
+        } else if (signInCountDays_i >= 30 && signInCountDays_i < 100) {
 
-            updateRanked(mb_id, mapper, 35);
-
+//            updateRanked(mb_id, mapper, 35);
+            scoreLogService.updateRankedMedal(mb_id,35);
         } else {
-
             int signInCount = 0;
 
             //查询log日志 获取用户签到累计天数
@@ -417,7 +417,8 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
             signInCount = scoreLogService.selectCount(scoreLogEntityWrapper);
 
             if (signInCount >= 100) {
-                updateRanked(mb_id, mapper, 36);
+                scoreLogService.updateRankedMedal(mb_id,36);
+//                updateRanked(mb_id, mapper, 36);
             }
         }
         return ResultDto.success("签到成功");

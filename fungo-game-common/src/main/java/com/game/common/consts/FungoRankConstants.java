@@ -14,6 +14,7 @@ public class FungoRankConstants {
     /**
      * 资源类型
      */
+    public static final int SELECTED_TWENTY_FOUR = 24;//文章上精选2次
     public static final int SELECTED_TWENTY_FIVE = 25;//文章上精选2次
     public static final int SELECTED_TWENTY_SIX = 26;//文章上精选10次
     public static final int SELECTED_TWENTY_SEVEN = 27;//文章上精选50次

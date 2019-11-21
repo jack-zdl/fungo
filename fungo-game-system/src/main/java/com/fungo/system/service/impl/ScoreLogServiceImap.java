@@ -13,6 +13,7 @@ import com.fungo.system.entity.*;
 import com.fungo.system.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.FunGoGameConsts;
+import com.game.common.consts.FungoRankConstants;
 import com.game.common.dto.ResultDto;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.exception.BusinessException;
@@ -830,5 +831,97 @@ public class ScoreLogServiceImap extends ServiceImpl<ScoreLogDao, ScoreLog> impl
         return scoreLogList;
     }
 
-    //----------
+
+
+    //更新荣誉-fungo身份证 汇总
+    @Override
+    public void updateRankedMedal(String userId, int rankidt) throws IOException {
+        IncentRuleRank rankRule = ruleRankService.selectOne(new EntityWrapper<IncentRuleRank>().eq("rank_idt", rankidt));
+        //荣誉汇总 类型
+        IncentRanked incentRanked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", userId).eq("rank_type", rankRule.getRankType()));
+        SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        //------fungo身份证 获取时间，是用户注册时间
+        String datos = format.format(new Date());
+        boolean levelRank = rankRule.getRankType() == 1;
+        ArrayList<Map<String, Object>> mapList = new ArrayList<>();
+        if (null != incentRanked && null!=incentRanked.getRankIdtIds()) {
+            mapList = mapper.readValue(incentRanked.getRankIdtIds(), ArrayList.class);
+        }
+        List<IncentRuleRank> rankRuleList = new ArrayList<>();
+        if (rankidt == FungoRankConstants.SELECTED_TWENTY_FOUR) { //初始徽章
+            rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24"));
+        } else if (rankidt == FungoRankConstants.LIKE_THIRTY_ONE) { //累计收到点赞50次
+            rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24,31"));
+        } else if (rankidt == FungoRankConstants.LIKE_THIRTY_TWO) { //累计收到点赞100次
+            rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24,31,32"));
+        } else if (rankidt == FungoRankConstants.LIKE_THIRTY_THREE) { //累计收到点赞300次
+            rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24,31,32,33"));
+        }else if (rankidt == FungoRankConstants.SIGN_THIRTY_FOUR) { //累计签到7天
+            rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24,34"));
+        } else if (rankidt == FungoRankConstants.SIGN_THIRTY_FIVE) { //累计签到30天
+            rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24,34,35"));
+        } else if (rankidt == FungoRankConstants.SIGN_THIRTY_SIX) { //累计签到100天
+            rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24,34,35,36"));
+        }
+        if (!rankRuleList.isEmpty()) {
+            String key = "1";
+            if (levelRank) {//等级荣誉
+                key = "rankId";
+            }
+            Map<String, Object> medalMap = null;
+            for (IncentRuleRank incentRuleRank : rankRuleList) {
+                boolean flag = true;
+                for (Map<String, Object> m : mapList) {
+                    if (Long.parseLong(m.get(key) + "") == incentRuleRank.getId()) {//汇总已包含当前荣誉
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag) {
+                    medalMap = new HashMap<>();
+                    if (levelRank) {//等级荣誉
+                        medalMap.put("rankId", incentRuleRank.getId());
+                        medalMap.put("rankName", incentRuleRank.getRankName());
+                    } else {//非等级荣誉
+                        medalMap.put("1", incentRuleRank.getId());
+                        medalMap.put("2", incentRuleRank.getRankName());
+                        medalMap.put("3", incentRuleRank.getRankType());
+                        medalMap.put("4", datos);
+                    }
+                    mapList.add(medalMap);
+                }
+            }
+        }
+        if (incentRanked == null) {//用户没有该类型荣誉 新建记录
+            incentRanked = new IncentRanked();
+            incentRanked.setMbId(userId);
+            incentRanked.setRankIdtIds(mapper.writeValueAsString(mapList));
+            incentRanked.setCurrentRankId(rankRule.getId());
+            incentRanked.setCurrentRankName(rankRule.getRankName());
+            incentRanked.setRankType(rankRule.getRankType());
+            incentRanked.setCreatedAt(new Date());
+            incentRanked.setUpdatedAt(new Date());
+            Integer clusterIndex_i = Integer.parseInt(clusterIndex);
+            incentRanked.setId(PKUtil.getInstance(clusterIndex_i).longPK());
+            incentRanked.insert();
+            addRankLog(userId, rankRule);
+        } else {//用户已有该类型荣誉
+            incentRanked.setRankIdtIds(mapper.writeValueAsString(mapList));
+            incentRanked.setCurrentRankId(rankRule.getId());
+            incentRanked.setCurrentRankName(rankRule.getRankName());
+            incentRanked.setRankType(rankRule.getRankType());
+            incentRanked.setUpdatedAt(new Date());
+            incentRanked.updateById();
+            addRankLog(userId, rankRule);
+        }
+        //clear redis
+        //清除 会员信息（web端）
+        fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_WEBIINFO + userId, "", null);
+        //其他会员信息
+        fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_CARD + userId, "", null);
+        // 个人资料
+        fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + userId, "", null);
+    }
+
+
 }
