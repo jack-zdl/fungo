@@ -200,4 +200,31 @@ public class PortalCommunityCircleController {
     }
 
 
+
+
+    /**
+     * 功能描述: PC端获取圈子列表列表及详情
+     * @param: [memberUserPrefile, inputPageDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: dl.zhang
+     * @date: 2019/6/11 11:01
+     */
+    @ApiOperation(value = "pc2.1", notes = "")
+    @PostMapping(value = "/api/portal/community/community/circle")
+    @ApiImplicitParams({})
+    public FungoPageResultDto<CmmCircleDto> circleEventList(@Anonymous MemberUserProfile memberUserPrefile,  @RequestBody CmmCircleVo cmmCircleVo) {
+        FungoPageResultDto<CmmCircleDto> re = null;
+        String memberId = memberUserPrefile == null ? "" : memberUserPrefile.getLoginId();
+        try {
+            cmmCircleVo.setQueryType("0");
+            re = circleServiceImpl.selectCircle(memberId,cmmCircleVo);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.error("获取圈子列表列表及详情",e);
+            re = FungoPageResultDto.FungoPageResultDtoFactory.buildError("获取圈子列表异常，请联系管理员");
+        }
+        return re;
+    }
+
+
 }

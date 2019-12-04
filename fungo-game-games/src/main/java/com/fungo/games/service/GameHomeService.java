@@ -46,4 +46,5 @@ public interface GameHomeService {
 	ResultDto<AdminCollectionGroup> queryCollectionItem(AdminCollectionVo input,String memberId, String os);
 
 
+
 }

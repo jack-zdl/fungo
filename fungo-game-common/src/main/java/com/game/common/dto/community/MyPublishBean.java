@@ -33,6 +33,9 @@ public class MyPublishBean implements Serializable{
 	
 	@ApiModelProperty(value="视频封面",example="")
 	private String videoCoverImage;
+
+	@ApiModelProperty(value="圈子id",example="")
+	private String circleId;
 	
 	private ArrayList<StreamInfo> videoList = new ArrayList<>();
 	
@@ -153,5 +156,13 @@ public class MyPublishBean implements Serializable{
 
 	public void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;
+	}
+
+	public String getCircleId() {
+		return circleId;
+	}
+
+	public void setCircleId(String circleId) {
+		this.circleId = circleId;
 	}
 }

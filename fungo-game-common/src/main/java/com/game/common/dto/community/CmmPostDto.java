@@ -127,6 +127,8 @@ V2.4.3版本添加
 
 	private Long postId;
 
+	private String circleId;
+
 	/**
 	 * 功能描述: 1 自己查询自己的信息
 	 * @auther: dl.zhang
