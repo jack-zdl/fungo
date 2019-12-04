@@ -1,6 +1,5 @@
 package com.fungo.games.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.games.dao.FindCollectionGroupDao;
@@ -21,7 +20,6 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.index.BannerBean;
 import com.game.common.dto.mall.MallBannersInput;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
-import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
 import com.game.common.util.exception.BusinessException;
 import com.game.common.vo.AdminCollectionVo;
@@ -93,19 +91,19 @@ public class GameHomeServiceImpl implements GameHomeService {
         List<HomePage> result = new ArrayList<>();
         //查询正常和置顶全部数据
         HomePageDto homePageDto = new HomePageDto();
-        List<String> states = new ArrayList<>();
-        states.add("0");
-        states.add("3");
-        homePageDto.setStates(states);
+//        List<String> states = new ArrayList<>();
+//        states.add("0");
+//        states.add("3");
+        homePageDto.setStates(Arrays.asList("0,3"));
         List<HomePage> totalListPage = homePageDao.queryList(homePageDto);
         //查询数据按时间排序
         //查询分页列表startOffset
         int startOffset = (inputPageDto.getPage() - 1) * inputPageDto.getLimit();
         homePageDto.setStartOffset(startOffset);
         homePageDto.setPageSize(inputPageDto.getLimit());
-        states = new ArrayList<>();
-        states.add("0");
-        homePageDto.setStates(states);
+//        states = new ArrayList<>();
+//        states.add("0");
+        homePageDto.setStates(Arrays.asList("0"));
         List<HomePage> pageList = homePageDao.queryListByPage(homePageDto);
         //获取前一页后一页数据
         FungoPageResultDto<HomePage> fungoPageResultDto = new FungoPageResultDto<>();
@@ -121,9 +119,9 @@ public class GameHomeServiceImpl implements GameHomeService {
         re.setAfter(fungoPageResultDto.getAfter());
         if (1 == inputPageDto.getPage()) {
             //置顶标识首页数据
-            states = new ArrayList<>();
-            states.add("3");
-            homePageDto.setStates(states);
+//            states = new ArrayList<>();
+//            states.add("3");
+            homePageDto.setStates(Arrays.asList("3"));
             List<HomePage> topList = homePageDao.queryList(homePageDto);
             boolean flag = true;
             if (topList.isEmpty()) {
