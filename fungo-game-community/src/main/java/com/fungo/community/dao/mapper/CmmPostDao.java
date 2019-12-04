@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.community.entity.CmmPost;
 import com.game.common.bean.CollectionBean;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.Map;
  * @author lzh
  * @since 2018-04-20
  */
+@Repository
 public interface CmmPostDao extends BaseMapper<CmmPost> {
 
 

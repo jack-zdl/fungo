@@ -3,6 +3,7 @@ package com.fungo.community.dao.mapper;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.fungo.community.entity.BasVideoJob;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
  * @author lzh
  * @since 2018-11-08
  */
+@Repository
 public interface BasVideoJobDao extends BaseMapper<BasVideoJob> {
 
     List<BasVideoJob> getBasVideoJobByPostIds(@Param("type")String type,  @Param("postIds")List<String> postIds);

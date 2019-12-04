@@ -121,6 +121,8 @@ public class PostServiceImpl implements IPostService {
     private AliAcsCheck myIAcsClient;
     @Autowired
     private ContentGreenDao contentGreenDao;
+    @Autowired
+    private RedisActionHelper redisActionHelper;
 
     @Override
     @Transactional
@@ -837,29 +839,35 @@ public class PostServiceImpl implements IPostService {
         actioninput.setTarget_id(cmmPost.getCommunityId());
         boolean b = iCountService.subCounter(userId, 7, actioninput);
 
+        List<String> list = new LinkedList<String>();
+        list.add(SecurityMD5.encrypt16(FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_CONTENT + postId));
+        list.add(SecurityMD5.encrypt16(FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_TITLE + postId));
+        list.add(SecurityMD5.encrypt16(FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS));
+        list.add(SecurityMD5.encrypt16(FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST));
+        redisActionHelper.removePostRedisCache(list);
         //clear redis cache
         //文章内容html-内容
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_CONTENT + postId, "", null);
-        //文章内容html-标题
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_TITLE + postId, "", null);
-        //帖子详情
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, postId, null);
-        //帖子/心情评论列表
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
-        //clear redis cache
-        //首页文章帖子列表(v2.4)
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
-        //帖子列表
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
-        //社区置顶文章(2.4.3)
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, "", null);
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
-
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX, "", null);
-        // 个人信息
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + userId, "", null);
-        // fun币消耗详情
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + userId, "", null);
+//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_CONTENT + postId, "", null);
+//        //文章内容html-标题
+//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_TITLE + postId, "", null);
+//        //帖子详情
+//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, postId, null);
+//        //帖子/心情评论列表
+//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
+//        //clear redis cache
+//        //首页文章帖子列表(v2.4)
+//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
+//        //帖子列表
+//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
+//        //社区置顶文章(2.4.3)
+//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, "", null);
+//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
+//
+//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX, "", null);
+//        // 个人信息
+//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + userId, "", null);
+//        // fun币消耗详情
+//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + userId, "", null);
         return ResultDto.success("删除成功");
 
     }
@@ -1709,7 +1717,7 @@ public class PostServiceImpl implements IPostService {
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_ALL_POST_TOPIC;
         String keySuffix = JSON.toJSONString(inputPageDto)+JSON.toJSONString(memberUserPrefile);
         try {
-            list = (List<PostOutBean>) fungoCacheArticle.getIndexCache(keyPrefix, keySuffix);
+            list = (List<PostOutBean>) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
             if (null != list &&  list.size() > 0) {
                 re.setData(list);
                 PageTools.pageToResultDto(re, page);
@@ -1828,7 +1836,7 @@ public class PostServiceImpl implements IPostService {
                     list.add(bean);
                 }
             }
-            fungoCacheArticle.excIndexCache(true, keyPrefix, keySuffix, list, RedisActionHelper.getRandomRedisCacheTime());
+            fungoCacheArticle.excIndexDecodeCache(true, keyPrefix, keySuffix, list, RedisActionHelper.getRandomRedisCacheTime());
         }catch (Exception e){
             logger.error( "圈子查询推荐文章异常",e );
         }

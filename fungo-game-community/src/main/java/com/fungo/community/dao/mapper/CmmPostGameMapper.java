@@ -2,8 +2,10 @@ package com.fungo.community.dao.mapper;
 
 import com.fungo.community.entity.CmmPostGame;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 
+@Repository
 public interface CmmPostGameMapper {
     int deleteByPrimaryKey(String id);
 
