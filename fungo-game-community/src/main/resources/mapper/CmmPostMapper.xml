@@ -218,11 +218,23 @@
 
     <!-- AND cpc.default_link = 1  -->
     <select id="getCmmCircleListByPostId" parameterType="java.lang.String" resultType="com.fungo.community.entity.CmmPost">
-    select  *  from  t_cmm_post where state != -1 and id in
+    select
+        <include refid="Base_Column_List"></include>
+      from  t_cmm_post where state != -1 and id in
     ( select cpc.post_id
     from t_cmm_post_circle cpc where cpc.circle_id = #{circleId} )
 
   </select>
+
+    <!-- AND cpc.default_link = 1  -->
+    <select id="getPostTotalByCircleId" parameterType="java.lang.String" resultType="java.lang.Long">
+        select
+        COUNT(1)
+        from  t_cmm_post where state != -1 and id in
+        ( select cpc.post_id
+        from t_cmm_post_circle cpc where cpc.circle_id = #{circleId} )
+
+    </select>
 
 
     <select id="getCmmCircleListByCircleId" resultType="com.fungo.community.entity.CmmPost">
@@ -355,6 +367,21 @@
 	    cp.community_id in  (SELECT cc.id  FROM t_cmm_community cc WHERE cc.game_id = #{gameId} )
 	    or cp.id in (SELECT cpg.post_id FROM t_cmm_post_game cpg WHERE cpg.game_id = #{gameId}  )
 	 )order  by cp.created_at desc
+    </select>
+
+    <select id="getGamePostByGameId"  resultType="com.fungo.community.entity.CmmPost">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM t_cmm_post WHERE state != -1
+    	AND (
+		    id in (
+	            SELECT post_id FROM t_cmm_post_circle WHERE circle_id in (SELECT id FROM t_cmm_circle WHERE game_id =  #{gameId}  and state = 1  )
+	        )
+	        OR
+	        id in (SELECT cpg.post_id FROM t_cmm_post_game cpg WHERE cpg.game_id =  #{gameId}   )
+	        OR
+	        community_id in (SELECT id FROM t_cmm_community WHERE game_id =  #{gameId}  and state = 1)
+	    ) order  by created_at desc
     </select>
 
     <select id="getCmmPostByRecommend" resultType="com.fungo.community.entity.CmmPost">

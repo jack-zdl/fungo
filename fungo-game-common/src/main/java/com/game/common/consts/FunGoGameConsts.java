@@ -260,13 +260,17 @@ public class FunGoGameConsts {
     public static  final String CACHE_EH_KEY_PRE_POST = "FG_eh_publish";
 
 
-
     /**
      * 社区
      *
      */
     public static  final String CACHE_EH_KEY_PRE_COMMUNITY = "FG_eh_community";
 
+    /**
+     * 文章
+     *
+     */
+    public static  final String CACHE_EH_KEY_POST = "FG_eh_post";
 
     /**
      * 发现

@@ -99,12 +99,26 @@ public interface CmmPostDao extends BaseMapper<CmmPost> {
 
     List<CmmPost> getCmmCircleListByPostId(String circleId);
 
+    Long getPostTotalByCircleId(@Param( "circleId" ) String circleId);
+
     List<CmmPost> getCmmCircleListByCircleId(Page page ,@Param("circleId") String circleId, @Param("tagId") String tagId,@Param("cream") String cream , @Param("sortType") String sortType);
 
     List<CmmPost> getAllCmmCircleListByCircleId(Page page ,@Param("circleId") String circleId, @Param("tagId") String tagId,@Param("cream") String cream , @Param("sortType") String sortType);
 
 
     List<CmmPost> getCmmPostByGameId(Page page,@Param("gameId")String gameId );
+
+    /**
+     * 功能描述: pc2.1 需求 游戏详情模块 圈子页面
+     * 文章来源，
+     * 1.取该游戏圈下的所有文章；
+     * 2.老游戏社区文章；
+     * 3.用户发布文章时添加相关游戏的文章。
+     * 按照文章发布时间从当前到过去排序
+     * 默认展示10条，向下拉再次展示10条
+     * @date: 2019/12/4 14:03
+     */
+    List<CmmPost> getGamePostByGameId(Page page,@Param("gameId")String gameId );
 
     List<CmmPost> getCmmPostByRecommend(Page page);
 

@@ -1,5 +1,6 @@
 package com.fungo.community.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -16,10 +17,13 @@ import com.fungo.community.entity.CmmPost;
 import com.fungo.community.facede.GameFacedeService;
 import com.fungo.community.facede.SystemFacedeService;
 import com.fungo.community.feign.SystemFeignClient;
+import com.fungo.community.helper.RedisActionHelper;
 import com.fungo.community.service.CircleService;
 import com.fungo.community.service.CmmCircleService;
 import com.game.common.bean.MemberPulishFromCommunity;
 import com.game.common.bean.TagBean;
+import com.game.common.consts.FunGoGameConsts;
+import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
@@ -36,6 +40,7 @@ import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.ActionTypeEnum;
 import com.game.common.enums.PostTypeEnum;
 import com.game.common.enums.circle.CircleTypeEnum;
+import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.Html2Text;
@@ -51,12 +56,16 @@ import org.checkerframework.checker.units.qual.C;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.game.common.consts.FunGoGameConsts.CACHE_EH_KEY_POST;
+import static com.game.common.consts.FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_POST_CACHE;
 import static java.util.stream.Collectors.groupingBy;
 
 /**
@@ -91,6 +100,8 @@ public class CircleServiceImpl implements CircleService {
 
     @Autowired
     private CmmCommentDaoService commentService;
+    @Autowired
+    private FungoCacheArticle fungoCacheArticle;
 
     @Override
     public FungoPageResultDto<CmmCircleDto> selectCircle(String memberId, CmmCircleVo cmmCircleVo) {
@@ -188,12 +199,20 @@ public class CircleServiceImpl implements CircleService {
         return re;
     }
 
+    @Cacheable(value = FunGoGameConsts.CACHE_EH_KEY_PRE_COMMUNITY, key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_INFO_CACHE +" ' +#memberId + #circleId ")
     @Override
-    public ResultDto<CmmCircleDto> selectCircleById(String memberId, String circleId) throws InvocationTargetException, IllegalAccessException {
+    public ResultDto<CmmCircleDto> selectCircleById(String memberId, String circleId) {
         ResultDto<CmmCircleDto> re = null;
-        CmmCircleDto cmmCircleDto = new CmmCircleDto();
+        CmmCircleDto cmmCircleDto = null;
         try {
-
+            String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_INFO;
+            String keySuffix = memberId + circleId;
+            cmmCircleDto = (CmmCircleDto) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
+            if (null != cmmCircleDto ) {
+                re = ResultDto.success(cmmCircleDto);
+                return re;
+            }
+            cmmCircleDto = new CmmCircleDto();
             //fix bug:管控台 下架游戏圈 进入对应的游戏内 不显示圈子选项 [by mxf 2019-7-11]
             EntityWrapper<CmmCircle> cmmCircleEntityWrapper = new EntityWrapper<CmmCircle>();
             cmmCircleEntityWrapper.eq("id", circleId);
@@ -210,6 +229,8 @@ public class CircleServiceImpl implements CircleService {
             CircleFollowVo circleFollowVo = new CircleFollowVo();
             circleFollowVo.setMemberId(memberId);
             circleFollowVo.setActionType(ActionTypeEnum.FOLLOW.getKey());
+            Long postTotal = cmmPostDao.getPostTotalByCircleId(circleId);
+            cmmCircleDto.setPostNum(postTotal);
             CircleFollow circleFollow = new CircleFollow();
             circleFollow.setCircleId(circleId);
             circleFollowVo.setCircleFollows(Arrays.asList(circleFollow));
@@ -220,6 +241,7 @@ public class CircleServiceImpl implements CircleService {
             }
             List<Map<String, Object>> map = getCirclePayer(cmmCircle);
             cmmCircleDto.setEliteMembers(map);
+            fungoCacheArticle.excIndexDecodeCache(true, keyPrefix, keySuffix, cmmCircleDto, RedisActionHelper.getRandomRedisCacheTime());
             re = ResultDto.success(cmmCircleDto);
         } catch (Exception e) {
             e.printStackTrace();
@@ -229,18 +251,27 @@ public class CircleServiceImpl implements CircleService {
         return re;
     }
 
+    @Cacheable(value = CACHE_EH_KEY_POST,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_POST_CACHE +" ' +#memberId + #cmmCirclePostVo.circleId + #cmmCirclePostVo.queryType + #cmmCirclePostVo.sortType + #cmmCirclePostVo.page + #cmmCirclePostVo.limit " )
     @Override
     public FungoPageResultDto<PostOutBean> selectCirclePost(String memberId, CmmCirclePostVo cmmCirclePostVo) {
         FungoPageResultDto<PostOutBean> re = new FungoPageResultDto<>();
         List<CmmPost> cmmPosts = new ArrayList<>();
         String userId = memberId;
-        List<PostOutBean> relist = new ArrayList<>();
+        List<PostOutBean> relist = null;
         String circleId = cmmCirclePostVo.getCircleId();
+        Page page = new Page(cmmCirclePostVo.getPage(), cmmCirclePostVo.getLimit());
         try {
-
+            String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_POST;
+            String keySuffix = JSON.toJSONString(cmmCirclePostVo)+memberId;
+            relist = (List<PostOutBean>) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
+            if (null != relist &&  relist.size() > 0) {
+                re.setData(relist);
+                PageTools.pageToResultDto(re, page);
+                return re;
+            }
+            relist = new ArrayList<>();
             String tagId = cmmCirclePostVo.getQueryType();
             String sortType = cmmCirclePostVo.getSortType();
-            Page page = new Page(cmmCirclePostVo.getPage(), cmmCirclePostVo.getLimit());
             if (CmmCirclePostVo.QueryTypeEnum.ALL.getKey().equals(cmmCirclePostVo.getQueryType())) {  // 全部查询
                 cmmPosts = cmmPostDao.getAllCmmCircleListByCircleId(page, circleId, null, null, sortType);
             } else if (CmmCirclePostVo.QueryTypeEnum.ESSENCE.getKey().equals(cmmCirclePostVo.getQueryType())) { // 精华查询
@@ -266,7 +297,6 @@ public class CircleServiceImpl implements CircleService {
                 }
                 if (StringUtils.isNotBlank(post.getContent())) {
                     String interactContent = FilterEmojiUtil.decodeEmoji(post.getContent());
-
                     //bean.setContent(content.length() > 100 ? CommonUtils.filterWord(content.substring(0, 100)) : CommonUtils.filterWord(content));
                     interactContent = interactContent.length() > 40 ? Html2Text.removeHtmlTag(interactContent.substring(0, 40)) : Html2Text.removeHtmlTag(interactContent);
 
@@ -349,7 +379,6 @@ public class CircleServiceImpl implements CircleService {
                     //!fixme 查询用户点赞数
                     //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", post.getId()).eq("member_id", userId));
 
-
                     BasActionDto basActionDto = new BasActionDto();
                     basActionDto.setMemberId(userId);
                     basActionDto.setType(0);
@@ -366,11 +395,8 @@ public class CircleServiceImpl implements CircleService {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-
-
                     bean.setLiked(liked > 0 ? true : false);
                 }
-
                 //
                 bean.setVideoCoverImage(post.getVideoCoverImage());
                 bean.setType(post.getType());
@@ -386,8 +412,8 @@ public class CircleServiceImpl implements CircleService {
                     bean.setCircleIcon(cmmCircle.getCircleIcon());
                 }
                 relist.add(bean);
-
             }
+            fungoCacheArticle.excIndexDecodeCache(true, keyPrefix, keySuffix, relist, RedisActionHelper.getRandomRedisCacheTime());
             re.setData(relist);
             PageTools.pageToResultDto(re, page);
         } catch (Exception e) {
@@ -511,13 +537,23 @@ public class CircleServiceImpl implements CircleService {
      * @auther: dl.zhang
      * @date: 2019/6/21 14:28
      */
+//    @Cacheable(cacheNames={FunGoGameConsts.CACHE_EH_KEY_POST} ,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_GAMR_POSTS_CACHE +" ' +#userId + #circleGamePostVo.gameId + #circleGamePostVo.page + #circleGamePostVo.limit ")
     @Override
     public FungoPageResultDto<PostOutBean> selectCircleGamePost(String userId, CircleGamePostVo circleGamePostVo) {
         FungoPageResultDto<PostOutBean> re = null;
-        List<PostOutBean> relist = new ArrayList<>();
+        List<PostOutBean> relist = null;
+        Page page = new Page(circleGamePostVo.getPage(), circleGamePostVo.getLimit());
         String gameId = circleGamePostVo.getGameId();
+//        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_GAMR_POSTS;
+//        String keySuffix = JSON.toJSONString(circleGamePostVo);
+//        relist = (List<PostOutBean>) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
+//        if (null != relist &&  relist.size() > 0) {
+//            re.setData(relist);
+//            PageTools.pageToResultDto(re, page);
+//            return re;
+//        }
         try {
-            Page page = new Page(circleGamePostVo.getPage(), circleGamePostVo.getLimit());
+            relist = new ArrayList<>();
             List<CmmPost> cmmPosts = cmmPostDao.getCmmPostByGameId(page, gameId);
             for (CmmPost post : cmmPosts) {
                 //表情解码
@@ -538,10 +574,7 @@ public class CircleServiceImpl implements CircleService {
 //	            String interactHtmlOrigin = FilterEmojiUtil.resolveToEmojiFromByte(post.getHtmlOrigin());
 //	            post.setHtmlOrigin(interactHtmlOrigin);
 //	        }
-
-
                 PostOutBean bean = new PostOutBean();
-
                 //!fixme 查询用户数据
                 //bean.setAuthor(iUserService.getAuthor(post.getMemberId()));
                 try {
@@ -553,7 +586,6 @@ public class CircleServiceImpl implements CircleService {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-
 //                if (bean.getAuthor() == null) {
 //                    continue;
 //                }
@@ -606,32 +638,24 @@ public class CircleServiceImpl implements CircleService {
                 if (CommonUtil.isNull(userId)) {
                     bean.setLiked(false);
                 } else {
-
                     //!fixme 查询用户点赞数
                     //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", post.getId()).eq("member_id", userId));
-
-
                     BasActionDto basActionDto = new BasActionDto();
                     basActionDto.setMemberId(userId);
                     basActionDto.setType(0);
                     basActionDto.setState(0);
                     basActionDto.setTargetId(post.getId());
-
                     int liked = 0;
                     try {
                         ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
-
                         if (null != resultDto) {
                             liked = resultDto.getData();
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-
-
                     bean.setLiked(liked > 0 ? true : false);
                 }
-
                 //
                 bean.setVideoCoverImage(post.getVideoCoverImage());
                 bean.setType(post.getType());
@@ -649,6 +673,7 @@ public class CircleServiceImpl implements CircleService {
                 relist.add(bean);
             }
             re = new FungoPageResultDto<>();
+//            fungoCacheArticle.excIndexDecodeCache(true, keyPrefix, keySuffix, relist, RedisActionHelper.getRandomRedisCacheTime());
             re.setData(relist);
             PageTools.pageToResultDto(re, page);
         } catch (Exception e) {
@@ -659,27 +684,39 @@ public class CircleServiceImpl implements CircleService {
         return re;
     }
 
+    @Cacheable(cacheNames={FunGoGameConsts.CACHE_EH_KEY_PRE_COMMUNITY} ,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_GAME_CACHE +" ' +#memberId + #circleGamePostVo.gameId + #circleGamePostVo.page + #circleGamePostVo.limit ")
     @Override
     public FungoPageResultDto<CmmCircleDto> selectGameCircle(String memberId, CircleGamePostVo circleGamePostVo) {
         FungoPageResultDto<CmmCircleDto> re = null;
-        List<CmmCircleDto> cmmCircleDtoList = new ArrayList<>();
+        List<CmmCircleDto> cmmCircleDtoList = null;
+        Page page = new Page(circleGamePostVo.getPage(), circleGamePostVo.getLimit());
         String gameId = circleGamePostVo.getGameId();
         try {
-            Page page = new Page(circleGamePostVo.getPage(), circleGamePostVo.getLimit());
+            String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_GAME;
+            String keySuffix = JSON.toJSONString(circleGamePostVo);
+            cmmCircleDtoList = (List<CmmCircleDto>) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
+            if (null != cmmCircleDtoList &&  cmmCircleDtoList.size() > 0) {
+                re.setData(cmmCircleDtoList);
+                PageTools.pageToResultDto(re, page);
+                return re;
+            }
+            cmmCircleDtoList = new ArrayList<>();
             List<CmmCircle> cmmCircles = cmmCircleMapper.selectCircleByGame(page, gameId);
             if (cmmCircles != null && cmmCircles.size() > 0) {
-                cmmCircles.stream().forEach(s -> {
+                List<CmmCircleDto> finalCmmCircleDtoList = cmmCircleDtoList;
+                cmmCircles.stream().forEach( s -> {
                     CmmCircleDto cmmCircleDto = new CmmCircleDto();
                     try {
                         BeanUtils.copyProperties(cmmCircleDto, s);
                         cmmCircleDto.setMemberNum(s.getFolloweeNum());
-                        cmmCircleDtoList.add(cmmCircleDto);
+                        finalCmmCircleDtoList.add(cmmCircleDto);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 });
             }
             re = new FungoPageResultDto<>();
+            fungoCacheArticle.excIndexDecodeCache(true, keyPrefix, keySuffix, cmmCircleDtoList, RedisActionHelper.getRandomRedisCacheTime());
             re.setData(cmmCircleDtoList);
             PageTools.pageToResultDto(re, page);
         } catch (Exception e) {

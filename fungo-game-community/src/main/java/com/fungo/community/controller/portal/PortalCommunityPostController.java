@@ -41,9 +41,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -586,6 +588,14 @@ public class PortalCommunityPostController {
         return re;
     }
 
+    @ApiOperation(value = "管控台推荐文章", notes = "")
+    @PostMapping(value = "/api/portal/content/post/topic")
+    public FungoPageResultDto<PostOutBean> getTopicPosts(@Anonymous MemberUserProfile memberUserPrefile,@Valid @RequestBody PostInputPageDto inputPageDto, Errors errors) {
+        if(errors.hasErrors())
+            return FungoPageResultDto.FungoPageResultDtoFactory.buildError( errors.getAllErrors().get(0).getDefaultMessage());
+
+        return bsPostService.getTopicPosts(memberUserPrefile , inputPageDto);
+    }
 
     /**
      * 设置社区-帖子|文章分页查询条件
@@ -599,4 +609,8 @@ public class PortalCommunityPostController {
             postEntityWrapper.le("updated_at", lastUpdateDate);
         }
     }
+
+
+
+
 }

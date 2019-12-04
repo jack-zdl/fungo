@@ -5,6 +5,7 @@ import com.game.common.validate.an.Min;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.Max;
 import java.io.Serializable;
 
 /**
@@ -20,8 +21,11 @@ public class InputPageDto extends InputDto implements Serializable {
 
 	@ApiModelProperty(allowEmptyValue = false, required = true, value = "页大小")
 	@Min(1)
+	@Max(value = 20,message = "分页查询数目有误")
 	private int pageSize = 10;
-	
+
+	@Min(1)
+	@Max(value = 20,message = "分页查询数目有误")
 	private int limit=10;//等同pageSize
 	private int page=1;//pageNum
 	private int sort;//排序

@@ -20,8 +20,30 @@
             maxElementsInMemory="1000"
             overflowToDisk="false"
             diskPersistent="false"
-            timeToIdleSeconds="120"
-            timeToLiveSeconds="180"
+            timeToIdleSeconds="60"
+            timeToLiveSeconds="90"
+            memoryStoreEvictionPolicy="LRU" />
+
+    <!-- 自定义缓存 fungoEhcache -->
+    <cache
+            name="FG_eh_community"
+            eternal="false"
+            maxElementsInMemory="1000"
+            overflowToDisk="false"
+            diskPersistent="false"
+            timeToIdleSeconds="60"
+            timeToLiveSeconds="90"
+            memoryStoreEvictionPolicy="LRU" />
+
+    <!-- 自定义缓存 fungoEhcache -->
+    <cache
+            name="FG_eh_post"
+            eternal="false"
+            maxElementsInMemory="1000"
+            overflowToDisk="false"
+            diskPersistent="false"
+            timeToIdleSeconds="60"
+            timeToLiveSeconds="90"
             memoryStoreEvictionPolicy="LRU" />
 
 </ehcache>

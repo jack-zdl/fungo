@@ -39,6 +39,8 @@ public class CmmCircleDto implements Serializable {
 
     private Integer hotValue;
 
+    private Long postNum;
+
     private Integer sort;
 
     private Date createdAt;
