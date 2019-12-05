@@ -128,5 +128,7 @@ public interface CmmPostDao extends BaseMapper<CmmPost> {
 
     boolean updateCmmPostCommentNum(@Param("commentId") String commentId);
 
+    int getPostNumById(@Param("id")String id);
+
 
 }

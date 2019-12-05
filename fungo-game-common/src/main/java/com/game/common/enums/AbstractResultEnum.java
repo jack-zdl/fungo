@@ -40,7 +40,12 @@ public enum AbstractResultEnum {
     CODE_SYSTEM_INVITATION_SIXSIXDAY("3014","66天免费使用的全局线路体验券已到账，快去“福利”页面查看！","参数有误"),
     CODE_SYSTEM_INVITATION_NINE("3015","您获得了一张九折加速器优惠券，快去“福利”页面点击使用吧！赶紧去邀请更多的用户，八折和七折券等你来拿哦~","参数有误"),
     CODE_SYSTEM_INVITATION_NGIHT("3016","您获得了一张八折加速器优惠券，快去“福利”页面点击使用吧！赶紧去邀请更多的用户，七折券等你来拿哦~","参数有误"),
-    CODE_SYSTEM_FESTIVAL_SEVEN("3017","您获得了一张七折加速器优惠券，快去“福利”页面点击使用吧！","参数有误");
+    CODE_SYSTEM_FESTIVAL_SEVEN("3017","您获得了一张七折加速器优惠券，快去“福利”页面点击使用吧！","参数有误"),
+
+    CODE_CLOUD_RSA_AUTHORITY("4001","","秘钥验证失败,请刷新页面"),
+    CODE_CLOUD_MD5_AUTHORITY("4002","","参数验证失败"),
+    CODE_CLOUD_IP_LIMIT_AUTHORITY("4003","","访问过于频繁"),
+    CODE_CLOUD_NOT_FOUND("4004","","查询不到指定内容");
 
     String key;
     String successValue;

@@ -399,4 +399,8 @@
         update t_cmm_post set  comment_num = comment_num - 1  WHERE id = (SELECT post_id FROM t_cmm_comment WHERE id = #{commentId})
     </update>
 
+    <select id="getPostNumById" resultType="java.lang.Integer" parameterType="java.lang.String">
+        SELECT  COUNT(1) FROM  t_cmm_post where  state != -1 and id = #{id}
+    </select>
+
 </mapper>
