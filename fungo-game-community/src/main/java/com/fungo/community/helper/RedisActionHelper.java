@@ -13,6 +13,7 @@ package com.fungo.community.helper;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.util.SecurityMD5;
+import com.game.common.util.SpringUtil;
 import io.lettuce.core.RedisFuture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Component;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import static freemarker.template.utility.Collections12.singletonList;
 
@@ -68,40 +70,71 @@ public class RedisActionHelper {
 //                System.out.println("异步删除"+s);
 //            }
 //        } );
-//        stringRedisTemplate.executePipelined( new RedisCallback<Object>() {
-//            public Object doInRedis(RedisConnection connection) throws DataAccessException {
-//                StringRedisConnection stringRedisConn = (StringRedisConnection)connection;
-//                for(int i=0; i< keyPrefixs.size(); i++) {
-//                    System.out.println(keyPrefixs.get(i)+"_join_" );
-////                    stringRedisConn.del(keyPrefixs.get(i)+"*");
+//        stringRedisTemplate.executePipelined( new SessionCallback<Object>() {
+//            @Override
+//            public <K, V> Object execute(RedisOperations<K, V> redisOperations) throws DataAccessException {
+//                for (int i = 0; i < keyPrefixs.size(); i++) {
+//                    System.out.println(keyPrefixs.get(i) + "_join_");
 //                    redisTemplate.delete(redisTemplate.keys(keyPrefixs.get(i) + "*"));
+//                }
+//                return null;
+//            }
+//        });
+//        Long start2 = System.currentTimeMillis();
+//        for(int i=0; i< 1000; i++) {
+////            redisTemplate.delete(redisTemplate.keys(keyPrefixs.get(i) + "*"));
+//            redisTemplate.opsForValue().set("key2"+i, "value2"+i);
+//        }
+//        Long end2  = System.currentTimeMillis();
+//        System.out.println("同步方法=="+(end2-start2));
+//        Long star1 = System.currentTimeMillis();
+//        stringRedisTemplate.executePipelined( new SessionCallback<Object>() {
+//
+//            @Override
+//            public <K, V> Object execute(RedisOperations<K, V> redisOperations) throws DataAccessException {
+//                for(int i=0; i< 1000; i++) {
+////                    redisTemplate.delete(redisTemplate.keys(keyPrefixs.get(i) + "*"));
+////                    redisTemplate.opsForValue().set("key1"+i, "value1"+i);
+//                    stringRedisTemplate.opsForValue().set("key_"+i,"value_"+i);
 ////                    stringRedisTemplate.delete(keyPrefixs.get(i)+"*" );
 //                }
 //                return null;
 //            }
 //        });
-        Long start2 = System.currentTimeMillis();
-        for(int i=0; i< 1000; i++) {
-//            redisTemplate.delete(redisTemplate.keys(keyPrefixs.get(i) + "*"));
-            redisTemplate.opsForValue().set("key2"+i, "value2"+i);
-        }
-        Long end2  = System.currentTimeMillis();
-        System.out.println("同步方法=="+(end2-start2));
-        Long star1 = System.currentTimeMillis();
-        stringRedisTemplate.executePipelined( new SessionCallback<Object>() {
+//        Long end1 = System.currentTimeMillis();
+//        System.out.println("22222222222222222="+(end1 - star1));
+//        Long star3 = System.currentTimeMillis();
+//        stringRedisTemplate.executePipelined( new SessionCallback<Object>() {
+//            @Override
+//            public <K, V> Object execute(RedisOperations<K, V> redisOperations) throws DataAccessException {
+////                for (int i = 0; i < keyPrefixs.size(); i++) {
+////                    System.out.println(keyPrefixs.get(i) + "_join_");
+////                stringRedisTemplate.delete(stringRedisTemplate.keys("key"+ "*"));
+////                stringRedisTemplate.opsForValue().set("key0","value0");
+////                stringRedisTemplate.delete("key0");
+////                stringRedisTemplate.delete("key1104");
+//                Set<String> keys = stringRedisTemplate.keys("key_" + "*");
+//                stringRedisTemplate.delete(keys);
+//
+////                StringRedisTemplate redisTemplate1 = SpringUtil.getBean(StringRedisTemplate.class);
+////                redisTemplate1.delete("key1102");
+////                redisTemplate1.delete("key*");
+////                redisTemplate.delete(redisTemplate.keys("key*"));
+////                redisTemplate.delete("key*");
+////                }
+//                return null;
+//            }
+//        });
 
-            @Override
-            public <K, V> Object execute(RedisOperations<K, V> redisOperations) throws DataAccessException {
-                for(int i=0; i< 1000; i++) {
-//                    redisTemplate.delete(redisTemplate.keys(keyPrefixs.get(i) + "*"));
-                    redisTemplate.opsForValue().set("key1"+i, "value1"+i);
-//                    stringRedisTemplate.delete(keyPrefixs.get(i)+"*" );
-                }
+        redisTemplate.execute(new RedisCallback<String>() {
+            public String doInRedis(RedisConnection connection) {
+                redisTemplate.delete(redisTemplate.keys("key_" + "*"));
                 return null;
             }
         });
-        Long end1 = System.currentTimeMillis();
-        System.out.println("22222222222222222="+(end1 - star1));
+
+        Long end3 = System.currentTimeMillis();
+//        System.out.println("22222222222222222="+(end3 - star3));
 
 
         System.out.println("同步删除");
