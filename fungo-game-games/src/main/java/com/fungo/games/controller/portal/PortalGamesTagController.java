@@ -1,10 +1,12 @@
 package com.fungo.games.controller.portal;
 
 
+import com.fungo.games.entity.BasTag;
 import com.fungo.games.service.IGameService;
 import com.fungo.games.service.ITagService;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.game.BasTagGroupDto;
 import com.game.common.dto.game.TagInput;
 import com.game.common.dto.game.TagSelectOut;
 import com.game.common.util.annotation.Anonymous;
@@ -27,12 +29,22 @@ public class PortalGamesTagController {
 	@Autowired
 	private ITagService iTagService;
 
-	@ApiOperation(value="获得全部游戏标签", notes="")
-	@RequestMapping(value="/api/portal/games/tag/taglist", method= {RequestMethod.POST , RequestMethod.GET})
-	public ResultDto<List> getTagListAll(@Anonymous MemberUserProfile memberUserPrefile) {
-		return iTagService.getTagListAll();
-		
+	@Autowired
+	private IGameService iGameService;
+	
+
+
+
+	@ApiOperation(value="获得文章分类标签", notes="")
+	@RequestMapping(value="/api/portal/games/tag/listPostTag", method= RequestMethod.GET)
+	public ResultDto<List<BasTag>> listPostTag() {
+		return iTagService.listPostTag();
 	}
+
+
+
+
+
 
 	
 }
