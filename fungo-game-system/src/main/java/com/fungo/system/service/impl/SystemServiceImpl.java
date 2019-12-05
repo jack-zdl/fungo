@@ -654,6 +654,16 @@ public class SystemServiceImpl implements SystemService {
         return ResultDto.success(author);
     }
 
+    /**
+     * 功能描述: @TODO  针对/api/portal/community/content/posts 接口做优化
+     * @auther: dl.zhang
+     * @date: 2019/12/5 11:41
+     */
+    @Override
+    public FungoPageResultDto<AuthorBean> getAuthorList(List<String> memberIds) {
+        return null;
+    }
+
     @Override
     public ResultDto<AuthorBean> getUserCard(String cardId, String memberId) {
         AuthorBean authorBean = userService.getUserCard(cardId, memberId);

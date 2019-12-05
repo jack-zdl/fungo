@@ -15,6 +15,8 @@ import com.fungo.community.dao.service.BasVideoJobDaoService;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.dao.service.impl.ESDAOServiceImpl;
+import com.fungo.community.dto.AbstractEventDto;
+import com.fungo.community.dto.PostCircleDto;
 import com.fungo.community.entity.*;
 import com.fungo.community.facede.GameFacedeService;
 import com.fungo.community.facede.SystemFacedeService;
@@ -58,6 +60,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,6 +69,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static com.game.common.consts.FunGoGameConsts.CACHE_EH_KEY_POST;
 
 
 @EnableAsync
@@ -123,6 +128,8 @@ public class PostServiceImpl implements IPostService {
     private ContentGreenDao contentGreenDao;
     @Autowired
     private RedisActionHelper redisActionHelper;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Transactional
@@ -644,31 +651,21 @@ public class PostServiceImpl implements IPostService {
     @Override
     @Transactional
     public ResultDto<String> deletePost(String postId, String userId) {
-        if (postId == null) {
-            return ResultDto.error("221", "找不到帖子id");
-        }
         CmmPost cmmPost = postService.selectById(postId);
         if (cmmPost == null) {
             return ResultDto.error("223", "没有这个帖子");
         }
-
         if (userId == null) {
             return ResultDto.error("211", "找不到用户id");
         }
-
-        //!fixme 查询用户数据
-        //Member user = memberService.selectById(userId);
-
-        List<String> idsList = new ArrayList<String>();
+           List<String> idsList = new ArrayList<>();
         idsList.add(userId);
-
         ResultDto<List<MemberDto>> listMembersByids = null;
         try {
             listMembersByids = systemFacedeService.listMembersByids(idsList, null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
         MemberDto memberDto = null;
         if (null != listMembersByids) {
             List<MemberDto> memberDtoList = listMembersByids.getData();
@@ -676,14 +673,12 @@ public class PostServiceImpl implements IPostService {
                 memberDto = memberDtoList.get(0);
             }
         }
-
         if (memberDto == null) {
             return ResultDto.error("126", "用户不存在");
         }
         if (!cmmPost.getMemberId().equals(userId)) {
             return ResultDto.error("224", "用户和帖子不匹配");
         }
-
         cmmPost.setUpdatedAt(new Date());
 //        cmmPost.setEditedAt(new Date());
         cmmPost.setMemberId(userId);
@@ -704,172 +699,12 @@ public class PostServiceImpl implements IPostService {
          * @date: 2019/9/25 9:58
          */
         int score = 5;
-
-        //!fixme 扣减用户经验值 MQ
-        // --------------------------------------------------start-----------------------------------------------
-     /*
-        IncentAccountScore scoreCount = accountScoreService.selectOne(new EntityWrapper<IncentAccountScore>().eq("mb_id", userId).eq("account_group_id", 1));
-        if (scoreCount == null) {
-            scoreCount = IAccountDaoService.createAccountScore(user, 1);
-        }
-        scoreCount.setScoreUsable(scoreCount.getScoreUsable().subtract((new BigDecimal(score))));
-        scoreCount.setUpdatedAt(new Date());
-        scoreCount.updateById();
-
-        user.setExp(scoreCount.getScoreUsable().intValue());
-        user = scoreLogService.updateLevel(user);
-        */
-        //scoreLogService
-
-        //!fixme 更新用户等级数据
-      /*
-        IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", userId).eq("rank_type", 1));
-
-        Long prelevel = incentRankedDtoResult.getCurrentRankId();//记录中的等级 可能需要修改
-        int curLevel = scoreLogService.getLevel(scoreCount.getScoreUsable().intValue());//现在应有的等级
-
-        //用户需不需要变更等级
-        ObjectMapper mapper = new ObjectMapper();
-        if (curLevel != prelevel) {
-
-            ranked.setCurrentRankId((long) curLevel);
-
-            ranked.setCurrentRankName("Lv" + curLevel);
-
-            String rankIdtIds = ranked.getRankIdtIds();
-            List<HashMap<String, String>> rankList = new ArrayList<>();
-            try {
-                rankList = mapper.readValue(rankIdtIds, ArrayList.class);
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
-            boolean add = true;
-            for (HashMap m : rankList) {
-                if (m.get("rankId").equals(curLevel + "")) {
-                    add = false;
-                }
-            }
-            if (add) {
-                HashMap<String, String> newMap = new HashMap<String, String>();
-                newMap.put("rankId", curLevel + "");
-                newMap.put("rankName", "Lv" + curLevel);
-                rankList.add(newMap);
-                try {
-                    ranked.setRankIdtIds(mapper.writeValueAsString(rankList));
-                } catch (JsonProcessingException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                //等级变更记录 t_incent_ranked_log 更新
-            }
-            ranked.setUpdatedAt(new Date());
-            ranked.updateById();
-            IncentRuleRank rankRule = ruleRankService.selectOne(new EntityWrapper<IncentRuleRank>().eq("id", curLevel));
-            scoreLogService.addRankLog(userId, rankRule);
-
-        }
-        */
-        //--------------------------------------------------end-----------------------------------------------
-
-        //-----start
-        //MQ 业务数据发送给系统用户业务处理
-        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
-
-        //消息类型
-        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
-
-        //发送的队列
-        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
-
-        //路由key
-        StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
-        routinKey.deleteCharAt(routinKey.length() - 1);
-        routinKey.append("deletePostSubtractExpLevel");
-
-        transactionMessageDto.setRoutingKey(routinKey.toString());
-
-        MQResultDto mqResultDto = new MQResultDto();
-        mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MQ_TYPE_DELETE_POST_SUBTRACT_EXP_LEVEL.getCode());
-
-        HashMap<String, Object> hashMap = new HashMap<String, Object>();
-        hashMap.put("mb_id", userId);
-        hashMap.put("score", score);
-
-        mqResultDto.setBody(hashMap);
-
-        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
-        //执行MQ发送
-        ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
-        logger.info("--删除帖子执行扣减用户经验值和等级--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
-
-        //--start 扣减10fun币
-        //@todo
-        TransactionMessageDto transactionMessageDto1 = new TransactionMessageDto();
-
-        //消息类型
-        transactionMessageDto1.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
-
-        //发送的队列
-        transactionMessageDto1.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
-
-        //路由key
-        StringBuffer routinKey1 = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
-        routinKey1.deleteCharAt(routinKey1.length() - 1);
-        routinKey1.append("deletePostSubtractExpLevel");
-
-        transactionMessageDto1.setRoutingKey(routinKey1.toString());
-
-        MQResultDto mqResultDto1 = new MQResultDto();
-        mqResultDto1.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_GAME_MQ_TYPE_DELETE.getCode());
-
-        UserFunVO userFunVO = new UserFunVO();
-        userFunVO.setMemberId(userId );
-        userFunVO.setDescription( "删除文章" );
-        userFunVO.setNumber(10);
-        mqResultDto1.setBody(userFunVO);
-        transactionMessageDto1.setMessageBody(JSON.toJSONString(mqResultDto1));
-        //执行MQ发送
-        ResultDto<Long> Result = tSMQFacedeService.saveAndSendMessage(transactionMessageDto1);
-        //--end 扣减10fun币
-        //-----start
-
-        ActionInput actioninput = new ActionInput();
-        actioninput.setTarget_type(4);
-        actioninput.setTarget_id(cmmPost.getCommunityId());
-        boolean b = iCountService.subCounter(userId, 7, actioninput);
-
-        List<String> list = new LinkedList<String>();
-        list.add(SecurityMD5.encrypt16(FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_CONTENT + postId));
-        list.add(SecurityMD5.encrypt16(FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_TITLE + postId));
-        list.add(SecurityMD5.encrypt16(FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS));
-        list.add(SecurityMD5.encrypt16(FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST));
-        redisActionHelper.removePostRedisCache(list);
-        //clear redis cache
-        //文章内容html-内容
-//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_CONTENT + postId, "", null);
-//        //文章内容html-标题
-//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_TITLE + postId, "", null);
-//        //帖子详情
-//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, postId, null);
-//        //帖子/心情评论列表
-//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
-//        //clear redis cache
-//        //首页文章帖子列表(v2.4)
-//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
-//        //帖子列表
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
-//        //社区置顶文章(2.4.3)
-//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, "", null);
-//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
-//
-//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX, "", null);
-//        // 个人信息
-//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + userId, "", null);
-//        // fun币消耗详情
-//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + userId, "", null);
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.DELETE_POST.getKey());
+        abstractEventDto.setScore(score);
+        abstractEventDto.setUserId(userId);
+        applicationEventPublisher.publishEvent(abstractEventDto);
         return ResultDto.success("删除成功");
-
     }
 
     @Override
@@ -1098,6 +933,7 @@ public class PostServiceImpl implements IPostService {
         return ResultDto.success();
     }
 
+    @Cacheable(value = CACHE_EH_KEY_POST, key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL_CACHE +" ' +#userId + #postId ")
     @Override
     public ResultDto<PostOut> getPostDetails(String postId, String userId, String os) throws Exception {
         PostOut out = null;
@@ -1246,17 +1082,19 @@ public class PostServiceImpl implements IPostService {
         Map<String, Object> communityMap = new HashMap<String, Object>();
         //type 0 游戏社区 1：官方社区 2 圈子 3.什么都没有
         communityMap.put("type", 3);
-        CmmCircle circle = null;
+        PostCircleDto circle = null;
         String circleId = cmmPostCircleMapper.getCmmCircleByPostId(cmmPost.getId());
         if (StringUtil.isNotNull(circleId)) {
-            circle = cmmCircleMapper.selectById(circleId);
+            circle = cmmCircleMapper.getPostCircleDtoById(circleId);
         }
         if (circle != null) {
             communityMap.put("objectId", circle.getId());
             communityMap.put("name", circle.getCircleName());
             communityMap.put("icon", circle.getCircleIcon());
+            communityMap.put( "hotValue",circle.getHotValue() );
+            communityMap.put( "postNum",circle.getPostNum());
             communityMap.put("intro", circle.getIntro());
-            //3标识本次是圈子
+            //2标识本次是圈子
             communityMap.put("type", 2);
         } else {
             //分两种情况 是否关联了社区，关联社区走之前逻辑，否则走关联游戏逻辑

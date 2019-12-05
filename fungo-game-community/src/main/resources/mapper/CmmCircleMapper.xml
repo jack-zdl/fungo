@@ -23,6 +23,11 @@
     hot_value AS hotValue , sort, created_at AS  createdAt,updated_at AS  updatedAt, created_by AS  createdBy, updated_by as updatedBy
   </sql>
 
+  <sql id="Base_Alias_Column_List">
+    ${alias}.id, ${alias}.circle_name as circleName, ${alias}.circle_icon AS circleIcon , ${alias}.intro, ${alias}.game_id AS gameId , ${alias}.cmm_id AS cmmId , ${alias}.type, ${alias}.state, ${alias}.followee_num AS  followeeNum,
+    ${alias}.hot_value AS hotValue , ${alias}.sort, ${alias}.created_at AS  createdAt, ${alias}.updated_at AS  updatedAt, ${alias}.created_by AS  createdBy, ${alias}.updated_by as updatedBy
+  </sql>
+
   <select id="selectAll" resultType="com.fungo.community.entity.CmmCircle" >
     SELECT
     <include refid="Base_Column_List"></include>
@@ -169,5 +174,11 @@ WHERE
   </select>
 
 
-
+  <select id="getPostCircleDtoById" parameterType="java.lang.String" resultType="com.fungo.community.dto.PostCircleDto">
+    SELECT
+    <include refid="Base_Alias_Column_List"><property name="alias" value="cc"/></include>, COUNT(cp.id) as postNum
+    from t_cmm_circle cc , t_cmm_post cp where cc.id = #{id} and cp.state != -1 and cp.id in
+    ( select cpc.post_id
+    from t_cmm_post_circle cpc where cpc.circle_id = #{id} )
+  </select>
 </mapper>

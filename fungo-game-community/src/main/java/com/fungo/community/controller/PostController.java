@@ -27,6 +27,7 @@ import com.game.common.util.*;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
+import com.game.common.util.validate.ValidateUtil;
 import com.game.common.vo.MemberFollowerVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -162,6 +163,7 @@ public class PostController {
             @ApiImplicitParam(name = "postId", value = "帖子id", paramType = "form", dataType = "string"),
     })
     public ResultDto<String> deletePost(MemberUserProfile memberUserPrefile, @PathVariable("postId") String postId) {
+        if(ValidateUtil.checkNullAndLength(postId)) return  ResultDto.ResultDtoFactory.buildError( "文章id有误" );
         String userId = memberUserPrefile.getLoginId();
         return bsPostService.deletePost(postId, userId);
     }

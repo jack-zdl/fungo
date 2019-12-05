@@ -477,6 +477,20 @@ public class SystemController {
         }
     }
 
+    @GetMapping("/getAuthorList")
+    @ApiOperation(value="获取会员信息")
+    public FungoPageResultDto<AuthorBean> getAuthorList(List<String> memberIds){
+        FungoPageResultDto<AuthorBean> re = null;
+        try {
+            re = systemService.getAuthorList(memberIds);
+        }catch (Exception e){
+            LOGGER.error("SystemController.getAuthor",e);
+            re = FungoPageResultDto.error("-1", "SystemController.getAuthorList执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
     @GetMapping("/getUserCard")
     @ApiOperation(value="获取会员信息")
     public ResultDto<AuthorBean> getUserCard(@RequestParam("cardId") String cardId, @RequestParam(value = "memberId",required = false) String memberId){
