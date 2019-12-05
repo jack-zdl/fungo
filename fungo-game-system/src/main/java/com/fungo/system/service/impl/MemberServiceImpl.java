@@ -1385,6 +1385,7 @@ public class MemberServiceImpl implements IMemberService {
             if (!CommonUtil.isNull(post.getImages())) {
                 bean.setImages(mapper.readValue(post.getImages(), ArrayList.class));
             }
+            bean.setCircleName(post.getCircleName());
             bean.setCoverImage(post.getCoverImage());
             bean.setObjectId(post.getId());
             bean.setCommentNum(post.getCommentNum());
