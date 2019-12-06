@@ -141,6 +141,12 @@ public class SystemFacedeHystrixService implements FallbackFactory<SystemFeignCl
                 logger.error("--------------------gameListMineDownload--启动熔断:{}", "gameListMineDownload");
                 return null;
             }
+
+            @Override
+            public ResultDto<String> addAction(BasActionDto basActionDto) {
+                logger.error("--------------------addAction--启动熔断:{}", "addAction");
+                return null;
+            }
         };
     }
 }

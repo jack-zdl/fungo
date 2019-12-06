@@ -100,6 +100,9 @@ public class GameServiceImpl implements IGameService {
     @Autowired
     private GameTagDao gameTagDao;
 
+    @Autowired
+    private AsyncTaskService asyncTaskService;
+
     @Override
     public FungoPageResultDto<GameOutPage> getGameList(GameInputPageDto gameInputDto, String memberId, String os) {
         String keySuffix = JSON.toJSONString(gameInputDto) + os;
@@ -662,6 +665,11 @@ public class GameServiceImpl implements IGameService {
         //redis cache
         fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId,
                 memberId + ptype, out, 60 * 5);
+
+        // vpc2.1 改版 记录用户浏览游戏详情
+        if(StringUtil.isNotNull(gameId)&&StringUtil.isNotNull(memberId)){
+            asyncTaskService.recordGameView(memberId,gameId);
+        }
         return ResultDto.success(out);
     }
 

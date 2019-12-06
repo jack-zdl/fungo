@@ -203,4 +203,15 @@ public interface SystemFeignClient {
     @ApiImplicitParams({})
     public ResultDto<BannerBean> queryCollection(@RequestBody MallBannersInput mallBannersInput);
 
+
+    @PostMapping(value = "/addAction")
+    @ApiOperation(value="新增用户行为记录")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "type",value = "行为类型",paramType = "form",dataType = "integer"),
+            @ApiImplicitParam(name = "targetType",value = "业务类型",paramType = "form",dataType = "integer"),
+            @ApiImplicitParam(name = "memberId",value = "会员id",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "targetid",value = "业务id",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "information",value = "内容",paramType = "form",dataType = "string")
+    })
+    public ResultDto<String> addAction(@RequestBody BasActionDto basActionDto);
 }
