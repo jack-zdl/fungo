@@ -2,6 +2,7 @@ package com.fungo.community.dao.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.community.dto.PostCircleDto;
 import com.fungo.community.entity.CmmPost;
 import com.game.common.bean.CollectionBean;
 import org.apache.ibatis.annotations.Param;
@@ -126,4 +127,8 @@ public interface CmmPostDao extends BaseMapper<CmmPost> {
 
 
     boolean updateCmmPostCommentNum(@Param("commentId") String commentId);
+
+    int getPostNumById(@Param("id")String id);
+
+
 }

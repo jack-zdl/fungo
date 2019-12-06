@@ -31,6 +31,7 @@ import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
+import com.game.common.util.validate.ValidateUtil;
 import com.game.common.vo.MemberFollowerVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -98,7 +99,7 @@ public class PortalCommunityPostController {
             @ApiImplicitParam(name = "community_id", value = "社区id", paramType = "form", dataType = "String")
     })
     public FungoPageResultDto<PostOutBean> getPostContentList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody PostInputPageDto postInputPageDto) {
-
+        if(ValidateUtil.checkNullAndLength(postInputPageDto.getCommunity_id()) ) return FungoPageResultDto.FungoPageResultDtoFactory.buildError( "社区id有误" );
         String userId = "";
         if (memberUserPrefile != null) {
             userId = memberUserPrefile.getLoginId();
@@ -170,6 +171,7 @@ public class PortalCommunityPostController {
             @ApiImplicitParam(name = "userId", value = "用户id", paramType = "form", dataType = "string")
     })
     public ResultDto<PostOut> getPostDetail(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @PathVariable("postId") String postId) {
+        if(ValidateUtil.checkNullAndLength(postId)) return ResultDto.ResultDtoFactory.buildError( "文章id有误" );
         String userId = "";
         String os = "";
         os = (String) request.getHeader("os");

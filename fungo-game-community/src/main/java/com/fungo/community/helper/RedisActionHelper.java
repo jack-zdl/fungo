@@ -39,111 +39,24 @@ import static freemarker.template.utility.Collections12.singletonList;
 public class RedisActionHelper {
 
     @Autowired
-    private FungoCacheArticle fungoCacheArticle;
-//
-//    @Autowired
-//    private RedisTemplate<Object, Object> redisTemplate;
-//
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate;
-
-    @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
 
-//    @Autowired
-//    RedisScript<Boolean> script;
-
-//    public boolean checkAndSet(String expectedValue, String newValue) {
-//        return stringRedisTemplate.execute(script, singletonList("key"), expectedValue, newValue);
-//    }
-
     /**
-     * 功能描述: 清除文章相关的redis 缓存
+     * 功能描述: redis的pipeLine管道清除redis缓存
      * @date: 2019/11/28 13:21
      */
     public void removePostRedisCache(List<String> keyPrefixs){
-
-//        RedisFuture<String> future = redisAsyncCommands.get( "2019112718360917911" );
-//        future.thenAccept( new Consumer<String>() {
-//            @Override
-//            public void accept(String s) {
-//                System.out.println("异步删除"+s);
-//            }
-//        } );
-//        stringRedisTemplate.executePipelined( new SessionCallback<Object>() {
-//            @Override
-//            public <K, V> Object execute(RedisOperations<K, V> redisOperations) throws DataAccessException {
-//                for (int i = 0; i < keyPrefixs.size(); i++) {
-//                    System.out.println(keyPrefixs.get(i) + "_join_");
-//                    redisTemplate.delete(redisTemplate.keys(keyPrefixs.get(i) + "*"));
-//                }
-//                return null;
-//            }
-//        });
-//        Long start2 = System.currentTimeMillis();
-//        for(int i=0; i< 1000; i++) {
-////            redisTemplate.delete(redisTemplate.keys(keyPrefixs.get(i) + "*"));
-//            redisTemplate.opsForValue().set("key2"+i, "value2"+i);
-//        }
-//        Long end2  = System.currentTimeMillis();
-//        System.out.println("同步方法=="+(end2-start2));
-//        Long star1 = System.currentTimeMillis();
-//        stringRedisTemplate.executePipelined( new SessionCallback<Object>() {
-//
-//            @Override
-//            public <K, V> Object execute(RedisOperations<K, V> redisOperations) throws DataAccessException {
-//                for(int i=0; i< 1000; i++) {
-////                    redisTemplate.delete(redisTemplate.keys(keyPrefixs.get(i) + "*"));
-////                    redisTemplate.opsForValue().set("key1"+i, "value1"+i);
-//                    stringRedisTemplate.opsForValue().set("key_"+i,"value_"+i);
-////                    stringRedisTemplate.delete(keyPrefixs.get(i)+"*" );
-//                }
-//                return null;
-//            }
-//        });
-//        Long end1 = System.currentTimeMillis();
-//        System.out.println("22222222222222222="+(end1 - star1));
-//        Long star3 = System.currentTimeMillis();
-//        stringRedisTemplate.executePipelined( new SessionCallback<Object>() {
-//            @Override
-//            public <K, V> Object execute(RedisOperations<K, V> redisOperations) throws DataAccessException {
-////                for (int i = 0; i < keyPrefixs.size(); i++) {
-////                    System.out.println(keyPrefixs.get(i) + "_join_");
-////                stringRedisTemplate.delete(stringRedisTemplate.keys("key"+ "*"));
-////                stringRedisTemplate.opsForValue().set("key0","value0");
-////                stringRedisTemplate.delete("key0");
-////                stringRedisTemplate.delete("key1104");
-//                Set<String> keys = stringRedisTemplate.keys("key_" + "*");
-//                stringRedisTemplate.delete(keys);
-//
-////                StringRedisTemplate redisTemplate1 = SpringUtil.getBean(StringRedisTemplate.class);
-////                redisTemplate1.delete("key1102");
-////                redisTemplate1.delete("key*");
-////                redisTemplate.delete(redisTemplate.keys("key*"));
-////                redisTemplate.delete("key*");
-////                }
-//                return null;
-//            }
-//        });
-
-        redisTemplate.execute(new RedisCallback<String>() {
-            public String doInRedis(RedisConnection connection) {
-                redisTemplate.delete(redisTemplate.keys("key_" + "*"));
+        redisTemplate.executePipelined( new RedisCallback<Object>() {
+            @Override
+            public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
+                for (String redisKey : keyPrefixs){
+                    redisTemplate.delete(redisTemplate.keys("key_" + "*"));
+                }
                 return null;
             }
         });
 
-        Long end3 = System.currentTimeMillis();
-//        System.out.println("22222222222222222="+(end3 - star3));
-
-
-        System.out.println("同步删除");
-
-//        redisTemplate.delete(redisTemplate.keys(keyPrefix + "*"));
-//        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_ALL_POST_TOPIC,"", null);
-
     }
-
 
 
     /**
@@ -156,10 +69,5 @@ public class RedisActionHelper {
         return cacheTime;
     }
 
-    public static void main(String[] args) {
 
-//        RedisActionHelper redisActionHelper = new RedisActionHelper();
-//        redisActionHelper.removePostRedisCache();
-//        System.out.println(RedisActionHelper.getRandomRedisCacheTime());
-    }
 }

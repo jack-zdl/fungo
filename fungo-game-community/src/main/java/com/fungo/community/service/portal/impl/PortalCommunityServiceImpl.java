@@ -5,29 +5,21 @@ import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.community.dao.mapper.CmmCommunityDao;
+import com.fungo.community.dao.mapper.CmmCircleDao;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
-import com.fungo.community.dao.service.CmmPostDaoService;
+import com.fungo.community.entity.CmmCircle;
 import com.fungo.community.entity.CmmCommunity;
-import com.fungo.community.entity.CmmPost;
 import com.fungo.community.entity.portal.CmmCommunityIndex;
-import com.fungo.community.feign.GameFeignClient;
 import com.fungo.community.feign.SystemFeignClient;
-import com.fungo.community.service.ICommunityService;
 import com.fungo.community.service.portal.IPortalCommunityService;
-import com.game.common.bean.MemberPulishFromCommunity;
 import com.game.common.consts.FungoCoreApiConstant;
-import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.community.*;
 import com.game.common.dto.community.portal.CmmCommunityIndexDto;
-import com.game.common.dto.user.IncentRankedDto;
-import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
-import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.repo.cache.facade.FungoCacheCommunity;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
@@ -62,6 +54,8 @@ public class PortalCommunityServiceImpl implements IPortalCommunityService {
     private SystemFeignClient systemFeignClient;
     @Autowired
     private CmmCommunityDao cmmCommunityDao;
+    @Autowired
+    private CmmCircleDao cmmCricleDao;
 
 
 
@@ -323,14 +317,20 @@ public class PortalCommunityServiceImpl implements IPortalCommunityService {
             List<String> data = recentBrowseCommunityByUserId.getData();
             if (data != null && data.size() > 0){
 //                首页最近浏览圈子
-                List<CmmCommunity> cmmCommunities =  cmmCommunityDao.selectCmmCommunityByBrowse(data);
-//                Wrapper<CmmCommunity> id = new EntityWrapper<CmmCommunity>().setSqlSelect("id,name,icon").in("id", data).eq("state", 1);
-//                List<CmmCommunity> cmmCommunities = communityService.selectList(id);
-                for (CmmCommunity cmmCommunity:cmmCommunities) {
+//                List<CmmCommunity> cmmCommunities =  cmmCommunityDao.selectCmmCommunityByBrowse(data);
+                List<CmmCircle> cmmCircles =  cmmCricleDao.selectCmmCommunityByBrowse(data);
+                for (CmmCircle cmmCircle:cmmCircles) {
                     CmmCommunityDto cmmCommunityDto = new CmmCommunityDto();
-                    BeanUtils.copyProperties(cmmCommunity, cmmCommunityDto);
+                    cmmCommunityDto.setId(cmmCircle.getId());
+                    cmmCommunityDto.setName(cmmCircle.getCircleName());
+                    cmmCommunityDto.setIcon(cmmCircle.getCircleIcon());
                     cmmCommunityIndexDtos.add(cmmCommunityDto);
                 }
+//                for (CmmCommunity cmmCommunity:cmmCommunities) {
+//                    CmmCommunityDto cmmCommunityDto = new CmmCommunityDto();
+//                    BeanUtils.copyProperties(cmmCommunity, cmmCommunityDto);
+//                    cmmCommunityIndexDtos.add(cmmCommunityDto);
+//                }
             }
         }
 

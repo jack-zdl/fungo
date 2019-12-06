@@ -13,6 +13,7 @@ import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.entity.TCmmPostCircle;
 import com.fungo.community.facede.GameFacedeService;
+import com.fungo.community.service.CmmCircleService;
 import com.fungo.community.service.impl.PostServiceImpl;
 import com.fungo.community.service.msService.IMSServicePostService;
 import com.game.common.bean.CollectionBean;
@@ -58,6 +59,9 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
     private PostServiceImpl postService;
     @Autowired
     private CmmPostCircleDaoService cmmPostCircleDaoService;
+    @Autowired
+    private CmmCircleService cmmCircleService;
+
 
     @Override
     public FungoPageResultDto<CmmPostDto> queryCmmPostList(CmmPostDto postDto) {
@@ -170,8 +174,12 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
                     BeanUtils.copyProperties(cmmPostEntity, cmmPostDto);
 
                     TCmmPostCircle tCmmPostCircle = cmmPostCircleDaoService.selectOne(new EntityWrapper<TCmmPostCircle>().eq("post_id", cmmPostEntity.getId()));
-                    if(null != tCmmPostCircle){
-                        cmmPostDto.setCircleId(tCmmPostCircle.getCircleId());
+                    if(null != tCmmPostCircle && StringUtils.isNotBlank(tCmmPostCircle.getCircleId())){
+                        CmmCircle cmmCircle = cmmCircleService.selectById(tCmmPostCircle.getCircleId());
+                        if(null != cmmCircle){
+                            cmmPostDto.setCircleId(cmmCircle.getId());
+                            cmmPostDto.setCircleName(cmmCircle.getCircleName());
+                        }
                     }
                     cmmPostList.add(cmmPostDto);
                 }

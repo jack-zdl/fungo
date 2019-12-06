@@ -58,6 +58,8 @@ public interface SystemService {
 
     ResultDto<AuthorBean> getAuthor(String memberId);
 
+    FungoPageResultDto<AuthorBean> getAuthorList(List<String> memberIds);
+
     ResultDto<AuthorBean> getUserCard(String cardId, String memberId);
 
     ResultDto<String> updateActionUpdatedAtByCondition(Map<String,Object> map);

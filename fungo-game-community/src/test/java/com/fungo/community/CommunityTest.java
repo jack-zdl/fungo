@@ -23,9 +23,9 @@ public class CommunityTest {
     public void redisActionHelper(){
         String postId = "e96c4f62d53f4e77974802198ae7973f";
         List<String> list = new LinkedList<String>();
-        list.add( SecurityMD5.encrypt16( FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_CONTENT + postId));
-        list.add(SecurityMD5.encrypt16(FungoCoreApiConstant.FUNGO_CORE_API_GAMR_POSTS));
-        list.add(SecurityMD5.encrypt16(FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL));
+//        list.add( SecurityMD5.encrypt16( FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_CONTENT + postId));
+//        list.add(SecurityMD5.encrypt16(FungoCoreApiConstant.FUNGO_CORE_API_GAMR_POSTS));
+//        list.add(SecurityMD5.encrypt16(FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL));
         redisActionHelper.removePostRedisCache(list);
     }
 

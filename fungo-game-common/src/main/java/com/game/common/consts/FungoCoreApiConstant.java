@@ -275,6 +275,9 @@ public class FungoCoreApiConstant {
     public static final String FUNGO_CORE_API_CIRCLE_POST = PUB_POST+"/api/community/circle/post"+tag;
 
 
+    public static final String FUNGO_CORE_API_COMMUNITY_POST_CACHE = "/api/portal/community/content/posts";
+    public static final String FUNGO_CORE_API_COMMUNITY_POST = PUB_POST+"/api/portal/community/content/posts"+tag;
+
     /**
      * 我的评论(2.4.3)
      * POST
@@ -309,6 +312,7 @@ public class FungoCoreApiConstant {
      * 帖子(文章)详情
      * GET
      */
+    public static final String FUNGO_CORE_API_POST_CONTENT_DETAIL_CACHE = "/api/content/post/{postId}/detail" ;
     public static final String FUNGO_CORE_API_POST_CONTENT_DETAIL = "/api/content/post/{postId}/detail" + tag ;// "_cloud";
 
 
@@ -361,6 +365,7 @@ public class FungoCoreApiConstant {
      * 社区详情
      * GET
      */
+    public static final String FUNGO_CORE_API_COMMUNITYS_DETAIL_CACHE = "/api/content/community/{communityId}" ;
     public static final String FUNGO_CORE_API_COMMUNITYS_DETAIL = "/api/content/community/{communityId}" + tag ;// "_cloud";
 
 

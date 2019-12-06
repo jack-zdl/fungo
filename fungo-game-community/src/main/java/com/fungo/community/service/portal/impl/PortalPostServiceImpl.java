@@ -21,6 +21,7 @@ import com.fungo.community.facede.TSMQFacedeService;
 import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.function.FungoLivelyCalculateUtils;
 import com.fungo.community.function.SerUtils;
+import com.fungo.community.helper.RedisActionHelper;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IPostService;
 import com.fungo.community.service.IVideoService;
@@ -51,6 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +61,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.game.common.consts.FunGoGameConsts.CACHE_EH_KEY_PRE_COMMUNITY;
 
 
 @EnableAsync
@@ -109,16 +113,17 @@ public class PortalPostServiceImpl implements IPortalPostService {
 
 
 
+    @Cacheable(value = CACHE_EH_KEY_PRE_COMMUNITY,key ="'" + FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITY_POST_CACHE +" ' +#userId + #postInputPageDto.community_id + #postInputPageDto.page + #postInputPageDto.sort + #postInputPageDto.page + #postInputPageDto.limit ")
     @Override
     public FungoPageResultDto<PostOutBean> getPostList(String userId, PostInputPageDto postInputPageDto) throws Exception {
         //结果模型
         FungoPageResultDto<PostOutBean> result = null;
 
         //pc 2.0 stop from redis cache
-//        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST;
-//        String keySuffix = userId + JSON.toJSONString(postInputPageDto);
+        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITY_POST;
+        String keySuffix = userId + JSON.toJSONString(postInputPageDto);
 
-//        result = (FungoPageResultDto<PostOutBean>) fungoCacheArticle.getIndexCache(keyPrefix, keySuffix);
+        result = (FungoPageResultDto<PostOutBean>) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
         if (null != result && null != result.getData() && result.getData().size() > 0) {
             return result;
         }
@@ -129,20 +134,17 @@ public class PortalPostServiceImpl implements IPortalPostService {
         String filter = postInputPageDto.getFilter();
         String communityId = postInputPageDto.getCommunity_id();
 
-        if (communityId == null) {
-            return FungoPageResultDto.error("241", "社区id不存在");
-        }
-        CmmCommunity community = communityService.selectOne(new EntityWrapper<CmmCommunity>().eq("id", communityId).and("state <> {0}", -1));
-        if (community == null) {
+        int community = communityService.selectCount(new EntityWrapper<CmmCommunity>().eq("id", communityId).and("state <> {0}", -1));
+        if (community == 0) {
             return FungoPageResultDto.error("241", "所属社区不存在");
         }
 
 
-        result = new FungoPageResultDto<PostOutBean>();
-        List<PostOutBean> relist = new ArrayList<PostOutBean>();
+        result = new FungoPageResultDto<>();
+        List<PostOutBean> relist = new ArrayList<>();
         Wrapper<CmmPost> wrapper = new EntityWrapper<CmmPost>().eq("community_id", communityId).eq("state", 1); //.ne("type", 3);
 //		Wrapper<CmmPost> wrapper = new EntityWrapper<CmmPost>().eq("community_id",communityId ).eq("state", 1).ne("type", 3).ne("topic", 2); eq topic1
-        List<CmmPost> postList = new ArrayList<CmmPost>();
+        List<CmmPost> postList = null;
         if(filter != null  && !"".equals(filter)){
             wrapper.eq( "type",filter );
         }
@@ -170,8 +172,6 @@ public class PortalPostServiceImpl implements IPortalPostService {
             ResultDto.error("221", "找不到符合条件的帖子");
         }
 
-        boolean b = CommonUtil.isNull(userId);
-
         for (CmmPost post : postList) {
             //表情解码
             if (StringUtils.isNotBlank(post.getTitle())) {
@@ -195,7 +195,6 @@ public class PortalPostServiceImpl implements IPortalPostService {
 //	            post.setHtmlOrigin(interactHtmlOrigin);
 //	        }
 
-
             PostOutBean bean = new PostOutBean();
 
             //!fixme 查询用户数据
@@ -207,10 +206,11 @@ public class PortalPostServiceImpl implements IPortalPostService {
                     bean.setAuthor(authorBean);
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                logger.error( "PortalPostServiceImpl.getPostList方法中systemFacedeService.getAuthor出现异常，参数="+post.getMemberId(), ex);
             }
 
             if (bean.getAuthor() == null) {
+                logger.error( "查询不到文章的用户,跳过此次文章");
                 continue;
             }
             String content = post.getContent();
@@ -239,7 +239,7 @@ public class PortalPostServiceImpl implements IPortalPostService {
 //			}
             try {
                 if (!CommonUtil.isNull(post.getImages())) {
-                    ArrayList<String> readValue = new ArrayList<String>();
+                    ArrayList<String> readValue = null;
                     ObjectMapper mapper = new ObjectMapper();
                     readValue = mapper.readValue(post.getImages(), ArrayList.class);
 
@@ -257,7 +257,7 @@ public class PortalPostServiceImpl implements IPortalPostService {
                     //end
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+              logger.error( "PortalPostServiceImpl.getPostList方法中解析images出错", e);
             }
             if (CommonUtil.isNull(userId)) {
                 bean.setLiked(false);
@@ -265,40 +265,31 @@ public class PortalPostServiceImpl implements IPortalPostService {
 
                 //!fixme 查询用户点赞数
                 //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", post.getId()).eq("member_id", userId));
-
-
                 BasActionDto basActionDto = new BasActionDto();
                 basActionDto.setMemberId(userId);
                 basActionDto.setType(0);
                 basActionDto.setState(0);
                 basActionDto.setTargetId(post.getId());
-
                 int liked = 0;
                 try {
                     ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
-
                     if (null != resultDto) {
                         liked = resultDto.getData();
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-
-
                 bean.setLiked(liked > 0 ? true : false);
             }
-
             //
             bean.setVideoCoverImage(post.getVideoCoverImage());
             bean.setType(post.getType());
-
             relist.add(bean);
         }
-
         result.setData(relist);
         PageTools.pageToResultDto(result, pagePost);
         //redis cache
-//        fungoCacheArticle.excIndexCache(true, keyPrefix, keySuffix, result);
+        fungoCacheArticle.excIndexDecodeCache(true, keyPrefix, keySuffix, result, RedisActionHelper.getRandomRedisCacheTime());
         return result;
 
     }

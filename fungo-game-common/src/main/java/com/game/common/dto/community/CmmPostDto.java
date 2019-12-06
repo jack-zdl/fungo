@@ -129,6 +129,8 @@ V2.4.3版本添加
 
 	private String circleId;
 
+	private String circleName;
+
 	/**
 	 * 功能描述: 1 自己查询自己的信息
 	 * @auther: dl.zhang
