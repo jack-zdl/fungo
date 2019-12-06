@@ -18,20 +18,20 @@ import reactor.core.publisher.Mono;
  * @Date: 2019/12/6
  */
 @Component
-public class BackIpGatewayFilter implements GlobalFilter, Ordered {
+public class BackIpGatewayFilter  { //implements GlobalFilter, Ordered
 
-    @Autowired
-    private AuthSkipUrlsProperties authSkipUrlsProperties;
+//    @Autowired
+//    private AuthSkipUrlsProperties authSkipUrlsProperties;
 
-    @Override
-    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        return null;
-    }
-
-    @Override
-    public int getOrder() {
-        return 0;
-    }
+//    @Override
+//    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+//        return null;
+//    }
+//
+//    @Override
+//    public int getOrder() {
+//        return 0;
+//    }
 
 //    /**
 //     * 白名单
