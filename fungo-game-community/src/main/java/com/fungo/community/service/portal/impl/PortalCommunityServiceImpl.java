@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.community.dao.mapper.CmmCircleMapper;
 import com.fungo.community.dao.mapper.CmmCommunityDao;
-import com.fungo.community.dao.mapper.CmmCircleDao;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.entity.CmmCircle;
 import com.fungo.community.entity.CmmCommunity;
@@ -55,7 +55,7 @@ public class PortalCommunityServiceImpl implements IPortalCommunityService {
     @Autowired
     private CmmCommunityDao cmmCommunityDao;
     @Autowired
-    private CmmCircleDao cmmCricleDao;
+    private CmmCircleMapper cmmCircleMapper;
 
 
 
@@ -318,7 +318,7 @@ public class PortalCommunityServiceImpl implements IPortalCommunityService {
             if (data != null && data.size() > 0){
 //                首页最近浏览圈子
 //                List<CmmCommunity> cmmCommunities =  cmmCommunityDao.selectCmmCommunityByBrowse(data);
-                List<CmmCircle> cmmCircles =  cmmCricleDao.selectCmmCommunityByBrowse(data);
+                List<CmmCircle> cmmCircles =  cmmCircleMapper.selectCmmCommunityByBrowse(data);
                 for (CmmCircle cmmCircle:cmmCircles) {
                     CmmCommunityDto cmmCommunityDto = new CmmCommunityDto();
                     cmmCommunityDto.setId(cmmCircle.getId());

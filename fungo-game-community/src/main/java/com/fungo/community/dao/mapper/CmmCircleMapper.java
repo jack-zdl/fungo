@@ -39,4 +39,6 @@ public interface CmmCircleMapper  extends BaseMapper<CmmCircle> {
 
     PostCircleDto getPostCircleDtoById(@Param("id")String id);
 
+    List<CmmCircle> selectCmmCommunityByBrowse(@Param("ids") List<String> ids);
+
 }
