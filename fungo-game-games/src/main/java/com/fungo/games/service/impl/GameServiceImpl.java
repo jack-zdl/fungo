@@ -1921,6 +1921,7 @@ public class GameServiceImpl implements IGameService {
 
     @Override
     public ResultDto<List<GameOutPage>> viewGames(String memberId) {
+
         List<String> ids = iEvaluateProxyService.listGameHisIds(memberId);
         List<GameOutPage> gameOutPages = new ArrayList<>();
         if (ids == null || ids.isEmpty()) {

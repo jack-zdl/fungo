@@ -221,15 +221,9 @@
   WHERE
    type = 12
   AND state = 0
-  AND target_type = 4
+  AND target_type = 3
   AND member_id = #{memberId}
   AND created_at > #{date}
-		<if test="officialCommunityIds!=null and officialCommunityIds.size()>0 " >
-			AND target_id NOT IN
-			<foreach item="item" index="index" collection="officialCommunityIds" open="(" separator="," close=")">
-				#{item}
-			</foreach>
-		</if>
   GROUP BY
    target_id
   ORDER BY

@@ -852,17 +852,16 @@ public class SystemServiceImpl implements SystemService {
      * 获取最近浏览的游戏 取最近8条
      */
     @Override
-    public ResultDto<List<String>> listCommunityHisIds(String memberId) {
+    public ResultDto<List<String>> listGameHisIds(String memberId) {
 
-        List<String> officialCommunityIds = communityProxyService.listOfficialCommunityIds();
         //获取7天前时间
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DATE, -7);
-        List<String> list = basActionDao.getRecentViewGame(memberId, officialCommunityIds, c.getTime());
+        List<String> list = basActionDao.getRecentViewGame(memberId,c.getTime());
         //根据社区id获取游戏
-        if (list != null && !list.isEmpty()) {
+       /* if (list != null && !list.isEmpty()) {
             list = communityProxyService.listGameIds(list);
-        }
+        }*/
         return ResultDto.success(list);
     }
     /*

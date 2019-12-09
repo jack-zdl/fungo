@@ -391,15 +391,15 @@ public class SystemController {
     }
 
     @GetMapping(value = "/listGameHisIds")
-    @ApiOperation(value="获取历史浏览游戏社区id集合")
+    @ApiOperation(value="获取历史浏览游戏id集合")
     public ResultDto<List<String>> listGameHisIds(@RequestParam("memberid") String memberid){
         ResultDto<List<String>> re = null;
         try {
-            re =  systemService.listCommunityHisIds(memberid);
+            re =  systemService.listGameHisIds(memberid);
         }catch (Exception e){
             e.printStackTrace();
-            LOGGER.error("SystemController.listCommunityHisIds",e);
-            re = ResultDto.error("-1", "SystemController.listCommunityHisIds执行service出现异常");
+            LOGGER.error("SystemController.listGameHisIds",e);
+            re = ResultDto.error("-1", "SystemController.listGameHisIds执行service出现异常");
         }finally {
             return re;
         }

@@ -18,6 +18,7 @@ import com.game.common.dto.game.*;
 import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.util.AesUtil;
 import com.game.common.util.CommonUtil;
+import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -116,7 +117,7 @@ public class GameController {
     }
 
 
-    @ApiOperation(value = "最近浏览游戏(社区)列表", notes = "")
+    @ApiOperation(value = "最近浏览游戏列表", notes = "")
     @RequestMapping(value = "/api/content/viewGames", method = RequestMethod.GET)
     public ResultDto<List<GameOutPage>> viewGames(@Anonymous MemberUserProfile memberUserPrefile) {
 
@@ -124,6 +125,9 @@ public class GameController {
         String os = "";
         if (memberUserPrefile != null) {
             memberId = memberUserPrefile.getLoginId();
+        }
+        if(StringUtil.isNull(memberId)){
+            return ResultDto.error("-1","请登录");
         }
         //"cec9c9dfe70b4ba9b684f81e617f4833"
         return gameService.viewGames(memberId);
