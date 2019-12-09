@@ -1,10 +1,10 @@
 package com.fungo.community.function.event;
 
-import com.fungo.community.dto.AbstractEventDto;
 import com.fungo.community.function.cache.EhcacheActionFunction;
 import com.fungo.community.function.mq.MQActionFunction;
 import com.fungo.community.function.cache.RedisActionFunction;
 import com.fungo.community.service.ICounterService;
+import com.game.common.dto.AbstractEventDto;
 import com.game.common.dto.ActionInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

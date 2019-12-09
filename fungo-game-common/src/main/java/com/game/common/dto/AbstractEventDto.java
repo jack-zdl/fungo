@@ -1,4 +1,4 @@
-package com.fungo.community.dto;
+package com.game.common.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -29,12 +29,23 @@ public class AbstractEventDto extends ApplicationEvent {
     private String postId;
     /************** end eventType = 1*********************/
 
+    /************** start eventType = 2*********************/
+//    private String userId;
+
+    /************** end eventType = 2*********************/
+
+    /************** start eventType = 3*********************/
+//    private String userId;
+    /************** end eventType = 3*********************/
+
     public AbstractEventDto(Object source) {
         super( source );
     }
 
     public enum AbstractEventEnum{
-        DELETE_POST(1);
+        DELETE_POST(1),
+        USER_LOGIN(2),
+        USER_LOGOUT(3);
         int key;
         AbstractEventEnum(int k){
             this.key = k;

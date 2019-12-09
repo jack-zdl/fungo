@@ -26,6 +26,7 @@ import com.game.common.util.SensitiveWordUtil;
 import com.game.common.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -99,6 +100,7 @@ public class SeacherServiceImpl implements ISeacherService {
         return ResultDto.success(list);
     }
 
+    @Async
     public void updateGameKeywords() {
 
         System.out.println("........执行获取关键字过滤.");

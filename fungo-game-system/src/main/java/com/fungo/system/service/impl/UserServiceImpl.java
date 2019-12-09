@@ -15,6 +15,7 @@ import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.MemberLoginConsts;
 import com.game.common.consts.Setting;
+import com.game.common.dto.AbstractEventDto;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.user.MemberOutBean;
@@ -33,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -80,20 +82,17 @@ public class UserServiceImpl implements IUserService {
     private MemberInfoDao memberInfoDao;
     @Autowired
     private BasActionDao actionDao;
-
     //用户成长业务
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
-
     @Autowired
-
     private IncentAccountCoinDaoService incentAccountCoinDaoService;
-
     @Autowired
     private ICommunityProxyService communityProxyService;
-
     @Autowired
     private SysMockuserDao sysMockuserDao;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -289,6 +288,10 @@ public class UserServiceImpl implements IUserService {
 
         //记录登录用户
         memberLoginedStatisticsService.addLoginToBucket(member.getId(), appVersion);
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.USER_LOGIN.getKey());
+        abstractEventDto.setUserId(member.getId());
+        applicationEventPublisher.publishEvent(abstractEventDto);
         return rest;
     }
 
