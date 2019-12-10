@@ -34,7 +34,7 @@ public class CmmCirclePostVo extends InputPageDto {
      * @date: 2019/6/11 16:14
      */
     @NotBlank(message = "查询类型不能为空")
-    @Size(max = 1,message = "查询类型长度有误")
+    @Size(max = 32,message = "查询类型长度有误")
     private String queryType;
 
     /**
@@ -82,6 +82,10 @@ public class CmmCirclePostVo extends InputPageDto {
 
     public enum QueryTypeEnum implements BaseEnum<QueryTypeEnum,String> {
 
+        /**
+         * 功能描述: 有一部分用的是id(32位)
+         * @date: 2019/12/10 17:46
+         */
         ALL("1","全部查询"),
         TESTPLAY("2","评测试玩"),
         STRATEGY("3","攻略心得"),
