@@ -590,7 +590,11 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                     dataMap.put("userName", "FunGo大助手");
                     dataMap.put("content", finalMessage );
                     dataMap.put("targetId","");
-                    dataMap.put("targetType","11"); // 表明跳转位置
+                    if(DelObjectListVO.TypeEnum.GAMEVIP.getKey() == delObjectListVO.getType()){
+                        dataMap.put("targetType","13"); // 表明跳转位置 游戏VIP
+                    }else if(DelObjectListVO.TypeEnum.BAIJINVIP.getKey() == delObjectListVO.getType()){
+                        dataMap.put("targetType","14"); // 表明跳转位置 白金VIP
+                    }
                     dataMap.put("msgTime", DateTools.fmtDate(new Date()));
                     //从DB查
                     EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();

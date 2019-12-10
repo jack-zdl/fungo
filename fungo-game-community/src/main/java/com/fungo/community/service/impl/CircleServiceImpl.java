@@ -199,7 +199,7 @@ public class CircleServiceImpl implements CircleService {
         return re;
     }
 
-    @Cacheable(value = FunGoGameConsts.CACHE_EH_KEY_PRE_COMMUNITY, key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_INFO_CACHE +" ' +#memberId + #circleId ")
+//    @Cacheable(value = FunGoGameConsts.CACHE_EH_KEY_PRE_COMMUNITY, key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_INFO_CACHE +" ' +#memberId + #circleId ")
     @Override
     public ResultDto<CmmCircleDto> selectCircleById(String memberId, String circleId) {
         ResultDto<CmmCircleDto> re = null;

@@ -166,6 +166,22 @@ public class FungoCacheArticle {
     }
 
 
+    /**
+     * 添加缓存和删除缓存,<b>此缓存是不加密的</b>
+     * <p>前缀不加密,方便后续删除一系列的redis的key</p>
+     * @param isCache true 缓存，false清除缓存
+     * @param keyPrefix 缓存key的前缀（对象是json字符串，非对象是字符串）
+     */
+    public void removeIndexDecodeCache(boolean isCache, String keyPrefix) {
+        //从redis获取
+        String redisKey = keyPrefix ;
+        if (!isCache) {
+            redisHandler.batchDelete(redisKey);
+        }
+    }
+
+
+
 
     /**
      *  获取缓存数据

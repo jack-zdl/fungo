@@ -499,7 +499,7 @@ public class FungoMallScanOrderWithSeckillService {
             memberCoupon.setCreatedAt( new Date());
             memberCoupon.setCreatedBy( "system");
             memberCoupon.setRversion(1);
-            memberCoupon.setDescription( "被邀请人满足2级条件数目达到20人,邀请人获取7折优惠券" );
+            memberCoupon.setDescription( "用户商城购买白金VIP兑换券" );
             memberCoupon.insert();
             // 同步到零卡绑定券
             BindGiftcardDto bindGiftcardDto  = lingKaHelper.sendGiftCardToLingka(member,"1",memberCoupon.getId());
@@ -517,7 +517,7 @@ public class FungoMallScanOrderWithSeckillService {
             memberCoupon.setRversion(1);
             memberCoupon.setCreatedAt( new Date());
             memberCoupon.setCreatedBy( "system");
-            memberCoupon.setDescription( "被邀请人满足2级条件数目达到20人,邀请人获取7折优惠券" );
+            memberCoupon.setDescription( "用户商城购买游戏VIP兑换券" );
             memberCoupon.insert();
             // 同步到零卡绑定券
             BindGiftcardDto bindGiftcardDto  = lingKaHelper.sendGiftCardToLingka(member,"1",memberCoupon.getId());

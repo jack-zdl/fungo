@@ -231,6 +231,10 @@ public class ProtalSystemActionServiceImpl implements IActionService {
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
         //获取心情动态列表(v2.4)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOODS_LIST, "", null);
+        // 删除圈子相关的信息
+        fungoCacheArticle.removeIndexDecodeCache(false, FungoCoreApiConstant.PUB_CIRCLE);
+        // 删除文章相关的信息
+        fungoCacheArticle.removeIndexDecodeCache(false, FungoCoreApiConstant.PUB_POST);
         return resultDto;
     }
 
