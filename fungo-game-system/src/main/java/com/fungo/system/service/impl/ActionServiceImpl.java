@@ -23,6 +23,7 @@ import com.game.common.buriedpoint.model.BuriedPointLikeModel;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
+import com.game.common.dto.AbstractEventDto;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
@@ -40,6 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,11 +82,12 @@ public class ActionServiceImpl implements IActionService {
     private MemberDao memberDao;
     @Autowired
     private GamesFeignClient gamesFeignClient;
-
     @Autowired
     private ICommunityProxyService iCommunityProxyService;
     @Autowired
     private BasActionService basActionService;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
 
 
@@ -481,6 +484,9 @@ public class ActionServiceImpl implements IActionService {
 
         }
 
+//        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+//        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.USER_FOLLOW.getKey());
+//        applicationEventPublisher.publishEvent(abstractEventDto);
         //clear redis
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_FOLLW + memberId;
         fungoCacheMember.excIndexCache(false, keyPrefix, "", null);

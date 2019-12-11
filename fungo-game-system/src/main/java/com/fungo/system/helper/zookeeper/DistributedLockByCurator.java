@@ -2,6 +2,8 @@ package com.fungo.system.helper.zookeeper;
 
 import com.fungo.system.config.CuratorConfiguration;
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.recipes.cache.NodeCache;
+import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.zookeeper.CreateMode;
@@ -136,19 +138,20 @@ public class DistributedLockByCurator implements InitializingBean {
         }catch (Exception e){
             logger.error("systyem  create distributed counter file，please check the log >> {}", e.getMessage(), e);
         }
-//        // 建立永久节点
-//        try {
-//            String loginNumPath = "/" + curatorConfiguration.getLoginNum();
-//            if (curatorFramework.checkExists().forPath(loginNumPath) == null) {
-//                curatorFramework.create()
-//                        .creatingParentsIfNeeded()
-//                        .withMode(CreateMode.PERSISTENT)
-//                        .withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE)
-//                        .forPath(loginNumPath,"0".getBytes());
-//            }
-//        }catch (Exception e){
-//            logger.error("systyem  create distributed counter file，please check the log >> {}", e.getMessage(), e);
-//        }
+        // 建立永久节点
+        try {
+            String loginNumPath = "/" + curatorConfiguration.getActionLock();
+            if (curatorFramework.checkExists().forPath(loginNumPath) == null) {
+                curatorFramework.create()
+                        .creatingParentsIfNeeded()
+                        .withMode(CreateMode.PERSISTENT)
+                        .withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE)
+                        .forPath(loginNumPath,"0".getBytes());
+            }
+            addMyWatcher(curatorConfiguration.getActionLock());
+        }catch (Exception e){
+            logger.error("systyem  create distributed counter file，please check the log >> {}", e.getMessage(), e);
+        }
     }
 
 
@@ -233,22 +236,29 @@ public class DistributedLockByCurator implements InitializingBean {
         return true;
     }
 
+    public boolean updateZKNode(String noticeLock,String text){
+        String keyPath = "/"+noticeLock;
+        try {
+//            byte[] datas = curatorFramework.getData().forPath(keyPath);
+            curatorFramework.setData().forPath(keyPath, text.getBytes());
+        }catch (Exception e){
+            logger.error( "更新ZK节点信息",e);
+        }
+        return true;
+    }
+
     /**
      * 创建 watcher 事件  监听事件
      */
     private void addMyWatcher(String path) throws Exception {
         String keyPath = "/" + path;
-        final PathChildrenCache cache = new PathChildrenCache(curatorFramework, keyPath, false);
-        cache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
-        cache.getListenable().addListener((client, event) -> {
-            if (event.getType().equals( PathChildrenCacheEvent.Type.CHILD_REMOVED)) {
-                String oldPath = event.getData().getPath();
-                logger.info("监听事件-删除节点 :{}", oldPath);
-                if (oldPath.contains(path)) {
-                    //释放计数器，让当前的请求获取锁
-                    logger.info("----------------监听事件-删除节点 :{}", path,oldPath);
-                    countDownLatch.countDown();
-                }
+        NodeCache nodeCache = new NodeCache(curatorFramework, keyPath, false);
+        nodeCache.start();
+        nodeCache.getListenable().addListener(new NodeCacheListener() {
+            @Override
+            public void nodeChanged() throws Exception {
+                System.out.println("监听事件触发");
+                System.out.println("重新获得节点内容为：" + new String(nodeCache.getCurrentData().getData()));
             }
         });
     }

@@ -33,6 +33,7 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
     public void onApplicationEvent(AbstractEventDto event) {
         String lockPath = curatorConfiguration.getCounterLock();
         String loginPath = curatorConfiguration.getLoginNum();
+        String actionPath = curatorConfiguration.getActionLock();
         if (AbstractEventDto.AbstractEventEnum.USER_LOGIN.getKey() == event.getEventType()) {
             try {
                 distributedLockByCurator.acquireMyDistributedLock( lockPath,loginPath);
@@ -51,6 +52,17 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
             }finally {
                 distributedLockByCurator.releaseMyDistributedLock( lockPath,loginPath);
             }
+        }else if(AbstractEventDto.AbstractEventEnum.USER_FOLLOW.getKey() == event.getEventType()){
+            try {
+                distributedLockByCurator.acquireMyDistributedLock( actionPath,loginPath);
+                distributedLockByCurator.updateZKNode( actionPath,"CIRCLE");
+            }catch (Exception e){
+                logger.error( "修改登陆人数分布式计数器失败",e);
+            }finally {
+                distributedLockByCurator.releaseMyDistributedLock( actionPath,loginPath);
+            }
+        }else if(AbstractEventDto.AbstractEventEnum.USER_UNFOLLOW.getKey() == event.getEventType()){
+
         }
     }
 

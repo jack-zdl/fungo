@@ -45,7 +45,9 @@ public class AbstractEventDto extends ApplicationEvent {
     public enum AbstractEventEnum{
         DELETE_POST(1),
         USER_LOGIN(2),
-        USER_LOGOUT(3);
+        USER_LOGOUT(3),
+        USER_FOLLOW(4),
+        USER_UNFOLLOW(5);
         int key;
         AbstractEventEnum(int k){
             this.key = k;

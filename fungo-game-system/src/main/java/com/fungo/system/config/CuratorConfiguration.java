@@ -8,6 +8,8 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.validation.Valid;
+
 /**
  * <p>zk客戶端Curator使用</p>
  * @Author: dl.zhang
@@ -45,7 +47,10 @@ public class CuratorConfiguration {
     private String namespaceLock;
 
 
-    @Value( value = "${zk.notice.loginNum}")
+    @Value( value = "${zk.notice.action}")
+    private String  actionLock;
+
+    @Value(value = "zk.notice.login")
     private String loginNum;
 
     @Bean(initMethod = "start")
@@ -88,6 +93,14 @@ public class CuratorConfiguration {
 
     public void setNamespaceLock(String namespaceLock) {
         this.namespaceLock = namespaceLock;
+    }
+
+    public String getActionLock() {
+        return actionLock;
+    }
+
+    public void setActionLock(String actionLock) {
+        this.actionLock = actionLock;
     }
 
     public String getLoginNum() {

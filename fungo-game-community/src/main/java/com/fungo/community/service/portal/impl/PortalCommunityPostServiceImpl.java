@@ -73,7 +73,7 @@ public class PortalCommunityPostServiceImpl implements IPortalCommunityPostServi
 	 * @auther: dl.zhang
 	 * @date: 2019/6/21 14:28
 	 */
-	@Cacheable(cacheNames={FunGoGameConsts.CACHE_EH_KEY_POST} ,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_GAMR_POSTS_CACHE +" ' +#userId + #circleGamePostVo.gameId + #circleGamePostVo.page + #circleGamePostVo.limit ")
+//	@Cacheable(cacheNames={FunGoGameConsts.CACHE_EH_KEY_POST} ,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_GAMR_POSTS_CACHE +" ' +#userId + #circleGamePostVo.gameId + #circleGamePostVo.page + #circleGamePostVo.limit ")
 	@Override
 	public FungoPageResultDto<PostOutBean> selectCircleGamePost(String userId, CircleGamePostVo circleGamePostVo) {
 		FungoPageResultDto<PostOutBean> re = null;
