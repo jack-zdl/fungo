@@ -591,7 +591,7 @@ public class PortalCommunityPostController {
     }
 
     @ApiOperation(value = "管控台推荐文章", notes = "")
-    @PostMapping(value = "/api/portal/content/post/topic")
+    @PostMapping(value = "/api/portal/community/content/post/topic")
     public FungoPageResultDto<PostOutBean> getTopicPosts(@Anonymous MemberUserProfile memberUserPrefile,@Valid @RequestBody PostInputPageDto inputPageDto, Errors errors) {
         if(errors.hasErrors())
             return FungoPageResultDto.FungoPageResultDtoFactory.buildError( errors.getAllErrors().get(0).getDefaultMessage());
