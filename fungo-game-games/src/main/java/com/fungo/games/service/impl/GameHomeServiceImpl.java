@@ -168,6 +168,8 @@ public class GameHomeServiceImpl implements GameHomeService {
             homePageBean.setId(homePage.getId());
             homePageBean.setGameId(homePage.getGameId());
             if(null!=game){
+                homePageBean.setImages(game.getImages());
+                homePageBean.setCoverImage(homePageBean.getCoverImage());
                 homePageBean.setName(game.getName());
                 homePageBean.setTags(game.getTags());
                 homePageBean.setCanFast("中国".equals(game.getOrigin())?false:game.getCanFast());

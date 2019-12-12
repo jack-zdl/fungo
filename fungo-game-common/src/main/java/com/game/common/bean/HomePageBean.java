@@ -111,6 +111,16 @@ public class HomePageBean {
 	 * @return
 	 */
 	private Boolean canFast;
+	/**
+	 *  图片s
+	 * @return
+	 */
+	private String images;
+	/**
+	 *  游戏图标
+	 * @return
+	 */
+	private String coverImage;
 
 
 }

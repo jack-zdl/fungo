@@ -113,6 +113,16 @@ public class CollectionItemBean implements Serializable {
 	 * 是否支持加速
 	 */
 	private String origin;
+	/**
+	 *  图片s
+	 * @return
+	 */
+	private String images;
+	/**
+	 *  游戏图标
+	 * @return
+	 */
+	private String coverImage;
 
 
 }
