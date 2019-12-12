@@ -199,7 +199,7 @@ public class CircleServiceImpl implements CircleService {
         return re;
     }
 
-//    @Cacheable(value = FunGoGameConsts.CACHE_EH_KEY_PRE_COMMUNITY, key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_INFO_CACHE +" ' +#memberId + #circleId ")
+    @Cacheable(value = FunGoGameConsts.CACHE_EH_KEY_PRE_COMMUNITY, key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_INFO_CACHE +" ' +#memberId + #circleId ")
     @Override
     public ResultDto<CmmCircleDto> selectCircleById(String memberId, String circleId) {
         ResultDto<CmmCircleDto> re = null;
@@ -251,7 +251,7 @@ public class CircleServiceImpl implements CircleService {
         return re;
     }
 
-//    @Cacheable(value = CACHE_EH_KEY_POST,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_POST_CACHE +" ' +#memberId + #cmmCirclePostVo.circleId + #cmmCirclePostVo.queryType + #cmmCirclePostVo.sortType + #cmmCirclePostVo.page + #cmmCirclePostVo.limit " )
+    @Cacheable(value = CACHE_EH_KEY_POST,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_POST_CACHE +" ' +#memberId + #cmmCirclePostVo.circleId + #cmmCirclePostVo.queryType + #cmmCirclePostVo.sortType + #cmmCirclePostVo.page + #cmmCirclePostVo.limit " )
     @Override
     public FungoPageResultDto<PostOutBean> selectCirclePost(String memberId, CmmCirclePostVo cmmCirclePostVo) {
         FungoPageResultDto<PostOutBean> re = new FungoPageResultDto<>();
@@ -537,7 +537,7 @@ public class CircleServiceImpl implements CircleService {
      * @auther: dl.zhang
      * @date: 2019/6/21 14:28
      */
-//    @Cacheable(cacheNames={FunGoGameConsts.CACHE_EH_KEY_POST} ,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_GAMR_POSTS_CACHE +" ' +#userId + #circleGamePostVo.gameId + #circleGamePostVo.page + #circleGamePostVo.limit ")
+    @Cacheable(cacheNames={FunGoGameConsts.CACHE_EH_KEY_POST} ,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_GAMR_POSTS_CACHE +" ' +#userId + #circleGamePostVo.gameId + #circleGamePostVo.page + #circleGamePostVo.limit ")
     @Override
     public FungoPageResultDto<PostOutBean> selectCircleGamePost(String userId, CircleGamePostVo circleGamePostVo) {
         FungoPageResultDto<PostOutBean> re = null;
@@ -684,10 +684,10 @@ public class CircleServiceImpl implements CircleService {
         return re;
     }
 
-//    @Cacheable(cacheNames={FunGoGameConsts.CACHE_EH_KEY_PRE_COMMUNITY} ,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_GAME_CACHE +" ' +#memberId + #circleGamePostVo.gameId + #circleGamePostVo.page + #circleGamePostVo.limit ")
+    @Cacheable(cacheNames={FunGoGameConsts.CACHE_EH_KEY_PRE_COMMUNITY} ,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_GAME_CACHE +" ' +#memberId + #circleGamePostVo.gameId + #circleGamePostVo.page + #circleGamePostVo.limit ")
     @Override
     public FungoPageResultDto<CmmCircleDto> selectGameCircle(String memberId, CircleGamePostVo circleGamePostVo) {
-        FungoPageResultDto<CmmCircleDto> re = null;
+        FungoPageResultDto<CmmCircleDto> re = new FungoPageResultDto<>();
         List<CmmCircleDto> cmmCircleDtoList = null;
         Page page = new Page(circleGamePostVo.getPage(), circleGamePostVo.getLimit());
         String gameId = circleGamePostVo.getGameId();

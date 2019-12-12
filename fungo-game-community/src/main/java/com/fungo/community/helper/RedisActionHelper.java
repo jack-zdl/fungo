@@ -1,35 +1,13 @@
 package com.fungo.community.helper;
-//
-//import com.game.common.consts.FungoCoreApiConstant;
-//import com.game.common.repo.cache.facade.FungoCacheArticle;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.dao.DataAccessException;
-//import org.springframework.data.redis.connection.RedisConnection;
-//import org.springframework.data.redis.connection.StringRedisConnection;
-//import org.springframework.data.redis.core.RedisCallback;
-//import org.springframework.data.redis.core.RedisTemplate;
-//import org.springframework.data.redis.core.StringRedisTemplate;
-//import org.springframework.data.redis.core.script.RedisScript;
-import com.game.common.consts.FungoCoreApiConstant;
-import com.game.common.repo.cache.facade.FungoCacheArticle;
-import com.game.common.util.SecurityMD5;
-import com.game.common.util.SpringUtil;
-import io.lettuce.core.RedisFuture;
+
+import com.fungo.community.function.cache.EhcacheActionFunction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.connection.StringRedisConnection;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
+import java.util.*;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-
-import static freemarker.template.utility.Collections12.singletonList;
-
-//import static freemarker.template.utility.Collections12.singletonList;
 
 /**
  * <p>redis相关辅助操作</p>
@@ -40,6 +18,8 @@ public class RedisActionHelper {
 
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
+    @Autowired
+    private EhcacheActionFunction ehcacheActionFunction;
 
     /**
      * 功能描述: redis的pipeLine管道清除redis缓存
@@ -50,12 +30,29 @@ public class RedisActionHelper {
             @Override
             public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
                 for (String redisKey : keyPrefixs){
-                    redisTemplate.delete(redisTemplate.keys("key_" + "*"));
+                    redisTemplate.delete(redisTemplate.keys(redisKey + "*"));
                 }
                 return null;
             }
         });
 
+    }
+
+    public void removeEhcacheKey(String ehcacheKey){
+        try {
+            Map<String,String> ehcacheMap = new HashMap<>(2);
+            if("ALL".equals( ehcacheKey )){
+                ehcacheMap.put( "FG_eh_post","");
+                ehcacheMap.put( "FG_eh_community","");
+            }else if("CIRCLE".equals( ehcacheKey )){
+                ehcacheMap.put( "FG_eh_community","");
+            }else if("POST".equals( ehcacheKey )){
+                ehcacheMap.put( "FG_eh_post","");
+            }
+            ehcacheActionFunction.deletePostEhcacheHandler(ehcacheMap);
+        }catch (Exception e){
+
+        }
     }
 
 

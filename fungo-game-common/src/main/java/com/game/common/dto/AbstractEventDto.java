@@ -38,6 +38,9 @@ public class AbstractEventDto extends ApplicationEvent {
 //    private String userId;
     /************** end eventType = 3*********************/
 
+    /************** start eventType = 4*********************/
+    private int followType;
+    /************** end eventType = 4*********************/
     public AbstractEventDto(Object source) {
         super( source );
     }
@@ -47,7 +50,10 @@ public class AbstractEventDto extends ApplicationEvent {
         USER_LOGIN(2),
         USER_LOGOUT(3),
         USER_FOLLOW(4),
-        USER_UNFOLLOW(5);
+        USER_UNFOLLOW(5),
+        UPDATE_POST(6),
+        ADD_LIKE(7),
+        DELETE_LIKE(6);
         int key;
         AbstractEventEnum(int k){
             this.key = k;

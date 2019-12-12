@@ -906,10 +906,10 @@ public class PostServiceImpl implements IPostService {
 //				}
             }
         }
-
-
         postService.updateAllColumnById(post);
-
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.UPDATE_POST.getKey());
+        applicationEventPublisher.publishEvent(abstractEventDto);
 
         //clear redis cache
         //文章内容html-内容
@@ -927,7 +927,6 @@ public class PostServiceImpl implements IPostService {
         //社区置顶文章(2.4.3)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, post.getCommunityId(), null);
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
-
         return ResultDto.success();
     }
 

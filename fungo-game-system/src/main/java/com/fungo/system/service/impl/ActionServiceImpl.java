@@ -169,6 +169,11 @@ public class ActionServiceImpl implements IActionService {
                 this.actionService.updateById(action);
             }
         }
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.ADD_LIKE.getKey());
+        abstractEventDto.setFollowType(inputDto.getTarget_type());
+        applicationEventPublisher.publishEvent(abstractEventDto);
+
         //V2.4.6版本任务
         // 每日任务
         //1 经验值
@@ -221,7 +226,10 @@ public class ActionServiceImpl implements IActionService {
             this.subCounter(memberId, Setting.ACTION_TYPE_LIKE, inputDto);
         }
 
-
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.DELETE_LIKE.getKey());
+        abstractEventDto.setFollowType(inputDto.getTarget_type());
+        applicationEventPublisher.publishEvent(abstractEventDto);
         //首页文章帖子列表(v2.4)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
@@ -484,9 +492,10 @@ public class ActionServiceImpl implements IActionService {
 
         }
 
-//        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
-//        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.USER_FOLLOW.getKey());
-//        applicationEventPublisher.publishEvent(abstractEventDto);
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.USER_FOLLOW.getKey());
+        abstractEventDto.setFollowType(inputDto.getTarget_type());
+        applicationEventPublisher.publishEvent(abstractEventDto);
         //clear redis
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_FOLLW + memberId;
         fungoCacheMember.excIndexCache(false, keyPrefix, "", null);
@@ -559,6 +568,11 @@ public class ActionServiceImpl implements IActionService {
             fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + targetId, "", null);
 
         }
+
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.USER_UNFOLLOW.getKey());
+        abstractEventDto.setFollowType(inputDto.getTarget_type());
+        applicationEventPublisher.publishEvent(abstractEventDto);
 
         //clear redis
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_FOLLW + memberId;

@@ -2,6 +2,10 @@ package com.game.common.dto;
 
 import com.game.common.enums.BaseEnum;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class ActionInput {
     /**
      * 关注目标id
@@ -24,6 +28,10 @@ public class ActionInput {
      *  圈子  / 11   @zdl 2019/6/18
      */
     private int target_type;
+
+    public static List<Integer> circleList = new ArrayList<Integer>( Arrays.asList( 4,11 ) );
+
+    public  static List<Integer> postList = new ArrayList<Integer>( Arrays.asList( 0,1 ) );
 
     /**
      * 备注信息

@@ -48,6 +48,24 @@ public class RedisActionFunction {
             list.add(SecurityMD5.encrypt16(FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX)); // 首页-首页(v2.4)
             list.add(SecurityMD5.encrypt16(FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + userId));   // 个人信息
             list.add(SecurityMD5.encrypt16(FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + userId));    // fun币消耗详情
+            list.add(FungoCoreApiConstant.PUB_POST);    // fun币消耗详情
+            redisActionHelper.removePostRedisCache(list);
+        }catch (Exception e){
+            logger.error( "删除文章后清除Redis事件",e );
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 功能描述: 删除文章后清除redis 相关的key
+     * @return: boolean
+     * @date: 2019/12/5 14:37
+     */
+    public boolean updatePostRedisHandle(){
+        try {
+            List<String> list = new LinkedList<>();
+            list.add(FungoCoreApiConstant.PUB_POST);    // fun币消耗详情
             redisActionHelper.removePostRedisCache(list);
         }catch (Exception e){
             logger.error( "删除文章后清除Redis事件",e );

@@ -15,6 +15,7 @@ import com.fungo.system.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
+import com.game.common.dto.AbstractEventDto;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.index.BannerBean;
@@ -25,6 +26,7 @@ import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,13 +72,13 @@ public class ProtalSystemActionServiceImpl implements IActionService {
 
     @Autowired
     private IDeveloperProxyService iDeveloperProxyService;
-
     @Autowired
     private MQProduct mqProduct;
-
     //用户成长业务
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
 
     @Override
@@ -216,6 +218,11 @@ public class ProtalSystemActionServiceImpl implements IActionService {
             //清除个人获取用户任务完成进度数据的缓存
             fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_TASK_USER_TASK_PROGRESS + "-" + memberId, "", null);
         }
+
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.USER_FOLLOW.getKey());
+        abstractEventDto.setFollowType(inputDto.getTarget_type());
+        applicationEventPublisher.publishEvent(abstractEventDto);
 
         //clear redis
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_FOLLW + memberId;

@@ -32,6 +32,7 @@ public class CommunityTest {
     @Test
     public void communityTest(){
         System.out.println("---------------------");
+        redisActionHelper.removeEhcacheKey("CIRCLE");
     }
 
 }

@@ -45,8 +45,13 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
             String postId = event.getPostId();
             redisActionFunction.deletePostRedisHandle(userId,postId);
             mqActionFunction.deletePostMQHandle( userId,score);
-            Map<String,String> ehcacheMap = new HashMap<>(2);
-            ehcacheMap.put( "CACHE_EH_KEY_POST","");
+            Map<String,String> ehcacheMap = new HashMap<>(1);
+            ehcacheMap.put( "FG_eh_post","");
+            ehcacheActionFunction.deletePostEhcacheHandler(ehcacheMap);
+        }else if(AbstractEventDto.AbstractEventEnum.UPDATE_POST.getKey() == event.getEventType()){
+            redisActionFunction.updatePostRedisHandle();
+            Map<String,String> ehcacheMap = new HashMap<>(1);
+            ehcacheMap.put( "FG_eh_post","");
             ehcacheActionFunction.deletePostEhcacheHandler(ehcacheMap);
         }
     }

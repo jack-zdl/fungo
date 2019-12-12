@@ -20,8 +20,8 @@
             maxElementsInMemory="1000"
             overflowToDisk="false"
             diskPersistent="false"
-            timeToIdleSeconds="60"
-            timeToLiveSeconds="90"
+            timeToIdleSeconds="30"
+            timeToLiveSeconds="60"
             memoryStoreEvictionPolicy="LRU" />
 
     <!-- 自定义缓存 fungoEhcache -->
@@ -31,8 +31,8 @@
             maxElementsInMemory="1000"
             overflowToDisk="false"
             diskPersistent="false"
-            timeToIdleSeconds="60"
-            timeToLiveSeconds="90"
+            timeToIdleSeconds="30"
+            timeToLiveSeconds="60"
             memoryStoreEvictionPolicy="LRU" />
 
     <!-- 自定义缓存 fungoEhcache -->
@@ -42,8 +42,8 @@
             maxElementsInMemory="1000"
             overflowToDisk="false"
             diskPersistent="false"
-            timeToIdleSeconds="60"
-            timeToLiveSeconds="90"
+            timeToIdleSeconds="30"
+            timeToLiveSeconds="60"
             memoryStoreEvictionPolicy="LRU" />
 
 </ehcache>

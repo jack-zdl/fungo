@@ -116,6 +116,7 @@ public class SeacherServiceImpl implements ISeacherService {
             }
             GuavaCache.put("hotSearchWord", list);
         }
+        System.out.println("........执行游戏热值计算结束.");
 
     }
 
