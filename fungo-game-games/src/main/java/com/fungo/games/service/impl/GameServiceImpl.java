@@ -815,6 +815,8 @@ public class GameServiceImpl implements IGameService {
                     }
                 }
                 it.setIcon(game.getIcon());
+                it.setImages(game.getImages());
+                it.setCoverImage(game.getCoverImage());
                 it.setObjectId(game.getId());
                 it.setName(game.getName());
                 it.setIosState(game.getIosState() == null ? -1 : game.getIosState());
