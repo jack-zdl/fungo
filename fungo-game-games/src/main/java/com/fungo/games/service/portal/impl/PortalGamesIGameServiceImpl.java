@@ -203,6 +203,68 @@ public class PortalGamesIGameServiceImpl implements PortalGamesIGameService {
         return re;
     }
 
+
+
+    @Override
+    public FungoPageResultDto<MyGameBean> getOtherGameList(String memberId, MyGameInputPageDto inputPage, String os) {
+        FungoPageResultDto<MyGameBean> re = null;
+
+        re = new FungoPageResultDto<MyGameBean>();
+        List<MyGameBean> list = new ArrayList<MyGameBean>();
+
+//        if (2 == inputPage.getType()) {
+            Page<GameSurveyRel> page = gameSurveyRelService.selectPage(new Page<GameSurveyRel>(inputPage.getPage(),
+                    inputPage.getLimit()), new EntityWrapper<GameSurveyRel>().eq("member_id", inputPage.getMemberId()).eq("state", 0));
+            List<GameSurveyRel> plist = page.getRecords();
+            plist = plist.stream().collect(
+                    Collectors.collectingAndThen(
+                            Collectors.toCollection(() -> new TreeSet<>( Comparator.comparing(GameSurveyRel::getGameId))), ArrayList::new)
+            );
+            for (GameSurveyRel gameSurveyRel : plist) {
+                Game game = gameService.selectById(gameSurveyRel.getGameId());
+                MyGameBean bean = new MyGameBean();
+                bean.setAndroidState(game.getAndroidState());
+                bean.setGameContent(game.getDetail());
+                bean.setGameIcon(game.getIcon());
+                bean.setGameId(gameSurveyRel.getGameId());
+                bean.setGameName(game.getName());
+                bean.setIosState(game.getIosState());
+                bean.setMsgCount(0);
+                bean.setPhoneModel(gameSurveyRel.getPhoneModel());
+                bean.setRating( getGameRating(game.getId()) );
+                list.add(bean);
+            }
+            re.setData(list);
+            PageTools.pageToResultDto(re, page);
+//        }else {
+//            CircleFollowVo param = new CircleFollowVo();
+//            param.setActionType(ActionTypeEnum.DOWNLOAD.getKey());
+//            param.setMemberId(memberId);
+//            param.setPage( inputPage.getPage() );
+//            param.setLimit( inputPage.getLimit());
+//            FungoPageResultDto<String>  resultDto = systemFeignClient.gameListMineDownload(param);
+//            if(resultDto != null && CommonEnum.SUCCESS.code().equals(String.valueOf(resultDto.getStatus())) && resultDto.getData().size() > 0){
+//                List<String> gameIds =  resultDto.getData();
+//                List<Game>  gamesList =  gameDao.getGameList(gameIds);
+//                gamesList.stream().forEach(game ->{
+//                    MyGameBean bean = new MyGameBean();
+//                    bean.setAndroidState(game.getAndroidState() == null ? 0 : game.getAndroidState()  );
+//                    bean.setGameContent(game.getDetail());
+//                    bean.setGameIcon(game.getIcon());
+//                    bean.setGameId(game.getId());
+//                    bean.setGameName(game.getName());
+//                    bean.setIosState(game.getIosState()== null ? 0 : game.getIosState());
+//                    bean.setMsgCount(0);
+//                    bean.setRating( getGameRating(game.getId()) );
+//                    list.add(bean);
+//                });
+//            }
+//            re.setData(list);
+//            PageTools.newPageToResultDto(re, resultDto.getCount(),inputPage.getLimit(),inputPage.getPage());
+//        }
+        return re;
+    }
+
     public double getGameRating(String gameId) {
 
         double rating = 0;

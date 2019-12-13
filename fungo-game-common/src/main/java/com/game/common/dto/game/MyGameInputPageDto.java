@@ -11,6 +11,8 @@ public class MyGameInputPageDto extends InputPageDto {
 	private int type=1;
     @ApiModelProperty(value="手机型号",example="")
   	private String phoneModel;
+	@ApiModelProperty(value="用户id",example="")
+	private String memberId;
 	public int getType() {
 		return type;
 	}
@@ -18,4 +20,19 @@ public class MyGameInputPageDto extends InputPageDto {
 		this.type = type;
 	}
 
+	public String getPhoneModel() {
+		return phoneModel;
+	}
+
+	public void setPhoneModel(String phoneModel) {
+		this.phoneModel = phoneModel;
+	}
+
+	public String getMemberId() {
+		return memberId;
+	}
+
+	public void setMemberId(String memberId) {
+		this.memberId = memberId;
+	}
 }
