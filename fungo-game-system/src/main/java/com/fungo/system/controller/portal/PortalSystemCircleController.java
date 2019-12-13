@@ -94,7 +94,7 @@ public class PortalSystemCircleController {
         //app渠道编码
         String app_channel = request.getHeader("appChannel");
         String appVersion = request.getHeader("appVersion");
-        re = indexService.queryHomePage(os, iosChannel, app_channel, appVersion);
+        re = indexService.queryPcHomePage(os, iosChannel, app_channel, appVersion);
         return re;
     }
 

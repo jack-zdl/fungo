@@ -57,6 +57,17 @@ public interface IIndexService {
 
 
 	/**
+	 * 首页显示内容
+	 * @param os app 平台类型
+	 * @param iosChannel ios渠道标识
+	 * @param app_channel app渠道编码
+	 * @param appVersion app release版本号
+	 * @return
+	 */
+	ResultDto<CircleCardDataBean> queryPcHomePage(String os, String iosChannel, String app_channel, String appVersion);
+
+
+	/**
 	 * app端获取管控台设置的启动页banner
 	 * @param os app 平台类型
 	 * @param iosChannel ios渠道标识

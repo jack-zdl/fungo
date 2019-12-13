@@ -862,6 +862,66 @@ public class IndexServiceImpl implements IIndexService {
 
 
 
+
+
+    /**
+     * 功能描述: app端获取管控台设置的活动列表及详情
+     *
+     * @param: [memberUserPrefile, request, inputPageDto]
+     * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     * @auther: Carlos
+     * @date: 2019/10/11 11:01
+     */
+    @Override
+    public ResultDto<CircleCardDataBean> queryPcHomePage(String os, String iosChannel, String app_channel, String appVersion) {
+        ResultDto<CircleCardDataBean> re = new ResultDto<>();
+        List<Banner> list = bannerService.selectList(new EntityWrapper<Banner>()
+                .in("position_code","0009,0010")
+                .in("display_platform", "0,1")
+                .eq("state", "0")
+                .orderBy("sort desc,updated_at", false));
+        Date nowDate = new Date();
+        nowDate.getTime();
+        List<Banner> bannerList = new ArrayList<>();
+        for(Banner banner : list){
+            if(null!=banner.getBeginDate() && null!=banner.getEndDate()){
+                if(nowDate.getTime()>=banner.getBeginDate().getTime() && nowDate.getTime()<=banner.getEndDate().getTime()){
+                    bannerList.add(banner);
+                }
+            }else if(null==banner.getBeginDate() && null!=banner.getEndDate()){
+                if( nowDate.getTime()<=banner.getEndDate().getTime()){
+                    bannerList.add(banner);
+                }
+            }else if(null!=banner.getBeginDate() && null==banner.getEndDate()){
+                if(nowDate.getTime()>=banner.getBeginDate().getTime()){
+                    bannerList.add(banner);
+                }
+            }else{
+                bannerList.add(banner);
+            }
+        }
+        CircleCardDataBean b1 = null;
+        if(!bannerList.isEmpty()){
+            Banner banner = bannerList.get(0);
+            b1 = new CircleCardDataBean();
+            b1.setBannerId(banner.getId());
+            b1.setMainTitle(banner.getGeneralizeTitle());
+            b1.setImageUrl(banner.getCoverImage());
+            b1.setImageUrlNew(banner.getPageImage());
+            b1.setContent(banner.getIntro());
+            b1.setHref(banner.getHref());
+            b1.setActionType(String.valueOf(banner.getActionType()));
+            b1.setTargetType(banner.getTargetType());
+            b1.setTargetId(banner.getTargetId());
+            b1.setStartDate(DateTools.fmtDate(banner.getBeginDate()));
+            b1.setEndDate(DateTools.fmtDate(banner.getEndDate()));
+        }
+        re.setData(b1);
+        return re;
+    }
+
+
+
     /**
      * 功能描述: app端获取管控台设置的启动页banner
      *
