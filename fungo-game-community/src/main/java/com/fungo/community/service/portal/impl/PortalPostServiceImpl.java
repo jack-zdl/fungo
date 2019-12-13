@@ -62,6 +62,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.game.common.consts.FunGoGameConsts.CACHE_EH_KEY_POST;
 import static com.game.common.consts.FunGoGameConsts.CACHE_EH_KEY_PRE_COMMUNITY;
 
 
@@ -113,7 +114,7 @@ public class PortalPostServiceImpl implements IPortalPostService {
 
 
 
-    @Cacheable(value = CACHE_EH_KEY_PRE_COMMUNITY,key ="'" + FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITY_POST_CACHE +" ' +#userId + #postInputPageDto.community_id + #postInputPageDto.page + #postInputPageDto.sort + #postInputPageDto.page + #postInputPageDto.limit ")
+    @Cacheable(value = CACHE_EH_KEY_POST,key ="'" + FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITY_POST_CACHE +" ' +#userId + #postInputPageDto.community_id + #postInputPageDto.page + #postInputPageDto.sort + #postInputPageDto.page + #postInputPageDto.limit ")
     @Override
     public FungoPageResultDto<PostOutBean> getPostList(String userId, PostInputPageDto postInputPageDto) throws Exception {
         //结果模型
