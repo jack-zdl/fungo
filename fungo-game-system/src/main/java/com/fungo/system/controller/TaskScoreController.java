@@ -103,8 +103,9 @@ public class TaskScoreController {
 
     @ApiOperation(value = "签到格言(2.4.3)", notes = "")
     @RequestMapping(value = "/api/rank/signinmotto", method = RequestMethod.GET)
-    public ResultDto<String> DailyMotto() throws Exception {
-        return taskService.DailyMotto();
+    public ResultDto<String> DailyMotto(MemberUserProfile memberUserPrefile) throws Exception {
+        String userId = memberUserPrefile.getLoginId();
+        return taskService.DailyMotto(userId);
     }
 
 //----------

@@ -26,7 +26,7 @@ public interface ITaskService {
     ResultDto<Map<String, Object>> checkInfo(String userId) throws Exception;
 
     //每日格言
-    public ResultDto<String> DailyMotto() throws Exception;
+    public ResultDto<String> DailyMotto(String userId) throws Exception;
 
 
 }

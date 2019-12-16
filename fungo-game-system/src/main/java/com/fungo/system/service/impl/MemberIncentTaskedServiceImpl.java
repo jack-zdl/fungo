@@ -178,7 +178,7 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
 //                return scoreGroupMapList;
 //            }
 
-            scoreGroupMapList = new ArrayList<Map<String, Object>>();
+            scoreGroupMapList = new ArrayList<>();
 
             //第一步获取任务分类 默认查询 task_type =3 分值和虚拟币共有
             if (task_type <= 0) {

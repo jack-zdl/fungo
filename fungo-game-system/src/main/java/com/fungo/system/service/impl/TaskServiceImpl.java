@@ -527,7 +527,7 @@ public class TaskServiceImpl implements ITaskService {
 
 
     @Override
-    public ResultDto<String> DailyMotto() throws Exception {
+    public ResultDto<String> DailyMotto(String userId) throws Exception {
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
         String relDate = formatter.format(new Date());
@@ -560,6 +560,48 @@ public class TaskServiceImpl implements ITaskService {
         }
 
         return re;
+    }
+
+
+    private StringBuffer getNearDateByUserSign(int userSignDate){
+        List<Integer>  twoDaysList = Arrays.asList( 0,1 );
+        List<Integer>  sevenDaysList = Arrays.asList( 2,3,4,5,6 );
+        List<Integer>  fourthDaysList = Arrays.asList( 7,8,9,10,11,12,13 );
+        List<Integer>  twentyOneDaysList = Arrays.asList( 14,15,16,17,18,19,20 );
+        List<Integer>  twenthSevenDaysList = Arrays.asList( 21,22,23,24,25,26,27 );
+        List<Integer>  twenthEightDaysList = Arrays.asList( 28,29 );
+//        List<Integer>  thirtyDaysList = Arrays.asList( 30 );
+        int nextSignDays = 0;
+        StringBuffer stringBuffer = new StringBuffer( "再签到天可额外获得Fun币奖励" );
+        if( twoDaysList.contains( userSignDate ) ){
+            nextSignDays = twoDaysList.size() - userSignDate;
+            stringBuffer = stringBuffer.insert(3,nextSignDays);
+            stringBuffer = stringBuffer.insert(stringBuffer.length()-8,15);
+        }else if(sevenDaysList.contains( userSignDate )){
+            nextSignDays = sevenDaysList.size() - userSignDate;
+            stringBuffer = stringBuffer.insert(3,nextSignDays);
+            stringBuffer = stringBuffer.insert(stringBuffer.length()-8,20);
+        }else if(fourthDaysList.contains( userSignDate )){
+            nextSignDays = fourthDaysList.size() - userSignDate;
+            stringBuffer = stringBuffer.insert(3,nextSignDays);
+            stringBuffer = stringBuffer.insert(stringBuffer.length()-8,30);
+        }else if(twentyOneDaysList.contains( userSignDate )){
+            nextSignDays = twentyOneDaysList.size() - userSignDate;
+            stringBuffer = stringBuffer.insert(3,nextSignDays);
+            stringBuffer = stringBuffer.insert(stringBuffer.length()-8,35);
+        }else if(twenthSevenDaysList.contains( userSignDate )){
+            nextSignDays = twenthSevenDaysList.size() - userSignDate;
+            stringBuffer = stringBuffer.insert(3,nextSignDays);
+            stringBuffer = stringBuffer.insert(stringBuffer.length()-8,50);
+        }else if(twenthEightDaysList.contains( userSignDate )){
+            nextSignDays = twenthEightDaysList.size() - userSignDate;
+            stringBuffer = stringBuffer.insert(3,nextSignDays);
+            stringBuffer = stringBuffer.insert(stringBuffer.length()-8,150);
+        }else{
+            nextSignDays =  userSignDate - 30;
+            stringBuffer = getNearDateByUserSign(nextSignDays);
+        }
+        return stringBuffer;
     }
 
     //-------
