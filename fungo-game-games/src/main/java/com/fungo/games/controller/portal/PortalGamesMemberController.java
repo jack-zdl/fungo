@@ -60,7 +60,7 @@ public class PortalGamesMemberController {
     @ApiOperation(value = "PC2.0我的游戏列表", notes = "PC2.0我的游戏列表")
     @RequestMapping(value = "/api/portal/games/mine/otherGameList", method = RequestMethod.POST)
     @ApiImplicitParams({})
-    public FungoPageResultDto<MyGameBean> otherGameList(MemberUserProfile memberUserPrefile, @RequestBody MyGameInputPageDto inputPage, HttpServletRequest request) {
+    public FungoPageResultDto<MyGameBean> otherGameList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody MyGameInputPageDto inputPage, HttpServletRequest request) {
         String os = (String) request.getAttribute("os");
         return portalGamesIGameService.getOtherGameList(memberUserPrefile.getLoginId(), inputPage,os);
     }
