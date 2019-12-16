@@ -86,7 +86,7 @@
 
   </select>
 
-<select id="selectCmmCommunityByBrowse" resultType="com.fungo.community.entity.CmmCircle">
+<select id="selectCmmCommunityByBrowse" resultMap="BaseResultMap" >
     select  id,circle_name,circle_icon from t_cmm_circle where state = 1 and  id  in
         <foreach  item="item" collection="ids" index="index"  open="(" separator="," close=")">
             #{item}
