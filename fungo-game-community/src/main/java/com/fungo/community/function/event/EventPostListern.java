@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.game.common.consts.FunGoGameConsts.CACHE_EH_KEY_POST;
+
 /**
  * <p></p>
  *
@@ -46,12 +48,12 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
             redisActionFunction.deletePostRedisHandle(userId,postId);
             mqActionFunction.deletePostMQHandle( userId,score);
             Map<String,String> ehcacheMap = new HashMap<>(1);
-            ehcacheMap.put( "FG_eh_post","");
+            ehcacheMap.put( CACHE_EH_KEY_POST,"");
             ehcacheActionFunction.deletePostEhcacheHandler(ehcacheMap);
         }else if(AbstractEventDto.AbstractEventEnum.UPDATE_POST.getKey() == event.getEventType()){
             redisActionFunction.updatePostRedisHandle();
             Map<String,String> ehcacheMap = new HashMap<>(1);
-            ehcacheMap.put( "FG_eh_post","");
+            ehcacheMap.put( CACHE_EH_KEY_POST,"");
             ehcacheActionFunction.deletePostEhcacheHandler(ehcacheMap);
         }
     }

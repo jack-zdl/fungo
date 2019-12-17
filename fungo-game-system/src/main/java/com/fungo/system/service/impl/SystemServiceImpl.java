@@ -661,7 +661,7 @@ public class SystemServiceImpl implements SystemService {
      */
     @Override
     public FungoPageResultDto<AuthorBean> getAuthorList(List<String> memberIds) {
-        return null;
+        return userService.getAuthorList(memberIds);
     }
 
     @Override

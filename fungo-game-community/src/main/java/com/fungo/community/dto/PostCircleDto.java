@@ -18,4 +18,7 @@ import lombok.ToString;
 public class PostCircleDto extends CmmCircle {
 
     private Long postNum;
+
+    private String postId;
+
 }

@@ -479,7 +479,7 @@ public class SystemController {
 
     @GetMapping("/getAuthorList")
     @ApiOperation(value="获取会员信息")
-    public FungoPageResultDto<AuthorBean> getAuthorList(List<String> memberIds){
+    public FungoPageResultDto<AuthorBean> getAuthorList(@RequestBody  List<String> memberIds){
         FungoPageResultDto<AuthorBean> re = null;
         try {
             re = systemService.getAuthorList(memberIds);

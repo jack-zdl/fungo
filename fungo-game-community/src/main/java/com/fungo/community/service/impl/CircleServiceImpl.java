@@ -11,6 +11,7 @@ import com.fungo.community.dao.mapper.CmmCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
 import com.fungo.community.dao.service.CmmCommentDaoService;
+import com.fungo.community.dto.PostCircleDto;
 import com.fungo.community.entity.CmmCircle;
 import com.fungo.community.entity.CmmComment;
 import com.fungo.community.entity.CmmPost;
@@ -261,7 +262,7 @@ public class CircleServiceImpl implements CircleService {
         return re;
     }
 
-    @Cacheable(value = CACHE_EH_KEY_POST,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_POST_CACHE +" ' +#memberId + #cmmCirclePostVo.circleId + #cmmCirclePostVo.queryType + #cmmCirclePostVo.sortType + #cmmCirclePostVo.page + #cmmCirclePostVo.limit " )
+//    @Cacheable(value = CACHE_EH_KEY_POST,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_POST_CACHE +" ' +#memberId + #cmmCirclePostVo.circleId + #cmmCirclePostVo.queryType + #cmmCirclePostVo.sortType + #cmmCirclePostVo.page + #cmmCirclePostVo.limit " )
     @Override
     public FungoPageResultDto<PostOutBean> selectCirclePost(String memberId, CmmCirclePostVo cmmCirclePostVo) {
         FungoPageResultDto<PostOutBean> re = new FungoPageResultDto<>();
@@ -273,7 +274,7 @@ public class CircleServiceImpl implements CircleService {
         try {
             String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_POST;
             String keySuffix = JSON.toJSONString(cmmCirclePostVo)+memberId;
-            relist = (List<PostOutBean>) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
+//            relist = (List<PostOutBean>) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
             if (null != relist &&  relist.size() > 0) {
                 re.setData(relist);
                 PageTools.pageToResultDto(re, page);
@@ -321,17 +322,18 @@ public class CircleServiceImpl implements CircleService {
 
                 PostOutBean bean = new PostOutBean();
 
+                bean.setMemberId( post.getMemberId());
                 //!fixme 查询用户数据
                 //bean.setAuthor(iUserService.getAuthor(post.getMemberId()));
-                try {
-                    ResultDto<AuthorBean> authorBeanResultDto = systemFacedeService.getAuthor(post.getMemberId());
-                    if (null != authorBeanResultDto) {
-                        AuthorBean authorBean = authorBeanResultDto.getData();
-                        bean.setAuthor(authorBean);
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+//                try {
+//                    ResultDto<AuthorBean> authorBeanResultDto = systemFacedeService.getAuthor(post.getMemberId());
+//                    if (null != authorBeanResultDto) {
+//                        AuthorBean authorBean = authorBeanResultDto.getData();
+//                        bean.setAuthor(authorBean);
+//                    }
+//                } catch (Exception ex) {
+//                    ex.printStackTrace();
+//                }
 
 //                if (bean.getAuthor() == null) {
 //                    continue;
@@ -415,14 +417,32 @@ public class CircleServiceImpl implements CircleService {
                  * @auther: dl.zhang
                  * @date: 2019/6/27 15:40
                  */
-                CmmCircle cmmCircle = cmmPostCircleMapper.getCircleEntityByPostId(bean.getPostId());
-                if (cmmCircle != null) {
-                    bean.setCircleId(cmmCircle.getId());
-                    bean.setCircleName(cmmCircle.getCircleName());
-                    bean.setCircleIcon(cmmCircle.getCircleIcon());
-                }
+//                CmmCircle cmmCircle = cmmPostCircleMapper.getCircleEntityByPostId(bean.getPostId());
+//                if (cmmCircle != null) {
+//                    bean.setCircleId(cmmCircle.getId());
+//                    bean.setCircleName(cmmCircle.getCircleName());
+//                    bean.setCircleIcon(cmmCircle.getCircleIcon());
+//                }
                 relist.add(bean);
             }
+            List<String> postIds = cmmPosts.stream().map( CmmPost::getId ).collect( Collectors.toList());
+           List<PostCircleDto> postCircleDtos =  cmmPostCircleMapper.getCircleEntityByPostIds(postIds);
+            List<String> memberIds = cmmPosts.stream().map( CmmPost::getMemberId ).collect( Collectors.toList());
+            FungoPageResultDto<AuthorBean>  resultDto =  systemFeignClient.getAuthorList(memberIds);
+            List<AuthorBean> authorBeans = resultDto != null ? resultDto.getData() : new ArrayList<>();
+           relist.stream().forEach( s ->{
+                Optional<PostCircleDto> postCircles = postCircleDtos.stream().filter( x-> s.getPostId().equals( x.getPostId())).findFirst();
+                if(postCircles.isPresent()){
+                    PostCircleDto postCircleDto = postCircles.get();
+                    s.setCircleId( postCircleDto.getId());
+                    s.setCircleName(postCircleDto.getCircleName());
+                    s.setCircleIcon(postCircleDto.getCircleIcon());
+                }
+               Optional<AuthorBean> authorBean = authorBeans.stream().filter(  c ->s.getMemberId().equals( c.getObjectId())).findFirst();
+                if(authorBean.isPresent()){
+                    s.setAuthor( authorBean.get());
+                }
+            });
             fungoCacheArticle.excIndexDecodeCache(true, keyPrefix, keySuffix, relist, RedisActionHelper.getRandomRedisCacheTime());
             re.setData(relist);
             PageTools.pageToResultDto(re, page);

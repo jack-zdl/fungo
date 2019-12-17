@@ -2,6 +2,7 @@ package com.fungo.community.dao.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.community.dto.PostAndCircleDto;
 import com.fungo.community.dto.PostCircleDto;
 import com.fungo.community.entity.CmmPost;
 import com.game.common.bean.CollectionBean;
@@ -104,7 +105,7 @@ public interface CmmPostDao extends BaseMapper<CmmPost> {
 
     Long getPostTotalByCircleId(@Param( "circleId" ) String circleId);
 
-    List<CmmPost> getCmmCircleListByCircleId(Page page ,@Param("circleId") String circleId, @Param("tagId") String tagId,@Param("cream") String cream , @Param("sortType") String sortType);
+    List<CmmPost> getCmmCircleListByCircleId(Page page , @Param("circleId") String circleId, @Param("tagId") String tagId, @Param("cream") String cream , @Param("sortType") String sortType);
 
     List<CmmPost> getAllCmmCircleListByCircleId(Page page ,@Param("circleId") String circleId, @Param("tagId") String tagId,@Param("cream") String cream , @Param("sortType") String sortType);
 
