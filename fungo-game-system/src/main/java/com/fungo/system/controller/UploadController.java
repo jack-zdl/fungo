@@ -43,7 +43,7 @@ public class UploadController {
     private MallSeckillOrderFileService mallSeckillOrderFileService;
 
     //	private String allowSuffix = "jpg,png,gif,jpeg";//允许文件格式
-    private String allowSuffix = "jpg,png,gif";//允许文件格式
+    private String allowSuffix = "jpg,png,gif,jpeg";//允许文件格式
     private long allowSize = 10L;//允许文件大小
 
     public String getAllowSuffix() {
