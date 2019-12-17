@@ -103,6 +103,7 @@ public class CircleServiceImpl implements CircleService {
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
 
+
     @Override
     public FungoPageResultDto<CmmCircleDto> selectCircle(String memberId, CmmCircleVo cmmCircleVo) {
         FungoPageResultDto<CmmCircleDto> re = null;
@@ -122,6 +123,7 @@ public class CircleServiceImpl implements CircleService {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    LOGGER.info(r.getId());
                     Long postTotal = cmmPostDao.getPostTotalByCircleId(r.getId());
                     s.setPostNum(postTotal);
                     cmmCircleDtoList.add(s);
@@ -164,6 +166,7 @@ public class CircleServiceImpl implements CircleService {
                             e.printStackTrace();
                         }
                         s.setFollow(true);
+                        LOGGER.info(r.getId());
                         Long postTotal = cmmPostDao.getPostTotalByCircleId(r.getId());
                         s.setPostNum(postTotal);
                         cmmCircleDtoList.add(s);
@@ -188,6 +191,7 @@ public class CircleServiceImpl implements CircleService {
                             e.printStackTrace();
                         }
                         s.setFollow(true);
+                        LOGGER.info(r.getId());
                         Long postTotal = cmmPostDao.getPostTotalByCircleId(r.getId());
                         s.setPostNum(postTotal);
                         cmmCircleDtoList.add(s);
