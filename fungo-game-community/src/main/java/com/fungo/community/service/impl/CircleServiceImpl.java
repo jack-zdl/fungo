@@ -122,6 +122,8 @@ public class CircleServiceImpl implements CircleService {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    Long postTotal = cmmPostDao.getPostTotalByCircleId(r.getId());
+                    s.setPostNum(postTotal);
                     cmmCircleDtoList.add(s);
                 });
 //            BeanUtils.copyProperties(list,cmmCircleDtoList);
@@ -138,8 +140,6 @@ public class CircleServiceImpl implements CircleService {
                 ResultDto<CircleFollowVo> resultDto = systemFeignClient.circleListFollow(circleFollowVo);
                 if (resultDto.isSuccess()) {
                     cmmCircleDtoList.stream().forEach(s -> {
-                        Long postTotal = cmmPostDao.getPostTotalByCircleId(s.getId());
-                        s.setPostNum(postTotal);
                         List<CircleFollow> circleFollow = resultDto.getData().getCircleFollows().stream().filter(e -> e.getCircleId().equals(s.getId())).collect(Collectors.toList());
                         s.setFollow((circleFollow == null || circleFollow.size() == 0) ? false : circleFollow.get(0).isFollow());
                     });
