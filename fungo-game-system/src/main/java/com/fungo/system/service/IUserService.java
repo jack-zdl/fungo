@@ -3,6 +3,7 @@ package com.fungo.system.service;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
 import com.game.common.dto.AuthorBean;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.user.MemberOutBean;
 import org.springframework.web.multipart.MultipartFile;
@@ -125,6 +126,13 @@ public interface IUserService {
      * @return
      */
     AuthorBean getAuthor(String memberId);
+
+    /**
+     * 用户信息
+     * @param memberIds
+     * @return
+     */
+    FungoPageResultDto<AuthorBean> getAuthorList(List<String> memberIds);
 
     /**
      * 用户绑定appleId

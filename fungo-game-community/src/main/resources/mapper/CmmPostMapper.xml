@@ -241,7 +241,9 @@
     <select id="getCmmCircleListByCircleId" resultType="com.fungo.community.entity.CmmPost">
         select  
          <include refid="Base_Column_List"></include>
-         ,sum(cp.comment_num+cp.like_num+cp.collect_num+cp.watch_num) as total  from  t_cmm_post cp where  cp.state != -1 and id in
+         ,sum(cp.comment_num+cp.like_num+cp.collect_num+cp.watch_num) as total
+         from  t_cmm_post cp ,t_cmm_circle cc where  cp.state != -1
+        and cp.id in
         ( select cpc.post_id
         from t_cmm_post_circle cpc where cpc.circle_id = #{circleId}   )
 

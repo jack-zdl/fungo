@@ -86,6 +86,12 @@ public class SystemFacedeHystrixService implements FallbackFactory<SystemFeignCl
             }
 
             @Override
+            public FungoPageResultDto<AuthorBean> getAuthorList(List<String> memberIds) {
+                logger.error("--------------------SystemFeignClient--启动熔断:{}" , "getAuthorList");
+                return null;
+            }
+
+            @Override
             public ResultDto<Map<String, Object>> exTask(TaskDto taskDto) {
                 logger.error("--------------------SystemFeignClient--启动熔断:{}" , "exTask");
                 return null;

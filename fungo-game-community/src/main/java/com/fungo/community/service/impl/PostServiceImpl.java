@@ -927,6 +927,7 @@ public class PostServiceImpl implements IPostService {
         //社区置顶文章(2.4.3)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, post.getCommunityId(), null);
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
         return ResultDto.success();
     }
 
@@ -1026,6 +1027,8 @@ public class PostServiceImpl implements IPostService {
             }
             //!fixme
             out.setHtml_origin(origin);
+            // fix  当app新增文章查询时,pc端再次查询获取不到这个字段
+            out.setPc_html_origin(SerUtils.returnOriginHrml(SerUtils.getOriginImageContent(CommonUtils.filterWord(origin), out.getImages(), gameList)));
 //          String html_origin = CommonUtils.filter(cmmPost.getHtmlOrigin());
 //			out.setHtml_origin(html_origin);
         } else {
