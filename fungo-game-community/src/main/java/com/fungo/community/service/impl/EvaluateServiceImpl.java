@@ -246,73 +246,65 @@ public class EvaluateServiceImpl implements IEvaluateService {
         t.setReplys(new ArrayList<String>());
         t.setUpdatedAt(DateTools.fmtDate(new Date()));
         re.setData(t);
-//		gameProxy.addScore(Setting.ACTION_TYPE_COMMENT, memberId, commentInput.getTarget_id(), commentInput.getTarget_type());
-        //完成任务 V2.4.6版本任务之前任务废弃
-        // int addTaskCore = gameProxy.addTaskCore(Setting.ACTION_TYPE_COMMENT, memberId, commentInput.getTarget_id(), commentInput.getTarget_type());
-        //V2.4.6版本任务
+//
+        // v2.7 评论自己不算完成任务
         String tips = "";
-        //每日任务
-        /*
-        //1 fungo币
-        Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
-                MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code());
-        //2 经验值
-        Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
-                MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
-        */
-        //任务：
-        // 1.调用微服务接口
-        // 2.执行失败，发送MQ消息
-        Map<String, Object> resMapCoin = null;
-        Map<String, Object> resMapExp = null;
-        String uuidCoin = UUIDUtils.getUUID();
-        String uuidExp = UUIDUtils.getUUID();
-        //coin task
-        TaskDto taskDtoCoin = new TaskDto();
-        taskDtoCoin.setRequestId(uuidCoin);
-        taskDtoCoin.setMbId(memberId);
-        taskDtoCoin.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
-        taskDtoCoin.setTaskType(MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT);
-        taskDtoCoin.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code());
-        //exp task
-        TaskDto taskDtoExp = new TaskDto();
-        taskDtoExp.setRequestId(uuidExp);
-        taskDtoExp.setMbId(memberId);
-        taskDtoExp.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
-        taskDtoExp.setTaskType(MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT);
-        taskDtoExp.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
-        try {
+        if(!Objects.equals(targetMemberId,memberId)){
+            //任务：
+            // 1.调用微服务接口
+            // 2.执行失败，发送MQ消息
+            Map<String, Object> resMapCoin = null;
+            Map<String, Object> resMapExp = null;
+            String uuidCoin = UUIDUtils.getUUID();
+            String uuidExp = UUIDUtils.getUUID();
             //coin task
-            ResultDto<Map<String, Object>> coinTaskResultDto = systemFacedeService.exTask(taskDtoCoin);
-            if (null != coinTaskResultDto) {
-                resMapCoin = coinTaskResultDto.getData();
-            }
+            TaskDto taskDtoCoin = new TaskDto();
+            taskDtoCoin.setRequestId(uuidCoin);
+            taskDtoCoin.setMbId(memberId);
+            taskDtoCoin.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
+            taskDtoCoin.setTaskType(MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT);
+            taskDtoCoin.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code());
             //exp task
-            ResultDto<Map<String, Object>> expTaskResultDto = systemFacedeService.exTask(taskDtoExp);
-            if (null != expTaskResultDto) {
-                resMapExp = expTaskResultDto.getData();
+            TaskDto taskDtoExp = new TaskDto();
+            taskDtoExp.setRequestId(uuidExp);
+            taskDtoExp.setMbId(memberId);
+            taskDtoExp.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
+            taskDtoExp.setTaskType(MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT);
+            taskDtoExp.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
+            try {
+                //coin task
+                ResultDto<Map<String, Object>> coinTaskResultDto = systemFacedeService.exTask(taskDtoCoin);
+                if (null != coinTaskResultDto) {
+                    resMapCoin = coinTaskResultDto.getData();
+                }
+                //exp task
+                ResultDto<Map<String, Object>> expTaskResultDto = systemFacedeService.exTask(taskDtoExp);
+                if (null != expTaskResultDto) {
+                    resMapExp = expTaskResultDto.getData();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                //出现异常mq发送
+                //coin task
+                doExcTaskSendMQ(taskDtoCoin);
+                //exp task
+                doExcTaskSendMQ(taskDtoExp);
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            //出现异常mq发送
-            //coin task
-            doExcTaskSendMQ(taskDtoCoin);
-            //exp task
-            doExcTaskSendMQ(taskDtoExp);
-        }
-        if (null != resMapCoin && !resMapCoin.isEmpty()) {
-            if (null != resMapExp && !resMapExp.isEmpty()) {
-                boolean coinsSuccess = (boolean) resMapCoin.get("success");
-                boolean expSuccess = (boolean) resMapExp.get("success");
-                if (coinsSuccess && expSuccess) {
-                    tips = (String) resMapCoin.get("msg");
-                    tips += (String) resMapExp.get("msg");
-                } else {
-                    tips = (String) resMapCoin.get("msg");
+            if (null != resMapCoin && !resMapCoin.isEmpty()) {
+                if (null != resMapExp && !resMapExp.isEmpty()) {
+                    boolean coinsSuccess = (boolean) resMapCoin.get("success");
+                    boolean expSuccess = (boolean) resMapExp.get("success");
+                    if (coinsSuccess && expSuccess) {
+                        tips = (String) resMapCoin.get("msg");
+                        tips += (String) resMapExp.get("msg");
+                    } else {
+                        tips = (String) resMapCoin.get("msg");
+                    }
                 }
             }
+            //end
         }
-        //end
+
         if (StringUtils.isNotBlank(tips)) {
             re.show(tips);
         } else {
@@ -1952,89 +1944,78 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 this.sendNoticeToSystemServcie(noticeMap);
             }
         }
-
-
-//		gameProxy.addScore(Setting.ACTION_TYPE_REPLY, memberId, replyInput.getTarget_id(), replyInput.getTarget_type());
-        //完成任务 获取积分 V2.4.6版本任务之前任务废弃
-        //int count = gameProxy.addTaskCore(Setting.ACTION_TYPE_REPLY, memberId, replyInput.getTarget_id(), replyInput.getTarget_type());
-
-        //V2.4.6版本任务
+        // v2.7 当前用户和要回复的用户不是一个人 才可算完成任务
         String tips = "";
-
-        //1 fungo币
-        /*
-        Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
-                MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code());
-
-        //2 经验值
-        Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
-                MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
-        */
-
-        //任务：
-        // 1.调用微服务接口
-        // 2.执行失败，发送MQ消息
-        Map<String, Object> resMapCoin = null;
-        Map<String, Object> resMapExp = null;
-
-        String uuidCoin = UUIDUtils.getUUID();
-        String uuidExp = UUIDUtils.getUUID();
-
-        //coin task
-        TaskDto taskDtoCoin = new TaskDto();
-        taskDtoCoin.setRequestId(uuidCoin);
-        taskDtoCoin.setMbId(memberId);
-        taskDtoCoin.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
-        taskDtoCoin.setTaskType(MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT);
-        taskDtoCoin.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code());
-
-
-        //exp task
-        TaskDto taskDtoExp = new TaskDto();
-        taskDtoExp.setRequestId(uuidExp);
-        taskDtoExp.setMbId(memberId);
-        taskDtoExp.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
-        taskDtoExp.setTaskType(MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT);
-        taskDtoExp.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
-
-        try {
-
-            //coin task
-            ResultDto<Map<String, Object>> coinTaskResultDto = systemFacedeService.exTask(taskDtoCoin);
-            if (null != coinTaskResultDto) {
-                resMapCoin = coinTaskResultDto.getData();
-            }
-
-            //exp task
-            ResultDto<Map<String, Object>> expTaskResultDto = systemFacedeService.exTask(taskDtoExp);
-            if (null != expTaskResultDto) {
-                resMapExp = expTaskResultDto.getData();
-            }
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-
-            //出现异常mq发送
-            //coin task
-            doExcTaskSendMQ(taskDtoCoin);
-            //exp task
-            doExcTaskSendMQ(taskDtoExp);
-
+        if(replyInput.getReply_to()!=null){
+            targetMemberId = replyInput.getReply_to();
         }
+        if(targetMemberId!=null&&!Objects.equals(memberId,targetMemberId)){
+            // 1.调用微服务接口
+            // 2.执行失败，发送MQ消息
+            Map<String, Object> resMapCoin = null;
+            Map<String, Object> resMapExp = null;
 
-        if (null != resMapCoin && !resMapCoin.isEmpty()) {
-            if (null != resMapExp && !resMapExp.isEmpty()) {
-                boolean coinsSuccess = (boolean) resMapCoin.get("success");
-                boolean expSuccess = (boolean) resMapExp.get("success");
-                if (coinsSuccess && expSuccess) {
-                    tips = (String) resMapCoin.get("msg");
-                    tips += (String) resMapExp.get("msg");
-                } else {
-                    tips = (String) resMapCoin.get("msg");
+            String uuidCoin = UUIDUtils.getUUID();
+            String uuidExp = UUIDUtils.getUUID();
+
+            //coin task
+            TaskDto taskDtoCoin = new TaskDto();
+            taskDtoCoin.setRequestId(uuidCoin);
+            taskDtoCoin.setMbId(memberId);
+            taskDtoCoin.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
+            taskDtoCoin.setTaskType(MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT);
+            taskDtoCoin.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code());
+
+
+            //exp task
+            TaskDto taskDtoExp = new TaskDto();
+            taskDtoExp.setRequestId(uuidExp);
+            taskDtoExp.setMbId(memberId);
+            taskDtoExp.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code());
+            taskDtoExp.setTaskType(MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT);
+            taskDtoExp.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code());
+
+            try {
+
+                //coin task
+                ResultDto<Map<String, Object>> coinTaskResultDto = systemFacedeService.exTask(taskDtoCoin);
+                if (null != coinTaskResultDto) {
+                    resMapCoin = coinTaskResultDto.getData();
+                }
+
+                //exp task
+                ResultDto<Map<String, Object>> expTaskResultDto = systemFacedeService.exTask(taskDtoExp);
+                if (null != expTaskResultDto) {
+                    resMapExp = expTaskResultDto.getData();
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+
+                //出现异常mq发送
+                //coin task
+                doExcTaskSendMQ(taskDtoCoin);
+                //exp task
+                doExcTaskSendMQ(taskDtoExp);
+
+            }
+
+            if (null != resMapCoin && !resMapCoin.isEmpty()) {
+                if (null != resMapExp && !resMapExp.isEmpty()) {
+                    boolean coinsSuccess = (boolean) resMapCoin.get("success");
+                    boolean expSuccess = (boolean) resMapExp.get("success");
+                    if (coinsSuccess && expSuccess) {
+                        tips = (String) resMapCoin.get("msg");
+                        tips += (String) resMapExp.get("msg");
+                    } else {
+                        tips = (String) resMapCoin.get("msg");
+                    }
                 }
             }
+            //end
         }
-        //end
+
+
 
         //!fixme
         //t.setAuthor(this.userService.getAuthor(memberId));
@@ -2082,7 +2063,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
             re.show("发布成功");
         }
 
-        //----添加埋点点赞数据----------
+        //----添加埋点数据----------
         BuriedPointReplyModel replyModel = new BuriedPointReplyModel();
         replyModel.setDistinctId(memberId);
         replyModel.setPlatForm(BuriedPointUtils.getPlatForm());

@@ -147,6 +147,16 @@ public class ActionServiceImpl implements IActionService {
 //                scoreLogService.updateRanked(targetMemberId, new ObjectMapper(), 33);
                 scoreLogService.updateRankedMedal(targetMemberId,33);
             }
+
+            // 任务
+            //V2.7版本任务
+            if(!Objects.equals(memberId,targetMemberId)){
+                iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+                        MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_LIKE_EXP.code());
+                //2 fungo币
+                iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+                        MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_LIKE_COIN.code());
+            }
             //----添加埋点点赞数据----------
             BuriedPointLikeModel likeModel = new BuriedPointLikeModel();
             likeModel.setDistinctId(memberId);
@@ -158,6 +168,8 @@ public class ActionServiceImpl implements IActionService {
             likeModel.setType(getBuriedPointLikeType(inputDto.getTarget_type()));
             likeModel.setChannel(getChannal(inputDto.getTarget_type(), inputDto.getTarget_id()));
             BuriedPointUtils.publishBuriedPointEvent(likeModel);
+
+
         } else {//点赞记录存在
             if (-1 == action.getState()) {
                 action.setState(0);
@@ -166,14 +178,8 @@ public class ActionServiceImpl implements IActionService {
                 this.actionService.updateById(action);
             }
         }
-        //V2.4.6版本任务
-        // 每日任务
-        //1 经验值
-        iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
-                MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_LIKE_EXP.code());
-        //2 fungo币
-        iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
-                MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_LIKE_COIN.code());
+
+
         //redis cache
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, null, null);
         //首页文章帖子列表(v2.4)
@@ -954,6 +960,12 @@ public class ActionServiceImpl implements IActionService {
         if (action == null) {
             action = this.buildAction(memberId, Setting.ACTION_TYPE_COLLECTION, inputDto);
             actionService.insert(action);
+            // 2.7 点赞任务
+            iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+                    MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_LIKE_EXP.code());
+            //2 fungo币
+            iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+                    MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_LIKE_COIN.code());
         } else {
             if (-1 == action.getState()) {
                 action.setState(0);
