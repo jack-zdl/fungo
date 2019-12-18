@@ -109,14 +109,11 @@ public class PortalGamesIndexServiceImpl implements PortalGamesIIndexService {
 //			}
 
         }
-        re = new FungoPageResultDto<Map<String, Object>>();
+        re = new FungoPageResultDto<>();
         re.setData(list);
         PageTools.pageToResultDto(re, gpage);
-
-
         //redis cache
-        fungoCacheIndex.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_PC_GAMEGROUP,
-                keySuffix, re);
+        fungoCacheIndex.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_PC_GAMEGROUP, keySuffix, re);
         return re;
     }
 
