@@ -262,7 +262,7 @@ public class CircleServiceImpl implements CircleService {
         return re;
     }
 
-//    @Cacheable(value = CACHE_EH_KEY_POST,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_POST_CACHE +" ' +#memberId + #cmmCirclePostVo.circleId + #cmmCirclePostVo.queryType + #cmmCirclePostVo.sortType + #cmmCirclePostVo.page + #cmmCirclePostVo.limit " )
+    @Cacheable(value = CACHE_EH_KEY_POST,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_POST_CACHE +" ' +#memberId + #cmmCirclePostVo.circleId + #cmmCirclePostVo.queryType + #cmmCirclePostVo.sortType + #cmmCirclePostVo.page + #cmmCirclePostVo.limit " )
     @Override
     public FungoPageResultDto<PostOutBean> selectCirclePost(String memberId, CmmCirclePostVo cmmCirclePostVo) {
         FungoPageResultDto<PostOutBean> re = new FungoPageResultDto<>();
@@ -275,7 +275,7 @@ public class CircleServiceImpl implements CircleService {
         try {
             String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_POST;
             String keySuffix = JSON.toJSONString(cmmCirclePostVo)+memberId;
-//            relist = (List<PostOutBean>) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
+            relist = (List<PostOutBean>) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
             if (null != relist &&  relist.size() > 0) {
                 re.setData(relist);
                 PageTools.pageToResultDto(re, page);
