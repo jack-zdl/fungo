@@ -1251,22 +1251,23 @@ public class GameServiceImpl implements IGameService {
         }
         FungoPageResultDto<String> re = new FungoPageResultDto<>();
         try {
-            Page<Game> gamePage = null;
+            Page<Game> gamePage = new Page( 1,10 );;
             List<String> gameNameList = new ArrayList<>();
             List<Game> gameList = null;
             // 判断是否选择es
             if(nacosFungoCircleConfig.isKeywordGameSearch()){
-                @SuppressWarnings("rawtypes")
-                Wrapper wrapper = Condition.create().setSqlSelect(
-                        "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
-                        .eq("state", 0).like("name", keyword).or().like( "google_deputy_name like ", keyword ); //.or().like( "intro",keyword )
-
-                if (sort != null && !"".equals(sort.replace(" ", ""))) {
-                    gamePage = gameService.selectPage(new Page<>(page, limit), wrapper.orderBy(sort));
-                } else {
-                    gamePage = gameService.selectPage(new Page<>(page, limit), wrapper);
-//                    gameList = gameService.selectList(wrapper);
-                }
+//                @SuppressWarnings("rawtypes")
+//                Wrapper wrapper = Condition.create().setSqlSelect(
+//                        "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
+//                        .eq("state", 0).like("name", keyword).or().like( "google_deputy_name like ", keyword ); //.or().like( "intro",keyword )
+//
+//                if (sort != null && !"".equals(sort.replace(" ", ""))) {
+//                    gamePage = gameService.selectPage(new Page<>(page, limit), wrapper.orderBy(sort));
+//                } else {
+//                    gamePage = gameService.selectPage(new Page<>(page, limit), wrapper);
+////                    gameList = gameService.selectList(wrapper);
+//                }
+                gameList = gameDao.getGmaePage( gamePage,keyword );
             }else {
                 if (sort != null && !"".equals(sort.replace(" ", ""))) {
                     gamePage = esdaoServiceImpl.getGameByES( page,  limit, keyword,  tag,  sort );
