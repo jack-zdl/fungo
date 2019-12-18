@@ -271,6 +271,7 @@ public class CircleServiceImpl implements CircleService {
         List<PostOutBean> relist = null;
         String circleId = cmmCirclePostVo.getCircleId();
         Page page = new Page(cmmCirclePostVo.getPage(), cmmCirclePostVo.getLimit());
+
         try {
             String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_POST;
             String keySuffix = JSON.toJSONString(cmmCirclePostVo)+memberId;
@@ -396,7 +397,7 @@ public class CircleServiceImpl implements CircleService {
                     basActionDto.setType(0);
                     basActionDto.setState(0);
                     basActionDto.setTargetId(post.getId());
-
+                    basActionDto.setCircleId(cmmCirclePostVo.getCircleId());
                     int liked = 0;
                     try {
                         ResultDto<Integer> resultDto = systemFacedeService.countActionNum(basActionDto);
