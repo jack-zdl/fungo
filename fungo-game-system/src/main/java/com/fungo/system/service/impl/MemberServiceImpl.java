@@ -1365,7 +1365,11 @@ public class MemberServiceImpl implements IMemberService {
             MyPublishBean bean = new MyPublishBean();
 
             if (StringUtils.isNotBlank(post.getTitle())) {
-                String interactTitle = FilterEmojiUtil.decodeEmoji(post.getTitle());
+                String interactTitle = "";
+                try{
+                    interactTitle = FilterEmojiUtil.decodeEmoji(post.getTitle());
+                }catch(Exception e) {
+                }
                 //String interactTitle = EmojiParser.parseToUnicode(cmmPost.getTitle() );
                 post.setTitle(interactTitle);
             }

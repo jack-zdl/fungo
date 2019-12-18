@@ -221,7 +221,7 @@ public class CircleServiceImpl implements CircleService {
             cmmCircleDto = (CmmCircleDto) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
             if (null != cmmCircleDto ) {
                 re = ResultDto.success(cmmCircleDto);
-                return re;
+//                return re;
             }
             cmmCircleDto = new CmmCircleDto();
             //fix bug:管控台 下架游戏圈 进入对应的游戏内 不显示圈子选项 [by mxf 2019-7-11]
@@ -279,7 +279,7 @@ public class CircleServiceImpl implements CircleService {
             if (null != relist &&  relist.size() > 0) {
                 re.setData(relist);
                 PageTools.pageToResultDto(re, page);
-                return re;
+//                return re;
             }
             relist = new ArrayList<>();
             String tagId = cmmCirclePostVo.getQueryType();
