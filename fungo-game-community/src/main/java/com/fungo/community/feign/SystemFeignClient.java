@@ -112,9 +112,9 @@ public interface SystemFeignClient {
     @ApiOperation(value="获取会员信息")
     ResultDto<AuthorBean> getAuthor(@RequestParam("memberId") String memberId);
 
-    @GetMapping(value = "/getAuthorList",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/getAuthorList") //consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
     @ApiOperation(value="获取会员信息")
-    FungoPageResultDto<AuthorBean> getAuthorList(@RequestBody  List<String> memberIds);
+    FungoPageResultDto<AuthorBean> getAuthorList(@RequestParam("memberIds")String memberIds);
 
     @PostMapping(value = "/exTask")
     @ApiOperation(value="执行任务")

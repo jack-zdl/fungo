@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -479,10 +480,11 @@ public class SystemController {
 
     @GetMapping("/getAuthorList")
     @ApiOperation(value="获取会员信息")
-    public FungoPageResultDto<AuthorBean> getAuthorList(@RequestBody  List<String> memberIds){
+    public FungoPageResultDto<AuthorBean> getAuthorList(@RequestParam("memberIds") String memberIds){
         FungoPageResultDto<AuthorBean> re = null;
         try {
-            re = systemService.getAuthorList(memberIds);
+            List<String> memberList = Arrays.asList(memberIds.split(","));
+            re = systemService.getAuthorList(memberList);
         }catch (Exception e){
             LOGGER.error("SystemController.getAuthor",e);
             re = FungoPageResultDto.error("-1", "SystemController.getAuthorList执行service出现异常");

@@ -679,11 +679,11 @@ public class UserServiceImpl implements IUserService {
                 author.setUpdatedAt(DateTools.fmtDate(s.getUpdatedAt()));
                 author.setUsername(s.getUserName());
                 author.setObjectId(s.getId());
-                int followed = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).ne("state", "-1").eq("target_id", s.getId()));
-                author.setFolloweeNum(followed);//粉丝数
-                List followlist = actionDao.getFollowerUserList(s.getId());
-                int follower = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).ne("state", "-1").eq("target_type", 0).eq("member_id",  s.getId()));
-                author.setFollowerNum(followlist.size());//关注数
+//                int followed = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).ne("state", "-1").eq("target_id", s.getId()));
+//                author.setFolloweeNum(followed);//粉丝数
+//                List followlist = actionDao.getFollowerUserList(s.getId());
+//                int follower = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).ne("state", "-1").eq("target_type", 0).eq("member_id",  s.getId()));
+//                author.setFollowerNum(followlist.size());//关注数
                 author.setMemberNo(s.getMemberNo());
                 author.setSign(s.getSign());
                 author.setLastestHonorName("FunGo身份证");
@@ -692,7 +692,7 @@ public class UserServiceImpl implements IUserService {
                 ObjectMapper mapper = new ObjectMapper();
 //                荣誉,身份图片
                 List<IncentRanked> list = rankedService.selectList(new EntityWrapper<IncentRanked>().eq("mb_id", s.getId()));
-                for (IncentRanked ranked : list) {
+                bgm:for (IncentRanked ranked : list) {
                     try {
                         if (ranked.getRankType() == 1) {//等级
                             IncentRuleRank rank = rankRuleService.selectById( ranked.getCurrentRankId() );//最近获得
@@ -700,7 +700,9 @@ public class UserServiceImpl implements IUserService {
                             String rankImgs = rank.getRankImgs();
                             ArrayList<HashMap<String, Object>> urlList = mapper.readValue( rankImgs, ArrayList.class );
                             author.setDignityImg( (String) urlList.get( 0 ).get( "url" ) );
-                        } else if (ranked.getRankType() == 2) {//身份
+//                            break bgm;
+                        }
+                        else if (ranked.getRankType() == 2) {//身份
                             IncentRuleRank rank = rankRuleService.selectById( ranked.getCurrentRankId() );//最近获得
                             String rankImgs = rank.getRankImgs();
                             ArrayList<HashMap<String, Object>> urlList = mapper.readValue( rankImgs, ArrayList.class );
@@ -734,10 +736,10 @@ public class UserServiceImpl implements IUserService {
                             }
                             author.setHonorImgList( honorImgList );
                         }
-                        authorBeans.add( author);
                     } catch (Exception e) {
                     }
                 }
+                authorBeans.add( author);
             });
             resultDto.setData( authorBeans);
         }catch (Exception e){

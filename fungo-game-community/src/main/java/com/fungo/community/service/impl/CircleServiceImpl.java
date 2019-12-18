@@ -262,7 +262,7 @@ public class CircleServiceImpl implements CircleService {
         return re;
     }
 
-    @Cacheable(value = CACHE_EH_KEY_POST,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_POST_CACHE +" ' +#memberId + #cmmCirclePostVo.circleId + #cmmCirclePostVo.queryType + #cmmCirclePostVo.sortType + #cmmCirclePostVo.page + #cmmCirclePostVo.limit " )
+//    @Cacheable(value = CACHE_EH_KEY_POST,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_POST_CACHE +" ' +#memberId + #cmmCirclePostVo.circleId + #cmmCirclePostVo.queryType + #cmmCirclePostVo.sortType + #cmmCirclePostVo.page + #cmmCirclePostVo.limit " )
     @Override
     public FungoPageResultDto<PostOutBean> selectCirclePost(String memberId, CmmCirclePostVo cmmCirclePostVo) {
         FungoPageResultDto<PostOutBean> re = new FungoPageResultDto<>();
@@ -275,7 +275,7 @@ public class CircleServiceImpl implements CircleService {
         try {
             String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_POST;
             String keySuffix = JSON.toJSONString(cmmCirclePostVo)+memberId;
-            relist = (List<PostOutBean>) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
+//            relist = (List<PostOutBean>) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
             if (null != relist &&  relist.size() > 0) {
                 re.setData(relist);
                 PageTools.pageToResultDto(re, page);
@@ -325,7 +325,7 @@ public class CircleServiceImpl implements CircleService {
 
                 bean.setMemberId( post.getMemberId());
                 //!fixme 查询用户数据
-                //bean.setAuthor(iUserService.getAuthor(post.getMemberId()));
+//                bean.setAuthor(iUserService.getAuthor(post.getMemberId()));
 //                try {
 //                    ResultDto<AuthorBean> authorBeanResultDto = systemFacedeService.getAuthor(post.getMemberId());
 //                    if (null != authorBeanResultDto) {
@@ -335,7 +335,7 @@ public class CircleServiceImpl implements CircleService {
 //                } catch (Exception ex) {
 //                    ex.printStackTrace();
 //                }
-
+//
 //                if (bean.getAuthor() == null) {
 //                    continue;
 //                }
@@ -429,7 +429,7 @@ public class CircleServiceImpl implements CircleService {
             List<String> postIds = cmmPosts.stream().map( CmmPost::getId ).collect( Collectors.toList());
            List<PostCircleDto> postCircleDtos =  cmmPostCircleMapper.getCircleEntityByPostIds(postIds);
             List<String> memberIds = cmmPosts.stream().map( CmmPost::getMemberId ).collect( Collectors.toList());
-            FungoPageResultDto<AuthorBean>  resultDto =  systemFeignClient.getAuthorList(memberIds);
+            FungoPageResultDto<AuthorBean>  resultDto =  systemFeignClient.getAuthorList(String.join(",", memberIds));
             List<AuthorBean> authorBeans = resultDto != null ? resultDto.getData() : new ArrayList<>();
            relist.stream().forEach( s ->{
                 Optional<PostCircleDto> postCircles = postCircleDtos.stream().filter( x-> s.getPostId().equals( x.getPostId())).findFirst();
