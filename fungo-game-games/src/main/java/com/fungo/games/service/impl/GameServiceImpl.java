@@ -809,6 +809,7 @@ public class GameServiceImpl implements IGameService {
                 it.setIcon(game.getIcon());
                 it.setObjectId(game.getId());
                 it.setName(game.getName());
+                it.setOrigin(game.getOrigin());
                 it.setIosState(game.getIosState() == null ? -1 : game.getIosState());
                 it.setItunesId(game.getItunesId());
                 it.setTags(game.getTags());
