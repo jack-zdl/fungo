@@ -527,6 +527,14 @@ public class SystemServiceImpl implements SystemService {
         if (basActionDto.getState() != null) {
             actionEntityWrapper.eq("state", basActionDto.getState());
         }
+        BasAction basAction = new BasAction();
+        basAction.setMemberId(basActionDto.getMemberId());
+        basAction.setType(basActionDto.getType());
+        basAction.setTargetType(basActionDto.getTargetType());
+        basAction.setTargetId(basActionDto.getCircleId());
+        basAction.setCreatedAt(new Date());
+        basAction.setState(basActionDto.getState());
+        actionService.insert(basAction);
         //根据条件查询
         int count = actionServiceImap.selectCount(actionEntityWrapper);
         return ResultDto.success(count);
@@ -554,11 +562,19 @@ public class SystemServiceImpl implements SystemService {
         if (basActionDto.getState() != null) {
             wrapper.eq("state", basActionDto.getState());
         }
+
         List<BasAction> actionList = actionServiceImap.selectList(wrapper);
         LOGGER.info(actionList.size() + "");
         List<String> ids = actionList.stream().filter(li -> {
             return li != null && li.getTargetId() != null && !"".equals(li.getTargetId());
         }).map(BasAction::getTargetId).collect(Collectors.toList());
+        BasAction basAction = new BasAction();
+        basAction.setMemberId(basActionDto.getMemberId());
+        basAction.setCreatedAt(new Date());
+        basAction.setTargetId(basActionDto.getTargetId());
+        basAction.setTargetType(basActionDto.getTargetType());
+        basAction.setType(basActionDto.getType());
+        actionService.insert(basAction);
         return ResultDto.success(ids);
 
     }
@@ -661,7 +677,7 @@ public class SystemServiceImpl implements SystemService {
      */
     @Override
     public FungoPageResultDto<AuthorBean> getAuthorList(List<String> memberIds) {
-        return null;
+        return userService.getAuthorList(memberIds);
     }
 
     @Override

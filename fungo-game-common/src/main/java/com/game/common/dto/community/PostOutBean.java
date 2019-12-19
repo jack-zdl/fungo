@@ -92,5 +92,7 @@ public class PostOutBean {
 	@ApiModelProperty(value="圈子名称",example="")
 	private String circleName;
 
+	private String memberId;
+
 
 }

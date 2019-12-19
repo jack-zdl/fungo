@@ -3,6 +3,7 @@ package com.fungo.system.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.dao.BasActionDao;
+import com.fungo.system.dao.MemberDao;
 import com.fungo.system.dao.MemberInfoDao;
 import com.fungo.system.dao.SysMockuserDao;
 import com.fungo.system.dto.*;
@@ -17,6 +18,7 @@ import com.game.common.consts.MemberLoginConsts;
 import com.game.common.consts.Setting;
 import com.game.common.dto.AbstractEventDto;
 import com.game.common.dto.AuthorBean;
+import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.user.MemberOutBean;
 import com.game.common.enums.AbstractResultEnum;
@@ -93,6 +95,8 @@ public class UserServiceImpl implements IUserService {
     private SysMockuserDao sysMockuserDao;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
+    @Autowired
+    private MemberDao memberDao;
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -660,6 +664,88 @@ public class UserServiceImpl implements IUserService {
 
         }
         return author;
+    }
+
+    @Override
+    public FungoPageResultDto<AuthorBean> getAuthorList(List<String> memberIds) {
+        FungoPageResultDto<AuthorBean> resultDto = new FungoPageResultDto<>();
+        List<AuthorBean> authorBeans = new ArrayList<>();
+        try {
+            List<Member> memberList  = memberDao.getEnableMemberList(memberIds);
+            memberList.stream().forEach( s ->{
+                AuthorBean author = new AuthorBean();
+                author.setAvatar(s.getAvatar());
+                author.setCreatedAt(DateTools.fmtDate(s.getCreatedAt()));
+                author.setUpdatedAt(DateTools.fmtDate(s.getUpdatedAt()));
+                author.setUsername(s.getUserName());
+                author.setObjectId(s.getId());
+//                int followed = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).ne("state", "-1").eq("target_id", s.getId()));
+//                author.setFolloweeNum(followed);//粉丝数
+//                List followlist = actionDao.getFollowerUserList(s.getId());
+//                int follower = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 5).ne("state", "-1").eq("target_type", 0).eq("member_id",  s.getId()));
+//                author.setFollowerNum(followlist.size());//关注数
+                author.setMemberNo(s.getMemberNo());
+                author.setSign(s.getSign());
+                author.setLastestHonorName("FunGo身份证");
+
+                author.setGender(s.getGender());
+                ObjectMapper mapper = new ObjectMapper();
+//                荣誉,身份图片
+                List<IncentRanked> list = rankedService.selectList(new EntityWrapper<IncentRanked>().eq("mb_id", s.getId()));
+                bgm:for (IncentRanked ranked : list) {
+                    try {
+                        if (ranked.getRankType() == 1) {//等级
+                            IncentRuleRank rank = rankRuleService.selectById( ranked.getCurrentRankId() );//最近获得
+                            author.setLevel( ranked.getCurrentRankId().intValue() );
+                            String rankImgs = rank.getRankImgs();
+                            ArrayList<HashMap<String, Object>> urlList = mapper.readValue( rankImgs, ArrayList.class );
+                            author.setDignityImg( (String) urlList.get( 0 ).get( "url" ) );
+//                            break bgm;
+                        }
+                        else if (ranked.getRankType() == 2) {//身份
+                            IncentRuleRank rank = rankRuleService.selectById( ranked.getCurrentRankId() );//最近获得
+                            String rankImgs = rank.getRankImgs();
+                            ArrayList<HashMap<String, Object>> urlList = mapper.readValue( rankImgs, ArrayList.class );
+                            author.setStatusImg( urlList );
+                        } else if (ranked.getRankType() == 3) {//成就
+                            //找出获得的荣誉合集
+                            String rankIdtIds = ranked.getRankIdtIds();
+                            ArrayList<HashMap<String, Object>> rankList = mapper.readValue( rankIdtIds, ArrayList.class );
+                            Collections.reverse( rankList );
+                            List<String> honorImgList = new ArrayList<>();
+                            int i = 0;
+                            ArrayList<String> groupIdList = new ArrayList<>();
+                            //取前三位
+                            for (HashMap<String, Object> map : rankList) {
+                                IncentRuleRank rank = rankRuleService.selectById( Long.parseLong( map.get( "1" ) + "" ) );
+                                //取同一勋章中等级最高的那一个
+                                if (!groupIdList.contains( rank.getRankGroupId() )) {
+                                    groupIdList.add( rank.getRankGroupId() );
+                                    if (rank != null) {
+                                        ArrayList<HashMap<String, Object>> urlkList = mapper.readValue( rank.getRankImgs(), ArrayList.class );
+                                        honorImgList.add( (String) urlkList.get( 0 ).get( "url" ) );
+                                    }
+                                    if (i == 0) {
+                                        author.setLastestHonorName( getHonorName( rank.getRankGroupId() ) + rank.getRankName() );
+                                    }
+                                    i++;
+                                    if (i > 2) {
+                                        break;
+                                    }
+                                }
+                            }
+                            author.setHonorImgList( honorImgList );
+                        }
+                    } catch (Exception e) {
+                    }
+                }
+                authorBeans.add( author);
+            });
+            resultDto.setData( authorBeans);
+        }catch (Exception e){
+            LOGGER.error( "根据集合获取用户信息集合" ,e);
+        }
+        return resultDto;
     }
 
     @Override

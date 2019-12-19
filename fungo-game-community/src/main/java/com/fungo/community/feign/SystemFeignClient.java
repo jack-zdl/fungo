@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -110,6 +111,10 @@ public interface SystemFeignClient {
     @GetMapping("/getAuthor")
     @ApiOperation(value="获取会员信息")
     ResultDto<AuthorBean> getAuthor(@RequestParam("memberId") String memberId);
+
+    @GetMapping(value = "/getAuthorList") //consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
+    @ApiOperation(value="获取会员信息")
+    FungoPageResultDto<AuthorBean> getAuthorList(@RequestParam("memberIds")String memberIds);
 
     @PostMapping(value = "/exTask")
     @ApiOperation(value="执行任务")

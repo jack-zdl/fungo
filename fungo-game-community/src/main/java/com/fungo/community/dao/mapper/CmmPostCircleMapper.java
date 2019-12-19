@@ -2,12 +2,14 @@ package com.fungo.community.dao.mapper;
 
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.fungo.community.dto.PostCircleDto;
 import com.fungo.community.entity.CmmCircle;
 import com.fungo.community.entity.CmmPostCircle;
 import com.game.common.dto.circle.CircleMemberPulishDto;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Repository
@@ -28,6 +30,8 @@ public interface CmmPostCircleMapper {
 
     CmmCircle getCircleEntityByPostId(String postId);
 
+
+    List<PostCircleDto> getCircleEntityByPostIds(@Param("postIds") List<String> postIds);
     /**
      * 功能描述: 根据文章id查询当前默认关联的圈子
      * @auther: dl.zhang

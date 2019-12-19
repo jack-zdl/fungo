@@ -17,6 +17,14 @@
     id, circle_name as circleName, circle_icon AS circleIcon , intro,game_id AS gameId ,cmm_id AS cmmId , type, state, followee_num AS  followeeNum,
     hot_value AS hotValue , sort, created_at AS  createdAt,updated_at AS  updatedAt, created_by AS  createdBy, updated_by as updatedBy
   </sql>
+
+
+
+    <sql id="Base_List">
+     ${alias}.id,  ${alias}.circle_name as circleName,  ${alias}.circle_icon AS circleIcon ,  ${alias}.intro,  ${alias}.game_id AS gameId , ${alias}.cmm_id AS cmmId ,  ${alias}.type,  ${alias}.state,  ${alias}.followee_num AS  followeeNum,
+     ${alias}.hot_value AS hotValue ,  ${alias}.sort,  ${alias}.created_at AS  createdAt,  ${alias}.updated_at AS  updatedAt,  ${alias}.created_by AS  createdBy,  ${alias}.updated_by as updatedBy
+  </sql>
+
     <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -182,5 +190,17 @@
         </foreach>
     </delete>
 
+    <select id="getCircleEntityByPostIds" resultType="com.fungo.community.dto.PostCircleDto">
+
+        SELECT
+        <include refid="Base_List"><property name="alias" value="cc"/></include>, cpc.post_id as postId
+        FROM t_cmm_circle cc , t_cmm_post_circle  cpc WHERE cc.state = 1
+        AND cc.id =  cpc.circle_id and cpc.default_link = 1  and cpc.post_id
+         in
+         <foreach item="item" collection="postIds" index="index" open="(" separator="," close=")">
+             #{item}
+         </foreach>
+
+    </select>
 
 </mapper>
