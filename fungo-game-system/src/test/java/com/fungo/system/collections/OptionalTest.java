@@ -1,6 +1,7 @@
 package com.fungo.system.collections;
 
 import org.junit.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
@@ -20,5 +21,7 @@ public class OptionalTest {
         String name = "John";
         Optional<String> opt = Optional.ofNullable(name);
         assertEquals("John", opt.get());
+        System.out.println("--------------");
+            System.out.println(new BCryptPasswordEncoder().encode("123456"));
     }
 }

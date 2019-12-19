@@ -1358,6 +1358,9 @@ public class MemberServiceImpl implements IMemberService {
 
         //  Page<CmmPostDto> page =   iMemeberProxyService.selectCmmPostpage(param); // postService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<CmmPost>().eq("member_id", loginId).ne("state", -1).orderBy("updated_at", false));
         // List<CmmPostDto> plist = page.getRecords();
+        if(cmmPostDtoFungoPageResultDto == null){
+            return FungoPageResultDto.FungoPageResultDtoFactory.buildError( "CommunityFeignClient--启动熔断:queryCmmPostList" );
+        }
         List<CmmPostDto> plist =  cmmPostDtoFungoPageResultDto.getData();
         List<MyPublishBean> blist = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
