@@ -290,6 +290,13 @@ public class FunGoGameConsts {
      *
      */
     public static  final String CACHE_EH_KEY_PRE_SYSTEM = "FG_eh_Sytem";
+
+
+    /**
+     * 首页
+     *
+     */
+    public static  final String CACHE_EH_KEY_PRE_INDEX = "FG_eh_index";
     //----------------------------ehcache--常量--end---------------------------------
 
     public static final String CACHE_MALL_KEY = "mall";
