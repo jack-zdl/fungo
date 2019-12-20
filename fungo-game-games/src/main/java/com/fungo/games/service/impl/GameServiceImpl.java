@@ -787,6 +787,9 @@ public class GameServiceImpl implements IGameService {
         if (gameIdList.size() > 0) {
             List<Game> gamel = gameDao.getGameList(gameIdList);  //gameService.selectList(new EntityWrapper<Game>().in("id", gameIdList));
             for (Game game : gamel) {
+                if(game.getState() != 0){
+                    continue;
+                }
                 GameItem it = new GameItem();
                 if (game.getAndroidPackageName() == null) {
                     game.setAndroidPackageName("");

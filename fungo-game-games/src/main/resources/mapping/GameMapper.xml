@@ -130,7 +130,7 @@
 
 
     <select id="listGame" parameterType="java.lang.String" resultMap="BaseResultMap">
-        select * from t_game where id in
+        select * from t_game where state =0 and id in
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
