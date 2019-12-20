@@ -1,4 +1,4 @@
-package com.fungo.system.config;
+package com.fungo.games.config;
 
 import com.game.common.config.MyThreadLocal;
 import feign.Logger;
@@ -32,7 +32,6 @@ public class FeignConfiguration {
     public FeignBasicAuthRequestInterceptor basicAuthRequestInterceptor() {
         return new FeignBasicAuthRequestInterceptor();
     }
-
 }
 
 /**

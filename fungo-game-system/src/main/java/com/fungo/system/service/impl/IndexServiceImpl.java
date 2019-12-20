@@ -39,11 +39,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import static com.game.common.consts.FunGoGameConsts.CACHE_EH_KEY_POST;
+import static com.game.common.consts.FunGoGameConsts.CACHE_EH_KEY_PRE_INDEX;
 
 @Service
 public class IndexServiceImpl implements IIndexService {
@@ -232,6 +237,7 @@ public class IndexServiceImpl implements IIndexService {
      * @auther: dl.zhang
      * @date: 2019/6/11 11:05
      */
+    @Cacheable(value = CACHE_EH_KEY_PRE_INDEX,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_EVENT_INDEX_CACHE +" ' +#os +#iosChannel  + #input.filter + #input.page + #input.limit " )
     @Override
     public FungoPageResultDto<CardIndexBean> circleEventList(InputPageDto input, String os, String iosChannel, String app_channel, String appVersion) {
         FungoPageResultDto<CardIndexBean> re = new FungoPageResultDto<>();
@@ -280,6 +286,7 @@ public class IndexServiceImpl implements IIndexService {
                 list.add(b1);
             }
             re = FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(list, input.getPage() - 1, page);
+            fungoCacheIndex.excIndexCache( true,keyPrefix,keySuffix,re );
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("获取圈子页面上广告位", e);
