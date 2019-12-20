@@ -601,6 +601,8 @@ public class TaskServiceImpl implements ITaskService {
             nextSignDays =  userSignDate - 30;
             stringBuffer = getNearDateByUserSign(nextSignDays);
         }
+        String a = "";
+        a.contains( a);
         return stringBuffer;
     }
 
