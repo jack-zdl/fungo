@@ -2,6 +2,7 @@ package com.fungo.system.config;
 
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.fungo.system.entity.BasFilterword;
+import com.fungo.system.service.ISeacherService;
 import com.fungo.system.service.impl.BasFilterwordService;
 import com.game.common.util.SensitiveWordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +26,15 @@ public class InitProject implements ApplicationRunner {
 
     @Autowired
     private BasFilterwordService filterService;
+    @Autowired
+    private ISeacherService iSeacherService;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
         System.out.println("-----------启动工程后执行初始化过滤非法关键字------------------------");
         initFilterWord();
+        System.out.println("-----------启动工程后执行初始化游戏热门------------------------");
+        iSeacherService.updateGameKeywords();
     }
 
     private void initFilterWord() {

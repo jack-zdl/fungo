@@ -15,6 +15,7 @@ import com.fungo.community.entity.CmmComment;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.facede.GameFacedeService;
 import com.fungo.community.facede.SystemFacedeService;
+import com.fungo.community.feign.GameFeignClient;
 import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.service.CircleService;
 import com.fungo.community.service.CmmCircleService;
@@ -22,6 +23,7 @@ import com.game.common.bean.MemberPulishFromCommunity;
 import com.game.common.bean.TagBean;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.circle.CircleMemberPulishDto;
@@ -88,9 +90,10 @@ public class CircleServiceImpl implements CircleService {
     //依赖游戏微服务
     @Autowired(required = false)
     private GameFacedeService gameFacedeService;
-
     @Autowired
     private CmmCommentDaoService commentService;
+    @Autowired
+    private GameFeignClient gameFeignClient;
 
     @Override
     public FungoPageResultDto<CmmCircleDto> selectCircle(String memberId, CmmCircleVo cmmCircleVo) {
@@ -217,6 +220,10 @@ public class CircleServiceImpl implements CircleService {
             if (resultDto != null && resultDto.getData() != null && resultDto.getData().getCircleFollows() != null) {
                 List<CircleFollow> circleFollows = resultDto.getData().getCircleFollows().stream().filter(r -> r.getCircleId().equals(circleId)).collect(Collectors.toList());
                 cmmCircleDto.setFollow((circleFollows == null || circleFollows.size() == 0) ? false : circleFollows.get(0).isFollow());
+            }
+            ResultDto<GameDto>  resultGameDto = gameFeignClient.selectGameDetails(cmmCircleDto.getGameId(),0);
+            if(resultGameDto != null && resultGameDto.getData() != null && !CommonUtil.isNull( resultGameDto.getData().getId()) ){
+                cmmCircleDto.setGameStatus(1);
             }
             List<Map<String, Object>> map = getCirclePayer(cmmCircle);
             cmmCircleDto.setEliteMembers(map);
