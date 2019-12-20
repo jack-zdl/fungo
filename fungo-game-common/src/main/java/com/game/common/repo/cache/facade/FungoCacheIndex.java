@@ -55,6 +55,27 @@ public class FungoCacheIndex {
     }
 
     /**
+     * 添加缓存和删除
+     * @param isCache true 缓存，false清除缓存
+     * @param keyPrefix 缓存key的前缀（对象是json字符串，非对象是字符串）
+     * @param keySuffix 缓存key的后缀（对象是json字符串，非对象是字符串）
+     * @param value
+     */
+    public void excIndexCacheWithTime(boolean isCache, String keyPrefix, String keySuffix, Object value,Integer expireSecond) {
+
+        //从redis获取
+        String redisKey = SecurityMD5.encrypt16(keyPrefix) + "_join_" ;
+        if (StringUtils.isNotBlank(keySuffix)){
+            redisKey += SecurityMD5.encrypt16(keySuffix);
+        }
+        if (isCache) {
+            redisHandler.set(redisKey, value,expireSecond);
+        } else {
+            redisHandler.batchDelete(redisKey);
+        }
+    }
+
+    /**
      *  获取缓存数据
      * @param keyPrefix 缓存key的前缀 （对象是json字符串，非对象是字符串）
      * @param keySuffix 缓存key的后缀 （对象是json字符串，非对象是字符串）
