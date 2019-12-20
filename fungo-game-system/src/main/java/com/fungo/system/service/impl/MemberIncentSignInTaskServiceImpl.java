@@ -68,7 +68,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
     private IMemberAccountScoreDaoService memberAccountDaoService;
 
     @Autowired
-    private IncentAccountCoinDaoService accountCoinService;
+    private IncentAccountCoinDaoService incentAccountCoinServiceImap;
 
     @Autowired
     private IncentRankedService rankedService;
@@ -728,7 +728,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
         }
 
         //获取用户的fungo账号 .eq("account_group_id", 3)
-        IncentAccountCoin accountCoin = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", member.getId()));
+        IncentAccountCoin accountCoin = incentAccountCoinServiceImap.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", member.getId()));
 
         //若用户没有fungo币账户，则创建
         if (null == accountCoin) {
@@ -753,7 +753,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
 
         coinAccountEntityWrapper.allEq(criteriaMap);
 
-        boolean isUpdate = accountCoinService.update(accountCoin, coinAccountEntityWrapper);
+        boolean isUpdate = incentAccountCoinServiceImap.update(accountCoin, coinAccountEntityWrapper);
 
         logger.info("=======用户id:{}----第一次签到-----获取fungo币数量:{}--isUpdate:{}", member.getId(), JSON.toJSONString(accountCoin), isUpdate);
 

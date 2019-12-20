@@ -63,7 +63,7 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private BasActionService actionService;
     @Autowired
-    private IncentAccountCoinDaoService accountCoinService;
+    private IncentAccountCoinDaoService incentAccountCoinServiceImap;
     @Autowired
     private ScoreLogService scoreLogService;
     @Autowired
@@ -799,7 +799,7 @@ public class UserServiceImpl implements IUserService {
         bean.setMemberNo(member.getMemberNo());
         bean.setMb_id(member.getId());
 
-        IncentAccountCoin accountCoin = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", memberId));
+        IncentAccountCoin accountCoin = incentAccountCoinServiceImap.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", memberId));
         //.eq("account_group_id", 3));
         if (accountCoin == null) {
             bean.setFunCoin(0);

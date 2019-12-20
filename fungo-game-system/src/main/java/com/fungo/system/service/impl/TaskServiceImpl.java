@@ -42,7 +42,7 @@ public class TaskServiceImpl implements ITaskService {
     private ScoreGroupService scoreGroupService;
 
     @Autowired
-    private IncentAccountCoinDaoService accountCoinService;
+    private IncentAccountCoinDaoService incentAccountCoinServiceImap;
 
     @Autowired
     private IncentAccountScoreService accountScoreService;
@@ -316,7 +316,7 @@ public class TaskServiceImpl implements ITaskService {
 
 
         //fun币 .eq("account_group_id", 3)
-        IncentAccountCoin accountCoin = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", userId));
+        IncentAccountCoin accountCoin = incentAccountCoinServiceImap.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", userId));
         if (accountCoin == null) {
             accountCoin = IAccountDaoService.createAccountCoin(userId);
         }

@@ -62,7 +62,7 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
     private IMemberAccountScoreDaoService accountScoreDaoService;
 
     @Autowired
-    private IncentAccountCoinDaoService accountCoinService;
+    private IncentAccountCoinDaoService incentAccountCoinServiceImap;
 
     @Autowired
     private IMemberIncentTaskRuleService iMemberIncentTaskRuleService;
@@ -388,7 +388,7 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
         Integer coinCount = scoreRule.getScore();
         //更新账户.
         // eq("account_group_id", FunGoGameConsts.INCENT_ACCOUNT_TYPE_COIN_ID)
-        IncentAccountCoin coinAccount = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", mb_id));
+        IncentAccountCoin coinAccount = incentAccountCoinServiceImap.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", mb_id));
         if (coinAccount == null) {
             Member member = memberService.selectById(mb_id);
             coinAccount = accountScoreDaoService.createAccountCoin(mb_id);
@@ -414,7 +414,7 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
         coinAccountEntityWrapper.allEq(criteriaMap);
 
         logger.info("执行新手任务---经验值任务--用户fungo币账户新数据-scoreAccount:{}", JSON.toJSONString(coinAccount));
-        boolean updateStatus = accountCoinService.update(coinAccount, coinAccountEntityWrapper);
+        boolean updateStatus = incentAccountCoinServiceImap.update(coinAccount, coinAccountEntityWrapper);
         logger.info("执行新手任务---经验值任务--用户经验值账户更新结果-updateStatus:{}", updateStatus);
         if (updateStatus) {
             return 1;
