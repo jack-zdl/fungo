@@ -169,7 +169,7 @@ public class IndexController {
 
 
         //reids cache
-        fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
+        fungoCacheIndex.excIndexCacheWithTime(true, keyPrefix, keySuffix, re,3*60);
 
         return re;
     }
