@@ -7,6 +7,7 @@ import com.fungo.system.helper.mq.MQProduct;
 import com.fungo.system.service.MemberPlayLogService;
 import com.fungo.system.service.SysVersionService;
 import com.fungo.system.tools.WXPayUtil;
+import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.vo.MemberPlayLogVO;
@@ -298,6 +299,18 @@ public class LingkaController {
             }
         } finally {
 //            lock.unlock();
+        }
+        return null;
+    }
+
+
+    @GetMapping("/api/system/accelerate")
+    public String accelerate(MemberUserProfile memberUserPrefile) {
+        Map<String, String> returnData = new HashMap<>();
+        try {
+//
+        } catch (final Exception e) {
+
         }
         return null;
     }

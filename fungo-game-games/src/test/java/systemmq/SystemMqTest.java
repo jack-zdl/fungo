@@ -25,20 +25,20 @@ import java.util.List;
  *  ysx
  *  用户mq相关测试
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = FungoGamesApplication.class)
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@SpringBootTest(classes = FungoGamesApplication.class)
 public class SystemMqTest {
-    @Autowired
-    private MQFeignClient mqFeignClient;
-
-    @Autowired
-    private BasTagService basTagService;
-
-    @Test
-    public void addTag(){
-        List<BasTag> tags = getTags();
-        basTagService.insertBatch(tags);
-    }
+//    @Autowired
+//    private MQFeignClient mqFeignClient;
+//
+//    @Autowired
+//    private BasTagService basTagService;
+//
+//    @Test
+//    public void addTag(){
+//        List<BasTag> tags = getTags();
+//        basTagService.insertBatch(tags);
+//    }
 
     private List<BasTag> getTags(){
         List<BasTag> list = new ArrayList<>();
@@ -86,7 +86,7 @@ public class SystemMqTest {
     /**
      *  添加行为记录
      */
-    @Test
+//    @Test
     public void processAddAction() {
         //参数
         BasActionDto basActionDto = new BasActionDto();
@@ -107,7 +107,7 @@ public class SystemMqTest {
         transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
         transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
         transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_USER);
-        ResultDto resultDto = mqFeignClient.saveAndSendMessage(transactionMessageDto);
+//        ResultDto resultDto = mqFeignClient.saveAndSendMessage(transactionMessageDto);
 
     }
 }
