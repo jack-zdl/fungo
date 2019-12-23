@@ -11,6 +11,7 @@ public class PostOut {
 
 	private String objectId;
     private List<String> tags = new ArrayList<>();
+//	private List<String> tagsName = new ArrayList<>();
 	private List<String> images = new ArrayList<>();
 	private String cover_image;
 	private String title;
