@@ -1003,7 +1003,7 @@ public class GameServiceImpl implements IGameService {
      * @return
      */
     @Override
-    public FungoPageResultDto<GameSearchOut> searchGames(int page, int limit, String keyword, String tag, String sort, String os, String memberId)
+    public FungoPageResultDto<GameSearchOut>    searchGames(int page, int limit, String keyword, String tag, String sort, String os, String memberId)
             throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         if (keyword == null || "".equals(keyword.replace(" ", "")) || keyword.contains("%")) {
             return FungoPageResultDto.error("13", "请输入正确的关键字格式");
@@ -1019,7 +1019,7 @@ public class GameServiceImpl implements IGameService {
 //                        "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
 //                        .eq("state", 0);
 //                wrapper.and().like("name", keyword);//.like("name", ).or().like("google_deputy_name", keyword).or().like( "intro",keyword );
-                 gameList = gameDao.getGmaePage( gamePage,keyword );
+                gameList = gameDao.getGmaePage( gamePage,keyword );
 //                if (tag != null && !"".equals(tag.replace(" ", ""))) {
 //                    wrapper.like("tags", tag);
 //                }
@@ -1039,7 +1039,7 @@ public class GameServiceImpl implements IGameService {
 
             if (gameList == null) {
                 gameList = gamePage.getRecords();
-            } else {// 如果sort不存在,默认排序
+            } else { // 如果sort不存在,默认排序
                 if (gameList.size() == 0) {
                     return new FungoPageResultDto<GameSearchOut>();
                 }
@@ -1068,7 +1068,11 @@ public class GameServiceImpl implements IGameService {
                         }
                     });
                 }
-                gamePage = pageFormat(gameList, page, limit);
+                if(gamePage.getTotal() == 0){
+                    gamePage = pageFormat(gameList, page, limit);
+                }else {
+                    gamePage.setRecords(gameList);
+                }
             }
 
             boolean m = false;
