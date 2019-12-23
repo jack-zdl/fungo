@@ -77,10 +77,10 @@ public class MemberIncentDoTaskFacadeServiceImpl implements IMemberIncentDoTaskF
 
                 //每周任务，起始编号 8706
                 case 8706:
-                    resMap = this.iMemberIncentWeeklyTaskService.exTask(mb_id, task_group_flag, task_type, type_code_idt);
+                    resMap.put("-1", "每周任务已于 V2.7 版本取消");
+                    resMap.put("success", false);
+                    //resMap = this.iMemberIncentWeeklyTaskService.exTask(mb_id, task_group_flag, task_type, type_code_idt);
                     break;
-
-
                 //精品任务，起始编号 9728
                 case 9728:
                     resMap = this.iMemberIncentExcellentTaskService.exTask(mb_id, task_group_flag, task_type, type_code_idt);
@@ -132,9 +132,10 @@ public class MemberIncentDoTaskFacadeServiceImpl implements IMemberIncentDoTaskF
 
                 //每周任务，起始编号 8706
                 case 8706:
-                    resMap = this.iMemberIncentWeeklyTaskService.exTask(mb_id, task_group_flag, task_type, type_code_idt, target_id);
+                    resMap.put("-1", "每周任务已于 V2.7 版本取消");
+                    resMap.put("success", false);
+                    //resMap = this.iMemberIncentWeeklyTaskService.exTask(mb_id, task_group_flag, task_type, type_code_idt);
                     break;
-
 
                 //精品任务，起始编号 9728
                 case 9728:
