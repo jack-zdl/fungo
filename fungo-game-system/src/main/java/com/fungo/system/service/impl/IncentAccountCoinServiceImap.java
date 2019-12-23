@@ -6,15 +6,10 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.fungo.system.dao.IncentAccountCoinDao;
 import com.fungo.system.entity.IncentAccountCoin;
 import com.fungo.system.entity.Member;
-import com.fungo.system.entity.MessageCode;
-import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.mall.service.commons.FungoMallScanOrderWithSeckillService;
 import com.fungo.system.service.IMemberService;
 import com.fungo.system.service.IncentAccountCoinDaoService;
 import com.fungo.system.service.MemberService;
-import com.game.common.buriedpoint.BuriedPointUtils;
-import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
-import com.game.common.buriedpoint.model.BuriedPointConsumeModel;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MessageConstants;
 import com.game.common.dto.ResultDto;
@@ -25,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,8 +38,8 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
 
     private static final Logger logger = LoggerFactory.getLogger( IncentAccountCoinServiceImap.class);
 
-    @Autowired
-    private IncentAccountCoinDaoService incentAccountCoinService;
+//    @Autowired
+//    private IncentAccountCoinDaoService incentAccountCoinService;
     @Autowired
     private FungoMallScanOrderWithSeckillService fungoMallScanOrderWithSeckillServiceImpl;
     @Autowired
@@ -74,7 +68,7 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
             criteriaMap.put("mb_id", memberId);
             mbAccountCoinEntityWrapper.allEq(criteriaMap);
 
-            IncentAccountCoin incentAccountCoinDB = incentAccountCoinService.selectOne(mbAccountCoinEntityWrapper);
+            IncentAccountCoin incentAccountCoinDB = selectOne(mbAccountCoinEntityWrapper);
 
             logger.info("扣减用户fungo币账户被冻结商品价格-扣减前账户详情：{}", JSON.toJSONString(incentAccountCoinDB));
             //账户冻结币量
@@ -96,7 +90,7 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
 
                 logger.info("扣减用户fungo币账户被冻结商品价格-扣减计算后，账户详情：{}", JSON.toJSONString(incentAccountCoinNew));
                 //执行账户更新
-                boolean updateOk = incentAccountCoinService.update(incentAccountCoinNew, mbAccountCoinEntityWrapper);
+                boolean updateOk = update(incentAccountCoinNew, mbAccountCoinEntityWrapper);
                 logger.info("扣减用户fungo币账户被冻结商品价格-用户Id:{}--fungo币账户被冻结商品价格-商品价格:{}--账户冻结币量:{}--执行结果:{}", userFunVO.getMemberId(), userFunVO.getNumber(),
                         coinUsableNew.toString(), updateOk);
 
@@ -113,7 +107,7 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
 
                 logger.info("扣减fun币账户详情：{}", JSON.toJSONString(incentAccountCoinNew));
                 //执行账户更新
-                boolean updateOk = incentAccountCoinService.update(incentAccountCoinNew, mbAccountCoinEntityWrapper);
+                boolean updateOk = update(incentAccountCoinNew, mbAccountCoinEntityWrapper);
                 logger.info("扣减用户fungo币账户被冻结商品价格-用户Id:{}--fungo币账户被冻结商品价格-商品价格:{}--账户冻结币量:{}--执行结果:{}", userFunVO.getMemberId(), userFunVO.getNumber(),
                         coinUsableNew.toString(), updateOk);
 

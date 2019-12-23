@@ -1,22 +1,12 @@
 package com.game.common.aliyun.green;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
-import com.aliyuncs.exceptions.ClientException;
-import com.aliyuncs.exceptions.ServerException;
-import com.aliyuncs.green.model.v20180509.TextScanRequest;
-import com.aliyuncs.http.FormatType;
-import com.aliyuncs.http.HttpResponse;
+
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import com.game.common.config.FungoConfig;
-import org.springframework.stereotype.Component;
-
-import java.io.UnsupportedEncodingException;
-import java.util.*;
 
 /**
  * <p></p>

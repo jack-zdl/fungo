@@ -29,7 +29,6 @@ import com.game.common.consts.FunGoGameConsts;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.mall.MallGoodsInput;
-import com.game.common.enums.AbstractResultEnum;
 import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.FunGoEHCacheUtils;
 import com.game.common.util.FungoAESUtil;
@@ -71,7 +70,7 @@ public class FungoMallScanOrderWithSeckillService {
     private MallSeckillDaoService mallSeckillDaoService;
 
     @Autowired
-    private IncentAccountCoinDaoService incentAccountCoinService;
+    private IncentAccountCoinDaoService incentAccountCoinServiceImap;
 
     @Autowired
     private MallOrderDaoService mallOrderDaoService;
@@ -682,7 +681,7 @@ public class FungoMallScanOrderWithSeckillService {
         criteriaMap.put("mb_id", mb_id);
         mbAccountCoinEntityWrapper.allEq(criteriaMap);
 
-        IncentAccountCoin incentAccountCoinDB = incentAccountCoinService.selectOne(mbAccountCoinEntityWrapper);
+        IncentAccountCoin incentAccountCoinDB = incentAccountCoinServiceImap.selectOne(mbAccountCoinEntityWrapper);
 
         logger.info("解冻用户fungo币账户被冻结商品价格-解冻前账户详情：{}", JSON.toJSONString(incentAccountCoinDB));
 
@@ -711,7 +710,7 @@ public class FungoMallScanOrderWithSeckillService {
             logger.info("解冻用户fungo币账户被冻结商品价格-执行解冻计算后账户详情：{}", JSON.toJSONString(incentAccountCoinNew));
 
             //执行账户更新
-            boolean updateOk = incentAccountCoinService.update(incentAccountCoinNew, mbAccountCoinEntityWrapper);
+            boolean updateOk = incentAccountCoinServiceImap.update(incentAccountCoinNew, mbAccountCoinEntityWrapper);
             logger.info("更新解冻用户-用户Id:{}--fungo币账户被冻结商品价格-商品价格:{}--执行结果:{}", mb_id, goodsPriceVcy, updateOk);
         }
     }
@@ -844,7 +843,7 @@ public class FungoMallScanOrderWithSeckillService {
         criteriaMap.put("mb_id", mb_id);
         mbAccountCoinEntityWrapper.allEq(criteriaMap);
 
-        IncentAccountCoin incentAccountCoinDB = incentAccountCoinService.selectOne(mbAccountCoinEntityWrapper);
+        IncentAccountCoin incentAccountCoinDB = incentAccountCoinServiceImap.selectOne(mbAccountCoinEntityWrapper);
 
         logger.info("扣减用户fungo币账户被冻结商品价格-扣减前账户详情：{}", JSON.toJSONString(incentAccountCoinDB));
         //账户冻结币量
@@ -865,7 +864,7 @@ public class FungoMallScanOrderWithSeckillService {
 
             logger.info("扣减用户fungo币账户被冻结商品价格-扣减计算后，账户详情：{}", JSON.toJSONString(incentAccountCoinNew));
             //执行账户更新
-            boolean updateOk = incentAccountCoinService.update(incentAccountCoinNew, mbAccountCoinEntityWrapper);
+            boolean updateOk = incentAccountCoinServiceImap.update(incentAccountCoinNew, mbAccountCoinEntityWrapper);
             logger.info("扣减用户fungo币账户被冻结商品价格-用户Id:{}--fungo币账户被冻结商品价格-商品价格:{}--账户冻结币量:{}--执行结果:{}", mb_id, goodsPriceVcy,
                     coinFreezeNew.toString(), updateOk);
 

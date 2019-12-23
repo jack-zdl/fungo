@@ -51,7 +51,7 @@ public class ScoreLogServiceImap extends ServiceImpl<ScoreLogDao, ScoreLog> impl
     private ScoreRuleServiceImap scoreRuleService;
 
     @Autowired
-    private IncentAccountCoinDaoService accountCoinService;
+    private IncentAccountCoinDaoService incentAccountCoinServiceImap;
 
     @Autowired
     private IncentAccountScoreService accountScoreService;
@@ -452,7 +452,7 @@ public class ScoreLogServiceImap extends ServiceImpl<ScoreLogDao, ScoreLog> impl
         //加积分，添加日志,更新等级
         Integer score = coinRule.getScore();
         //更新账户 .eq("account_group_id", 3)
-        IncentAccountCoin coinAccount = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", userId));
+        IncentAccountCoin coinAccount = incentAccountCoinServiceImap.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", userId));
         if (coinAccount == null) {
             coinAccount = IAccountDaoService.createAccountCoin(userId);
         }

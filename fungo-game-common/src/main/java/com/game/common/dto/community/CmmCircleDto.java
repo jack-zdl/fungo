@@ -29,6 +29,12 @@ public class CmmCircleDto implements Serializable {
 
     private String gameId;
 
+    /**
+     * 功能描述: 游戏状态  1 true 正常 0 下架
+     * @date: 2019/12/20 10:18
+     */
+    private int gameStatus = 0;
+
     private String cmmId;
 
     private Integer type;

@@ -47,7 +47,7 @@ public class FungoGrantHandworkService {
 
     //"D:/MingBoWork/fungoCoin/uat/提取信息.xlsx";//
     @Autowired
-    private IncentAccountCoinDaoService accountCoinService;
+    private IncentAccountCoinDaoService incentAccountCoinServiceImap;
 
     @Autowired
     private IMemberAccountScoreDaoService IAccountDaoService;
@@ -186,7 +186,7 @@ public class FungoGrantHandworkService {
 
 
             //更新fungo币账户
-            IncentAccountCoin coinAccount = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", memberInfo.getId()).
+            IncentAccountCoin coinAccount = incentAccountCoinServiceImap.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", memberInfo.getId()).
                     eq("account_group_id", 3));
             if (coinAccount == null) {
                 coinAccount = IAccountDaoService.createAccountCoin(memberInfo.getId());

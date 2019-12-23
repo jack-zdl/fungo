@@ -47,7 +47,7 @@ public class MemberIncentAccountServiceImpl implements IMemberIncentAccountServi
     private IncentAccountScoreService incentAccountScoreService;
 
     @Autowired
-    private IncentAccountCoinDaoService incentAccountCoinService;
+    private IncentAccountCoinDaoService incentAccountCoinServiceImap;
 
     @Autowired
     private ScoreLogService scoreLogService;
@@ -185,7 +185,7 @@ public class MemberIncentAccountServiceImpl implements IMemberIncentAccountServi
             criteriaMap.put("mb_id", memberId);
             wrapperCriteria.allEq(criteriaMap);
 
-            IncentAccountCoin accountScore = incentAccountCoinService.selectOne(wrapperCriteria);
+            IncentAccountCoin accountScore = incentAccountCoinServiceImap.selectOne(wrapperCriteria);
             if (null != accountScore) {
                 AccountCoinOutBean accountCoinOutBean = new AccountCoinOutBean();
                 BeanUtils.copyProperties(accountScore, accountCoinOutBean);
