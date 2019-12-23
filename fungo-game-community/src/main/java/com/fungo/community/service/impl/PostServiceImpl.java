@@ -1235,6 +1235,9 @@ public class PostServiceImpl implements IPostService {
         out.setAuthor(authorBean);
         out.setType(cmmPost.getType());
 
+        // pc 2.1 新增关联的游戏
+        out.setIncludeGameList(cmmPostGameMapper.listGameName(postId));
+        
         CmmPost cmmPostUpdate = new CmmPost();
         cmmPostUpdate.setId(postId);
         cmmPostUpdate.setWatchNum(cmmPost.getWatchNum() + 1);

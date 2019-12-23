@@ -4,6 +4,8 @@ import com.fungo.community.entity.CmmPostGame;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 public interface CmmPostGameMapper {
@@ -20,4 +22,6 @@ public interface CmmPostGameMapper {
     int updateByPrimaryKey(CmmPostGame record);
 
     String getCommunityIdByPostId(@Param("postId") String id);
+
+    List<String> listGameName(@Param("postId") String postId);
 }
