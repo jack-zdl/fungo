@@ -76,11 +76,14 @@ public class PortalGamesIndexServiceImpl implements PortalGamesIIndexService {
             }
             List<Map<String, Object>> lists = new ArrayList<Map<String, Object>>();
             for (GameCollectionItem gameCollectionItem : ilist) {
+                Game game = this.gameService.selectById(gameCollectionItem.getGameId());
+                if( game.getState() != 0){
+                    continue;
+                }
                 if (lists.size() == input.getAmount()) {
                     map.put("is_more", true);
                     break;
                 }
-                Game game = this.gameService.selectById(gameCollectionItem.getGameId());
                 HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
                 Map<String, Object> map1 = new HashMap<String, Object>();
                 if (rateData != null) {
