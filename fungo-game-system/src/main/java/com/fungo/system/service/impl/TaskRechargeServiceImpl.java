@@ -1,9 +1,10 @@
 package com.fungo.system.service.impl;
 
 import com.fungo.system.service.TaskRechargeService;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
+@Service
 public class TaskRechargeServiceImpl implements TaskRechargeService {
 
     @Override

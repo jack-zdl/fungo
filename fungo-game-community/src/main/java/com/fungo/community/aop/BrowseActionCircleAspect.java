@@ -45,7 +45,7 @@ public class BrowseActionCircleAspect {
 
 
 
-    @Pointcut("execution(public * com.fungo.community.controller.CircleController.selectCircle(..))" )
+    @Pointcut("execution(public * com.fungo.community.controller.CircleController.selectCircle(..)) || execution(public * com.fungo.community.controller.portal.PortalCommunityCircleController.selectCircle(..)) " )
     public void webLog() {
     }
 
