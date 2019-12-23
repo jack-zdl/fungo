@@ -76,7 +76,7 @@ public class PortalCommunityPostServiceImpl implements IPortalCommunityPostServi
 	@Cacheable(cacheNames={FunGoGameConsts.CACHE_EH_KEY_POST} ,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_GAMR_POSTS_CACHE +" ' +#userId + #circleGamePostVo.gameId + #circleGamePostVo.page + #circleGamePostVo.limit ")
 	@Override
 	public FungoPageResultDto<PostOutBean> selectCircleGamePost(String userId, CircleGamePostVo circleGamePostVo) {
-		FungoPageResultDto<PostOutBean> re = null;
+		FungoPageResultDto<PostOutBean> re = new FungoPageResultDto<>();
 		List<PostOutBean> relist = null;
 		Page page = new Page(circleGamePostVo.getPage(), circleGamePostVo.getLimit());
 		String gameId = circleGamePostVo.getGameId();
@@ -198,7 +198,6 @@ public class PortalCommunityPostServiceImpl implements IPortalCommunityPostServi
 				}
 				relist.add(bean);
 			}
-			re = new FungoPageResultDto<>();
 			fungoCacheArticle.excIndexDecodeCache(true, keyPrefix, keySuffix, relist, RedisActionHelper.getRandomRedisCacheTime());
 			re.setData(relist);
 			PageTools.pageToResultDto(re, page);
