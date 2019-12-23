@@ -733,12 +733,12 @@ public class ActionServiceImpl implements IActionService {
         mqProduct.updateGameDownNumAndBoomDownloadNum(ssmap);
 
 
-        //V2.4.6之前版本任务
+        //V2.4.6之前版本任务  -- v2.7 取消下载游戏任务
         // times = gameProxy.addTaskCore(Setting.ACTION_TYPE_DOWNLOAD, memberId, inputDto.getTarget_id(), inputDto.getTarget_type());
 
         //V2.4.6版本任务
         //登录用户执行下载游戏任务
-        if (StringUtils.isNoneBlank(memberId)) {
+    /*    if (StringUtils.isNoneBlank(memberId)) {
             //新手任务
             //1 经验值
             iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
@@ -770,7 +770,7 @@ public class ActionServiceImpl implements IActionService {
                 }
             }
             //end
-        }
+        }*/
 
         ResultDto<String> re = new ResultDto<>();
         if (StringUtils.isNotBlank(tips)) {
