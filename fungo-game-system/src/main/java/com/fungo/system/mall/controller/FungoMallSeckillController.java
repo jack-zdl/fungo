@@ -342,6 +342,24 @@ public class FungoMallSeckillController {
     }
 
 
+
+    /**
+     *  浏览一次礼包乐园
+     * @return
+     */
+    @RequestMapping(value = "/api/mall/task/browse ", method = RequestMethod.POST)
+    public ResultDto<String> browseMall(@RequestBody Map<String, String> authMap) throws Exception {
+
+        try {
+
+        }catch (Exception e){
+
+        }
+        return ResultDto.error("-1", "您需要授权操作!");
+    }
+
+
+
     /**
      * 添加商品数据
      * @return

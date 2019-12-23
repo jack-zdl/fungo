@@ -461,6 +461,18 @@ public class MemberController {
     }
 
 
+    @ApiOperation(value = "获取我的中秋抽奖权限", notes = "")
+    @RequestMapping(value = "/api/mine/push", method = RequestMethod.POST)
+    @ApiImplicitParams({})
+    public ResultDto<Map<String, Integer>> userPush(MemberUserProfile memberUserPrefile) {
+        String memberId = memberUserPrefile.getLoginId();
+        if (CommonUtil.isNull(memberId)) {
+            return ResultDto.error("-1", "未指定用户");
+        }
+        return memberService.getPublishCount(memberId);
+    }
+
+
 }
 
 

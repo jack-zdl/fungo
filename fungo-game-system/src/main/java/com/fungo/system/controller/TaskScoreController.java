@@ -108,5 +108,18 @@ public class TaskScoreController {
         return taskService.DailyMotto(userId);
     }
 
+    @ApiOperation(value = "task", notes = "")
+    @RequestMapping(value = "/api/rank/joinCilcle", method = RequestMethod.GET)
+    public ResultDto<String> joinCilcle(MemberUserProfile memberUserPrefile) throws Exception {
+        String userId = memberUserPrefile.getLoginId();
+        return taskService.DailyMotto(userId);
+    }
+
+    @ApiOperation(value = "task", notes = "")
+    @RequestMapping(value = "/api/rank/followUser", method = RequestMethod.GET)
+    public ResultDto<String> followUser(MemberUserProfile memberUserPrefile) throws Exception {
+        String userId = memberUserPrefile.getLoginId();
+        return taskService.DailyMotto(userId);
+    }
 //----------
 }
