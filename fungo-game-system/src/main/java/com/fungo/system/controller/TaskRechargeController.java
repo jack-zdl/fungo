@@ -18,9 +18,11 @@ public class TaskRechargeController {
         if(StringUtil.isNull(loginId)||StringUtil.isNull(orderId)){
             return  ResultDto.error("-1","参数错误");
         }
-        taskRechargeService.completeRechargeTask(loginId,rechargeType,orderId);
-        return ResultDto.success();
+        return taskRechargeService.completeRechargeTask(loginId,rechargeType,orderId);
     }
+
+
+
 
 
 }
