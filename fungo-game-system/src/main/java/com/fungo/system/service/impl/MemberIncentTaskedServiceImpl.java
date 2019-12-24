@@ -174,9 +174,9 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
 
             //从redis缓存中获取
             scoreGroupMapList = (List<Map<String, Object>>) fungoCacheTask.getIndexCache(keyPreffix, keySuffix);
-//            if (null != scoreGroupMapList && !scoreGroupMapList.isEmpty()) {
-//                return scoreGroupMapList;
-//            }
+            if (null != scoreGroupMapList && !scoreGroupMapList.isEmpty()) {
+                return scoreGroupMapList;
+            }
 
             scoreGroupMapList = new ArrayList<>();
 

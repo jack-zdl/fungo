@@ -14,7 +14,11 @@ public class CounterServiceImpl implements ICounterService {
 
 	@Autowired
 	private CmmCommentDao actionDao;
-	
+
+	/**
+	 * 功能描述: todo  增加mq到system微服务通知他用户已关注官方圈
+	 * @date: 2019/12/23 17:37
+	 */
 	@Override
 	public boolean addCounter(String tableType, String fieldType, String id) {
 		Map<String,String> map =new HashMap<String,String>();
