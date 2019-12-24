@@ -63,7 +63,7 @@ public class NacosFungoCircleConfig {
     @Value( value = "${fungo.cloud.wechat.appKey}")
     public String wechatAppKey;
 
-    @NacosValue(  value = "${fungo.cloud.official.users}")
+    @Value(value = "${fungo.cloud.official.users}")
     public List<String> officialUsers;
 
     public String getBasLog() {
