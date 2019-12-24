@@ -1556,10 +1556,8 @@ public class PostServiceImpl implements IPostService {
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_ALL_POST_TOPIC;
         String keySuffix = JSON.toJSONString(inputPageDto)+JSON.toJSONString(memberUserPrefile);
         try {
-            list = (List<PostOutBean>) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
-            if (null != list &&  list.size() > 0) {
-                re.setData(list);
-                PageTools.pageToResultDto(re, page);
+            re = (FungoPageResultDto<PostOutBean>) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
+            if (null != re ) {
                 return re;
             }
             List<CmmPost> cmmPostList = cmmPostDao.getCmmPostByRecommend(page);
@@ -1672,15 +1670,20 @@ public class PostServiceImpl implements IPostService {
                         bean.setCircleName(cmmCircle.getCircleName());
                         bean.setCircleIcon(cmmCircle.getCircleIcon());
                     }
+                    //视频详情
+                    if (!CommonUtil.isNull(cmmPost.getVideoUrls())) {
+                        ArrayList<StreamInfo> streams = (ArrayList<StreamInfo>) JSON.parseArray(cmmPost.getVideoUrls(), StreamInfo.class);
+                        bean.setVideoList(streams);
+                    }
                     list.add(bean);
                 }
             }
-            fungoCacheArticle.excIndexDecodeCache(true, keyPrefix, keySuffix, list, RedisActionHelper.getRandomRedisCacheTime());
+            re.setData(list);
+            PageTools.pageToResultDto(re, page);
+            fungoCacheArticle.excIndexDecodeCache(true, keyPrefix, keySuffix, re, RedisActionHelper.getRandomRedisCacheTime());
         }catch (Exception e){
             logger.error( "圈子查询推荐文章异常",e );
         }
-        re.setData(list);
-        PageTools.pageToResultDto(re, page);
         return re;
     }
 

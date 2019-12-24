@@ -94,5 +94,10 @@ public class PostOutBean {
 
 	private String memberId;
 
+	/**
+	 * 视频详情(2.4.3)
+	 */
+	private List<StreamInfo> videoList = new ArrayList<>();
+
 
 }

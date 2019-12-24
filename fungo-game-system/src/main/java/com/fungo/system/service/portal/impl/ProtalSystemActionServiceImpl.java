@@ -79,6 +79,8 @@ public class ProtalSystemActionServiceImpl implements IActionService {
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
+    @Autowired
+    private IActionService iActionService;
 
 
     @Override
@@ -122,7 +124,7 @@ public class ProtalSystemActionServiceImpl implements IActionService {
         if (action == null) {
             action = this.buildAction(memberId, Setting.ACTION_TYPE_FOLLOW, inputDto);
             this.actionService.insert(action);
-            this.addCounter(memberId, Setting.ACTION_TYPE_FOLLOW, inputDto);//粉丝数 +1
+            iActionService.addCounter(memberId, Setting.ACTION_TYPE_FOLLOW, inputDto);//粉丝数 +1
 
             if ("t_member".equals(getTableName(inputDto.getTarget_type()))) {//用户 关注数+1
                 isMember = true;
