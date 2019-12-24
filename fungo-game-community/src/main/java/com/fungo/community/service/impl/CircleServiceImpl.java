@@ -273,7 +273,7 @@ public class CircleServiceImpl implements CircleService {
     @Cacheable(value = CACHE_EH_KEY_POST,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_POST_CACHE +" ' +#memberId + #cmmCirclePostVo.circleId + #cmmCirclePostVo.queryType + #cmmCirclePostVo.sortType + #cmmCirclePostVo.page + #cmmCirclePostVo.limit " )
     @Override
     public FungoPageResultDto<PostOutBean> selectCirclePost(String memberId, CmmCirclePostVo cmmCirclePostVo) {
-        FungoPageResultDto<PostOutBean> re = new FungoPageResultDto<>();
+        FungoPageResultDto<PostOutBean> re = null;
         List<CmmPost> cmmPosts = new ArrayList<>();
         String userId = memberId;
         List<PostOutBean> relist = null;
@@ -283,13 +283,12 @@ public class CircleServiceImpl implements CircleService {
         try {
             String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_POST;
             String keySuffix = JSON.toJSONString(cmmCirclePostVo)+memberId;
-            relist = (List<PostOutBean>) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
-            if (null != relist &&  relist.size() > 0) {
-                re.setData(relist);
-                PageTools.pageToResultDto(re, page);
+            re = (FungoPageResultDto<PostOutBean>) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
+            if (null != re) {
                 return re;
             }
             relist = new ArrayList<>();
+            re = new FungoPageResultDto<>();
             String tagId = cmmCirclePostVo.getQueryType();
             String sortType = cmmCirclePostVo.getSortType();
             if (CmmCirclePostVo.QueryTypeEnum.ALL.getKey().equals(cmmCirclePostVo.getQueryType())) {  // 全部查询
@@ -452,9 +451,9 @@ public class CircleServiceImpl implements CircleService {
                     s.setAuthor( authorBean.get());
                 }
             });
-            fungoCacheArticle.excIndexDecodeCache(true, keyPrefix, keySuffix, relist, RedisActionHelper.getRandomRedisCacheTime());
             re.setData(relist);
             PageTools.pageToResultDto(re, page);
+            fungoCacheArticle.excIndexDecodeCache(true, keyPrefix, keySuffix, re, RedisActionHelper.getRandomRedisCacheTime());
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error("圈子获取下属文章异常，圈子id="+circleId, e);

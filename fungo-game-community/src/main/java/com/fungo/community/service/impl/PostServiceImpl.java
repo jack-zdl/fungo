@@ -560,7 +560,8 @@ public class PostServiceImpl implements IPostService {
         }
         //我的文章(2.4.3)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
-
+        //刪除文章相關的rediskey
+        fungoCacheArticle.excIndexDecodeCache( false, FungoCoreApiConstant.PUB_POST, "", null,null);
         //添加埋点信息
         BuriedPointPostModel model = new BuriedPointPostModel();
         //封装父类3个公共属性
@@ -1568,7 +1569,7 @@ public class PostServiceImpl implements IPostService {
     @Cacheable(cacheNames = {FunGoGameConsts.CACHE_EH_KEY_PRE_COMMUNITY } ,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_ALL_POST_TOPIC_CACHE +" ' + #inputPageDto.page + #inputPageDto.limit ")
     @Override
     public FungoPageResultDto<PostOutBean> getTopicPosts(MemberUserProfile memberUserPrefile, PostInputPageDto inputPageDto) {
-        FungoPageResultDto<PostOutBean> re = new FungoPageResultDto<>();
+        FungoPageResultDto<PostOutBean> re = null;
         List<PostOutBean> list = null;
         Page page = new Page(inputPageDto.getPage(), inputPageDto.getLimit());
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_ALL_POST_TOPIC;
@@ -1580,6 +1581,7 @@ public class PostServiceImpl implements IPostService {
             }
             List<CmmPost> cmmPostList = cmmPostDao.getCmmPostByRecommend(page);
             list = new ArrayList<>();
+            re = new FungoPageResultDto<>();
             if (cmmPostList != null) {
                 ObjectMapper mapper = new ObjectMapper();
                 for (CmmPost cmmPost : cmmPostList) {
