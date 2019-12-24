@@ -6,18 +6,26 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.dao.BannerDao;
+import com.fungo.system.dao.MemberDao;
 import com.fungo.system.entity.*;
 import com.fungo.system.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.dto.ActionInput;
 import com.game.common.dto.ResultDto;
 import com.game.common.enums.FunGoTaskV243Enum;
+import com.game.common.enums.NewTaskIdenum;
 import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.PKUtil;
+import org.checkerframework.checker.units.qual.A;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -29,41 +37,40 @@ import java.util.*;
 @Transactional
 public class TaskServiceImpl implements ITaskService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskServiceImpl.class);
+
     @Autowired
     private MemberService memberService;
-
     @Autowired
     private ScoreLogService scoreLogService;
-
     @Autowired
     private ScoreRuleService scoreRuleService;
-
+    @Autowired
+    private IScoreRuleService scoreRuleServiceImpl;
     @Autowired
     private ScoreGroupService scoreGroupService;
-
     @Autowired
-    private IncentAccountCoinDaoService accountCoinService;
-
+    private IncentAccountCoinDaoService incentAccountCoinServiceImap;
     @Autowired
     private IncentAccountScoreService accountScoreService;
-
     @Autowired
     private IncentRankedService rankedService;
-
     @Autowired
     private IMemberAccountScoreDaoService IAccountDaoService;
-
     @Autowired
     private IncentRuleRankService ruleRankService;
-
     @Autowired
     private IncentRankedLogService rankedLogService;
-
     @Autowired
     private BannerDao bannerDao;
-
     @Autowired
     private FungoCacheTask fungoCacheTask;
+    @Autowired
+    private MemberDao memberDao;
+    @Autowired
+    private NacosFungoCircleConfig nacosFungoCircleConfig;
+    @Resource(name = "actionServiceImpl")
+    private IActionService actionService;
 
     @SuppressWarnings("rawtypes")
     @Override
@@ -316,7 +323,7 @@ public class TaskServiceImpl implements ITaskService {
 
 
         //fun币 .eq("account_group_id", 3)
-        IncentAccountCoin accountCoin = accountCoinService.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", userId));
+        IncentAccountCoin accountCoin = incentAccountCoinServiceImap.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", userId));
         if (accountCoin == null) {
             accountCoin = IAccountDaoService.createAccountCoin(userId);
         }
@@ -560,6 +567,30 @@ public class TaskServiceImpl implements ITaskService {
         }
 
         return re;
+    }
+
+    @Override
+    public ResultDto<String> followUser(String userId) throws Exception {
+        try {
+            List<String> officialUsers = nacosFungoCircleConfig.getOfficialUsers();
+            List<String> memberIdList = memberDao.getMemberIdList(officialUsers);
+            memberIdList.stream().forEach(s ->{
+                ActionInput inputDto = new ActionInput();
+                inputDto.setTarget_type(0);
+                inputDto.setTarget_id(s);
+                try {
+                    ResultDto<String> resultDto = actionService.follow(userId, inputDto);
+                } catch (Exception e) {
+                    LOGGER.error( userId+"用户关注用户"+s+"失败",e);
+                }
+            });
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskIdenum.FOLLOWOFFICIALUSER_COIN.getKey() );
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskIdenum.FOLLOWOFFICIALUSER_EXP.getKey());
+            return ResultDto.ResultDtoFactory.buildSuccess( "一键关注官方账户成功" );
+        }catch (Exception e){
+            LOGGER.error( userId+"用户一键关注官方账户失败",e );
+            return ResultDto.ResultDtoFactory.buildError("一键关注官方账户失败");
+        }
     }
 
 

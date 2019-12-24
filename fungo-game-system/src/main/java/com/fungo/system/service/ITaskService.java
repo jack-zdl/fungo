@@ -29,4 +29,6 @@ public interface ITaskService {
     public ResultDto<String> DailyMotto(String userId) throws Exception;
 
 
+    public ResultDto<String> followUser(String userId) throws Exception;
+
 }

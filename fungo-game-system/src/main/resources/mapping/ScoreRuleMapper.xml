@@ -33,7 +33,29 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, group_id AS groupId, name, is_active AS isActive, extra, tip, max, score, code, intro, created_at AS createdAt, updated_at AS updatedAt
+        id, group_id AS groupId, name, is_active AS isActive, extra, tip, max, score, code, intro, created_at AS createdAt, updated_at AS updatedAt ,
+        code_idt as codeIdt , incomie_freg_type  as incomieFregType, action_url as actionUrl, task_type as taskType, auth_level as authLevel, ext1 ,ext2 ,ext3,
+        income_freq_intro as incomeFreqIntro , creator_id as creatorId , creator_name as creatorName , sort , pls_task_id as plsTaskId
     </sql>
+	
+	<select id="getScoreRule" parameterType="java.lang.String" resultType="com.fungo.system.entity.ScoreRule" >
+	SELECT
+	 <include refid="Base_Column_List"></include>
+	 FROM t_score_rule WHERE ext2 = #{ext2Status} and group_id
+		in
+		(
+			SELECT id FROM t_score_group WHERE task_type = 3 and is_active = 1 and task_flag = 1701
+		)
+	</select>
+
+	<select id="getNewbieScoreRuleById" parameterType="java.lang.String" resultType="com.fungo.system.entity.ScoreRule" >
+		SELECT
+		<include refid="Base_Column_List"></include>
+		FROM t_score_rule WHERE id = #{id} and is_active = 1  and group_id
+		in
+		(
+			SELECT id FROM t_score_group WHERE task_type = 3 and is_active = 1 and task_flag = 1701
+		)
+	</select>
 
 </mapper>

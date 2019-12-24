@@ -7,5 +7,5 @@ package com.fungo.system.service;
  */
 public interface IScoreRuleService {
 
-    void achieveScoreRule(String memberId,int type);
+    void achieveScoreRule(String memberId,String ext2Task);
 }

@@ -1,9 +1,12 @@
 package com.fungo.system.ScoreRuleTest;
 
+import com.fungo.system.entity.IncentTasked;
 import com.fungo.system.entity.ScoreRule;
+import com.fungo.system.service.IScoreRuleService;
 import com.game.common.util.UUIDUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import sun.security.krb5.SCDynamicStoreConfig;
@@ -20,6 +23,16 @@ import java.util.Date;
 @SpringBootTest
 public class ScoreRuleTest {
 
+    @Autowired
+    private IScoreRuleService scoreRuleServiceImpl;
+
+    @Test
+    public void testUserScoreRule(){
+//        String memberId = "287c0f55aaf7436b89c0a73964efff3c";
+        String memberId = "db670a48ec9c49f187392c23dd81ab61";
+        String exitType = "1";
+        scoreRuleServiceImpl.achieveScoreRule( memberId,exitType);
+    }
 
     @Test
     public void insertScoreRule(){

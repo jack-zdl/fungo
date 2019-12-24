@@ -22,4 +22,10 @@
         id, mb_id AS mbId, current_task_id AS currentTaskId, current_task_name AS currentTaskName, task_idt_ids AS taskIdtIds, task_type AS taskType, ext1, ext2, ext3
     </sql>
 
+	<select id="getIncentTaskedByUserAndType" parameterType="java.lang.String" resultType="com.fungo.system.entity.IncentTasked" >
+		SELECT 
+		 <include refid="Base_Column_List"></include>
+		 FROM t_incent_tasked WHERE mb_id = #{memberId} and task_type = #{taskType}
+	</select>
+
 </mapper>

@@ -2,6 +2,7 @@ package com.fungo.system.controller;
 
 import com.fungo.system.helper.TaskUrl;
 import com.fungo.system.service.IMemberIncentSignInTaskService;
+import com.fungo.system.service.IScoreRuleService;
 import com.fungo.system.service.ITaskService;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
@@ -115,11 +116,15 @@ public class TaskScoreController {
         return taskService.DailyMotto(userId);
     }
 
+    /**
+     * 功能描述: 关注官方账号
+     * @date: 2019/12/24 14:53
+     */
     @ApiOperation(value = "task", notes = "")
     @RequestMapping(value = "/api/rank/followUser", method = RequestMethod.GET)
     public ResultDto<String> followUser(MemberUserProfile memberUserPrefile) throws Exception {
         String userId = memberUserPrefile.getLoginId();
-        return taskService.DailyMotto(userId);
+        return taskService.followUser( userId);
     }
 //----------
 }
