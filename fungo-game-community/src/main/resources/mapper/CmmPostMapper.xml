@@ -399,9 +399,6 @@
         SELECT  COUNT(1) FROM  t_cmm_post where  state != -1 and id = #{id}
     </select>
 
-    <select id="listGameName" parameterType="java.lang.String" resultType="java.lang.String">
-        select t_game.name from t_game inner join t_cmm_post_game on t_game.id = t_cmm_post_game.game_id
-        where t_cmm_post_game.post_id = #{postId} and t_game.state = 0
-    </select>
+
 
 </mapper>

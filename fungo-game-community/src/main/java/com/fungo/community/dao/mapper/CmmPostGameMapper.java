@@ -23,5 +23,5 @@ public interface CmmPostGameMapper {
 
     String getCommunityIdByPostId(@Param("postId") String id);
 
-    List<String> listGameName(@Param("postId") String postId);
+    List<String> listGameIds(@Param("postId") String postId);
 }

@@ -1235,8 +1235,23 @@ public class PostServiceImpl implements IPostService {
         out.setAuthor(authorBean);
         out.setType(cmmPost.getType());
 
-        // pc 2.1 新增关联的游戏
-        out.setIncludeGameList(cmmPostGameMapper.listGameName(postId));
+        // pc 2.1 预览新增关联的游戏名称展示
+        List<String> gameIds = cmmPostGameMapper.listGameIds(postId);
+        ArrayList<String> gameNames = new ArrayList<>();
+        if(!gameIds.isEmpty()){
+            String gameIdString = StringUtils.join(gameIds, ",");
+            ResultDto<List<GameDto>> resultDto = gameFacedeService.selectGameDetailsByIds(gameIdString);
+            if(resultDto!=null &&resultDto.isSuccess()){
+                List<GameDto> gameDtos = resultDto.getData();
+                for (GameDto gameDto : gameDtos) {
+                    if(gameDto.getState() == 0){
+                        gameNames.add(gameDto.getName());
+                    }
+                }
+            }
+        }
+        out.setIncludeGameList(gameNames);
+
         
         CmmPost cmmPostUpdate = new CmmPost();
         cmmPostUpdate.setId(postId);
