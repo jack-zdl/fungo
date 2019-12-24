@@ -46,7 +46,6 @@ public class PortalHomePageController {
     @RequestMapping(value="/api/portal/games/content/game/queryHomePage", method= RequestMethod.POST)
     @ApiImplicitParams({})
     public FungoPageResultDto<HomePageBean> queryHomePage(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPageDto) {
-        LOGGER.info("首页信息查询**************queryHomePage");
         String memberId = "";
         String os = "";
         if (memberUserPrefile != null) {

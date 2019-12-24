@@ -94,7 +94,7 @@ public class GameHomeServiceImpl implements GameHomeService {
 //        List<String> states = new ArrayList<>();
 //        states.add("0");
 //        states.add("3");
-        homePageDto.setStates(Arrays.asList("0,3"));
+        homePageDto.setStates(Arrays.asList("0","3"));
         List<HomePage> totalListPage = homePageDao.queryList(homePageDto);
         //查询数据按时间排序
         //查询分页列表startOffset
