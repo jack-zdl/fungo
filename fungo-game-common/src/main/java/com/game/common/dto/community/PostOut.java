@@ -61,8 +61,17 @@ public class PostOut {
 	 */
 	private String videoCoverImage;
 
+	private List<String> includeGameList;
 
-    public List<String> getTags() {
+	public List<String> getIncludeGameList() {
+		return includeGameList;
+	}
+
+	public void setIncludeGameList(List<String> includeGameList) {
+		this.includeGameList = includeGameList;
+	}
+
+	public List<String> getTags() {
         return tags;
     }
 

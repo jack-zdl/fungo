@@ -142,4 +142,10 @@
   <select id="getCommunityIdByPostId" parameterType="java.lang.String" resultType="java.lang.String">
     select cmm_id from t_cmm_post_game where post_id = #{postId} limit 1
   </select>
+
+  <select id="listGameIds" parameterType="java.lang.String" resultType="java.lang.String">
+        select t_cmm_post_game.game_id from  t_cmm_post_game
+        where t_cmm_post_game.post_id = #{postId}
+    </select>
+
 </mapper>

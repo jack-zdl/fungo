@@ -399,4 +399,6 @@
         SELECT  COUNT(1) FROM  t_cmm_post where  state != -1 and id = #{id}
     </select>
 
+
+
 </mapper>
