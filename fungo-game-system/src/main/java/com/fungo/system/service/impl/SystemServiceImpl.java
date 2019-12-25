@@ -24,10 +24,7 @@ import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.enums.ActionTypeEnum;
-import com.game.common.util.CommonUtils;
-import com.game.common.util.PageTools;
-import com.game.common.util.StringUtil;
-import com.game.common.util.UniqueIdCkeckUtil;
+import com.game.common.util.*;
 import com.game.common.vo.MemberFollowerVo;
 import com.sun.istack.NotNull;
 import org.apache.commons.beanutils.BeanUtils;
@@ -923,7 +920,7 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public FungoPageResultDto<String> circleListMineFollow(CircleFollowVo circleFollowVo) {
         FungoPageResultDto re = new FungoPageResultDto();
-        if(circleFollowVo.getMemberId() == null ){
+        if(CommonUtil.isNull(circleFollowVo.getMemberId()) ){
             return  FungoPageResultDto.error("-1","用户id为空");
         }
         try {
@@ -939,9 +936,10 @@ public class SystemServiceImpl implements SystemService {
             }else if(ActionTypeEnum.BROWSE.getKey().equals(circleFollowVo.getActionType())){
                 List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
                 Page p = new Page(circleFollowVo.getPage(), circleFollowVo.getLimit());
-                Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("member_id",circleFollowVo.getMemberId())
-                        .eq("type",ActionTypeEnum.BROWSE.getKey()).eq("target_type", ActionTypeEnum.ActionTargetTypeEnum.CIRCLE.getKey()).eq("state","0").orderBy("created_at",false);;
-                List<BasAction> basActions  = basActionServiceImap.selectList(wrapper);
+//                Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("member_id",circleFollowVo.getMemberId())
+//                        .eq("type",ActionTypeEnum.BROWSE.getKey()).eq("target_type", ActionTypeEnum.ActionTargetTypeEnum.CIRCLE.getKey()).eq("state","0").orderBy("created_at",false);;
+//                List<BasAction> basActions  = basActionServiceImap.selectList(wrapper);
+                List<BasAction> basActions = basActionDao.getRecentBrowseCircleByUserId( circleFollowVo.getMemberId() );
 //            List<BasAction> basActions = page.getRecords();
                 re.setData(basActions.stream().map(BasAction::getTargetId).collect(Collectors.toList()));
                 PageTools.pageToResultDto(re, p);
