@@ -18,7 +18,7 @@ import java.util.Map;
 @Service
 public class TaskRechargeServiceImpl implements TaskRechargeService {
 
-    @Resource
+    @Resource(name = "memberIncentExcellentTaskServiceImpl")
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskRechargeServiceImpl.class);
