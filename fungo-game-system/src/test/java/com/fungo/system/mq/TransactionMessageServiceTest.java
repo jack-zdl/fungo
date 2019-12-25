@@ -18,13 +18,13 @@ import java.util.HashMap;
 @SpringBootTest
 public class TransactionMessageServiceTest {
 
-    @Autowired
-    private ITransactionMessageService iTransactionMessageService;
+  /*  @Autowired
+    private ITransactionMessageService iTransactionMessageService;*/
 
     @Test
     public void testSaveAndSendMessage() {
 
-        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+    /*    TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
         HashMap<String,String>  msg = new HashMap<>();
         msg.put("id", "190");
         msg.put("content", "test mq");
@@ -35,7 +35,7 @@ public class TransactionMessageServiceTest {
         transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_DIRECT_NAME_DEFAULT.getName());
        
 
-        iTransactionMessageService.saveAndSendMessage(transactionMessageDto);
+        iTransactionMessageService.saveAndSendMessage(transactionMessageDto);*/
 
     }
 
