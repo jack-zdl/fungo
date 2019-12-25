@@ -216,7 +216,6 @@ public class PortalCommunityCircleController {
         FungoPageResultDto<CmmCircleDto> re = null;
         String memberId = memberUserPrefile == null ? "" : memberUserPrefile.getLoginId();
         try {
-            cmmCircleVo.setQueryType("0");
             re = circleServiceImpl.selectCircle(memberId,cmmCircleVo);
         }catch (Exception e){
             e.printStackTrace();

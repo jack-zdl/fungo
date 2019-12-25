@@ -156,7 +156,7 @@ public class CircleServiceImpl implements CircleService {
                 param.setMemberId(memberId);
                 param.setActionType(ActionTypeEnum.BROWSE.getKey());
                 FungoPageResultDto<String> circleFollowVos = systemFeignClient.circleListMineFollow(param);
-                if (circleFollowVos.getData().size() > 0) {
+                if (circleFollowVos != null &&  circleFollowVos.getData().size() > 0) {
                     List<String> ids = circleFollowVos.getData();
                     String sortType = cmmCircleVo.getSortType();
                     List<CmmCircle> cmmCircles = cmmCircleMapper.selectPageByIds(page, sortType, ids);
