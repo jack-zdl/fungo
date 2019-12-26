@@ -561,9 +561,9 @@ public class PostServiceImpl implements IPostService {
         //我的文章(2.4.3)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
         //刪除文章相關的rediskey
-        fungoCacheArticle.excIndexDecodeCache( false, FungoCoreApiConstant.PUB_POST, "", null,null);
+        fungoCacheArticle.removeIndexDecodeCache( false, FungoCoreApiConstant.PUB_POST);
         //刪除文章相關的社区信息，文章数据
-        fungoCacheArticle.excIndexDecodeCache( false, FungoCoreApiConstant.PUB_CIRCLE, "", null,null);
+        fungoCacheArticle.removeIndexDecodeCache( false, FungoCoreApiConstant.PUB_CIRCLE);
         //添加埋点信息
         BuriedPointPostModel model = new BuriedPointPostModel();
         //封装父类3个公共属性
