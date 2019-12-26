@@ -20,6 +20,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import javax.annotation.Resources;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +46,7 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
     @Autowired
     private FungoMallScanOrderWithSeckillService fungoMallScanOrderWithSeckillServiceImpl;
     @Autowired
-    private MemberService memberService;
+    private MemberService MemberServiceImap;
     @Autowired
     private FungoCacheTask fungoCacheTask;
 //    @Autowired
@@ -60,7 +63,7 @@ public class IncentAccountCoinServiceImap extends ServiceImpl<IncentAccountCoinD
         String memberId = userFunVO.getMemberId();
         int funNumber = userFunVO.getNumber();
         String description  = userFunVO.getDescription();
-        Member member = memberService.selectById( memberId);
+        Member member = MemberServiceImap.selectById( memberId);
         try {
 //
             EntityWrapper<IncentAccountCoin> mbAccountCoinEntityWrapper = new EntityWrapper<IncentAccountCoin>();
