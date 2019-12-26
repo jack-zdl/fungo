@@ -2275,7 +2275,7 @@ public class MemberServiceImpl implements IMemberService {
             noticeEntityWrapper.eq( "ntc_type", 7 );
             noticeEntityWrapper.eq( "is_read", 2 );
             List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
-            distributedLockByCurator.acquireDistributedLock( memberId );
+//            distributedLockByCurator.acquireDistributedLock( memberId );
             if (noticeListDB != null && noticeListDB.size() > 0) {
                 noticeListDB.parallelStream().forEach( x -> {
                     String jsonString = x.getNtcData();
@@ -2316,7 +2316,7 @@ public class MemberServiceImpl implements IMemberService {
             logger.error( "增加消息异常" ,e);
             return false;
         }    finally {
-            distributedLockByCurator.releaseDistributedLock( memberId );
+//            distributedLockByCurator.releaseDistributedLock( memberId );
         }
         return true;
     }

@@ -279,7 +279,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                 watch.start( "parallelStream start" );
                 gameSurveyRelList.parallelStream().forEach( s -> {
                     try {
-                        distributedLockByCurator.acquireDistributedLock( s.getMemberId() );
+//                        distributedLockByCurator.acquireDistributedLock( s.getMemberId() );
                         //从DB查
                         EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
                         noticeEntityWrapper.eq( "mb_id", s.getMemberId() );
@@ -327,7 +327,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                     } catch (Exception e) {
                         logger.error( "更新系统消息失败,用户id:{},游戏id:{}", s.getMemberId(), s.getGameId(), e );
                     } finally {
-                        distributedLockByCurator.releaseDistributedLock( s.getMemberId() );
+//                        distributedLockByCurator.releaseDistributedLock( s.getMemberId() );
                     }
                 } );
                 watch.stop();
@@ -355,7 +355,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
     @Transactional
     public void insertSystemNotice (String mobileType,String memberId,String data) throws Exception {
             try {
-                distributedLockByCurator.acquireDistributedLock( memberId );
+//                distributedLockByCurator.acquireDistributedLock( memberId );
                 //从DB查
                 EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
                 noticeEntityWrapper.eq( "mb_id", memberId );
@@ -403,7 +403,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                 logger.error( "根据游戏模块更新系统消息异常", e );
                 throw new Exception( "根据游戏模块更新系统消息异常" );
             }finally {
-                distributedLockByCurator.releaseDistributedLock(memberId);
+//                distributedLockByCurator.releaseDistributedLock(memberId);
             }
         }
 
@@ -483,7 +483,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                     dataMap.put("content", StringUtil.getGameIOSNotice(gameDto.getName(), appId));
                     dataMap.put("targetId",gameDto.getId());
                     dataMap.put("msgTime", DateTools.fmtDate(new Date()));
-                    distributedLockByCurator.acquireDistributedLock( s );
+//                    distributedLockByCurator.acquireDistributedLock( s );
                     //从DB查
                     EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
                     noticeEntityWrapper.eq( "mb_id", s );
@@ -527,7 +527,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                 } catch (Exception e) {
                     logger.error( "根据游戏模块更新系统消息异常", e );
                 } finally {
-                    distributedLockByCurator.releaseDistributedLock( s);
+//                    distributedLockByCurator.releaseDistributedLock( s);
                 }
             } );
         }catch (Exception e){
@@ -650,7 +650,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
         watch.start( "parallelStream start" );
         memberList.parallelStream().forEach( o ->{
             try {
-                distributedLockByCurator.acquireDistributedLock( o );
+//                distributedLockByCurator.acquireDistributedLock( o );
                 //从DB查
                 EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
                 noticeEntityWrapper.eq( "mb_id", o );
@@ -697,7 +697,7 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
             }catch (Exception e){
                 logger.error( "根据游戏模块版本更新系统消息异常用户id:"+o, e );
             }finally {
-                distributedLockByCurator.releaseDistributedLock(o);
+//                distributedLockByCurator.releaseDistributedLock(o);
             }
         } );
         watch.stop();

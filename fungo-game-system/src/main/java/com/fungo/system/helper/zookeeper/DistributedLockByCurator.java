@@ -28,7 +28,7 @@ public class DistributedLockByCurator implements InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(DistributedLockByCurator.class);
 
-    private CountDownLatch countDownLatch = new CountDownLatch(1);
+//    private CountDownLatch countDownLatch = new CountDownLatch(1);
 
     @Autowired
     private CuratorFramework curatorFramework;
@@ -54,14 +54,14 @@ public class DistributedLockByCurator implements InitializingBean {
             } catch (Exception e) {
                 logger.info("systyem failed to acquire lock for path:{}", keyPath);
                 logger.info("systyem while try again .......");
-                try {
-                    if (countDownLatch.getCount() <= 0) {
-                        countDownLatch = new CountDownLatch(1);
-                    }
-                    countDownLatch.await();
-                } catch (InterruptedException e1) {
-                    logger.error( "acquireDistributedLock 转换异常",e1 );
-                }
+//                try {
+//                    if (countDownLatch.getCount() <= 0) {
+//                        countDownLatch = new CountDownLatch(1);
+//                    }
+//                    countDownLatch.await();
+//                } catch (InterruptedException e1) {
+//                    logger.error( "acquireDistributedLock 转换异常",e1 );
+//                }
             }
         }
     }
@@ -101,7 +101,7 @@ public class DistributedLockByCurator implements InitializingBean {
                 if (oldPath.contains(path)) {
                     //释放计数器，让当前的请求获取锁
                     logger.info("----------------监听事件-删除节点 :{}", path,oldPath);
-                    countDownLatch.countDown();
+//                    countDownLatch.countDown();
                 }
             }
         });
@@ -173,14 +173,14 @@ public class DistributedLockByCurator implements InitializingBean {
             } catch (Exception e) {
                 logger.info("systyem failed to acquire lock for path:{}", keyPath);
                 logger.info("systyem while try again .......");
-                try {
-                    if (countDownLatch.getCount() <= 0) {
-                        countDownLatch = new CountDownLatch(1);
-                    }
-                    countDownLatch.await();
-                } catch (InterruptedException e1) {
-                    logger.error( "acquireDistributedLock 转换异常",e1 );
-                }
+//                try {
+//                    if (countDownLatch.getCount() <= 0) {
+//                        countDownLatch = new CountDownLatch(1);
+//                    }
+//                    countDownLatch.await();
+//                } catch (InterruptedException e1) {
+//                    logger.error( "acquireDistributedLock 转换异常",e1 );
+//                }
             }
         }
     }
