@@ -49,6 +49,7 @@ public class RedisActionFunction {
             list.add(SecurityMD5.encrypt16(FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + userId));   // 个人信息
             list.add(SecurityMD5.encrypt16(FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + userId));    // fun币消耗详情
             list.add(FungoCoreApiConstant.PUB_POST);    // fun币消耗详情
+            list.add(FungoCoreApiConstant.PUB_CIRCLE);    // 刪除文章相關的社区信息，文章数据
             redisActionHelper.removePostRedisCache(list);
         }catch (Exception e){
             logger.error( "删除文章后清除Redis事件",e );
