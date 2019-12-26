@@ -1241,7 +1241,7 @@ public class PostServiceImpl implements IPostService {
         // pc 2.1 预览新增关联的游戏名称展示
         List<String> gameIds = cmmPostGameMapper.listGameIds(postId);
         ArrayList<String> gameNames = new ArrayList<>();
-        if(!gameIds.isEmpty() && gameIds.size() > 0){
+        if(!gameIds.isEmpty() ){
             String gameIdString = StringUtils.join(gameIds, ",");
             ResultDto<List<GameDto>> resultDto = gameFacedeService.selectGameDetailsByIds(gameIdString);
             if(resultDto!=null &&resultDto.isSuccess() && resultDto.getData() != null){
