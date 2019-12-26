@@ -1241,10 +1241,10 @@ public class PostServiceImpl implements IPostService {
         // pc 2.1 预览新增关联的游戏名称展示
         List<String> gameIds = cmmPostGameMapper.listGameIds(postId);
         ArrayList<String> gameNames = new ArrayList<>();
-        if(!gameIds.isEmpty()){
+        if(!gameIds.isEmpty() && gameIds.size() > 0){
             String gameIdString = StringUtils.join(gameIds, ",");
             ResultDto<List<GameDto>> resultDto = gameFacedeService.selectGameDetailsByIds(gameIdString);
-            if(resultDto!=null &&resultDto.isSuccess()){
+            if(resultDto!=null &&resultDto.isSuccess() && resultDto.getData() != null){
                 List<GameDto> gameDtos = resultDto.getData();
                 for (GameDto gameDto : gameDtos) {
                     if(gameDto.getState() == 0){
