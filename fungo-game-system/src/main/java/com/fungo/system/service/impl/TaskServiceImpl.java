@@ -16,6 +16,7 @@ import com.game.common.dto.ActionInput;
 import com.game.common.dto.ResultDto;
 import com.game.common.enums.FunGoTaskV243Enum;
 import com.game.common.enums.NewTaskIdenum;
+import com.game.common.enums.NewTaskStatusEnum;
 import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.PKUtil;
 import org.checkerframework.checker.units.qual.A;
@@ -584,8 +585,8 @@ public class TaskServiceImpl implements ITaskService {
                     LOGGER.error( userId+"用户关注用户"+s+"失败",e);
                 }
             });
-            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskIdenum.FOLLOWOFFICIALUSER_COIN.getKey() );
-            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskIdenum.FOLLOWOFFICIALUSER_EXP.getKey());
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.FOLLOWOFFICIALUSER_COIN.getKey() );
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.FOLLOWOFFICIALUSER_EXP.getKey());
             return ResultDto.ResultDtoFactory.buildSuccess( "一键关注官方账户成功" );
         }catch (Exception e){
             LOGGER.error( userId+"用户一键关注官方账户失败",e );

@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -601,7 +602,9 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
      * 由原来的task_idt_ids 转换成 状态位
      * @date: 2019/12/24 17:37
      */
-    private IncentTasked updateExtBygetTasked(String memberId, int task_type) {
+    @Async
+    @Override
+    public IncentTasked updateExtBygetTasked(String memberId, int task_type) {
         try {
             Wrapper incentTaskedEntityWrapper = new EntityWrapper<IncentTasked>();
             Map<String, Object> criteriaMapRule = new HashMap<String, Object>();

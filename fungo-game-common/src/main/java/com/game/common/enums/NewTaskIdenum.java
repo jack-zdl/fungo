@@ -32,10 +32,8 @@ public enum NewTaskIdenum implements BaseEnum<NewTaskIdenum,String>{
     BINDING_WB_COIN("6a555f4013f84bb48cada2aff4d9bdb0","绑定微博"),
 
     RESUME_EXP("66ccf4a3083b4a60adb7a57c657b126d","修改个人简介Exp"),
-    RESUME_COIN("224185f746cf465abbd5b745dbb85c46","修改个人简介Coin"),
+    RESUME_COIN("224185f746cf465abbd5b745dbb85c46","修改个人简介Coin")
 
-    FOLLOWOFFICIALUSER_EXP("8","一键关注官方用户Exp"),
-    FOLLOWOFFICIALUSER_COIN("4","一键关注官方用户Exp"),
     ;
 
 

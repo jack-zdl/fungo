@@ -1,5 +1,7 @@
 package com.fungo.system.service;
 
+import com.fungo.system.entity.IncentTasked;
+
 /**
  * <p> 規則任務 </p>
  * @Author: dl.zhang
@@ -8,4 +10,6 @@ package com.fungo.system.service;
 public interface IScoreRuleService {
 
     void achieveScoreRule(String memberId,String ext2Task);
+
+    IncentTasked updateExtBygetTasked(String memberId, int task_type);
 }
