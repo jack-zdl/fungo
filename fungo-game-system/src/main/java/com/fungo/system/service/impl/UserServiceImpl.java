@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Predicate;
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -709,25 +710,16 @@ public class UserServiceImpl implements IUserService {
         Member newMemeber = new Member();
         newMemeber.setId(member.getId());
         newMemeber.setGender(msg.getGender());
-        if (!member.getUserName().equals(msg.getUser_name())) {//昵称
+        if (!CommonUtil.isNull(msg.getUser_name()) && !member.getUserName().equals(msg.getUser_name())) {//昵称
             //转码表情符号
             String usereName = msg.getUser_name();
             newMemeber.setUserName(usereName);
-            // 2.7 任务
-            AbstractEventDto abstractEventDto = new AbstractEventDto(this);
-            abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.EDIT_USER.getKey());
-            abstractEventDto.setUserId(member.getId());
-            applicationEventPublisher.publishEvent(abstractEventDto);
         }
         if (!CommonUtil.isNull(msg.getSign()) && null != msg.getSign() &&!"".equals(msg.getSign().trim())&& !member.getSign().equals(msg.getSign())) {//简介
             newMemeber.setSign(msg.getSign());
-            // 2.7 任务
-            AbstractEventDto abstractEventDto = new AbstractEventDto(this);
-            abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.EDIT_USER.getKey());
-            abstractEventDto.setUserId(member.getId());
-            applicationEventPublisher.publishEvent(abstractEventDto);
         }
         newMemeber.updateById();
+        filterStr(memberId, (s) -> (!member.getUserName().equals(s.getUser_name()) ||  !member.getSign().equals(msg.getSign())));
         //其他会员信息接口 清除
         String keyPrefixUserCard = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_CARD + memberId;
         fungoCacheMember.excIndexCache(false, keyPrefixUserCard, "", null);
@@ -1116,4 +1108,12 @@ public class UserServiceImpl implements IUserService {
         return idYearMonth + grapNo;
     }
 
+    //需求：将满足条件的字符串，放入集合中
+    public List<String> filterStr(String memberId, Predicate<UserBean> pre){
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.EDIT_USER.getKey());
+        abstractEventDto.setUserId(memberId);
+        applicationEventPublisher.publishEvent(abstractEventDto);
+        return null;
+    }
 }
