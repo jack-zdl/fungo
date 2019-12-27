@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -568,6 +569,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
         return url;
     }
 
+    @Async
     public void updateNoticeMap(String memberId,String key){
         /**
          * 功能描述: 查询获取点赞我的信息，然后将其在消息临时表中删除掉
@@ -579,7 +581,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
             memberNoticeEntityWrapper.eq("mb_id", memberId);
             memberNoticeEntityWrapper.eq("ntc_type", 7);
             memberNoticeEntityWrapper.eq("is_read", 2);
-            distributedLockByCurator.acquireDistributedLock( memberId );
+//            distributedLockByCurator.acquireDistributedLock( memberId );
             List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList(memberNoticeEntityWrapper);
             if (null != noticeListDB && !noticeListDB.isEmpty()) {
                 for (MemberNotice memberNotice : noticeListDB) {
@@ -599,9 +601,10 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
             e.printStackTrace();
             logger.error("删除未读消息",e);
         }finally {
-            distributedLockByCurator.releaseDistributedLock(memberId);
+//            distributedLockByCurator.releaseDistributedLock(memberId);
         }
     }
+
     public void updateMap(Map<String,Object> oldMap,Map noticeMap){
         if(noticeMap.get("expire") != null){
             Map<String,Object> expire = (Map<String, Object>) noticeMap.get("expire");

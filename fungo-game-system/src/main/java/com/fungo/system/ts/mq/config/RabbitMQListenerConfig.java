@@ -38,7 +38,7 @@ public class RabbitMQListenerConfig {
 
 
     //------direct---
-    @Bean("MQDirectQueueContainer")
+  /*  @Bean("MQDirectQueueContainer")
     public MessageListenerContainer mqDirectMessageListenerContainer(ConnectionFactory connectionFactory) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
@@ -46,7 +46,7 @@ public class RabbitMQListenerConfig {
         container.setMessageListener(mqDirectMessageListener());
         container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         return container;
-    }
+    }*/
 
     @Bean("MQDirectQueueListener")
     public ChannelAwareMessageListener mqDirectMessageListener() {

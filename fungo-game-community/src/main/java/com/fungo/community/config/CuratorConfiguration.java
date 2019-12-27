@@ -39,6 +39,11 @@ public class CuratorConfiguration {
     private String noticeChildrenLock;
     @Value( value = "${zk.namespace.notice.lock}")
     private String namespaceLock;
+    @Value( value = "${zk.notice.action}")
+    private String  actionLock;
+
+    @Value(value = "zk.notice.login")
+    private String loginNum;
 
     @Bean(initMethod = "start")
     public CuratorFramework curatorFramework() {
@@ -71,5 +76,21 @@ public class CuratorConfiguration {
 
     public void setNamespaceLock(String namespaceLock) {
         this.namespaceLock = namespaceLock;
+    }
+
+    public String getActionLock() {
+        return actionLock;
+    }
+
+    public void setActionLock(String actionLock) {
+        this.actionLock = actionLock;
+    }
+
+    public String getLoginNum() {
+        return loginNum;
+    }
+
+    public void setLoginNum(String loginNum) {
+        this.loginNum = loginNum;
     }
 }

@@ -100,6 +100,9 @@ public class GameServiceImpl implements IGameService {
     @Autowired
     private GameTagDao gameTagDao;
 
+    @Autowired
+    private AsyncTaskService asyncTaskService;
+
     @Override
     public FungoPageResultDto<GameOutPage> getGameList(GameInputPageDto gameInputDto, String memberId, String os) {
         String keySuffix = JSON.toJSONString(gameInputDto) + os;
@@ -662,6 +665,11 @@ public class GameServiceImpl implements IGameService {
         //redis cache
         fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId,
                 memberId + ptype, out, 60 * 5);
+
+        // vpc2.1 改版 记录用户浏览游戏详情
+        if(StringUtil.isNotNull(gameId)&&StringUtil.isNotNull(memberId)){
+            asyncTaskService.recordGameView(memberId,gameId);
+        }
         return ResultDto.success(out);
     }
 
@@ -787,6 +795,9 @@ public class GameServiceImpl implements IGameService {
         if (gameIdList.size() > 0) {
             List<Game> gamel = gameDao.getGameList(gameIdList);  //gameService.selectList(new EntityWrapper<Game>().in("id", gameIdList));
             for (Game game : gamel) {
+                if(game.getState() != 0){
+                    continue;
+                }
                 GameItem it = new GameItem();
                 if (game.getAndroidPackageName() == null) {
                     game.setAndroidPackageName("");
@@ -807,6 +818,8 @@ public class GameServiceImpl implements IGameService {
                     }
                 }
                 it.setIcon(game.getIcon());
+                it.setImages(game.getImages());
+                it.setCoverImage(game.getCoverImage());
                 it.setObjectId(game.getId());
                 it.setName(game.getName());
                 it.setOrigin(game.getOrigin());
@@ -991,7 +1004,7 @@ public class GameServiceImpl implements IGameService {
      * @return
      */
     @Override
-    public FungoPageResultDto<GameSearchOut> searchGames(int page, int limit, String keyword, String tag, String sort, String os, String memberId)
+    public FungoPageResultDto<GameSearchOut>    searchGames(int page, int limit, String keyword, String tag, String sort, String os, String memberId)
             throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         if (keyword == null || "".equals(keyword.replace(" ", "")) || keyword.contains("%")) {
             return FungoPageResultDto.error("13", "请输入正确的关键字格式");
@@ -1007,7 +1020,7 @@ public class GameServiceImpl implements IGameService {
 //                        "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
 //                        .eq("state", 0);
 //                wrapper.and().like("name", keyword);//.like("name", ).or().like("google_deputy_name", keyword).or().like( "intro",keyword );
-                 gameList = gameDao.getGmaePage( gamePage,keyword );
+                gameList = gameDao.getGmaePage( gamePage,keyword );
 //                if (tag != null && !"".equals(tag.replace(" ", ""))) {
 //                    wrapper.like("tags", tag);
 //                }
@@ -1027,7 +1040,7 @@ public class GameServiceImpl implements IGameService {
 
             if (gameList == null) {
                 gameList = gamePage.getRecords();
-            } else {// 如果sort不存在,默认排序
+            } else { // 如果sort不存在,默认排序
                 if (gameList.size() == 0) {
                     return new FungoPageResultDto<GameSearchOut>();
                 }
@@ -1056,7 +1069,11 @@ public class GameServiceImpl implements IGameService {
                         }
                     });
                 }
-                gamePage = pageFormat(gameList, page, limit);
+                if(gamePage.getTotal() == 0){
+                    gamePage = pageFormat(gameList, page, limit);
+                }else {
+                    gamePage.setRecords(gameList);
+                }
             }
 
             boolean m = false;
@@ -1242,22 +1259,23 @@ public class GameServiceImpl implements IGameService {
         }
         FungoPageResultDto<String> re = new FungoPageResultDto<>();
         try {
-            Page<Game> gamePage = null;
+            Page<Game> gamePage = new Page( 1,10 );;
             List<String> gameNameList = new ArrayList<>();
             List<Game> gameList = null;
             // 判断是否选择es
             if(nacosFungoCircleConfig.isKeywordGameSearch()){
-                @SuppressWarnings("rawtypes")
-                Wrapper wrapper = Condition.create().setSqlSelect(
-                        "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
-                        .eq("state", 0).like("name", keyword).or().like( "google_deputy_name like ", keyword ); //.or().like( "intro",keyword )
-
-                if (sort != null && !"".equals(sort.replace(" ", ""))) {
-                    gamePage = gameService.selectPage(new Page<>(page, limit), wrapper.orderBy(sort));
-                } else {
-                    gamePage = gameService.selectPage(new Page<>(page, limit), wrapper);
-//                    gameList = gameService.selectList(wrapper);
-                }
+//                @SuppressWarnings("rawtypes")
+//                Wrapper wrapper = Condition.create().setSqlSelect(
+//                        "id,icon,name,recommend_num as recommendNum,cover_image as coverImage,unrecommend_num as unrecommendNum,game_size as gameSize,intro,community_id as communityId,created_at as createdAt,updated_at as updatedAt,developer,tags,android_state as androidState,ios_state as iosState,android_package_name as androidPackageName,itunes_id as itunesId,apk")
+//                        .eq("state", 0).like("name", keyword).or().like( "google_deputy_name like ", keyword ); //.or().like( "intro",keyword )
+//
+//                if (sort != null && !"".equals(sort.replace(" ", ""))) {
+//                    gamePage = gameService.selectPage(new Page<>(page, limit), wrapper.orderBy(sort));
+//                } else {
+//                    gamePage = gameService.selectPage(new Page<>(page, limit), wrapper);
+////                    gameList = gameService.selectList(wrapper);
+//                }
+                gameList = gameDao.getGmaePage( gamePage,keyword );
             }else {
                 if (sort != null && !"".equals(sort.replace(" ", ""))) {
                     gamePage = esdaoServiceImpl.getGameByES( page,  limit, keyword,  tag,  sort );
@@ -1914,6 +1932,7 @@ public class GameServiceImpl implements IGameService {
 
     @Override
     public ResultDto<List<GameOutPage>> viewGames(String memberId) {
+
         List<String> ids = iEvaluateProxyService.listGameHisIds(memberId);
         List<GameOutPage> gameOutPages = new ArrayList<>();
         if (ids == null || ids.isEmpty()) {

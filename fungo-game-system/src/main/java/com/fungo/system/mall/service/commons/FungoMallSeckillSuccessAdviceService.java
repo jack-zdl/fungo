@@ -126,7 +126,8 @@ public class FungoMallSeckillSuccessAdviceService {
                 case 28:        //零卡 游戏VIP月卡
                     msgDataContent = FungoMallSeckillConsts.MSG_SECKILL_SUCCESS_LINGKA_BAIJINVIP;
                     msgDataContent = msgDataContent.replace("{", goodsName);
-                    msgContentMap.put("actionType", "2");
+                    msgContentMap.put("actionType", "1");
+                    msgContentMap.put("targetType", "12");
                     break;
                 case 1:
                     msgDataContent = FungoMallSeckillConsts.MSG_SECKILL_SUCCESS_physical;

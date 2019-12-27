@@ -15,6 +15,7 @@ import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboar
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -25,13 +26,13 @@ import javax.servlet.MultipartConfigElement;
 @EnableFeignClients(basePackages = {"com.fungo.community.feign"})
 @EnableCaching
 @EnableHystrix
-//@EnableTurbine
 @EnableHystrixDashboard
 @EnableCircuitBreaker   //使用@HystrixCommand
 @EnableTransactionManagement
 @EnableConfigurationProperties(MyProperties.class)
 @EnableRedisHttpSession
 @EnableEurekaClient
+@EnableAsync
 public class FungoGameCommunityApplication {
 
     public static void main(String[] args) {

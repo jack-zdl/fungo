@@ -1,7 +1,10 @@
 package com.fungo.community.helper.zookeeper;
 
 import com.fungo.community.config.CuratorConfiguration;
+import com.fungo.community.helper.RedisActionHelper;
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.recipes.cache.NodeCache;
+import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.zookeeper.CreateMode;
@@ -31,6 +34,8 @@ public class DistributedLockByCurator implements InitializingBean {
     private CuratorFramework curatorFramework;
     @Autowired
     private CuratorConfiguration curatorConfiguration;
+    @Autowired
+    private RedisActionHelper redisActionHelper;
 
 
     /**
@@ -121,5 +126,37 @@ public class DistributedLockByCurator implements InitializingBean {
         } catch (Exception e) {
             logger.error("community afterPropertiesSet function   connect zookeeper fail，please check the log >> {}", e.getMessage(), e);
         }
+
+        // 建立永久节点
+        try {
+            String loginNumPath = "/" + curatorConfiguration.getActionLock();
+            if (curatorFramework.checkExists().forPath(loginNumPath) == null) {
+                curatorFramework.create()
+                        .creatingParentsIfNeeded()
+                        .withMode(CreateMode.PERSISTENT)
+                        .withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE)
+                        .forPath(loginNumPath);
+            }
+            addMyWatcher(curatorConfiguration.getActionLock());
+        }catch (Exception e){
+            logger.error("systyem  create distributed counter file，please check the log >> {}", e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 创建 watcher 事件  监听事件
+     */
+    private void addMyWatcher(String path) throws Exception {
+        String keyPath = "/" + path;
+        NodeCache nodeCache = new NodeCache(curatorFramework, keyPath, false);
+        nodeCache.start();
+        nodeCache.getListenable().addListener(new NodeCacheListener() {
+            @Override
+            public void nodeChanged() throws Exception {
+                String key = new String(nodeCache.getCurrentData().getData());
+                System.out.println("重新获得节点内容为：" + key);
+                redisActionHelper.removeEhcacheKey(key);
+            }
+        });
     }
 }

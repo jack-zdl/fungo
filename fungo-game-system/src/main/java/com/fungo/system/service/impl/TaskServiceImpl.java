@@ -52,6 +52,7 @@ public class TaskServiceImpl implements ITaskService {
     private ScoreGroupService scoreGroupService;
     @Autowired
     private IncentAccountCoinDaoService incentAccountCoinServiceImap;
+
     @Autowired
     private IncentAccountScoreService accountScoreService;
     @Autowired

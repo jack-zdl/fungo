@@ -3,6 +3,7 @@ package com.fungo.community.dao.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
+import com.fungo.community.dto.PostCircleDto;
 import com.fungo.community.entity.CmmCircle;
 import com.game.common.dto.ResultDto;
 import com.game.common.vo.CmmCircleVo;
@@ -35,5 +36,9 @@ public interface CmmCircleMapper  extends BaseMapper<CmmCircle> {
     List<String> listCircleNameByPost(@Param("postId")String postId);
 
     List<CmmCircle> selectCircleByPostId(@Param("postId") String postId);
+
+    PostCircleDto getPostCircleDtoById(@Param("id")String id);
+
+    List<CmmCircle> selectCmmCommunityByBrowse(@Param("ids") List<String> ids);
 
 }

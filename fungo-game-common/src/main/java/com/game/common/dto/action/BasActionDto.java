@@ -56,4 +56,8 @@ public class BasActionDto extends InputPageDto {
      * @date: 2019/9/26 16:40
      */
     private boolean liked;
+    /**
+     * 圈子id
+     */
+    private String circleId;
 }

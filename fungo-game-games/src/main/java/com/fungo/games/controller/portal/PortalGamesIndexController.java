@@ -124,6 +124,9 @@ public class PortalGamesIndexController {
 
             for (GameCollectionItem gameCollectionItem : ilist) {
                 Game game = gameMap.get(gameCollectionItem.getGameId());
+                if(game == null){
+                    continue;
+                }
                 Map<String, Object> map1 = new HashMap<String, Object>();
 //				HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
 //				if(rateData != null) {
@@ -178,7 +181,7 @@ public class PortalGamesIndexController {
 
 
         //reids cache
-        fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
+        fungoCacheIndex.excIndexCacheWithTime(true, keyPrefix, keySuffix, re,3*60);
 
         return re;
     }
@@ -223,6 +226,9 @@ public class PortalGamesIndexController {
             List<Map<String, Object>> lists = new ArrayList<Map<String, Object>>();
             for (GameCollectionItem gameCollectionItem : ilist) {
                 Game game = this.gameService.selectById(gameCollectionItem.getGameId());
+                if( game.getState() != 0){
+                    continue;
+                }
                 HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
                 Map<String, Object> map1 = new HashMap<String, Object>();
                 if (rateData != null) {
@@ -265,7 +271,7 @@ public class PortalGamesIndexController {
         String keySuffix = JSON.toJSONString(inputPageDto);
         FungoPageResultDto<AmwayWallBean> re = (FungoPageResultDto<AmwayWallBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
-            //return re;
+            return re;
         }
         re = new FungoPageResultDto<AmwayWallBean>();
         List<AmwayWallBean> list = new ArrayList<AmwayWallBean>();

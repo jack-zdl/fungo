@@ -32,6 +32,7 @@ public class FeignConfiguration {
     public FeignBasicAuthRequestInterceptor basicAuthRequestInterceptor() {
         return new FeignBasicAuthRequestInterceptor();
     }
+
 }
 
 /**

@@ -3,6 +3,10 @@ package com.game.common.vo;
 import com.game.common.api.InputPageDto;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 /**
  * <p></p>
@@ -20,6 +24,9 @@ public class CircleGamePostVo extends InputPageDto {
      * @date: 2019/7/13 14:33
      */
     private int type;
+
+    @Size(max = 32 ,min = 32 ,message = "游戏id不符合规范")
+    @NotBlank
     private String gameId;
     private String post;
 

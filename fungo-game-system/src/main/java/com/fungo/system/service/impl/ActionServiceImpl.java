@@ -23,6 +23,7 @@ import com.game.common.buriedpoint.model.BuriedPointLikeModel;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
+import com.game.common.dto.AbstractEventDto;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
@@ -40,6 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,11 +82,12 @@ public class ActionServiceImpl implements IActionService {
     private MemberDao memberDao;
     @Autowired
     private GamesFeignClient gamesFeignClient;
-
     @Autowired
     private ICommunityProxyService iCommunityProxyService;
     @Autowired
     private BasActionService basActionService;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
 
 
@@ -178,8 +181,19 @@ public class ActionServiceImpl implements IActionService {
                 this.actionService.updateById(action);
             }
         }
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.ADD_LIKE.getKey());
+        abstractEventDto.setFollowType(inputDto.getTarget_type());
+        applicationEventPublisher.publishEvent(abstractEventDto);
 
-
+        //V2.4.6版本任务
+        // 每日任务
+        //1 经验值
+        iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+                MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_LIKE_EXP.code());
+        //2 fungo币
+        iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+                MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_LIKE_COIN.code());
         //redis cache
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, null, null);
         //首页文章帖子列表(v2.4)
@@ -224,7 +238,10 @@ public class ActionServiceImpl implements IActionService {
             this.subCounter(memberId, Setting.ACTION_TYPE_LIKE, inputDto);
         }
 
-
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.DELETE_LIKE.getKey());
+        abstractEventDto.setFollowType(inputDto.getTarget_type());
+        applicationEventPublisher.publishEvent(abstractEventDto);
         //首页文章帖子列表(v2.4)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
@@ -487,6 +504,10 @@ public class ActionServiceImpl implements IActionService {
 
         }
 
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.USER_FOLLOW.getKey());
+        abstractEventDto.setFollowType(inputDto.getTarget_type());
+        applicationEventPublisher.publishEvent(abstractEventDto);
         //clear redis
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_FOLLW + memberId;
         fungoCacheMember.excIndexCache(false, keyPrefix, "", null);
@@ -560,6 +581,11 @@ public class ActionServiceImpl implements IActionService {
 
         }
 
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.USER_UNFOLLOW.getKey());
+        abstractEventDto.setFollowType(inputDto.getTarget_type());
+        applicationEventPublisher.publishEvent(abstractEventDto);
+
         //clear redis
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_FOLLW + memberId;
         fungoCacheMember.excIndexCache(false, keyPrefix, "", null);
@@ -575,6 +601,7 @@ public class ActionServiceImpl implements IActionService {
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
         //获取心情动态列表(v2.4)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOODS_LIST, "", null);
+
         return ResultDto.success("取消成功");
     }
 

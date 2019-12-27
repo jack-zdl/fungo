@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.community.config.LogicCheck;
 import com.fungo.community.dao.mapper.CmmPostCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
@@ -27,6 +28,7 @@ import com.game.common.util.*;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
+import com.game.common.util.validate.ValidateUtil;
 import com.game.common.vo.MemberFollowerVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -45,6 +47,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.fungo.community.config.LogicCheck.LogicEnum.DELETE_POST;
 
 /**
  *  文章模块
@@ -161,7 +165,9 @@ public class PostController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "postId", value = "帖子id", paramType = "form", dataType = "string"),
     })
+    @LogicCheck(loginc = {"DELETE_POST"})
     public ResultDto<String> deletePost(MemberUserProfile memberUserPrefile, @PathVariable("postId") String postId) {
+        if(ValidateUtil.checkNullAndLength(postId)) return  ResultDto.ResultDtoFactory.buildError( "文章id有误" );
         String userId = memberUserPrefile.getLoginId();
         return bsPostService.deletePost(postId, userId);
     }

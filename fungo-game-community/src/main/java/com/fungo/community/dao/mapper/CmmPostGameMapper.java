@@ -2,8 +2,12 @@ package com.fungo.community.dao.mapper;
 
 import com.fungo.community.entity.CmmPostGame;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 
+@Repository
 public interface CmmPostGameMapper {
     int deleteByPrimaryKey(String id);
 
@@ -18,4 +22,6 @@ public interface CmmPostGameMapper {
     int updateByPrimaryKey(CmmPostGame record);
 
     String getCommunityIdByPostId(@Param("postId") String id);
+
+    List<String> listGameIds(@Param("postId") String postId);
 }

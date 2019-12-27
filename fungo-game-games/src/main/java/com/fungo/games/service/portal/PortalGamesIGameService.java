@@ -39,4 +39,14 @@ public interface PortalGamesIGameService {
 	FungoPageResultDto<MyGameBean> getMyGameList(String loginId, MyGameInputPageDto inputPage, String os);
 
 
+	/**
+	 * 我的游戏列表
+	 * @param loginId
+	 * @param inputPage
+	 * @param os
+	 * @return
+	 */
+	FungoPageResultDto<MyGameBean> getOtherGameList(String loginId, MyGameInputPageDto inputPage, String os);
+
+
 }

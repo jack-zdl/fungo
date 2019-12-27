@@ -16,6 +16,7 @@ import com.game.common.dto.game.GameOut;
 import com.game.common.dto.game.GameOutPage;
 import com.game.common.dto.game.TagOutPage;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
+import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.date.DateTools;
 import io.swagger.annotations.Api;
@@ -190,6 +191,22 @@ public class PortalGamesGameController {
         fungoCacheIndex.excIndexCache(true, keyPrefix, groupId, map);
 
         return resultMap;
+    }
+
+
+    @ApiOperation(value = "最近浏览游戏列表", notes = "")
+    @RequestMapping(value = "/api/portal/games/content/viewGames", method = RequestMethod.GET)
+    public ResultDto<List<GameOutPage>> viewGames(@Anonymous MemberUserProfile memberUserPrefile) {
+        String memberId = "";
+        String os = "";
+        if (memberUserPrefile != null) {
+            memberId = memberUserPrefile.getLoginId();
+        }
+        if(StringUtil.isNull(memberId)){
+            return ResultDto.error("-1","请登录");
+        }
+        //"cec9c9dfe70b4ba9b684f81e617f4833"
+        return gameService.viewGames(memberId);
     }
 
 }

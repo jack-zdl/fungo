@@ -1,9 +1,13 @@
 package com.fungo.system.function;
 
+import com.game.common.dto.AbstractEventDto;
 import com.game.common.websocket.LinkSession;
 import com.game.common.websocket.LocalLinkSessionPoolsImpl;
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,6 +24,8 @@ public class MemberLoginedStatisticsService {
 
     private static final Logger logger = LoggerFactory.getLogger(MemberLoginedStatisticsService.class);
 
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
     /**
      * 添加登录用户到在线人数统计
      * @param mb_id
@@ -52,6 +58,9 @@ public class MemberLoginedStatisticsService {
             LocalLinkSessionPoolsImpl.getInstance().removeChannel(mb_id);
             int mbCount = LocalLinkSessionPoolsImpl.getInstance().size();
             logger.info("****************************有用户登出mb_id:{}----当前在线人数：{}", mb_id, mbCount);
+            AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+            abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.USER_LOGOUT.getKey());
+            applicationEventPublisher.publishEvent(abstractEventDto);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

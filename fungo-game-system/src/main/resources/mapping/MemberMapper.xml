@@ -168,7 +168,9 @@
     </select>
 
     <select id="getEnableMemberList" resultType="com.fungo.system.entity.Member">
-        SELECT  * FROM  t_member where
+        SELECT
+         <include refid="Base_List"></include>
+         FROM  t_member where
         state = 0 and
         id in
         <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">

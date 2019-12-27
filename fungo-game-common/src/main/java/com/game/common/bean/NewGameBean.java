@@ -128,5 +128,15 @@ public class NewGameBean {
 	 * @return
 	 */
 	private String versionChild;
+	/**
+	 *  图片s
+	 * @return
+	 */
+	private String images;
+	/**
+	 *  游戏图标
+	 * @return
+	 */
+	private String coverImage;
 
 }

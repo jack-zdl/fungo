@@ -86,6 +86,9 @@ public class PortalSystemAdvertController {
             map1.put("objectId", banner.getTargetId());
             map1.put("cover_image", banner.getCoverImage());
             map1.put("type", String.valueOf(banner.getTargetType()));
+            map1.put("actionType", String.valueOf(banner.getActionType()));
+            map1.put("href", banner.getHref());
+            map1.put("tag", banner.getTag());
             list.add(map1);
         }
         re.setData(list);

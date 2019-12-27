@@ -33,6 +33,12 @@ public class GameItem {
 	private String iosStatusDesc;
 	//ios状态描述
 	private String tags;
+	//图片s
+	private String images;
+	//游戏图标
+	private String coverImage;
+	
+	
 
 	private String origin;
 
@@ -145,5 +151,21 @@ public class GameItem {
 
 	public void setTags(String tags) {
 		this.tags = tags;
+	}
+
+	public String getImages() {
+		return images;
+	}
+
+	public void setImages(String images) {
+		this.images = images;
+	}
+
+	public String getCoverImage() {
+		return coverImage;
+	}
+
+	public void setCoverImage(String coverImage) {
+		this.coverImage = coverImage;
 	}
 }

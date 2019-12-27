@@ -33,9 +33,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+
+import static com.game.common.consts.FunGoGameConsts.CACHE_EH_KEY_PRE_COMMUNITY;
 
 
 @Service
@@ -66,6 +69,7 @@ public class CommunityServiceImpl implements ICommunityService {
 
 
 
+    @Cacheable(value = CACHE_EH_KEY_PRE_COMMUNITY,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_DETAIL_CACHE +" ' +#communityId + #userId ")
     @Override
     public ResultDto<CommunityOut> getCommunityDetail(String communityId, String userId)
             throws Exception {

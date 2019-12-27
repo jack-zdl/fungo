@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -391,15 +392,15 @@ public class SystemController {
     }
 
     @GetMapping(value = "/listGameHisIds")
-    @ApiOperation(value="获取历史浏览游戏社区id集合")
+    @ApiOperation(value="获取历史浏览游戏id集合")
     public ResultDto<List<String>> listGameHisIds(@RequestParam("memberid") String memberid){
         ResultDto<List<String>> re = null;
         try {
-            re =  systemService.listCommunityHisIds(memberid);
+            re =  systemService.listGameHisIds(memberid);
         }catch (Exception e){
             e.printStackTrace();
-            LOGGER.error("SystemController.listCommunityHisIds",e);
-            re = ResultDto.error("-1", "SystemController.listCommunityHisIds执行service出现异常");
+            LOGGER.error("SystemController.listGameHisIds",e);
+            re = ResultDto.error("-1", "SystemController.listGameHisIds执行service出现异常");
         }finally {
             return re;
         }
@@ -472,6 +473,21 @@ public class SystemController {
         }catch (Exception e){
             LOGGER.error("SystemController.getAuthor",e);
             re = ResultDto.error("-1", "SystemController.getAuthor执行service出现异常");
+        }finally {
+            return re;
+        }
+    }
+
+    @GetMapping("/getAuthorList")
+    @ApiOperation(value="获取会员信息")
+    public FungoPageResultDto<AuthorBean> getAuthorList(@RequestParam("memberIds") String memberIds){
+        FungoPageResultDto<AuthorBean> re = null;
+        try {
+            List<String> memberList = Arrays.asList(memberIds.split(","));
+            re = systemService.getAuthorList(memberList);
+        }catch (Exception e){
+            LOGGER.error("SystemController.getAuthor",e);
+            re = FungoPageResultDto.error("-1", "SystemController.getAuthorList执行service出现异常");
         }finally {
             return re;
         }

@@ -76,11 +76,14 @@ public class PortalGamesIndexServiceImpl implements PortalGamesIIndexService {
             }
             List<Map<String, Object>> lists = new ArrayList<Map<String, Object>>();
             for (GameCollectionItem gameCollectionItem : ilist) {
+                Game game = this.gameService.selectById(gameCollectionItem.getGameId());
+                if( game.getState() != 0){
+                    continue;
+                }
                 if (lists.size() == input.getAmount()) {
                     map.put("is_more", true);
                     break;
                 }
-                Game game = this.gameService.selectById(gameCollectionItem.getGameId());
                 HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
                 Map<String, Object> map1 = new HashMap<String, Object>();
                 if (rateData != null) {
@@ -109,14 +112,11 @@ public class PortalGamesIndexServiceImpl implements PortalGamesIIndexService {
 //			}
 
         }
-        re = new FungoPageResultDto<Map<String, Object>>();
+        re = new FungoPageResultDto<>();
         re.setData(list);
         PageTools.pageToResultDto(re, gpage);
-
-
         //redis cache
-        fungoCacheIndex.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_PC_GAMEGROUP,
-                keySuffix, re);
+        fungoCacheIndex.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_PC_GAMEGROUP, keySuffix, re);
         return re;
     }
 

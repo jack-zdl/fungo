@@ -33,6 +33,10 @@ public class FunGoEHCacheUtils {
         getCache(cacheName).remove(key);
     }
 
+    public static void removeAll(String cacheName) {
+        getCache(cacheName).removeAll();
+    }
+
     public static List cacheKeys(String cacheName){
         return getCache(cacheName).getKeys();
     }

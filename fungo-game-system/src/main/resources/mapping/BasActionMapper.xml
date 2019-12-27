@@ -221,15 +221,9 @@
   WHERE
    type = 12
   AND state = 0
-  AND target_type = 4
+  AND target_type = 3
   AND member_id = #{memberId}
   AND created_at > #{date}
-		<if test="officialCommunityIds!=null and officialCommunityIds.size()>0 " >
-			AND target_id NOT IN
-			<foreach item="item" index="index" collection="officialCommunityIds" open="(" separator="," close=")">
-				#{item}
-			</foreach>
-		</if>
   GROUP BY
    target_id
   ORDER BY
@@ -243,9 +237,9 @@
 		FROM
 			t_bas_action
 		WHERE
-			type = 12
-		AND state = 0
-		AND target_type = 4
+<!--			type = 12-->
+		 state = 0
+<!--		AND target_type = 4-->
 		AND member_id = #{userId}
 		GROUP BY
 			target_id
@@ -261,6 +255,20 @@
  		and  ba.member_id = #{memberId}
 		GROUP BY ba.target_id  ORDER BY created_at desc
 	</select>
-	
+
+	<select id="getRecentBrowseCircleByUserId" parameterType="java.lang.String" resultType="com.fungo.system.entity.BasAction">
+		SELECT x.target_id as targetId , x.created_at as createdAt   FROM
+		(
+		SELECT  target_id , created_at  FROM t_bas_action WHERE member_id = #{userId} and type = '12' and target_type = '11' and state = 0   ORDER BY  created_at desc
+		) x
+		LEFT JOIN
+		(
+		SELECT  target_id , created_at  FROM t_bas_action WHERE member_id = #{userId} and type = '12' and target_type = '11' and state = 0    ORDER BY  created_at desc
+
+		) s
+		on  x.target_id = s.target_id and
+		<![CDATA[  (x.created_at < s.created_at) ]]>
+		WHERE  s.target_id IS NULL   ORDER BY x.created_at desc  limit 10
+	</select>
 
 </mapper>

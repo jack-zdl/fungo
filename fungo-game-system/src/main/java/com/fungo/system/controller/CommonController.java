@@ -170,7 +170,9 @@ public class CommonController {
                         int c_code = Integer.parseInt(version.getCode());
                         int new_code = Integer.parseInt(lastNewVersion.getCode());
 
-                        if (new_code > c_code && 1 == lastNewVersion.getIsForce()) {
+                        if(lastNewVersion.getIsForce() == null ){
+                            map.put("versionName", input.getCurrentVersion());
+                        }else if (new_code > c_code && 1 == lastNewVersion.getIsForce()) {
                             map.put("is_force", true);
                         }
 
@@ -221,18 +223,22 @@ public class CommonController {
                         int new_code = Integer.parseInt(lastNewVersion.getCode());
 
                         if (new_code > c_code) {
+                            if(lastNewVersion.getIsForce() == null ) {
+                                map.put( "versionName", input.getCurrentVersion() );
+                            }else {
+                                //查询新版本对应的渠道更新机制
+                                SysVersionChannel sysVersionChannel = channelService.selectOne(new EntityWrapper<SysVersionChannel>().eq("version_id", lastNewVersion.getId()).eq("channel_code", input.getChannelCode()));
 
-                            //查询新版本对应的渠道更新机制
-                            SysVersionChannel sysVersionChannel = channelService.selectOne(new EntityWrapper<SysVersionChannel>().eq("version_id", lastNewVersion.getId()).eq("channel_code", input.getChannelCode()));
+                                if (null != sysVersionChannel) {
 
-                            if (null != sysVersionChannel) {
-                                Integer isForce = sysVersionChannel.getIsForce();
-                                if (1 == isForce) {
-                                    map.put("is_force", true);
+                                    Integer isForce = sysVersionChannel.getIsForce();
+                                    if (1 == isForce) {
+                                        map.put("is_force", true);
+                                    }
                                 }
                             }
-                        }
 
+                        }
                     } catch (Exception ex) {
                        LOGGER.error( "ios检查更新",ex );
                     }

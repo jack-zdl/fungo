@@ -218,17 +218,26 @@
 
     <!-- AND cpc.default_link = 1  -->
     <select id="getCmmCircleListByPostId" parameterType="java.lang.String" resultType="com.fungo.community.entity.CmmPost">
-    select  *  from  t_cmm_post where state != -1 and id in
+    select
+        <include refid="Base_Column_List"></include>
+      from  t_cmm_post where state != -1 and id in
     ( select cpc.post_id
     from t_cmm_post_circle cpc where cpc.circle_id = #{circleId} )
 
   </select>
 
+    <!-- AND cpc.default_link = 1  -->
+    <select id="getPostTotalByCircleId" parameterType="java.lang.String" resultType="java.lang.Long">
+     select count(*) from t_cmm_post p inner JOIN t_cmm_post_circle pc on p.id = pc.post_id
+    where p.state = 1 and pc.circle_id = #{circleId}
+    </select>
+
+
 
     <select id="getCmmCircleListByCircleId" resultType="com.fungo.community.entity.CmmPost">
-        select  
-         <include refid="Base_Column_List"></include>
-         ,sum(cp.comment_num+cp.like_num+cp.collect_num+cp.watch_num) as total  from  t_cmm_post cp where  cp.state != -1 and id in
+        select
+        <include refid="Base_Column_List"></include>
+        ,sum(cp.comment_num+cp.like_num+cp.collect_num+cp.watch_num) as total  from  t_cmm_post cp where  cp.state != -1 and id in
         ( select cpc.post_id
         from t_cmm_post_circle cpc where cpc.circle_id = #{circleId}   )
 
@@ -357,6 +366,21 @@
 	 )order  by cp.created_at desc
     </select>
 
+    <select id="getGamePostByGameId"  resultType="com.fungo.community.entity.CmmPost">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM t_cmm_post WHERE state != -1
+    	AND (
+		    id in (
+	            SELECT post_id FROM t_cmm_post_circle WHERE circle_id in (SELECT id FROM t_cmm_circle WHERE game_id =  #{gameId}  and state = 1  )
+	        )
+	        OR
+	        id in (SELECT cpg.post_id FROM t_cmm_post_game cpg WHERE cpg.game_id =  #{gameId}   )
+	        OR
+	        community_id in (SELECT id FROM t_cmm_community WHERE game_id =  #{gameId}  and state = 1)
+	    ) order  by created_at desc
+    </select>
+
     <select id="getCmmPostByRecommend" resultType="com.fungo.community.entity.CmmPost">
         SELECT
         <include refid="Base_List"><property name="alias" value="cp"/></include>
@@ -370,5 +394,11 @@
     <update id="updateCmmPostCommentNum" >
         update t_cmm_post set  comment_num = comment_num - 1  WHERE id = (SELECT post_id FROM t_cmm_comment WHERE id = #{commentId})
     </update>
+
+    <select id="getPostNumById" resultType="java.lang.Integer" parameterType="java.lang.String">
+        SELECT  COUNT(1) FROM  t_cmm_post where  state != -1 and id = #{id}
+    </select>
+
+
 
 </mapper>

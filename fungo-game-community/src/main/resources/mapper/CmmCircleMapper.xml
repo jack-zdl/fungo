@@ -1,27 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fungo.community.dao.mapper.CmmCircleMapper">
-  <resultMap id="BaseResultMap" type="com.fungo.community.entity.CmmCircle">
-    <id column="id" jdbcType="VARCHAR" property="id" />
-    <result column="circle_name" jdbcType="VARCHAR" property="circleName" />
-    <result column="circle_icon" jdbcType="VARCHAR" property="circleIcon" />
-    <result column="intro" jdbcType="VARCHAR" property="intro" />
-    <result column="game_id" jdbcType="VARCHAR" property="gameId" />
-    <result column="cmm_id" jdbcType="VARCHAR" property="cmmId" />
-    <result column="type" jdbcType="INTEGER" property="type" />
-    <result column="state" jdbcType="INTEGER" property="state" />
-    <result column="followee_num" jdbcType="INTEGER" property="followeeNum" />
-    <result column="hot_value" jdbcType="INTEGER" property="hotValue" />
-    <result column="sort" jdbcType="INTEGER" property="sort" />
-    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
-    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
-    <result column="created_by" jdbcType="VARCHAR" property="createdBy" />
-    <result column="updated_by" jdbcType="VARCHAR" property="updatedBy" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    id, circle_name as circleName, circle_icon AS circleIcon , intro,game_id AS gameId ,cmm_id AS cmmId , type, state, followee_num AS  followeeNum,
-    hot_value AS hotValue , sort, created_at AS  createdAt,updated_at AS  updatedAt, created_by AS  createdBy, updated_by as updatedBy
-  </sql>
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.fungo.community.entity.CmmCircle">
+        <id column="id" property="id"/>
+        <result column="circle_name" property="circleName"/>
+        <result column="circle_icon" property="circleIcon"/>
+        <result column="intro" property="intro"/>
+        <result column="cmm_id" property="cmmId"/>
+        <result column="game_id" property="gameId"/>
+        <result column="type" property="type"/>
+        <result column="state" property="state"/>
+        <result column="followee_num" property="followeeNum"/>
+        <result column="hot_value" property="hotValue"/>
+        <result column="sort" property="sort"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_by" property="updatedBy"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, circle_name as circleName, circle_icon AS circleIcon , intro,game_id AS gameId ,cmm_id AS cmmId , type, state, followee_num AS  followeeNum,
+        hot_value AS hotValue , sort, created_at AS  createdAt,updated_at AS  updatedAt, created_by AS  createdBy, updated_by as updatedBy
+    </sql>
+
+    <sql id="Base_Alias_Column_List">
+        ${alias}.id, ${alias}.circle_name as circleName, ${alias}.circle_icon AS circleIcon , ${alias}.intro, ${alias}.game_id AS gameId , ${alias}.cmm_id AS cmmId , ${alias}.type, ${alias}.state, ${alias}.followee_num AS  followeeNum,
+        ${alias}.hot_value AS hotValue , ${alias}.sort, ${alias}.created_at AS  createdAt, ${alias}.updated_at AS  updatedAt, ${alias}.created_by AS  createdBy, ${alias}.updated_by as updatedBy
+    </sql>
 
   <select id="selectAll" resultType="com.fungo.community.entity.CmmCircle" >
     SELECT
@@ -78,6 +85,20 @@
     </if>
 
   </select>
+
+<select id="selectCmmCommunityByBrowse" resultMap="BaseResultMap" >
+    select  id,circle_name,circle_icon from t_cmm_circle where state = 1 and  id  in
+        <foreach  item="item" collection="ids" index="index"  open="(" separator="," close=")">
+            #{item}
+        </foreach>
+     order by
+        field(
+        id,
+        <foreach collection="ids" index="index" item="item"   separator=","    >
+            #{item}
+        </foreach>
+        )
+    </select>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.fungo.community.entity.CmmCircle">
     update t_cmm_circle
@@ -169,5 +190,11 @@ WHERE
   </select>
 
 
-
+  <select id="getPostCircleDtoById" parameterType="java.lang.String" resultType="com.fungo.community.dto.PostCircleDto">
+    SELECT
+    <include refid="Base_Alias_Column_List"><property name="alias" value="cc"/></include>, COUNT(cp.id) as postNum
+    from t_cmm_circle cc , t_cmm_post cp where cc.id = #{id} and cp.state != -1 and cp.id in
+    ( select cpc.post_id
+    from t_cmm_post_circle cpc where cpc.circle_id = #{id} )
+  </select>
 </mapper>

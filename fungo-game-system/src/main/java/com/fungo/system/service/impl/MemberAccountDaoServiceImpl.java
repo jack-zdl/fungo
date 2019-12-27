@@ -24,10 +24,6 @@ public class MemberAccountDaoServiceImpl extends ServiceImpl<IncentAccountScoreD
 
 
     @Autowired
-    private IncentAccountCoinDaoService accountCoinService;
-
-
-    @Autowired
     private IMemberAccountScoreDaoService accountScoreService;
 
     @Value("${sys.config.fungo.cluster.index}")

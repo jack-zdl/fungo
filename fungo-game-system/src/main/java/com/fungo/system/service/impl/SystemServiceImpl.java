@@ -24,10 +24,7 @@ import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.enums.ActionTypeEnum;
-import com.game.common.util.CommonUtils;
-import com.game.common.util.PageTools;
-import com.game.common.util.StringUtil;
-import com.game.common.util.UniqueIdCkeckUtil;
+import com.game.common.util.*;
 import com.game.common.vo.MemberFollowerVo;
 import com.sun.istack.NotNull;
 import org.apache.commons.beanutils.BeanUtils;
@@ -527,6 +524,14 @@ public class SystemServiceImpl implements SystemService {
         if (basActionDto.getState() != null) {
             actionEntityWrapper.eq("state", basActionDto.getState());
         }
+        BasAction basAction = new BasAction();
+        basAction.setMemberId(basActionDto.getMemberId());
+        basAction.setType(basActionDto.getType());
+        basAction.setTargetType(basActionDto.getTargetType());
+        basAction.setTargetId(basActionDto.getCircleId());
+        basAction.setCreatedAt(new Date());
+        basAction.setState(basActionDto.getState());
+        actionService.insert(basAction);
         //根据条件查询
         int count = actionServiceImap.selectCount(actionEntityWrapper);
         return ResultDto.success(count);
@@ -554,11 +559,19 @@ public class SystemServiceImpl implements SystemService {
         if (basActionDto.getState() != null) {
             wrapper.eq("state", basActionDto.getState());
         }
+
         List<BasAction> actionList = actionServiceImap.selectList(wrapper);
         LOGGER.info(actionList.size() + "");
         List<String> ids = actionList.stream().filter(li -> {
             return li != null && li.getTargetId() != null && !"".equals(li.getTargetId());
         }).map(BasAction::getTargetId).collect(Collectors.toList());
+        BasAction basAction = new BasAction();
+        basAction.setMemberId(basActionDto.getMemberId());
+        basAction.setCreatedAt(new Date());
+        basAction.setTargetId(basActionDto.getTargetId());
+        basAction.setTargetType(basActionDto.getTargetType());
+        basAction.setType(basActionDto.getType());
+        actionService.insert(basAction);
         return ResultDto.success(ids);
 
     }
@@ -652,6 +665,16 @@ public class SystemServiceImpl implements SystemService {
     public ResultDto<AuthorBean> getAuthor(String memberId) {
         AuthorBean author = userService.getAuthor(memberId);
         return ResultDto.success(author);
+    }
+
+    /**
+     * 功能描述: @TODO  针对/api/portal/community/content/posts 接口做优化
+     * @auther: dl.zhang
+     * @date: 2019/12/5 11:41
+     */
+    @Override
+    public FungoPageResultDto<AuthorBean> getAuthorList(List<String> memberIds) {
+        return userService.getAuthorList(memberIds);
     }
 
     @Override
@@ -842,17 +865,16 @@ public class SystemServiceImpl implements SystemService {
      * 获取最近浏览的游戏 取最近8条
      */
     @Override
-    public ResultDto<List<String>> listCommunityHisIds(String memberId) {
+    public ResultDto<List<String>> listGameHisIds(String memberId) {
 
-        List<String> officialCommunityIds = communityProxyService.listOfficialCommunityIds();
         //获取7天前时间
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DATE, -7);
-        List<String> list = basActionDao.getRecentViewGame(memberId, officialCommunityIds, c.getTime());
+        List<String> list = basActionDao.getRecentViewGame(memberId,c.getTime());
         //根据社区id获取游戏
-        if (list != null && !list.isEmpty()) {
+       /* if (list != null && !list.isEmpty()) {
             list = communityProxyService.listGameIds(list);
-        }
+        }*/
         return ResultDto.success(list);
     }
     /*
@@ -898,7 +920,7 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public FungoPageResultDto<String> circleListMineFollow(CircleFollowVo circleFollowVo) {
         FungoPageResultDto re = new FungoPageResultDto();
-        if(circleFollowVo.getMemberId() == null ){
+        if(CommonUtil.isNull(circleFollowVo.getMemberId()) ){
             return  FungoPageResultDto.error("-1","用户id为空");
         }
         try {
@@ -914,9 +936,10 @@ public class SystemServiceImpl implements SystemService {
             }else if(ActionTypeEnum.BROWSE.getKey().equals(circleFollowVo.getActionType())){
                 List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
                 Page p = new Page(circleFollowVo.getPage(), circleFollowVo.getLimit());
-                Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("member_id",circleFollowVo.getMemberId())
-                        .eq("type",ActionTypeEnum.BROWSE.getKey()).eq("target_type", ActionTypeEnum.ActionTargetTypeEnum.CIRCLE.getKey()).eq("state","0").orderBy("created_at",false);;
-                List<BasAction> basActions  = basActionServiceImap.selectList(wrapper);
+//                Wrapper wrapper = new EntityWrapper<BasAction>().setSqlSelect("target_id as targetId").eq("member_id",circleFollowVo.getMemberId())
+//                        .eq("type",ActionTypeEnum.BROWSE.getKey()).eq("target_type", ActionTypeEnum.ActionTargetTypeEnum.CIRCLE.getKey()).eq("state","0").orderBy("created_at",false);;
+//                List<BasAction> basActions  = basActionServiceImap.selectList(wrapper);
+                List<BasAction> basActions = basActionDao.getRecentBrowseCircleByUserId( circleFollowVo.getMemberId() );
 //            List<BasAction> basActions = page.getRecords();
                 re.setData(basActions.stream().map(BasAction::getTargetId).collect(Collectors.toList()));
                 PageTools.pageToResultDto(re, p);

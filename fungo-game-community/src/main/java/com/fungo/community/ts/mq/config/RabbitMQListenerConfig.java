@@ -46,7 +46,7 @@ public class RabbitMQListenerConfig {
     }
 
     //社区-心情队列
-    @Bean("mqTopicCommunityMoodMessageListenerContainer")
+  /*  @Bean("mqTopicCommunityMoodMessageListenerContainer")
     public MessageListenerContainer mqTopicCommunityMoodMessageListenerContainer(ConnectionFactory connectionFactory) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
@@ -54,7 +54,7 @@ public class RabbitMQListenerConfig {
         container.setMessageListener(mqTopicMessageListener());
         container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         return container;
-    }
+    }*/
 
 
     @Bean("MQTopicQueueListener")

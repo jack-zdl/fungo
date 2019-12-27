@@ -112,6 +112,9 @@ public class IndexController {
 
             for (GameCollectionItem gameCollectionItem : ilist) {
                 Game game = gameMap.get(gameCollectionItem.getGameId());
+                if(game == null){
+                    continue;
+                }
                 Map<String, Object> map1 = new HashMap<String, Object>();
 //				HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
 //				if(rateData != null) {
@@ -166,7 +169,7 @@ public class IndexController {
 
 
         //reids cache
-        fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
+        fungoCacheIndex.excIndexCacheWithTime(true, keyPrefix, keySuffix, re,3*60);
 
         return re;
     }

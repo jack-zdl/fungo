@@ -8,6 +8,8 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.validation.Valid;
+
 /**
  * <p>zk客戶端Curator使用</p>
  * @Author: dl.zhang
@@ -35,11 +37,21 @@ public class CuratorConfiguration {
     @Value( value = "${zk.notice.lock}")
     private String  noticeLock;
 
+    @Value( value = "${zk.counter.lock}")
+    private String  counterLock;
+
     @Value(value = "${zk.notice.children.lock}")
     private String noticeChildrenLock;
 
     @Value( value = "${zk.namespace.notice.lock}")
     private String namespaceLock;
+
+
+    @Value( value = "${zk.notice.action}")
+    private String  actionLock;
+
+    @Value(value = "zk.notice.login")
+    private String loginNum;
 
     @Bean(initMethod = "start")
     public CuratorFramework curatorFramework() {
@@ -52,6 +64,14 @@ public class CuratorConfiguration {
 
     public String getNoticeLock() {
         return noticeLock;
+    }
+
+    public String getCounterLock() {
+        return counterLock;
+    }
+
+    public void setCounterLock(String counterLock) {
+        this.counterLock = counterLock;
     }
 
     public void setNoticeLock(String noticeLock) {
@@ -75,4 +95,19 @@ public class CuratorConfiguration {
         this.namespaceLock = namespaceLock;
     }
 
+    public String getActionLock() {
+        return actionLock;
+    }
+
+    public void setActionLock(String actionLock) {
+        this.actionLock = actionLock;
+    }
+
+    public String getLoginNum() {
+        return loginNum;
+    }
+
+    public void setLoginNum(String loginNum) {
+        this.loginNum = loginNum;
+    }
 }

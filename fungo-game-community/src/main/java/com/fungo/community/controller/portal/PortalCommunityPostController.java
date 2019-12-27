@@ -31,6 +31,7 @@ import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
+import com.game.common.util.validate.ValidateUtil;
 import com.game.common.vo.MemberFollowerVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -41,9 +42,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -96,7 +99,7 @@ public class PortalCommunityPostController {
             @ApiImplicitParam(name = "community_id", value = "社区id", paramType = "form", dataType = "String")
     })
     public FungoPageResultDto<PostOutBean> getPostContentList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody PostInputPageDto postInputPageDto) {
-
+        if(ValidateUtil.checkNullAndLength(postInputPageDto.getCommunity_id()) ) return FungoPageResultDto.FungoPageResultDtoFactory.buildError( "社区id有误" );
         String userId = "";
         if (memberUserPrefile != null) {
             userId = memberUserPrefile.getLoginId();
@@ -168,6 +171,7 @@ public class PortalCommunityPostController {
             @ApiImplicitParam(name = "userId", value = "用户id", paramType = "form", dataType = "string")
     })
     public ResultDto<PostOut> getPostDetail(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @PathVariable("postId") String postId) {
+        if(ValidateUtil.checkNullAndLength(postId)) return ResultDto.ResultDtoFactory.buildError( "文章id有误" );
         String userId = "";
         String os = "";
         os = (String) request.getHeader("os");
@@ -586,6 +590,14 @@ public class PortalCommunityPostController {
         return re;
     }
 
+    @ApiOperation(value = "管控台推荐文章", notes = "")
+    @PostMapping(value = "/api/portal/community/content/post/topic")
+    public FungoPageResultDto<PostOutBean> getTopicPosts(@Anonymous MemberUserProfile memberUserPrefile,@Valid @RequestBody PostInputPageDto inputPageDto, Errors errors) {
+        if(errors.hasErrors())
+            return FungoPageResultDto.FungoPageResultDtoFactory.buildError( errors.getAllErrors().get(0).getDefaultMessage());
+
+        return bsPostService.getTopicPosts(memberUserPrefile , inputPageDto);
+    }
 
     /**
      * 设置社区-帖子|文章分页查询条件
@@ -599,4 +611,8 @@ public class PortalCommunityPostController {
             postEntityWrapper.le("updated_at", lastUpdateDate);
         }
     }
+
+
+
+
 }

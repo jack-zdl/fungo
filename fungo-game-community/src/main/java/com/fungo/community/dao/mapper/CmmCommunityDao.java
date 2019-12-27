@@ -8,6 +8,7 @@ import com.game.common.bean.CommentBean;
 import com.game.common.bean.MemberPulishFromCommunity;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import java.util.Map;
  * @author lzh
  * @since 2018-06-28
  */
+@Repository
 public interface CmmCommunityDao extends BaseMapper<CmmCommunity> {
 
     /**

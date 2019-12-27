@@ -92,5 +92,12 @@ public class PostOutBean {
 	@ApiModelProperty(value="圈子名称",example="")
 	private String circleName;
 
+	private String memberId;
+
+	/**
+	 * 视频详情(2.4.3)
+	 */
+	private List<StreamInfo> videoList = new ArrayList<>();
+
 
 }

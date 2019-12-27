@@ -247,7 +247,6 @@ public class CircleController {
         try {
             re = circleServiceImpl.selectGameCircle (memberId,circleGamePostVo);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("app端获取游戏相关的圈子",e);
             re = FungoPageResultDto.error("-1","app端获取游戏相关的圈子");
         }

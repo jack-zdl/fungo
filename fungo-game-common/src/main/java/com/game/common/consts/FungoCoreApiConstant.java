@@ -15,6 +15,10 @@ public class FungoCoreApiConstant {
 
     private static String tag = new FungoConfig().getTag();
 
+    public static final String PUB_POST = "POST_";
+
+    public static final String PUB_CIRCLE = "CIRCLE_";
+
     //********************************************首页********************************************************
     /**
      * 首页-发现页轮播
@@ -251,11 +255,28 @@ public class FungoCoreApiConstant {
     //**************************************************文章**************************************************
 
     /**
+     * 所有的社区置顶文章(2.4.3)
+     * POST
+     */
+    public static final String FUNGO_CORE_API_ALL_POST_TOPIC_CACHE =  "/api/content/post/topic";
+    public static final String FUNGO_CORE_API_ALL_POST_TOPIC = PUB_POST+"/api/content/post/topic" + tag ;// "_cloud";
+
+    /**
      * 我的文章(2.4.3)
      * POST
      */
     public static final String FUNGO_CORE_API_MEMBER_USER_POSTS = "/api/mine/posts" + tag ;// "_cloud";
 
+    public static final String  FUNGO_CORE_API_GAMR_POSTS_CACHE = "/api/community/circle/game/post";
+    public static final String FUNGO_CORE_API_GAMR_POSTS = PUB_POST+"/api/community/circle/game/post"+tag;
+
+
+    public static final String FUNGO_CORE_API_CIRCLE_POST_CACHE = "/api/community/circle/post";
+    public static final String FUNGO_CORE_API_CIRCLE_POST = PUB_POST+"/api/community/circle/post"+tag;
+
+
+    public static final String FUNGO_CORE_API_COMMUNITY_POST_CACHE = "/api/portal/community/content/posts";
+    public static final String FUNGO_CORE_API_COMMUNITY_POST = PUB_POST+"/api/portal/community/content/posts"+tag;
 
     /**
      * 我的评论(2.4.3)
@@ -291,6 +312,7 @@ public class FungoCoreApiConstant {
      * 帖子(文章)详情
      * GET
      */
+    public static final String FUNGO_CORE_API_POST_CONTENT_DETAIL_CACHE = "/api/content/post/{postId}/detail" ;
     public static final String FUNGO_CORE_API_POST_CONTENT_DETAIL = "/api/content/post/{postId}/detail" + tag ;// "_cloud";
 
 
@@ -343,6 +365,7 @@ public class FungoCoreApiConstant {
      * 社区详情
      * GET
      */
+    public static final String FUNGO_CORE_API_COMMUNITYS_DETAIL_CACHE = "/api/content/community/{communityId}" ;
     public static final String FUNGO_CORE_API_COMMUNITYS_DETAIL = "/api/content/community/{communityId}" + tag ;// "_cloud";
 
 
@@ -352,6 +375,12 @@ public class FungoCoreApiConstant {
      */
     public static final String FUNGO_CORE_API_COMMUNITYS_POST_LIST = "/api/content/posts" + tag ;// "_cloud";
 
+    public static final String FUNGO_CORE_API_CIRCLE_GAME_CACHE = "/api/community/game/circle";
+    public static final String FUNGO_CORE_API_CIRCLE_GAME = PUB_CIRCLE+"/api/community/game/circle"+tag;
+
+    //**************************************************圈子**************************************************
+    public static final String FUNGO_CORE_API_CIRCLE_INFO_CACHE = "/api/community/circle/";
+    public static final String FUNGO_CORE_API_CIRCLE_INFO = PUB_CIRCLE+"/api/community/circle/"+tag;
 
     //**************************************************评论**************************************************
 
@@ -417,6 +446,7 @@ public class FungoCoreApiConstant {
     //    getRecentBrowseCommunity
     public static final String FUNGO_CORE_API_GETRECENTBROWSECOMMUNITY = "/api/portal/community/content/recentbrowsecommunity" + tag ;//;
 
+    public static final String FUNGO_CORE_API_CIRCLE_EVENT_INDEX_CACHE = "/api/system/circle/event/list";
     public static final String FUNGO_CORE_API_CIRCLE_EVENT_INDEX = "/api/system/circle/event/list"  + tag ;// "_cloud";
 
 

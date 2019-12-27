@@ -15,6 +15,7 @@ import com.fungo.system.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
+import com.game.common.dto.AbstractEventDto;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.index.BannerBean;
@@ -25,6 +26,7 @@ import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,13 +72,15 @@ public class ProtalSystemActionServiceImpl implements IActionService {
 
     @Autowired
     private IDeveloperProxyService iDeveloperProxyService;
-
     @Autowired
     private MQProduct mqProduct;
-
     //用户成长业务
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
+    @Autowired
+    private IActionService iActionService;
 
 
     @Override
@@ -120,7 +124,7 @@ public class ProtalSystemActionServiceImpl implements IActionService {
         if (action == null) {
             action = this.buildAction(memberId, Setting.ACTION_TYPE_FOLLOW, inputDto);
             this.actionService.insert(action);
-            this.addCounter(memberId, Setting.ACTION_TYPE_FOLLOW, inputDto);//粉丝数 +1
+            iActionService.addCounter(memberId, Setting.ACTION_TYPE_FOLLOW, inputDto);//粉丝数 +1
 
             if ("t_member".equals(getTableName(inputDto.getTarget_type()))) {//用户 关注数+1
                 isMember = true;
@@ -217,6 +221,11 @@ public class ProtalSystemActionServiceImpl implements IActionService {
             fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_TASK_USER_TASK_PROGRESS + "-" + memberId, "", null);
         }
 
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.USER_FOLLOW.getKey());
+        abstractEventDto.setFollowType(inputDto.getTarget_type());
+        applicationEventPublisher.publishEvent(abstractEventDto);
+
         //clear redis
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_FOLLW + memberId;
         fungoCacheMember.excIndexCache(false, keyPrefix, "", null);
@@ -231,6 +240,10 @@ public class ProtalSystemActionServiceImpl implements IActionService {
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
         //获取心情动态列表(v2.4)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MOODS_LIST, "", null);
+        // 删除圈子相关的信息
+        fungoCacheArticle.removeIndexDecodeCache(false, FungoCoreApiConstant.PUB_CIRCLE);
+        // 删除文章相关的信息
+        fungoCacheArticle.removeIndexDecodeCache(false, FungoCoreApiConstant.PUB_POST);
         return resultDto;
     }
 

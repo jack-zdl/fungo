@@ -19,7 +19,7 @@ public interface CircleService {
 
     FungoPageResultDto<CmmCircleDto> selectCircle(String memberId, CmmCircleVo cmmCircleVo);
 
-    ResultDto<CmmCircleDto> selectCircleById(String memberId, String circleId) throws InvocationTargetException, IllegalAccessException;
+    ResultDto<CmmCircleDto> selectCircleById(String memberId, String circleId) ;
 
     FungoPageResultDto<PostOutBean> selectCirclePost(String memberId, CmmCirclePostVo cmmCirclePostVo);
 

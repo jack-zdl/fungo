@@ -2,9 +2,13 @@ package com.game.common.vo;
 
 import com.game.common.api.InputPageDto;
 import com.game.common.enums.BaseEnum;
+import com.game.common.validate.an.Max;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 /**
  * <p></p>
@@ -17,6 +21,8 @@ import lombok.ToString;
 @ToString
 public class CmmCirclePostVo extends InputPageDto {
 
+    @NotBlank(message = "圈子id不能为空")
+    @Size(max = 32,min = 32 ,message = "圈子id长度有误")
     private String circleId;
 
     /**
@@ -27,6 +33,8 @@ public class CmmCirclePostVo extends InputPageDto {
      * @auther: dl.zhang
      * @date: 2019/6/11 16:14
      */
+    @NotBlank(message = "查询类型不能为空")
+    @Size(max = 32,message = "查询类型长度有误")
     private String queryType;
 
     /**
@@ -40,6 +48,8 @@ public class CmmCirclePostVo extends InputPageDto {
      * @auther: dl.zhang
      * @date: 2019/6/19 16:45
      */
+    @NotBlank(message = "排序类型不能为空")
+    @Size(max = 1,message = "排序类型长度有误")
     private String sortType;
 
 
@@ -72,6 +82,10 @@ public class CmmCirclePostVo extends InputPageDto {
 
     public enum QueryTypeEnum implements BaseEnum<QueryTypeEnum,String> {
 
+        /**
+         * 功能描述: 有一部分用的是id(32位)
+         * @date: 2019/12/10 17:46
+         */
         ALL("1","全部查询"),
         TESTPLAY("2","评测试玩"),
         STRATEGY("3","攻略心得"),

@@ -130,7 +130,7 @@
 
 
     <select id="listGame" parameterType="java.lang.String" resultMap="BaseResultMap">
-        select * from t_game where id in
+        select * from t_game where state =0 and id in
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
@@ -370,7 +370,7 @@
         select
         <include refid="Base_Column_List"></include>
         from  t_game
-        where  state = 0  and ( name LIKE  concat(concat('%',#{keyword}),'%')OR google_deputy_name LIKE concat(concat('%',#{keyword}),'%') OR intro LIKE  concat(concat('%',#{keyword}),'%') )
+        where  state = 0  and ( name LIKE  concat(concat('%',#{keyword}),'%')OR google_deputy_name LIKE concat(concat('%',#{keyword}),'%') )
     </select>
 
 </mapper>

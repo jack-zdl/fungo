@@ -15,6 +15,7 @@ import com.fungo.community.dao.service.BasVideoJobDaoService;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.dao.service.impl.ESDAOServiceImpl;
+import com.fungo.community.dto.PostCircleDto;
 import com.fungo.community.entity.*;
 import com.fungo.community.facede.GameFacedeService;
 import com.fungo.community.facede.SystemFacedeService;
@@ -22,6 +23,7 @@ import com.fungo.community.facede.TSMQFacedeService;
 import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.function.FungoLivelyCalculateUtils;
 import com.fungo.community.function.SerUtils;
+import com.fungo.community.helper.RedisActionHelper;
 import com.fungo.community.service.ICounterService;
 import com.fungo.community.service.IPostService;
 import com.fungo.community.service.IVideoService;
@@ -29,6 +31,7 @@ import com.game.common.aliyun.green.AliAcsCheck;
 import com.game.common.buriedpoint.BuriedPointUtils;
 import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
 import com.game.common.buriedpoint.model.BuriedPointPostModel;
+import com.game.common.consts.FunGoGameConsts;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
@@ -49,12 +52,13 @@ import com.game.common.util.*;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.EmojiDealUtil;
 import com.game.common.util.emoji.FilterEmojiUtil;
-import com.game.common.vo.UserFunVO;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,6 +67,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static com.game.common.consts.FunGoGameConsts.CACHE_EH_KEY_POST;
 
 
 @EnableAsync
@@ -118,6 +124,10 @@ public class PostServiceImpl implements IPostService {
     private AliAcsCheck myIAcsClient;
     @Autowired
     private ContentGreenDao contentGreenDao;
+    @Autowired
+    private RedisActionHelper redisActionHelper;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Transactional
@@ -550,7 +560,10 @@ public class PostServiceImpl implements IPostService {
         }
         //我的文章(2.4.3)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
-
+        //刪除文章相關的rediskey
+        fungoCacheArticle.removeIndexDecodeCache( false, FungoCoreApiConstant.PUB_POST);
+        //刪除文章相關的社区信息，文章数据
+        fungoCacheArticle.removeIndexDecodeCache( false, FungoCoreApiConstant.PUB_CIRCLE);
         //添加埋点信息
         BuriedPointPostModel model = new BuriedPointPostModel();
         //封装父类3个公共属性
@@ -639,31 +652,21 @@ public class PostServiceImpl implements IPostService {
     @Override
     @Transactional
     public ResultDto<String> deletePost(String postId, String userId) {
-        if (postId == null) {
-            return ResultDto.error("221", "找不到帖子id");
-        }
         CmmPost cmmPost = postService.selectById(postId);
         if (cmmPost == null) {
             return ResultDto.error("223", "没有这个帖子");
         }
-
         if (userId == null) {
             return ResultDto.error("211", "找不到用户id");
         }
-
-        //!fixme 查询用户数据
-        //Member user = memberService.selectById(userId);
-
-        List<String> idsList = new ArrayList<String>();
+           List<String> idsList = new ArrayList<>();
         idsList.add(userId);
-
         ResultDto<List<MemberDto>> listMembersByids = null;
         try {
             listMembersByids = systemFacedeService.listMembersByids(idsList, null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
         MemberDto memberDto = null;
         if (null != listMembersByids) {
             List<MemberDto> memberDtoList = listMembersByids.getData();
@@ -671,14 +674,12 @@ public class PostServiceImpl implements IPostService {
                 memberDto = memberDtoList.get(0);
             }
         }
-
         if (memberDto == null) {
             return ResultDto.error("126", "用户不存在");
         }
         if (!cmmPost.getMemberId().equals(userId)) {
             return ResultDto.error("224", "用户和帖子不匹配");
         }
-
         cmmPost.setUpdatedAt(new Date());
 //        cmmPost.setEditedAt(new Date());
         cmmPost.setMemberId(userId);
@@ -699,166 +700,12 @@ public class PostServiceImpl implements IPostService {
          * @date: 2019/9/25 9:58
          */
         int score = 5;
-
-        //!fixme 扣减用户经验值 MQ
-        // --------------------------------------------------start-----------------------------------------------
-     /*
-        IncentAccountScore scoreCount = accountScoreService.selectOne(new EntityWrapper<IncentAccountScore>().eq("mb_id", userId).eq("account_group_id", 1));
-        if (scoreCount == null) {
-            scoreCount = IAccountDaoService.createAccountScore(user, 1);
-        }
-        scoreCount.setScoreUsable(scoreCount.getScoreUsable().subtract((new BigDecimal(score))));
-        scoreCount.setUpdatedAt(new Date());
-        scoreCount.updateById();
-
-        user.setExp(scoreCount.getScoreUsable().intValue());
-        user = scoreLogService.updateLevel(user);
-        */
-        //scoreLogService
-
-        //!fixme 更新用户等级数据
-      /*
-        IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", userId).eq("rank_type", 1));
-
-        Long prelevel = incentRankedDtoResult.getCurrentRankId();//记录中的等级 可能需要修改
-        int curLevel = scoreLogService.getLevel(scoreCount.getScoreUsable().intValue());//现在应有的等级
-
-        //用户需不需要变更等级
-        ObjectMapper mapper = new ObjectMapper();
-        if (curLevel != prelevel) {
-
-            ranked.setCurrentRankId((long) curLevel);
-
-            ranked.setCurrentRankName("Lv" + curLevel);
-
-            String rankIdtIds = ranked.getRankIdtIds();
-            List<HashMap<String, String>> rankList = new ArrayList<>();
-            try {
-                rankList = mapper.readValue(rankIdtIds, ArrayList.class);
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
-            boolean add = true;
-            for (HashMap m : rankList) {
-                if (m.get("rankId").equals(curLevel + "")) {
-                    add = false;
-                }
-            }
-            if (add) {
-                HashMap<String, String> newMap = new HashMap<String, String>();
-                newMap.put("rankId", curLevel + "");
-                newMap.put("rankName", "Lv" + curLevel);
-                rankList.add(newMap);
-                try {
-                    ranked.setRankIdtIds(mapper.writeValueAsString(rankList));
-                } catch (JsonProcessingException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                //等级变更记录 t_incent_ranked_log 更新
-            }
-            ranked.setUpdatedAt(new Date());
-            ranked.updateById();
-            IncentRuleRank rankRule = ruleRankService.selectOne(new EntityWrapper<IncentRuleRank>().eq("id", curLevel));
-            scoreLogService.addRankLog(userId, rankRule);
-
-        }
-        */
-        //--------------------------------------------------end-----------------------------------------------
-
-        //-----start
-        //MQ 业务数据发送给系统用户业务处理
-        TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
-
-        //消息类型
-        transactionMessageDto.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
-
-        //发送的队列
-        transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
-
-        //路由key
-        StringBuffer routinKey = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
-        routinKey.deleteCharAt(routinKey.length() - 1);
-        routinKey.append("deletePostSubtractExpLevel");
-
-        transactionMessageDto.setRoutingKey(routinKey.toString());
-
-        MQResultDto mqResultDto = new MQResultDto();
-        mqResultDto.setType(MQResultDto.CommunityEnum.CMT_POST_MQ_TYPE_DELETE_POST_SUBTRACT_EXP_LEVEL.getCode());
-
-        HashMap<String, Object> hashMap = new HashMap<String, Object>();
-        hashMap.put("mb_id", userId);
-        hashMap.put("score", score);
-
-        mqResultDto.setBody(hashMap);
-
-        transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
-        //执行MQ发送
-        ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
-        logger.info("--删除帖子执行扣减用户经验值和等级--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
-
-        //--start 扣减10fun币
-        //@todo
-        TransactionMessageDto transactionMessageDto1 = new TransactionMessageDto();
-
-        //消息类型
-        transactionMessageDto1.setMessageDataType(TransactionMessageDto.MESSAGE_DATA_TYPE_POST);
-
-        //发送的队列
-        transactionMessageDto1.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName());
-
-        //路由key
-        StringBuffer routinKey1 = new StringBuffer(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
-        routinKey1.deleteCharAt(routinKey1.length() - 1);
-        routinKey1.append("deletePostSubtractExpLevel");
-
-        transactionMessageDto1.setRoutingKey(routinKey1.toString());
-
-        MQResultDto mqResultDto1 = new MQResultDto();
-        mqResultDto1.setType(MQResultDto.CommunityEnum.CMT_POST_MOOD_GAME_MQ_TYPE_DELETE.getCode());
-
-        UserFunVO userFunVO = new UserFunVO();
-        userFunVO.setMemberId(userId );
-        userFunVO.setDescription( "删除文章" );
-        userFunVO.setNumber(10);
-        mqResultDto1.setBody(userFunVO);
-        transactionMessageDto1.setMessageBody(JSON.toJSONString(mqResultDto1));
-        //执行MQ发送
-        ResultDto<Long> Result = tSMQFacedeService.saveAndSendMessage(transactionMessageDto1);
-        //--end 扣减10fun币
-        //-----start
-
-        ActionInput actioninput = new ActionInput();
-        actioninput.setTarget_type(4);
-        actioninput.setTarget_id(cmmPost.getCommunityId());
-        boolean b = iCountService.subCounter(userId, 7, actioninput);
-
-        //clear redis cache
-        //文章内容html-内容
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_CONTENT + postId, "", null);
-        //文章内容html-标题
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_TITLE + postId, "", null);
-        //帖子详情
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, postId, null);
-        //帖子/心情评论列表
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
-        //clear redis cache
-        //首页文章帖子列表(v2.4)
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
-        //帖子列表
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
-        //社区置顶文章(2.4.3)
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, "", null);
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
-
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX, "", null);
-        // 个人信息
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + userId, "", null);
-        // fun币消耗详情
-        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + userId, "", null);
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.DELETE_POST.getKey());
+        abstractEventDto.setScore(score);
+        abstractEventDto.setUserId(userId);
+        applicationEventPublisher.publishEvent(abstractEventDto);
         return ResultDto.success("删除成功");
-
     }
 
     @Override
@@ -1062,10 +909,10 @@ public class PostServiceImpl implements IPostService {
 //				}
             }
         }
-
-
         postService.updateAllColumnById(post);
-
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.UPDATE_POST.getKey());
+        applicationEventPublisher.publishEvent(abstractEventDto);
 
         //clear redis cache
         //文章内容html-内容
@@ -1083,10 +930,11 @@ public class PostServiceImpl implements IPostService {
         //社区置顶文章(2.4.3)
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, post.getCommunityId(), null);
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
-
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
         return ResultDto.success();
     }
 
+    @Cacheable(value = CACHE_EH_KEY_POST, key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL_CACHE +" ' +#userId + #postId ")
     @Override
     public ResultDto<PostOut> getPostDetails(String postId, String userId, String os) throws Exception {
         PostOut out = null;
@@ -1141,9 +989,10 @@ public class PostServiceImpl implements IPostService {
         out.setObjectId(cmmPost.getId());
         out.setTitle(CommonUtils.filterWord(cmmPost.getTitle()));
         String tags = cmmPost.getTags();
-     /*   if (!CommonUtil.isNull(tags)) {
-            out.setTags(tags);
-        }*/
+        if (!CommonUtil.isNull(tags)) {
+            out.setTags(Arrays.asList( tags.split( "," )) );
+//            out.setTags(Arrays.asList( tags.split( "," )) );
+        }
         if (cmmPost.getImages() != null) {
             out.setImages(Arrays.asList(cmmPost.getImages().replace("]", "").replace("[", "").replace("\"", "").split(",")));
         }
@@ -1182,6 +1031,8 @@ public class PostServiceImpl implements IPostService {
             }
             //!fixme
             out.setHtml_origin(origin);
+            // fix  当app新增文章查询时,pc端再次查询获取不到这个字段
+            out.setPc_html_origin(SerUtils.returnOriginHrml(SerUtils.getOriginImageContent(CommonUtils.filterWord(origin), out.getImages(), gameList)));
 //          String html_origin = CommonUtils.filter(cmmPost.getHtmlOrigin());
 //			out.setHtml_origin(html_origin);
         } else {
@@ -1235,17 +1086,19 @@ public class PostServiceImpl implements IPostService {
         Map<String, Object> communityMap = new HashMap<String, Object>();
         //type 0 游戏社区 1：官方社区 2 圈子 3.什么都没有
         communityMap.put("type", 3);
-        CmmCircle circle = null;
+        PostCircleDto circle = null;
         String circleId = cmmPostCircleMapper.getCmmCircleByPostId(cmmPost.getId());
         if (StringUtil.isNotNull(circleId)) {
-            circle = cmmCircleMapper.selectById(circleId);
+            circle = cmmCircleMapper.getPostCircleDtoById(circleId);
         }
         if (circle != null) {
             communityMap.put("objectId", circle.getId());
             communityMap.put("name", circle.getCircleName());
             communityMap.put("icon", circle.getCircleIcon());
+            communityMap.put( "hotValue",circle.getHotValue() );
+            communityMap.put( "postNum",circle.getPostNum());
             communityMap.put("intro", circle.getIntro());
-            //3标识本次是圈子
+            //2标识本次是圈子
             communityMap.put("type", 2);
         } else {
             //分两种情况 是否关联了社区，关联社区走之前逻辑，否则走关联游戏逻辑
@@ -1385,6 +1238,24 @@ public class PostServiceImpl implements IPostService {
         out.setAuthor(authorBean);
         out.setType(cmmPost.getType());
 
+        // pc 2.1 预览新增关联的游戏名称展示
+        List<String> gameIds = cmmPostGameMapper.listGameIds(postId);
+        ArrayList<String> gameNames = new ArrayList<>();
+        if(!gameIds.isEmpty() ){
+            String gameIdString = StringUtils.join(gameIds, ",");
+            ResultDto<List<GameDto>> resultDto = gameFacedeService.selectGameDetailsByIds(gameIdString);
+            if(resultDto!=null &&resultDto.isSuccess() && resultDto.getData() != null){
+                List<GameDto> gameDtos = resultDto.getData();
+                for (GameDto gameDto : gameDtos) {
+                    if(gameDto.getState() == 0){
+                        gameNames.add(gameDto.getName());
+                    }
+                }
+            }
+        }
+        out.setIncludeGameList(gameNames);
+
+        
         CmmPost cmmPostUpdate = new CmmPost();
         cmmPostUpdate.setId(postId);
         cmmPostUpdate.setWatchNum(cmmPost.getWatchNum() + 1);
@@ -1691,165 +1562,150 @@ public class PostServiceImpl implements IPostService {
 
 
     /**
-     * 功能描述:
+     * 功能描述: 圈子查询推荐文章
      * @param: []
      * @return: com.game.common.dto.FungoPageResultDto<java.util.Map                                                                                                                                                                                                                                                               <                                                                                                                                                                                                                                                               java.lang.String                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                               java.lang.String>>
      * @auther: dl.zhang
      * @date: 2019/6/18 18:21
      */
+    @Cacheable(cacheNames = {FunGoGameConsts.CACHE_EH_KEY_PRE_COMMUNITY } ,key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_ALL_POST_TOPIC_CACHE +" ' + #inputPageDto.page + #inputPageDto.limit ")
     @Override
     public FungoPageResultDto<PostOutBean> getTopicPosts(MemberUserProfile memberUserPrefile, PostInputPageDto inputPageDto) {
-
-        FungoPageResultDto<PostOutBean> re = new FungoPageResultDto<>();
-
-//        List<Map<String, String>> mapList = null;
-
-//        mapList = new ArrayList<>();
-
+        FungoPageResultDto<PostOutBean> re = null;
+        List<PostOutBean> list = null;
         Page page = new Page(inputPageDto.getPage(), inputPageDto.getLimit());
+        String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_ALL_POST_TOPIC;
+        String keySuffix = JSON.toJSONString(inputPageDto)+JSON.toJSONString(memberUserPrefile);
+        try {
+            re = (FungoPageResultDto<PostOutBean>) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
+            if (null != re ) {
+                return re;
+            }
+            List<CmmPost> cmmPostList = cmmPostDao.getCmmPostByRecommend(page);
+            list = new ArrayList<>();
+            re = new FungoPageResultDto<>();
+            if (cmmPostList != null) {
+                ObjectMapper mapper = new ObjectMapper();
+                for (CmmPost cmmPost : cmmPostList) {
+                    //表情解码
+                    if (StringUtils.isNotBlank(cmmPost.getTitle())) {
+                        String interactTitle = FilterEmojiUtil.decodeEmoji(cmmPost.getTitle());
+                        //String interactTitle = EmojiParser.parseToUnicode(cmmPost.getTitle() );
+                        cmmPost.setTitle(interactTitle);
+                    }
+                    if (StringUtils.isNotBlank(cmmPost.getContent())) {
+                        String interactContent = FilterEmojiUtil.decodeEmoji(cmmPost.getContent());
+                        //String interactContent = EmojiParser.parseToUnicode(cmmPost.getContent());
+                        cmmPost.setContent(interactContent);
+                    }
 
-//        EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<>();
-//        postEntityWrapper.eq("recommend", 1);
-//        postEntityWrapper.eq("state", 1);
-//        postEntityWrapper.orderBy("sort", false);
-
-
-        //Page<CmmPost> postPage = postService.selectPage(page,postEntityWrapper );
-        List<CmmPost> cmmPostList = cmmPostDao.getCmmPostByRecommend(page);
-
-        List<PostOutBean> list = new ArrayList<>();
-        if (cmmPostList != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            for (CmmPost cmmPost : cmmPostList) {
-                //表情解码
-                if (StringUtils.isNotBlank(cmmPost.getTitle())) {
-                    String interactTitle = FilterEmojiUtil.decodeEmoji(cmmPost.getTitle());
-                    //String interactTitle = EmojiParser.parseToUnicode(cmmPost.getTitle() );
-                    cmmPost.setTitle(interactTitle);
-                }
-                if (StringUtils.isNotBlank(cmmPost.getContent())) {
-                    String interactContent = FilterEmojiUtil.decodeEmoji(cmmPost.getContent());
-                    //String interactContent = EmojiParser.parseToUnicode(cmmPost.getContent());
-                    cmmPost.setContent(interactContent);
-                }
-
-                PostOutBean bean = new PostOutBean();
-                CmmCommunity community = communityService.selectById(cmmPost.getCommunityId());
+                    PostOutBean bean = new PostOutBean();
+                    CmmCommunity community = communityService.selectById(cmmPost.getCommunityId());
 //               if (community == null || community.getState() != 1) {
 //                   continue;
 //               }
-                AuthorBean authorBean = new AuthorBean();
-                try {
-                    ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(cmmPost.getMemberId());
-                    if (null != beanResultDto) {
-                        authorBean = beanResultDto.getData();
+                    AuthorBean authorBean = new AuthorBean();
+                    try {
+                        ResultDto<AuthorBean> beanResultDto = systemFeignClient.getAuthor(cmmPost.getMemberId());
+                        if (null != beanResultDto) {
+                            authorBean = beanResultDto.getData();
+                        }
+                    } catch (Exception ex) {
+                        logger.error( "PostServiceImpl.getTopicPosts获取getAuthor异常,参数="+cmmPost.getMemberId(),ex);
                     }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                bean.setAuthor(authorBean);
-                //
-                //systemFeignClient.list
-
+                    bean.setAuthor(authorBean);
 //               if (bean.getAuthor() == null) {
 //                   continue;
 //               }
-                String content = cmmPost.getContent();
-                if (!CommonUtil.isNull(content)) {
-                    //bean.setContent(content.length() > 100 ? CommonUtils.filterWord(content.substring(0, 100)) : CommonUtils.filterWord(content));
-                    bean.setContent(content.length() > 40 ? Html2Text.removeHtmlTag(content.substring(0, 40)) : Html2Text.removeHtmlTag(content));
-                }
-                bean.setUpdated_at(DateTools.fmtDate(cmmPost.getUpdatedAt()));
-                bean.setCreatedAt(DateTools.fmtDate(cmmPost.getCreatedAt()));
-                bean.setVideoUrl(cmmPost.getVideo());
-                bean.setImageUrl(cmmPost.getCoverImage());
-                bean.setLikeNum(cmmPost.getLikeNum());
-                bean.setPostId(cmmPost.getId());
-                bean.setReplyNum(cmmPost.getCommentNum());
-                bean.setTitle(CommonUtils.filterWord(cmmPost.getTitle()));
-                if (community != null) {
-                    bean.setCommunityIcon(community.getIcon());
-                    bean.setCommunityId(community.getId());
-                    bean.setCommunityName(community.getName());
-                }
-
-
-                //文章 row_id
-                bean.setRowId(cmmPost.getPostId());
-
-                if (community != null && !CommonUtil.isNull(cmmPost.getVideo()) && CommonUtil.isNull(cmmPost.getCoverImage())) {
-                    bean.setImageUrl(community.getCoverImage());
-                }
-                try {
-                    if (!CommonUtil.isNull(cmmPost.getImages())) {
-                        ArrayList<String> readValue = new ArrayList<String>();
-                        readValue = mapper.readValue(cmmPost.getImages(), ArrayList.class);
-                        int readValueListSize = readValue.size();
-                        if (readValueListSize > 3) {
-                            List threeReadValueList = new ArrayList(readValue.subList(0, 3));
-                            bean.setImages(threeReadValueList);
-                        } else {
-                            bean.setImages(readValue);
-                        }
-                        //bean.setImages(readValue.size() > 3 ? readValue.subList(0, 3) : readValue);
+                    String content = cmmPost.getContent();
+                    if (!CommonUtil.isNull(content)) {
+                        //bean.setContent(content.length() > 100 ? CommonUtils.filterWord(content.substring(0, 100)) : CommonUtils.filterWord(content));
+                        bean.setContent(content.length() > 40 ? Html2Text.removeHtmlTag(content.substring(0, 40)) : Html2Text.removeHtmlTag(content));
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                //是否点赞
-                if (memberUserPrefile == null) {
-
-                    bean.setLiked(false);
-
-                } else {
-
-                    //!fixme 获取点赞数
-                    //行为类型
-                    //点赞 | 0
-                    //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", cmmPost.getId()).eq("member_id", memberUserPrefile.getLoginId()));
-
-                    BasActionDto basActionDto = new BasActionDto();
-
-                    basActionDto.setMemberId(memberUserPrefile.getLoginId());
-                    basActionDto.setType(0);
-                    basActionDto.setState(0);
-                    basActionDto.setTargetId(cmmPost.getId());
-
-                    int liked = 0;
-
+                    bean.setUpdated_at(DateTools.fmtDate(cmmPost.getUpdatedAt()));
+                    bean.setCreatedAt(DateTools.fmtDate(cmmPost.getCreatedAt()));
+                    bean.setVideoUrl(cmmPost.getVideo());
+                    bean.setImageUrl(cmmPost.getCoverImage());
+                    bean.setLikeNum(cmmPost.getLikeNum());
+                    bean.setPostId(cmmPost.getId());
+                    bean.setReplyNum(cmmPost.getCommentNum());
+                    bean.setTitle(CommonUtils.filterWord(cmmPost.getTitle()));
+                    if (community != null) {
+                        bean.setCommunityIcon(community.getIcon());
+                        bean.setCommunityId(community.getId());
+                        bean.setCommunityName(community.getName());
+                    }
+                    //文章 row_id
+                    bean.setRowId(cmmPost.getPostId());
+                    if (community != null && !CommonUtil.isNull(cmmPost.getVideo()) && CommonUtil.isNull(cmmPost.getCoverImage())) {
+                        bean.setImageUrl(community.getCoverImage());
+                    }
                     try {
-                        ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
-
-                        if (null != resultDto) {
-                            liked = resultDto.getData();
+                        if (!CommonUtil.isNull(cmmPost.getImages())) {
+                            ArrayList<String> readValue = mapper.readValue(cmmPost.getImages(), ArrayList.class);
+                            int readValueListSize = readValue.size();
+                            if (readValueListSize > 3) {
+                                List threeReadValueList = new ArrayList(readValue.subList(0, 3));
+                                bean.setImages(threeReadValueList);
+                            } else {
+                                bean.setImages(readValue);
+                            }
+                            //bean.setImages(readValue.size() > 3 ? readValue.subList(0, 3) : readValue);
                         }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-
-
-                    bean.setLiked(liked > 0 ? true : false);
+                    //是否点赞
+                    if (memberUserPrefile == null) {
+                        bean.setLiked(false);
+                    } else {
+                        //!fixme 获取点赞数
+                        //行为类型
+                        //点赞 | 0
+                        //int liked = actionService.selectCount(new EntityWrapper<BasAction>().eq("type", 0).ne("state", "-1").eq("target_id", cmmPost.getId()).eq("member_id", memberUserPrefile.getLoginId()));
+                        BasActionDto basActionDto = new BasActionDto();
+                        basActionDto.setMemberId(memberUserPrefile.getLoginId());
+                        basActionDto.setType(0);
+                        basActionDto.setState(0);
+                        basActionDto.setTargetId(cmmPost.getId());
+                        int liked = 0;
+                        try {
+                            ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
+                            if (null != resultDto) {
+                                liked = resultDto.getData();
+                            }
+                        } catch (Exception ex) {
+                            logger.error( "PostServiceImpl.getTopicPosts获取systemFeignClient.countActionNum异常,参数="+JSON.toJSONString( basActionDto ),ex);
+                        }
+                        bean.setLiked(liked > 0 ? true : false);
+                    }
+                    bean.setVideoCoverImage(cmmPost.getVideoCoverImage());
+                    bean.setType(cmmPost.getType());
+                    /**
+                     * 功能描述: 根据文章查询是否有圈子
+                     * @auther: dl.zhang
+                     * @date: 2019/6/27 15:40
+                     */
+                    CmmCircle cmmCircle = cmmPostCircleMapper.getCircleEntityByPostId(bean.getPostId());
+                    if (cmmCircle != null) {
+                        bean.setCircleId(cmmCircle.getId());
+                        bean.setCircleName(cmmCircle.getCircleName());
+                        bean.setCircleIcon(cmmCircle.getCircleIcon());
+                    }
+                    //视频详情
+                    if (!CommonUtil.isNull(cmmPost.getVideoUrls())) {
+                        ArrayList<StreamInfo> streams = (ArrayList<StreamInfo>) JSON.parseArray(cmmPost.getVideoUrls(), StreamInfo.class);
+                        bean.setVideoList(streams);
+                    }
+                    list.add(bean);
                 }
-
-                bean.setVideoCoverImage(cmmPost.getVideoCoverImage());
-                bean.setType(cmmPost.getType());
-                /**
-                 * 功能描述: 根据文章查询是否有圈子
-                 * @auther: dl.zhang
-                 * @date: 2019/6/27 15:40
-                 */
-                CmmCircle cmmCircle = cmmPostCircleMapper.getCircleEntityByPostId(bean.getPostId());
-                if (cmmCircle != null) {
-                    bean.setCircleId(cmmCircle.getId());
-                    bean.setCircleName(cmmCircle.getCircleName());
-                    bean.setCircleIcon(cmmCircle.getCircleIcon());
-                }
-                list.add(bean);
             }
+            re.setData(list);
+            PageTools.pageToResultDto(re, page);
+            fungoCacheArticle.excIndexDecodeCache(true, keyPrefix, keySuffix, re, RedisActionHelper.getRandomRedisCacheTime());
+        }catch (Exception e){
+            logger.error( "圈子查询推荐文章异常",e );
         }
-        re.setData(list);
-        PageTools.pageToResultDto(re, page);
         return re;
     }
 

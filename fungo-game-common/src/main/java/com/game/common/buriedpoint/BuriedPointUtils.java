@@ -16,6 +16,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -61,9 +62,15 @@ public class BuriedPointUtils {
      * 在spring容器中发布埋点事件(spring异步事件多播器处理后相当于异步上传埋点数据至易观-不会阻塞业务线程)
      */
     public static void publishBuriedPointEvent(BuriedPointModel pointModel) {
-        BuriedPointEvent buriedPointEvent = new BuriedPointEvent(pointModel);
-        // 对应的事件监听器为 BuriedPointEventListener
-        SpringUtil.getContext().publishEvent(buriedPointEvent);
+        // 判断当前 运行时环境
+        String property = SpringUtil.getProperty("spring.profiles.active");
+        if(Objects.equals("pro",property)){
+            BuriedPointEvent buriedPointEvent = new BuriedPointEvent(pointModel);
+            // 对应的事件监听器为 BuriedPointEventListener
+            SpringUtil.getContext().publishEvent(buriedPointEvent);
+        }else{
+            logger.warn("非生产环境，不上报埋点信息");
+        }
     }
 
     /**

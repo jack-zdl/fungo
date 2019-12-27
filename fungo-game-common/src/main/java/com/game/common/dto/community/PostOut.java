@@ -11,6 +11,7 @@ public class PostOut {
 
 	private String objectId;
     private List<String> tags = new ArrayList<>();
+//	private List<String> tagsName = new ArrayList<>();
 	private List<String> images = new ArrayList<>();
 	private String cover_image;
 	private String title;
@@ -60,8 +61,17 @@ public class PostOut {
 	 */
 	private String videoCoverImage;
 
+	private List<String> includeGameList;
 
-    public List<String> getTags() {
+	public List<String> getIncludeGameList() {
+		return includeGameList;
+	}
+
+	public void setIncludeGameList(List<String> includeGameList) {
+		this.includeGameList = includeGameList;
+	}
+
+	public List<String> getTags() {
         return tags;
     }
 
