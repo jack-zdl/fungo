@@ -53,7 +53,15 @@ public class AbstractEventDto extends ApplicationEvent {
         USER_UNFOLLOW(5),
         UPDATE_POST(6),
         ADD_LIKE(7),
-        DELETE_LIKE(6);
+        DELETE_LIKE(8),
+        EDIT_USER(9),
+        FOLLOW_OFFICIAL_USER(10),
+        BROWSE_SHOP(11),
+        BINDQQ_USER(12),
+        BINDWECHAT_USER(13),
+        BINDWEIBO_USER(14),
+        OPENPUSH_USER(15),
+        VPN_GAME(16);
         int key;
         AbstractEventEnum(int k){
             this.key = k;

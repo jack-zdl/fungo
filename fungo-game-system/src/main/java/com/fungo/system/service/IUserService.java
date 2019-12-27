@@ -27,7 +27,7 @@ public interface IUserService {
      * @param
      * @throws Exception
      */
-    ResultDto<LoginMemberBean> login(String mobile, String password, String code, String appVersion,String deviceId,String channel) throws Exception;
+    ResultDto<LoginMemberBean> login(String mobile, String password, String code, String appVersion,String deviceId,String channel) ;
 
     /**
      * 用户登录

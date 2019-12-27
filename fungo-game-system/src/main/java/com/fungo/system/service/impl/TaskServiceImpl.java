@@ -12,6 +12,7 @@ import com.fungo.system.dao.MemberDao;
 import com.fungo.system.entity.*;
 import com.fungo.system.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.dto.AbstractEventDto;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.ResultDto;
 import com.game.common.enums.FunGoTaskV243Enum;
@@ -23,6 +24,7 @@ import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,17 +54,12 @@ public class TaskServiceImpl implements ITaskService {
     private ScoreGroupService scoreGroupService;
     @Autowired
     private IncentAccountCoinDaoService incentAccountCoinServiceImap;
-
-    @Autowired
-    private IncentAccountScoreService accountScoreService;
     @Autowired
     private IncentRankedService rankedService;
     @Autowired
     private IMemberAccountScoreDaoService IAccountDaoService;
     @Autowired
     private IncentRuleRankService ruleRankService;
-    @Autowired
-    private IncentRankedLogService rankedLogService;
     @Autowired
     private BannerDao bannerDao;
     @Autowired
@@ -73,6 +70,8 @@ public class TaskServiceImpl implements ITaskService {
     private NacosFungoCircleConfig nacosFungoCircleConfig;
     @Resource(name = "actionServiceImpl")
     private IActionService actionService;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @SuppressWarnings("rawtypes")
     @Override
@@ -586,8 +585,11 @@ public class TaskServiceImpl implements ITaskService {
                     LOGGER.error( userId+"用户关注用户"+s+"失败",e);
                 }
             });
-            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.FOLLOWOFFICIALUSER_COIN.getKey() );
-            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.FOLLOWOFFICIALUSER_EXP.getKey());
+            // 2.7 任务
+            AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+            abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.FOLLOW_OFFICIAL_USER.getKey());
+            abstractEventDto.setUserId(userId);
+            applicationEventPublisher.publishEvent(abstractEventDto);
             return ResultDto.ResultDtoFactory.buildSuccess( "一键关注官方账户成功" );
         }catch (Exception e){
             LOGGER.error( userId+"用户一键关注官方账户失败",e );

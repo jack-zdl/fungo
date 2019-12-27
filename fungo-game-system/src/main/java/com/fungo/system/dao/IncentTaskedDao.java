@@ -3,6 +3,7 @@ package com.fungo.system.dao;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.fungo.system.entity.IncentTasked;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 /**
  * <p>
@@ -12,6 +13,7 @@ import org.apache.ibatis.annotations.Param;
  * @author lzh
  * @since 2018-12-03
  */
+@Repository
 public interface IncentTaskedDao extends BaseMapper<IncentTasked> {
 
     IncentTasked getIncentTaskedByUserAndType(@Param("memberId") String memberId,@Param("taskType") String taskType);

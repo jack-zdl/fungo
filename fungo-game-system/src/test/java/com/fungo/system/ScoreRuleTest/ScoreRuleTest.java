@@ -1,6 +1,5 @@
 package com.fungo.system.ScoreRuleTest;
 
-import com.fungo.system.entity.IncentTasked;
 import com.fungo.system.entity.ScoreRule;
 import com.fungo.system.service.IScoreRuleService;
 import com.game.common.util.UUIDUtils;
@@ -9,8 +8,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import sun.security.krb5.SCDynamicStoreConfig;
-
 import java.util.Date;
 
 /**

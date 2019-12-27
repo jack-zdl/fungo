@@ -52,8 +52,6 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
     private static final Logger logger = LoggerFactory.getLogger( ScoreRuleServiceImpl.class);
 
     //用户成长业务
-    @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
-    private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
     @Autowired
     private IMemberIncentTaskRuleService iMemberIncentTaskRuleService;
     @Autowired
@@ -70,8 +68,6 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
     private IncentRankedService rankedService;
     @Autowired
     private ScoreRuleDao scoreRuleDao;
-    @Autowired
-    private IncentTaskedDao incentTaskedDao;
     @Autowired
     private IncentTaskedService incentTaskedService;
     @Value("${sys.config.fungo.cluster.index}")

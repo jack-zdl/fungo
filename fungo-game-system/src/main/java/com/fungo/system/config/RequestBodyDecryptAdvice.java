@@ -36,7 +36,7 @@ public class RequestBodyDecryptAdvice  extends RequestBodyAdviceAdapter{
      */
     @Override
     public boolean supports(MethodParameter methodParameter, Type type, Class<? extends HttpMessageConverter<?>> converterType) {
-        return type.getTypeName().equals( UserBean.class.getName() );  // type.getTypeName().equals( UserBean.class.getName());
+        return  true; // type.getTypeName().equals( UserBean.class.getName() );  // type.getTypeName().equals( UserBean.class.getName());
     }
 
     /**
@@ -98,7 +98,7 @@ class MyHttpInputMessage  implements HttpInputMessage{
             String key = entry.getKey();
             Object objValue = entry.getValue();
             if (objValue instanceof String) {
-                String value = objValue.toString();
+                String value = filterDangerString(objValue.toString());
                 map.put(key,value.trim() ); //filterDangerString(value)
             }else{
                 map.put(key,objValue ); //filterDangerString(value)

@@ -31,7 +31,7 @@ public class MyResponseBodyAdvice implements ResponseBodyAdvice {
 
     @Override
     public boolean supports(MethodParameter methodParameter, Class aClass) {
-        return false;
+        return true;
     }
 
     @Override
