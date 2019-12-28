@@ -56,7 +56,6 @@ public interface IUserService {
      */
     ResultDto<LoginMemberBean> register(String mobile, String password, String code) throws Exception;
 
-
     /**
      * http://{{host}}/api/user/smscode
      */
@@ -111,7 +110,6 @@ public interface IUserService {
      */
     ResultDto<Map<String, String>> verifyMobile(String memberId, String type, String code, String mobile, String password);
 
-
     /**
      * 设置新密码
      * http://{{host}}/api/mine/password
@@ -149,9 +147,6 @@ public interface IUserService {
     //用户信息
     ResultDto<MemberOutBean> getUserInfo(String memberId) throws Exception;
 
-    //更新用户头像
-    ResultDto<Map<String, String>> uploadAvatar(String loginId, MultipartFile appFile);
-
     //用户信息
     AuthorBean getUserCard(String cardId, String memberId);
 
@@ -161,15 +156,12 @@ public interface IUserService {
     //用户注册 初始化数据(Fungo身份证、等级)
     void initUserRank(String memberId);
 
-
     ResultDto updateUserRegister(String userId, String registerChannel, String registerPlatform);
 
     ResultDto<MemberBuriedPointBean> getBuriedPointUserProperties(String loginId);
 
-
     //添加管理员关联的虚拟用户
     ResultDto<Member> addVirtualUser(AdminUserInputDTO input, String adminId) throws Exception;
-
 
     //添加管理员关联的虚拟用户
     ResultDto<String> userShareMall(String adminId) throws Exception;
