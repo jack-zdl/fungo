@@ -26,6 +26,7 @@ public class ActionInput {
      *  意见反馈 | 9
      *  游戏标签 | 10
      *  圈子  / 11   @zdl 2019/6/18
+     *  加速器 / 16 2019/12/28
      */
     private int target_type;
 

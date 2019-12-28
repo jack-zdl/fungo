@@ -271,56 +271,53 @@ public class ActionServiceImpl implements IActionService {
             //times = gameProxy.addTaskCore(Setting.ACTION_TYPE_SHARE, memberId, inputDto.getTarget_id(), inputDto.getTarget_type());
 
             //V2.4.6版本任务
+            Map<String, Object> resMapCoin = null;
+            Map<String, Object> resMapExp = null;
             //分享文章
             if (inputDto.getTarget_type() == Setting.RES_TYPE_POST) {
                 //每日任务
                 //1 fungo币
-                Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+                resMapCoin = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                         MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_SHARE_1_ARTICLE_COIN.code());
 
                 //2 经验值
-                Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+                resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                         MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_SHARE_1_ARTICLE_EXP.code());
 
-
-                if (null != resMapCoin && !resMapCoin.isEmpty()) {
-                    if (null != resMapExp && !resMapExp.isEmpty()) {
-                        boolean coinsSuccess = (boolean) resMapCoin.get("success");
-                        boolean expSuccess = (boolean) resMapExp.get("success");
-                        if (coinsSuccess && expSuccess) {
-                            tips = (String) resMapCoin.get("msg");
-                            tips += (String) resMapExp.get("msg");
-                        } else {
-                            tips = (String) resMapCoin.get("msg");
-                        }
-                    }
-                }
 
                 //分享游戏
             } else if (inputDto.getTarget_type() == Setting.RES_TYPE_GAME) {
 
                 //1 fungo币
-                Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+                 resMapCoin = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                         MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_SHARE_1_GAME_COIN.code());
 
                 //2 经验值
-                Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+               resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                         MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_SHARE_1_GAME_EXP.code());
 
-                if (null != resMapCoin && !resMapCoin.isEmpty()) {
-                    if (null != resMapExp && !resMapExp.isEmpty()) {
-                        boolean coinsSuccess = (boolean) resMapCoin.get("success");
-                        boolean expSuccess = (boolean) resMapExp.get("success");
-                        if (coinsSuccess && expSuccess) {
-                            tips = (String) resMapCoin.get("msg");
-                            tips += (String) resMapExp.get("msg");
-                        } else {
-                            tips = (String) resMapCoin.get("msg");
-                        }
+            }else if(inputDto.getTarget_type() == Setting.RES_TYPE_LINGKAFAST){
+                //1 fungo币
+                resMapCoin = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+                        MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_SHARE_1_FAST_COIN.code());
+
+                //2 经验值
+               resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+                        MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_SHARE_1_FAST_EXP.code());
+
+            }
+            if (null != resMapCoin && !resMapCoin.isEmpty()) {
+                if (null != resMapExp && !resMapExp.isEmpty()) {
+                    boolean coinsSuccess = (boolean) resMapCoin.get("success");
+                    boolean expSuccess = (boolean) resMapExp.get("success");
+                    if (coinsSuccess && expSuccess) {
+                        tips = (String) resMapCoin.get("msg");
+                        tips += (String) resMapExp.get("msg");
+                    } else {
+                        tips = (String) resMapCoin.get("msg");
                     }
                 }
             }
-
         }
 
        /* if (times > 0) {
@@ -911,6 +908,20 @@ public class ActionServiceImpl implements IActionService {
         map.put("id", inputDto.getTarget_id());
         map.put("type", "sub");
         return getCounterBoolean(inputDto, map);
+    }
+
+    @Override
+    public ResultDto<String> useSomeTimeFast(String memberId) throws Exception{
+        //1 fungo币
+        Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+                MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_USE_FAST_COIN.code());
+
+
+        //2 经验值
+        Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
+                MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_USE_FAST_EXP.code());
+
+        return ResultDto.success();
     }
 
     //根据资源类型获取表名
