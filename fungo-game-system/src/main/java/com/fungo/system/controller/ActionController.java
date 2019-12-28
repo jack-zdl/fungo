@@ -1,16 +1,20 @@
 package com.fungo.system.controller;
 
 import com.fungo.system.service.IActionService;
+import com.fungo.system.service.TaskRechargeService;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.MemberUserProfile;
+import com.game.common.dto.RechargeInput;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.index.BannerBean;
 import com.game.common.dto.mall.MallBannersInput;
+import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -31,6 +35,8 @@ public class ActionController {
     @Resource(name = "actionServiceImpl")
     private IActionService actionService;
 
+    @Resource
+    private TaskRechargeService taskRechargeService;
 
     @ApiOperation(value="点赞", notes="")
     @PostMapping(value="/api/action/like")
@@ -206,6 +212,26 @@ public class ActionController {
         mallBannersInput.setLogin_id(memberUserPrefile.getLoginId());
         return actionService.queryCollectionLike(mallBannersInput);
     }
+
+
+    @PostMapping("/api/action/completeRechargeTask")
+    public ResultDto<String> completeRechargeTask(MemberUserProfile memberUserPrefile, @RequestBody RechargeInput rechargeInput){
+        String loginId = memberUserPrefile.getLoginId();
+        if(StringUtil.isNull(loginId)||StringUtil.isNull(rechargeInput.getOrderId())||rechargeInput.getRechargeType()==null){
+            return  ResultDto.error("-1","参数错误");
+        }
+        return taskRechargeService.completeRechargeTask(loginId,rechargeInput.getRechargeType(),rechargeInput.getOrderId());
+    }
+
+    @PostMapping("/api/action/useSomeTimeFast")
+    public ResultDto<String> useSomeTimeFast(MemberUserProfile memberUserPrefile)  throws Exception{
+        String memberId = memberUserPrefile.getLoginId();
+        if(StringUtil.isNull(memberId)){
+            return  ResultDto.error("-1","参数错误");
+        }
+        return actionService.useSomeTimeFast(memberId);
+    }
+
 
 
 }
