@@ -15,6 +15,7 @@ import com.game.common.dto.user.MemberOutBean;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.framework.file.IFileService;
 import com.game.common.util.ValidateUtils;
+import com.game.common.util.annotation.JsonView;
 import com.game.common.util.token.TokenService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -152,6 +153,7 @@ public class UserController {
             @ApiImplicitParam(name = "recommendId", value = "邀请人id", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "code", value = "验证码", paramType = "form", dataType = "string")
     })
+
     public ResultDto<LoginMemberBean> recommendLogin(HttpServletRequest request, @RequestBody MsgInput msg) throws  Exception {
         String appversion = request.getHeader("appversion");
         if(StringUtils.isBlank(msg.getCode()) || StringUtils.isBlank(msg.getRecommendId()) ){
@@ -295,6 +297,7 @@ public class UserController {
             @ApiImplicitParam(name = "sign", value = "签名", paramType = "form", dataType = "String"),
             @ApiImplicitParam(name = "username", value = "名称", paramType = "form", dataType = "string")
     })
+    @JsonView
     public ResultDto<String> editUser(MemberUserProfile memberUserPrefile, @Valid @RequestBody UserBean msg, BindingResult errors) throws Exception {
         if(errors.hasErrors()){
             return ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FIVE.getKey(),errors.getAllErrors().stream().map( ObjectError::getDefaultMessage).collect(Collectors.joining(",") ));

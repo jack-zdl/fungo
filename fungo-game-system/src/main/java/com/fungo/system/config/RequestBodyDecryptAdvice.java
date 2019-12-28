@@ -2,11 +2,16 @@ package com.fungo.system.config;
 
 import com.alibaba.fastjson.JSON;
 import com.fungo.system.dto.UserBean;
+import com.game.common.util.annotation.EnumConver;
+import com.game.common.util.annotation.JsonView;
+import com.game.common.util.network.NetworkUtil;
+import io.swagger.annotations.ApiImplicitParams;
 import org.apache.commons.io.IOUtils;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAdapter;
 
@@ -31,12 +36,12 @@ public class RequestBodyDecryptAdvice  extends RequestBodyAdviceAdapter{
     /**
      * 前置拦截匹配操作(定义自己业务相关的拦截匹配规则)
      * 满足为true的才会执行下面的方法
-     *
+     * methodParameter.getParameterAnnotation(EnumConver.class) != null
      * @date 2018/10/10 11:43
      */
     @Override
     public boolean supports(MethodParameter methodParameter, Type type, Class<? extends HttpMessageConverter<?>> converterType) {
-        return  true; // type.getTypeName().equals( UserBean.class.getName() );  // type.getTypeName().equals( UserBean.class.getName());
+        return  (AbstractJackson2HttpMessageConverter.class.isAssignableFrom(converterType) && methodParameter.getParameterAnnotation(JsonView.class) != null ); // type.getTypeName().equals( UserBean.class.getName() );  // type.getTypeName().equals( UserBean.class.getName());
     }
 
     /**
