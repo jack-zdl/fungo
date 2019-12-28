@@ -347,15 +347,17 @@ public class FungoMallSeckillController {
      *  浏览一次礼包乐园
      * @return
      */
-    @RequestMapping(value = "/api/mall/task/browse ", method = RequestMethod.POST)
-    public ResultDto<String> browseMall(@RequestBody Map<String, String> authMap) throws Exception {
-
+    @PostMapping(value = "/api/mall/task/browse")
+    public ResultDto<String> browseMall(MemberUserProfile memberUserPrefile,@RequestBody Map<String, String> authMap) throws Exception {
+        ResultDto<String> resultDto = null;
         try {
-
+            String loginId = memberUserPrefile.getLoginId();
+            resultDto = iFungoMallSeckillService.browseMall( loginId );
         }catch (Exception e){
-
+            LOGGER.error( "浏览商品礼包异常",e);
+            resultDto = ResultDto.ResultDtoFactory.buildError( "浏览商品礼包异常" );
         }
-        return ResultDto.error("-1", "您需要授权操作!");
+        return resultDto;
     }
 
 

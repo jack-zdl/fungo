@@ -115,6 +115,14 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
             String userId = event.getUserId();
             scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.BINDWEIBO_EXP.getKey());
             scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.BINDWEIBO_COIN.getKey());
+        }else if(AbstractEventDto.AbstractEventEnum.OPENPUSH_USER.getKey() == event.getEventType()){
+            String userId = event.getUserId();
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.OPENPUSH_EXP.getKey());
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.OPENPUSH_COIN.getKey());
+        }else if(AbstractEventDto.AbstractEventEnum.VPN_GAME.getKey() == event.getEventType()){
+            String userId = event.getUserId();
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.VPN_EXP.getKey());
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.VPN_COIN.getKey());
         }
     }
 

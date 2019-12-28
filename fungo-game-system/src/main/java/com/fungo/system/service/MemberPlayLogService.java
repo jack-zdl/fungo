@@ -22,4 +22,6 @@ public interface MemberPlayLogService {
     void saveWeChatMemberPalyLog(Map<String,String> map,HttpServletRequest request, HttpServletResponse response) throws Exception;
 
     void checkAllALiPay();
+
+    ResultDto<String> accelerate(String memberId);
 }

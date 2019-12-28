@@ -34,13 +34,10 @@ import static com.game.common.consts.FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_
 @Api(value = "")
 public class AdvertController {
 
-
     @Autowired
     private BannerService bannerService;
     @Autowired
     private FungoCacheAdvert fungoCacheAdvert;
-    @Autowired
-    private IndexProxyService indexProxyService;
     @Autowired
     private IGameProxyService iGameProxyService;
 

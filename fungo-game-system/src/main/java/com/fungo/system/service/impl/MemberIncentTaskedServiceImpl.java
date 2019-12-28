@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
+import com.fungo.system.dto.ScoreGroupDTO;
+import com.fungo.system.dto.ScoreRuleDTO;
 import com.fungo.system.entity.*;
 import com.fungo.system.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
@@ -15,6 +17,7 @@ import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.FunGoBeanUtils;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,63 +163,40 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
     //@Cacheable(cacheNames = {FunGoGameConsts.CACHE_EH_NAME}, key = "'" + FunGoGameConsts.CACHE_EH_KEY_PRE_MEMBER + "_TaskProgress' + #memberId")
     @Override
     public List<Map<String, Object>> getMemberTaskProgress(String memberId, int task_type) throws BusinessException {
-
-
         //封装响应的数据集合
         List<Map<String, Object>> scoreGroupMapList = null;
-
         String keyPreffix = FungoCoreApiConstant.FUNGO_CORE_API_TASK_USER_TASK_PROGRESS + "-" + memberId;
         String keySuffix = task_type + "";
-
         try {
-
-            LOGGER.info("获取用户任务完整进度-task_type:{}", task_type);
-
             //从redis缓存中获取
             scoreGroupMapList = (List<Map<String, Object>>) fungoCacheTask.getIndexCache(keyPreffix, keySuffix);
             if (null != scoreGroupMapList && !scoreGroupMapList.isEmpty()) {
                 return scoreGroupMapList;
             }
-
             scoreGroupMapList = new ArrayList<>();
-
             //第一步获取任务分类 默认查询 task_type =3 分值和虚拟币共有
-            if (task_type <= 0) {
-                task_type = FunGoGameConsts.TASK_RULE_TASK_TYPE_SCOREANDCOIN;
-            }
-
+//            if (task_type <= 0) {
+//                task_type = FunGoGameConsts.TASK_RULE_TASK_TYPE_SCOREANDCOIN;
+//            }
             Wrapper wrapperGroup = new EntityWrapper<ScoreGroup>();
-            Map<String, Object> criteriaMapGroup = new HashMap<String, Object>();
+            Map<String, Object> criteriaMapGroup = new HashMap<>();
             criteriaMapGroup.put("task_type", task_type);
             criteriaMapGroup.put("is_active", FunGoGameConsts.FUNGO_PUBLIC_IS_ACTIVE_ABLE);
-
             wrapperGroup.allEq(criteriaMapGroup).orderBy("sort", true);
-
-
-            //任务分类
             List<ScoreGroup> taskGroupList = scoreGroupService.selectList(wrapperGroup);
-            LOGGER.info("获取用户任务完整进度-任务分类Result:{}", JSONObject.toJSONString(taskGroupList));
-
             //第二步根据任务分类id 查询每个分类下的分类规则数据
-            List<String> scoreGroupIdList = new ArrayList<String>();
+            List<String> scoreGroupIdList = new ArrayList<>();
             for (ScoreGroup scoreGroup : taskGroupList) {
                 scoreGroupIdList.add(scoreGroup.getId());
             }
-                  //根据scoreGroupId查询规则数据
+            //根据scoreGroupId查询规则数据
             Wrapper wrapperRule = new EntityWrapper<ScoreRule>();
             Map<String, Object> criteriaMapRule = new HashMap<String, Object>();
-
             criteriaMapRule.put("is_active", FunGoGameConsts.FUNGO_PUBLIC_IS_ACTIVE_ABLE);
-            //criteriaMapRule.put("group_id", scoreGroup.getId());
-            //criteriaMapRule.put("task_type", FunGoGameConsts.TASK_RULE_TASK_TYPE_SCORE);
-
             wrapperRule.allEq(criteriaMapRule).in("group_id", scoreGroupIdList.toArray()).in("task_type", new Object[]{FunGoGameConsts.TASK_RULE_TASK_TYPE_SCORE,
                     FunGoGameConsts.TASK_RULE_TASK_TYPE_COIN_TASK}).orderBy("sort", true);
-
             //任务规则数据
             List<ScoreRule> ruleListOfAllCategory = scoreRuleService.selectList(wrapperRule);
-
-
             //第三 步  查询某个用户，完成某个分类下的分类规则数据
             //1 .分值任务用户完成进度和成果
             Wrapper wrapperRuleTaskScore = new EntityWrapper<IncentTasked>();
@@ -225,180 +205,134 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
             criteriaMapIncentTaskedScore.put("task_type", FunGoGameConsts.TASK_RULE_TASK_TYPE_SCORE);
             wrapperRuleTaskScore.allEq(criteriaMapIncentTaskedScore);
             wrapperRuleTaskScore.orderBy("updated_at", false);
-
             //获取当前用户已经完成的所有任务
             IncentTasked incentTaskedScore = null;
-
             IncentTasked incentTaskedScore22 = null;
-
             List<IncentTasked> incentTaskedListScore = incentTaskedService.selectList(wrapperRuleTaskScore);
             if (null != incentTaskedListScore && !incentTaskedListScore.isEmpty()) {
                 incentTaskedScore = incentTaskedListScore.get(0);
             }
-
             //fix:分值任务-11,fungo币任务-23, 签到-22
-
             //若分值类没有则，获取 22类型的任务数据
-            if (null == incentTaskedScore) {
-
-                criteriaMapIncentTaskedScore.put("task_type", FunGoGameConsts.TASK_RULE_TASK_TYPE_COIN_SIGN_IN);
-
-                wrapperRuleTaskScore = new EntityWrapper<IncentTasked>();
-                wrapperRuleTaskScore.allEq(criteriaMapIncentTaskedScore);
-                wrapperRuleTaskScore.orderBy("updated_at", false);
-
-                incentTaskedListScore = incentTaskedService.selectList(wrapperRuleTaskScore);
-
-                if (null != incentTaskedListScore && !incentTaskedListScore.isEmpty()) {
-                    incentTaskedScore = incentTaskedListScore.get(0);
-                    incentTaskedScore22 = incentTaskedScore;
-                }
-            }
-
-            if (null == incentTaskedScore22) {
-                criteriaMapIncentTaskedScore.put("task_type", FunGoGameConsts.TASK_RULE_TASK_TYPE_COIN_SIGN_IN);
-
-                wrapperRuleTaskScore = new EntityWrapper<IncentTasked>();
-                wrapperRuleTaskScore.allEq(criteriaMapIncentTaskedScore);
-                wrapperRuleTaskScore.orderBy("updated_at", false);
-
-                incentTaskedListScore = incentTaskedService.selectList(wrapperRuleTaskScore);
-
-                if (null != incentTaskedListScore && !incentTaskedListScore.isEmpty()) {
-                    incentTaskedScore22 = incentTaskedListScore.get(0);
-                }
-            }
-
-
+//            if (null == incentTaskedScore) {
+//                criteriaMapIncentTaskedScore.put("task_type", FunGoGameConsts.TASK_RULE_TASK_TYPE_COIN_SIGN_IN);
+//                wrapperRuleTaskScore = new EntityWrapper<IncentTasked>();
+//                wrapperRuleTaskScore.allEq(criteriaMapIncentTaskedScore);
+//                wrapperRuleTaskScore.orderBy("updated_at", false);
+//                incentTaskedListScore = incentTaskedService.selectList(wrapperRuleTaskScore);
+//                if (null != incentTaskedListScore && !incentTaskedListScore.isEmpty()) {
+//                    incentTaskedScore = incentTaskedListScore.get(0);
+//                    incentTaskedScore22 = incentTaskedScore;
+//                }
+//            }
+//            if (null == incentTaskedScore22) {
+//                criteriaMapIncentTaskedScore.put("task_type", FunGoGameConsts.TASK_RULE_TASK_TYPE_COIN_SIGN_IN);
+//                wrapperRuleTaskScore = new EntityWrapper<IncentTasked>();
+//                wrapperRuleTaskScore.allEq(criteriaMapIncentTaskedScore);
+//                wrapperRuleTaskScore.orderBy("updated_at", false);
+//                incentTaskedListScore = incentTaskedService.selectList(wrapperRuleTaskScore);
+//                if (null != incentTaskedListScore && !incentTaskedListScore.isEmpty()) {
+//                    incentTaskedScore22 = incentTaskedListScore.get(0);
+//                }
+//            }
             //2 .虚拟币任务用户完成进度和成果
-
             Wrapper wrapperRuleTaskCoin = new EntityWrapper<IncentTasked>();
             Map<String, Object> criteriaMapIncentTaskedCoin = new HashMap<String, Object>();
             criteriaMapIncentTaskedCoin.put("mb_id", memberId);
             criteriaMapIncentTaskedCoin.put("task_type", FunGoGameConsts.TASK_RULE_TASK_TYPE_COIN_TASK);
             wrapperRuleTaskCoin.allEq(criteriaMapIncentTaskedCoin);
-
             wrapperRuleTaskCoin.orderBy("updated_at", false);
-
             //获取当前用户已经完成的所有任务
             IncentTasked incentTaskedCoin = null;
             IncentTasked incentTaskedCoin22 = null;
-
             List<IncentTasked> incentTaskedListCoin = incentTaskedService.selectList(wrapperRuleTaskCoin);
             if (null != incentTaskedListCoin && !incentTaskedListCoin.isEmpty()) {
                 incentTaskedCoin = incentTaskedListCoin.get(0);
             }
-
             //若Fungo币类任务成果没有，则获取 22类型的任务数据
-            if (null == incentTaskedCoin) {
-
-                criteriaMapIncentTaskedCoin.put("task_type", FunGoGameConsts.TASK_RULE_TASK_TYPE_COIN_SIGN_IN);
-
-                wrapperRuleTaskCoin = new EntityWrapper<IncentTasked>();
-                wrapperRuleTaskCoin.allEq(criteriaMapIncentTaskedCoin);
-                wrapperRuleTaskCoin.orderBy("updated_at", false);
-
-                incentTaskedListCoin = incentTaskedService.selectList(wrapperRuleTaskCoin);
-                if (null != incentTaskedListCoin && !incentTaskedListCoin.isEmpty()) {
-                    incentTaskedCoin = incentTaskedListCoin.get(0);
-                    incentTaskedCoin22 = incentTaskedCoin;
-                }
-            }
-
-            if (null == incentTaskedCoin22) {
-
-                criteriaMapIncentTaskedCoin.put("task_type", FunGoGameConsts.TASK_RULE_TASK_TYPE_COIN_SIGN_IN);
-
-                wrapperRuleTaskCoin = new EntityWrapper<IncentTasked>();
-                wrapperRuleTaskCoin.allEq(criteriaMapIncentTaskedCoin);
-                wrapperRuleTaskCoin.orderBy("updated_at", false);
-
-                incentTaskedListCoin = incentTaskedService.selectList(wrapperRuleTaskCoin);
-                if (null != incentTaskedListCoin && !incentTaskedListCoin.isEmpty()) {
-                    incentTaskedCoin22 = incentTaskedListCoin.get(0);
-                }
-            }
-
-
+//            if (null == incentTaskedCoin) {
+//                criteriaMapIncentTaskedCoin.put("task_type", FunGoGameConsts.TASK_RULE_TASK_TYPE_COIN_SIGN_IN);
+//                wrapperRuleTaskCoin = new EntityWrapper<IncentTasked>();
+//                wrapperRuleTaskCoin.allEq(criteriaMapIncentTaskedCoin);
+//                wrapperRuleTaskCoin.orderBy("updated_at", false);
+//                incentTaskedListCoin = incentTaskedService.selectList(wrapperRuleTaskCoin);
+//                if (null != incentTaskedListCoin && !incentTaskedListCoin.isEmpty()) {
+//                    incentTaskedCoin = incentTaskedListCoin.get(0);
+//                    incentTaskedCoin22 = incentTaskedCoin;
+//                }
+//            }
+//            if (null == incentTaskedCoin22) {
+//                criteriaMapIncentTaskedCoin.put("task_type", FunGoGameConsts.TASK_RULE_TASK_TYPE_COIN_SIGN_IN);
+//                wrapperRuleTaskCoin = new EntityWrapper<IncentTasked>();
+//                wrapperRuleTaskCoin.allEq(criteriaMapIncentTaskedCoin);
+//                wrapperRuleTaskCoin.orderBy("updated_at", false);
+//                incentTaskedListCoin = incentTaskedService.selectList(wrapperRuleTaskCoin);
+//                if (null != incentTaskedListCoin && !incentTaskedListCoin.isEmpty()) {
+//                    incentTaskedCoin22 = incentTaskedListCoin.get(0);
+//                }
+//            }
             //权益规则与功能授权关系列表
             List<IncentMbPermRanked> incentMbPermRankedList = iMemberPerRankedService.getIncentMbPermRankedList();
-
             //遍历规则分类数据
             for (ScoreGroup scoreGroup : taskGroupList) {
-
-                Map<String, Object> scoreGroupMap = new HashMap<String, Object>();
+                Map<String, Object> scoreGroupMap = new HashMap<>();
                 scoreGroupMapList.add(scoreGroupMap);
-                FunGoBeanUtils.bean2map(scoreGroup, scoreGroupMap, ScoreGroup.class);
-
+                ScoreGroupDTO scoreGroupDTO = new ScoreGroupDTO();
+                BeanUtils.copyProperties(scoreGroupDTO,scoreGroup);
+                FunGoBeanUtils.bean2map(scoreGroupDTO, scoreGroupMap, ScoreGroupDTO.class);
                 String groupIdFor = scoreGroup.getId();
-
                 //分类下的规则数据
-                List<ScoreRule> scoreRuleListOfCategory = new ArrayList<ScoreRule>();
+                List<ScoreRuleDTO> scoreRuleListOfCategory = new ArrayList<>();
                 scoreGroupMap.put("ruleData", scoreRuleListOfCategory);
-
                 //遍历分值类任务规则数据 获取分值任务用户完成进度和成果
                 for (ScoreRule scoreRule : ruleListOfAllCategory) {
-
                     //找到某个规则分类下的 所有规则数据
                     //规则分类数据ID
                     String groupIdOfRule = scoreRule.getGroupId();
+                    ScoreRuleDTO scoreRuleDTO = new ScoreRuleDTO();
+                    BeanUtils.copyProperties(scoreRuleDTO,scoreRule);
                     //规则数据ID
                     String ruleId = scoreRule.getId();
-
                     if (StringUtils.equalsIgnoreCase(groupIdFor, groupIdOfRule) && scoreRule.getTaskType().intValue() == FunGoGameConsts.TASK_RULE_TASK_TYPE_SCORE) {
-
-                        scoreRuleListOfCategory.add(scoreRule);
-
+                        scoreRuleListOfCategory.add(scoreRuleDTO);
                         //分值类规则用户的完成进度数据
                         //分值任务规则，用户完成进度和成果
                         IncentTaskedOut taskedOutScore = getMbIncentTaskedOutWithScore(memberId, scoreRule, incentTaskedScore, scoreGroup.getTaskFlag(), incentTaskedCoin22);
                         if (null != taskedOutScore) {
                             Map<String, Object> taskedOutScoreMap = new HashMap<String, Object>();
                             FunGoBeanUtils.bean2map(taskedOutScore, taskedOutScoreMap, IncentTaskedOut.class);
-
                             scoreRule.setIncentTaskedOut(taskedOutScoreMap);
+                            scoreRuleDTO.setIncentTaskedOut( taskedOutScoreMap);
+
                         }
-
                     }
-
-
                     //获取分值任务规则对应的虚拟币规则
                     for (ScoreRule coinRule : ruleListOfAllCategory) {
-
                         String plsTaskId = coinRule.getPlsTaskId();
-
                         if (StringUtils.equalsIgnoreCase(groupIdFor, coinRule.getGroupId())
                                 && StringUtils.equalsIgnoreCase(ruleId, plsTaskId)
                                 && coinRule.getTaskType().intValue() == FunGoGameConsts.TASK_RULE_TASK_TYPE_COIN_TASK) {
-
                             //分值类任务 对应的虚拟币类任务
                             scoreRule.setCoinRule(coinRule);
-
+                            scoreRuleDTO.setCoinRule(coinRule);
                             //虚拟币任务用户完成进度和成果
                             IncentTaskedOut taskedOutCoin = getMbIncentTaskedOutWithCoin(memberId, coinRule, incentTaskedCoin, scoreGroup.getTaskFlag(), incentTaskedCoin22);
-
                             if (null != taskedOutCoin) {
-
                                 Map<String, Object> taskedOutCoinMap = new HashMap<String, Object>();
                                 FunGoBeanUtils.bean2map(taskedOutCoin, taskedOutCoinMap, IncentTaskedOut.class);
-
                                 coinRule.setIncentTaskedOut(taskedOutCoinMap);
+                                scoreRuleDTO.setIncentTaskedOut(taskedOutCoinMap);
                             }
                             break;
                         }
                     }
-
-
                     //任务page
 //                  List<IncentMbPermRanked> incentMbPermRankedList
                     for (IncentMbPermRanked permRanked : incentMbPermRankedList) {
-
                         Integer permTaskIdt = permRanked.getTaskCodeIdt();
                         Integer scoreIdt = scoreRule.getCodeIdt();
-
                         int permTaskIdt_i = -1;
                         int scoreIdt_i = -1;
-
                         if (null != permTaskIdt) {
                             permTaskIdt_i = permTaskIdt.intValue();
                         }
@@ -409,20 +343,20 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                             if (permTaskIdt_i == scoreIdt_i) {
                                 scoreRule.setToLinkUrl(permRanked.getToLinkUrl());
                                 scoreRule.setLevelLimit(permRanked.getRankId());
+                                scoreRuleDTO.setToLinkUrl( permRanked.getToLinkUrl());
+                                scoreRuleDTO.setLevelLimit( permRanked.getRankId() );
                             }
                         }
                     }
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
             LOGGER.error("获取用户任务完整进度出现异常",ex);
             throw new BusinessException("-1", "获取用户任务完整进度出现异常");
         }
         //把数据缓存
         fungoCacheTask.excIndexCache(true, keyPreffix, keySuffix, scoreGroupMapList, FungoCacheTask.REDIS_EXPIRE_DEFAULT);
         return scoreGroupMapList;
-
     }
 
     @Override
@@ -497,27 +431,18 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
 
     /**
      * 获取用户执行分值任务的进度
-     *
      * @param memberId
-     * @param taskId
      * @param taskGroupFlag 任务组flag
      * @return
      */
     public IncentTaskedOut getMbIncentTaskedOutWithScore(String memberId, ScoreRule scoreRule, IncentTasked incentTasked, Integer taskGroupFlag, IncentTasked incentTaskedScore22) {
-
         IncentTaskedOut taskedOut = null;
-
         try {
-
             if (null == incentTasked) {
-
                 return taskedOut;
             }
-
             String taskId = scoreRule.getId();
-
             int taskType = scoreRule.getTaskType();
-
             //获取数据示例：[  { 1:taskid, 2:taskname,  3:score,  4:type,  5:count ,6:date,  7:incomie_freg_type}  ]
             //               (任务id,任务名称，获取的分值|虚拟币数，任务类型，完成数量,任务完成时间,收益频率类型)
             String taskIdtIdsJson = incentTasked.getTaskIdtIds();
@@ -526,9 +451,7 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                 //获取已完成历史任务集合
                 JSONArray jsonArray = JSONObject.parseArray(taskIdtIdsJson);
                 if (null != jsonArray && !jsonArray.isEmpty()) {
-
                     for (int i = 0; i < jsonArray.size(); i++) {
-
                         JSONObject object = jsonArray.getJSONObject(i);
                         //获取taskId
                         String taskId_done = object.getString("1");
@@ -545,18 +468,13 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                         //基于任务的状态更新情况
                         //1.新手任务，起始编号 1701-关注3位Fun友，验证是否关注了3位好友
                         if (FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code() == taskGroupFlag.intValue()) {
-
-
                             //若历史的新手任务已经做了，则不在显示
                             boolean isFinishOldTask = isFinishOldTask(taskId, taskId_done,memberId);
                             if (!isFinishOldTask) {
                                 isFinishOldTask = this.isHasOldTaskV243(incentTaskedScore22, taskId);
                             }
-
                             if (isFinishOldTask) {
-
                                 taskedOut = new IncentTaskedOut();
-
                                 taskedOut.setTaskId(taskId_done);
                                 taskedOut.setTaskName(taskname);
                                 taskedOut.setScore(score);
@@ -567,20 +485,16 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                                 } else {
                                     taskedOut.setTaskedCount(scoreRule.getMax());
                                 }
-
                                 return taskedOut;
                             }
                         }
                         if (StringUtils.equalsIgnoreCase(taskId, taskId_done) &&
                                 StringUtils.equalsIgnoreCase(type, String.valueOf(taskType))
                         ) {
-
                             taskedOut = new IncentTaskedOut();
-
                             //基于任务的状态更新情况
                             //1.新手任务，起始编号 1701-关注3位Fun友，验证是否关注了3位好友
                             if (FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code() == taskGroupFlag.intValue()) {
-
                                 boolean watchThreeMember = this.isWatchThreeMember(taskId_done, count);
                                 if (!watchThreeMember) {
                                     return null;
@@ -591,7 +505,6 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                                 if (!isCurrentDate) {
                                     return null;
                                 }
-
                                 //2.每周任务，起始编号 8706
                             } else if (FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code() == taskGroupFlag.intValue()) {
                                 if (object.containsKey("8")) {
@@ -604,10 +517,7 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                                     return null;
                                 }
                             }
-
-                            //
                             String incomie_freg_type = "";
-
                             //刷新任务次数
                             if (object.get("7") != null) {
                                 incomie_freg_type = String.valueOf(object.get("7"));
@@ -617,9 +527,7 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                                     incomie_freg_type = rule.getIncomieFregType().toString();
                                 }
                             }
-
                             if ("1".equals(incomie_freg_type)) {
-
                                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                                 //今天的日期
                                 Date todayDate = format.parse(format.format(new Date()));
@@ -629,29 +537,22 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                                     count = "0";
                                 }
                             }
-
                             taskedOut.setTaskId(taskId);
                             taskedOut.setTaskName(taskname);
                             taskedOut.setScore(score);
                             taskedOut.setTaskType(taskType);
                             taskedOut.setDoneDate(doneDate);
-
                             if (StringUtils.isNotBlank(count)) {
                                 taskedOut.setTaskedCount(Integer.parseInt(count));
                             }
                             break;
                         }
                     }
-
                 }
-
-
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
             LOGGER.error("获取用户执行分值任务的进度",ex);
         }
-
         return taskedOut;
     }
 

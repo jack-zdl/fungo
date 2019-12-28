@@ -23,9 +23,9 @@ public enum  NewTaskStatusEnum implements BaseEnum<NewTaskStatusEnum,String> {
     BINDWEIBO_EXP("65536","绑定微博Exp"),
     BINDWEIBO_COIN("131072","绑定微信Coin"),
     OPENPUSH_EXP("128","开启推送Exp"),
-    BOPENPUSH_COIN("64","开启推送Coin"),
+    OPENPUSH_COIN("64","开启推送Coin"),
     VPN_EXP("512","加速器界面成功导入一款游戏Exp"),
-    BVP_COIN("256","加速器界面成功导入一款游戏Coin")
+    VPN_COIN("256","加速器界面成功导入一款游戏Coin")
             ;
 
     String key;

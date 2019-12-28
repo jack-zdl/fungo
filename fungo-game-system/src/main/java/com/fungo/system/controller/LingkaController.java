@@ -304,14 +304,20 @@ public class LingkaController {
     }
 
 
+    /**
+     * 功能描述: 加速器界面成功导入一款游戏
+     * @date: 2019/12/28 10:13
+     */
     @GetMapping("/api/system/accelerate")
-    public String accelerate(MemberUserProfile memberUserPrefile) {
-        Map<String, String> returnData = new HashMap<>();
+    public ResultDto<String> accelerate(MemberUserProfile memberUserPrefile) {
+        ResultDto<String> resultDto = null;
         try {
-//
+            String memberId = memberUserPrefile.getLoginId();
+            resultDto = memberPlayLogService.accelerate( memberId);
         } catch (final Exception e) {
-
+            LOGGER.error( "加速器界面成功导入一款游戏异常",e );
+            resultDto = ResultDto.ResultDtoFactory.buildError( "加速器界面成功导入一款游戏异常" );
         }
-        return null;
+        return resultDto;
     }
 }

@@ -21,7 +21,6 @@ import java.util.Map;
  */
 public interface IMemberIncentTaskedService {
 
-
     /**
      * 获取分值类任务规则及其对应的FunGo虚拟币规则
      * @param task_type 任务类型
@@ -35,7 +34,7 @@ public interface IMemberIncentTaskedService {
      *                                  4 系统模块
      * @throws BusinessException
      */
-    public List<Map<String, Object>> getTaskRule(int task_type) throws BusinessException;
+    List<Map<String, Object>> getTaskRule(int task_type) throws BusinessException;
 
 
 
@@ -46,7 +45,7 @@ public interface IMemberIncentTaskedService {
      * @return
      * @throws BusinessException
      */
-    public List<Map<String, Object>> getMemberTaskProgress(String memberId, int task_type) throws BusinessException;
+    List<Map<String, Object>> getMemberTaskProgress(String memberId, int task_type) throws BusinessException;
 
 
     /**
@@ -56,7 +55,7 @@ public interface IMemberIncentTaskedService {
      * @param task_id 任务ID
      * @return 返回  {1:taskid,2:taskname,3:score,4:type,5:count,6:date,7:incomie_freg_type} (任务id,任务名称，获取的分值|虚拟币数，任务类型，完成数量,任务完成时间,任务频率 )
      */
-    public IncentTaskedOut getTasked(String memberId, int task_type, String task_id);
+    IncentTaskedOut getTasked(String memberId, int task_type, String task_id);
 
 
     IncentTaskedOut getMbIncentTaskedOutWithScore(String memberId, ScoreRule scoreRule, IncentTasked incentTasked, Integer taskGroupFlag, IncentTasked incentTaskedScore22);
