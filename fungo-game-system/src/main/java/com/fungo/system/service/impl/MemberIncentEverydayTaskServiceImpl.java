@@ -259,6 +259,15 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
         } else if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code()) {
             tips = FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.statusDesc() + FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.message();
             tips = tips.replace("B", String.valueOf(scoreRule.getScore()));
+        } else if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_COIN.code()) {
+
+            tips = FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_COIN.statusDesc() + FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_COIN.message();
+            tips = tips.replace("A", String.valueOf(scoreRule.getScore()));
+
+            //exp
+        } else if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_EXP.code()) {
+            tips = FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_EXP.statusDesc() + FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_EXP.message();
+            tips = tips.replace("B", String.valueOf(scoreRule.getScore()));
         }
 
         return tips;
@@ -830,6 +839,7 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
         int task_type = scoreRule.getTaskType();
         int task_code_idt = scoreRule.getCodeIdt();
         String task_id = scoreRule.getId();
+
 
 
         //用户任务成果表获取
