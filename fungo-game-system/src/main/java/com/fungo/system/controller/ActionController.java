@@ -61,7 +61,6 @@ public class ActionController {
         return actionService.unLike(memberUserPrefile.getLoginId(), inputDto);
     }
 
-
     @ApiOperation(value="分享", notes="")
     @RequestMapping(value="/api/action/share", method= RequestMethod.POST)
     @ApiImplicitParams({
@@ -176,11 +175,8 @@ public class ActionController {
         return actionService.whetherIsDone(memberUserPrefile.getLoginId(), inputDto);
     }
 
-
-
     @ApiOperation(value="合集点赞", notes="")
     @RequestMapping(value="/api/action/collectionLike", method= RequestMethod.POST)
-//    @PostMapping(value="/api/action/collectionLike")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "target_id",value = "目标对象",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string")
@@ -190,7 +186,6 @@ public class ActionController {
         appVersion = request.getHeader("appversion");
         return actionService.collectionLike(memberUserPrefile.getLoginId(), inputDto,appVersion);
     }
-
 
     @ApiOperation(value="合集取消赞", notes="")
     @RequestMapping(value="/api/action/unCollectionLike", method= RequestMethod.POST)
@@ -202,7 +197,6 @@ public class ActionController {
         return actionService.unCollectionLike(memberUserPrefile.getLoginId(), inputDto);
     }
 
-
     @ApiOperation(value="查询合集点赞总数", notes="")
     @RequestMapping(value="/api/action/queryCollectionLike", method= RequestMethod.POST)
     @ApiImplicitParams({
@@ -212,7 +206,6 @@ public class ActionController {
         mallBannersInput.setLogin_id(memberUserPrefile.getLoginId());
         return actionService.queryCollectionLike(mallBannersInput);
     }
-
 
     @PostMapping("/api/action/completeRechargeTask")
     public ResultDto<String> completeRechargeTask(MemberUserProfile memberUserPrefile, @RequestBody RechargeInput rechargeInput){

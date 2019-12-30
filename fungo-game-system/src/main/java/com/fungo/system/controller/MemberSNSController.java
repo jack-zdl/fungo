@@ -5,6 +5,7 @@ import com.fungo.system.dto.MemberSNSBindOutput;
 import com.fungo.system.service.IMemberSNSService;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.util.annotation.JsonView;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
@@ -32,9 +33,9 @@ import javax.validation.Valid;
 public class MemberSNSController {
 
     private static final Logger logger = LoggerFactory.getLogger(MemberSNSController.class);
+
     @Autowired
     private IMemberSNSService iMemberSNSService;
-
 
     /**
      * 绑定第三方SNS平台账号
@@ -44,20 +45,12 @@ public class MemberSNSController {
     @ApiOperation(value = "登录用户绑定第三方账号", httpMethod = "POST")
     @ApiImplicitParams({})
     @RequestMapping(value = "/api/user/sns/bind", method = RequestMethod.POST)
+    @JsonView
     public ResultDto<MemberSNSBindOutput> bindThirdSNSWithLogged(MemberUserProfile memberprofile, HttpServletRequest request,
                                                                  @Valid @RequestBody MemberSNSBindInput bindInput) throws Exception {
-
-        if (null == memberprofile) {
-            return ResultDto.error("-1", "请先登录");
-        }
         String mb_id = memberprofile.getLoginId();
-        if (StringUtils.isBlank(mb_id)) {
-            return ResultDto.error("-1", "请先登录");
-        }
-
-        String os = (String)request.getHeader("os");
+        String os = request.getHeader("os");
         bindInput.setOs(os);
-
         ResultDto<MemberSNSBindOutput> outputResultDto = iMemberSNSService.bindThirdSNSWithLogged(mb_id, bindInput);
         return outputResultDto;
     }

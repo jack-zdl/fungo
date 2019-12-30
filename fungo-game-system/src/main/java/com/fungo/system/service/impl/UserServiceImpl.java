@@ -382,10 +382,10 @@ public class UserServiceImpl implements IUserService {
     }
 
     /**作废*/
+    @Deprecated
     @Override
     public void forgotpassword(String code, String mobile) {
         messageCodeService.checkCode(GameConstant.MSG_TYPE_USER_LOGIN, mobile, code);
-
     }
 
     /******************************************************************************/
@@ -404,6 +404,7 @@ public class UserServiceImpl implements IUserService {
         return ResultDto.success();
     }
 
+    @Deprecated
     @Override
     public ResultDto<String> logon(String memberId) {
         Member member = this.memberService.selectById(memberId);
@@ -830,11 +831,6 @@ public class UserServiceImpl implements IUserService {
         re.setData(bean);
         fungoCacheMember.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + memberId, "", bean);
         return re;
-    }
-
-    @Override
-    public ResultDto<Map<String, String>> uploadAvatar(String loginId, MultipartFile appFile) {
-        return null;
     }
 
     /**

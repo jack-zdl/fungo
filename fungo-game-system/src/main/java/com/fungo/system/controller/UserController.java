@@ -68,7 +68,6 @@ public class UserController {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
-
     /**
      * 功能描述: 这是提供给pc端使用
      * @date: 2019/10/15 15:45
@@ -225,7 +224,6 @@ public class UserController {
         return this.userService.updatepassword(memberUserPrefile.getLoginId(), msg.getOld_password(), msg.getNew_password());
     }
 
-
     @ApiOperation(value = "退出登录", notes = "退出登录")
     @PostMapping(value = "/api/mine/logout")
     @ApiImplicitParams({
@@ -246,7 +244,6 @@ public class UserController {
         ValidateUtils.is(msg.getCode()).notNull().and(msg.getMobile()).notNull();
         return this.userService.updateMobile(memberUserPrefile.getLoginId(), msg.getCode(), msg.getMobile());
     }
-
 
     @ApiOperation(value = "用户身份校验(配合修改密码操作)", notes = "用户身份校验(配合修改密码操作)")
     @PostMapping(value = "/api/mine/verify")
@@ -282,7 +279,6 @@ public class UserController {
 
     /*********************************************设置资料************************************/
 
-
     @ApiOperation(value = "个人资料", notes = "用户身份校验(配合修改密码操作)")
     @RequestMapping(value = "/api/mine/info", method = RequestMethod.GET)
     @ApiImplicitParams({})
@@ -293,7 +289,6 @@ public class UserController {
         }
         return userService.getUserInfo(memberId);
     }
-
 
     @ApiOperation(value = "编辑个人资料", notes = "编辑个人资料")
     @PostMapping(value = "/api/mine/info")
@@ -307,13 +302,9 @@ public class UserController {
         if(errors.hasErrors()){
             return ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FIVE.getKey(),errors.getAllErrors().stream().map( ObjectError::getDefaultMessage).collect(Collectors.joining(",") ));
         }
-        String memberId = "";
-        if (memberUserPrefile != null) {
-            memberId = memberUserPrefile.getLoginId();
-        }
+        String memberId = memberUserPrefile.getLoginId();
         return userService.editUser(memberId, msg);
     }
-
 
     @ApiOperation(value = "验证手机验证码有效性", notes = "验证手机验证码有效性")
     @PostMapping(value = "/api/user/verifycode")
@@ -329,15 +320,11 @@ public class UserController {
         return res;
     }
 
-
     @ApiOperation(value = "用户绑定appleId(v2.3)", notes = "")
     @PostMapping(value = "/api/user/addAppleId")
     @ApiImplicitParams({})
     public ResultDto<String> addAppleId(MemberUserProfile memberUserPrefile, @RequestBody AppleInputBean msg) throws Exception {
-        String memberId = "";
-        if (memberUserPrefile != null) {
-            memberId = memberUserPrefile.getLoginId();
-        }
+        String memberId =  memberUserPrefile.getLoginId();
         return userService.addAppleId(memberId, msg);
     }
 
@@ -372,7 +359,6 @@ public class UserController {
         suffix = suffix.toLowerCase();
         int length = getAllowSuffix().indexOf(suffix);
         if (length == -1) {
-//            throw new Exception("请上传允许格式的文件");
             return ResultDto.ResultDtoFactory.buildError( "请上传允许格式的文件" );
         }
 //         if(file.getSize() > getAllowSize()){
@@ -391,41 +377,23 @@ public class UserController {
         member.setAvatar(imagePath);
         member.updateById();
 
-        //V2.4.6版本之前任务
-        //gameProxy.addTaskCore(Setting.ACTION_TYPE_AVATAR, memberUserPrefile.getLoginId(), "", -1);
-
-
-        //V2.4.6版本任务
-        //1 经验值
-//        iMemberIncentDoTaskFacadeService.exTask(memberUserPrefile.getLoginId(), FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
-//                MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_UPATE_AVATAR_EXP.code());
-//        //2 fungo币
-//        iMemberIncentDoTaskFacadeService.exTask(memberUserPrefile.getLoginId(), FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
-//                MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_UPATE_AVATAR_COIN.code());
         // 2.7 任务
         AbstractEventDto abstractEventDto = new AbstractEventDto(this);
         abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.EDIT_USER.getKey());
         abstractEventDto.setUserId(member.getId());
         applicationEventPublisher.publishEvent(abstractEventDto);
-
         ResultDto<Map<String, String>> re = new ResultDto<Map<String, String>>();
         Map<String, String> map = new HashMap<String, String>();
         map.put("url", imagePath);
         re.setData(map);
-
         re.setMessage("编辑成功");
-
         return re;
     }
 
-
-    @GetMapping("/api/user/getBuriedPointUserProperties")
+   @GetMapping("/api/user/getBuriedPointUserProperties")
    public ResultDto<MemberBuriedPointBean> getBuriedPointUserProperties(String userId){
-        //MemberUserProfile memberUserPrefile
-              // String loginId = memberUserPrefile.getLoginId();
         return userService.getBuriedPointUserProperties(userId);
     }
-
 
     /**
      *  更新 用户注册信息
@@ -439,7 +407,6 @@ public class UserController {
         return  userService.updateUserRegister(userId,registerChannel,platForm);
     }
 
-
     @ApiOperation(value="新增虚拟用户", notes="")
     @PostMapping(value="/api/system/user/mockuser")
     @ApiImplicitParams({})
@@ -452,7 +419,6 @@ public class UserController {
         }
     }
 
-
     @ApiOperation(value="用户分享中秋礼品", notes="")
     @RequestMapping(value="/api/system/user/share", method= RequestMethod.GET)
     @ApiImplicitParams({})
@@ -464,7 +430,6 @@ public class UserController {
             return ResultDto.error( "-1","新增虚拟用户异常" );
         }
     }
-
 
     public String getAllowSuffix() {
         return allowSuffix;
@@ -481,6 +446,5 @@ public class UserController {
     public void setAllowSize(long allowSize) {
         this.allowSize = allowSize;
     }
-
 
 }

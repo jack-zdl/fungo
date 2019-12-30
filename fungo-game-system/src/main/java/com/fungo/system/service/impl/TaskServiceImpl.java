@@ -597,6 +597,22 @@ public class TaskServiceImpl implements ITaskService {
         }
     }
 
+    @Override
+    public ResultDto<String> openPush(String userId) {
+        ResultDto<String> resultDto = null;
+        try {
+            AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+            abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.OPENPUSH_USER.getKey());
+            abstractEventDto.setUserId(userId);
+            applicationEventPublisher.publishEvent(abstractEventDto);
+            resultDto = ResultDto.ResultDtoFactory.buildSuccess( "开启推送通知成功" );
+        }catch (Exception e){
+            LOGGER.error( "开启推送通知异常,用户 = {}",userId,e );
+            resultDto = ResultDto.ResultDtoFactory.buildError( "开启推送通知异常" );
+        }
+        return resultDto;
+    }
+
 
     private StringBuffer getNearDateByUserSign(int userSignDate){
         List<Integer>  twoDaysList = Arrays.asList( 0,1 );
