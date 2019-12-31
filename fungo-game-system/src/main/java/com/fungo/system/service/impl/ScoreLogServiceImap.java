@@ -797,7 +797,7 @@ public class ScoreLogServiceImap extends ServiceImpl<ScoreLogDao, ScoreLog> impl
 
 
     @Override
-    public List<ScoreLog> getScoreLogWithMbAndTask(String mb_id, int task_type, int task_code_idt) throws Exception {
+    public List<ScoreLog> getScoreLogWithMbAndTask(String mb_id, int task_type, int task_code_idt)  {
 
         EntityWrapper<ScoreLog> logEntityWrapper = new EntityWrapper<>();
 

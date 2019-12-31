@@ -48,7 +48,7 @@ public enum FunGoIncentTaskV246Enum {
 
     //==========  每日任务，起始编号 8485
     //fungo币任务 | 经验值任务
-    TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_COIN(8491, "分享一篇文章", "分享成功", "Fun币+A！"), TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_EXP(84910, "分享一篇文章", "", "经验+B！"),
+    TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_COIN(8491, "为游戏打分", "发布成功", "Fun币+A！"), TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_EXP(84910, "为游戏打分", "", "经验+B！"),
     TASK_GROUP_EVERYDAY_SHARE_1_ARTICLE_COIN(8485, "分享一篇文章", "分享成功", "Fun币+A！"), TASK_GROUP_EVERYDAY_SHARE_1_ARTICLE_EXP(84850, "分享一篇文章", "", "经验+B！"),
     TASK_GROUP_EVERYDAY_SHARE_1_GAME_COIN(8486, "分享一款游戏", "分享成功", "Fun币+A！"), TASK_GROUP_EVERYDAY_SHARE_1_GAME_EXP(84860, "分享一款游戏", "", "经验+B！"),
     TASK_GROUP_EVERYDAY_FISRT_SEND_ARTICLE_COIN(8487, "发布文章", "发布成功", "Fun币+A"), TASK_GROUP_EVERYDAY_FISRT_SEND_ARTICLE_EXP(84870, "发布文章", "", "经验+B！"),

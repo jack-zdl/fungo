@@ -124,7 +124,7 @@ public interface ScoreLogService extends IService<ScoreLog> {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<ScoreLog> getScoreLogWithMbAndTask(String mb_id, int task_type, int task_code_idt) throws Exception ;
+	public List<ScoreLog> getScoreLogWithMbAndTask(String mb_id, int task_type, int task_code_idt)  ;
 
 
 	/**

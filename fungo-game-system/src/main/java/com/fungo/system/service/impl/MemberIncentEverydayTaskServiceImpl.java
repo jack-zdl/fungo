@@ -74,6 +74,10 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
 
+    /**
+     *  点赞任务需要达到的次数
+     */
+    private static final int LIKE_TASK_NUM = 5;
 
     //json解析
     private static ObjectMapper mapper = new ObjectMapper();
@@ -259,6 +263,15 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
         } else if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code()) {
             tips = FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.statusDesc() + FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.message();
             tips = tips.replace("B", String.valueOf(scoreRule.getScore()));
+        } else if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_COIN.code()) {
+
+            tips = FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_COIN.statusDesc() + FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_COIN.message();
+            tips = tips.replace("A", String.valueOf(scoreRule.getScore()));
+
+            //exp
+        } else if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_EXP.code()) {
+            tips = FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_EXP.statusDesc() + FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_EXP.message();
+            tips = tips.replace("B", String.valueOf(scoreRule.getScore()));
         }
 
         return tips;
@@ -283,14 +296,26 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
         }
 
         //2.验证是否完成过这个任务
-        boolean isAddEquit = this.isAddEquitWithSingleAction(mb_id, task_group_flag, scoreRule);
+        boolean isAddEquit = true;
+        // 若是点赞任务 今日已点赞次数
+        Integer todayLikeNum = null;
+        // 判断这个任务是不是点赞任务
+        if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_LIKE_EXP.code()) {
+            // 获取今日点赞数
+            todayLikeNum = getTodayLikeNum(mb_id, scoreRule);
+            if(todayLikeNum>=LIKE_TASK_NUM){
+                isAddEquit = false;
+            }
+        }else{
+            isAddEquit = this.isAddEquitWithSingleAction(mb_id, task_group_flag, scoreRule);
+        }
         logger.info("---member-mb_id:{}--执行每日任务---经验值任务--task_code_idt:{}--验证是否完成过这个任务-isAddEquitWithSingleAction:{}",
                 mb_id, task_type, task_code_idt, isAddEquit);
         if (!isAddEquit) {
             return -1;
         }
 
-        //添加新手任务完成埋点
+        //添加每日任务完成埋点
         BuriedPointTaskModel buriedPointTaskModel = new BuriedPointTaskModel();
         buriedPointTaskModel.setDistinctId(mb_id);
         buriedPointTaskModel.setPlatForm(BuriedPointPlatformConstant.PLATFORM_SERVER);
@@ -302,23 +327,28 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
         buriedPointTaskModel.setQuestExp(scoreRule.getScore());
         buriedPointTaskModel.setFinalQuest(iMemberIncentTaskedService.currentTaskIsLast(scoreRule,mb_id,FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code()));
         BuriedPointUtils.publishBuriedPointEvent(buriedPointTaskModel);
-        //没有执行过
-        //3.更新用户经验值账户
-        int accountScore = updateAccountScore(mb_id, scoreRule);
 
+        // 不是点赞任务 或者点赞任务已经达到最后一次的上限，本次完成任务 直接更新
+        if(todayLikeNum == null || todayLikeNum == LIKE_TASK_NUM - 1){
+            //3.更新用户经验值账户
+            int accountScore = updateAccountScore(mb_id, scoreRule);
 
-        //4.更新用户表的等级和经验值数据
-        this.updateMemberLevelAndScore(mb_id, accountScore);
+            //4.更新用户表的等级和经验值数据
+            this.updateMemberLevelAndScore(mb_id, accountScore);
 
-        //5.更新用户任务成果表
-        this.updateMemberIncentTasked(mb_id, task_type, scoreRule);
+            //5.更新用户任务成果表
+            this.updateMemberIncentTasked(mb_id, task_type, scoreRule);
 
-        //6.更新用户成就表的等级数据
-        this.updateMemberIncentRanked(mb_id, accountScore, ranked);
+            //6.更新用户成就表的等级数据
+            this.updateMemberIncentRanked(mb_id, accountScore, ranked);
 
-
-        //7.添加任务执行日志
-        this.addTaskedLog(mb_id, scoreRule);
+            //7.添加任务执行日志
+            this.addTaskedLog(mb_id, scoreRule);
+        }else{
+            // 是点赞任务，且本次无法完成任务
+            //5.更新用户任务成果表
+            this.updateMemberIncentTasked(mb_id, task_type, scoreRule);
+        }
 
         return 1;
     }
@@ -342,33 +372,45 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
         }
 
         //2.验证是否完成过这个任务
+        boolean isAddEquit = true;
+        // 若是点赞任务 今日已点赞次数
+        Integer todayLikeNum = null;
+        // 判断这个任务是不是点赞任务
+        if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_LIKE_COIN.code()) {
+            // 获取今日点赞数
+            todayLikeNum = getTodayLikeNum(mb_id, scoreRule);
+            if(todayLikeNum>=LIKE_TASK_NUM){
+                isAddEquit = false;
+            }
+        }else{
+            isAddEquit = this.isAddEquitWithSingleAction(mb_id, task_group_flag, scoreRule);
+        }
 
-        boolean isAddEquit = this.isAddEquitWithSingleAction(mb_id, task_group_flag, scoreRule);
         logger.info("---member-mb_id:{}--执行每日任务---Fungo币任务--task_code_idt:{}--验证是否完成过这个任务-isAddEquitWithSingleAction:{}",
                 mb_id, task_type, task_code_idt, isAddEquit);
         if (!isAddEquit) {
             return -1;
         }
+        if(todayLikeNum == null || todayLikeNum == LIKE_TASK_NUM-1){
+            // 添加新手任务产生 fun币埋点
+            BuriedPointProductModel buriedPointProductModel = new BuriedPointProductModel();
+            buriedPointProductModel.setDistinctId(mb_id);
+            buriedPointProductModel.setPlatForm(BuriedPointPlatformConstant.PLATFORM_SERVER);
+            buriedPointProductModel.setEventName(BuriedPointEventConstant.EVENT_KEY_GOLD_PRODUCED);
 
-        // 添加新手任务产生 fun币埋点
-        BuriedPointProductModel buriedPointProductModel = new BuriedPointProductModel();
-        buriedPointProductModel.setDistinctId(mb_id);
-        buriedPointProductModel.setPlatForm(BuriedPointPlatformConstant.PLATFORM_SERVER);
-        buriedPointProductModel.setEventName(BuriedPointEventConstant.EVENT_KEY_GOLD_PRODUCED);
+            buriedPointProductModel.setAmount(scoreRule.getScore());
+            buriedPointProductModel.setMethod(BuriedPointProductFunConstant.PRODUCT_FUN_TYPE_TASK);
+            BuriedPointUtils.publishBuriedPointEvent(buriedPointProductModel);
 
-        buriedPointProductModel.setAmount(scoreRule.getScore());
-        buriedPointProductModel.setMethod(BuriedPointProductFunConstant.PRODUCT_FUN_TYPE_TASK);
-        BuriedPointUtils.publishBuriedPointEvent(buriedPointProductModel);
+            //没有执行过
+            //3.更新用户fungo币账户
+            this.updateAccountCoin(mb_id, scoreRule);
 
-        //没有执行过
-        //3.更新用户fungo币账户
-        this.updateAccountCoin(mb_id, scoreRule);
-
+            //5.添加任务执行日志
+            this.addTaskedLog(mb_id, scoreRule);
+        }
         //4.更新用户任务成果表
         this.updateMemberIncentTasked(mb_id, task_type, scoreRule);
-
-        //5.添加任务执行日志
-        this.addTaskedLog(mb_id, scoreRule);
 
         return 1;
     }
@@ -744,6 +786,14 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
             if (StringUtils.equalsIgnoreCase(oldTaskId, scoreRule.getId())) {
                 //有相同的任务则更新最后完成的时间
                 map.put("6", DateTools.fmtDate(new Date()));
+                // 如果是点赞任务，更新次数
+                int codeIdt = scoreRule.getCodeIdt().intValue();
+                if (codeIdt == FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_LIKE_EXP.code()|| codeIdt == FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_LIKE_COIN.code()) {
+                    Integer currentTaskCount = (Integer)map.get("5");
+                    if(currentTaskCount<LIKE_TASK_NUM){
+                        map.put("5",currentTaskCount+1);
+                    }
+                }
                 isAdd = false;
                 isContain = true;
                 break;
@@ -814,6 +864,42 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
         return incentTaskedMb;
     }
 
+   private int getTodayLikeNum(String memberId,ScoreRule scoreRule){
+        int likeNum = 0;
+
+       int task_type = scoreRule.getTaskType();
+       int task_code_idt = scoreRule.getCodeIdt();
+       String task_id = scoreRule.getId();
+       //用户任务成果表获取
+       IncentTaskedOut tasked = iMemberIncentTaskedService.getTasked(memberId, task_type, task_id);
+       if(tasked == null){
+           //从任务日志库查询是否有记录
+           List<ScoreLog> scoreLogList = scoreLogService.getScoreLogWithMbAndTask(memberId, task_type, task_code_idt);
+           if (null != scoreLogList && !scoreLogList.isEmpty()) {
+               ScoreLog scoreLog = scoreLogList.get(0);
+               //获取最后一次完成日期与当前日期是否同一天
+               String finishDate = DateTools.fmtDate(scoreLog.getCreatedAt());
+               String currentDateStr = DateTools.fmtSimpleDateToString(new Date());
+               long interval = DateTools.getDaySub(finishDate, currentDateStr);
+               // 是同一天说明任务已完成
+               if (0 == interval) {
+                   likeNum = LIKE_TASK_NUM;
+               }
+           }
+
+       }else{
+           //获取最后一次完成日期与当前日期是否同一天
+           String finishDate = tasked.getDoneDate();
+           String currentDateStr = DateTools.fmtSimpleDateToString(new Date());
+           long interval = DateTools.getDaySub(finishDate, currentDateStr);
+           // 只有今天完成的才算有效次数
+           if (0 == interval) {
+               int taskedCount = tasked.getTaskedCount();
+               likeNum = taskedCount >5?LIKE_TASK_NUM:taskedCount;
+           }
+       }
+        return likeNum;
+   }
 
     /**
      *  验证用户执行当前任务是否产生收益
@@ -830,6 +916,7 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
         int task_type = scoreRule.getTaskType();
         int task_code_idt = scoreRule.getCodeIdt();
         String task_id = scoreRule.getId();
+
 
 
         //用户任务成果表获取

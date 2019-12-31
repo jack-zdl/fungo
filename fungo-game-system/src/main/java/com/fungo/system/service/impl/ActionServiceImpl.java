@@ -149,7 +149,7 @@ public class ActionServiceImpl implements IActionService {
             }
 
             // 任务
-            //V2.7版本任务
+            //V2.7版本任务  -- 自己给自己点赞不算完成任务
             if(!Objects.equals(memberId,targetMemberId)){
                 iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
                         MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_LIKE_EXP.code());
@@ -183,14 +183,6 @@ public class ActionServiceImpl implements IActionService {
         abstractEventDto.setFollowType(inputDto.getTarget_type());
         applicationEventPublisher.publishEvent(abstractEventDto);
 
-        //V2.4.6版本任务
-        // 每日任务
-        //1 经验值
-        iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
-                MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_LIKE_EXP.code());
-        //2 fungo币
-        iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
-                MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_LIKE_COIN.code());
         //redis cache
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, null, null);
         //首页文章帖子列表(v2.4)
