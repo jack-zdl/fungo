@@ -524,14 +524,14 @@ public class SystemServiceImpl implements SystemService {
         if (basActionDto.getState() != null) {
             actionEntityWrapper.eq("state", basActionDto.getState());
         }
-        BasAction basAction = new BasAction();
-        basAction.setMemberId(basActionDto.getMemberId());
-        basAction.setType(basActionDto.getType());
-        basAction.setTargetType(basActionDto.getTargetType());
-        basAction.setTargetId(basActionDto.getCircleId());
-        basAction.setCreatedAt(new Date());
-        basAction.setState(basActionDto.getState());
-        actionService.insert(basAction);
+//        BasAction basAction = new BasAction();
+//        basAction.setMemberId(basActionDto.getMemberId());
+//        basAction.setType(basActionDto.getType());
+//        basAction.setTargetType(basActionDto.getTargetType());
+//        basAction.setTargetId(basActionDto.getCircleId());
+//        basAction.setCreatedAt(new Date());
+//        basAction.setState(basActionDto.getState());
+//        actionService.insert(basAction);
         //根据条件查询
         int count = actionServiceImap.selectCount(actionEntityWrapper);
         return ResultDto.success(count);
