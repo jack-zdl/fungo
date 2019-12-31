@@ -76,6 +76,64 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
     private static ObjectMapper mapper = new ObjectMapper();
 
 
+    @Transactional
+    @Override
+    public int achieveMultiScoreRule(String memberId, String ext2Task,String  objectId) {
+        try {
+            ScoreRule scoreRule = scoreRuleDao.getScoreRule(ext2Task);
+            int taskType = scoreRule.getTaskType();
+            if(scoreRule == null){
+                logger.error("---member-mb_id:{}--执行新手任务---经验值任务---scoreRule:{}", scoreRule);
+                return -1;
+            }
+            IncentTasked incentTasked  = this.updateExtBygetTasked(memberId, scoreRule.getTaskType());
+            String ext2 = incentTasked.getExt2();
+            if(((Integer.valueOf( ext2 ) & Integer.valueOf( ext2Task) ) == Integer.valueOf( ext2Task))) return 0;
+            if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_EXP.code()
+                    || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_EXP.code() )
+            {
+                int watchThreeUserTask = this.isWatchThreeUserTask(memberId, scoreRule,objectId);
+                if (-1 == watchThreeUserTask) {
+                    return -1;
+                }
+            }
+            //添加新手任务埋点
+            BuriedPointTaskModel buriedPointTaskModel = new BuriedPointTaskModel();
+            buriedPointTaskModel.setDistinctId(memberId);
+            buriedPointTaskModel.setPlatForm( BuriedPointPlatformConstant.PLATFORM_SERVER);
+            buriedPointTaskModel.setEventName( BuriedPointEventConstant.EVENT_KEY_QUEST_COMPLETE);
+
+            buriedPointTaskModel.setQuestId(scoreRule.getId());
+            buriedPointTaskModel.setQuestName(scoreRule.getName());
+            buriedPointTaskModel.setFirstCategory( BuriedPointTaskTypeConstant.TASK_TYPE_NEW);
+            buriedPointTaskModel.setQuestExp(scoreRule.getScore());
+            buriedPointTaskModel.setFinalQuest(iMemberIncentTaskedService.currentTaskIsLast(scoreRule,memberId,FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code()));
+            BuriedPointUtils.publishBuriedPointEvent(buriedPointTaskModel);
+
+            //没有执行过
+            //3.更新用户经验值账户
+            int accountScore = updateAccountScore(memberId, scoreRule.getScore());
+
+            //4.更新用户表的等级和经验值数据
+            this.updateMemberLevelAndScore(memberId, accountScore);
+
+            //5.更新用户成就表的等级数据
+            this.updateMemberIncentRanked(memberId, accountScore);
+
+            //6. 更新用户任务成果表
+            this.updateMemberIncentTasked(memberId, taskType, scoreRule,objectId);
+
+            //7.添加任务执行日志
+            if(accountScore > 0){
+                this.addTaskedLog(memberId, scoreRule);
+            }
+            return 0;
+        }catch (Exception e){
+            LOGGER.error( "多次型任务出现异常,ext2Task= {}",ext2Task,e);
+            return 0;
+        }
+    }
+
     /**
      * 功能描述: 新手任务
      * @param  memberId 用户id
@@ -92,11 +150,12 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
             }
             IncentTasked incentTasked  = this.updateExtBygetTasked(memberId, scoreRule.getTaskType());
             String ext2 = incentTasked.getExt2();
-            if(!((Integer.valueOf( ext2 ) & Integer.valueOf( ext2Task) ) == Integer.valueOf( ext2Task))   ){
-                Integer result = (Integer.valueOf( ext2 ) | Integer.valueOf( ext2Task));
-                incentTasked.setExt2( result.toString());
-                incentTasked.updateById();
-            }
+            if(((Integer.valueOf( ext2 ) & Integer.valueOf( ext2Task) ) == Integer.valueOf( ext2Task))) return;
+//            if(!((Integer.valueOf( ext2 ) & Integer.valueOf( ext2Task) ) == Integer.valueOf( ext2Task))   ){
+            Integer result = (Integer.valueOf( ext2 ) | Integer.valueOf( ext2Task));
+            incentTasked.setExt2( result.toString());
+            incentTasked.updateById();
+//            }
             //添加新手任务埋点
             BuriedPointTaskModel buriedPointTaskModel = new BuriedPointTaskModel();
             buriedPointTaskModel.setDistinctId(memberId);
@@ -161,7 +220,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
         } else {
             //若是关注3位Fun友 已经达到3位，则不再执行任务记录
             if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_USER_EXP.code()) {
-                int watchThreeUserTask = this.isWatchThreeUserTask(mb_id, scoreRule);
+                int watchThreeUserTask = this.isWatchThreeUserTask(mb_id, scoreRule,null);
                 logger.info("---member-mb_id:{}--执行新手任务---经验值任务--task_code_idt:{}--【关注3位Fun友】已经达到3位，则不再执行任务记录-watchThreeUserTask:{}",
                         mb_id, task_type, task_code_idt, watchThreeUserTask);
                 if (3 == watchThreeUserTask) {
@@ -194,7 +253,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
         this.updateMemberIncentRanked(mb_id, accountScore);
 
         //6. 更新用户任务成果表
-        this.updateMemberIncentTasked(mb_id, task_type, scoreRule);
+//        this.updateMemberIncentTasked(mb_id, task_type, scoreRule);
 
         //7.添加任务执行日志
         if(accountScore > 0){
@@ -242,7 +301,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
      * @return
      * @throws IOException
      */
-    private int isWatchThreeUserTask(String mb_id, ScoreRule scoreRule) throws IOException {
+    private int isWatchThreeUserTask(String mb_id, ScoreRule scoreRule,String objectId) throws IOException {
         int count_i = 0;
         //获取用户当前任务的历史记录
         IncentTasked incentTaskedMb = getIncentTaskedWithMember(mb_id, scoreRule.getTaskType());
@@ -258,13 +317,21 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
             //验证当前任务是否存在记录
             if (StringUtils.equalsIgnoreCase(oldTaskId, scoreRule.getId())) {
                 //若 关注3位Fun友任务  5:count 已经是 3，则不在记录
-                if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_USER_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_USER_EXP.code()) {
-                    Integer count = (Integer) map.get("5");
-                    if (null != count) {
-                        count_i = count.intValue();
-                        break;
+//                if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_USER_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_USER_EXP.code())
+//                {
+//                    Integer count = (Integer) map.get("5");
+//                    if (null != count) {
+//                        count_i = count.intValue();
+//                        break;
+//                    }
+                String targetId = (String) map.get("8");
+                if (null != targetId ) {
+                   List<String> targetidList = Arrays.asList(  targetId.split( "," ) );
+                    if(targetidList.contains( objectId)){
+                        return -1;
                     }
                 }
+//                }
             }
         }
         return count_i;
@@ -446,17 +513,17 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
      * @param scoreRule
      * @throws IOException
      */
-    private void updateMemberIncentTasked(String mb_id, int task_type, ScoreRule scoreRule) throws IOException {
+    private void updateMemberIncentTasked(String mb_id, int task_type, ScoreRule scoreRule,String objectId) throws IOException {
         //获取用户当前任务的历史记录
         IncentTasked incentTaskedMb = getIncentTaskedWithMember(mb_id, task_type);
 
         logger.info("执行新手任务---经验值任务--开始更新用户任务成果表-获取用户当前任务的历史记录-incentTaskedMb:{}", incentTaskedMb);
         //1.任务存在历史记录
         if (null != incentTaskedMb) {
-            exUpdateMbTaskedData(task_type, scoreRule, incentTaskedMb);
+            exUpdateMbTaskedData(task_type, scoreRule, incentTaskedMb,objectId);
             //2.不存在该类型任务的历史记录
         } else {
-            exAddMbTaskedData(mb_id, scoreRule);
+            exAddMbTaskedData(mb_id, scoreRule,objectId);
         }
     }
 
@@ -467,7 +534,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
      * @param incentTaskedMb
      * @throws IOException
      */
-    private void exUpdateMbTaskedData(int task_type, ScoreRule scoreRule, IncentTasked incentTaskedMb) throws IOException {
+    private void exUpdateMbTaskedData(int task_type, ScoreRule scoreRule, IncentTasked incentTaskedMb,String obejctId) throws IOException {
         //json格式:[   {1:taskid,2:taskname,3:score,4:type,5:count,6:date,7:incomie_freg_type}   ]
         incentTaskedMb.setCurrentTaskId(scoreRule.getId());
         incentTaskedMb.setCurrentTaskName(scoreRule.getName());
@@ -478,10 +545,13 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
         int taskCount = 1;
         boolean isContain = true;
         boolean isAdd = true;
+        String oldObjectId = "";
+        boolean isCircle = false;
         //遍历历史任务记录中，是否存在当前任务
         for (Map<String, Object> map : taskIdtIdsList) {
             String oldTaskId = (String) map.get("1");
             Integer count = (Integer) map.get("5");
+
             int count_i = 0;
             if (null != count) {
                 count_i = count.intValue();
@@ -490,18 +560,32 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
             if (StringUtils.equalsIgnoreCase(oldTaskId, scoreRule.getId())) {
                 isContain = false;
                 //若 关注3位Fun友任务  5:count 已经是 3，则不在记录
-                if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_USER_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_USER_EXP.code()) {
+                if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_EXP.code()
+                    || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_EXP.code() ) {
                     if (3 == count_i) {
                         logger.info("执行新手任务---经验值任务--开始更新用户任务成果表-----验证当前任务是否存在记录----关注3位Fun友任务----count:{}，已经达到3位不再记录", count_i);
                         isContain = false;
                     } else {
                         isContain = true;
                         taskCount += count_i;
+                        if(3 == taskCount ){
+                            String ext2 = CommonUtil.isNull( incentTaskedMb.getExt2() ) ? "0" :incentTaskedMb.getExt2();
+                            String ext2Task = CommonUtil.isNull(scoreRule.getExt2() ) ? "0": scoreRule.getExt2();
+                            Integer result = (Integer.valueOf( ext2 ) | Integer.valueOf( ext2Task));
+                            incentTaskedMb.setExt2( result.toString());
+                            incentTaskedMb.updateById();
+                        }
+                        if(!CommonUtil.isNull(    (String) map.get( "8" ))){
+                            oldObjectId = (String) map.get( "8" );
+                        }
                         taskIdtIdsList.remove(map);
                     }
                 }
                 isAdd = false;
                 break;
+            }else if( scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_EXP.code()
+                    || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_EXP.code() ){
+                isCircle  =true;
             }
         }
         logger.info("执行新手任务---经验值任务--开始更新用户任务成果表-----验证当前任务是否存在记录--isContain:{}", isContain);
@@ -517,7 +601,11 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
 
             currenttaskedMap.put("6", DateTools.fmtDate(new Date()));
             currenttaskedMap.put("7", scoreRule.getIncomieFregType());
-
+            if(!CommonUtil.isNull(  oldObjectId)){
+                currenttaskedMap.put("8", oldObjectId +","+obejctId);
+            }else if(isCircle){
+                currenttaskedMap.put("8", obejctId);
+            }
             taskIdtIdsList.add(currenttaskedMap);
 
             incentTaskedMb.setTaskIdtIds(mapper.writeValueAsString(taskIdtIdsList));
@@ -543,7 +631,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
      * @throws JsonProcessingException
      */
     @Transactional
-    public void exAddMbTaskedData(String mb_id, ScoreRule scoreRule) throws JsonProcessingException {
+    public void exAddMbTaskedData(String mb_id, ScoreRule scoreRule,String objectId) throws JsonProcessingException {
         logger.info("执行新手任务---经验值任务--开始更新用户任务成果表---用户无该任务历史记录执行添加...");
         IncentTasked incentTaskedMb = new IncentTasked();
         incentTaskedMb.setCurrentTaskId(scoreRule.getId());
@@ -559,6 +647,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
         map.put("5", 1);
         map.put("6", DateTools.fmtDate(new Date()));
         map.put("7", scoreRule.getIncomieFregType());
+        if(objectId != null)map.put( "8", objectId);
         taskList.add(map);
         incentTaskedMb.setTaskIdtIds(mapper.writeValueAsString(taskList));
         incentTaskedMb.setCreatedAt(new Date());
@@ -620,6 +709,14 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
                         String taskId_done = object.getString("1");
                         ScoreRule scoreRule = scoreRuleDao.getNewbieScoreRuleById( taskId_done);
                         if(scoreRule != null){
+                            if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_EXP.code()
+                                    || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_EXP.code() )
+                            {
+                                String numberDone = object.getString("5");
+                                if( 3 > Integer.valueOf( numberDone) ){
+                                    continue;
+                                }
+                            }
                             String ext2 = !CommonUtil.isNull(  incentTasked.getExt2()) ? incentTasked.getExt2() : "0";
                             if( (Integer.valueOf(ext2) & Integer.valueOf( scoreRule.getExt2())) != Integer.valueOf( scoreRule.getExt2()) ){
                                Integer result = ( Integer.valueOf(ext2) | Integer.valueOf( scoreRule.getExt2()));
@@ -635,11 +732,10 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
                 scoreRule.setId( UUIDUtils.getUUID());
                 scoreRule.setName("");
                 scoreRule.setTaskType( task_type );
-                exAddMbTaskedData(memberId,scoreRule);
+                exAddMbTaskedData(memberId,scoreRule,null);
                 return updateExtBygetTasked(memberId,task_type);
             }
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("用户任务成果表",e);
         }
         return null;

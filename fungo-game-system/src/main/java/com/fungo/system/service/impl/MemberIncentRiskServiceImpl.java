@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.fungo.system.entity.*;
+import com.fungo.system.function.UserTaskFilterService;
 import com.fungo.system.service.*;
 import com.game.common.consts.FunGoGameConsts;
 import com.game.common.dto.ResultDto;
@@ -41,7 +42,7 @@ public class MemberIncentRiskServiceImpl implements IMemberIncentRiskService {
     @Autowired
     private ScoreLogService scoreLogService;
     @Autowired
-    private IScoreRuleService scoreRuleServiceImpl;
+    private UserTaskFilterService userTaskFilterService;
 
     @Override
     public boolean isMatchLevel(String rank_id, String task_id) throws BusinessException {
@@ -99,8 +100,7 @@ public class MemberIncentRiskServiceImpl implements IMemberIncentRiskService {
           23 任务 获取fungo币
           分享文章 | 分享游戏任务要给出收益提示
          */
-        scoreRuleServiceImpl.updateExtBygetTasked( userId,11 );
-        scoreRuleServiceImpl.updateExtBygetTasked( userId,23);
+        userTaskFilterService.updateUserTask( userId);
         //用户是否存在
         //查出全部新手任务
         //V2.4.6 新手任务flag 1701

@@ -197,4 +197,8 @@ WHERE
     ( select cpc.post_id
     from t_cmm_post_circle cpc where cpc.circle_id = #{id} )
   </select>
+
+    <select id="selectOfficialCircle" resultType="java.lang.Integer">
+        select  count(1) from t_cmm_circle where  type = 1 and state = 1 and id = #{id}
+    </select>
 </mapper>

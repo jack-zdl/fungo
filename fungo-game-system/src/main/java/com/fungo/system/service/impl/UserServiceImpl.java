@@ -2,6 +2,7 @@ package com.fungo.system.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.dao.MemberDao;
 import com.fungo.system.dao.MemberInfoDao;
@@ -84,6 +85,8 @@ public class UserServiceImpl implements IUserService {
     private ApplicationEventPublisher applicationEventPublisher;
     @Autowired
     private MemberDao memberDao;
+    @Autowired
+    private NacosFungoCircleConfig nacosFungoCircleConfig;
 
     @Override
     public ResultDto<LoginMemberBean> bindingPhoneNo(String code, String mobile, String token,String channel,String deviceId) {
@@ -1084,6 +1087,17 @@ public class UserServiceImpl implements IUserService {
             resultDto = ResultDto.ResultDtoFactory.buildError(  "用户分享中秋活动失败,请联系管理员");
         }
         return resultDto;
+    }
+
+    @Override
+    public boolean checkFollowOfficialUser(String memberId) {
+        try {
+            List<String> officialUsers = nacosFungoCircleConfig.getOfficialUsers();
+            List<String> memberIdList = memberDao.getMemberIdList(officialUsers);
+        }catch (Exception e){
+            LOGGER.error( "检查关注用户是否是官方用户,关注用户 {}",memberId,e );
+        }
+        return true;
     }
 
     /**

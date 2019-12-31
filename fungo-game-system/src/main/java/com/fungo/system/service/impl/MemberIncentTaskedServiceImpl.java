@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.fungo.system.dto.ScoreGroupDTO;
 import com.fungo.system.dto.ScoreRuleDTO;
 import com.fungo.system.entity.*;
+import com.fungo.system.function.UserTaskFilterService;
 import com.fungo.system.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.FunGoGameConsts;
@@ -14,6 +15,7 @@ import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.enums.NewTaskIdenum;
 import com.game.common.enums.oldTaskIdenum;
 import com.game.common.repo.cache.facade.FungoCacheTask;
+import com.game.common.util.CommonUtil;
 import com.game.common.util.FunGoBeanUtils;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
@@ -25,8 +27,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService {
@@ -35,21 +41,18 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
 
     @Autowired
     private ScoreGroupService scoreGroupService;
-
     @Autowired
     private ScoreRuleService scoreRuleService;
-
     @Autowired
     private IncentTaskedService incentTaskedService;
-
     @Autowired
     private ScoreLogService scoreLogService;
-
     @Autowired
     private IMemberPermRankedService iMemberPerRankedService;
-
     @Autowired
     private FungoCacheTask fungoCacheTask;
+    @Autowired
+    private UserTaskFilterService userTaskFilterService;
 
 
     @Cacheable(cacheNames = {FunGoGameConsts.CACHE_EH_NAME}, key = "'" + FunGoGameConsts.CACHE_EH_KEY_PRE_MEMBER + "_TaskRule' + #task_type")
@@ -173,6 +176,8 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
             if (null != scoreGroupMapList && !scoreGroupMapList.isEmpty()) {
                 return scoreGroupMapList;
             }
+            // 旧数据转换新数据
+            userTaskFilterService.updateUserTask( memberId);
             scoreGroupMapList = new ArrayList<>();
             //第一步获取任务分类 默认查询 task_type =3 分值和虚拟币共有
 //            if (task_type <= 0) {
@@ -273,6 +278,7 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
 //            }
             //权益规则与功能授权关系列表
             List<IncentMbPermRanked> incentMbPermRankedList = iMemberPerRankedService.getIncentMbPermRankedList();
+
             //遍历规则分类数据
             for (ScoreGroup scoreGroup : taskGroupList) {
                 Map<String, Object> scoreGroupMap = new HashMap<>();
@@ -303,25 +309,78 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                             FunGoBeanUtils.bean2map(taskedOutScore, taskedOutScoreMap, IncentTaskedOut.class);
                             scoreRule.setIncentTaskedOut(taskedOutScoreMap);
                             scoreRuleDTO.setIncentTaskedOut( taskedOutScoreMap);
+                        }
+                        if(FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code() == scoreGroup.getTaskFlag() ){
+                            String taskExt2 = CommonUtil.isNull(  incentTaskedScore.getExt2()) ? "0": incentTaskedScore.getExt2();
+                            String ruleExt2 = CommonUtil.isNull(  scoreRule.getExt2()) ? "0": scoreRule.getExt2();
+                            if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_EXP.code()
+                                    || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_EXP.code() )
+                            {
 
+                                if( (Integer.valueOf( taskExt2) & Integer.valueOf(  ruleExt2)) == Integer.valueOf(  ruleExt2 ) ){
+                                    Map<String,Object> taskedCountMap = new ConcurrentHashMap<>(  );
+                                    taskedCountMap.put( "taskedCount",3);
+                                    scoreRuleDTO.setIncentTaskedOut( taskedCountMap);
+                                }else {
+                                    Map<String,Object> taskedCountMap = new ConcurrentHashMap<>(  );
+                                    taskedCountMap.put( "taskedCount",getTaskNum(scoreRule,incentTaskedScore));
+                                    scoreRuleDTO.setIncentTaskedOut( taskedCountMap);
+                                }
+                            }else {
+                                if( (Integer.valueOf( taskExt2) & Integer.valueOf(  ruleExt2)) == Integer.valueOf(  ruleExt2) ){
+                                    Map<String,Object> taskedCountMap = new ConcurrentHashMap<>(  );
+                                    taskedCountMap.put( "taskedCount",1);
+                                    scoreRuleDTO.setIncentTaskedOut( taskedCountMap);
+                                }else {
+                                    Map<String,Object> taskedCountMap = new ConcurrentHashMap<>(  );
+                                    taskedCountMap.put( "taskedCount",1);
+                                    scoreRuleDTO.setIncentTaskedOut( taskedCountMap);
+                                }
+                            }
                         }
                     }
                     //获取分值任务规则对应的虚拟币规则
                     for (ScoreRule coinRule : ruleListOfAllCategory) {
                         String plsTaskId = coinRule.getPlsTaskId();
-                        if (StringUtils.equalsIgnoreCase(groupIdFor, coinRule.getGroupId())
-                                && StringUtils.equalsIgnoreCase(ruleId, plsTaskId)
-                                && coinRule.getTaskType().intValue() == FunGoGameConsts.TASK_RULE_TASK_TYPE_COIN_TASK) {
+                        if (StringUtils.equalsIgnoreCase(groupIdFor, coinRule.getGroupId())&& StringUtils.equalsIgnoreCase(ruleId, plsTaskId) && coinRule.getTaskType().intValue() == FunGoGameConsts.TASK_RULE_TASK_TYPE_COIN_TASK) {
                             //分值类任务 对应的虚拟币类任务
                             scoreRule.setCoinRule(coinRule);
                             scoreRuleDTO.setCoinRule(coinRule);
                             //虚拟币任务用户完成进度和成果
                             IncentTaskedOut taskedOutCoin = getMbIncentTaskedOutWithCoin(memberId, coinRule, incentTaskedCoin, scoreGroup.getTaskFlag(), incentTaskedCoin22);
                             if (null != taskedOutCoin) {
-                                Map<String, Object> taskedOutCoinMap = new HashMap<String, Object>();
+                                Map<String, Object> taskedOutCoinMap = new HashMap<>();
                                 FunGoBeanUtils.bean2map(taskedOutCoin, taskedOutCoinMap, IncentTaskedOut.class);
                                 coinRule.setIncentTaskedOut(taskedOutCoinMap);
                                 scoreRuleDTO.setIncentTaskedOut(taskedOutCoinMap);
+                            }
+                            if(FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code() == scoreGroup.getTaskFlag() ){
+                                String taskExt2 = CommonUtil.isNull(  incentTaskedScore.getExt2()) ? "0": incentTaskedScore.getExt2();
+                                String ruleExt2 = CommonUtil.isNull(  scoreRule.getExt2()) ? "0": scoreRule.getExt2();
+                                if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_EXP.code()
+                                        || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_EXP.code() )
+                                {
+                                    if( (Integer.valueOf( taskExt2) & Integer.valueOf(  ruleExt2)) == Integer.valueOf(  ruleExt2 ) ){
+                                        Map<String,Object> taskedCountMap = new ConcurrentHashMap<>(  );
+                                        taskedCountMap.put( "taskedCount",3);
+                                        scoreRuleDTO.setIncentTaskedOut( taskedCountMap);
+                                    }else {
+                                        Map<String,Object> taskedCountMap = new ConcurrentHashMap<>(  );
+                                        taskedCountMap.put( "taskedCount",getTaskNum(scoreRule,incentTaskedScore));
+                                        scoreRuleDTO.setIncentTaskedOut( taskedCountMap);
+                                    }
+
+                                }else {
+                                    if( (Integer.valueOf( taskExt2) & Integer.valueOf(  ruleExt2)) == Integer.valueOf(  ruleExt2) ){
+                                        Map<String,Object> taskedCountMap = new ConcurrentHashMap<>(  );
+                                        taskedCountMap.put( "taskedCount",1);
+                                        scoreRuleDTO.setIncentTaskedOut( taskedCountMap);
+                                    }else {
+                                        Map<String,Object> taskedCountMap = new ConcurrentHashMap<>(  );
+                                        taskedCountMap.put( "taskedCount",1);
+                                        scoreRuleDTO.setIncentTaskedOut( taskedCountMap);
+                                    }
+                                }
                             }
                             break;
                         }
@@ -599,7 +658,6 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
      * 获取用户执行虚拟币任务的进度
      *
      * @param memberId
-     * @param taskId
      * @param taskGroupFlag 任务组flag
      * @return
      */
@@ -1088,7 +1146,7 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                     incentTaskedCoin22 = incentTaskedListCoin.get(0);
                 }
             }
-
+// --------------------------------------------------------------------------------------------  新
             //------------------------引入任务进度逻辑，结束--------------------------
             for (ScoreRule rule : noviceTaskList) {
                 if(Objects.equals(rule.getId(),scoreRule.getId())){
@@ -1126,5 +1184,32 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
             LOGGER.error("任务埋点-判断当前任务是否该类型最后任务失败",e);
         }
         return false;
+    }
+
+    private int getTaskNum(ScoreRule scoreRule, IncentTasked incentTasked){
+        String  taskIdtIds =  incentTasked.getTaskIdtIds();
+        if(CommonUtil.isNull( taskIdtIds )) return 0;
+        List<Map> jsonArray = JSONArray.parseArray( taskIdtIds,Map.class);
+        int result = 0 ;
+        for (Map map : jsonArray){
+            if(comparingByName(map,scoreRule.getId())){
+             result = (int)map.get( "5" );
+            }
+        }
+        return  result;
+//        List<Map> collect = jsonArray.stream().filter( x -> MemberIncentTaskedServiceImpl.comparingByName(x,scoreRule.getId())).collect( Collectors.toList() );
+//        if(!collect.isEmpty())
+//            return (int)collect.get(0).get( "5");
+//        else
+//            return 0;
+    }
+
+    private boolean comparingByName(Map<String, Object> map,String taskId){
+        if(map.get( "1" ).equals( taskId )){
+            return true;
+        }else {
+            return false;
+        }
+
     }
 }

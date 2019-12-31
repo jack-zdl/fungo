@@ -166,4 +166,6 @@ public interface IUserService {
     //添加管理员关联的虚拟用户
     ResultDto<String> userShareMall(String adminId) throws Exception;
 
+    boolean checkFollowOfficialUser(String memberId);
+
 }

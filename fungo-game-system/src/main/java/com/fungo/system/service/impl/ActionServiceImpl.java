@@ -23,10 +23,7 @@ import com.game.common.buriedpoint.model.BuriedPointLikeModel;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
-import com.game.common.dto.AbstractEventDto;
-import com.game.common.dto.ActionInput;
-import com.game.common.dto.FungoPageResultDto;
-import com.game.common.dto.ResultDto;
+import com.game.common.dto.*;
 import com.game.common.dto.community.*;
 import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.index.BannerBean;
@@ -410,15 +407,37 @@ public class ActionServiceImpl implements IActionService {
             action = this.buildAction(memberId, Setting.ACTION_TYPE_FOLLOW, inputDto);
             this.actionService.insert(action);
             this.addCounter(memberId, Setting.ACTION_TYPE_FOLLOW, inputDto);//粉丝数 +1
-
             if ("t_member".equals(getTableName(inputDto.getTarget_type()))) {//用户 关注数+1
                 isMember = true;
                 counterService.addCounter("t_member", "follower_num", memberId);
-
-                //V2.4.6版本之前任务
-                //gameProxy.addTaskCore(Setting.ACTION_TYPE_FOLLOW, memberId, inputDto.getTarget_id(), inputDto.getTarget_type());
-
             }
+            AbstractTaskEventDto abstractEventDto = new AbstractTaskEventDto(this);
+            if( 0 == inputDto.getTarget_type()){
+                abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.FOLLOW_ONE_OFFICIAL_USER.getKey());
+            }
+//            else if(11 == inputDto.getTarget_type()){
+//                abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.FOLLOW_ONE_OFFICIAL_CIRCLE.getKey());
+//            }
+            abstractEventDto.setFollowType(inputDto.getTarget_type());
+            abstractEventDto.setUserId(memberId);
+            abstractEventDto.setObjectId(inputDto.getTarget_id());
+            applicationEventPublisher.publishEvent(abstractEventDto);
+
+
+        }else {
+            AbstractTaskEventDto abstractEventDto = new AbstractTaskEventDto(this);
+            if( 0 == inputDto.getTarget_type()){
+                abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.FOLLOW_ONE_OFFICIAL_USER.getKey());
+            }else if(11 == inputDto.getTarget_type()){
+                abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.FOLLOW_ONE_OFFICIAL_CIRCLE.getKey());
+            }
+            abstractEventDto.setFollowType(inputDto.getTarget_type());
+            abstractEventDto.setUserId(memberId);
+            abstractEventDto.setObjectId(inputDto.getTarget_id());
+            applicationEventPublisher.publishEvent(abstractEventDto);
+            action.setState( 0 );
+            action.setUpdatedAt( new Date( ) );
+            action.updateById();
         }
         if (isMember) {
             String userId = memberId;
@@ -505,6 +524,7 @@ public class ActionServiceImpl implements IActionService {
         abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.USER_FOLLOW.getKey());
         abstractEventDto.setFollowType(inputDto.getTarget_type());
         applicationEventPublisher.publishEvent(abstractEventDto);
+
         //clear redis
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_FOLLW + memberId;
         fungoCacheMember.excIndexCache(false, keyPrefix, "", null);
@@ -863,6 +883,12 @@ public class ActionServiceImpl implements IActionService {
                     .eq("target_id", inputDto.getTarget_id())
                     .eq("target_type", inputDto.getTarget_type())
                     .eq("type", type));
+        }else if(Setting.ACTION_TYPE_FOLLOW == type){
+            return this.actionService.selectOne(new EntityWrapper<BasAction>()
+                    .eq("member_id", memberId)
+                    .eq("target_id", inputDto.getTarget_id())
+                    .eq("target_type", inputDto.getTarget_type())
+                    .eq("type", type).orderBy( "created_at",false ));
         }
 
         return this.actionService.selectOne(new EntityWrapper<BasAction>()
@@ -880,6 +906,7 @@ public class ActionServiceImpl implements IActionService {
         map.put("fieldName", getFieldName(type));
         map.put("id", inputDto.getTarget_id());
         map.put("type", "add");
+        map.put("memberId", memberId);
         return getCounterBoolean(inputDto, map);
     }
 

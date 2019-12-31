@@ -10,6 +10,7 @@ import com.fungo.community.service.ICounterService;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
+import com.game.common.util.CommonUtil;
 import com.game.common.util.UniqueIdCkeckUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -123,7 +124,13 @@ public class CommunityTSMQService {
                         String fieldName = bodyMap.get("fieldName");
                         String id = bodyMap.get("id");
                             if (StringUtils.isNotBlank(tableName) && StringUtils.isNotBlank(fieldName) && StringUtils.isNotBlank(id)) {
-                                return iCounterService.addCounter(tableName, fieldName, id);
+                                if("t_cmm_circle".equals( tableName )){
+                                    String memberId = bodyMap.get( "memberId" );
+                                    if(!CommonUtil.isNull( memberId ))
+                                        return iCounterService.addCircleCounter( tableName,fieldName,id, memberId);
+                                }else {
+                                    return iCounterService.addCounter(tableName, fieldName, id);
+                                }
                             }
                         }else if(StringUtils.isNotBlank(typeAdd) && StringUtils.equalsAnyIgnoreCase("sub", typeAdd)){
                             String tableName = bodyMap.get("tableName");

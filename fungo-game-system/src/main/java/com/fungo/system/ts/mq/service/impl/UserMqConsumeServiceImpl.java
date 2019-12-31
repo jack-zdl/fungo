@@ -3,6 +3,7 @@ package com.fungo.system.ts.mq.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fungo.system.service.IGameProxy;
+import com.fungo.system.service.IScoreRuleService;
 import com.fungo.system.service.IncentAccountCoinDaoService;
 import com.fungo.system.service.SystemService;
 import com.fungo.system.ts.mq.service.UserMqConsumeService;
@@ -10,6 +11,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.enums.CommonEnum;
+import com.game.common.enums.NewTaskStatusEnum;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.util.StringUtil;
 import com.game.common.vo.UserFunVO;
@@ -33,7 +35,8 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
     private SystemService systemService;
     @Autowired
     private IncentAccountCoinDaoService incentAccountCoinDaoService;
-
+    @Autowired
+    private IScoreRuleService scoreRuleServiceImpl;
 
     /**
      * 处理mq的消息
@@ -73,6 +76,11 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
         //@todo 用户扣减fun币
         if(CMT_POST_MOOD_GAME_MQ_TYPE_DELETE.getCode() == type){
             return deleteUserFun(body);
+        }
+
+        //添加用户动作行为数据
+        if(MQResultDto.CommunityEnum.CMT_POST_MOOD_GAME_MQ_TYPE_TASK.getCode() == type){
+            return userFollowCircle(body);
         }
         return false;
     }
@@ -154,6 +162,20 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
         UserFunVO userFunVO = JSON.toJavaObject( jsonObject,UserFunVO.class );
         ResultDto<String> resultDto = incentAccountCoinDaoService.deleteUserFun( userFunVO);
         return CommonEnum.SUCCESS.code().equals(String.valueOf(resultDto.getStatus()));
+    }
+
+    private boolean userFollowCircle(String body){
+        try {
+            JSONObject jsonObject = JSON.parseObject( body );
+            BasActionDto basActionDto = JSON.toJavaObject( jsonObject,BasActionDto.class );
+            String userId = basActionDto.getMemberId();
+            String circleId = basActionDto.getTargetId();
+            scoreRuleServiceImpl.achieveMultiScoreRule( userId, NewTaskStatusEnum.JOINOFFICIALCIRLCE_EXP.getKey(),circleId );
+            scoreRuleServiceImpl.achieveMultiScoreRule( userId,NewTaskStatusEnum.JOINOFFICIALCIRLCE_COIN.getKey(),circleId );
+        }catch (Exception e){
+
+        }
+        return true;
     }
 
 

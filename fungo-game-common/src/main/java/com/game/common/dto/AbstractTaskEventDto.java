@@ -12,7 +12,7 @@ import org.springframework.context.ApplicationEvent;
 @Setter
 @Getter
 @ToString
-public class AbstractEventDto extends ApplicationEvent {
+public class AbstractTaskEventDto extends ApplicationEvent {
 
     /**
      * 功能描述:
@@ -44,41 +44,10 @@ public class AbstractEventDto extends ApplicationEvent {
     private String ObjectId;
     /************** end eventType = 4*********************/
 
-    public AbstractEventDto(Object source) {
+    public AbstractTaskEventDto(Object source) {
         super( source );
     }
 
-    public enum AbstractEventEnum{
-        DELETE_POST(1),
-        USER_LOGIN(2),
-        USER_LOGOUT(3),
-        USER_FOLLOW(4),
-        USER_UNFOLLOW(5),
-        UPDATE_POST(6),
-        ADD_LIKE(7),
-        DELETE_LIKE(8),
-        EDIT_USER(9),
-        FOLLOW_OFFICIAL_USER(10),
-        BROWSE_SHOP(11),
-        BINDQQ_USER(12),
-        BINDWECHAT_USER(13),
-        BINDWEIBO_USER(14),
-        OPENPUSH_USER(15),
-        VPN_GAME(16),
-        FOLLOW_ONE_OFFICIAL_USER(17),
-        FOLLOW_ONE_OFFICIAL_CIRCLE(18);
-        int key;
-        AbstractEventEnum(int k){
-            this.key = k;
-        }
 
-        public int getKey() {
-            return key;
-        }
-
-        public void setKey(int key) {
-            this.key = key;
-        }
-    }
 }
 

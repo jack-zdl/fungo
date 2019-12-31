@@ -1,9 +1,11 @@
 package com.fungo.system.controller;
 
+import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.helper.TaskUrl;
 import com.fungo.system.service.IMemberIncentSignInTaskService;
 import com.fungo.system.service.IScoreRuleService;
 import com.fungo.system.service.ITaskService;
+import com.fungo.system.service.MemberPlayLogService;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.util.annotation.Anonymous;
@@ -12,13 +14,12 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+
+import static org.terracotta.modules.ehcache.ToolkitInstanceFactoryImpl.LOGGER;
 
 /**
  * 任务积分
@@ -34,6 +35,8 @@ public class TaskScoreController {
     private ITaskService taskService;
     @Autowired
     private IMemberIncentSignInTaskService iMemberIncentSignInTaskService;
+    @Autowired
+    private MemberPlayLogService memberPlayLogService;
 
     @ApiOperation(value = "获得签到信息", notes = "")
     @RequestMapping(value = "/api/rank/info", method = RequestMethod.GET)
@@ -118,14 +121,31 @@ public class TaskScoreController {
     }
 
     /**
-     * 功能描述: 关注官方账号
+     * 功能描述: 开启推送通知
      * @date: 2019/12/24 14:53
      */
     @ApiOperation(value = "task", notes = "")
     @RequestMapping(value = "/api/rank/openpush", method = RequestMethod.GET)
-    public ResultDto<String> openPush(MemberUserProfile memberUserPrefile) throws Exception {
+    public ResultDto<String> openPush(MemberUserProfile memberUserPrefile)  {
         String userId = memberUserPrefile.getLoginId();
         return taskService.openPush( userId);
+    }
+
+    /**
+     * 功能描述: 加速器界面成功导入一款游戏
+     * @date: 2019/12/28 10:13
+     */
+    @GetMapping("/api/system/accelerate")
+    public ResultDto<String> accelerate(MemberUserProfile memberUserPrefile) {
+        ResultDto<String> resultDto = null;
+        try {
+            String memberId = memberUserPrefile.getLoginId();
+            resultDto = memberPlayLogService.accelerate( memberId);
+        } catch (final Exception e) {
+            LOGGER.error( "加速器界面成功导入一款游戏异常",e );
+            resultDto = ResultDto.ResultDtoFactory.buildError( "加速器界面成功导入一款游戏异常" );
+        }
+        return resultDto;
     }
 
 }

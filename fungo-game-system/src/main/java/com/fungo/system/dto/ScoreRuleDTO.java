@@ -45,6 +45,11 @@ public class ScoreRuleDTO  {
     private Integer score;
 
     /**
+     * 行为代码
+     */
+    private String code;
+
+    /**
      * 任务编码的int型值
      */
     private Integer codeIdt;

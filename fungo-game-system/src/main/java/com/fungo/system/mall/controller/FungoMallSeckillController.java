@@ -347,8 +347,8 @@ public class FungoMallSeckillController {
      *  浏览一次礼包乐园
      * @return
      */
-    @PostMapping(value = "/api/mall/task/browse")
-    public ResultDto<String> browseMall(MemberUserProfile memberUserPrefile,@RequestBody Map<String, String> authMap) throws Exception {
+    @GetMapping(value = "/api/mall/task/browse")
+    public ResultDto<String> browseMall(MemberUserProfile memberUserPrefile) throws Exception {
         ResultDto<String> resultDto = null;
         try {
             String loginId = memberUserPrefile.getLoginId();

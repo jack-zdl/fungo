@@ -9,6 +9,8 @@ import com.fungo.system.entity.IncentTasked;
  */
 public interface IScoreRuleService {
 
+    int achieveMultiScoreRule(String memberId, String ext2Task,String  objectId);
+
     void achieveScoreRule(String memberId,String ext2Task);
 
     IncentTasked updateExtBygetTasked(String memberId, int task_type);

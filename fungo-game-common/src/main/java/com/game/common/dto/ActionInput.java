@@ -34,6 +34,7 @@ public class ActionInput {
 
     public  static List<Integer> postList = new ArrayList<Integer>( Arrays.asList( 0,1 ) );
 
+    public  static List<Integer> userList = new ArrayList<Integer>( Arrays.asList( 0 ) );
     /**
      * 备注信息
      */

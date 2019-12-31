@@ -40,8 +40,6 @@ public class LingkaController {
     private MemberPlayLogService memberPlayLogService;
     @Autowired
     private SysVersionService sysVersionService;
-    @Autowired
-    private NacosFungoCircleConfig nacosFungoCircleConfig;
 
     @PostMapping(value = "/api/system/member/log")
     public ResultDto<String> saveLingkaMemeberPlayLog(@Validated @RequestBody MemberPlayLogVO memberPlayLogVO){
@@ -303,21 +301,4 @@ public class LingkaController {
         return null;
     }
 
-
-    /**
-     * 功能描述: 加速器界面成功导入一款游戏
-     * @date: 2019/12/28 10:13
-     */
-    @GetMapping("/api/system/accelerate")
-    public ResultDto<String> accelerate(MemberUserProfile memberUserPrefile) {
-        ResultDto<String> resultDto = null;
-        try {
-            String memberId = memberUserPrefile.getLoginId();
-            resultDto = memberPlayLogService.accelerate( memberId);
-        } catch (final Exception e) {
-            LOGGER.error( "加速器界面成功导入一款游戏异常",e );
-            resultDto = ResultDto.ResultDtoFactory.buildError( "加速器界面成功导入一款游戏异常" );
-        }
-        return resultDto;
-    }
 }
