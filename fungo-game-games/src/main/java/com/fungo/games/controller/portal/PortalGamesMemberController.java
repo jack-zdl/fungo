@@ -11,6 +11,7 @@ import com.game.common.dto.game.MermberSearchInput;
 import com.game.common.dto.game.MyGameBean;
 import com.game.common.dto.game.MyGameInputPageDto;
 import com.game.common.util.CommonUtil;
+import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
@@ -50,13 +51,19 @@ public class PortalGamesMemberController {
     @ApiOperation(value = "PC2.0我的游戏列表", notes = "PC2.0我的游戏列表")
     @RequestMapping(value = "/api/portal/games/mine/gameList", method = RequestMethod.POST)
     @ApiImplicitParams({})
-    public FungoPageResultDto<MyGameBean> getGameList(MemberUserProfile memberUserPrefile, @RequestBody MyGameInputPageDto inputPage, HttpServletRequest request) {
+    public FungoPageResultDto<MyGameBean> getGameList(@RequestBody MyGameInputPageDto inputPage, HttpServletRequest request) {
         String os = (String) request.getAttribute("os");
-        return portalGamesIGameService.getMyGameList(memberUserPrefile.getLoginId(), inputPage,os);
+        String memberId = inputPage.getMemberId();
+        if(StringUtil.isNull(memberId)){
+            return FungoPageResultDto.error("-1","用户id不可为空");
+        }
+        return portalGamesIGameService.getMyGameList(memberId, inputPage,os);
     }
 
 
-
+    /**
+     * 杨磊编写看别人，废弃使用
+     */
     @ApiOperation(value = "PC2.0我的游戏列表", notes = "PC2.0我的游戏列表")
     @RequestMapping(value = "/api/portal/games/mine/otherGameList", method = RequestMethod.POST)
     @ApiImplicitParams({})
