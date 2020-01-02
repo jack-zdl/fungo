@@ -42,7 +42,11 @@ public class MemberOutBean {
     private String funImg;
     
     private boolean  is_followed;
-	
+
+	@ApiModelProperty(value="用户官方身份(2.4.3)",example="")
+	private List<List<HashMap<String,Object>>> statusImgs = new ArrayList<>();
+
+	private int groupLevel;
 	public String getMemberNo() {
 		return memberNo;
 	}
@@ -213,5 +217,21 @@ public class MemberOutBean {
 
 	public void setMb_id(String mb_id) {
 		this.mb_id = mb_id;
+	}
+
+	public List<List<HashMap<String, Object>>> getStatusImgs() {
+		return statusImgs;
+	}
+
+	public void setStatusImgs(List<List<HashMap<String, Object>>> statusImgs) {
+		this.statusImgs = statusImgs;
+	}
+
+	public int getGroupLevel() {
+		return groupLevel;
+	}
+
+	public void setGroupLevel(int groupLevel) {
+		this.groupLevel = groupLevel;
 	}
 }

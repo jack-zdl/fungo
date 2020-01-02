@@ -2,10 +2,7 @@ package com.fungo.system.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fungo.system.dao.BasActionDao;
-import com.fungo.system.dao.MemberDao;
-import com.fungo.system.dao.MemberInfoDao;
-import com.fungo.system.dao.SysMockuserDao;
+import com.fungo.system.dao.*;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
 import com.fungo.system.facede.ICommunityProxyService;
@@ -42,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -97,6 +95,8 @@ public class UserServiceImpl implements IUserService {
     private ApplicationEventPublisher applicationEventPublisher;
     @Autowired
     private MemberDao memberDao;
+    @Autowired
+    private IncentRuleRankGroupDao incentRuleRankGroupDao;
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -910,10 +910,30 @@ public class UserServiceImpl implements IUserService {
                 ArrayList<HashMap<String, Object>> urlList = mapper.readValue(rankImgs, ArrayList.class);
                 bean.setDignityImg((String) urlList.get(0).get("url"));
             } else if (ranked.getRankType() == 2) {
-                IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
-                String rankImgs = rank.getRankImgs();
-                ArrayList<HashMap<String, Object>> urlList = mapper.readValue(rankImgs, ArrayList.class);
-                bean.setStatusImg(urlList);
+                String rankIdtIds = ranked.getRankIdtIds();
+                List<HashMap<String,Object>> list1 = mapper.readValue(rankIdtIds, ArrayList.class);
+                List<List<HashMap<String,Object>>> statusLists = new ArrayList<>(  );
+                int groupLevel = 0;
+                for (HashMap<String,Object> map : list1){
+                    Integer rankId = (Integer) map.get( "1" );
+                    IncentRuleRank rank = rankRuleService.selectById(rankId);//最近获得
+                    String rankImgs = rank.getRankImgs();
+                    ArrayList<HashMap<String, Object>> urlList = null;
+                    IncentRuleRankGroup incentRuleRankGroup = incentRuleRankGroupDao.selectById( rank.getRankGroupId());
+                    groupLevel =  incentRuleRankGroup.getAuth() > groupLevel ? incentRuleRankGroup.getAuth() : groupLevel;
+                    try {
+                        urlList = mapper.readValue(rankImgs, ArrayList.class);
+                        urlList.stream().forEach( s ->{
+                            s.put( "auth", incentRuleRankGroup.getAuth());
+                            s.put( "group", incentRuleRankGroup.getId());
+                        } );
+                        statusLists.add( urlList );
+                    } catch (IOException e) {
+                        LOGGER.error( "對象轉換异常",e );
+                    }
+                }
+                bean.setGroupLevel(groupLevel);
+                bean.setStatusImgs(statusLists);
             } else if (ranked.getRankType() == 3) {
 
                 //找出获得的荣誉合集

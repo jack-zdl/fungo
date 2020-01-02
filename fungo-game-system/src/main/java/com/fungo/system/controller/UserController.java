@@ -321,7 +321,7 @@ public class UserController {
 
 
     @ApiOperation(value = "个人资料", notes = "用户身份校验(配合修改密码操作)")
-    @RequestMapping(value = "/api/mine/info", method = RequestMethod.GET)
+    @GetMapping(value = "/api/mine/info")
     @ApiImplicitParams({})
     public ResultDto<MemberOutBean> getUserInfo(MemberUserProfile memberUserPrefile) throws Exception {
         String memberId = "";

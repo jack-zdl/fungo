@@ -2,6 +2,7 @@ package com.fungo.system.dao;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.fungo.system.entity.IncentRuleRankGroup;
+import org.springframework.stereotype.Repository;
 
 /**
  * <p>
@@ -11,6 +12,7 @@ import com.fungo.system.entity.IncentRuleRankGroup;
  * @author lzh
  * @since 2018-12-03
  */
+@Repository
 public interface IncentRuleRankGroupDao extends BaseMapper<IncentRuleRankGroup> {
 
 }

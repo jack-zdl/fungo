@@ -16,11 +16,12 @@
 		<result column="ext1" property="ext1" />
 		<result column="ext2" property="ext2" />
 		<result column="ext3" property="ext3" />
+		<result column="auth" property="auth" />
 	</resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, group_name AS groupName, group_intro AS groupIntro, created_at AS createdAt, updated_at AS updatedAt, ext1, ext2, ext3
+        id, group_name AS groupName, group_intro AS groupIntro, created_at AS createdAt, updated_at AS updatedAt, ext1, ext2, ext3,auth
     </sql>
 
 </mapper>

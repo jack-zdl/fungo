@@ -87,6 +87,11 @@ public class IncentRuleRankGroup extends Model<IncentRuleRankGroup> {
      */
 	private String ext3;
 
+	/**
+	 * 扩展字段3
+	 */
+	private Integer auth;
+
 
 	public Long getId() {
 		return id;
@@ -182,6 +187,14 @@ public class IncentRuleRankGroup extends Model<IncentRuleRankGroup> {
 
 	public void setExt3(String ext3) {
 		this.ext3 = ext3;
+	}
+
+	public Integer getAuth() {
+		return auth;
+	}
+
+	public void setAuth(Integer auth) {
+		this.auth = auth;
 	}
 
 	@Override
