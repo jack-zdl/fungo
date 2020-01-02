@@ -784,16 +784,25 @@ public class MemberIncentEverydayTaskServiceImpl implements IMemberIncentEveryda
             String oldTaskId = (String) map.get("1");
             //验证当前任务是否存在记录
             if (StringUtils.equalsIgnoreCase(oldTaskId, scoreRule.getId())) {
-                //有相同的任务则更新最后完成的时间
-                map.put("6", DateTools.fmtDate(new Date()));
+
                 // 如果是点赞任务，更新次数
                 int codeIdt = scoreRule.getCodeIdt().intValue();
                 if (codeIdt == FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_LIKE_EXP.code()|| codeIdt == FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_LIKE_COIN.code()) {
-                    Integer currentTaskCount = (Integer)map.get("5");
+                    String doneDate = String.valueOf(map.get("6"));
+                    String currentDateStr = DateTools.fmtSimpleDateToString(new Date());
+                    long interval = DateTools.getDaySub(doneDate, currentDateStr);
+                    // 当前点赞任务点赞次数
+                    Integer currentTaskCount = 0;
+                    if(interval == 0){
+                        currentTaskCount = (Integer)map.get("5");
+                    }
                     if(currentTaskCount<LIKE_TASK_NUM){
                         map.put("5",currentTaskCount+1);
                     }
                 }
+
+                //有相同的任务则更新最后完成的时间
+                map.put("6", DateTools.fmtDate(new Date()));
                 isAdd = false;
                 isContain = true;
                 break;
