@@ -50,8 +50,7 @@ public class FungoMallController {
     private NacosFungoCircleConfig nacosFungoCircleConfig;
     @Autowired
     private FungoCacheTask fungoCacheTask;
-    @Autowired
-    private FungoMallScanOrderWithSeckillService fungoMallScanOrderWithSeckillService;
+
 
 
     @PostMapping("/mall/addGoods/")

@@ -9,6 +9,8 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.MyCommentBean;
 import com.game.common.dto.community.MyPublishBean;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -95,5 +97,8 @@ public interface IMemberService {
 
 	boolean addActionTypeNotice(String memberId,String content,String actionType);
 
+	boolean getNewMember(Date registerDate, Integer level);
+
+	boolean getActiveMemeber(String memberId);
 
 }
