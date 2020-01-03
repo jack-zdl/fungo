@@ -26,7 +26,8 @@ public class FungoCacheSystem {
      * Redis 默认缓存时间: 秒
      * 30 分钟
      */
-    public static final Integer REDIS_EXPIRE_DEFAULT = 60 * 30;
+//    public static final Integer REDIS_EXPIRE_DEFAULT = 60 * 30;
+    public static final Integer REDIS_EXPIRE_DEFAULT = 60 * 2;
 
     @Autowired
     private RedisHandler redisHandler;

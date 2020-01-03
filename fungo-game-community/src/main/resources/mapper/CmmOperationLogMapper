@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fungo.community.dao.mapper.CmmOperationLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.fungo.community.entity.CmmOperationLog" >
+        <result column="id" property="id" />
+        <result column="circle_id" property="circleId" />
+        <result column="member_id" property="memberId" />
+        <result column="target_id" property="targetId" />
+        <result column="target_type" property="targetType" />
+        <result column="old_target_state" property="oldTargetState" />
+        <result column="new_target_state" property="newTargetState" />
+        <result column="action_type" property="actionType" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+                id,
+                circle_id,
+                member_id,
+                target_id,
+                target_type,
+                old_target_state,
+                new_target_state,
+                action_type,
+                created_at,
+                updated_at
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="id" parameterType="com.fungo.community.entity.CmmOperationLog">
+        INSERT INTO t_cmm_operation_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test ='null != circleId'>
+                circle_id,
+            </if>
+            <if test ='null != memberId'>
+                member_id,
+            </if>
+            <if test ='null != targetId'>
+                target_id,
+            </if>
+            <if test ='null != targetType'>
+                target_type,
+            </if>
+            <if test ='null != oldTargetState'>
+                old_target_state,
+            </if>
+            <if test ='null != newTargetState'>
+                new_target_state,
+            </if>
+            <if test ='null != actionType'>
+                action_type,
+            </if>
+            <if test ='null != createdAt'>
+                created_at,
+            </if>
+            <if test ='null != updatedAt'>
+                updated_at
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test ='null != circleId'>
+                #{circleId},
+            </if>
+            <if test ='null != memberId'>
+                #{memberId},
+            </if>
+            <if test ='null != targetId'>
+                #{targetId},
+            </if>
+            <if test ='null != targetType'>
+                #{targetType},
+            </if>
+            <if test ='null != oldTargetState'>
+                #{oldTargetState},
+            </if>
+            <if test ='null != newTargetState'>
+                #{newTargetState},
+            </if>
+            <if test ='null != actionType'>
+                #{actionType},
+            </if>
+            <if test ='null != createdAt'>
+                #{createdAt},
+            </if>
+            <if test ='null != updatedAt'>
+                #{updatedAt}
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="delete" >
+        DELETE FROM t_cmm_operation_log
+        WHERE id = #{id}
+    </delete>
+
+    <update id="update" parameterType="com.fungo.community.entity.CmmOperationLog">
+        UPDATE t_cmm_operation_log
+        <set>
+            <if test ='null != circleId'>circle_id = #{circleId},</if>
+            <if test ='null != memberId'>member_id = #{memberId},</if>
+            <if test ='null != targetId'>target_id = #{targetId},</if>
+            <if test ='null != targetType'>target_type = #{targetType},</if>
+            <if test ='null != oldTargetState'>old_target_state = #{oldTargetState},</if>
+            <if test ='null != newTargetState'>new_target_state = #{newTargetState},</if>
+            <if test ='null != actionType'>action_type = #{actionType},</if>
+            <if test ='null != createdAt'>created_at = #{createdAt},</if>
+            <if test ='null != updatedAt'>updated_at = #{updatedAt}</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <select id="load" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_cmm_operation_log
+        WHERE id = #{id}
+    </select>
+
+    <select id="pageList" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM t_cmm_operation_log
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="pageListCount" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM t_cmm_operation_log
+    </select>
+
+</mapper>

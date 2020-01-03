@@ -125,4 +125,6 @@ public interface IPostService {
 	ResultDto<String> essence(String userId, String postId);
 
     ResultDto<String> restore(String userId, String postId);
+
+    ResultDto<String> updatePostTag(String userId, String postId, String tagId);
 }

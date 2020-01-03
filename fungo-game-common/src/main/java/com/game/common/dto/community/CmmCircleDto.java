@@ -60,6 +60,8 @@ public class CmmCircleDto implements Serializable {
 
     private boolean follow = false;
 
+
+
     /**
      * 玩家排行(2.4.3) objectId avatar
      */

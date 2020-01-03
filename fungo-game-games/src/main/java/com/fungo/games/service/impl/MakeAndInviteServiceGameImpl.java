@@ -152,6 +152,7 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
             re.show("预约成功");
             re.setData("预约成功");
         }
+        re.setShowState(0);
 
         //clear redis cache
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_GAMELIST + memberId;

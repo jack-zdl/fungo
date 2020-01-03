@@ -663,6 +663,38 @@ public class TaskServiceImpl implements ITaskService {
         return null;
     }
 
+    @Override
+    public ResultDto<String> taskCheckUserBindQQWeiboWechat(String userId) {
+        try {
+            Member member = memberDao.selectById( userId);
+            if(member == null){
+                return null;
+            }
+            AbstractTaskEventDto abstractEventDto = new AbstractTaskEventDto(this);
+            abstractEventDto.setUserId(userId);
+            List<Integer> eventType = new ArrayList<>(  );
+            if(!CommonUtil.isNull(  member.getQqOpenId())){
+                abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_BIND_QQ_WEIBO_WECHAT.getKey());
+                eventType.add( AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_BIND_QQ.getKey());
+            }
+            if(!CommonUtil.isNull( member.getWeiboOpenId())){
+                abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_BIND_QQ_WEIBO_WECHAT.getKey());
+                eventType.add( AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_BIND_WEIBO.getKey());
+            }
+            if(!CommonUtil.isNull( member.getWeixinOpenId() )){
+                abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_BIND_QQ_WEIBO_WECHAT.getKey());
+                eventType.add( AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_BIND_WECHAT.getKey());
+            }
+            if(!CommonUtil.isNull(  member.getQqOpenId()) || !CommonUtil.isNull( member.getWeiboOpenId()) || !CommonUtil.isNull( member.getWeixinOpenId() ) ){
+                abstractEventDto.setEventTypeList(eventType);
+                applicationEventPublisher.publishEvent(abstractEventDto);
+            }
+        }catch (Exception e){
+            LOGGER.error( "检查用户是否关注官方圈子异常",e);
+        }
+        return ResultDto.success();
+    }
+
 
     private StringBuffer getNearDateByUserSign(int userSignDate){
         List<Integer>  twoDaysList = Arrays.asList( 0,1 );

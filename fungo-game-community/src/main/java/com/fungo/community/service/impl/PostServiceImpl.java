@@ -2029,7 +2029,7 @@ public class PostServiceImpl implements IPostService {
         data.put("userName", "FunGo大助手");
         data.put("msgTime", DateTools.fmtDate(new Date()));
         data.put("userType", "1");
-        data.put("content", "恭喜～你的文章 <a href='#' style='color: red;' >《" + title + "》</a>太棒啦！小Fun已把你的作品推荐给全站玩家欣赏～，同时奖励您500Fun币，30经验值，期待您的更多作品哦～");
+        data.put("content", "恭喜～你的文章 <a href='#' style='color: red;' >《" + title + "》</a>太棒啦！小Fun已把你的作品推荐给全站玩家欣赏，同时奖励您500Fun币，30经验值，期待您的更多作品哦～");
         data.put("href", "");
         map.put( "data", JSON.toJSONString( data ) );
         sendMessage(map);
@@ -2062,6 +2062,19 @@ public class PostServiceImpl implements IPostService {
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
         fungoCacheArticle.excIndexDecodeCache(false, FungoCoreApiConstant.PUB_CIRCLE);
         fungoCacheArticle.excIndexDecodeCache(false, FungoCoreApiConstant.PUB_POST);
+        return ResultDto.success();
+    }
+
+    @Override
+    public ResultDto<String> updatePostTag(String userId, String postId, String tagId) {
+        int cmmPostCount = postService.selectCount(new EntityWrapper<CmmPost>().eq("id",postId));
+        if(cmmPostCount == 1){
+            CmmPost cmmPost1 = new CmmPost();
+            cmmPost1.setId(postId);
+           cmmPost1.setUpdatedAt(new Date());
+           cmmPost1.setTags(tagId);
+            postService.updateById(cmmPost1);
+        }
         return ResultDto.success();
     }
 

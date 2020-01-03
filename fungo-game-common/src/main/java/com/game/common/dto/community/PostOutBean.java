@@ -100,4 +100,6 @@ public class PostOutBean {
 	private List<StreamInfo> videoList = new ArrayList<>();
 
 
+	private String tagName;
+
 }
