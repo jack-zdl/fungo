@@ -304,4 +304,8 @@ public class SystemFacedeService {
         }
         return null;
     }
+
+    public ResultDto updateRankedMedal(String mb_id, int i) {
+        return  systemFeignClient.updateRankedMedal(mb_id,i);
+    }
 }

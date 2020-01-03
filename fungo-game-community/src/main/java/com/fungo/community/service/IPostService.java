@@ -120,4 +120,9 @@ public interface IPostService {
 	 */
 	ResultDto<String> checkAndUpdateVideoPost();
 
+    ResultDto<String> top(String userId, String postId);
+
+	ResultDto<String> essence(String userId, String postId);
+
+    ResultDto<String> restore(String userId, String postId);
 }
