@@ -236,5 +236,16 @@ public class FungoCacheArticle {
     }
 
 
+    /**
+     * 添加缓存和删除
+     * @param isCache true 缓存，false清除缓存
+     * @param keyPrefix 缓存key的前缀（对象是json字符串，非对象是字符串）
+     */
+    public void excIndexDecodeCache(boolean isCache, String keyPrefix) {
+        if (!isCache){
+            redisHandler.batchDelete(keyPrefix);
+        }
+    }
+
     //-----------
 }

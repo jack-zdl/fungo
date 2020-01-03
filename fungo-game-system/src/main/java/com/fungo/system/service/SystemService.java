@@ -126,4 +126,5 @@ public interface SystemService {
 
     ResultDto<Map<String,Object>> getMemberFollow(MemberFollowerVo  memberFollowVo);
 
+    ResultDto<String> updateRankedMedal(String userId, Integer rankidt);
 }

@@ -680,5 +680,30 @@ public class PostController {
         }
     }
 
-    //--------
+    //------------------ 圈主权限 ----------------------
+    @ApiOperation(value="置顶", notes="")
+    @RequestMapping(value="/api/content/post/top/{postId}", method= RequestMethod.GET)
+    @ApiImplicitParams({})
+    public ResultDto<String> top(@Anonymous MemberUserProfile memberUserPrefile,@PathVariable("postId")String postId) {
+        String userId = memberUserPrefile.getLoginId();
+        if(StringUtil.isNull(userId)){
+            return ResultDto.error("-1","无权操作");
+        }
+        return bsPostService.top(userId,postId);
+    }
+
+
+    @ApiOperation(value="精华", notes="")
+    @RequestMapping(value="/api/content/post/essence", method= RequestMethod.GET)
+    @ApiImplicitParams({})
+    public ResultDto<String> essence(@Anonymous MemberUserProfile memberUserPrefile,@PathVariable("postId")String postId){
+        String userId = memberUserPrefile.getLoginId();
+        if(StringUtil.isNull(userId)){
+            return ResultDto.error("-1","无权操作");
+        }
+        return bsPostService.essence(userId,postId);
+    }
+
+
+
 }
