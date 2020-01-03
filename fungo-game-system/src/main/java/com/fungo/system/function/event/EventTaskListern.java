@@ -44,35 +44,35 @@ public class EventTaskListern implements ApplicationListener<AbstractTaskEventDt
         String objectId = event.getObjectId();
        if(AbstractEventDto.AbstractEventEnum.FOLLOW_ONE_OFFICIAL_USER.getKey() == event.getEventType() ){
             scoreRuleServiceImpl.achieveMultiScoreRule( userId,NewTaskStatusEnum.FOLLOWOFFICIALUSER_EXP.getKey(), objectId);
-            scoreRuleServiceImpl.achieveMultiScoreRule( userId,NewTaskStatusEnum.FOLLOWOFFICIALUSER_COIN.getKey(),objectId );
+            scoreRuleServiceImpl.achieveMultiCoinRule( userId,NewTaskStatusEnum.FOLLOWOFFICIALUSER_COIN.getKey(),objectId );
         }else if(AbstractEventDto.AbstractEventEnum.FOLLOW_ONE_OFFICIAL_CIRCLE.getKey() == event.getEventType()){
             scoreRuleServiceImpl.achieveMultiScoreRule( userId,NewTaskStatusEnum.JOINOFFICIALCIRLCE_EXP.getKey(),objectId );
-            scoreRuleServiceImpl.achieveMultiScoreRule( userId,NewTaskStatusEnum.JOINOFFICIALCIRLCE_COIN.getKey(),objectId );
+            scoreRuleServiceImpl.achieveMultiCoinRule( userId,NewTaskStatusEnum.JOINOFFICIALCIRLCE_COIN.getKey(),objectId );
         }else if(AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_OFFICIAL_USER.getKey() == event.getEventType()){
            List<String> objectList = event.getObjectIdList();
            objectList.stream().forEach( s ->{
                scoreRuleServiceImpl.achieveMultiScoreRule( userId,NewTaskStatusEnum.FOLLOWOFFICIALUSER_EXP.getKey(),s);
-               scoreRuleServiceImpl.achieveMultiScoreRule( userId,NewTaskStatusEnum.FOLLOWOFFICIALUSER_COIN.getKey(),s );
+               scoreRuleServiceImpl.achieveMultiCoinRule( userId,NewTaskStatusEnum.FOLLOWOFFICIALUSER_COIN.getKey(),s );
            } );
        }else if(AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_OFFICIAL_CIRCLE.getKey() == event.getEventType()){
            List<String> objectList = event.getObjectIdList();
            objectList.stream().forEach( s ->{
                scoreRuleServiceImpl.achieveMultiScoreRule( userId,NewTaskStatusEnum.JOINOFFICIALCIRLCE_EXP.getKey(),s);
-               scoreRuleServiceImpl.achieveMultiScoreRule( userId,NewTaskStatusEnum.JOINOFFICIALCIRLCE_COIN.getKey(),s );
+               scoreRuleServiceImpl.achieveMultiCoinRule( userId,NewTaskStatusEnum.JOINOFFICIALCIRLCE_COIN.getKey(),s );
            } );
        }else if(AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_BIND_QQ_WEIBO_WECHAT.getKey() == event.getEventType()){
            List<Integer> list = event.getEventTypeList();
            if(list.contains( AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_BIND_QQ.getKey() ) ){
                scoreRuleServiceImpl.achieveScoreRule(userId,NewTaskStatusEnum.BINDQQ_EXP.getKey());
-               scoreRuleServiceImpl.achieveScoreRule( userId,NewTaskStatusEnum.BINDQQ_COIN.getKey());
+               scoreRuleServiceImpl.achieveCoinRule( userId,NewTaskStatusEnum.BINDQQ_COIN.getKey());
            }
            if( list.contains( AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_BIND_WEIBO.getKey()  )){
                scoreRuleServiceImpl.achieveScoreRule(userId,NewTaskStatusEnum.BINDWEIBO_EXP.getKey());
-               scoreRuleServiceImpl.achieveScoreRule( userId,NewTaskStatusEnum.BINDWEIBO_COIN.getKey());
+               scoreRuleServiceImpl.achieveCoinRule( userId,NewTaskStatusEnum.BINDWEIBO_COIN.getKey());
            }
            if( list.contains(  AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_BIND_WECHAT.getKey() ) ){
                scoreRuleServiceImpl.achieveScoreRule(userId,NewTaskStatusEnum.BINDWECHAT_Exp.getKey());
-               scoreRuleServiceImpl.achieveScoreRule( userId,NewTaskStatusEnum.BINDWECHAT_Exp.getKey());
+               scoreRuleServiceImpl.achieveCoinRule( userId,NewTaskStatusEnum.BINDWECHAT_Exp.getKey());
            }
        }
         if(!CommonUtil.isNull( userId )){

@@ -14,7 +14,9 @@ import com.fungo.system.service.*;
 import com.game.common.buriedpoint.BuriedPointUtils;
 import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
 import com.game.common.buriedpoint.constants.BuriedPointPlatformConstant;
+import com.game.common.buriedpoint.constants.BuriedPointProductFunConstant;
 import com.game.common.buriedpoint.constants.BuriedPointTaskTypeConstant;
+import com.game.common.buriedpoint.model.BuriedPointProductModel;
 import com.game.common.buriedpoint.model.BuriedPointTaskModel;
 import com.game.common.common.MemberIncentCommonUtils;
 import com.game.common.consts.FunGoGameConsts;
@@ -72,6 +74,8 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
     private IncentTaskedService incentTaskedService;
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
+    @Autowired
+    private IncentAccountCoinDaoService incentAccountCoinServiceImap;
     //json解析
     private static ObjectMapper mapper = new ObjectMapper();
 
@@ -136,6 +140,56 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
             LOGGER.error( "多次型任务出现异常,ext2Task= {}",ext2Task,e);
             return 0;
         }
+    }
+
+    @Override
+    public int achieveMultiCoinRule(String memberId, String ext2Task,String  objectId) throws IOException {
+        try {
+            ScoreRule scoreRule = scoreRuleDao.getScoreRule(ext2Task);
+            IncentTasked incentTasked  = this.updateExtBygetTasked(memberId, scoreRule.getTaskType());
+            String ext2 = incentTasked.getExt2();
+            if(((Integer.valueOf( ext2 ) & Integer.valueOf( ext2Task) ) == Integer.valueOf( ext2Task))) return 0;
+            if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_EXP.code()
+                    || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_EXP.code() )
+            {
+                int watchThreeUserTask = this.isWatchThreeUserTask(memberId, scoreRule,objectId);
+                if (-1 == watchThreeUserTask) {
+                    return -1;
+                }
+                boolean isok = this.updateMemberIncentTasked(memberId, incentTasked.getTaskType(), scoreRule,objectId);
+                if(!isok){
+                    return -1;
+                }
+            }
+
+            if(((Integer.valueOf( ext2 ) & Integer.valueOf( ext2Task) ) == Integer.valueOf( ext2Task))) return -1;
+            Integer result = (Integer.valueOf( ext2 ) | Integer.valueOf( ext2Task));
+            incentTasked.setExt2( result.toString());
+            incentTasked.updateById();
+
+            //没有执行过
+            //3.更新用户fungo币账户
+            int coinCount = 0;
+            coinCount = this.updateAccountCoin(memberId, scoreRule);
+            //4.更新用户任务成果表
+            this.updateMemberIncentTasked(memberId, scoreRule.getTaskType(), scoreRule,null);
+            //5.添加任务执行日志
+            if(coinCount > 0){ //判断是否需要增加fungo币
+                this.addTaskedLog(memberId, scoreRule);
+                // 添加新手任务产生 fun币埋点
+                BuriedPointProductModel buriedPointProductModel = new BuriedPointProductModel();
+                buriedPointProductModel.setDistinctId(memberId);
+                buriedPointProductModel.setPlatForm(BuriedPointPlatformConstant.PLATFORM_SERVER);
+                buriedPointProductModel.setEventName(BuriedPointEventConstant.EVENT_KEY_GOLD_PRODUCED);
+
+                buriedPointProductModel.setAmount(scoreRule.getScore());
+                buriedPointProductModel.setMethod(BuriedPointProductFunConstant.PRODUCT_FUN_TYPE_TASK);
+                BuriedPointUtils.publishBuriedPointEvent(buriedPointProductModel);
+            }
+        } catch (IOException e) {
+            LOGGER.error("更新用户fungo币账户异常,用户= {}",memberId,e);
+        }
+        return 0;
     }
 
     /**
@@ -263,6 +317,76 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
             this.addTaskedLog(mb_id, scoreRule);
         }
         return 1;
+    }
+
+    /**
+     * 执行Fungo币任务
+     * @return 1 首次成功   -1 任务失败  2 任务重复完成
+     */
+    public void achieveCoinRule(String memberId,String ext2Task)  {
+
+        ScoreRule scoreRule = scoreRuleDao.getScoreRule(ext2Task);
+        if(scoreRule == null){
+            logger.error("---member-mb_id:{}--执行新手任务---经验值任务---scoreRule:{}", scoreRule);
+            return;
+        }
+        IncentTasked incentTasked  = this.updateExtBygetTasked(memberId, scoreRule.getTaskType());
+        String ext2 = incentTasked.getExt2();
+        if(((Integer.valueOf( ext2 ) & Integer.valueOf( ext2Task) ) == Integer.valueOf( ext2Task))) return;
+        Integer result = (Integer.valueOf( ext2 ) | Integer.valueOf( ext2Task));
+        incentTasked.setExt2( result.toString());
+        incentTasked.updateById();
+
+        //没有执行过
+        //3.更新用户fungo币账户
+        int coinCount = 0;
+        try {
+            coinCount = this.updateAccountCoin(memberId, scoreRule);
+            //4.更新用户任务成果表
+            this.updateMemberIncentTasked(memberId, scoreRule.getTaskType(), scoreRule,null);
+            //5.添加任务执行日志
+            if(coinCount > 0){ //判断是否需要增加fungo币
+                this.addTaskedLog(memberId, scoreRule);
+                // 添加新手任务产生 fun币埋点
+                BuriedPointProductModel buriedPointProductModel = new BuriedPointProductModel();
+                buriedPointProductModel.setDistinctId(memberId);
+                buriedPointProductModel.setPlatForm(BuriedPointPlatformConstant.PLATFORM_SERVER);
+                buriedPointProductModel.setEventName(BuriedPointEventConstant.EVENT_KEY_GOLD_PRODUCED);
+
+                buriedPointProductModel.setAmount(scoreRule.getScore());
+                buriedPointProductModel.setMethod(BuriedPointProductFunConstant.PRODUCT_FUN_TYPE_TASK);
+                BuriedPointUtils.publishBuriedPointEvent(buriedPointProductModel);
+            }
+        } catch (IOException e) {
+           LOGGER.error("更新用户fungo币账户异常,用户= {}",memberId,e);
+        }
+    }
+
+    /**
+     *  修改用户fungo币账户
+     * @param mb_id
+     * @param scoreRule
+     */
+    private int updateAccountCoin(String mb_id, ScoreRule scoreRule) throws IOException {
+        Integer coinCount = scoreRule.getScore();
+        IncentAccountCoin coinAccount = incentAccountCoinServiceImap.selectOne(new EntityWrapper<IncentAccountCoin>().eq("mb_id", mb_id));
+        if (coinAccount == null) {
+            coinAccount = accountScoreDaoService.createAccountCoin(mb_id);
+        }
+        Long lastCasVersion = coinAccount.getCasVersion() == null ? 0l :  coinAccount.getCasVersion();
+        coinAccount.setCasVersion(lastCasVersion + 1);
+        coinAccount.setCoinUsable(coinAccount.getCoinUsable().add(new BigDecimal(coinCount)));
+        coinAccount.setUpdatedAt(new Date());
+        Map<String, Object> criteriaMap = new HashMap<String, Object>();
+        criteriaMap.put("mb_id", mb_id);
+        criteriaMap.put("cas_version", lastCasVersion);
+        EntityWrapper<IncentAccountCoin> coinAccountEntityWrapper = new EntityWrapper<IncentAccountCoin>();
+        coinAccountEntityWrapper.allEq(criteriaMap);
+        boolean updateStatus = incentAccountCoinServiceImap.update(coinAccount, coinAccountEntityWrapper);
+        if (updateStatus) {
+            return 1;
+        }
+        return -1;
     }
 
     /**
@@ -516,7 +640,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
      * @param scoreRule
      * @throws IOException
      */
-    private boolean updateMemberIncentTasked(String mb_id, int task_type, ScoreRule scoreRule,String objectId) throws IOException {
+    private boolean    updateMemberIncentTasked(String mb_id, int task_type, ScoreRule scoreRule,String objectId) throws IOException {
         //获取用户当前任务的历史记录
         IncentTasked incentTaskedMb = getIncentTaskedWithMember(mb_id, task_type);
         boolean isok = false;
