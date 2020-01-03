@@ -42,7 +42,8 @@ public class FungoCacheArticle {
     /**
      * Redis 默认缓存时间: 秒
      */
-    public static final Integer REDIS_EXPIRE_DEFAULT = 60 * 5;
+//    public static final Integer REDIS_EXPIRE_DEFAULT = 60 * 5;
+    public static final Integer REDIS_EXPIRE_DEFAULT = 60 * 2;
 
 
     @Autowired
