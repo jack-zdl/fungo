@@ -726,4 +726,16 @@ public class SystemController {
         return re;
     }
 
+
+    /**
+     * 更新荣誉 勋章 加精次数
+     */
+    @PostMapping("/updateRankedMedal")
+    public ResultDto<String> updateRankedMedal(@RequestParam("userId") String userId, @RequestParam("rankidt") Integer rankidt){
+           if(StringUtil.isNull(userId)||rankidt==null){
+               return ResultDto.error("-1","参数错误");
+           }
+           return  systemService.updateRankedMedal(userId,rankidt);
+    }
+
 }

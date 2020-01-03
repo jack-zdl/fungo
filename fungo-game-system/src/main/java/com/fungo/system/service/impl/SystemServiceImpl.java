@@ -10,6 +10,8 @@ import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.entity.*;
 import com.fungo.system.facede.ICommunityProxyService;
 import com.fungo.system.service.*;
+import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.consts.FungoRankConstants;
 import com.game.common.consts.Setting;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.AuthorBean;
@@ -24,6 +26,7 @@ import com.game.common.dto.user.IncentRuleRankDto;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberFollowerDto;
 import com.game.common.enums.ActionTypeEnum;
+import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.*;
 import com.game.common.vo.MemberFollowerVo;
 import com.sun.istack.NotNull;
@@ -32,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -39,6 +43,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -109,6 +114,18 @@ public class SystemServiceImpl implements SystemService {
     @Autowired
     private BasActionService actionService;
 
+    @Autowired
+    private IncentRuleRankService ruleRankService;
+    @Autowired
+    private IncentRankedService rankedService;
+
+    private static ObjectMapper mapper = new ObjectMapper();
+
+    @Value("${sys.config.fungo.cluster.index}")
+    private String clusterIndex;
+
+    @Autowired
+    private FungoCacheMember fungoCacheMember;
 
     /**
      * 功能描述: 根据用户id查询被关注人的id集合
@@ -992,6 +1009,120 @@ public class SystemServiceImpl implements SystemService {
       }catch (Exception e){
           LOGGER.error( "查询用户是否关注异常",e );
       }return ResultDto.success(map) ;
+    }
+
+    @Override
+    @Transactional
+    public ResultDto<String> updateRankedMedal(String userId, Integer rankidt) {
+        try{
+            IncentRuleRank rankRule = ruleRankService.selectOne(new EntityWrapper<IncentRuleRank>().eq("rank_idt", rankidt));
+            //荣誉汇总 类型
+            IncentRanked incentRanked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", userId).eq("rank_type", rankRule.getRankType()));
+            SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd");
+            //------fungo身份证 获取时间，是用户注册时间
+            String datos = format.format(new Date());
+            boolean levelRank = rankRule.getRankType() == 1;
+            ArrayList<Map<String, Object>> mapList = new ArrayList<>();
+            if (null != incentRanked && null!=incentRanked.getRankIdtIds()) {
+                mapList = mapper.readValue(incentRanked.getRankIdtIds(), ArrayList.class);
+            }
+            List<IncentRuleRank> rankRuleList = new ArrayList<>();
+            if (rankidt == FungoRankConstants.SELECTED_TWENTY_FOUR) { //初始徽章
+                rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24"));
+            } else if (rankidt == FungoRankConstants.SELECTED_TWENTY_FIVE) { //文章上精选2次
+                rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24,25"));
+            } else if (rankidt == FungoRankConstants.SELECTED_TWENTY_SIX) { //文章上精选10次
+                rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24,25,26"));
+            } else if (rankidt == FungoRankConstants.SELECTED_TWENTY_SEVEN) { //文章上精选50次
+                rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24,25,26,27"));
+            } else if (rankidt == FungoRankConstants.AMWAYWALL_TWENTY_EIGHT) { //评测上安利墙2次
+                rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24,28"));
+            } else if (rankidt == FungoRankConstants.AMWAYWALL_TWENTY_NINE) { //评测上安利墙10次
+                rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24,28,29"));
+            } else if (rankidt == FungoRankConstants.AMWAYWALL_THIRTY) { //评测上安利墙50次
+                rankRuleList = ruleRankService.selectList(new EntityWrapper<IncentRuleRank>().in("rank_idt", "24,28,29,30"));
+            }
+            if (!rankRuleList.isEmpty()) {
+                String key = "1";
+                if (levelRank) {//等级荣誉
+                    key = "rankId";
+                }
+                Map<String, Object> medalMap = null;
+                for (IncentRuleRank incentRuleRank : rankRuleList) {
+                    boolean flag = true;
+                    for (Map<String, Object> m : mapList) {
+                        if (Long.parseLong(m.get(key) + "") == incentRuleRank.getId()) {//汇总已包含当前荣誉
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        medalMap = new HashMap<>();
+                        if (levelRank) {//等级荣誉
+                            medalMap.put("rankId", rankRule.getId());
+                            medalMap.put("rankName", rankRule.getRankName());
+                        } else {//非等级荣誉
+                            medalMap.put("1", rankRule.getId());
+                            medalMap.put("2", rankRule.getRankName());
+                            medalMap.put("3", rankRule.getRankType());
+                            medalMap.put("4", datos);
+                        }
+                        mapList.add(medalMap);
+                    }
+                }
+            }
+            if (incentRanked == null) {//用户没有该类型荣誉 新建记录
+                incentRanked = new IncentRanked();
+                incentRanked.setMbId(userId);
+                incentRanked.setRankIdtIds(mapper.writeValueAsString(mapList));
+                incentRanked.setCurrentRankId(rankRule.getId());
+                incentRanked.setCurrentRankName(rankRule.getRankName());
+                incentRanked.setRankType(rankRule.getRankType());
+                incentRanked.setCreatedAt(new Date());
+                incentRanked.setUpdatedAt(new Date());
+                Integer clusterIndex_i = Integer.parseInt(clusterIndex);
+                incentRanked.setId(PKUtil.getInstance(clusterIndex_i).longPK());
+                incentRanked.insert();
+                addRankLog(userId, rankRule);
+            } else {//用户已有该类型荣誉
+                incentRanked.setRankIdtIds(mapper.writeValueAsString(mapList));
+                incentRanked.setCurrentRankId(rankRule.getId());
+                incentRanked.setCurrentRankName(rankRule.getRankName());
+                incentRanked.setRankType(rankRule.getRankType());
+                incentRanked.setUpdatedAt(new Date());
+                incentRanked.updateById();
+                addRankLog(userId, rankRule);
+            }
+            //clear redis
+            //清除 会员信息（web端）
+            fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_WEBIINFO + userId, "", null);
+            //其他会员信息
+            fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_CARD + userId, "", null);
+            // 个人资料
+            fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + userId, "", null);
+            return ResultDto.success();
+        }catch (Exception e){
+            LOGGER.error("文章加精，勋章荣誉更新失败",e);
+        }
+
+        return ResultDto.error("-1","勋章荣誉更新失败");
+    }
+
+    public void addRankLog(String userId, IncentRuleRank rankRule) {
+        IncentRankedLog rankLog = new IncentRankedLog();
+        rankLog.setMbId(userId);
+        rankLog.setGainTime(new Date());
+        rankLog.setProduceType(1);
+        rankLog.setRankCode(rankRule.getRankCode());
+        rankLog.setRankGroupId(Long.parseLong(rankRule.getRankGroupId()));
+        rankLog.setRankIdt(rankRule.getRankIdt());
+        rankLog.setRankRuleId(rankRule.getId());
+        rankLog.setUpdatedAt(new Date());
+        rankLog.setCreatedAt(new Date());
+
+        Integer clusterIndex_i = Integer.parseInt(clusterIndex);
+        rankLog.setId(PKUtil.getInstance(clusterIndex_i).longPK());
+        rankLog.insert();
     }
 
 

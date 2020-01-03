@@ -45,6 +45,7 @@ import com.game.common.enums.AliGreenLabelEnum;
 import com.game.common.enums.CommonEnum;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
+import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
 import com.game.common.ts.mq.enums.RabbitMQEnum;
@@ -55,6 +56,7 @@ import com.game.common.util.emoji.FilterEmojiUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -128,7 +130,8 @@ public class PostServiceImpl implements IPostService {
     private RedisActionHelper redisActionHelper;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
-
+    @Autowired
+    private FungoCacheIndex fungoCacheIndex;
     @Override
     @Transactional
     public ResultDto<ObjectId> addPost(PostInput postInput, String user_id) throws Exception {
@@ -1941,6 +1944,282 @@ public class PostServiceImpl implements IPostService {
         return  resultDto;
 
     }
+
+    @Override
+    public ResultDto<String> top(String userId, String postId) {
+        // 校验 圈主身份 圈主当日操作次数 TODO
+
+        CmmPost post =postService.selectById(postId);
+        if(post==null||post.getState()!=1){
+            return ResultDto.error("-1","文章不存在或已下架");
+        }
+        post.setType(3);
+        post.setEditedAt(new Date());
+        boolean b = postService.updateById(post);
+        if (!b) {
+            return ResultDto.error("-1","操作失败");
+        }
+         //执行精品任务
+         //文章上置顶
+         doPostCommRecomTopWithExcellentTask(post.getMemberId(), postId);
+         //删除查询社区置顶文章缓存 //FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_DETAIL + communityId;
+         fungoCacheIndex.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_DETAIL+post.getCommunityId(), "", null);
+        ///clear redis cache
+        //安利墙首页
+        fungoCacheIndex.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX, "", null);
+        //帖子列表
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
+        // 清除所有的社区置顶文章
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_ALL_POST_TOPIC, "", null);
+        // mq发送消息
+        Map<String,String> map = new HashMap<>();
+        map.put( "id",post.getMemberId());
+        map.put( "type","2");
+        Map<String,String> dataMap = new HashMap<>();
+        dataMap.put("actionType","1");
+        dataMap.put("content",new  StringBuffer().append("恭喜～ 你的文章<a href='#' style='color: red;' >《").append(post.getTitle()).append( "》</a>太棒了！小Fun已把你的作品置顶给全站玩家欣赏，同时奖励您500Fun币，30经验值，期待您的更多作品哦～～" ).toString());
+        dataMap.put("targetType","1");
+        dataMap.put("targetId",post.getId());
+        dataMap.put("userId", "0b8aba833f934452992a972b60e9ad10");
+        dataMap.put("userType", "1");
+        dataMap.put("userAvatar", "http://output-mingbo.oss-cn-beijing.aliyuncs.com/official.png");
+        dataMap.put("userName", "FunGo大助手");
+        dataMap.put("msgTime", DateTools.fmtDate(new Date()));
+        map.put( "data", JSON.toJSONString( dataMap ) );
+        // mq 消息通知
+        sendMessage(map);
+        fungoCacheArticle.excIndexDecodeCache(false, FungoCoreApiConstant.PUB_CIRCLE);
+        fungoCacheArticle.excIndexDecodeCache(false, FungoCoreApiConstant.PUB_POST);
+        return ResultDto.success();
+    }
+
+    @Override
+    public ResultDto<String> essence(String userId, String postId) {
+        // 校验 圈主身份 圈主当日操作次数 TODO
+        
+        CmmPost post = postService.selectById(postId);
+        post.setType(2);
+        post.setEditedAt(new Date());
+        boolean b = postService.updateById(post);
+        if (!b) {
+            return ResultDto.error("-1", "操作失败");
+        }
+
+        String memberId = post.getMemberId();
+        String articleId = post.getId();
+        //执行精品任务
+        //文章上推荐被标记为精华
+        doPostCommRecomEssenceWithExcellentTask(memberId, articleId);
+        //任务 荣誉
+        //根据用户文章上精选情况授予 荣誉勋章
+        updateMemberRanked(memberId);
+        String title = post.getTitle();
+
+        Map<String,String> map = new HashMap<>();
+        map.put( "id",post.getMemberId());
+        map.put( "type","2");
+
+        Map<String, String> data = new HashMap<String, String>();
+//		Member member=this.memberService.selectById((String)map.get("memberId"));
+        data.put("actionType", "1");
+        data.put("targetId", post.getId());
+        data.put("targetType", "1");
+        data.put("userId", "0b8aba833f934452992a972b60e9ad10");
+        data.put("userAvatar", "http://output-mingbo.oss-cn-beijing.aliyuncs.com/official.png");
+        data.put("userName", "FunGo大助手");
+        data.put("msgTime", DateTools.fmtDate(new Date()));
+        data.put("userType", "1");
+        data.put("content", "恭喜～你的文章 <a href='#' style='color: red;' >《" + title + "》</a>太棒啦！小Fun已把你的作品推荐给全站玩家欣赏～，同时奖励您500Fun币，30经验值，期待您的更多作品哦～");
+        data.put("href", "");
+        map.put( "data", JSON.toJSONString( data ) );
+        sendMessage(map);
+
+        //clear redis cache
+        fungoCacheIndex.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX, "", null);
+        //帖子列表
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
+        fungoCacheArticle.excIndexDecodeCache(false, FungoCoreApiConstant.PUB_CIRCLE);
+        fungoCacheArticle.excIndexDecodeCache(false, FungoCoreApiConstant.PUB_POST);
+
+        return ResultDto.success();
+    }
+
+    private void updateMemberRanked(String mb_id) {
+        ResultDto resultDto = null;
+        //判断是否满足获取徽章的条件
+        EntityWrapper<CmmPost> cmmPostEntityWrapper = new EntityWrapper<>();
+        cmmPostEntityWrapper.eq("member_id", mb_id);
+        cmmPostEntityWrapper.eq("type", 2);
+        cmmPostEntityWrapper.eq("state", 1);
+        int articleCount = postService.selectCount(cmmPostEntityWrapper);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            //文章上精选2次
+            if (10 > articleCount && articleCount >= 2) {
+//                scoreLogService.updateRanked(mb_id, mapper, 25);
+                resultDto = systemFacedeService.updateRankedMedal(mb_id,25);
+                //文章上精选10次
+            } else if (50 > articleCount && articleCount >= 10) {
+//                scoreLogService.updateRanked(mb_id, mapper, 26);
+                resultDto = systemFacedeService.updateRankedMedal(mb_id,26);
+                //文章上精选50次
+            } else if (articleCount >= 50) {
+//                scoreLogService.updateRanked(mb_id, mapper, 27);
+                resultDto = systemFacedeService.updateRankedMedal(mb_id,27);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        if((resultDto ==null||!resultDto.isSuccess())&&articleCount >= 2){
+            logger.error("-1","加精勋章执行失败");
+        }
+    }
+
+    //V2.4.6版本任务
+    //执行精品任务
+    //文章上置顶
+    private void doPostCommRecomTopWithExcellentTask(String memberId, String articleId) {
+
+        //任务：
+        // 1.调用微服务接口
+        // 2.执行失败，发送MQ消息
+
+        Map<String, Object> resMapCoin = null;
+        Map<String, Object> resMapExp = null;
+
+        String uuidCoin = UUIDUtils.getUUID();
+        String uuidExp = UUIDUtils.getUUID();
+
+        //coin task
+        TaskDto taskDtoCoin = new TaskDto();
+        taskDtoCoin.setRequestId(uuidCoin);
+        taskDtoCoin.setMbId(memberId);
+        taskDtoCoin.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EXCELLENT.code());
+        taskDtoCoin.setTaskType(MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT);
+        taskDtoCoin.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EXCELLENT_ARTICLE_TOP_COIN.code());
+        taskDtoCoin.setTargetId(articleId);
+
+        //exp task
+        TaskDto taskDtoExp = new TaskDto();
+        taskDtoExp.setRequestId(uuidExp);
+        taskDtoExp.setMbId(memberId);
+        taskDtoExp.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EXCELLENT.code());
+        taskDtoExp.setTaskType(MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT);
+        taskDtoExp.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EXCELLENT_ARTICLE_TOP_EXP.code());
+        taskDtoExp.setTargetId(articleId);
+        try {
+            //coin task
+            ResultDto<Map<String, Object>> coinTaskResultDto = systemFacedeService.exTask(taskDtoCoin);
+            if (null != coinTaskResultDto) {
+                resMapCoin = coinTaskResultDto.getData();
+            }
+            //exp task
+            ResultDto<Map<String, Object>> expTaskResultDto = systemFacedeService.exTask(taskDtoExp);
+            if (null != expTaskResultDto) {
+                resMapExp = expTaskResultDto.getData();
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            //出现异常mq发送
+            //coin task
+            doExcTaskSendMQ(taskDtoCoin);
+            //exp task
+            doExcTaskSendMQ(taskDtoExp);
+        }
+    }
+
+
+    //V2.4.6版本任务
+    //执行精品任务
+    //文章上推荐
+    private void doPostCommRecomEssenceWithExcellentTask(String memberId, String articleId) {
+        //任务：
+        // 1.调用微服务接口
+        // 2.执行失败，发送MQ消息
+
+        Map<String, Object> resMapCoin = null;
+        Map<String, Object> resMapExp = null;
+
+        String uuidCoin = UUIDUtils.getUUID();
+        String uuidExp = UUIDUtils.getUUID();
+
+        //coin task
+        TaskDto taskDtoCoin = new TaskDto();
+        taskDtoCoin.setRequestId(uuidCoin);
+        taskDtoCoin.setMbId(memberId);
+        taskDtoCoin.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EXCELLENT.code());
+        taskDtoCoin.setTaskType(MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT);
+        taskDtoCoin.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EXCELLENT_ARTICLE_RECOM_COIN.code());
+        taskDtoCoin.setTargetId(articleId);
+
+        //exp task
+        TaskDto taskDtoExp = new TaskDto();
+        taskDtoExp.setRequestId(uuidExp);
+        taskDtoExp.setMbId(memberId);
+        taskDtoExp.setTaskGroupFlag(FunGoIncentTaskV246Enum.TASK_GROUP_EXCELLENT.code());
+        taskDtoExp.setTaskType(MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT);
+        taskDtoExp.setTypeCodeIdt(FunGoIncentTaskV246Enum.TASK_GROUP_EXCELLENT_ARTICLE_RECOM_EXP.code());
+        taskDtoExp.setTargetId(articleId);
+        try {
+            //coin task
+            ResultDto<Map<String, Object>> coinTaskResultDto = systemFacedeService.exTask(taskDtoCoin);
+            if (null != coinTaskResultDto) {
+                resMapCoin = coinTaskResultDto.getData();
+            }
+            //exp task
+            ResultDto<Map<String, Object>> expTaskResultDto = systemFacedeService.exTask(taskDtoExp);
+            if (null != expTaskResultDto) {
+                resMapExp = expTaskResultDto.getData();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            //出现异常mq发送
+            //coin task
+            doExcTaskSendMQ(taskDtoCoin);
+            //exp task
+            doExcTaskSendMQ(taskDtoExp);
+        }
+    }
+
+    /**
+     * 功能描述: 根据业务逻辑发送mq数据
+     * @return: boolean
+     * @auther: dl.zhang
+     * @date: 2019/7/31 10:24
+     */
+    public boolean sendMessage(Map<String,String> map)  {
+        try {
+            MQResultDto mqResultDto = new MQResultDto();
+            mqResultDto.setType( MQResultDto.AdminMQDataType.ADMIN_DATA_TYPE_BASNOTICEUPDATEBYID.getCode());
+            mqResultDto.setBody(map);
+
+            TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
+            transactionMessageDto.setMessageBody(JSON.toJSONString(mqResultDto));
+            /**
+             * 功能描述:
+             * 消息业务领域类型:
+             * 1 系统
+             * 2 用户
+             * 3 社区-文章
+             * 4 社区-心情
+             * 5 游戏
+             * 6 首页
+             * 7 管控台
+             */
+            transactionMessageDto.setMessageDataType(7); //
+            transactionMessageDto.setConsumerQueue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM.getName());
+            transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM.getName());
+            ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
+            return messageResult.isSuccess();
+        } catch (Exception e) {
+            //手动开启事务回滚
+            // TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            logger.error("--ts--mq---发送某条消息--发送失败，消息id:"+JSONObject.toJSONString(map), e);
+        }
+        return false;
+    }
+
 
     /**
      * 功能描述:  抽象出关键字搜索的Wrapper

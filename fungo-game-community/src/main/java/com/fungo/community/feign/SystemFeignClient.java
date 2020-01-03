@@ -193,4 +193,7 @@ public interface SystemFeignClient {
     ResultDto<Map<String,Object>>  getMemberFollow(@RequestBody MemberFollowerVo  memberFollowVo );
 
 
+    @PostMapping("/updateRankedMedal")
+    ResultDto<String> updateRankedMedal(@RequestParam("userId") String userId, @RequestParam("rankidt") Integer rankidt);
+
 }
