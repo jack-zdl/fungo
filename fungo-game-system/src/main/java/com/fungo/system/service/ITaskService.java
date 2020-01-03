@@ -34,4 +34,6 @@ public interface ITaskService {
     ResultDto<String> taskCheckUserFollowOfficialUser(String userId);
 
     ResultDto<String> taskCheckUserFollowOfficialCircle(String userId);
+
+    ResultDto<String> taskCheckUserBindQQWeiboWechat(String userId);
 }

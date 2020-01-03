@@ -272,7 +272,7 @@
 	</select>
 
 	<select id="getIdByFollowerId" resultType="java.lang.String">
-		select  target_id  from  t_bas_action WHERE member_id = #{memberId}  and type = #{actionType}  and target_type = #{targetType}
+		select  target_id  from  t_bas_action WHERE state = 0 and  member_id = #{memberId}  and type = #{actionType}  and target_type = #{targetType}
 		<if test="followIds != null  ">
 			and  target_id
 			in

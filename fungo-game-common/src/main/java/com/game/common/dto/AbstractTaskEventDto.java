@@ -46,6 +46,8 @@ public class AbstractTaskEventDto extends ApplicationEvent {
     private String ObjectId;
     private List<String> ObjectIdList;
     /************** end eventType = 4*********************/
+    private List<Integer> eventTypeList;
+    /************** end eventType = 5*********************/
 
     public AbstractTaskEventDto(Object source) {
         super( source );

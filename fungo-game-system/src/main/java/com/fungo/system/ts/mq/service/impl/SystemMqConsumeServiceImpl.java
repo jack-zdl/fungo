@@ -106,10 +106,9 @@ public class SystemMqConsumeServiceImpl implements SystemMqConsumeService {
         }
         if( !CommonUtil.isNull( data )){
             try {
-                if("1".equals(type)){
-
+                if("1".equals(type)){ // 给所有用户
                     iMemberNoticeServiceImpl.insertSystemVersionNotice(mobileType,data );
-                }else if("2".equals(type)){
+                }else if("2".equals(type)){ // // 给某些用户
                     List<String> listString = Arrays.asList(id.split(","));
                     listString.stream().forEach( s ->{
                         try {
