@@ -17,6 +17,7 @@ import com.game.common.dto.AbstractEventDto;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.MemberCmmCircleDto;
 import com.game.common.dto.user.MemberOutBean;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.repo.cache.facade.FungoCacheMember;
@@ -86,6 +87,8 @@ public class UserServiceImpl implements IUserService {
     private IncentRuleRankGroupDao incentRuleRankGroupDao;
     @Autowired
     private NacosFungoCircleConfig nacosFungoCircleConfig;
+    @Autowired
+    private MemberCircleMapper memberCircleMapper;
 
     @Override
     public ResultDto<LoginMemberBean> bindingPhoneNo(String code, String mobile, String token,String channel,String deviceId) {
@@ -788,6 +791,9 @@ public class UserServiceImpl implements IUserService {
         List<IncentRanked> list = rankedService.selectList(new EntityWrapper<IncentRanked>().eq("mb_id", member.getId()));
         for (IncentRanked ranked : list) {
             if (ranked.getRankType() == 1) {
+                String rankIdtIds = ranked.getRankIdtIds();
+                List<HashMap<String,Object>> medalList = mapper.readValue(rankIdtIds, ArrayList.class);
+                bean.setHonorNumber( medalList.size());
                 IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
                 bean.setLevel(ranked.getCurrentRankId().intValue());
                 String rankImgs = rank.getRankImgs();
@@ -819,7 +825,7 @@ public class UserServiceImpl implements IUserService {
                 bean.setGroupLevel(groupLevel);
                 bean.setStatusImgs(statusLists);
             } else if (ranked.getRankType() == 3) {
-                //找出获得的荣誉合集
+                //找出获得的荣誉合集 (勛章之類的)
                 String rankIdtIds = ranked.getRankIdtIds();
                 ArrayList<HashMap<String, Object>> rankList = mapper.readValue(rankIdtIds, ArrayList.class);
                 Collections.reverse(rankList);
@@ -847,6 +853,10 @@ public class UserServiceImpl implements IUserService {
         }
         if (CommonUtil.isNull(bean.getDignityImg())) {
             bean.setDignityImg(Setting.LEVEL_ONE_IMAGE);
+        }
+        MemberCmmCircleDto memberCmmCircleDto = memberCircleMapper.selectMemberCircleByUserId(member.getId());
+        if(memberCmmCircleDto != null && !CommonUtil.isNull(  memberCmmCircleDto.getId() ) ){
+            bean.setMemberCmmCircleDto( memberCmmCircleDto);
         }
 //		bean.getHonorImgList().add(Setting.FUM_IMAGE)
         //bean.setHonorImgList(honorImgList);

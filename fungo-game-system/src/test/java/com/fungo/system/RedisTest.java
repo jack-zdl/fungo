@@ -3,10 +3,13 @@ package com.fungo.system;
 import com.alibaba.fastjson.JSON;
 import com.fungo.system.dto.MemberSNSBindInput;
 import com.fungo.system.dto.MemberSNSBindOutput;
+import com.fungo.system.entity.MemberCircle;
 import com.fungo.system.service.IMemberSNSService;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmPostDto;
+import com.game.common.util.UUIDUtils;
 import com.game.common.util.date.DateTools;
+import org.hibernate.validator.constraints.br.TituloEleitoral;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -73,5 +77,20 @@ public class RedisTest {
             e.printStackTrace();
         }
 
+    }
+
+
+    @Test
+    public void  insertMemberCircle(){
+        MemberCircle  memberCircle = new MemberCircle();
+        memberCircle.setId( UUIDUtils.getUUID() );
+        memberCircle.setType( 1 );
+        memberCircle.setMemberId( "287c0f55aaf7436b89c0a73964efff3c" );
+        memberCircle.setCircleId( "b3db7baef2714bb8bab6005df8924586" );
+        memberCircle.setIsactive( "1" );
+        memberCircle.setCreatedAt( new Date( ) );
+        memberCircle.setCreatedBy( "287c0f55aaf7436b89c0a73964efff3c" );
+        memberCircle.setRversion( 1 );
+        memberCircle.insert();
     }
 }

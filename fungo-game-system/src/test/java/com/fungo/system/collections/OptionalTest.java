@@ -24,4 +24,5 @@ public class OptionalTest {
         System.out.println("--------------");
             System.out.println(new BCryptPasswordEncoder().encode("123456"));
     }
+
 }

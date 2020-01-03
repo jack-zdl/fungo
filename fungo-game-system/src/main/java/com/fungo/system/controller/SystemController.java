@@ -738,4 +738,13 @@ public class SystemController {
            return  systemService.updateRankedMedal(userId,rankidt);
     }
 
+
+    /**
+     * 更新荣誉 勋章 加精次数
+     */
+    @PostMapping("/getCircleMainByMemberId")
+    public ResultDto<String> getCircleMainByMemberId(@RequestParam("userId") String userId){
+        return null;
+        //        return  systemService.updateRankedMedal(userId,rankidt);
+    }
 }

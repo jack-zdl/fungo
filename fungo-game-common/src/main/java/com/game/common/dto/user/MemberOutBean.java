@@ -1,5 +1,7 @@
 package com.game.common.dto.user;
 
+import com.game.common.dto.community.CmmCircleDto;
+import com.game.common.dto.community.MemberCmmCircleDto;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ public class MemberOutBean {
 	private long funCoin;
 	@ApiModelProperty(value="用户等级身份(2.4.3)",example="")
     private String dignityImg;
+	private int honorNumber ;
     @ApiModelProperty(value="用户勋章(2.4.3)",example="")
     private List<String> honorImgList = new ArrayList<>();
     @ApiModelProperty(value="用户官方身份(2.4.3)",example="")
@@ -47,6 +50,9 @@ public class MemberOutBean {
 	private List<List<HashMap<String,Object>>> statusImgs = new ArrayList<>();
 
 	private int groupLevel;
+
+	private MemberCmmCircleDto memberCmmCircleDto;
+
 	public String getMemberNo() {
 		return memberNo;
 	}
@@ -233,5 +239,21 @@ public class MemberOutBean {
 
 	public void setGroupLevel(int groupLevel) {
 		this.groupLevel = groupLevel;
+	}
+
+	public MemberCmmCircleDto getMemberCmmCircleDto() {
+		return memberCmmCircleDto;
+	}
+
+	public void setMemberCmmCircleDto(MemberCmmCircleDto memberCmmCircleDto) {
+		this.memberCmmCircleDto = memberCmmCircleDto;
+	}
+
+	public int getHonorNumber() {
+		return honorNumber;
+	}
+
+	public void setHonorNumber(int honorNumber) {
+		this.honorNumber = honorNumber;
 	}
 }
