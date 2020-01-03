@@ -168,6 +168,9 @@ public class ScoreRule extends Model<ScoreRule> {
     @TableField(exist = false)
     private String levelLimit;
 
+    //使用平台类型状态位 1(001) 安卓  2 ios(010) 3(011)安卓和ios平台
+    private int userType;
+
 
     public String getId() {
         return id;
@@ -405,5 +408,13 @@ public class ScoreRule extends Model<ScoreRule> {
 
     public void setAuthLevel(Integer authLevel) {
         this.authLevel = authLevel;
+    }
+
+    public int getUserType() {
+        return userType;
+    }
+
+    public void setUserType(int userType) {
+        this.userType = userType;
     }
 }
