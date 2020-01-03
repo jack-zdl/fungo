@@ -169,6 +169,7 @@ public class ScoreRule extends Model<ScoreRule> {
     private String levelLimit;
 
     //使用平台类型状态位 1(001) 安卓  2 ios(010) 3(011)安卓和ios平台
+    @TableField("user_type")
     private int userType;
 
 
