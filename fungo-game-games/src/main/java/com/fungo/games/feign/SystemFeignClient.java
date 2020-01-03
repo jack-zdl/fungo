@@ -43,6 +43,11 @@ public interface SystemFeignClient {
     @RequestMapping(value="/api/developer/test", method= RequestMethod.POST)
     ResultDto<String> test();
 
+    /**
+     * 功能描述: 根据用户id集合查询用户详情 state为null就不根据状态查询
+     */
+    @GetMapping(value = "/listMembersByids")
+    ResultDto<List<MemberDto>> listMembersByids(@RequestBody List<String> ids,@RequestParam(value = "state",required = false) Integer state);
 
     /*****************************************分割线***************************************************************/
     /**

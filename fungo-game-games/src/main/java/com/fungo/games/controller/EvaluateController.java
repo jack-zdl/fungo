@@ -14,6 +14,7 @@ import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.util.StringUtil;
 import com.game.common.util.ValidateUtils;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.LogicCheck;
 import com.game.common.vo.DelObjectListVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -52,6 +53,7 @@ public class EvaluateController {
 			@ApiImplicitParam(name = "phone_model",value = "平台类型",paramType = "form",dataType = "string"),
 			@ApiImplicitParam(name = "target_id",value = "游戏id",paramType = "form",dataType = "string")
 	})
+	@LogicCheck(loginc={"BANNED_TEXT"})
 	public ResultDto<EvaluationBean> addGameEvaluation(MemberUserProfile memberUserPrefile, @RequestBody EvaluationInput commentInput) throws Exception {
 		ResultDto<EvaluationBean> resultDto = null;
 		try {

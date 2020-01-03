@@ -48,6 +48,12 @@ public class SystemFacedeHystrixService implements FallbackFactory<SystemFeignCl
             }
 
             @Override
+            public ResultDto<List<MemberDto>> listMembersByids(List<String> ids, Integer state) {
+                logger.error("--------------------SystemFeignClient--启动熔断:{}", "listMembersByids");
+                return null;
+            }
+
+            @Override
             public ResultDto<Map<String, Object>> exTask(TaskDto taskDto) {
                 logger.error("--------------------SystemFeignClient--启动熔断:{}", "exTask");
                 return new ResultDto<Map<String, Object>>();

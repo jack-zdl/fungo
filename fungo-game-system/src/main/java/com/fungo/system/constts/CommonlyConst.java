@@ -21,11 +21,11 @@ public class CommonlyConst {
         communityList.add(8);
         communityList.add(11);
 
-//        游戏
+        //        游戏
         gameList.add(3);
         gameList.add(6);
 
-//        系统
+        //        系统
         systemList.add(0);
         systemList.add(9);
     }

@@ -1,11 +1,9 @@
-package com.fungo.community.aop;
+package com.fungo.games.aop;
 
-import com.fungo.community.dao.mapper.CmmPostDao;
-import com.fungo.community.feign.SystemFeignClient;
+import com.fungo.games.feign.SystemFeignClient;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.user.MemberDto;
-import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.CommonEnum;
 import com.game.common.util.annotation.LogicCheck;
 import com.game.common.util.exception.BusinessException;
@@ -22,11 +20,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,13 +36,10 @@ import java.util.List;
 public class LogicCheckAspect {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( LogicCheckAspect.class);
-
-    @Autowired
-    private CmmPostDao cmmPostDao;
     @Autowired
     private SystemFeignClient systemFeignClient;
 
-    @Pointcut("execution(* com.fungo.community.controller.*.*.*(..)) && @annotation(com.game.common.util.annotation.LogicCheck)")
+    @Pointcut("execution(* com.fungo.games.controller.*.*.*(..)) && @annotation(com.game.common.util.annotation.LogicCheck)")
     public void before(){
     }
 
@@ -62,21 +53,7 @@ public class LogicCheckAspect {
             HttpServletRequest request = attributes.getRequest();
             String[] loginc = limit.loginc();
             Arrays.stream( loginc ).forEach( s -> {
-                if(LogicCheck.LogicEnum.DELETE_POST.getKey().equals(s)){
-                    String uri = request.getRequestURI();
-                    String[] uris = uri.split( "/" );
-                    String postId = uris[uris.length-1];
-                    int postNum = cmmPostDao.getPostNumById( postId);
-                    if(postNum == 0){
-                        HttpServletResponse response = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getResponse();
-                        try {
-                            response.sendError( -1, AbstractResultEnum.CODE_CLOUD_NOT_FOUND.getFailevalue() );
-                            response.getOutputStream().close();
-                        } catch (IOException e) {
-                            LOGGER.error( "返回response异常",e );
-                        }
-                    }
-                }else if(LogicCheck.LogicEnum.BANNED_TEXT.getKey().equals( s )){
+               if(LogicCheck.LogicEnum.BANNED_TEXT.getKey().equals( s )){
                     List<String> memberIds = new ArrayList<>(  );
                     MemberUserProfile member = (MemberUserProfile)request.getAttribute("member");
                     if(member !=null){

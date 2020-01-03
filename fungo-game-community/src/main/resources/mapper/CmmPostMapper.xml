@@ -34,6 +34,7 @@
         <result column="last_reply_at" property="lastReplyAt"/>
         <result column="video_cover_image" property="videoCoverImage"/>
         <result column="boom_watch_num" property="boomWatchNum"/>
+        <result column="auth" property="auth" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -41,7 +42,7 @@
         id, collect_num AS collectNum, tags, html_origin AS htmlOrigin, content, images, cover_image AS coverImage, comment_num AS commentNum, state, like_num AS likeNum,
         edited_at as editedAt, community_id AS communityId, title, member_id AS memberId, origin, watch_num AS watchNum, report_num AS reportNum, created_at AS createdAt,
         updated_at AS updatedAt ,recommend ,type ,sort ,video , game_list as gameList , topic ,video_urls as videoUrls, last_reply_at as lastReplyAt,video_cover_image as videoCoverImage,
-        boom_watch_num as boomWatchNum
+        boom_watch_num as boomWatchNum , auth
     </sql>
 
     <sql id="Base_List">
@@ -51,7 +52,7 @@
         ${alias}.report_num AS reportNum, ${alias}.created_at AS createdAt,
         ${alias}.updated_at AS updatedAt ,${alias}.recommend ,${alias}.type ,${alias}.sort ,${alias}.video , ${alias}.game_list as gameList , ${alias}.topic ,${alias}.video_urls as videoUrls,
         ${alias}.last_reply_at as lastReplyAt, ${alias}.video_cover_image as videoCoverImage,
-        ${alias}.boom_watch_num as boomWatchNum
+        ${alias}.boom_watch_num as boomWatchNum , ${alias}.auth
     </sql>
 
     <!-- 获取关注用户和社区的帖子分页数据 -->

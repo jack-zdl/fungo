@@ -157,6 +157,8 @@ public class MemberDto extends InputPageDto implements Serializable  {
 	private boolean isFollowed;
 
 	private String test;
+	//权限  1 权限正常 2:禁言
+	private int auth;
 
 	public String getTest() {
 		return test;
@@ -436,6 +438,14 @@ public class MemberDto extends InputPageDto implements Serializable  {
 
 	public void setFollowed(boolean followed) {
 		isFollowed = followed;
+	}
+
+	public int getAuth() {
+		return auth;
+	}
+
+	public void setAuth(int auth) {
+		this.auth = auth;
 	}
 
 	@Override

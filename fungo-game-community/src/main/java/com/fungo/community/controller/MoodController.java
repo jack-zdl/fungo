@@ -9,6 +9,7 @@ import com.game.common.dto.community.MoodBean;
 import com.game.common.dto.community.MoodInput;
 import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.LogicCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -44,6 +45,7 @@ public class MoodController {
 	        @ApiImplicitParam(name = "content",value = "内容",paramType = "form",dataType = "string"),
 			@ApiImplicitParam(name = "videoId", value = "视频id,  可选", paramType = "form", dataType = "string")
 	})
+	@LogicCheck(loginc = {"BANNED_TEXT"})
 	public ResultDto<ObjectId> addMood(MemberUserProfile memberUserPrefile, @RequestBody MoodInput input) throws Exception {
 		if(StringUtil.isNull(input.getContent())){
 			return ResultDto.error("-1","内容不可为空");

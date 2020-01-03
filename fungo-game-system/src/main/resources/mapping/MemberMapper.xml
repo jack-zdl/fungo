@@ -39,6 +39,7 @@
         <result column="type" property="type" />
         <result column="isFollowed" property="isFollowed" />
         <result column="register_lingka" property="registerLingka" />
+        <result column="auth" property="auth" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -48,7 +49,7 @@
                ${alias}.complete,   ${alias}.gender,   ${alias}.auth_data AS authData,   ${alias}.import_from_parse AS importFromParse,   ${alias}.mobile_phone_verified AS mobilePhoneVerified,
                  ${alias}.followee_num AS followeeNum,   ${alias}.publish_num AS publishNum,   ${alias}.follower_num AS followerNum,   ${alias}.report_num AS reportNum,   ${alias}.created_at AS createdAt,
                   ${alias}.updated_at AS updatedAt,   ${alias}.sign,   ${alias}.member_no AS memberNo,   ${alias}.qq_open_id AS qqOpenId,   ${alias}.weixin_open_id AS weixinOpenId,
-                    ${alias}.weibo_open_id AS weiboOpenId
+                    ${alias}.weibo_open_id AS weiboOpenId , ${alias}.auth as auth
     </sql>
 
     <sql id="Base_List">
@@ -57,7 +58,7 @@
               complete,  gender,  auth_data AS authData,  import_from_parse AS importFromParse,  mobile_phone_verified AS mobilePhoneVerified,
                 followee_num AS followeeNum,  publish_num AS publishNum,  follower_num AS followerNum,  report_num AS reportNum,  created_at AS createdAt,
                  updated_at AS updatedAt,  sign,  member_no AS memberNo,  qq_open_id AS qqOpenId,  weixin_open_id AS weixinOpenId,
-                   weibo_open_id AS weiboOpenId
+                   weibo_open_id AS weiboOpenId ,auth
     </sql>
 
 

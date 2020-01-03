@@ -1,4 +1,4 @@
-package com.fungo.community.config;
+package com.game.common.util.annotation;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -14,7 +14,10 @@ public @interface LogicCheck {
     String[] loginc() default {};
 
     public static enum LogicEnum{
-        DELETE_POST("DELETE_POST");
+
+        DELETE_POST("DELETE_POST"),
+        BANNED_TEXT("BANNED_TEXT");
+
         String key;
 
         LogicEnum(String k){

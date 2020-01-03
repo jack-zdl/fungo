@@ -12,6 +12,7 @@ import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.ValidateUtils;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.LogicCheck;
 import com.game.common.vo.DelObjectListVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -48,6 +49,7 @@ public class EvaluateController {
             @ApiImplicitParam(name = "target_type", value = "资源类型【1：帖子，2：心情】", paramType = "path", dataType = "string")
 
     })
+    @LogicCheck(loginc = {"BANNED_TEXT"})
     public ResultDto<CommentOut> addComment(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody CommentInput commentInput) throws Exception {
         String appVersion = "2.5.1";
         if(StringUtils.isNoneBlank(request.getHeader("appversion"))){

@@ -210,6 +210,11 @@ public class Member extends Model<Member> {
 	 */
 	@TableField("channel")
 	private String channel;
+	/**
+	 * 1 权限正常 2:禁言
+	 */
+	@TableField("auth")
+	private int auth;
 
 	public String getId() {
 		return id;
@@ -527,6 +532,14 @@ public class Member extends Model<Member> {
 
 	public void setChannel(String channel) {
 		this.channel = channel;
+	}
+
+	public int getAuth() {
+		return auth;
+	}
+
+	public void setAuth(int auth) {
+		this.auth = auth;
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package com.fungo.system.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.dao.*;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
@@ -31,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -89,7 +89,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ResultDto<LoginMemberBean> bindingPhoneNo(String code, String mobile, String token,String channel,String deviceId) {
-        ResultDto<LoginMemberBean> re1 = new ResultDto<LoginMemberBean>();
+        ResultDto<LoginMemberBean> re1 = new ResultDto<>();
         Member member = memberService.selectOne(new EntityWrapper<Member>().eq("sesion_token", token));
         if (member == null) {
             return ResultDto.error("13", "用户不存在");

@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fungo.community.config.LogicCheck;
 import com.fungo.community.dao.mapper.CmmPostCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
@@ -26,6 +25,7 @@ import com.game.common.dto.search.SearchInputPageDto;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.*;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.LogicCheck;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import com.game.common.util.validate.ValidateUtil;
@@ -48,7 +48,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.fungo.community.config.LogicCheck.LogicEnum.DELETE_POST;
 
 /**
  *  文章模块
@@ -132,6 +131,7 @@ public class PostController {
             @ApiImplicitParam(name = "origin", value = "文本", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "videoId", value = "视频id,  可选", paramType = "form", dataType = "string")
     })
+    @LogicCheck(loginc = {"BANNED_TEXT"})
     public ResultDto<ObjectId> addPost(MemberUserProfile memberUserPrefile, @RequestBody PostInput postInput) throws Exception {
         if (StringUtil.isNull(postInput.getHtml()) || StringUtil.isNull(postInput.getTitle())) {
             return ResultDto.error("-1", "文章内容或者标题不可为空");
@@ -183,6 +183,7 @@ public class PostController {
             @ApiImplicitParam(name = "images", value = "图片", paramType = "form", dataType = "string[]"),
 
     })
+    @LogicCheck(loginc = {"BANNED_TEXT"})
     public ResultDto<String> editPost(MemberUserProfile memberUserPrefile, HttpServletRequest request,
                                       @RequestBody PostInput postInput) throws Exception {
         String userId = memberUserPrefile.getLoginId();
