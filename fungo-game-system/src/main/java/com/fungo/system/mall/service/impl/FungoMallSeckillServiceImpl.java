@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.dao.MallSeckillOrderDao;
+import com.fungo.system.dto.UserBean;
 import com.fungo.system.entity.IncentAccountCoin;
 import com.fungo.system.entity.MallSeckillOrder;
 import com.fungo.system.entity.Member;
@@ -23,7 +24,9 @@ import com.game.common.buriedpoint.enums.BtnEnum;
 import com.game.common.buriedpoint.model.BuriedPointSignBtnModel;
 import com.game.common.consts.FunGoGameConsts;
 import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.dto.AbstractEventDto;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.mall.*;
 import com.game.common.repo.cache.facade.FungoCacheSystem;
 import com.game.common.repo.cache.facade.FungoCacheTask;
@@ -36,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +47,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
@@ -59,7 +64,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
     @Autowired
     private MallVirtualCardDaoService mallVirtualCardDaoService;
     @Autowired
-    private IncentAccountCoinDaoService incentAccountCoinService;
+    private IncentAccountCoinDaoService incentAccountCoinServiceImap;
     @Autowired
     private MallOrderDaoService mallOrderDaoService;
     @Autowired
@@ -71,16 +76,12 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
     @Autowired
     private FungoCacheTask fungoCacheTask;
     @Autowired
-    private FungoCacheSystem fungoCacheSystem;
-    @Autowired
-    private MallSeckillOrderDao mallSeckillOrderDao;
-    @Autowired
     private IMallSeckillOrderService iMallSeckillOrderServiceImpl;
-
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Value("${fungo.mall.seckill.aesSecretKey}")
     private String aESSecretKey;
-
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
 
@@ -992,6 +993,22 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         }
     }
 
+    @Override
+    public ResultDto<String> browseMall(String memberId) {
+        ResultDto<String> resultDto = null;
+        try {
+            AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+            abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.BROWSE_SHOP.getKey());
+            abstractEventDto.setUserId(memberId);
+            applicationEventPublisher.publishEvent(abstractEventDto);
+            resultDto = ResultDto.ResultDtoFactory.buildSuccess( "浏览商品礼包成功" );
+        }catch (Exception e){
+            logger.error( "浏览商品礼包event异常,memberId = {}",memberId,e);
+            resultDto = ResultDto.ResultDtoFactory.buildError( "浏览商品礼包event异常" );
+        }
+        return resultDto;
+    }
+
 
     @Override
     public List<MallOrderOutBean> getOrdersWithSeckillGame(String mb_id, String orderId, String orderSn, String orderType) {
@@ -1333,7 +1350,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         criteriaMap.put("mb_id", mb_id);
         mbAccountCoinEntityWrapper.allEq(criteriaMap);
 
-        IncentAccountCoin incentAccountCoinDB = incentAccountCoinService.selectOne(mbAccountCoinEntityWrapper);
+        IncentAccountCoin incentAccountCoinDB = incentAccountCoinServiceImap.selectOne(mbAccountCoinEntityWrapper);
 
         return incentAccountCoinDB;
     }
@@ -1401,7 +1418,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         //再次验证 账户可用币量 大于等于 商品价格fungo币
         mbAccountCoinEntityWrapper.allEq(criteriaMap).ge("coin_usable", goodsPriceVcyBD);
 
-        boolean update = incentAccountCoinService.update(incentAccountCoinNew, mbAccountCoinEntityWrapper);
+        boolean update = incentAccountCoinServiceImap.update(incentAccountCoinNew, mbAccountCoinEntityWrapper);
 
         logger.info("冻结用户可用币量,mb_id:{}--执行结果：{}", mb_id, update);
         if (update) {
@@ -1879,7 +1896,12 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
         return  isFullMbFungo;
     }
 
-
-    //---------
-
+    //需求：将满足条件的字符串，放入集合中
+    public List<String> filterStr(String memberId, Predicate<UserBean> pre){
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.EDIT_USER.getKey());
+        abstractEventDto.setUserId(memberId);
+        applicationEventPublisher.publishEvent(abstractEventDto);
+        return null;
+    }
 }

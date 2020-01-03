@@ -342,6 +342,26 @@ public class FungoMallSeckillController {
     }
 
 
+
+    /**
+     *  浏览一次礼包乐园
+     * @return
+     */
+    @GetMapping(value = "/api/mall/task/browse")
+    public ResultDto<String> browseMall(MemberUserProfile memberUserPrefile) throws Exception {
+        ResultDto<String> resultDto = null;
+        try {
+            String loginId = memberUserPrefile.getLoginId();
+            resultDto = iFungoMallSeckillService.browseMall( loginId );
+        }catch (Exception e){
+            LOGGER.error( "浏览商品礼包异常",e);
+            resultDto = ResultDto.ResultDtoFactory.buildError( "浏览商品礼包异常" );
+        }
+        return resultDto;
+    }
+
+
+
     /**
      * 添加商品数据
      * @return

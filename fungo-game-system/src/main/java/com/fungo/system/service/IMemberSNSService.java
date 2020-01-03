@@ -21,7 +21,7 @@ public interface IMemberSNSService {
      * @param bindInput 入参
      * @return
      */
-    public ResultDto<MemberSNSBindOutput> bindThirdSNSWithLogged(String mb_id, MemberSNSBindInput bindInput) throws Exception;
+    ResultDto<MemberSNSBindOutput> bindThirdSNSWithLogged(String mb_id, MemberSNSBindInput bindInput) throws Exception;
 
 
 }

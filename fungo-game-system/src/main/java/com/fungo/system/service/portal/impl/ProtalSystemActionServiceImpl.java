@@ -16,6 +16,7 @@ import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.consts.Setting;
 import com.game.common.dto.AbstractEventDto;
+import com.game.common.dto.AbstractTaskEventDto;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.index.BannerBean;
@@ -132,8 +133,32 @@ public class ProtalSystemActionServiceImpl implements IActionService {
 
                 //V2.4.6版本之前任务
                 //gameProxy.addTaskCore(Setting.ACTION_TYPE_FOLLOW, memberId, inputDto.getTarget_id(), inputDto.getTarget_type());
-
+                AbstractTaskEventDto abstractEventDto = new AbstractTaskEventDto(this);
+                if( 0 == inputDto.getTarget_type()){
+                    abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.FOLLOW_ONE_OFFICIAL_USER.getKey());
+                }
+//            else if(11 == inputDto.getTarget_type()){
+//                abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.FOLLOW_ONE_OFFICIAL_CIRCLE.getKey());
+//            }
+                abstractEventDto.setFollowType(inputDto.getTarget_type());
+                abstractEventDto.setUserId(memberId);
+                abstractEventDto.setObjectId(inputDto.getTarget_id());
+                applicationEventPublisher.publishEvent(abstractEventDto);
             }
+        }else {
+            AbstractTaskEventDto abstractEventDto = new AbstractTaskEventDto(this);
+            if( 0 == inputDto.getTarget_type()){
+                abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.FOLLOW_ONE_OFFICIAL_USER.getKey());
+            }else if(11 == inputDto.getTarget_type()){
+                abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.FOLLOW_ONE_OFFICIAL_CIRCLE.getKey());
+            }
+            abstractEventDto.setFollowType(inputDto.getTarget_type());
+            abstractEventDto.setUserId(memberId);
+            abstractEventDto.setObjectId(inputDto.getTarget_id());
+            applicationEventPublisher.publishEvent(abstractEventDto);
+            action.setState( 0 );
+            action.setUpdatedAt( new Date( ) );
+            action.updateById();
         }
         if (isMember) {
             String userId = memberId;
@@ -224,6 +249,8 @@ public class ProtalSystemActionServiceImpl implements IActionService {
         AbstractEventDto abstractEventDto = new AbstractEventDto(this);
         abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.USER_FOLLOW.getKey());
         abstractEventDto.setFollowType(inputDto.getTarget_type());
+        abstractEventDto.setUserId(memberId);
+        abstractEventDto.setObjectId(inputDto.getTarget_id());
         applicationEventPublisher.publishEvent(abstractEventDto);
 
         //clear redis
@@ -305,6 +332,11 @@ public class ProtalSystemActionServiceImpl implements IActionService {
     @Override
     public boolean subCounter(String memberId, int type, ActionInput inputDto) {
         return false;
+    }
+
+    @Override
+    public ResultDto<String> useSomeTimeFast(String memberId) throws Exception {
+        return null;
     }
 
 

@@ -16,7 +16,7 @@ public class UserBean {
 	@Min( value = 0,message = "用户传递性别标示错误")
 	@Max( value = 2,message = "用户传递性别标示错误")
 	private int gender;
-	@Length(max = 1024,message = "用户签名过长,不应超过1024")
+	@Length(min = 1,max = 1024,message = "用户签名异常") //过长,不应超过1024
 	private String sign;
 	private String avatar;
 	

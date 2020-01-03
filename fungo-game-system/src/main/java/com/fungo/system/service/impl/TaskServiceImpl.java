@@ -6,64 +6,78 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.dao.BannerDao;
+import com.fungo.system.dao.BasActionDao;
+import com.fungo.system.dao.MemberDao;
 import com.fungo.system.entity.*;
+import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
-import com.game.common.dto.ResultDto;
+import com.game.common.dto.*;
+import com.game.common.dto.community.CmmCircleDto;
 import com.game.common.enums.FunGoTaskV243Enum;
+import com.game.common.enums.NewTaskIdenum;
+import com.game.common.enums.NewTaskStatusEnum;
 import com.game.common.repo.cache.facade.FungoCacheTask;
+import com.game.common.util.CommonUtil;
 import com.game.common.util.PKUtil;
+import com.game.common.vo.CircleGamePostVo;
+import org.checkerframework.checker.units.qual.A;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
 @Transactional
 public class TaskServiceImpl implements ITaskService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskServiceImpl.class);
+
     @Autowired
     private MemberService memberService;
-
     @Autowired
     private ScoreLogService scoreLogService;
-
     @Autowired
     private ScoreRuleService scoreRuleService;
-
     @Autowired
     private ScoreGroupService scoreGroupService;
-
     @Autowired
     private IncentAccountCoinDaoService incentAccountCoinServiceImap;
-
-    @Autowired
-    private IncentAccountScoreService accountScoreService;
-
     @Autowired
     private IncentRankedService rankedService;
-
     @Autowired
     private IMemberAccountScoreDaoService IAccountDaoService;
-
     @Autowired
     private IncentRuleRankService ruleRankService;
-
-    @Autowired
-    private IncentRankedLogService rankedLogService;
-
     @Autowired
     private BannerDao bannerDao;
-
     @Autowired
     private FungoCacheTask fungoCacheTask;
+    @Autowired
+    private MemberDao memberDao;
+    @Autowired
+    private NacosFungoCircleConfig nacosFungoCircleConfig;
+    @Resource(name = "actionServiceImpl")
+    private IActionService actionService;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
+    @Autowired
+    private BasActionDao basActionDao;
+    @Autowired
+    private CommunityFeignClient communityFeignClient;
 
     @SuppressWarnings("rawtypes")
     @Override
@@ -527,7 +541,7 @@ public class TaskServiceImpl implements ITaskService {
 
 
     @Override
-    public ResultDto<String> DailyMotto() throws Exception {
+    public ResultDto<String> DailyMotto(String userId) throws Exception {
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
         String relDate = formatter.format(new Date());
@@ -560,6 +574,137 @@ public class TaskServiceImpl implements ITaskService {
         }
 
         return re;
+    }
+
+    @Override
+    public ResultDto<String> followUser(String userId) throws Exception {
+        try {
+            List<String> officialUsers = nacosFungoCircleConfig.getOfficialUsers();
+            List<String> memberIdList = memberDao.getMemberIdList(officialUsers);
+            memberIdList.stream().forEach(s ->{
+                ActionInput inputDto = new ActionInput();
+                inputDto.setTarget_type(0);
+                inputDto.setTarget_id(s);
+                try {
+                    ResultDto<String> resultDto = actionService.follow(userId, inputDto);
+                } catch (Exception e) {
+                    LOGGER.error( userId+"用户关注用户"+s+"失败",e);
+                }
+            });
+            // 2.7 任务
+            AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+            abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.FOLLOW_OFFICIAL_USER.getKey());
+            abstractEventDto.setUserId(userId);
+            abstractEventDto.setObjectIdList( memberIdList);
+            applicationEventPublisher.publishEvent(abstractEventDto);
+            return ResultDto.ResultDtoFactory.buildSuccess( "一键关注官方账户成功" );
+        }catch (Exception e){
+            LOGGER.error( userId+"用户一键关注官方账户失败",e );
+            return ResultDto.ResultDtoFactory.buildError("一键关注官方账户失败");
+        }
+    }
+
+    @Override
+    public ResultDto<String> openPush(String userId) {
+        ResultDto<String> resultDto = null;
+        try {
+            AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+            abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.OPENPUSH_USER.getKey());
+            abstractEventDto.setUserId(userId);
+            applicationEventPublisher.publishEvent(abstractEventDto);
+            resultDto = ResultDto.ResultDtoFactory.buildSuccess( "开启推送通知成功" );
+        }catch (Exception e){
+            LOGGER.error( "开启推送通知异常,用户 = {}",userId,e );
+            resultDto = ResultDto.ResultDtoFactory.buildError( "开启推送通知异常" );
+        }
+        return resultDto;
+    }
+
+    @Override
+    public ResultDto<String> taskCheckUserFollowOfficialUser(String memberId) {
+        try {
+            List<String> officialUsers = nacosFungoCircleConfig.getOfficialUsers();
+            List<String> followIds = memberDao.getMemberIdList(officialUsers);
+            String actionType = "5";
+            String targetType = "0";
+            followIds = basActionDao.getIdByFollowerId( memberId,actionType,targetType, followIds);
+            if(followIds.isEmpty()) return null;
+
+            AbstractTaskEventDto abstractEventDto = new AbstractTaskEventDto(this);
+            abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_OFFICIAL_USER.getKey());
+            abstractEventDto.setUserId(memberId);
+            abstractEventDto.setObjectIdList(followIds);
+            applicationEventPublisher.publishEvent(abstractEventDto);
+        }catch (Exception e){
+        LOGGER.error( "检查用户是否关注官方账户异常",e );
+        }
+        return null;
+    }
+
+    @Override
+    public ResultDto<String> taskCheckUserFollowOfficialCircle(String userId) {
+        try {
+            CircleGamePostVo circleGamePostVo = new CircleGamePostVo();
+            circleGamePostVo.setType(1 );
+            FungoPageResultDto<CmmCircleDto> fungoPageResultDto =  communityFeignClient.getCircleListByType(circleGamePostVo);
+            if(fungoPageResultDto != null && fungoPageResultDto.getData() != null){
+                List<String> circleIds = fungoPageResultDto.getData().stream().map( CmmCircleDto::getId ).collect( Collectors.toList());
+                circleIds = basActionDao.getIdByFollowerId( userId,"5","11" ,circleIds);
+                if(circleIds.isEmpty()) return null;
+                AbstractTaskEventDto abstractEventDto = new AbstractTaskEventDto(this);
+                abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_OFFICIAL_CIRCLE.getKey());
+                abstractEventDto.setUserId(userId);
+                abstractEventDto.setObjectIdList(circleIds);
+                applicationEventPublisher.publishEvent(abstractEventDto);
+            }
+        }catch (Exception e){
+            LOGGER.error( "检查用户是否关注官方圈子异常",e );
+        }
+        return null;
+    }
+
+
+    private StringBuffer getNearDateByUserSign(int userSignDate){
+        List<Integer>  twoDaysList = Arrays.asList( 0,1 );
+        List<Integer>  sevenDaysList = Arrays.asList( 2,3,4,5,6 );
+        List<Integer>  fourthDaysList = Arrays.asList( 7,8,9,10,11,12,13 );
+        List<Integer>  twentyOneDaysList = Arrays.asList( 14,15,16,17,18,19,20 );
+        List<Integer>  twenthSevenDaysList = Arrays.asList( 21,22,23,24,25,26,27 );
+        List<Integer>  twenthEightDaysList = Arrays.asList( 28,29 );
+//        List<Integer>  thirtyDaysList = Arrays.asList( 30 );
+        int nextSignDays = 0;
+        StringBuffer stringBuffer = new StringBuffer( "再签到天可额外获得Fun币奖励" );
+        if( twoDaysList.contains( userSignDate ) ){
+            nextSignDays = twoDaysList.size() - userSignDate;
+            stringBuffer = stringBuffer.insert(3,nextSignDays);
+            stringBuffer = stringBuffer.insert(stringBuffer.length()-8,15);
+        }else if(sevenDaysList.contains( userSignDate )){
+            nextSignDays = sevenDaysList.size() - userSignDate;
+            stringBuffer = stringBuffer.insert(3,nextSignDays);
+            stringBuffer = stringBuffer.insert(stringBuffer.length()-8,20);
+        }else if(fourthDaysList.contains( userSignDate )){
+            nextSignDays = fourthDaysList.size() - userSignDate;
+            stringBuffer = stringBuffer.insert(3,nextSignDays);
+            stringBuffer = stringBuffer.insert(stringBuffer.length()-8,30);
+        }else if(twentyOneDaysList.contains( userSignDate )){
+            nextSignDays = twentyOneDaysList.size() - userSignDate;
+            stringBuffer = stringBuffer.insert(3,nextSignDays);
+            stringBuffer = stringBuffer.insert(stringBuffer.length()-8,35);
+        }else if(twenthSevenDaysList.contains( userSignDate )){
+            nextSignDays = twenthSevenDaysList.size() - userSignDate;
+            stringBuffer = stringBuffer.insert(3,nextSignDays);
+            stringBuffer = stringBuffer.insert(stringBuffer.length()-8,50);
+        }else if(twenthEightDaysList.contains( userSignDate )){
+            nextSignDays = twenthEightDaysList.size() - userSignDate;
+            stringBuffer = stringBuffer.insert(3,nextSignDays);
+            stringBuffer = stringBuffer.insert(stringBuffer.length()-8,150);
+        }else{
+            nextSignDays =  userSignDate - 30;
+            stringBuffer = getNearDateByUserSign(nextSignDays);
+        }
+        String a = "";
+        a.contains( a);
+        return stringBuffer;
     }
 
     //-------

@@ -2,9 +2,12 @@ package com.fungo.system.function.event;
 
 import com.fungo.system.config.CuratorConfiguration;
 import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
+import com.fungo.system.service.IScoreRuleService;
+import com.fungo.system.service.ITaskService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.AbstractEventDto;
 import com.game.common.dto.ActionInput;
+import com.game.common.enums.NewTaskStatusEnum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
@@ -32,8 +35,12 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
     private CuratorConfiguration curatorConfiguration;
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
-    @Override
+    @Autowired
+    private IScoreRuleService scoreRuleServiceImpl;
+    @Autowired
+    private ITaskService taskServiceImpl;
 
+    @Override
     @Async
     public void onApplicationEvent(AbstractEventDto event) {
         String lockPath = curatorConfiguration.getCounterLock();
@@ -87,6 +94,42 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
             }finally {
                 distributedLockByCurator.releaseMyDistributedLock( actionPath,loginPath);
             }
+        }else if(AbstractEventDto.AbstractEventEnum.EDIT_USER.getKey() == event.getEventType()){
+            String userId = event.getUserId();
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.EDITUSER_EXP.getKey());
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.EDITUSER_COIN.getKey());
+        }else if(AbstractEventDto.AbstractEventEnum.FOLLOW_OFFICIAL_USER.getKey() == event.getEventType()){
+            String userId = event.getUserId();
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.FOLLOWOFFICIALUSER_EXP.getKey());
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.FOLLOWOFFICIALUSER_COIN.getKey());
+        }else if(AbstractEventDto.AbstractEventEnum.BROWSE_SHOP.getKey() == event.getEventType()){
+            String userId = event.getUserId();
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.BROWSESHOP_EXP.getKey());
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.BROWSESHOP_EXP.getKey());
+        }else if(AbstractEventDto.AbstractEventEnum.BINDQQ_USER.getKey() == event.getEventType()){
+            String userId = event.getUserId();
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.BINDQQ_EXP.getKey());
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.BINDQQ_COIN.getKey());
+        }else if(AbstractEventDto.AbstractEventEnum.BINDWECHAT_USER.getKey() == event.getEventType()){
+            String userId = event.getUserId();
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.BINDWECHAT_Exp.getKey());
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.BINDWECHAT_COIN.getKey());
+        }else if(AbstractEventDto.AbstractEventEnum.BINDWEIBO_USER.getKey() == event.getEventType()){
+            String userId = event.getUserId();
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.BINDWEIBO_EXP.getKey());
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.BINDWEIBO_COIN.getKey());
+        }else if(AbstractEventDto.AbstractEventEnum.OPENPUSH_USER.getKey() == event.getEventType()){
+            String userId = event.getUserId();
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.OPENPUSH_EXP.getKey());
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.OPENPUSH_COIN.getKey());
+        }else if(AbstractEventDto.AbstractEventEnum.VPN_GAME.getKey() == event.getEventType()){
+            String userId = event.getUserId();
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.VPN_EXP.getKey());
+            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.VPN_COIN.getKey());
+        }else if(AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK.getKey() == event.getEventType()){
+            String userId = event.getUserId();
+            taskServiceImpl.taskCheckUserFollowOfficialUser(userId);
+            taskServiceImpl.taskCheckUserFollowOfficialCircle( userId );
         }
     }
 

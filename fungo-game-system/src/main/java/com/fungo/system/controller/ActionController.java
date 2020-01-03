@@ -1,16 +1,20 @@
 package com.fungo.system.controller;
 
 import com.fungo.system.service.IActionService;
+import com.fungo.system.service.TaskRechargeService;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.MemberUserProfile;
+import com.game.common.dto.RechargeInput;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.index.BannerBean;
 import com.game.common.dto.mall.MallBannersInput;
+import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -31,6 +35,8 @@ public class ActionController {
     @Resource(name = "actionServiceImpl")
     private IActionService actionService;
 
+    @Resource
+    private TaskRechargeService taskRechargeService;
 
     @ApiOperation(value="点赞", notes="")
     @PostMapping(value="/api/action/like")
@@ -54,7 +60,6 @@ public class ActionController {
     public ResultDto<String> unlike(MemberUserProfile memberUserPrefile,@RequestBody ActionInput inputDto) throws Exception {
         return actionService.unLike(memberUserPrefile.getLoginId(), inputDto);
     }
-
 
     @ApiOperation(value="分享", notes="")
     @RequestMapping(value="/api/action/share", method= RequestMethod.POST)
@@ -170,11 +175,8 @@ public class ActionController {
         return actionService.whetherIsDone(memberUserPrefile.getLoginId(), inputDto);
     }
 
-
-
     @ApiOperation(value="合集点赞", notes="")
     @RequestMapping(value="/api/action/collectionLike", method= RequestMethod.POST)
-//    @PostMapping(value="/api/action/collectionLike")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "target_id",value = "目标对象",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string")
@@ -184,7 +186,6 @@ public class ActionController {
         appVersion = request.getHeader("appversion");
         return actionService.collectionLike(memberUserPrefile.getLoginId(), inputDto,appVersion);
     }
-
 
     @ApiOperation(value="合集取消赞", notes="")
     @RequestMapping(value="/api/action/unCollectionLike", method= RequestMethod.POST)
@@ -196,7 +197,6 @@ public class ActionController {
         return actionService.unCollectionLike(memberUserPrefile.getLoginId(), inputDto);
     }
 
-
     @ApiOperation(value="查询合集点赞总数", notes="")
     @RequestMapping(value="/api/action/queryCollectionLike", method= RequestMethod.POST)
     @ApiImplicitParams({
@@ -206,6 +206,25 @@ public class ActionController {
         mallBannersInput.setLogin_id(memberUserPrefile.getLoginId());
         return actionService.queryCollectionLike(mallBannersInput);
     }
+
+    @PostMapping("/api/action/completeRechargeTask")
+    public ResultDto<String> completeRechargeTask(MemberUserProfile memberUserPrefile, @RequestBody RechargeInput rechargeInput){
+        String loginId = memberUserPrefile.getLoginId();
+        if(StringUtil.isNull(loginId)||StringUtil.isNull(rechargeInput.getOrderId())||rechargeInput.getRechargeType()==null){
+            return  ResultDto.error("-1","参数错误");
+        }
+        return taskRechargeService.completeRechargeTask(loginId,rechargeInput.getRechargeType(),rechargeInput.getOrderId());
+    }
+
+    @PostMapping("/api/action/useSomeTimeFast")
+    public ResultDto<String> useSomeTimeFast(MemberUserProfile memberUserPrefile)  throws Exception{
+        String memberId = memberUserPrefile.getLoginId();
+        if(StringUtil.isNull(memberId)){
+            return  ResultDto.error("-1","参数错误");
+        }
+        return actionService.useSomeTimeFast(memberId);
+    }
+
 
 
 }

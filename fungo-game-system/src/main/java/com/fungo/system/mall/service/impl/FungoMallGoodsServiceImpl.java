@@ -11,8 +11,6 @@ import com.fungo.system.dao.MallSeckillOrderDao;
 import com.fungo.system.dao.MemberInfoDao;
 import com.fungo.system.dto.FungoMallDto;
 import com.fungo.system.entity.*;
-import com.fungo.system.feign.GamesFeignClient;
-import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.mall.daoService.*;
 import com.fungo.system.mall.entity.*;
 import com.fungo.system.mall.mapper.MallLogsDao;
@@ -21,10 +19,10 @@ import com.fungo.system.mall.service.IFungoMallGoodsService;
 import com.fungo.system.mall.service.commons.FungoMallScanOrderWithSeckillService;
 import com.fungo.system.mall.service.commons.FungoMallSeckillTaskStateCommand;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
+import com.fungo.system.service.IMemberService;
 import com.fungo.system.service.MemberInfoService;
 import com.fungo.system.service.MemberService;
 import com.fungo.system.service.ScoreLogService;
-import com.fungo.system.service.impl.MemberServiceImpl;
 import com.game.common.api.InputPageDto;
 import com.game.common.buriedpoint.BuriedPointUtils;
 import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
@@ -40,10 +38,8 @@ import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.FungoAESUtil;
 import com.game.common.util.PKUtil;
 import com.game.common.util.PageTools;
-import com.game.common.util.StringUtil;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.exception.BusinessException;
-import io.netty.handler.codec.json.JsonObjectDecoder;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -53,13 +49,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
-
 import static java.util.stream.Collectors.groupingBy;
 
 @Service
@@ -78,9 +71,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
     @Autowired
     private MallVirtualCardDaoService mallVirtualCardDaoService;
     @Autowired
-    private MallSeckillDaoService mallSeckillDaoService;
-    @Autowired
-    private MemberServiceImpl memberServiceImpl;
+    private IMemberService memberServiceImpl;
     @Autowired
     private MemberService memberService;
     @Autowired

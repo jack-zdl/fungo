@@ -48,6 +48,7 @@ public class Setting {
 	public static final int RES_TYPE_REPLY = 7;//回复
 	public static final int RES_TYPE_MESSAGE = 8;//心情评论
 	public static final int RES_TYPE_FEEDBACK = 9;//反馈
+	public static final int RES_TYPE_LINGKAFAST = 16;//零卡加速器
 
 	
 	/**

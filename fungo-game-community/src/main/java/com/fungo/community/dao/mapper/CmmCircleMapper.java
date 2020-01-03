@@ -41,4 +41,6 @@ public interface CmmCircleMapper  extends BaseMapper<CmmCircle> {
 
     List<CmmCircle> selectCmmCommunityByBrowse(@Param("ids") List<String> ids);
 
+    int selectOfficialCircle(@Param("id") String id);
+
 }

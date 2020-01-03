@@ -8,12 +8,14 @@ import com.fungo.system.dto.WeiXinPayAsynResultDTO;
 import com.fungo.system.entity.MemberPlayLog;
 import com.fungo.system.helper.lingka.LingKaHelper;
 import com.fungo.system.service.MemberPlayLogService;
+import com.game.common.dto.AbstractEventDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.util.JsonUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +44,9 @@ public class MemberPlayLogServiceImpl implements MemberPlayLogService {
     private MemberPlayLogDao memberPlayLogDao;
     @Autowired
     private LingKaHelper lingKaHelper;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
+
     /**
      * 功能描述: 保存用户支付日志
      * @date: 2019/10/22 10:44
@@ -269,5 +274,22 @@ public class MemberPlayLogServiceImpl implements MemberPlayLogService {
         }catch (Exception e){
             LOGGER.error( "檢查所有的為完成回調的支付寶回調异常",e );
         }
+    }
+
+    @Override
+    public ResultDto<String> accelerate(String memberId) {
+        ResultDto<String> resultDto = null;
+        try {
+            // 2.7 任务
+            AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+            abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.VPN_GAME.getKey());
+            abstractEventDto.setUserId(memberId);
+            applicationEventPublisher.publishEvent(abstractEventDto);
+            resultDto = ResultDto.ResultDtoFactory.buildSuccess( "加速器界面成功导入一款游戏成功" );
+        }catch (Exception e){
+            LOGGER.error( "加速器界面成功导入一款游戏异常,memberId = {}",memberId,e );
+            resultDto = ResultDto.ResultDtoFactory.buildError( "加速器界面成功导入一款游戏异常" );
+        }
+        return resultDto;
     }
 }

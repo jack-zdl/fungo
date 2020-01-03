@@ -120,7 +120,13 @@ public class MQResultDto {
          * @auther: dl.zhang
          * @date: 2019/9/25 10:47
          */
-        CMT_POST_MOOD_GAME_MQ_TYPE_DELETE(7,"删除文章,心情,游戏评测,文章评论,心情评论,回复")
+        CMT_POST_MOOD_GAME_MQ_TYPE_DELETE(7,"删除文章,心情,游戏评测,文章评论,心情评论,回复"),
+  /**
+        * 功能描述: tongzhiyonghu shifoushi guanfang quanzi
+         * @auther: dl.zhang
+         * @date: 2019/9/25 10:47
+         */
+        CMT_POST_MOOD_GAME_MQ_TYPE_TASK(8,"通知用户关注的圈子是否是官方圈")
 
 
         ;

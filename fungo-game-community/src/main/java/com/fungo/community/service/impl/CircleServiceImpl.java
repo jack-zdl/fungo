@@ -899,6 +899,27 @@ public class CircleServiceImpl implements CircleService {
         return re;
     }
 
+    @Override
+    public FungoPageResultDto<CmmCircleDto> getCircleListByType(CircleGamePostVo circleGamePostVo) {
+        FungoPageResultDto<CmmCircleDto> resultDto = null;
+        try {
+            List<CmmCircle> cmmCircleDtoList =   cmmCircleMapper.selectList( new EntityWrapper<CmmCircle>().setSqlSelect( "id" ).eq( "state","1" ).eq( "type",circleGamePostVo.getType() ) );
+            List<CmmCircleDto> cmmCircleDtos = new ArrayList<>( );
+            cmmCircleDtoList.stream().forEach( s ->{
+                CmmCircleDto cmmCircleDto = new CmmCircleDto();
+                cmmCircleDto.setId(s.getId());
+                cmmCircleDtos.add( cmmCircleDto);
+            });
+            resultDto =new  FungoPageResultDto();
+            resultDto.setData( cmmCircleDtos );
+
+        }catch (Exception e){
+            LOGGER.error( "获取官方圈子失败",e );
+            resultDto = FungoPageResultDto.FungoPageResultDtoFactory.buildError( "获取官方圈子失败" );
+        }
+        return resultDto;
+    }
+
 
     /**
      * 功能描述: 

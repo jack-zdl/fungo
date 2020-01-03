@@ -1,5 +1,7 @@
 package com.fungo.system.config;
 
+import com.alibaba.nacos.api.config.annotation.NacosValue;
+import org.omg.CORBA.PUBLIC_MEMBER;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
@@ -60,6 +62,9 @@ public class NacosFungoCircleConfig {
     // 微信appid
     @Value( value = "${fungo.cloud.wechat.appKey}")
     public String wechatAppKey;
+
+    @Value(value = "${fungo.cloud.official.users}")
+    public List<String> officialUsers;
 
     public String getBasLog() {
         return basLog;
@@ -203,5 +208,13 @@ public class NacosFungoCircleConfig {
 
     public void setWechatAppKey(String wechatAppKey) {
         this.wechatAppKey = wechatAppKey;
+    }
+
+    public List<String> getOfficialUsers() {
+        return officialUsers;
+    }
+
+    public void setOfficialUsers(List<String> officialUsers) {
+        this.officialUsers = officialUsers;
     }
 }

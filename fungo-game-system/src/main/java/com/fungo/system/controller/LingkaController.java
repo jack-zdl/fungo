@@ -7,6 +7,7 @@ import com.fungo.system.helper.mq.MQProduct;
 import com.fungo.system.service.MemberPlayLogService;
 import com.fungo.system.service.SysVersionService;
 import com.fungo.system.tools.WXPayUtil;
+import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.vo.MemberPlayLogVO;
@@ -39,8 +40,6 @@ public class LingkaController {
     private MemberPlayLogService memberPlayLogService;
     @Autowired
     private SysVersionService sysVersionService;
-    @Autowired
-    private NacosFungoCircleConfig nacosFungoCircleConfig;
 
     @PostMapping(value = "/api/system/member/log")
     public ResultDto<String> saveLingkaMemeberPlayLog(@Validated @RequestBody MemberPlayLogVO memberPlayLogVO){
@@ -301,4 +300,5 @@ public class LingkaController {
         }
         return null;
     }
+
 }

@@ -26,6 +26,7 @@ public class ActionInput {
      *  意见反馈 | 9
      *  游戏标签 | 10
      *  圈子  / 11   @zdl 2019/6/18
+     *  加速器 / 16 2019/12/28
      */
     private int target_type;
 
@@ -33,6 +34,7 @@ public class ActionInput {
 
     public  static List<Integer> postList = new ArrayList<Integer>( Arrays.asList( 0,1 ) );
 
+    public  static List<Integer> userList = new ArrayList<Integer>( Arrays.asList( 0 ) );
     /**
      * 备注信息
      */

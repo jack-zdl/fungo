@@ -4,16 +4,22 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.fungo.system.entity.*;
+import com.fungo.system.function.UserTaskFilterService;
 import com.fungo.system.service.*;
 import com.game.common.consts.FunGoGameConsts;
+import com.game.common.dto.AbstractEventDto;
+import com.game.common.dto.AbstractTaskEventDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
+import com.game.common.enums.NewTaskStatusEnum;
 import com.game.common.enums.oldTaskIdenum;
+import com.game.common.util.CommonUtil;
 import com.game.common.util.exception.BusinessException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,19 +36,18 @@ public class MemberIncentRiskServiceImpl implements IMemberIncentRiskService {
     //权益规则与功能授权关系Dao层业务
     @Autowired
     private IMemberIncentPermRankedDaoService iMemberIncentPermRankedDaoService;
-
     @Autowired
     private ScoreGroupService scoreGroupService;
-
     @Autowired
     private ScoreRuleService scoreRuleService;
-
     @Autowired
     private IncentTaskedService incentTaskedService;
-
-
     @Autowired
     private ScoreLogService scoreLogService;
+    @Autowired
+    private UserTaskFilterService userTaskFilterService;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public boolean isMatchLevel(String rank_id, String task_id) throws BusinessException {
@@ -71,36 +76,41 @@ public class MemberIncentRiskServiceImpl implements IMemberIncentRiskService {
 
     @Override
     public boolean isMatchLevel(String rank_id, int fun_idt) throws BusinessException {
-
         try {
-
 //            if (StringUtils.isBlank(rank_id) || StringUtils.isBlank(task_id)) {
 //                throw new BusinessException("-1", "参数不能为空");
 //            }
-
             Wrapper<IncentMbPermRanked> wrapper = new EntityWrapper<IncentMbPermRanked>().eq("rank_id", rank_id).eq("fun_idt", fun_idt).eq("rank_type", 1);
             IncentMbPermRanked permRanked = iMemberIncentPermRankedDaoService.selectOne(wrapper);
             if (permRanked == null) {
                 return true;
             } else {
-
                 int level = Integer.parseInt(rank_id);
                 if (level >= Integer.parseInt(permRanked.getRankId())) {
                     return true;
                 }
             }
-
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new BusinessException("-1", "用户等级风控业务模块异常");
         }
-
         return false;
     }
 
     @Override
     public ResultDto<Map<String, Object>> checkeUnfinshedNoviceTask(String userId, String os) {
         ResultDto<Map<String, Object>> re = new ResultDto<Map<String, Object>>();
+        /*
+          11 任务 获取经验值
+          23 任务 获取fungo币
+          分享文章 | 分享游戏任务要给出收益提示
+         */
+        userTaskFilterService.updateUserTask( userId);
+        // 扫描用户关注的官方账户和官方圈子
+        AbstractEventDto abstractEventDto = new AbstractEventDto( this );
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK.getKey());
+        abstractEventDto.setUserId( userId);
+        applicationEventPublisher.publishEvent(abstractEventDto);
         //用户是否存在
         //查出全部新手任务
         //V2.4.6 新手任务flag 1701
@@ -112,6 +122,8 @@ public class MemberIncentRiskServiceImpl implements IMemberIncentRiskService {
         if (scoreGroup.getIsActive() == 0) {
             return ResultDto.error("-1", "任务未启用");
         }
+
+
         //统一查找经验值任务
         Wrapper<ScoreRule> wrapper = new EntityWrapper<ScoreRule>().eq("is_active", 1).eq("group_id", scoreGroup.getId()).and("pls_task_id is null");
 
@@ -121,8 +133,9 @@ public class MemberIncentRiskServiceImpl implements IMemberIncentRiskService {
             return ResultDto.error("-1", "找不到任务");
         }
 
+        int unfinishedCount = 1;
         //新手任务种类
-        int unfinishedCount = noviceTaskList.size();
+//        int unfinishedCount = noviceTaskList.size();
 
         //查出用户任务列表
 
@@ -131,24 +144,34 @@ public class MemberIncentRiskServiceImpl implements IMemberIncentRiskService {
 
         //查询用户已经完成的分值类任务
         IncentTasked tasked = getIncentTaskedExp(userId);
+        String ext2 = !CommonUtil.isNull(tasked.getExt2()) ? tasked.getExt2() : "0";
+        Integer status = Integer.valueOf(ext2);
+        if( ( (status & Integer.valueOf( NewTaskStatusEnum.JOINOFFICIALCIRLCE_EXP.getKey() )) == Integer.valueOf( NewTaskStatusEnum.JOINOFFICIALCIRLCE_EXP.getKey() ))
+            && ( (status & Integer.valueOf( NewTaskStatusEnum.JOINOFFICIALCIRLCE_EXP.getKey() )) == Integer.valueOf( NewTaskStatusEnum.FOLLOWOFFICIALUSER_EXP.getKey() ))
+            && ( (status & Integer.valueOf( NewTaskStatusEnum.JOINOFFICIALCIRLCE_EXP.getKey() )) == Integer.valueOf( NewTaskStatusEnum.EDITUSER_EXP.getKey() ))
+            && ( (status & Integer.valueOf( NewTaskStatusEnum.JOINOFFICIALCIRLCE_EXP.getKey() )) == Integer.valueOf( NewTaskStatusEnum.BROWSESHOP_EXP.getKey() ))
+        ){
+            unfinishedCount = 0;
+        }
 
         //fix:分值任务-11,fungo币任务-23, 签到-22
         //若分值类没有则，获取 22类型的任务数据
-        IncentTasked tasked22 = getIncentTasked22(userId);
+//        IncentTasked tasked22 = getIncentTasked22(userId);
 
-        //分值类
-        if (null != tasked) {
-            unfinishedCount = getUnfinishedNewbieTaskCount(noviceTaskList, unfinishedCount, tasked);
-        }
 
-        //22 分值和签到合一类
-        if (null != tasked22) {
-            unfinishedCount = getUnfinishedNewbieTaskCount(noviceTaskList, unfinishedCount, tasked22);
-        }
-        //第三步 去掉 V2.4.6版本之前的新手任务
-        int oldNewabTaskCount = this.queryTaskLog(userId);
-
-        unfinishedCount -= oldNewabTaskCount;
+//        //分值类
+//        if (null != tasked) {
+//            unfinishedCount = getUnfinishedNewbieTaskCount(noviceTaskList, unfinishedCount, tasked);
+//        }
+//
+//        //22 分值和签到合一类
+//        if (null != tasked22) {
+//            unfinishedCount = getUnfinishedNewbieTaskCount(noviceTaskList, unfinishedCount, tasked22);
+//        }
+//        //第三步 去掉 V2.4.6版本之前的新手任务
+//        int oldNewabTaskCount = this.queryTaskLog(userId);
+//
+//        unfinishedCount -= oldNewabTaskCount;
 
         if (unfinishedCount <= 0) {
             map.put("hasNotiveTask", false);

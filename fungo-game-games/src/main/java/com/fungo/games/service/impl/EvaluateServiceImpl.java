@@ -209,7 +209,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 //            lyc
             Integer clusterIndex_i = Integer.parseInt(clusterIndex);
             Map<String, Object> resMapCoin = iEvaluateProxyService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
-                    MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_COIN.code(), PKUtil.getInstance(clusterIndex_i).longPK());
+                    MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_COIN.code(), PKUtil.getInstance(clusterIndex_i).longPK());
 
             //2 经验值
 //            Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
@@ -218,7 +218,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
 //            2019-05-10
 //            lyc
             Map<String, Object> resMapExp = iEvaluateProxyService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY.code(),
-                    MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FISRT_SEND_COMMENT_EXP.code(),PKUtil.getInstance(clusterIndex_i).longPK());
+                    MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_EVERYDAY_FIRST_SCORE_GAME_EXP.code(),PKUtil.getInstance(clusterIndex_i).longPK());
 
             if (null != resMapCoin && !resMapCoin.isEmpty()) {
                 if (null != resMapExp && !resMapExp.isEmpty()) {

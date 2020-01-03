@@ -98,27 +98,27 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
             //V2.4.6版本任务之前任务 废弃
             //times = gameProxy.addTaskCore(Setting.ACTION_TYPE_BOOK, memberId, gameId, Setting.RES_TYPE_GAME);
 
-            //V2.4.6版本任务
+            //V2.4.6版本任务  v2.7 移除预约的 每周任务
             //每周任务
             //1 fungo币 微服务迁移 feign调用执行
 //            2019-05-13
 //            lyc
 //            Map<String, Object> resMapCoin = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
 //                    MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBE_GAME_COIN.code());
-            Integer clusterIndex_i = Integer.parseInt(clusterIndex);
-            Map<String, Object> resMapCoin = iEvaluateProxyService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
-                    MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBE_GAME_COIN.code(), PKUtil.getInstance(clusterIndex_i).longPK());
+           // Integer clusterIndex_i = Integer.parseInt(clusterIndex);
+          /*  Map<String, Object> resMapCoin = iEvaluateProxyService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
+                    MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBE_GAME_COIN.code(), PKUtil.getInstance(clusterIndex_i).longPK());*/
 
             //2 经验值 微服务迁移 feign调用执行
 //            2019-05-13
 //            lyc
 //            Map<String, Object> resMapExp = iMemberIncentDoTaskFacadeService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
 //                    MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBEGAME_EXP.code());
-            Map<String, Object> resMapExp = iEvaluateProxyService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
-                    MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBEGAME_EXP.code(), PKUtil.getInstance(clusterIndex_i).longPK());
+        /*    Map<String, Object> resMapExp = iEvaluateProxyService.exTask(memberId, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY.code(),
+                    MemberIncentTaskConsts.INECT_TASK_SCORE_EXP_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_WEEKLY_FIRST_SUBSCRIBEGAME_EXP.code(), PKUtil.getInstance(clusterIndex_i).longPK());*/
 
 
-            if (null != resMapCoin && !resMapCoin.isEmpty()) {
+          /*  if (null != resMapCoin && !resMapCoin.isEmpty()) {
                 if (null != resMapExp && !resMapExp.isEmpty()) {
                     boolean coinsSuccess = (boolean) resMapCoin.get("success");
                     boolean expSuccess = (boolean) resMapExp.get("success");
@@ -129,7 +129,7 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
                         tips = (String) resMapCoin.get("msg");
                     }
                 }
-            }
+            }*/
             //end
 
         } else {

@@ -129,7 +129,8 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
                     int canObtainCoin = 0;
                     if (days < 2) {
                         allCanSignDay = (2 - days);
-                        canObtainCoin = 30;//isCanObtainCoin(days + 1, allCanSignDay);
+//                        canObtainCoin = 30;//isCanObtainCoin(days + 1, allCanSignDay);
+                        canObtainCoin = 15;//isCanObtainCoin(days + 1, allCanSignDay);
                         data.put("tip", "再签" + allCanSignDay + "天可得到" + canObtainCoin + "Fun的币奖励哦!");
                     } else if (days < 7) {
                         allCanSignDay = (7 - days);
@@ -139,7 +140,8 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
                         } else if (6 <= days && days < 7) {
                             canObtainCoin += isCanObtainCoin(7, 1);
                         }*/
-                        canObtainCoin = 50;
+                        //canObtainCoin = 50;
+                        canObtainCoin = 20;
                         data.put("tip", "再签" + allCanSignDay + "天可得到" + canObtainCoin + "Fun的币奖励哦!");
                     } else if (days < 14) {
                         allCanSignDay = (14 - days);
@@ -149,7 +151,8 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
                         } else if (13 <= days && days < 14) {
                             canObtainCoin += isCanObtainCoin(14, 1);
                         }*/
-                        canObtainCoin = 50;
+//                        canObtainCoin = 50;
+                        canObtainCoin = 30;
                         data.put("tip", "再签" + allCanSignDay + "天可得到" + canObtainCoin + "Fun的币奖励哦!");
                     } else if (days < 21) {
                         allCanSignDay = (21 - days);
@@ -159,7 +162,8 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
                         } else if (20 <= days && days < 21) {
                             canObtainCoin += isCanObtainCoin(21, 1);
                         }*/
-                        canObtainCoin = 50;
+//                        canObtainCoin = 50;
+                        canObtainCoin = 35;
                         data.put("tip", "再签" + allCanSignDay + "天可得到" + canObtainCoin + "Fun的币奖励哦!");
                     } else if (days < 28) {
                         allCanSignDay = (28 - days);
@@ -169,6 +173,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
                         } else if (27 <= days && days < 28) {
                             canObtainCoin += isCanObtainCoin(28, 1);
                         }*/
+//                        canObtainCoin = 50;
                         canObtainCoin = 50;
                         data.put("tip", "再签" + allCanSignDay + "天可得到" + canObtainCoin + "Fun的币奖励哦!");
                     } else if (days < 30) {
@@ -179,7 +184,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
                         } else if (days == 29) {
                             canObtainCoin += isCanObtainCoin(30, 1);
                         }*/
-                        canObtainCoin = 150;
+                        canObtainCoin = 120;
                         data.put("tip", "再签" + allCanSignDay + "天可得到" + canObtainCoin + "Fun的币奖励哦!");
                     }
                 }
@@ -189,7 +194,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
                 int canObtainCoin = 0;
                 if (days < 2) {
                     allCanSignDay = (2 - days);
-                    canObtainCoin = 30;//isCanObtainCoin(days + 1, allCanSignDay);
+                    canObtainCoin = 15;//isCanObtainCoin(days + 1, allCanSignDay);
                     data.put("tip", "再签" + allCanSignDay + "天可得到" + canObtainCoin + "Fun的币奖励哦!");
                 }
             }

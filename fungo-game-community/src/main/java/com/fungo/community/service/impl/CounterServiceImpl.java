@@ -1,9 +1,13 @@
 package com.fungo.community.service.impl;
 
+import com.fungo.community.dao.mapper.CmmCircleMapper;
 import com.fungo.community.dao.mapper.CmmCommentDao;
 import com.fungo.community.service.ICounterService;
+import com.game.common.dto.AbstractEventDto;
 import com.game.common.dto.ActionInput;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -14,7 +18,15 @@ public class CounterServiceImpl implements ICounterService {
 
 	@Autowired
 	private CmmCommentDao actionDao;
-	
+	@Autowired
+	private CmmCircleMapper cmmCircleMapper;
+	@Autowired
+	private ApplicationEventPublisher applicationEventPublisher;
+
+	/**
+	 * 功能描述: todo  增加mq到system微服务通知他用户已关注官方圈
+	 * @date: 2019/12/23 17:37
+	 */
 	@Override
 	public boolean addCounter(String tableType, String fieldType, String id) {
 		Map<String,String> map =new HashMap<String,String>();
@@ -22,9 +34,33 @@ public class CounterServiceImpl implements ICounterService {
 		map.put("fieldName", fieldType);
 		map.put("id", id);
 		map.put("type","add");
+
+
 		return actionDao.updateCountor(map);
 	}
 
+	@Override
+	public boolean addCircleCounter(String tableType, String fieldType, String id,String memberId) {
+		try {
+			Map<String,String> map =new HashMap<String,String>();
+			map.put("tableName", tableType);
+			map.put("fieldName", fieldType);
+			map.put("id", id);
+			map.put("type","add");
+			int count = cmmCircleMapper.selectOfficialCircle( id);
+			if(count > 0){
+				AbstractEventDto abstractEventDto = new AbstractEventDto( this );
+				abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.FOLLOW_ONE_OFFICIAL_CIRCLE.getKey());
+				abstractEventDto.setUserId(  memberId);
+				abstractEventDto.setObjectId( id);
+				applicationEventPublisher.publishEvent(abstractEventDto);
+			}
+			return actionDao.updateCountor(map);
+		}catch (Exception e){
+
+		}
+		return false;
+	}
 
 
 	//表字段 增数

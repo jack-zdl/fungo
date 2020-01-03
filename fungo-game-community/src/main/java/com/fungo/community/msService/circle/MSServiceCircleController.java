@@ -92,4 +92,13 @@ public class MSServiceCircleController {
         return re;
     }
 
+
+    @PostMapping(value = "/ms/service/cmm/circle/type")
+    public FungoPageResultDto<CmmCircleDto> getCircleListByType( @RequestBody CircleGamePostVo circleGamePostVo){
+        FungoPageResultDto<CmmCircleDto> re = null;
+        return  circleServiceImpl.getCircleListByType (circleGamePostVo);
+    }
+
+
+
 }

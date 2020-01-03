@@ -2258,6 +2258,8 @@ public class MemberServiceImpl implements IMemberService {
         return true;
     }
 
+
+
     public boolean addActionTypeNotice(String memberId,String content,String actionType){
         Map<String,String> dataMap = new HashMap<>();
         dataMap.put("actionType",actionType);
@@ -2325,7 +2327,7 @@ public class MemberServiceImpl implements IMemberService {
      * @todo
      * @return
      */
-    private boolean getNewMember(Date registerDate){
+    public boolean getNewMember(Date registerDate){
         String startDate = nacosFungoCircleConfig.getStartDate();
         String endDate = nacosFungoCircleConfig.getEndDate();
         try {
@@ -2364,6 +2366,7 @@ public class MemberServiceImpl implements IMemberService {
      *  如果您是平台活跃用户，九月一号和九月十六号活动期间在平台连续签到 四天及以上获得两次免费单抽
      * @return
      */
+    @Override
     public boolean getActiveMemeber(String memberId){
         try {
             String startDate = nacosFungoCircleConfig.getStartDate();

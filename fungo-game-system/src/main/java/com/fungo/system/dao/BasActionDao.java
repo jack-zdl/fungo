@@ -71,4 +71,7 @@ public interface BasActionDao extends BaseMapper<BasAction> {
 	//	根据用户Id获取最近浏览圈子行为 8个
 	List<BasAction> getRecentBrowseCircleByUserId(@Param("userId") String userId);
 
+
+	//查询followId是否是被关注用户id
+	List<String> getIdByFollowerId(@Param( "memberId" ) String memberId,@Param("actionType") String actionType,@Param("targetType") String targetType,@Param("followIds") List<String> followIds);
 }

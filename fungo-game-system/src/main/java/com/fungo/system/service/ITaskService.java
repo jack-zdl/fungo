@@ -7,26 +7,31 @@ import java.util.List;
 import java.util.Map;
 
 public interface ITaskService {
-    //旧版接口,已弃用
-    public ResultDto<Map> getMineTaskInfo(String userId) throws IOException, ParseException;
 
     //旧版接口,已弃用
-    public ResultDto<List> getTaskCategory();
+    ResultDto<Map> getMineTaskInfo(String userId) throws IOException, ParseException;
 
     //旧版接口,已弃用
-    public ResultDto<List> getTaskList(String userId, String categoryId) throws Exception;
+    ResultDto<List> getTaskCategory();
 
-    //public void getTaskHelp();
-
+    //旧版接口,已弃用
+    ResultDto<List> getTaskList(String userId, String categoryId) throws Exception;
 
     //用户签到
-    public ResultDto<Map> checkIn(String userId) throws Exception;
+    ResultDto<Map> checkIn(String userId) throws Exception;
 
     //用户签到信息
     ResultDto<Map<String, Object>> checkInfo(String userId) throws Exception;
 
     //每日格言
-    public ResultDto<String> DailyMotto() throws Exception;
+    ResultDto<String> DailyMotto(String userId) throws Exception;
+
+    ResultDto<String> followUser(String userId) throws Exception;
+
+    ResultDto<String> openPush(String userId);
 
 
+    ResultDto<String> taskCheckUserFollowOfficialUser(String userId);
+
+    ResultDto<String> taskCheckUserFollowOfficialCircle(String userId);
 }

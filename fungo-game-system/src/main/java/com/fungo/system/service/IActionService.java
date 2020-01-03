@@ -40,4 +40,6 @@ public interface IActionService {
     public ResultDto<String>  addAction(String memberId,int targetType,int type,String targetId,String information);//添加用户行为记录
     public boolean addCounter(String memberId,int type, ActionInput inputDto);//计数 - 增
     public boolean subCounter(String memberId,int type, ActionInput inputDto);//计数 - 减
+
+    ResultDto<String> useSomeTimeFast(String memberId) throws Exception;
 }

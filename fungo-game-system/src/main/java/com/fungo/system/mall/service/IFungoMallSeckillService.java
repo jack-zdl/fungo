@@ -2,6 +2,7 @@ package com.fungo.system.mall.service;
 
 
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.ResultDto;
 import com.game.common.dto.mall.MallGoodsInput;
 import com.game.common.dto.mall.MallGoodsOutBean;
 import com.game.common.dto.mall.MallOrderInput;
@@ -26,7 +27,7 @@ public interface IFungoMallSeckillService {
      * @param mb_id 用户信息
      * @return 返回商品对象集合
      */
-    public List<MallGoodsOutBean> getGoodsListForSeckill(String mb_id, String realIp);
+    List<MallGoodsOutBean> getGoodsListForSeckill(String mb_id, String realIp);
 
 
     /**
@@ -34,7 +35,7 @@ public interface IFungoMallSeckillService {
      * @param mb_id 用户信息
      * @return 返回商品对象集合
      */
-    public List<MallGoodsOutBean> getGoodsListForGame(String mb_id, String realIp, MallGoodsInput mallGoodsInput);
+    List<MallGoodsOutBean> getGoodsListForGame(String mb_id, String realIp, MallGoodsInput mallGoodsInput);
 
 
     /**
@@ -42,7 +43,7 @@ public interface IFungoMallSeckillService {
      * @param mb_id 用户信息
      * @return  返回商品集合json字符串
      */
-    public String getGoodsListForSeckillJson(String mb_id, String realIp);
+    String getGoodsListForSeckillJson(String mb_id, String realIp);
 
 
 
@@ -51,7 +52,7 @@ public interface IFungoMallSeckillService {
      * @param mb_id
      * @return
      */
-    public String getSeckillGrantCode(String mb_id);
+    String getSeckillGrantCode(String mb_id);
 
 
     /**
@@ -59,14 +60,14 @@ public interface IFungoMallSeckillService {
      * @param orderInput
      * @return
      */
-    public Map<String,Object> createOrderWithSeckill(MallOrderInput orderInput, String realIp);
+    Map<String,Object> createOrderWithSeckill(MallOrderInput orderInput, String realIp);
 
     /**
      * 秒杀下单-游戏礼包
      * @param orderInput
      * @return
      */
-    public Map<String,Object> createOrderWithSeckillWithGame(MallOrderInput orderInput, String realIp);
+    Map<String,Object> createOrderWithSeckillWithGame(MallOrderInput orderInput, String realIp);
 
     /**
      * 秒杀成功，修改订单
@@ -77,7 +78,7 @@ public interface IFungoMallSeckillService {
      * @param mallOrderInput
      * @return
      */
-    public boolean updateOrderWithSeckill(MallOrderInput mallOrderInput);
+    boolean updateOrderWithSeckill(MallOrderInput mallOrderInput);
 
 
     /**
@@ -87,7 +88,7 @@ public interface IFungoMallSeckillService {
      * @param  orderSn 订单编号
      * @return 返回订单数据对象
      */
-    public List<MallOrderOutBean> getOrdersWithSeckillGame(String mb_id, String orderId, String orderSn, String orderType);
+    List<MallOrderOutBean> getOrdersWithSeckillGame(String mb_id, String orderId, String orderSn, String orderType);
 
 
 
@@ -98,7 +99,7 @@ public interface IFungoMallSeckillService {
      * @param  orderSn 订单编号
      * @return 返回订单数据json字符串
      */
-    public String getOrdersWithSeckillWithJsonStr(String mb_id, String orderId, String orderSn);
+    String getOrdersWithSeckillWithJsonStr(String mb_id, String orderId, String orderSn);
 
 
     /**
@@ -107,9 +108,10 @@ public interface IFungoMallSeckillService {
      * @param param
      * @return
      */
-    public FungoPageResultDto<Map<String, Object>> queryMemberGameOrderList(String mb_id , Map<String, Object> param);
+    FungoPageResultDto<Map<String, Object>> queryMemberGameOrderList(String mb_id , Map<String, Object> param);
 
 
-    public void insertMallSeckillOrder(String goodId,String number);
+    void insertMallSeckillOrder(String goodId,String number);
 
+    ResultDto<String> browseMall(String memberId);
 }
