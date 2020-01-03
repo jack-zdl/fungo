@@ -2029,7 +2029,7 @@ public class PostServiceImpl implements IPostService {
         data.put("userName", "FunGo大助手");
         data.put("msgTime", DateTools.fmtDate(new Date()));
         data.put("userType", "1");
-        data.put("content", "恭喜～你的文章 <a href='#' style='color: red;' >《" + title + "》</a>太棒啦！小Fun已把你的作品推荐给全站玩家欣赏～，同时奖励您500Fun币，30经验值，期待您的更多作品哦～");
+        data.put("content", "恭喜～你的文章 <a href='#' style='color: red;' >《" + title + "》</a>太棒啦！小Fun已把你的作品推荐给全站玩家欣赏，同时奖励您500Fun币，30经验值，期待您的更多作品哦～");
         data.put("href", "");
         map.put( "data", JSON.toJSONString( data ) );
         sendMessage(map);
