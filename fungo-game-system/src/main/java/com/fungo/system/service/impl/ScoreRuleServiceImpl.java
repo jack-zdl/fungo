@@ -96,20 +96,11 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
                 if (-1 == watchThreeUserTask) {
                     return -1;
                 }
+                boolean isok = this.updateMemberIncentTasked(memberId, taskType, scoreRule,objectId);
+                if(!isok){
+                    return -1;
+                }
             }
-            //添加新手任务埋点
-            BuriedPointTaskModel buriedPointTaskModel = new BuriedPointTaskModel();
-            buriedPointTaskModel.setDistinctId(memberId);
-            buriedPointTaskModel.setPlatForm( BuriedPointPlatformConstant.PLATFORM_SERVER);
-            buriedPointTaskModel.setEventName( BuriedPointEventConstant.EVENT_KEY_QUEST_COMPLETE);
-
-            buriedPointTaskModel.setQuestId(scoreRule.getId());
-            buriedPointTaskModel.setQuestName(scoreRule.getName());
-            buriedPointTaskModel.setFirstCategory( BuriedPointTaskTypeConstant.TASK_TYPE_NEW);
-            buriedPointTaskModel.setQuestExp(scoreRule.getScore());
-            buriedPointTaskModel.setFinalQuest(iMemberIncentTaskedService.currentTaskIsLast(scoreRule,memberId,FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code()));
-            BuriedPointUtils.publishBuriedPointEvent(buriedPointTaskModel);
-
             //没有执行过
             //3.更新用户经验值账户
             int accountScore = updateAccountScore(memberId, scoreRule.getScore());
@@ -120,12 +111,25 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
             //5.更新用户成就表的等级数据
             this.updateMemberIncentRanked(memberId, accountScore);
 
-            //6. 更新用户任务成果表
-            this.updateMemberIncentTasked(memberId, taskType, scoreRule,objectId);
+//            //6. 更新用户任务成果表
+//            this.updateMemberIncentTasked(memberId, taskType, scoreRule,objectId);
 
             //7.添加任务执行日志
             if(accountScore > 0){
                 this.addTaskedLog(memberId, scoreRule);
+                //添加新手任务埋点
+                BuriedPointTaskModel buriedPointTaskModel = new BuriedPointTaskModel();
+                buriedPointTaskModel.setDistinctId(memberId);
+                buriedPointTaskModel.setPlatForm( BuriedPointPlatformConstant.PLATFORM_SERVER);
+                buriedPointTaskModel.setEventName( BuriedPointEventConstant.EVENT_KEY_QUEST_COMPLETE);
+
+                buriedPointTaskModel.setQuestId(scoreRule.getId());
+                buriedPointTaskModel.setQuestName(scoreRule.getName());
+                buriedPointTaskModel.setFirstCategory( BuriedPointTaskTypeConstant.TASK_TYPE_NEW);
+                buriedPointTaskModel.setQuestExp(scoreRule.getScore());
+                buriedPointTaskModel.setFinalQuest(iMemberIncentTaskedService.currentTaskIsLast(scoreRule,memberId,FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code()));
+                BuriedPointUtils.publishBuriedPointEvent(buriedPointTaskModel);
+
             }
             return 0;
         }catch (Exception e){
@@ -512,18 +516,19 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
      * @param scoreRule
      * @throws IOException
      */
-    private void updateMemberIncentTasked(String mb_id, int task_type, ScoreRule scoreRule,String objectId) throws IOException {
+    private boolean updateMemberIncentTasked(String mb_id, int task_type, ScoreRule scoreRule,String objectId) throws IOException {
         //获取用户当前任务的历史记录
         IncentTasked incentTaskedMb = getIncentTaskedWithMember(mb_id, task_type);
-
+        boolean isok = false;
         logger.info("执行新手任务---经验值任务--开始更新用户任务成果表-获取用户当前任务的历史记录-incentTaskedMb:{}", incentTaskedMb);
         //1.任务存在历史记录
         if (null != incentTaskedMb) {
-            exUpdateMbTaskedData(task_type, scoreRule, incentTaskedMb,objectId);
+            isok =  exUpdateMbTaskedData(task_type, scoreRule, incentTaskedMb,objectId);
             //2.不存在该类型任务的历史记录
         } else {
             exAddMbTaskedData(mb_id, scoreRule,objectId);
         }
+        return isok;
     }
 
     /**
@@ -533,7 +538,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
      * @param incentTaskedMb
      * @throws IOException
      */
-    private void exUpdateMbTaskedData(int task_type, ScoreRule scoreRule, IncentTasked incentTaskedMb,String obejctId) throws IOException {
+    private boolean exUpdateMbTaskedData(int task_type, ScoreRule scoreRule, IncentTasked incentTaskedMb,String obejctId) throws IOException {
         //json格式:[   {1:taskid,2:taskname,3:score,4:type,5:count,6:date,7:incomie_freg_type}   ]
         incentTaskedMb.setCurrentTaskId(scoreRule.getId());
         incentTaskedMb.setCurrentTaskName(scoreRule.getName());
@@ -546,6 +551,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
         boolean isAdd = true;
         String oldObjectId = "";
         boolean isCircle = false;
+        boolean isOk = false;
         //遍历历史任务记录中，是否存在当前任务
         for (Map<String, Object> map : taskIdtIdsList) {
             String oldTaskId = (String) map.get("1");
@@ -573,6 +579,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
                             Integer result = (Integer.valueOf( ext2 ) | Integer.valueOf( ext2Task));
                             incentTaskedMb.setExt2( result.toString());
                             incentTaskedMb.updateById();
+                            isOk = true;
                         }
                         if(!CommonUtil.isNull(    (String) map.get( "8" ))){
                             oldObjectId = (String) map.get( "8" );
@@ -620,6 +627,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
             boolean isUpdate = incentTaskedMb.updateById();
             logger.info("执行新手任务---经验值任务--开始更新用户任务成果表--执行更新-isUpdate:{}----incentTaskedMb:{}", isUpdate, JSON.toJSONString(incentTaskedMb));
         }
+        return isOk;
     }
 
     /**
