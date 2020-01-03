@@ -181,6 +181,12 @@ public class SystemFacedeHystrixService implements FallbackFactory<SystemFeignCl
                 logger.error("--------------------SystemFeignClient--启动熔断:{}" , "getMemberFollow");
                 return null;
             }
+
+            @Override
+            public ResultDto<String> updateRankedMedal(String userId, Integer rankidt) {
+                logger.error("--------------------SystemFeignClient--启动熔断:{}" , "updateRankedMedal");
+                return null;
+            }
         };
     }
 }
