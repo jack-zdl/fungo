@@ -12,6 +12,7 @@ import com.fungo.community.dao.mapper.CmmPostCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
 import com.fungo.community.dao.service.CmmCommentDaoService;
 import com.fungo.community.dto.PostCircleDto;
+import com.fungo.community.entity.BasTag;
 import com.fungo.community.entity.CmmCircle;
 import com.fungo.community.entity.CmmComment;
 import com.fungo.community.entity.CmmPost;
@@ -44,10 +45,7 @@ import com.game.common.enums.ActionTypeEnum;
 import com.game.common.enums.PostTypeEnum;
 import com.game.common.enums.circle.CircleTypeEnum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
-import com.game.common.util.CommonUtil;
-import com.game.common.util.CommonUtils;
-import com.game.common.util.Html2Text;
-import com.game.common.util.PageTools;
+import com.game.common.util.*;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import com.game.common.vo.CircleGamePostVo;
@@ -329,7 +327,14 @@ public class CircleServiceImpl implements CircleService {
 
 
                 PostOutBean bean = new PostOutBean();
-
+                // 设置分类名称
+                String tags = post.getTags();
+                if(StringUtil.isNotNull(tags)){
+                    BasTag basTag = basTagDao.selectById(tags);
+                    if(basTag!=null){
+                        bean.setTagName(basTag.getName());
+                    }
+                }
                 bean.setMemberId( post.getMemberId());
                 //!fixme 查询用户数据
 //                bean.setAuthor(iUserService.getAuthor(post.getMemberId()));

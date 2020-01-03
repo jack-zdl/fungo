@@ -715,6 +715,17 @@ public class PostController {
         return bsPostService.restore(userId,postId);
     }
 
+    @ApiOperation(value="文章分类修改", notes="")
+    @RequestMapping(value="/api/content/post/updatePostTag", method= RequestMethod.GET)
+    @ApiImplicitParams({})
+    public ResultDto<String> updatePostTag(@Anonymous MemberUserProfile memberUserPrefile,String postId,String tagId) {
+        String userId = memberUserPrefile.getLoginId();
+        if(StringUtil.isNull(userId)){
+            return ResultDto.error("-1","无权操作");
+        }
+        return bsPostService.updatePostTag(userId,postId,tagId);
+    }
+
 
 
 }

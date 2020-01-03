@@ -2065,6 +2065,19 @@ public class PostServiceImpl implements IPostService {
         return ResultDto.success();
     }
 
+    @Override
+    public ResultDto<String> updatePostTag(String userId, String postId, String tagId) {
+        int cmmPostCount = postService.selectCount(new EntityWrapper<CmmPost>().eq("id",postId));
+        if(cmmPostCount == 1){
+            CmmPost cmmPost1 = new CmmPost();
+            cmmPost1.setId(postId);
+           cmmPost1.setUpdatedAt(new Date());
+           cmmPost1.setTags(tagId);
+            postService.updateById(cmmPost1);
+        }
+        return ResultDto.success();
+    }
+
     private void updateMemberRanked(String mb_id) {
         ResultDto resultDto = null;
         //判断是否满足获取徽章的条件
