@@ -29,7 +29,7 @@
                 updated_at
     </sql>
 
-    <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="id" parameterType="com.fungo.community.entity.entity.TCmmOperationLogEntity">
+    <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="id" parameterType="com.fungo.community.entity.CmmOperationLog">
         INSERT INTO t_cmm_operation_log
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test ='null != circleId'>
@@ -96,7 +96,7 @@
         WHERE id = #{id}
     </delete>
 
-    <update id="update" parameterType="com.fungo.community.entity.entity.TCmmOperationLogEntity">
+    <update id="update" parameterType="com.fungo.community.entity.CmmOperationLog">
         UPDATE t_cmm_operation_log
         <set>
             <if test ='null != circleId'>circle_id = #{circleId},</if>
