@@ -694,7 +694,7 @@ public class PostController {
 
 
     @ApiOperation(value="精华", notes="")
-    @RequestMapping(value="/api/content/post/essence", method= RequestMethod.GET)
+    @RequestMapping(value="/api/content/post/essence/{postId}", method= RequestMethod.GET)
     @ApiImplicitParams({})
     public ResultDto<String> essence(@Anonymous MemberUserProfile memberUserPrefile,@PathVariable("postId")String postId){
         String userId = memberUserPrefile.getLoginId();
@@ -702,6 +702,17 @@ public class PostController {
             return ResultDto.error("-1","无权操作");
         }
         return bsPostService.essence(userId,postId);
+    }
+
+    @ApiOperation(value="文章加精置顶状态恢复", notes="")
+    @RequestMapping(value="/api/content/post/restore/{postId}", method= RequestMethod.GET)
+    @ApiImplicitParams({})
+    public ResultDto<String> restore(@Anonymous MemberUserProfile memberUserPrefile,@PathVariable("postId")String postId) {
+        String userId = memberUserPrefile.getLoginId();
+        if(StringUtil.isNull(userId)){
+            return ResultDto.error("-1","无权操作");
+        }
+        return bsPostService.restore(userId,postId);
     }
 
 

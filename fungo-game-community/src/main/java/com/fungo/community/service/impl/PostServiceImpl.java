@@ -2044,6 +2044,27 @@ public class PostServiceImpl implements IPostService {
         return ResultDto.success();
     }
 
+    @Override
+    public ResultDto<String> restore(String userId, String postId) {
+        // TODO 校验圈主相关权限
+
+        CmmPost post = postService.selectById(postId);
+        post.setType(1);
+//            post.setEditedAt(new Date());
+        post.setUpdatedAt(new Date());
+        boolean b = postService.updateById(post);
+        if (!b) {
+            return ResultDto.error("-1", "操作失败");
+        }
+        //clear redis cache
+        fungoCacheIndex.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX, "", null);
+        //帖子列表
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
+        fungoCacheArticle.excIndexDecodeCache(false, FungoCoreApiConstant.PUB_CIRCLE);
+        fungoCacheArticle.excIndexDecodeCache(false, FungoCoreApiConstant.PUB_POST);
+        return ResultDto.success();
+    }
+
     private void updateMemberRanked(String mb_id) {
         ResultDto resultDto = null;
         //判断是否满足获取徽章的条件
