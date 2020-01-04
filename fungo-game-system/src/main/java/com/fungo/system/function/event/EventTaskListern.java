@@ -37,6 +37,8 @@ public class EventTaskListern implements ApplicationListener<AbstractTaskEventDt
     private IScoreRuleService scoreRuleServiceImpl;
     @Autowired
     private FungoCacheTask fungoCacheTask;
+    @Autowired
+    private FungoCacheArticle fungoCacheArticle;
 
     @Override
     public void onApplicationEvent(AbstractTaskEventDto event) {
@@ -79,6 +81,8 @@ public class EventTaskListern implements ApplicationListener<AbstractTaskEventDt
             String keyPreffix = FungoCoreApiConstant.FUNGO_CORE_API_TASK_USER_TASK_PROGRESS + "-" + userId;
             fungoCacheTask.excIndexCache(false,keyPreffix,null,null  );
             fungoCacheTask.excIndexCache(false,FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + userId,null,null  );
+            fungoCacheTask.excIndexCache(false,FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_RANKS_LEVEL + userId,null,null  );
+            fungoCacheArticle.removeIndexDecodeCache(false,"*"  );
         }
     }
 

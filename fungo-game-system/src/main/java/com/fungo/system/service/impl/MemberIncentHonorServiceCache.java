@@ -46,11 +46,11 @@ public class MemberIncentHonorServiceCache {
 
         try {
 
-            Object cacheObj = FunGoEHCacheUtils.get(FunGoGameConsts.CACHE_EH_NAME, cacheKey);
-            if (null != cacheObj) {
-                List list = JSONObject.parseObject(String.valueOf(cacheObj), List.class);
-                return list;
-            }
+//            Object cacheObj = FunGoEHCacheUtils.get(FunGoGameConsts.CACHE_EH_NAME, cacheKey);
+//            if (null != cacheObj) {
+//                List list = JSONObject.parseObject(String.valueOf(cacheObj), List.class);
+//                return list;
+//            }
 
 
             honorRuleMapListResult.addAll(incentRuleList);

@@ -82,7 +82,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
 
     @Transactional
     @Override
-    public int achieveMultiScoreRule(String memberId, String ext2Task,String  objectId) {
+    public synchronized int  achieveMultiScoreRule(String memberId, String ext2Task,String  objectId) {
         try {
             ScoreRule scoreRule = scoreRuleDao.getScoreRule(ext2Task);
             int taskType = scoreRule.getTaskType();
@@ -91,7 +91,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
                 return -1;
             }
             IncentTasked incentTasked  = this.updateExtBygetTasked(memberId, scoreRule.getTaskType());
-            String ext2 = incentTasked.getExt2();
+            String ext2 =!CommonUtil.isNull(incentTasked.getExt2() ) ? incentTasked.getExt2() : "0";
             if(((Integer.valueOf( ext2 ) & Integer.valueOf( ext2Task) ) == Integer.valueOf( ext2Task))) return 0;
             if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_EXP.code()
                     || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_EXP.code() )
@@ -143,11 +143,11 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
     }
 
     @Override
-    public int achieveMultiCoinRule(String memberId, String ext2Task,String  objectId) throws IOException {
+    public synchronized int achieveMultiCoinRule(String memberId, String ext2Task,String  objectId)  {
         try {
             ScoreRule scoreRule = scoreRuleDao.getScoreRule(ext2Task);
             IncentTasked incentTasked  = this.updateExtBygetTasked(memberId, scoreRule.getTaskType());
-            String ext2 = incentTasked.getExt2();
+            String ext2 = !CommonUtil.isNull( incentTasked.getExt2() )? incentTasked.getExt2() : "0" ;
             if(((Integer.valueOf( ext2 ) & Integer.valueOf( ext2Task) ) == Integer.valueOf( ext2Task))) return 0;
             if (scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_OFFICIAL_USER_EXP.code()
                     || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_COIN.code() || scoreRule.getCodeIdt().intValue() == FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_WATCH_3_CIRCLE_EXP.code() )
@@ -199,7 +199,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
      * @date: 2019/12/23 14:00
      */
     @Override
-    public void achieveScoreRule(String memberId,String ext2Task) {
+    public synchronized void  achieveScoreRule(String memberId,String ext2Task) {
         try {
             ScoreRule scoreRule = scoreRuleDao.getScoreRule(ext2Task);
             if(scoreRule == null){
@@ -207,7 +207,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
                 return;
             }
             IncentTasked incentTasked  = this.updateExtBygetTasked(memberId, scoreRule.getTaskType());
-            String ext2 = incentTasked.getExt2();
+            String ext2 = !CommonUtil.isNull( incentTasked.getExt2() ) ? incentTasked.getExt2() : "0";
             if(((Integer.valueOf( ext2 ) & Integer.valueOf( ext2Task) ) == Integer.valueOf( ext2Task))) return;
 //            if(!((Integer.valueOf( ext2 ) & Integer.valueOf( ext2Task) ) == Integer.valueOf( ext2Task))   ){
             Integer result = (Integer.valueOf( ext2 ) | Integer.valueOf( ext2Task));
@@ -323,7 +323,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
      * 执行Fungo币任务
      * @return 1 首次成功   -1 任务失败  2 任务重复完成
      */
-    public void achieveCoinRule(String memberId,String ext2Task)  {
+    public synchronized void achieveCoinRule(String memberId,String ext2Task)  {
 
         ScoreRule scoreRule = scoreRuleDao.getScoreRule(ext2Task);
         if(scoreRule == null){
@@ -331,7 +331,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
             return;
         }
         IncentTasked incentTasked  = this.updateExtBygetTasked(memberId, scoreRule.getTaskType());
-        String ext2 = incentTasked.getExt2();
+        String ext2 = !CommonUtil.isNull( incentTasked.getExt2() ) ? incentTasked.getExt2() : "0";
         if(((Integer.valueOf( ext2 ) & Integer.valueOf( ext2Task) ) == Integer.valueOf( ext2Task))) return;
         Integer result = (Integer.valueOf( ext2 ) | Integer.valueOf( ext2Task));
         incentTasked.setExt2( result.toString());
@@ -820,7 +820,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
      */
     @Async
     @Override
-    public IncentTasked updateExtBygetTasked(String memberId, int task_type) {
+    public synchronized IncentTasked updateExtBygetTasked(String memberId, int task_type) {
         try {
             Wrapper incentTaskedEntityWrapper = new EntityWrapper<IncentTasked>();
             Map<String, Object> criteriaMapRule = new HashMap<String, Object>();

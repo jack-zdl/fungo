@@ -922,7 +922,7 @@ public class SystemServiceImpl implements SystemService {
             inputDto.setTarget_type(Integer.valueOf(ActionInput.ActionEnum.CIRCLE.getKey()));
             for (CircleFollow circleFollow: circleFollowVo.getCircleFollows()) {
                 inputDto.setTarget_id(circleFollow.getCircleId());
-                BasAction action = actionServiceImpl.getAction(circleFollowVo.getMemberId(), Setting.ACTION_TYPE_FOLLOW, inputDto);
+                BasAction action = actionServiceImpl.getStateAction(circleFollowVo.getMemberId(), Setting.ACTION_TYPE_FOLLOW, inputDto);
                 if(action != null){
                     circleFollow.setFollow(true);
                 }

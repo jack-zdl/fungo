@@ -891,6 +891,23 @@ public class ActionServiceImpl implements IActionService {
                 .eq("state", 0));
     }
 
+    //获取用户行为记录
+    public BasAction getStateAction(String memberId, int type, ActionInput inputDto) {
+        if (0 == type) {
+            return this.actionService.selectOne(new EntityWrapper<BasAction>()
+                    .eq("member_id", memberId)
+                    .eq("target_id", inputDto.getTarget_id())
+                    .eq("target_type", inputDto.getTarget_type())
+                    .eq("type", type).ne( "state",-1 ));
+        }
+        return this.actionService.selectOne(new EntityWrapper<BasAction>()
+                .eq("member_id", memberId)
+                .eq("target_id", inputDto.getTarget_id())
+                .eq("target_type", inputDto.getTarget_type())
+                .eq("type", type)
+                .eq("state", 0));
+    }
+
     //表字段 增数
     public boolean addCounter(String memberId, int type, ActionInput inputDto) {
         Map<String, String> map = new HashMap<>();
