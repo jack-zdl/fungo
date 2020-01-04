@@ -7,10 +7,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.dto.system.TaskDto;
-import com.game.common.dto.user.IncentRankedDto;
-import com.game.common.dto.user.IncentRuleRankDto;
-import com.game.common.dto.user.MemberDto;
-import com.game.common.dto.user.MemberFollowerDto;
+import com.game.common.dto.user.*;
 import com.game.common.vo.MemberFollowerVo;
 import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
@@ -185,6 +182,12 @@ public class SystemFacedeHystrixService implements FallbackFactory<SystemFeignCl
             @Override
             public ResultDto<String> updateRankedMedal(String userId, Integer rankidt) {
                 logger.error("--------------------SystemFeignClient--启动熔断:{}" , "updateRankedMedal");
+                return null;
+            }
+
+            @Override
+            public ResultDto<List<MemberNameDTO>> getCircleMainByMemberId(String circleId) {
+                logger.error("--------------------SystemFeignClient--启动熔断:{}" , "getCircleMainByMemberId");
                 return null;
             }
         };

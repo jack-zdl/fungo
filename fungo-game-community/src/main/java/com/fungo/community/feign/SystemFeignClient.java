@@ -8,10 +8,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.dto.system.TaskDto;
-import com.game.common.dto.user.IncentRankedDto;
-import com.game.common.dto.user.IncentRuleRankDto;
-import com.game.common.dto.user.MemberDto;
-import com.game.common.dto.user.MemberFollowerDto;
+import com.game.common.dto.user.*;
 import com.game.common.vo.MemberFollowerVo;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -195,5 +192,12 @@ public interface SystemFeignClient {
 
     @PostMapping("/updateRankedMedal")
     ResultDto<String> updateRankedMedal(@RequestParam("userId") String userId, @RequestParam("rankidt") Integer rankidt);
+
+
+    /**
+     * 更新荣誉 勋章 加精次数
+     */
+    @PostMapping("/getCircleMainByMemberId")
+    ResultDto<List<MemberNameDTO>> getCircleMainByMemberId(@RequestParam("circleId") String circleId);
 
 }

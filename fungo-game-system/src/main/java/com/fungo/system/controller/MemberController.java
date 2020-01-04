@@ -12,6 +12,7 @@ import com.fungo.system.service.BasActionService;
 import com.fungo.system.service.IMemberService;
 import com.fungo.system.service.IUserService;
 import com.fungo.system.service.MemberService;
+import com.fungo.system.service.impl.UserServiceImpl;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.AuthorBean;
@@ -30,10 +31,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -41,6 +45,8 @@ import java.util.*;
 @RestController
 @Api(value = "", description = "会员相关接口")
 public class MemberController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( MemberController.class);
 
     @Autowired
     private IMemberService memberService;
@@ -352,8 +358,12 @@ public class MemberController {
 
 
         ResultDto<AuthorBean> re = new ResultDto<AuthorBean>();
-        AuthorBean author = iUserService.getUserCard(cardId, memberId);
-
+        AuthorBean author = null;
+        try {
+            author = iUserService.getUserCard(cardId, memberId);
+        } catch (IOException e) {
+            LOGGER.error( "其他会员信息异常",e );
+        }
         re.setData(author);
         return re;
     }

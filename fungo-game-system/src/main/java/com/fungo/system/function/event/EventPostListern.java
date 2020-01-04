@@ -3,9 +3,11 @@ package com.fungo.system.function.event;
 import com.fungo.system.config.CuratorConfiguration;
 import com.fungo.system.dto.MemberLevelBean;
 import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
+import com.fungo.system.service.IMemberService;
 import com.fungo.system.service.IScoreRuleService;
 import com.fungo.system.service.ITaskService;
 import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.consts.MessageConstants;
 import com.game.common.dto.AbstractEventDto;
 import com.game.common.dto.ActionInput;
 import com.game.common.enums.NewTaskStatusEnum;
@@ -44,6 +46,8 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
     private ITaskService taskServiceImpl;
     @Autowired
     private FungoCacheTask fungoCacheTask;
+    @Autowired
+    private IMemberService memberServiceImpl;
 
     @Override
     @Async
@@ -137,6 +141,14 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
             taskServiceImpl.taskCheckUserFollowOfficialUser(memberId);
             taskServiceImpl.taskCheckUserFollowOfficialCircle( memberId );
             taskServiceImpl.taskCheckUserBindQQWeiboWechat( memberId);
+        }else if(AbstractEventDto.AbstractEventEnum.EDIT_USER_MESSAGE.getKey() == event.getEventType()){
+            memberId = event.getUserId();
+            Integer type = event.getScore();
+            if(1 == type){
+                memberServiceImpl.addActionTypeNotice(memberId,  MessageConstants.SYSTEM_NOTICE_USER_ON,"2");
+            }else if(2 == type){
+                memberServiceImpl.addActionTypeNotice(memberId,  MessageConstants.SYSTEM_NOTICE_USER_OFF,"2");
+            }
         }
         if(!CommonUtil.isNull( memberId )){
             String keyPreffix = FungoCoreApiConstant.FUNGO_CORE_API_TASK_USER_TASK_PROGRESS + "-" + memberId;

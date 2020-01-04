@@ -696,7 +696,12 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public ResultDto<AuthorBean> getUserCard(String cardId, String memberId) {
-        AuthorBean authorBean = userService.getUserCard(cardId, memberId);
+        AuthorBean authorBean = null;
+        try {
+            authorBean = userService.getUserCard(cardId, memberId);
+        } catch (IOException e) {
+            LOGGER.error( "获取其他用户信息,cardId= {}",cardId,e );
+        }
         return ResultDto.success(authorBean);
     }
 

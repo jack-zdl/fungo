@@ -1,5 +1,6 @@
 package com.fungo.system.controller;
 
+import com.fungo.system.service.IMemberCircleService;
 import com.fungo.system.service.SystemService;
 import com.game.common.api.InputPageDto;
 import com.game.common.dto.AuthorBean;
@@ -11,10 +12,7 @@ import com.game.common.dto.index.CardIndexBean;
 import com.game.common.dto.system.CircleFollow;
 import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.dto.system.TaskDto;
-import com.game.common.dto.user.IncentRankedDto;
-import com.game.common.dto.user.IncentRuleRankDto;
-import com.game.common.dto.user.MemberDto;
-import com.game.common.dto.user.MemberFollowerDto;
+import com.game.common.dto.user.*;
 import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.vo.MemberFollowerVo;
@@ -46,6 +44,8 @@ public class SystemController {
 
     @Autowired
     private SystemService systemService;
+    @Autowired
+    private IMemberCircleService memberCircleServiceImpl;
 
     /**
      * 功能描述: 根据用户id查询被关注人的id集合
@@ -743,8 +743,7 @@ public class SystemController {
      * 更新荣誉 勋章 加精次数
      */
     @PostMapping("/getCircleMainByMemberId")
-    public ResultDto<String> getCircleMainByMemberId(@RequestParam("userId") String userId){
-        return null;
-        //        return  systemService.updateRankedMedal(userId,rankidt);
+    public   ResultDto<List<MemberNameDTO>> getCircleMainByMemberId(@RequestParam("circleId") String circleId){
+        return memberCircleServiceImpl.getCircleMainByMemberId(  circleId);
     }
 }

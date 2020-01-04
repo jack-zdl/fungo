@@ -5,6 +5,7 @@ import com.game.common.api.InputPageDto;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -18,7 +19,7 @@ import java.util.Map;
  */
 public interface PortalSystemIUserService {
     //用户信息
-    AuthorBean getUserCard(String cardId, String memberId);
+    AuthorBean getUserCard(String cardId, String memberId) throws IOException;
 
     /**
      * 获取用户关注

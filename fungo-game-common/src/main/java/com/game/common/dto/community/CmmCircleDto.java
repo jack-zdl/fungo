@@ -2,6 +2,7 @@ package com.game.common.dto.community;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.game.common.dto.GameDto;
+import com.game.common.dto.user.MemberNameDTO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -66,6 +67,12 @@ public class CmmCircleDto implements Serializable {
      * 玩家排行(2.4.3) objectId avatar
      */
     private List<Map<String,Object>> eliteMembers = new ArrayList<>();
+
+
+    /**
+     * 圈主
+     */
+    private List<MemberNameDTO> memberCmmCircleMainList ;
 
     @Setter
     @Getter

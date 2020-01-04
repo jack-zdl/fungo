@@ -36,10 +36,7 @@ import com.game.common.dto.circle.CircleMemberPulishDto;
 import com.game.common.dto.community.*;
 import com.game.common.dto.system.CircleFollow;
 import com.game.common.dto.system.CircleFollowVo;
-import com.game.common.dto.user.IncentRankedDto;
-import com.game.common.dto.user.IncentRuleRankDto;
-import com.game.common.dto.user.MemberDto;
-import com.game.common.dto.user.MemberFollowerDto;
+import com.game.common.dto.user.*;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.ActionTypeEnum;
 import com.game.common.enums.PostTypeEnum;
@@ -212,7 +209,7 @@ public class CircleServiceImpl implements CircleService {
         return re;
     }
 
-    @Cacheable(value = FunGoGameConsts.CACHE_EH_KEY_PRE_COMMUNITY, key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_INFO_CACHE +" ' +#memberId + #circleId ")
+//    @Cacheable(value = FunGoGameConsts.CACHE_EH_KEY_PRE_COMMUNITY, key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_INFO_CACHE +" ' +#memberId + #circleId ")
     @Override
     public ResultDto<CmmCircleDto> selectCircleById(String memberId, String circleId) {
         ResultDto<CmmCircleDto> re = new ResultDto<>( );
@@ -220,7 +217,7 @@ public class CircleServiceImpl implements CircleService {
         try {
             String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_CIRCLE_INFO;
             String keySuffix = memberId + circleId;
-            cmmCircleDto = (CmmCircleDto) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
+//            cmmCircleDto = (CmmCircleDto) fungoCacheArticle.getIndexDecodeCache(keyPrefix, keySuffix);
             if (null != cmmCircleDto ) {
                 re = ResultDto.success(cmmCircleDto);
                 return re;
@@ -258,6 +255,10 @@ public class CircleServiceImpl implements CircleService {
             }
             List<Map<String, Object>> map = getCirclePayer(cmmCircle);
             cmmCircleDto.setEliteMembers(map);
+            ResultDto<List<MemberNameDTO>> resultDto1 = systemFeignClient.getCircleMainByMemberId( circleId);
+            if(resultDto1 != null && resultDto1.getData() != null && resultDto1.getData().size() > 0){
+                cmmCircleDto.setMemberCmmCircleMainList(  resultDto1.getData());
+            }
             fungoCacheArticle.excIndexDecodeCache(true, keyPrefix, keySuffix, cmmCircleDto, RedisActionHelper.getRandomRedisCacheTime());
             re = ResultDto.success(cmmCircleDto);
         } catch (Exception e) {

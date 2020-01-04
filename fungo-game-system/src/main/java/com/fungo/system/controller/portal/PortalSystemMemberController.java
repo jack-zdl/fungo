@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -169,12 +170,16 @@ public class PortalSystemMemberController {
             memberId = memberUserPrefile.getLoginId();
         }
         ResultDto<AuthorBean> re = new ResultDto<AuthorBean>();
-        AuthorBean author = portalSystemIUserService.getUserCard(cardId, memberId);
-        re.setData(author);
-        return re;
+        AuthorBean author = null;
+        try {
+            author = portalSystemIUserService.getUserCard(cardId, memberId);
+            re.setData(author);
+            return re;
+        } catch (IOException e) {
+            logger.error( "getUserCard异常，cardId = {}",cardId ,e);
+            return  ResultDto.ResultDtoFactory.buildError( "getUserCard异常" );
+        }
     }
-
-
 
     @ApiOperation(value = "获取关注内容 ", notes = "获取关注内容 ")
     @RequestMapping(value = "/api/portal/system/mine/follow", method = RequestMethod.POST)

@@ -30,4 +30,8 @@ public class MessageConstants {
 	public static final String SYSTEM_NOTICE_GAMEVIP_TWO = "亲爱的fun友，您的白金VIP仅剩两天了哟~如果想继续使用请记得及时充值，以免影响游戏体验。点击续费";
 
 	public static final String SYSTEM_NOTICE_GAMEVIP_ZERO = "亲爱的fun友，您的白金VIP已到期，如想继续使用请记得充值哦~点击续费";
+
+	public static final String SYSTEM_NOTICE_USER_OFF = "你已被管理员禁言，现无法发布或回复帖子。加群746928618联系管理员解禁，<a href='https://www.fungoweb.com/post/d67a53ecf3174ed7a567e32d2fa6352a'>点击查看社区规范</a>";
+
+	public static final String SYSTEM_NOTICE_USER_ON = "您的禁言已被解除，请注意社区发帖规范";
 }

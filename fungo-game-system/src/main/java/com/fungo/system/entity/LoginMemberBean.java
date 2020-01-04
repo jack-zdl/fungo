@@ -29,6 +29,7 @@ public class LoginMemberBean implements Serializable {
 	@ApiModelProperty(value="用户头像",example="")
 	private String avatar;
 
+	private int auth;
 	
 	public boolean isHas_password() {
 		return has_password;
@@ -90,5 +91,12 @@ public class LoginMemberBean implements Serializable {
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
 	}
-	
+
+	public int getAuth() {
+		return auth;
+	}
+
+	public void setAuth(int auth) {
+		this.auth = auth;
+	}
 }

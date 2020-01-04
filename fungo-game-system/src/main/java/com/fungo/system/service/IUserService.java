@@ -7,6 +7,8 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.user.MemberOutBean;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,7 +150,7 @@ public interface IUserService {
     ResultDto<MemberOutBean> getUserInfo(String memberId) throws Exception;
 
     //用户信息
-    AuthorBean getUserCard(String cardId, String memberId);
+    AuthorBean getUserCard(String cardId, String memberId) throws IOException;
 
     //获得用户身份图标
     List<HashMap<String, Object>> getStatusImage(String memberId) throws Exception;

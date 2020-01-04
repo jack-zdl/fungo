@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.dao.BasActionDao;
+import com.fungo.system.dao.IncentRuleRankGroupDao;
+import com.fungo.system.dao.MemberCircleMapper;
 import com.fungo.system.dto.FollowInptPageDao;
 import com.fungo.system.entity.*;
 import com.fungo.system.feign.CommunityFeignClient;
@@ -15,6 +17,7 @@ import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.MemberCmmCircleDto;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.CommonUtil;
@@ -24,11 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -65,10 +65,14 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
     private IncentRuleRankService rankRuleService;
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private IncentRuleRankGroupDao incentRuleRankGroupDao;
+    @Autowired
+    private MemberCircleMapper memberCircleMapper;
 
 
     @Override
-    public AuthorBean getUserCard(String cardId, String memberId) {
+    public AuthorBean getUserCard(String cardId, String memberId) throws IOException {
         AuthorBean author = null;
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_CARD + cardId;
         author = (AuthorBean) fungoCacheMember.getIndexCache(keyPrefix, memberId);
@@ -91,6 +95,119 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
         ResultDto<Integer> resultDto = communityFeignClient.getPostBoomWatchNumByCardId(cardId);
         if (resultDto != null){
             author.setWatchNum(resultDto.getData() == null ? 0 : resultDto.getData());
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        //荣誉,身份图片
+        List<IncentRanked> list = rankedService.selectList(new EntityWrapper<IncentRanked>().eq("mb_id", cardId));
+        for (IncentRanked ranked : list) {
+            if (ranked.getRankType() == 1) {
+                String rankIdtIds = ranked.getRankIdtIds();
+                List<HashMap<String,Object>> medalList = mapper.readValue(rankIdtIds, ArrayList.class);
+                author.setHonorNumber( medalList.size());
+                IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
+//                author.setLevel(ranked.getCurrentRankId().intValue());
+                String rankImgs = rank.getRankImgs();
+                ArrayList<HashMap<String, Object>> urlList = mapper.readValue(rankImgs, ArrayList.class);
+                author.setDignityImg((String) urlList.get(0).get("url"));
+            } else if (ranked.getRankType() == 2) {
+                String rankIdtIds = ranked.getRankIdtIds();
+                List<HashMap<String,Object>> list1 = mapper.readValue(rankIdtIds, ArrayList.class);
+                List<List<HashMap<String,Object>>> statusLists = new ArrayList<>(  );
+                int groupLevel = 0;
+                int circleLevel = 0;
+                for (HashMap<String,Object> map : list1){
+                    Integer rankId = (Integer) map.get( "1" );
+                    IncentRuleRank rank = rankRuleService.selectById(rankId);//最近获得
+                    String rankImgs = rank.getRankImgs();
+                    ArrayList<HashMap<String, Object>> urlList = null;
+                    IncentRuleRankGroup incentRuleRankGroup = incentRuleRankGroupDao.selectById( rank.getRankGroupId());
+                    groupLevel =  incentRuleRankGroup.getAuth() > groupLevel ? incentRuleRankGroup.getAuth() : groupLevel;
+                    circleLevel =  incentRuleRankGroup.getAuth() == 2 ? incentRuleRankGroup.getAuth() : circleLevel;
+                    try {
+                        urlList = mapper.readValue(rankImgs, ArrayList.class);
+                        urlList.stream().forEach( s ->{
+                            s.put( "auth", incentRuleRankGroup.getAuth());
+                            s.put( "group", incentRuleRankGroup.getId());
+                        } );
+                        statusLists.add( urlList );
+                    } catch (IOException e) {
+                        logger.error( "對象轉換异常",e );
+                    }
+                }
+                author.setGroupLevel(groupLevel);
+                author.setCircleLevel( circleLevel );
+                author.setStatusImgs(statusLists);
+            } else if (ranked.getRankType() == 3) {
+                //找出获得的荣誉合集 (勛章之類的)
+                String rankIdtIds = ranked.getRankIdtIds();
+                ArrayList<HashMap<String, Object>> rankList = mapper.readValue(rankIdtIds, ArrayList.class);
+                Collections.reverse(rankList);
+                List<String> honorImgList = new ArrayList<>();
+                int i = 0;
+                ArrayList<String> groupIdList = new ArrayList<>();
+                //取前三位
+                for (HashMap<String, Object> map : rankList) {
+                    IncentRuleRank rank = rankRuleService.selectById(Long.parseLong(map.get("1") + ""));
+                    //同一荣誉取等级最高的一个
+                    if (rank != null && !groupIdList.contains(rank.getRankGroupId())) {
+                        groupIdList.add(rank.getRankGroupId());
+                        if (rank.getRankImgs() != null) {
+                            ArrayList<HashMap<String, Object>> urlkList = mapper.readValue(rank.getRankImgs(), ArrayList.class);
+                            honorImgList.add((String) urlkList.get(0).get("url"));
+                        }
+                        i++;
+                        if (i > 2) {
+                            break;
+                        }
+                    }
+                }
+                author.setHonorImgList(honorImgList);
+            }
+        }
+        if(!CommonUtil.isNull( memberId)  ){
+            if(cardId.equals( memberId)){
+                author.setGroupStatus( 0);
+            }else {
+                int circleLevel = 0;
+                List<IncentRanked> cardIdlist = rankedService.selectList(new EntityWrapper<IncentRanked>().eq("mb_id", memberId));
+                for (IncentRanked ranked : cardIdlist) {
+                    if (ranked.getRankType() == 2) {
+                        String rankIdtIds = ranked.getRankIdtIds();
+                        List<HashMap<String,Object>> list1 = mapper.readValue(rankIdtIds, ArrayList.class);
+                        List<List<HashMap<String,Object>>> statusLists = new ArrayList<>(  );
+                        int groupLevel = 0;
+                        for (HashMap<String,Object> map : list1){
+                            Integer rankId = (Integer) map.get( "1" );
+                            IncentRuleRank rank = rankRuleService.selectById(rankId);//最近获得
+                            String rankImgs = rank.getRankImgs();
+                            ArrayList<HashMap<String, Object>> urlList = null;
+                            IncentRuleRankGroup incentRuleRankGroup = incentRuleRankGroupDao.selectById( rank.getRankGroupId());
+                            groupLevel =  incentRuleRankGroup.getAuth() > groupLevel ? incentRuleRankGroup.getAuth() : groupLevel;
+                            circleLevel =  incentRuleRankGroup.getAuth() == 2 ? incentRuleRankGroup.getAuth() : circleLevel;
+                            try {
+                                urlList = mapper.readValue(rankImgs, ArrayList.class);
+                                urlList.stream().forEach( s ->{
+                                    s.put( "auth", incentRuleRankGroup.getAuth());
+                                    s.put( "group", incentRuleRankGroup.getId());
+                                    s.put( "groupNmae", incentRuleRankGroup.getGroupName());
+                                } );
+                                statusLists.add( urlList );
+                            } catch (IOException e) {
+                                logger.error( "對象轉換异常",e );
+                            }
+                        }
+                    }
+                }
+                if(circleLevel == 2 && circleLevel > author.getCircleLevel()){
+                    author.setGroupStatus(1);
+                }
+            }
+        }
+        MemberCmmCircleDto memberCmmCircleDto = memberCircleMapper.selectMemberCircleByUserId(cardId);
+        if(memberCmmCircleDto != null && !CommonUtil.isNull(  memberCmmCircleDto.getId() ) ){
+            author.setMemberCmmCircleDto( memberCmmCircleDto);
         }
         //redis cache
         fungoCacheMember.excIndexCache(true, keyPrefix, memberId, author);

@@ -85,11 +85,11 @@ public class RedisTest {
         MemberCircle  memberCircle = new MemberCircle();
         memberCircle.setId( UUIDUtils.getUUID() );
         memberCircle.setType( 1 );
-        memberCircle.setMemberId( "287c0f55aaf7436b89c0a73964efff3c" );
+        memberCircle.setMemberId( "493d8fae5b77424ca067d815fce025fb" );
         memberCircle.setCircleId( "b3db7baef2714bb8bab6005df8924586" );
         memberCircle.setIsactive( "1" );
         memberCircle.setCreatedAt( new Date( ) );
-        memberCircle.setCreatedBy( "287c0f55aaf7436b89c0a73964efff3c" );
+        memberCircle.setCreatedBy( "493d8fae5b77424ca067d815fce025fb" );
         memberCircle.setRversion( 1 );
         memberCircle.insert();
     }

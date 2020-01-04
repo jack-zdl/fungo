@@ -16,6 +16,7 @@ import com.game.common.enums.AbstractResultEnum;
 import com.game.common.framework.file.IFileService;
 import com.game.common.util.ValidateUtils;
 import com.game.common.util.annotation.JsonView;
+import com.game.common.util.annotation.LogicCheck;
 import com.game.common.util.token.TokenService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -305,6 +306,19 @@ public class UserController {
         String memberId = memberUserPrefile.getLoginId();
         return userService.editUser(memberId, msg);
     }
+
+
+    @ApiOperation(value = "编辑个人资料", notes = "编辑个人资料")
+    @PostMapping(value = "/api/user/info")
+    @JsonView
+    @LogicCheck(loginc = {"BANNED_AUTH"})
+    public ResultDto<String> editUserAuth(MemberUserProfile memberUserPrefile, @Valid @RequestBody UserBean msg, BindingResult errors) throws Exception {
+        if(errors.hasErrors()){
+            return ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FIVE.getKey(),errors.getAllErrors().stream().map( ObjectError::getDefaultMessage).collect(Collectors.joining(",") ));
+        }
+        return userService.editUser(msg.getId(), msg);
+    }
+
 
     @ApiOperation(value = "验证手机验证码有效性", notes = "验证手机验证码有效性")
     @PostMapping(value = "/api/user/verifycode")

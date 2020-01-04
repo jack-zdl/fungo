@@ -16,7 +16,8 @@ public @interface LogicCheck {
     public static enum LogicEnum{
 
         DELETE_POST("DELETE_POST"),
-        BANNED_TEXT("BANNED_TEXT");
+        BANNED_TEXT("BANNED_TEXT"),
+        BANNED_AUTH("BANNED_AUTH");
 
         String key;
 

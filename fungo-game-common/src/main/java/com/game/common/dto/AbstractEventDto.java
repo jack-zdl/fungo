@@ -78,7 +78,9 @@ public class AbstractEventDto extends ApplicationEvent {
         TASK_USER_CHECK_BIND_QQ(22),
         TASK_USER_CHECK_BIND_WEIBO(23),
         TASK_USER_CHECK_BIND_WECHAT(24),
-        TASK_USER_CHECK_BIND_QQ_WEIBO_WECHAT(25);
+        TASK_USER_CHECK_BIND_QQ_WEIBO_WECHAT(25),
+
+        EDIT_USER_MESSAGE(26);
         int key;
         AbstractEventEnum(int k){
             this.key = k;

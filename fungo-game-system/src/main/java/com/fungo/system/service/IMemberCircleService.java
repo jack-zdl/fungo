@@ -1,6 +1,10 @@
 package com.fungo.system.service;
 
 import com.fungo.system.entity.MemberCircle;
+import com.game.common.dto.ResultDto;
+import com.game.common.dto.user.MemberNameDTO;
+
+import java.util.List;
 
 /**
  * <p></p>
@@ -10,5 +14,5 @@ import com.fungo.system.entity.MemberCircle;
  */
 public interface IMemberCircleService {
 
-    MemberCircle getCircleMainByMemberId(String circleId);
+    ResultDto<List<MemberNameDTO>> getCircleMainByMemberId(String circleId);
 }

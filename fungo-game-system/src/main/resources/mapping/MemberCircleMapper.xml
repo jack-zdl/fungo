@@ -19,23 +19,23 @@
 
     <select id="selectMemberCircleByUserId" resultType="com.game.common.dto.community.MemberCmmCircleDto" >
         SELECT 
-        cc.id,cc.circle_name ,cc.circle_icon
-        from  t_cmm_circle cc where cc.state= 1
+        cc.id,cc.circle_name as circleName ,cc.circle_icon as circleIcon
+        from  t_cmm_circle cc where cc.state= 1 and
         id in (
             SELECT circle_id
             FROM  t_member_circle
-            WHEN  isactive = 1 and member_id = #{userId}
+            WHERE  isactive = 1 and member_id = #{userId}
         )
     </select>
 
     <select id="selectMemberCircleBycircleId" resultType="com.game.common.dto.user.MemberNameDTO">
         SELECT
-            m.id,m.name,m.avatar
-        from  t_member m  where m.state= 0
-        id in (
-            SELECT circle_id
+            m.id,m.user_name as userName ,m.avatar
+        from  t_member m  where m.state= 0 and
+        m.id in (
+            SELECT member_id
             FROM  t_member_circle
-            WHEN  isactive = 1 and circle_id = #{circleId}
+            WHERE  isactive = 1 and circle_id = #{circleId}
         )
     </select>
 </mapper>

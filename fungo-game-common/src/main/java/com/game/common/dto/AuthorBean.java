@@ -1,5 +1,6 @@
 package com.game.common.dto;
 
+import com.game.common.dto.community.MemberCmmCircleDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.ToString;
@@ -100,6 +101,25 @@ public class AuthorBean {
 
     @ApiModelProperty(value="浏览量",example="")
     private int watchNum;
+
+    private int honorNumber ;
+
+    @ApiModelProperty(value="用户官方身份(2.4.3)",example="")
+    private List<List<HashMap<String,Object>>> statusImgs = new ArrayList<>();
+
+    private int groupLevel;
+
+    private int circleLevel;
+
+    private MemberCmmCircleDto memberCmmCircleDto;
+
+    /**
+     * 功能描述: 身份等级状态  1  表明登录用户可以对查询用户有权限 0 没有
+     * @date: 2020/1/4 15:27
+     */
+    private int groupStatus;
+
+    private int auth;
 
     public String getUsername() {
         return username;
@@ -275,6 +295,62 @@ public class AuthorBean {
 
     public void setWatchNum(int watchNum) {
         this.watchNum = watchNum;
+    }
+
+    public int getHonorNumber() {
+        return honorNumber;
+    }
+
+    public void setHonorNumber(int honorNumber) {
+        this.honorNumber = honorNumber;
+    }
+
+    public List<List<HashMap<String, Object>>> getStatusImgs() {
+        return statusImgs;
+    }
+
+    public void setStatusImgs(List<List<HashMap<String, Object>>> statusImgs) {
+        this.statusImgs = statusImgs;
+    }
+
+    public int getGroupLevel() {
+        return groupLevel;
+    }
+
+    public void setGroupLevel(int groupLevel) {
+        this.groupLevel = groupLevel;
+    }
+
+    public MemberCmmCircleDto getMemberCmmCircleDto() {
+        return memberCmmCircleDto;
+    }
+
+    public void setMemberCmmCircleDto(MemberCmmCircleDto memberCmmCircleDto) {
+        this.memberCmmCircleDto = memberCmmCircleDto;
+    }
+
+    public int getGroupStatus() {
+        return groupStatus;
+    }
+
+    public void setGroupStatus(int groupStatus) {
+        this.groupStatus = groupStatus;
+    }
+
+    public int getCircleLevel() {
+        return circleLevel;
+    }
+
+    public void setCircleLevel(int circleLevel) {
+        this.circleLevel = circleLevel;
+    }
+
+    public int getAuth() {
+        return auth;
+    }
+
+    public void setAuth(int auth) {
+        this.auth = auth;
     }
 }
 
