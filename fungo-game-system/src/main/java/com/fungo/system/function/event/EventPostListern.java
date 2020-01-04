@@ -1,6 +1,7 @@
 package com.fungo.system.function.event;
 
 import com.fungo.system.config.CuratorConfiguration;
+import com.fungo.system.dto.MemberLevelBean;
 import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.service.IScoreRuleService;
 import com.fungo.system.service.ITaskService;
@@ -102,35 +103,35 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
         }else if(AbstractEventDto.AbstractEventEnum.EDIT_USER.getKey() == event.getEventType()){
             memberId = event.getUserId();
             scoreRuleServiceImpl.achieveScoreRule( memberId, NewTaskStatusEnum.EDITUSER_EXP.getKey());
-            scoreRuleServiceImpl.achieveScoreRule( memberId, NewTaskStatusEnum.EDITUSER_COIN.getKey());
+            scoreRuleServiceImpl.achieveCoinRule( memberId, NewTaskStatusEnum.EDITUSER_COIN.getKey());
         }else if(AbstractEventDto.AbstractEventEnum.FOLLOW_OFFICIAL_USER.getKey() == event.getEventType()){
             memberId = event.getUserId();
             scoreRuleServiceImpl.achieveScoreRule( memberId, NewTaskStatusEnum.FOLLOWOFFICIALUSER_EXP.getKey());
-            scoreRuleServiceImpl.achieveScoreRule( memberId, NewTaskStatusEnum.FOLLOWOFFICIALUSER_COIN.getKey());
+            scoreRuleServiceImpl.achieveCoinRule( memberId, NewTaskStatusEnum.FOLLOWOFFICIALUSER_COIN.getKey());
         }else if(AbstractEventDto.AbstractEventEnum.BROWSE_SHOP.getKey() == event.getEventType()){
             memberId = event.getUserId();
             scoreRuleServiceImpl.achieveScoreRule( memberId, NewTaskStatusEnum.BROWSESHOP_EXP.getKey());
-            scoreRuleServiceImpl.achieveScoreRule( memberId, NewTaskStatusEnum.BROWSESHOP_EXP.getKey());
+            scoreRuleServiceImpl.achieveCoinRule( memberId, NewTaskStatusEnum.BROWSESHOP_EXP.getKey());
         }else if(AbstractEventDto.AbstractEventEnum.BINDQQ_USER.getKey() == event.getEventType()){
             memberId = event.getUserId();
             scoreRuleServiceImpl.achieveScoreRule( memberId, NewTaskStatusEnum.BINDQQ_EXP.getKey());
-            scoreRuleServiceImpl.achieveScoreRule( memberId, NewTaskStatusEnum.BINDQQ_COIN.getKey());
+            scoreRuleServiceImpl.achieveCoinRule( memberId, NewTaskStatusEnum.BINDQQ_COIN.getKey());
         }else if(AbstractEventDto.AbstractEventEnum.BINDWECHAT_USER.getKey() == event.getEventType()){
             memberId = event.getUserId();
             scoreRuleServiceImpl.achieveScoreRule( memberId, NewTaskStatusEnum.BINDWECHAT_Exp.getKey());
-            scoreRuleServiceImpl.achieveScoreRule( memberId, NewTaskStatusEnum.BINDWECHAT_COIN.getKey());
+            scoreRuleServiceImpl.achieveCoinRule( memberId, NewTaskStatusEnum.BINDWECHAT_COIN.getKey());
         }else if(AbstractEventDto.AbstractEventEnum.BINDWEIBO_USER.getKey() == event.getEventType()){
             memberId = event.getUserId();
             scoreRuleServiceImpl.achieveScoreRule( memberId, NewTaskStatusEnum.BINDWEIBO_EXP.getKey());
-            scoreRuleServiceImpl.achieveScoreRule( memberId, NewTaskStatusEnum.BINDWEIBO_COIN.getKey());
+            scoreRuleServiceImpl.achieveCoinRule( memberId, NewTaskStatusEnum.BINDWEIBO_COIN.getKey());
         }else if(AbstractEventDto.AbstractEventEnum.OPENPUSH_USER.getKey() == event.getEventType()){
             String userId = event.getUserId();
             scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.OPENPUSH_EXP.getKey());
-            scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.OPENPUSH_COIN.getKey());
+            scoreRuleServiceImpl.achieveCoinRule( userId, NewTaskStatusEnum.OPENPUSH_COIN.getKey());
         }else if(AbstractEventDto.AbstractEventEnum.VPN_GAME.getKey() == event.getEventType()){
             memberId = event.getUserId();
             scoreRuleServiceImpl.achieveScoreRule( memberId, NewTaskStatusEnum.VPN_EXP.getKey());
-            scoreRuleServiceImpl.achieveScoreRule( memberId, NewTaskStatusEnum.VPN_COIN.getKey());
+            scoreRuleServiceImpl.achieveCoinRule( memberId, NewTaskStatusEnum.VPN_COIN.getKey());
         }else if(AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK.getKey() == event.getEventType()){
             memberId = event.getUserId();
             taskServiceImpl.taskCheckUserFollowOfficialUser(memberId);
@@ -141,6 +142,8 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
             String keyPreffix = FungoCoreApiConstant.FUNGO_CORE_API_TASK_USER_TASK_PROGRESS + "-" + memberId;
             fungoCacheTask.excIndexCache(false,keyPreffix,null,null  );
             fungoCacheTask.excIndexCache(false,FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + memberId,null,null  );
+            fungoCacheTask.excIndexCache(false,FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_RANKS_LEVEL + memberId,null,null  );
+            fungoCacheArticle.removeIndexDecodeCache(false,"*"  );
         }
 
     }

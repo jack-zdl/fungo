@@ -171,7 +171,7 @@ public class UserMqConsumeServiceImpl implements UserMqConsumeService {
             String userId = basActionDto.getMemberId();
             String circleId = basActionDto.getTargetId();
             scoreRuleServiceImpl.achieveMultiScoreRule( userId, NewTaskStatusEnum.JOINOFFICIALCIRLCE_EXP.getKey(),circleId );
-            scoreRuleServiceImpl.achieveMultiScoreRule( userId,NewTaskStatusEnum.JOINOFFICIALCIRLCE_COIN.getKey(),circleId );
+            scoreRuleServiceImpl.achieveMultiCoinRule( userId,NewTaskStatusEnum.JOINOFFICIALCIRLCE_COIN.getKey(),circleId );
         }catch (Exception e){
 
         }
