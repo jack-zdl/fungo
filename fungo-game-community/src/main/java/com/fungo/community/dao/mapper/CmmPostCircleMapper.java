@@ -73,5 +73,6 @@ public interface CmmPostCircleMapper {
      */
     int deletePostCircleByPostIds(@Param("ids")  List<String> ids);
 
+    int countCircleIdPostId(@Param("postId") String postId,@Param("circleId") String circleId);
 
 }

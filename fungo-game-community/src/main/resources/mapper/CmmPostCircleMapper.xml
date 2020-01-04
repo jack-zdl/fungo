@@ -122,6 +122,10 @@
 	 where cpc.post_id = #{postId} and cc.state = 1 order by cpc.default_link desc limit 1
   </select>
 
+    <select id="countCircleIdPostId" resultType="java.lang.Integer">
+        select count(*) from  t_cmm_post_circle cpc where cpc.post_id = #{postId} and cpc.circle_id = #{circleId}
+    </select>
+
     <select id="getCmmPostCircleByCircleId" parameterType="java.lang.String"
             resultType="com.game.common.dto.circle.CircleMemberPulishDto">
     SELECT sum(f.c) as postNum,sum(f.d) as commentNum,sum(f.f) as evaNum, f.member_id as memberId , sum(f.comment_num) as postCommentNum ,

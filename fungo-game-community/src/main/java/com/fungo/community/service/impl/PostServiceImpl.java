@@ -132,6 +132,10 @@ public class PostServiceImpl implements IPostService {
     private ApplicationEventPublisher applicationEventPublisher;
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
+
+    @Autowired
+    private CmmOperationLogMapper cmmOperationLogMapper;
+
     @Override
     @Transactional
     public ResultDto<ObjectId> addPost(PostInput postInput, String user_id) throws Exception {
@@ -1945,14 +1949,62 @@ public class PostServiceImpl implements IPostService {
 
     }
 
-    @Override
-    public ResultDto<String> top(String userId, String postId) {
-        // 校验 圈主身份 圈主当日操作次数 TODO
+    /**
+     * 校验圈主权限 成功返回圈子id
+     * 1.加精 2.置顶 3.修改分类 4.隐藏 5.关闭评论 6.禁言 各状态数字*100 为对应的解除操作 例 100 解除加精
+     */
+    private ResultDto<String> checkPermissions(String userId,String postId,Integer actionType){
 
+        String circleId = null;// TODO 校验用户是哪个圈子的圈主
+        int circleIdPostId = cmmPostCircleMapper.countCircleIdPostId(postId, circleId);
+        if(circleIdPostId==0){
+            return ResultDto.error("-1","文章不归属圈主所在圈子");
+        }
+
+        // 校验行为次数 加精置顶每日仅可各操作一次
+        if(actionType == 1 || actionType == 2){
+            long current = System.currentTimeMillis();    //当前时间毫秒数
+            long zeroT = current/(1000*3600*24)*(1000*3600*24)- TimeZone.getDefault().getRawOffset();  //今天零点零分零秒的毫秒数
+            long endT=zeroT+24*60*60*1000-1;  //今天23点59分59秒的毫秒数
+            Wrapper<CmmOperationLog> wrapper = new EntityWrapper<CmmOperationLog>().eq("member_id", userId).eq("action_type", actionType).ge("created_at", new Date(zeroT)).le("created_at", endT);
+            Integer operationCount = cmmOperationLogMapper.selectCount(wrapper);
+            if(operationCount>=1){
+                return ResultDto.error("-1","今日该操作次数已达上限");
+            }
+        }
+        return  ResultDto.success(circleId);
+    }
+
+    @Override
+    @Transactional
+    public ResultDto<String> top(String userId, String postId) {
         CmmPost post =postService.selectById(postId);
         if(post==null||post.getState()!=1){
             return ResultDto.error("-1","文章不存在或已下架");
         }
+        Integer type = post.getType();
+        if(type==3){
+            return ResultDto.error("-1","文章已处于置顶状态");
+        }
+        // 校验 圈主身份 圈主当日操作次数
+        ResultDto<String> checkPermissions = checkPermissions(userId,postId,2);
+        if(!checkPermissions.isSuccess()){
+            return checkPermissions;
+        }
+        // 插入操作日志
+        CmmOperationLog cmmOperationLog = new CmmOperationLog();
+        cmmOperationLog.setMemberId(userId);
+        cmmOperationLog.setActionType(2);
+        cmmOperationLog.setCircleId(checkPermissions.getMessage());
+        cmmOperationLog.setCreatedAt(new Date());
+        cmmOperationLog.setTargetId(postId);
+        cmmOperationLog.setTargetType(1);
+        cmmOperationLog.setUpdatedAt(new Date());
+        cmmOperationLog.setOldTargetState(String.valueOf(type));
+        // 3 标识 文章处于置顶状态
+        cmmOperationLog.setNewTargetState(String.valueOf(3));
+        cmmOperationLogMapper.insert(cmmOperationLog);
+
         post.setType(3);
         post.setEditedAt(new Date());
         boolean b = postService.updateById(post);
@@ -1995,9 +2047,34 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public ResultDto<String> essence(String userId, String postId) {
-        // 校验 圈主身份 圈主当日操作次数 TODO
-        
         CmmPost post = postService.selectById(postId);
+        if(post==null||post.getState()!=1){
+            return ResultDto.error("-1","文章不存在或已下架");
+        }
+        Integer type = post.getType();
+        if(type==2){
+            return ResultDto.error("-1","文章已处于加精状态");
+        }
+
+        // 校验 圈主身份 圈主当日操作次数
+        ResultDto<String> checkPermissions = checkPermissions(userId,postId,1);
+        if(!checkPermissions.isSuccess()){
+            return checkPermissions;
+        }
+        // 插入操作日志
+        CmmOperationLog cmmOperationLog = new CmmOperationLog();
+        cmmOperationLog.setMemberId(userId);
+        cmmOperationLog.setActionType(1);
+        cmmOperationLog.setCircleId(checkPermissions.getMessage());
+        cmmOperationLog.setCreatedAt(new Date());
+        cmmOperationLog.setTargetId(postId);
+        cmmOperationLog.setTargetType(1);
+        cmmOperationLog.setUpdatedAt(new Date());
+        cmmOperationLog.setOldTargetState(String.valueOf(type));
+        // 2 标识 文章处于加精状态
+        cmmOperationLog.setNewTargetState(String.valueOf(2));
+        cmmOperationLogMapper.insert(cmmOperationLog);
+
         post.setType(2);
         post.setEditedAt(new Date());
         boolean b = postService.updateById(post);
@@ -2046,9 +2123,33 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public ResultDto<String> restore(String userId, String postId) {
-        // TODO 校验圈主相关权限
-
         CmmPost post = postService.selectById(postId);
+        if(post==null){
+            return ResultDto.error("-1","文章不存在");
+        }
+        Integer type = post.getType();
+
+        if(type!=2&&type!=3){
+            return ResultDto.error("-1","文章当前是普通文章");
+        }
+        Integer actionType = type==2?100:200;
+        // 校验 圈主身份 圈主当日操作次数
+        ResultDto<String> checkPermissions = checkPermissions(userId,postId,actionType);
+        if(!checkPermissions.isSuccess()){
+            return checkPermissions;
+        }
+
+        // 插入操作日志
+        CmmOperationLog cmmOperationLog = new CmmOperationLog();
+        cmmOperationLog.setMemberId(userId);
+        cmmOperationLog.setActionType(actionType);
+        cmmOperationLog.setCircleId(checkPermissions.getMessage());
+        cmmOperationLog.setCreatedAt(new Date());
+        cmmOperationLog.setTargetId(postId);
+        cmmOperationLog.setTargetType(1);
+        cmmOperationLog.setUpdatedAt(new Date());
+        cmmOperationLogMapper.insert(cmmOperationLog);
+
         post.setType(1);
 //            post.setEditedAt(new Date());
         post.setUpdatedAt(new Date());
@@ -2067,14 +2168,35 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public ResultDto<String> updatePostTag(String userId, String postId, String tagId) {
-        int cmmPostCount = postService.selectCount(new EntityWrapper<CmmPost>().eq("id",postId));
-        if(cmmPostCount == 1){
-            CmmPost cmmPost1 = new CmmPost();
-            cmmPost1.setId(postId);
-           cmmPost1.setUpdatedAt(new Date());
-           cmmPost1.setTags(tagId);
-            postService.updateById(cmmPost1);
+        CmmPost post = postService.selectById(postId);
+        if(post==null){
+            return ResultDto.error("-1","文章不存在");
         }
+
+        // 校验 圈主身份 圈主当日操作次数
+        ResultDto<String> checkPermissions = checkPermissions(userId,postId,3);
+        if(!checkPermissions.isSuccess()){
+            return checkPermissions;
+        }
+
+        // 插入操作日志
+        CmmOperationLog cmmOperationLog = new CmmOperationLog();
+        cmmOperationLog.setMemberId(userId);
+        cmmOperationLog.setActionType(3);
+        cmmOperationLog.setCircleId(checkPermissions.getMessage());
+        cmmOperationLog.setCreatedAt(new Date());
+        cmmOperationLog.setTargetId(postId);
+        cmmOperationLog.setTargetType(1);
+        cmmOperationLog.setUpdatedAt(new Date());
+        cmmOperationLog.setOldTargetState(post.getTags());
+        cmmOperationLog.setNewTargetState(tagId);
+        cmmOperationLogMapper.insert(cmmOperationLog);
+
+        CmmPost cmmPost1 = new CmmPost();
+        cmmPost1.setId(postId);
+        cmmPost1.setUpdatedAt(new Date());
+        cmmPost1.setTags(tagId);
+        postService.updateById(cmmPost1);
         return ResultDto.success();
     }
 
