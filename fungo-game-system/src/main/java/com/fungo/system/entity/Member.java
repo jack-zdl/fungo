@@ -18,7 +18,7 @@ import java.util.Date;
  * @since 2018-10-25
  */
 @TableName("t_member")
-public class Member extends Model<Member> {
+public class Member extends Model<Member> implements Cloneable  {
 
     private static final long serialVersionUID = 1L;
 
@@ -215,6 +215,7 @@ public class Member extends Model<Member> {
 	 */
 	@TableField("auth")
 	private int auth;
+
 
 	public String getId() {
 		return id;
@@ -541,6 +542,7 @@ public class Member extends Model<Member> {
 	public void setAuth(int auth) {
 		this.auth = auth;
 	}
+
 
 	@Override
 	public String toString() {

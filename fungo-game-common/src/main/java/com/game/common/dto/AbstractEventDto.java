@@ -47,6 +47,11 @@ public class AbstractEventDto extends ApplicationEvent {
     private List<String> ObjectIdList;
     /************** end eventType = 4*********************/
 
+    /************** end eventType = 5*********************/
+    private int type;
+    private int auth;
+    /************** end eventType = 5*********************/
+
     public AbstractEventDto(Object source) {
         super( source );
     }

@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.dao.BasActionDao;
+import com.fungo.system.dao.MemberCircleMapper;
+import com.fungo.system.dao.MemberDao;
 import com.fungo.system.entity.*;
 import com.fungo.system.facede.ICommunityProxyService;
 import com.fungo.system.service.*;
@@ -18,6 +20,7 @@ import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
+import com.game.common.dto.community.MemberCmmCircleDto;
 import com.game.common.dto.system.CircleFollow;
 import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.dto.system.TaskDto;
@@ -42,6 +45,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -61,7 +65,6 @@ public class SystemServiceImpl implements SystemService {
 
     @Autowired
     private BasActionDao basActionDao;
-
 
     @Autowired
     private MemberFollowerService memberFollowerServiceImap;
@@ -126,7 +129,8 @@ public class SystemServiceImpl implements SystemService {
 
     @Autowired
     private FungoCacheMember fungoCacheMember;
-
+    @Autowired
+    private MemberCircleMapper memberCircleMapper;
     /**
      * 功能描述: 根据用户id查询被关注人的id集合
      *
@@ -623,9 +627,24 @@ public class SystemServiceImpl implements SystemService {
             wrapper.eq("state", state);
         }
         List<Member> members = memberServiceImap.selectList(wrapper);
-        List<MemberDto> memberFollowerDtos = null;
+        List<MemberDto> memberFollowerDtos = new ArrayList<>();
         try {
-            memberFollowerDtos = CommonUtils.deepCopy(members, MemberDto.class);
+            List<MemberDto> finalMemberFollowerDtos = memberFollowerDtos;
+            members.stream().forEach( x ->{
+                MemberDto s = new MemberDto();
+                try {
+                    BeanUtils.copyProperties(s,x);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+                MemberCmmCircleDto memberCmmCircleDto = memberCircleMapper.selectMemberCircleByUserId( x.getId());
+                if(memberCmmCircleDto != null && !CommonUtil.isNull( memberCmmCircleDto.getId() )){
+                    s.setCircleId( memberCmmCircleDto.getId() );
+                }
+                finalMemberFollowerDtos.add( s);
+            });
         } catch (Exception e) {
             LOGGER.error("SystemService.listMembersByids error", e);
             return ResultDto.error("-1", "SystemService.listMembersByids error");

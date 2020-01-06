@@ -20,6 +20,8 @@ import com.game.common.enums.FunGoTaskV243Enum;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.date.DateTools;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,9 @@ import java.util.Map;
 
 @Service
 public class GameProxyImpl implements IGameProxy {
+
+	private static final Logger logger = LoggerFactory.getLogger(GameProxyImpl.class);
+
 	@Autowired
 	private BasNoticeService noticeService;
 	@Autowired
@@ -42,13 +47,12 @@ public class GameProxyImpl implements IGameProxy {
 	@Autowired
 	private IPushService pushService;
 	@Autowired
-	private IGameProxyService gameProxyServiceImpl;
-	@Autowired
 	private IDeveloperProxyService iDeveloperProxyService;
 	@Autowired
 	private IGameProxyService iGameProxyService;
 	@Autowired
 	private CommunityFeignClient communityFeignClient;
+
 	/**
 	 * information --> content
 	 * 用户通知接口
@@ -61,7 +65,7 @@ public class GameProxyImpl implements IGameProxy {
 		getMemberInfo(memberId,date);
 		boolean push = true;
 		//  msgType = 6;   系统消息
-		if(Setting.ACTION_TYPE_LIKE == eventType && Setting.RES_TYPE_POST==target_type) {// 点赞帖子
+		if(Setting.ACTION_TYPE_LIKE == eventType && Setting.RES_TYPE_POST==target_type) { // 点赞帖子
 			// @todo 社区帖子的
 			CmmPostDto cmmPostParam = new CmmPostDto();cmmPostParam.setId(target_id);
 			cmmPostParam.setState(1);

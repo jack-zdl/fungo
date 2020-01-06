@@ -80,7 +80,7 @@ public interface SystemService {
      * @param changeScore 要变更的经验/积分
      * @return 操作结果
      */
-    public ResultDto<String>  processUserScoreChange(String userId,Integer changeScore);
+    ResultDto<String>  processUserScoreChange(String userId,Integer changeScore);
 
     ResultDto<IncentRuleRankDto> getIncentRuleRankById(String id);
 

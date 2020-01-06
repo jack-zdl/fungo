@@ -91,7 +91,7 @@ public class PostController {
         int page = searchInputDto.getPage();
         //fix: 页码 小于1 返回空 [by mxf 2019-01-30]
         if (page < 1) {
-            return new FungoPageResultDto<Map<String, Object>>();
+            return new FungoPageResultDto<>();
         }
 
         int limit = searchInputDto.getLimit();
@@ -299,7 +299,7 @@ public class PostController {
         if ("0".equals(filter)) {
 
             EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<CmmPost>();
-            postEntityWrapper.eq("type", 2).eq("state", 1);
+            postEntityWrapper.eq("type", 2).eq("state", 1).ne("auth", 1);
 
             postEntityWrapper.last("ORDER BY sort DESC,updated_at DESC");
 
@@ -727,6 +727,42 @@ public class PostController {
         return bsPostService.updatePostTag(userId,postId,tagId);
     }
 
+
+
+    @ApiOperation(value = "帖子權限", notes = "")
+    @GetMapping(value = "/api/content/post/auth/{postId}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "postId", value = "帖子id", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "userId", value = "用户id", paramType = "form", dataType = "string")
+    })
+    public ResultDto<Map<String,Object>> getPostAuth(MemberUserProfile memberUserPrefile, @PathVariable("postId") String postId) {
+        String userId = "";
+        if (memberUserPrefile != null) {
+            userId = memberUserPrefile.getLoginId();
+        }
+        try {
+            return bsPostService.getPostAuth(postId, userId);
+        } catch (Exception e) {
+            return ResultDto.error("-1", "操作失败");
+        }
+    }
+
+
+    @ApiOperation(value = "修改文章", notes = "")
+    @PutMapping(value = "/api/content/post/edit")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "html", value = "html内容", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "postId", value = "帖子id", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "title", value = "标题", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "content", value = "帖子内容", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "images", value = "图片", paramType = "form", dataType = "string[]"),
+
+    })
+    @LogicCheck(loginc = {"BANNED_TEXT"})
+    public ResultDto<String> editPost(MemberUserProfile memberUserPrefile, @RequestBody PostInput postInput) throws Exception {
+        String userId = memberUserPrefile.getLoginId();
+        return bsPostService.editPost(postInput, userId);
+    }
 
 
 }

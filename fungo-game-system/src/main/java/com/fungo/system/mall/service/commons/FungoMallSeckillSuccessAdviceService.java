@@ -61,7 +61,7 @@ public class FungoMallSeckillSuccessAdviceService {
             noticeDto.setIsRead(0);
             noticeDto.setMemberId(mb_id);
 
-            HashMap<String, String> msgContentMap = new HashMap<String, String>();
+            HashMap<String, String> msgContentMap = new HashMap<>();
             /**
              * 值|表意|说明|备注
              *
@@ -113,7 +113,6 @@ public class FungoMallSeckillSuccessAdviceService {
                     msgContentMap.put("actionType", "2");
                     break;
                 //零卡 谷歌
-
                 case 26:
                     msgDataContent = FungoMallSeckillConsts.MSG_SECKILL_SUCCESS_LINGKA_GOOGLE;
                     msgDataContent = msgDataContent.replace("{", cardSn);

@@ -55,6 +55,14 @@ public class PostInput implements Serializable{
 	 */
 	private String tagId;
 
+	/**
+	 * 功能描述: 错误类型 0  正常下隐藏 关闭回复  1 取消隐藏 取消关闭回复
+	 * @date: 2020/1/6 12:32
+	 */
+	private int type;
+
+	private Integer auth;
+
 	public List<String> getIncludeGameList() {
 		return includeGameList;
 	}
@@ -154,4 +162,20 @@ public class PostInput implements Serializable{
 	public void setVideoId(String videoId) {
 		this.videoId = videoId;
 	}
+
+	public Integer getAuth() {
+		return auth;
+	}
+
+	public void setAuth(Integer auth) {
+		this.auth = auth;
+	}
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
 }

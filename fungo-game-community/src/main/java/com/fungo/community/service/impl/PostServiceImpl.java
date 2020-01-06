@@ -53,6 +53,7 @@ import com.game.common.util.*;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.EmojiDealUtil;
 import com.game.common.util.emoji.FilterEmojiUtil;
+import com.game.common.util.exception.BusinessException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -941,6 +942,87 @@ public class PostServiceImpl implements IPostService {
         return ResultDto.success();
     }
 
+
+
+    @Override
+    @Transactional
+    public ResultDto<String> editPost(PostInput postInput, String userId) throws Exception {
+        /*
+         * 修改文章时
+         * 1，传入video=原始video即保持原来视频
+         * 2，传入video=""即删除原有视频
+         * 3，传入videoId=新视频videoId即传入新视频
+         */
+        String postId = postInput.getPostId();
+        if (postInput == null || postId == null) {
+            return ResultDto.error("222", "找不到帖子内容");
+        }
+        if (userId == null) {
+            return ResultDto.error("211", "找不到用户id");
+        }
+        CmmPost post = postService.selectById(postId);
+        if (post == null) {
+            return ResultDto.error("223", "帖子不存在");
+        }
+
+        List<CmmCircle> cmmCircles = cmmCircleMapper.selectCircleByPostId(post.getId());
+        if(cmmCircles != null && cmmCircles.size()> 0 ){
+            Integer oldStatus = post.getAuth();
+            CmmOperationLog cmmOperationLog = new CmmOperationLog();
+            cmmOperationLog.setId( UUIDUtils.getUUID() );
+            cmmOperationLog.setCircleId( cmmCircles.get(0).getId() );
+            cmmOperationLog.setMemberId( userId);
+            cmmOperationLog.setTargetType(1);
+            cmmOperationLog.setTargetId( postId);
+            cmmOperationLog.setOldTargetState( oldStatus.toString());
+            cmmOperationLog.setNewTargetState( String.valueOf( postInput.getAuth() ));
+            if( postInput.getType() == 0 && postInput.getAuth() == 1 ){
+                cmmOperationLog.setActionType( 4 );
+            }else if(postInput.getType() == 0 && postInput.getAuth() == 2){
+                cmmOperationLog.setActionType( 5 );
+            }else if(postInput.getType() == 1 && postInput.getAuth() == 2){
+                cmmOperationLog.setActionType( 500 );
+            }
+            cmmOperationLog.setCreatedAt( new Date( ) );
+            cmmOperationLog.setUpdatedAt( new Date( ) );
+            cmmOperationLog.insert();
+        }
+        if( postInput.getAuth() == null && postInput.getType() == 0){
+            post.setAuth( ( post.getAuth() | postInput.getAuth()));
+        }else {
+            post.setAuth( (postInput.getAuth()^post.getAuth()) );
+        }
+        postService.updateAllColumnById(post);
+
+        AbstractEventDto abstractEventDto = new AbstractEventDto(this);
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.UPDATE_POST.getKey());
+        abstractEventDto.setUserId( post.getMemberId() );
+        abstractEventDto.setPostId(postId);
+        abstractEventDto.setObjectId( post.getTitle());
+        abstractEventDto.setType( postInput.getType() );
+        abstractEventDto.setAuth( postInput.getAuth());
+        applicationEventPublisher.publishEvent(abstractEventDto);
+
+        //clear redis cache
+        //文章内容html-内容
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_CONTENT + postId, "", null);
+        //文章内容html-标题
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_TITLE + postId, "", null);
+        //帖子详情
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, postId, null);
+        //帖子/心情评论列表
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
+        //首页文章帖子列表(v2.4)
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
+        //帖子列表
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
+        //社区置顶文章(2.4.3)
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, post.getCommunityId(), null);
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
+        return ResultDto.success();
+    }
+
     @Cacheable(value = CACHE_EH_KEY_POST, key = "'" + FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL_CACHE +" ' +#userId + #postId ")
     @Override
     public ResultDto<PostOut> getPostDetails(String postId, String userId, String os) throws Exception {
@@ -1261,8 +1343,7 @@ public class PostServiceImpl implements IPostService {
             }
         }
         out.setIncludeGameList(gameNames);
-
-        
+        out.setAuth( cmmPost.getAuth());
         CmmPost cmmPostUpdate = new CmmPost();
         cmmPostUpdate.setId(postId);
         cmmPostUpdate.setWatchNum(cmmPost.getWatchNum() + 1);
@@ -1314,7 +1395,7 @@ public class PostServiceImpl implements IPostService {
         if(filter != null  && !"".equals(filter)){
             wrapper.eq( "type",filter );
         }
-
+        wrapper.ne( "auth",1 );
         if (sort == 1) {//  时间正序
             wrapper.orderBy("updated_at", true);
         } else if (sort == 2) {//  时间倒序
@@ -1551,7 +1632,7 @@ public class PostServiceImpl implements IPostService {
         }
 
         mapList = new ArrayList<>();
-        List<CmmPost> list = postService.selectList(new EntityWrapper<CmmPost>().eq("community_id", communityId).eq("type", 3));
+        List<CmmPost> list = postService.selectList(new EntityWrapper<CmmPost>().eq("community_id", communityId).eq("type", 3).ne( "auth",1 ));
         for (CmmPost p : list) {
             Map<String, String> map = new HashMap<>();
             map.put("titile", p.getTitle());
@@ -2200,6 +2281,30 @@ public class PostServiceImpl implements IPostService {
         return ResultDto.success();
     }
 
+    @Override
+    public ResultDto<Map<String,Object>> getPostAuth(String postId, String userId) {
+        Map<String,Object> map = new HashMap<>( );
+        map.put("isOk",false);
+        ResultDto<Map<String,Object>> result = ResultDto.ResultDtoFactory.buildSuccess( map);
+        try {
+            ResultDto<List<MemberDto>> resultDto = systemFeignClient.listMembersByids( Collections.singletonList( userId ),null);
+            if(resultDto != null && resultDto.getData() != null){
+                List<MemberDto> memberDtos = resultDto.getData();
+                MemberDto memberDto = memberDtos.get( 0);
+                if(!CommonUtil.isNull( memberDto.getCircleId() )){
+                    List<CmmCircle>  cmmCircles  =  cmmCircleMapper.selectCircleByPostId( postId);
+                    if(cmmCircles != null && cmmCircles.size()>0 && memberDto.getCircleId().equals(cmmCircles.get( 0 ).getId())){
+                        map.put("isOk",true);
+                        result = ResultDto.ResultDtoFactory.buildSuccess( map);
+                    }
+                }
+            }
+        }catch (Exception e){
+            logger.error( "查看用户和文章权限失败,userId = {} , postId = {}",userId,postId,e);
+        }
+        return result;
+    }
+
     private void updateMemberRanked(String mb_id) {
         ResultDto resultDto = null;
         //判断是否满足获取徽章的条件
@@ -2387,6 +2492,7 @@ public class PostServiceImpl implements IPostService {
     public Wrapper getWrapper(String keyword,Wrapper wrapperCmmPost){
 
         wrapperCmmPost.where("state = {0}", 1);
+        wrapperCmmPost.where("auth != {0}", 1);
         wrapperCmmPost.andNew("title like '%" + keyword + "%'");
         wrapperCmmPost.or("content like " + "'%" + keyword + "%'");
         return wrapperCmmPost;

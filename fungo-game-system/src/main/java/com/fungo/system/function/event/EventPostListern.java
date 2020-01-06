@@ -144,9 +144,9 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
         }else if(AbstractEventDto.AbstractEventEnum.EDIT_USER_MESSAGE.getKey() == event.getEventType()){
             memberId = event.getUserId();
             Integer type = event.getScore();
-            if(1 == type){
+            if(0 == type){
                 memberServiceImpl.addActionTypeNotice(memberId,  MessageConstants.SYSTEM_NOTICE_USER_ON,"2");
-            }else if(2 == type){
+            }else if(1 == type){
                 memberServiceImpl.addActionTypeNotice(memberId,  MessageConstants.SYSTEM_NOTICE_USER_OFF,"2");
             }
         }

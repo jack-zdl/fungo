@@ -740,10 +740,12 @@ public class SystemController {
 
 
     /**
-     * 更新荣誉 勋章 加精次数
+     * 查询圈主
      */
-    @PostMapping("/getCircleMainByMemberId")
+    @PostMapping("/getCircleMainByCircleId")
     public   ResultDto<List<MemberNameDTO>> getCircleMainByMemberId(@RequestParam("circleId") String circleId){
         return memberCircleServiceImpl.getCircleMainByMemberId(  circleId);
     }
+
+
 }

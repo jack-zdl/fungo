@@ -160,6 +160,8 @@ public class MemberDto extends InputPageDto implements Serializable  {
 	//权限  1 权限正常 2:禁言
 	private int auth;
 
+	private String circleId;
+
 	public String getTest() {
 		return test;
 	}
@@ -446,6 +448,14 @@ public class MemberDto extends InputPageDto implements Serializable  {
 
 	public void setAuth(int auth) {
 		this.auth = auth;
+	}
+
+	public String getCircleId() {
+		return circleId;
+	}
+
+	public void setCircleId(String circleId) {
+		this.circleId = circleId;
 	}
 
 	@Override
