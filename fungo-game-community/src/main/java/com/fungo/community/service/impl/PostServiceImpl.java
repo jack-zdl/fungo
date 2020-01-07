@@ -2035,8 +2035,17 @@ public class PostServiceImpl implements IPostService {
      * 1.加精 2.置顶 3.修改分类 4.隐藏 5.关闭评论 6.禁言 各状态数字*100 为对应的解除操作 例 100 解除加精
      */
     private ResultDto<String> checkPermissions(String userId,String postId,Integer actionType){
-
-        String circleId = null;// TODO 校验用户是哪个圈子的圈主
+        String circleId = null;//
+        ResultDto<List<MemberDto>> resultDto = systemFeignClient.listMembersByids( Collections.singletonList(userId),null);
+        if(resultDto != null && resultDto.getData() != null) {
+            List<MemberDto> memberDtos = resultDto.getData();
+            MemberDto memberDto = memberDtos.get(0);
+            circleId = memberDto.getCircleId();
+        }
+        if(StringUtil.isNull(circleId)){
+            return ResultDto.error("-1","用户非圈子身份");
+        }
+        
         int circleIdPostId = cmmPostCircleMapper.countCircleIdPostId(postId, circleId);
         if(circleIdPostId==0){
             return ResultDto.error("-1","文章不归属圈主所在圈子");
