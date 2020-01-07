@@ -95,6 +95,7 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
             Map<String, String> ehcacheMap = new HashMap<>( 1 );
             ehcacheMap.put( CACHE_EH_KEY_POST, "" );
             ehcacheActionFunction.deletePostEhcacheHandler( ehcacheMap );
+
         } else if (AbstractEventDto.AbstractEventEnum.FOLLOW_ONE_OFFICIAL_CIRCLE.getKey() == event.getEventType()) {
             String memberId = event.getUserId();
             String circleId = event.getObjectId();

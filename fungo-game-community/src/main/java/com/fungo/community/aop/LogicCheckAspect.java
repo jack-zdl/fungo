@@ -51,7 +51,7 @@ public class LogicCheckAspect {
     @Autowired
     private CmmCircleMapper cmmCircleMapper;
 
-    @Pointcut("execution(*  com.fungo.community.controller.*.*(..)) && @annotation(com.game.common.util.annotation.LogicCheck)")
+    @Pointcut("execution(*  com.fungo.community.controller..*.*(..)) && @annotation(com.game.common.util.annotation.LogicCheck)")
     public void before(){
     }
 
