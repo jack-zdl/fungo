@@ -103,7 +103,13 @@ public class LogicCheckAspect {
                         param.put(paramNames[i], paramValues[i]);
                     }
                     PostInput postInput = (PostInput) param.get( "postInput" );
-                    String postId = postInput.getPostId();
+                    String postId = null;
+                    if(postInput == null){
+                        postId = (String) param.get( "postId" );
+                    }else {
+                        postId = postInput.getPostId();
+                    }
+
                     if(member ==null){
                         throw new BusinessException( CommonEnum.UNACCESSRULE);
                     }
@@ -116,6 +122,8 @@ public class LogicCheckAspect {
                             if(!(cmmCircles != null && cmmCircles.size()>0 && cmmCircles.stream().anyMatch( x -> (x.getId().equals(memberDto.getCircleId() )) ) )){
                                 throw new BusinessException( CommonEnum.UNACCESSRULE);
                             }
+                        }else {
+                            throw new BusinessException( CommonEnum.UNACCESSRULE);
                         }
                     }
                 }

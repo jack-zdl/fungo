@@ -1010,7 +1010,11 @@ public class UserServiceImpl implements IUserService {
                             s.put( "group", incentRuleRankGroup.getId());
                             s.put( "groupNmae", incentRuleRankGroup.getGroupName());
                         } );
-                        statusLists.add( urlList );
+                        ArrayList<HashMap<String, Object>> finalUrlList = urlList;
+                        boolean isRepetition = statusLists.stream().noneMatch( x -> x.stream().anyMatch( c ->c.get("group").equals( finalUrlList.get( 0).get( "group" ) ) ) );
+                        if(isRepetition){
+                            statusLists.add( urlList );
+                        }
                     } catch (IOException e) {
                         LOGGER.error( "對象轉換异常",e );
                     }
