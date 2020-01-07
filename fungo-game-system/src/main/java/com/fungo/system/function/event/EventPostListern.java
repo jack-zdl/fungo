@@ -115,7 +115,7 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
         }else if(AbstractEventDto.AbstractEventEnum.BROWSE_SHOP.getKey() == event.getEventType()){
             memberId = event.getUserId();
             scoreRuleServiceImpl.achieveScoreRule( memberId, NewTaskStatusEnum.BROWSESHOP_EXP.getKey());
-            scoreRuleServiceImpl.achieveCoinRule( memberId, NewTaskStatusEnum.BROWSESHOP_EXP.getKey());
+            scoreRuleServiceImpl.achieveCoinRule( memberId, NewTaskStatusEnum.BROWSESHOP_COIN.getKey());
         }else if(AbstractEventDto.AbstractEventEnum.BINDQQ_USER.getKey() == event.getEventType()){
             memberId = event.getUserId();
             scoreRuleServiceImpl.achieveScoreRule( memberId, NewTaskStatusEnum.BINDQQ_EXP.getKey());
