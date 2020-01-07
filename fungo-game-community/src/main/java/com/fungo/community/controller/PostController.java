@@ -685,6 +685,7 @@ public class PostController {
     @ApiOperation(value="置顶", notes="")
     @RequestMapping(value="/api/content/post/top/{postId}", method= RequestMethod.GET)
     @ApiImplicitParams({})
+    @LogicCheck(loginc = {"BANNED_AUTH"})
     public ResultDto<String> top(@Anonymous MemberUserProfile memberUserPrefile,@PathVariable("postId")String postId) {
         String userId = memberUserPrefile.getLoginId();
         if(StringUtil.isNull(userId)){
@@ -697,6 +698,7 @@ public class PostController {
     @ApiOperation(value="精华", notes="")
     @RequestMapping(value="/api/content/post/essence/{postId}", method= RequestMethod.GET)
     @ApiImplicitParams({})
+    @LogicCheck(loginc = {"BANNED_AUTH"})
     public ResultDto<String> essence(@Anonymous MemberUserProfile memberUserPrefile,@PathVariable("postId")String postId){
         String userId = memberUserPrefile.getLoginId();
         if(StringUtil.isNull(userId)){
@@ -708,6 +710,7 @@ public class PostController {
     @ApiOperation(value="文章加精置顶状态恢复", notes="")
     @RequestMapping(value="/api/content/post/restore/{postId}", method= RequestMethod.GET)
     @ApiImplicitParams({})
+    @LogicCheck(loginc = {"BANNED_AUTH"})
     public ResultDto<String> restore(@Anonymous MemberUserProfile memberUserPrefile,@PathVariable("postId")String postId) {
         String userId = memberUserPrefile.getLoginId();
         if(StringUtil.isNull(userId)){
@@ -719,6 +722,7 @@ public class PostController {
     @ApiOperation(value="文章分类修改", notes="")
     @RequestMapping(value="/api/content/post/updatePostTag", method= RequestMethod.GET)
     @ApiImplicitParams({})
+    @LogicCheck(loginc = {"BANNED_AUTH"})
     public ResultDto<String> updatePostTag(@Anonymous MemberUserProfile memberUserPrefile,String postId,String tagId) {
         String userId = memberUserPrefile.getLoginId();
         if(StringUtil.isNull(userId)){
