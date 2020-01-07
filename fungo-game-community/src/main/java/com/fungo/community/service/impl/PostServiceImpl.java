@@ -2119,7 +2119,7 @@ public class PostServiceImpl implements IPostService {
         map.put( "type","2");
         Map<String,String> dataMap = new HashMap<>();
         dataMap.put("actionType","1");
-        dataMap.put("content",new  StringBuffer().append("恭喜～ 你的文章<a href='#' style='color: red;' >《").append(post.getTitle()).append( "》</a>太棒了！小Fun已把你的作品置顶给全站玩家欣赏，同时奖励您500Fun币，30经验值，期待您的更多作品哦～～" ).toString());
+        dataMap.put("content",new  StringBuffer().append("恭喜～ 你的文章<a href='#' style='color: red;' >《").append(post.getTitle()).append( "》</a>太棒啦！小Fun已把你的作品置顶给全站玩家欣赏，同时奖励您500Fun币，30经验值，期待您的更多作品哦～～" ).toString());
         dataMap.put("targetType","1");
         dataMap.put("targetId",post.getId());
         dataMap.put("userId", "0b8aba833f934452992a972b60e9ad10");
