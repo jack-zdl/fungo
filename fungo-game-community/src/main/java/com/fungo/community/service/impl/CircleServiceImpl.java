@@ -130,7 +130,7 @@ public class CircleServiceImpl implements CircleService {
                 });
 //            BeanUtils.copyProperties(list,cmmCircleDtoList);
                 List<CircleFollow> circleFollows = new ArrayList<>();
-                list.stream().forEach(x -> {
+                list.stream().forEach(x ->{
                     CircleFollow circleFollow = new CircleFollow();
                     circleFollow.setCircleId(x.getId());
                     circleFollows.add(circleFollow);
@@ -140,7 +140,7 @@ public class CircleServiceImpl implements CircleService {
                 circleFollowVo.setCircleFollows(circleFollows);
                 circleFollowVo.setActionType(ActionTypeEnum.FOLLOW.getKey());
                 ResultDto<CircleFollowVo> resultDto = systemFeignClient.circleListFollow(circleFollowVo);
-                if (resultDto.isSuccess()) {
+                if (resultDto != null && resultDto.isSuccess()) {
                     cmmCircleDtoList.stream().forEach(s -> {
                         List<CircleFollow> circleFollow = resultDto.getData().getCircleFollows().stream().filter(e -> e.getCircleId().equals(s.getId())).collect(Collectors.toList());
                         s.setFollow((circleFollow == null || circleFollow.size() == 0) ? false : circleFollow.get(0).isFollow());

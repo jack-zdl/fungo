@@ -135,6 +135,7 @@ public class ESDAOServiceImpl {
 //                boolQueryBuilder.must(QueryBuilders.wildcardQuery("title",keyword));
 //                sourceBuilder.query(boolQueryBuilder);
                 MatchQueryBuilder matchQueryBuilder1 = QueryBuilders.matchQuery("state",1);
+                MatchQueryBuilder matchQueryBuilder4 = QueryBuilders.matchQuery("auth",1);
                 MatchQueryBuilder matchQueryBuilder2 = QueryBuilders.matchQuery("title",keyword);
                 MatchQueryBuilder matchQueryBuilder3 = QueryBuilders.matchQuery("content",keyword);
                 BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
@@ -143,6 +144,7 @@ public class ESDAOServiceImpl {
                         .should(matchQueryBuilder3);
                 boolQueryBuilder.must(childBoolQueryBuilder);
                 boolQueryBuilder.must(matchQueryBuilder1);
+                boolQueryBuilder.mustNot( matchQueryBuilder4 );
                 sourceBuilder.query(boolQueryBuilder);
             }
 //            sourceBuilder.query( QueryBuilders.termQuery("title", keyword));

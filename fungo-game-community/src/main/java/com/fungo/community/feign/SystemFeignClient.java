@@ -197,7 +197,7 @@ public interface SystemFeignClient {
     /**
      * 更新荣誉 勋章 加精次数
      */
-    @PostMapping("/getCircleMainByMemberId")
+    @PostMapping("/getCircleMainByCircleId")
     ResultDto<List<MemberNameDTO>> getCircleMainByMemberId(@RequestParam("circleId") String circleId);
 
 }

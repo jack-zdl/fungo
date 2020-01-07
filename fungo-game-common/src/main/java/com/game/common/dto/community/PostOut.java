@@ -63,6 +63,11 @@ public class PostOut {
 
 	private List<String> includeGameList;
 
+	/**
+	 * 功能描述: 文章权限
+	 * @date: 2020/1/6 10:42
+	 */
+	private int auth;
 	public List<String> getIncludeGameList() {
 		return includeGameList;
 	}
@@ -300,5 +305,13 @@ public class PostOut {
 
 	public void setPc_html_origin(String pc_html_origin) {
 		this.pc_html_origin = pc_html_origin;
+	}
+
+	public int getAuth() {
+		return auth;
+	}
+
+	public void setAuth(int auth) {
+		this.auth = auth;
 	}
 }

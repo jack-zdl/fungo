@@ -385,7 +385,7 @@
     <select id="getCmmPostByRecommend" resultType="com.fungo.community.entity.CmmPost">
         SELECT
         <include refid="Base_List"><property name="alias" value="cp"/></include>
-        FROM t_cmm_post  cp WHERE cp.state != -1  and  cp.recommend = 1 and
+        FROM t_cmm_post  cp WHERE cp.state != -1  and cp.auth != 1 and  cp.recommend = 1 and
         cp.id  NOT in
         ( SELECT cpc.post_id  FROM t_cmm_post_circle cpc , t_cmm_circle cc WHERE  cpc.circle_id = cc.id  and cpc.post_id = cp.id  and cc.state != 1 )  ORDER BY cp.sort DESC , cp.edited_at desc
     </select>

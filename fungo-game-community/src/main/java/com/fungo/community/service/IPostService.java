@@ -48,6 +48,16 @@ public interface IPostService {
 	ResultDto<String> editPost(PostInput postInput, String userId, String os) throws Exception;
 
 	/**
+	 * 修改帖子
+	 * @param postInput
+	 * 请求地址：http://{{host}}/api/content/post/:post_id
+	 * @param os
+	 * @param userId
+	 * @throws Exception
+	 */
+	ResultDto<String> editPost(PostInput postInput, String userId) throws Exception;
+
+	/**
 	 * 帖子详情
 	 * @param postId
 	 * http://{{host}}/api/content/post/:post_id
@@ -127,4 +137,6 @@ public interface IPostService {
     ResultDto<String> restore(String userId, String postId);
 
     ResultDto<String> updatePostTag(String userId, String postId, String tagId);
+
+	ResultDto<Map<String,Object>> getPostAuth(String postId,String userId);
 }

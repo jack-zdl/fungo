@@ -29,6 +29,7 @@ import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
 import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.LogicCheck;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import com.game.common.util.validate.ValidateUtil;
@@ -268,7 +269,7 @@ public class PortalCommunityPostController {
         //filter(0:精华，1:关注游戏社区,2:关注用户, 3:最新，4:全部关注)
         if ("0".equals(filter)) {
             EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<CmmPost>();
-            postEntityWrapper.eq("type", 2).eq("state", 1);
+            postEntityWrapper.eq("type", 2).eq("state", 1).ne( "auth" ,1);
             int sort = inputPageDto.getSort();
             if (sort == 1) {//  时间正序
                 postEntityWrapper.orderBy("edited_at", true);
@@ -307,7 +308,7 @@ public class PortalCommunityPostController {
                 }
                 if (olist.size() > 0) {
                     EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<CmmPost>();
-                    postEntityWrapper.in("community_id", olist).eq("state", 1);
+                    postEntityWrapper.in("community_id", olist).eq("state", 1).ne( "auth" ,1);
                     //设置数据rowId和最后更新时间
                     queryPagePostWithRowIdUpdate(rowId, lastUpdateDate, postEntityWrapper);
                     postEntityWrapper.orderBy("updated_at", false);
@@ -346,7 +347,7 @@ public class PortalCommunityPostController {
                 }
                 if (olist.size() > 0) {
                     EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<CmmPost>();
-                    postEntityWrapper.in("member_id", olist).eq("state", 1);
+                    postEntityWrapper.in("member_id", olist).eq("state", 1).ne( "auth" ,1);
                     //设置数据rowId和最后更新时间
                     queryPagePostWithRowIdUpdate(rowId, lastUpdateDate, postEntityWrapper);
                     postEntityWrapper.orderBy("updated_at", false);
@@ -369,7 +370,7 @@ public class PortalCommunityPostController {
         } else if ("3".equals(filter)) {
 //            最新
             EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<CmmPost>();
-            postEntityWrapper.eq("state", 1);
+            postEntityWrapper.eq("state", 1).ne( "auth" ,1);
             //设置数据rowId和最后更新时间
             queryPagePostWithRowIdUpdate(rowId, lastUpdateDate, postEntityWrapper);
             postEntityWrapper.orderBy("updated_at", false);
@@ -444,7 +445,7 @@ public class PortalCommunityPostController {
             }
         } else {
             EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<CmmPost>();
-            postEntityWrapper.eq("state", 1);
+            postEntityWrapper.eq("state", 1).ne( "auth" ,1);
             //设置数据rowId和最后更新时间
             queryPagePostWithRowIdUpdate(rowId, lastUpdateDate, postEntityWrapper);
             postEntityWrapper.orderBy("updated_at", false);
@@ -611,6 +612,43 @@ public class PortalCommunityPostController {
             postEntityWrapper.le("updated_at", lastUpdateDate);
         }
     }
+
+
+    @ApiOperation(value = "帖子權限", notes = "")
+    @GetMapping(value = "/api/portal/community/content/post/auth/{postId}")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "postId", value = "帖子id", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "userId", value = "用户id", paramType = "form", dataType = "string")
+    })
+    public ResultDto<Map<String,Object>> getPostAuth(MemberUserProfile memberUserPrefile, @PathVariable("postId") String postId) {
+        String userId = "";
+        if (memberUserPrefile != null) {
+            userId = memberUserPrefile.getLoginId();
+        }
+        try {
+            return bsPostService.getPostAuth(postId, userId);
+        } catch (Exception e) {
+            return ResultDto.error("-1", "操作失败");
+        }
+    }
+
+
+    @ApiOperation(value = "修改文章", notes = "")
+    @PutMapping(value = "/api/portal/community/content/post/edit")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "html", value = "html内容", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "postId", value = "帖子id", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "title", value = "标题", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "content", value = "帖子内容", paramType = "form", dataType = "string"),
+            @ApiImplicitParam(name = "images", value = "图片", paramType = "form", dataType = "string[]"),
+
+    })
+    @LogicCheck(loginc = {"BANNED_TEXT"})
+    public ResultDto<String> editPost(MemberUserProfile memberUserPrefile, @RequestBody PostInput postInput) throws Exception {
+        String userId = memberUserPrefile.getLoginId();
+        return bsPostService.editPost(postInput, userId);
+    }
+
 
 
 
