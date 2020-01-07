@@ -49,7 +49,7 @@ public class LogicCheckAspect {
     private IncentRuleRankGroupDao incentRuleRankGroupDao;
 
 
-    @Pointcut("execution(* com.fungo.system.controller.UserController.*.*(..)) && @annotation(com.game.common.util.annotation.LogicCheck)")
+    @Pointcut("execution(* com.fungo.system.controller.UserController.*(..)) && @annotation(com.game.common.util.annotation.LogicCheck)")
     public void before(){
     }
 

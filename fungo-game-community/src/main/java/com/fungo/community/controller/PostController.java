@@ -758,7 +758,7 @@ public class PostController {
             @ApiImplicitParam(name = "images", value = "图片", paramType = "form", dataType = "string[]"),
 
     })
-    @LogicCheck(loginc = {"BANNED_TEXT"})
+    @LogicCheck(loginc = {"BANNED_AUTH"})
     public ResultDto<String> editPost(MemberUserProfile memberUserPrefile, @RequestBody PostInput postInput) throws Exception {
         String userId = memberUserPrefile.getLoginId();
         return bsPostService.editPost(postInput, userId);

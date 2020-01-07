@@ -1,12 +1,16 @@
 package com.fungo.community.aop;
 
+import com.fungo.community.dao.mapper.CmmCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
+import com.fungo.community.entity.CmmCircle;
 import com.fungo.community.feign.SystemFeignClient;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.PostInput;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.CommonEnum;
+import com.game.common.util.CommonUtil;
 import com.game.common.util.annotation.LogicCheck;
 import com.game.common.util.exception.BusinessException;
 import org.aspectj.lang.JoinPoint;
@@ -14,6 +18,7 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.CodeSignature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,15 +27,11 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>逻辑检查</p>
@@ -47,8 +48,10 @@ public class LogicCheckAspect {
     private CmmPostDao cmmPostDao;
     @Autowired
     private SystemFeignClient systemFeignClient;
+    @Autowired
+    private CmmCircleMapper cmmCircleMapper;
 
-    @Pointcut("execution(* com.fungo.community.controller.*.*.*(..)) && @annotation(com.game.common.util.annotation.LogicCheck)")
+    @Pointcut("execution(*  com.fungo.community.controller.*.*(..)) && @annotation(com.game.common.util.annotation.LogicCheck)")
     public void before(){
     }
 
@@ -58,7 +61,9 @@ public class LogicCheckAspect {
             if(limit == null) {
                 return;
             }
-            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        Map<String, Object> param = new HashMap<>();
+
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             HttpServletRequest request = attributes.getRequest();
             String[] loginc = limit.loginc();
             Arrays.stream( loginc ).forEach( s -> {
@@ -88,6 +93,29 @@ public class LogicCheckAspect {
                         MemberDto memberDto = memberDtos.get( 0);
                         if( 2 == memberDto.getAuth()){
                             throw new BusinessException( CommonEnum.UNACCESSRULE);
+                        }
+                    }
+                }else if(LogicCheck.LogicEnum.BANNED_AUTH.getKey().equals( s)){
+                    MemberUserProfile member = (MemberUserProfile)request.getAttribute("member");
+                    Object[] paramValues = joinPoint.getArgs();
+                    String[] paramNames = ((CodeSignature)joinPoint.getSignature()).getParameterNames();
+                    for (int i = 0; i < paramNames.length; i++) {
+                        param.put(paramNames[i], paramValues[i]);
+                    }
+                    PostInput postInput = (PostInput) param.get( "postInput" );
+                    String postId = postInput.getPostId();
+                    if(member ==null){
+                        throw new BusinessException( CommonEnum.UNACCESSRULE);
+                    }
+                    ResultDto<List<MemberDto>> resultDto = systemFeignClient.listMembersByids( Collections.singletonList( member.getLoginId() ),null);
+                    if(resultDto != null && resultDto.getData() != null){
+                        List<MemberDto> memberDtos = resultDto.getData();
+                        MemberDto memberDto = memberDtos.get( 0);
+                        if(!CommonUtil.isNull( memberDto.getCircleId() )){
+                            List<CmmCircle>  cmmCircles  =  cmmCircleMapper.selectCircleByPostId( postId);
+                            if(!(cmmCircles != null && cmmCircles.size()>0 && memberDto.getCircleId().equals(cmmCircles.get( 0 ).getId()))){
+                                throw new BusinessException( CommonEnum.UNACCESSRULE);
+                            }
                         }
                     }
                 }
