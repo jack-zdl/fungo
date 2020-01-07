@@ -976,7 +976,7 @@ public class PostServiceImpl implements IPostService {
                circleId = memberDto.getCircleId();
             }
         }
-        if( CommonUtil.isNull( circleId )  ){
+        if( !CommonUtil.isNull( circleId )  ){
             Integer oldStatus = post.getAuth();
             CmmOperationLog cmmOperationLog = new CmmOperationLog();
             cmmOperationLog.setId( UUIDUtils.getUUID());
