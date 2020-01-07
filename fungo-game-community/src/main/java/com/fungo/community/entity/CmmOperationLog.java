@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,8 +17,11 @@ import java.util.List;
 *  t_cmm_operation_log
 * @author ysx 2020-01-03
 */
+@Setter
+@Getter
+@ToString
 @TableName("t_cmm_operation_log")
-public class CmmOperationLog extends Model<CmmOperationLog> implements Serializable {
+public class CmmOperationLog extends Model<CmmOperationLog> {
 
     private static final long serialVersionUID = 1L;
 
@@ -80,95 +86,12 @@ public class CmmOperationLog extends Model<CmmOperationLog> implements Serializa
     private Date updatedAt;
 
 
-    public CmmOperationLog() {
-    }
-
     /**
      * 主键值
      */
     @Override
     protected Serializable pkVal() {
         return this.id;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getCircleId() {
-        return circleId;
-    }
-
-    public void setCircleId(String circleId) {
-        this.circleId = circleId;
-    }
-
-    public String getMemberId() {
-        return memberId;
-    }
-
-    public void setMemberId(String memberId) {
-        this.memberId = memberId;
-    }
-
-    public String getTargetId() {
-        return targetId;
-    }
-
-    public void setTargetId(String targetId) {
-        this.targetId = targetId;
-    }
-
-    public Integer getTargetType() {
-        return targetType;
-    }
-
-    public void setTargetType(Integer targetType) {
-        this.targetType = targetType;
-    }
-
-    public String getOldTargetState() {
-        return oldTargetState;
-    }
-
-    public void setOldTargetState(String oldTargetState) {
-        this.oldTargetState = oldTargetState;
-    }
-
-    public String getNewTargetState() {
-        return newTargetState;
-    }
-
-    public void setNewTargetState(String newTargetState) {
-        this.newTargetState = newTargetState;
-    }
-
-    public Integer getActionType() {
-        return actionType;
-    }
-
-    public void setActionType(Integer actionType) {
-        this.actionType = actionType;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
 }

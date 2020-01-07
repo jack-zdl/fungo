@@ -1341,7 +1341,7 @@ public class MemberServiceImpl implements IMemberService {
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS;
         String keySuffix = loginId + JSON.toJSONString(input);
 
-//        re = (FungoPageResultDto<MyPublishBean>) fungoCacheArticle.getIndexCache(keyPrefix, keySuffix);
+        re = (FungoPageResultDto<MyPublishBean>) fungoCacheArticle.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
         }
@@ -1401,7 +1401,7 @@ public class MemberServiceImpl implements IMemberService {
             bean.setVideo(post.getVideo());
             bean.setCircleId(post.getCircleId());
             bean.setUpdatedAt(DateTools.fmtDate(post.getUpdatedAt()));
-
+            bean.setAuth( post.getAuth());
             //@todo  社区主键查询
             if(org.apache.commons.lang3.StringUtils.isNoneBlank(post.getCommunityId()) ){
                 CmmCommunityDto cmmParam = new CmmCommunityDto();

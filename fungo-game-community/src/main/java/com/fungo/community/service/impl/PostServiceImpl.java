@@ -133,7 +133,6 @@ public class PostServiceImpl implements IPostService {
     private ApplicationEventPublisher applicationEventPublisher;
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
-
     @Autowired
     private CmmOperationLogMapper cmmOperationLogMapper;
 
@@ -964,13 +963,24 @@ public class PostServiceImpl implements IPostService {
         if (post == null) {
             return ResultDto.error("223", "帖子不存在");
         }
+        if((post.getAuth() & postInput.getAuth()) == postInput.getAuth()){
+            return ResultDto.ResultDtoFactory.buildSuccess( "帖子重复操作" );
+        }
 
-        List<CmmCircle> cmmCircles = cmmCircleMapper.selectCircleByPostId(post.getId());
-        if(cmmCircles != null && cmmCircles.size()> 0 ){
+        String circleId = null;
+        ResultDto<List<MemberDto>> resultDto = systemFeignClient.listMembersByids( Collections.singletonList( userId ),null);
+        if(resultDto != null && resultDto.getData() != null){
+            List<MemberDto> memberDtos = resultDto.getData();
+            MemberDto memberDto = memberDtos.get( 0);
+            if(!CommonUtil.isNull( memberDto.getCircleId() )){
+               circleId = memberDto.getCircleId();
+            }
+        }
+        if( CommonUtil.isNull( circleId )  ){
             Integer oldStatus = post.getAuth();
             CmmOperationLog cmmOperationLog = new CmmOperationLog();
-            cmmOperationLog.setId( UUIDUtils.getUUID() );
-            cmmOperationLog.setCircleId( cmmCircles.get(0).getId() );
+            cmmOperationLog.setId( UUIDUtils.getUUID());
+            cmmOperationLog.setCircleId( circleId );
             cmmOperationLog.setMemberId( userId);
             cmmOperationLog.setTargetType(1);
             cmmOperationLog.setTargetId( postId);
@@ -985,7 +995,7 @@ public class PostServiceImpl implements IPostService {
             }
             cmmOperationLog.setCreatedAt( new Date( ) );
             cmmOperationLog.setUpdatedAt( new Date( ) );
-            cmmOperationLog.insert();
+            cmmOperationLogMapper.insert( cmmOperationLog);
         }
         if( postInput.getAuth() == null && postInput.getType() == 0){
             post.setAuth( ( post.getAuth() | postInput.getAuth()));

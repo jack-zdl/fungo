@@ -297,25 +297,18 @@ public class PostController {
         }
         //filter(1:关注游戏社区,2:关注用户，4:全部关注, 0:推荐，3:最新)
         if ("0".equals(filter)) {
-
             EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<CmmPost>();
             postEntityWrapper.eq("type", 2).eq("state", 1).ne("auth", 1);
-
             postEntityWrapper.last("ORDER BY sort DESC,updated_at DESC");
-
             Page<CmmPost> pageRecommend = this.daoPostService.selectPage(new Page<CmmPost>(inputPageDto.getPage(), inputPageDto.getLimit()), postEntityWrapper);
             if (null != pageRecommend) {
                 plist = pageRecommend.getRecords();
                 total = pageRecommend.getTotal();
             }
-
         } else if ("1".equals(filter)) {
-
             if (memberUserPrefile != null) {
-
                 // 获取关注社区ID集合
                 List<String> olist = new ArrayList<String>();
-
                 try {
                     ResultDto<List<String>> listFollowerCommunityIdResult = systemFeignClient.listFollowerCommunityId(memberUserPrefile.getLoginId());
                     if (null != listFollowerCommunityIdResult) {

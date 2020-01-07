@@ -118,10 +118,14 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
                     // 今日已经签到过
                     if (0 == interval) {
                         isChecked = true;
-                        days = signInCountDays_i % 30;
+                        if(signInCountDays == 30){
+                            days = signInCountDays;
+                        }else {
+                            days = signInCountDays_i % 30;
+                        }
                         //连续签到
                     } else if (1 == interval) {
-                        days = signInCountDays_i % 30;
+                            days = signInCountDays_i % 30;
                     }
 
                     //计算未来 2 / 7 / 14 / 21 / 28 天签到可以获取的fungo币数量
@@ -186,6 +190,10 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
                         }*/
                         canObtainCoin = 120;
                         data.put("tip", "再签" + allCanSignDay + "天可得到" + canObtainCoin + "Fun的币奖励哦!");
+                    }else if(days == 30){
+                        int chenkin = 2;
+                        canObtainCoin = 15;
+                        data.put("tip", "再签" + chenkin + "天可得到" + canObtainCoin + "Fun的币奖励哦!");
                     }
                 }
             } else {

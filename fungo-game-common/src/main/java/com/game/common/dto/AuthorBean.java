@@ -111,7 +111,7 @@ public class AuthorBean {
 
     private int circleLevel;
 
-    private MemberCmmCircleDto memberCmmCircleDto;
+    private MemberCmmCircleDto memberCmmCircleDto = new MemberCmmCircleDto();
 
     /**
      * 功能描述: 身份等级状态  1  表明登录用户可以对查询用户有权限 0 没有

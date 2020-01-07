@@ -106,7 +106,7 @@ public class PortalSystemMemberController {
     }
 
     @ApiOperation(value = "PC2.0我的文章(2.4.3)", notes = "我的文章")
-    @RequestMapping(value = "/api/portal/system/mine/posts", method = RequestMethod.POST)
+    @PostMapping(value = "/api/portal/system/mine/posts")
     @ApiImplicitParams({})
     public FungoPageResultDto<MyPublishBean> getMyPosts(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody MermberSearchInput input) throws Exception {
 //		String loginId = memberUserPrefile.getLoginId();
