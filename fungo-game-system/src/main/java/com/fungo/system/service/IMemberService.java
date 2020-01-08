@@ -80,7 +80,7 @@ public interface IMemberService {
 	//用户等级信息
 	ResultDto<MemberLevelBean> getMemberLevel(String loginId);
 	//用户回复列表
-	FungoPageResultDto<MyCommentBean> getMyComments(String loginId, InputPageDto input);
+	FungoPageResultDto<MyCommentBean> getMyComments(String loginId, String memberId, InputPageDto input);
 	void initRank() throws Exception;
 	//获取用户等级图标
 	String getLevelRankUrl(int level, List<IncentRuleRank> levelRankList);

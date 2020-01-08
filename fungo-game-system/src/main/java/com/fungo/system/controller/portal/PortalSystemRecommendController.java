@@ -101,7 +101,7 @@ public class PortalSystemRecommendController {
                 }
             }
             try {
-                AuthorBean authorBean = userTaskFilterService.getStatusImages( memberId);
+                AuthorBean authorBean = userTaskFilterService.getStatusImages( member.getId());
                 if(authorBean != null && authorBean.getStatusImgs() != null){
                     bean.setStatusImgs( authorBean.getStatusImgs());
                 }

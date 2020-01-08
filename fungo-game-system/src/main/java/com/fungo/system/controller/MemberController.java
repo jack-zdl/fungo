@@ -424,12 +424,16 @@ public class MemberController {
     @RequestMapping(value = "/api/mine/comments", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public FungoPageResultDto<MyCommentBean> getMyComments(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody MermberSearchInput input) throws Exception {
-//		String loginId = memberUserPrefile.getLoginId();
+
+        String loginId = null ;
+        if(memberUserPrefile != null){
+            loginId = memberUserPrefile.getLoginId();
+        }
         String memberId = input.getMemberId();
         if (CommonUtil.isNull(memberId)) {
             return FungoPageResultDto.error("-1", "未指定用户");
         }
-        return memberService.getMyComments(memberId, input);
+        return memberService.getMyComments(loginId,memberId, input);
     }
 
 

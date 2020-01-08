@@ -48,6 +48,7 @@ public class AuthorityConstants {
 	/** 用户由于密码输错次数达到上限被锁定*/
 	public static final String USER_IS_LOCKED_BY_WRONG_PASSWORD = "4";
 	
+	
 	/*
 	 * 菜单常量类
 	 */

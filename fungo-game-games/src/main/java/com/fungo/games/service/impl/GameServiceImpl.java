@@ -29,6 +29,7 @@ import com.game.common.dto.game.*;
 import com.game.common.dto.mall.MallGoodsInput;
 import com.game.common.dto.search.GameSearchOut;
 import com.game.common.dto.user.MemberDto;
+import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.CommonEnum;
 import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.repo.cache.facade.FungoCacheMember;
@@ -344,7 +345,7 @@ public class GameServiceImpl implements IGameService {
 
             Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", "0"));
             if (game == null) {
-                return ResultDto.error("223", "找不到目标游戏");
+                return ResultDto.error( AbstractResultEnum.CODE_GAME_THREE.getKey(), "找不到目标游戏");
             }
             // 根据图片比例数据生成相应的返回字段
             int width = 16, height = 9;
