@@ -676,52 +676,52 @@ public class PostController {
 
     //------------------ 圈主权限 ----------------------
     @ApiOperation(value="置顶", notes="")
-    @RequestMapping(value="/api/content/post/top/{postId}", method= RequestMethod.POST)
+    @RequestMapping(value="/api/content/post/top", method= RequestMethod.POST)
     @ApiImplicitParams({})
     @LogicCheck(loginc = {"BANNED_AUTH"})
-    public ResultDto<String> top(@Anonymous MemberUserProfile memberUserPrefile,@PathVariable("postId")String postId) {
+    public ResultDto<String> top(@Anonymous MemberUserProfile memberUserPrefile,@RequestBody PostInput postInput) {
         String userId = memberUserPrefile.getLoginId();
         if(StringUtil.isNull(userId)){
             return ResultDto.error("-1","无权操作");
         }
-        return bsPostService.top(userId,postId);
+        return bsPostService.top(userId,postInput.getPostId());
     }
 
 
     @ApiOperation(value="精华", notes="")
-    @RequestMapping(value="/api/content/post/essence/{postId}", method= RequestMethod.POST)
+    @RequestMapping(value="/api/content/post/essence", method= RequestMethod.POST)
     @ApiImplicitParams({})
     @LogicCheck(loginc = {"BANNED_AUTH"})
-    public ResultDto<String> essence(@Anonymous MemberUserProfile memberUserPrefile,@PathVariable("postId")String postId){
+    public ResultDto<String> essence(@Anonymous MemberUserProfile memberUserPrefile,@RequestBody PostInput postInput){
         String userId = memberUserPrefile.getLoginId();
         if(StringUtil.isNull(userId)){
             return ResultDto.error("-1","无权操作");
         }
-        return bsPostService.essence(userId,postId);
+        return bsPostService.essence(userId,postInput.getPostId());
     }
 
     @ApiOperation(value="文章加精置顶状态恢复", notes="")
-    @RequestMapping(value="/api/content/post/restore/{postId}", method= RequestMethod.POST)
+    @RequestMapping(value="/api/content/post/restore", method= RequestMethod.POST)
     @ApiImplicitParams({})
     @LogicCheck(loginc = {"BANNED_AUTH"})
-    public ResultDto<String> restore(@Anonymous MemberUserProfile memberUserPrefile,@PathVariable("postId")String postId) {
+    public ResultDto<String> restore(@Anonymous MemberUserProfile memberUserPrefile,@RequestBody PostInput postInput) {
         String userId = memberUserPrefile.getLoginId();
         if(StringUtil.isNull(userId)){
             return ResultDto.error("-1","无权操作");
         }
-        return bsPostService.restore(userId,postId);
+        return bsPostService.restore(userId,postInput.getPostId());
     }
 
     @ApiOperation(value="文章分类修改", notes="")
     @RequestMapping(value="/api/content/post/updatePostTag", method= RequestMethod.POST)
     @ApiImplicitParams({})
     @LogicCheck(loginc = {"BANNED_AUTH"})
-    public ResultDto<String> updatePostTag(@Anonymous MemberUserProfile memberUserPrefile,String postId,String tagId) {
+    public ResultDto<String> updatePostTag(@Anonymous MemberUserProfile memberUserPrefile,@RequestBody PostInput postInput) {
         String userId = memberUserPrefile.getLoginId();
         if(StringUtil.isNull(userId)){
             return ResultDto.error("-1","无权操作");
         }
-        return bsPostService.updatePostTag(userId,postId,tagId);
+        return bsPostService.updatePostTag(userId,postInput.getPostId(),postInput.getTagId());
     }
 
 
