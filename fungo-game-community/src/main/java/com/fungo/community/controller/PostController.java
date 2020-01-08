@@ -683,7 +683,7 @@ public class PostController {
 
     //------------------ 圈主权限 ----------------------
     @ApiOperation(value="置顶", notes="")
-    @RequestMapping(value="/api/content/post/top/{postId}", method= RequestMethod.GET)
+    @RequestMapping(value="/api/content/post/top/{postId}", method= RequestMethod.POST)
     @ApiImplicitParams({})
     @LogicCheck(loginc = {"BANNED_AUTH"})
     public ResultDto<String> top(@Anonymous MemberUserProfile memberUserPrefile,@PathVariable("postId")String postId) {
@@ -696,7 +696,7 @@ public class PostController {
 
 
     @ApiOperation(value="精华", notes="")
-    @RequestMapping(value="/api/content/post/essence/{postId}", method= RequestMethod.GET)
+    @RequestMapping(value="/api/content/post/essence/{postId}", method= RequestMethod.POST)
     @ApiImplicitParams({})
     @LogicCheck(loginc = {"BANNED_AUTH"})
     public ResultDto<String> essence(@Anonymous MemberUserProfile memberUserPrefile,@PathVariable("postId")String postId){
@@ -708,7 +708,7 @@ public class PostController {
     }
 
     @ApiOperation(value="文章加精置顶状态恢复", notes="")
-    @RequestMapping(value="/api/content/post/restore/{postId}", method= RequestMethod.GET)
+    @RequestMapping(value="/api/content/post/restore/{postId}", method= RequestMethod.POST)
     @ApiImplicitParams({})
     @LogicCheck(loginc = {"BANNED_AUTH"})
     public ResultDto<String> restore(@Anonymous MemberUserProfile memberUserPrefile,@PathVariable("postId")String postId) {
@@ -720,7 +720,7 @@ public class PostController {
     }
 
     @ApiOperation(value="文章分类修改", notes="")
-    @RequestMapping(value="/api/content/post/updatePostTag", method= RequestMethod.GET)
+    @RequestMapping(value="/api/content/post/updatePostTag", method= RequestMethod.POST)
     @ApiImplicitParams({})
     @LogicCheck(loginc = {"BANNED_AUTH"})
     public ResultDto<String> updatePostTag(@Anonymous MemberUserProfile memberUserPrefile,String postId,String tagId) {
