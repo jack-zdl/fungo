@@ -19,7 +19,7 @@ import java.util.Date;
  * @since 2018-10-25
  */
 @TableName("t_member")
-public class Member extends Model<Member> implements Cloneable  {
+public class Member extends Model<Member> {
 
     private static final long serialVersionUID = 1L;
 
@@ -214,7 +214,6 @@ public class Member extends Model<Member> implements Cloneable  {
 	/**
 	 * 1 权限正常 2:禁言
 	 */
-	@TableField("auth")
 	private Integer auth;
 
 
@@ -536,14 +535,13 @@ public class Member extends Model<Member> implements Cloneable  {
 		this.channel = channel;
 	}
 
-	public int getAuth() {
+	public Integer getAuth() {
 		return auth;
 	}
 
-	public void setAuth(int auth) {
+	public void setAuth(Integer auth) {
 		this.auth = auth;
 	}
-
 
 	@Override
 	public String toString() {
