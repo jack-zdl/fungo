@@ -627,7 +627,9 @@ public class SystemServiceImpl implements SystemService {
                     s.setCircleId( memberCmmCircleDto.getId() );
                 }
                 AuthorBean authorBean = userTaskFilterService.getStatusImages( x.getId());
-                s.setStatusImgs(authorBean.getStatusImgs());
+                if(authorBean != null && authorBean.getStatusImgs() != null){
+                    s.setStatusImgs(authorBean.getStatusImgs());
+                }
                 finalMemberFollowerDtos.add( s);
             });
         } catch (Exception e) {

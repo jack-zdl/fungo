@@ -212,7 +212,11 @@ public class MemberServiceImpl implements IMemberService {
                 IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", (String) map.get("objectId")).eq("rank_type", 2));
                 if (ranked != null) {
                     AuthorBean authorBean = userTaskFilterService.getStatusImages( (String) map.get("objectId"));
-                    map.put( "statusImgs",authorBean.getStatusImgs() );
+                    if(authorBean != null && authorBean.getStatusImgs() != null){
+                        map.put("statusImgs", authorBean.getStatusImgs());
+                    }else {
+                        map.put("statusImgs", new ArrayList<>());
+                    }
 //                    IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
 //                    if (rank != null) {
 //                        String rankinf = rank.getRankImgs();
@@ -223,6 +227,7 @@ public class MemberServiceImpl implements IMemberService {
 //                    }
                 } else {
                     map.put("statusImg", new ArrayList<>());
+                    map.put("statusImgs", new ArrayList<>());
                 }
             }
             re.setData(list);
@@ -292,6 +297,11 @@ public class MemberServiceImpl implements IMemberService {
             IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", m.getId()).eq("rank_type", 2));
             if (ranked != null) {
                 AuthorBean authorBean = userTaskFilterService.getStatusImages( m.getId() );
+                if(authorBean != null && authorBean.getStatusImgs() != null){
+                    map.put( "statusImgs",authorBean.getStatusImgs() );
+                }else {
+                    map.put( "statusImgs", new ArrayList<>());
+                }
 //                IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
 //                if (rank != null) {
 //                    String rankinf = rank.getRankImgs();
@@ -300,9 +310,10 @@ public class MemberServiceImpl implements IMemberService {
 //                } else {
 //                    map.put("statusImg", new ArrayList<>());
 //                }
-                map.put( "statusImgs",authorBean.getStatusImgs() );
+//                map.put( "statusImgs",authorBean.getStatusImgs() );
             } else {
                 map.put("statusImg", new ArrayList<>());
+                map.put( "statusImgs", new ArrayList<>());
             }
 
             map.put("objectId", m.getId());

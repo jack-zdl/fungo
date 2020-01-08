@@ -102,7 +102,9 @@ public class PortalSystemRecommendController {
             }
             try {
                 AuthorBean authorBean = userTaskFilterService.getStatusImages( memberId);
-                bean.setStatusImgs( authorBean.getStatusImgs());
+                if(authorBean != null && authorBean.getStatusImgs() != null){
+                    bean.setStatusImgs( authorBean.getStatusImgs());
+                }
 //                bean.setStatusImg(userService.getStatusImage(member.getId()));
             } catch (Exception e) {
                 // TODO Auto-generated catch block
