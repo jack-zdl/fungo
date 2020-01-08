@@ -8,6 +8,7 @@ import com.fungo.system.service.IUserService;
 import com.fungo.system.service.ThirdLoginService;
 import com.fungo.system.service.impl.MemberIncentSignInTaskServiceImpl;
 import com.fungo.system.service.impl.MemberSNSServiceImpl;
+import com.game.common.common.MemberIncentCommonUtils;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.util.annotation.Anonymous;
@@ -69,7 +70,7 @@ public class PortalSystemThirdPartyController {
             MemberUserProfile userPrefile = new MemberUserProfile();
             userPrefile.setLoginId(bean.getObjectId());
             userPrefile.setName(bean.getUsername());
-            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), 1000 * 60 * 60 * 60 * 24 * 30));
+            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), MemberIncentCommonUtils.pastDate()));
         }
         return re;
     }
@@ -135,7 +136,7 @@ public class PortalSystemThirdPartyController {
             MemberUserProfile userPrefile = new MemberUserProfile();
             userPrefile.setLoginId(bean.getObjectId());
             userPrefile.setName(bean.getUsername());
-            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), 1000 * 60 * 60 * 60 * 24 * 30));
+            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), MemberIncentCommonUtils.pastDate()));
         }
         return re;
     }
@@ -182,7 +183,7 @@ public class PortalSystemThirdPartyController {
             MemberUserProfile userPrefile = new MemberUserProfile();
             userPrefile.setLoginId(bean.getObjectId());
             userPrefile.setName(bean.getUsername());
-            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), 1000 * 60 * 60 * 60 * 24 * 30));
+            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), MemberIncentCommonUtils.pastDate()));
         }
         return re;
     }
