@@ -385,7 +385,7 @@ public class MemberServiceImpl implements IMemberService {
                         if (!CommonUtil.isNull(post.getVideo())) {
                             map.put("video", post.getVideo());
                         }
-                        map.put("one_level_deltype", post.getState() == -1 ? -1 : 0);
+                        map.put("one_level_deltype", (post.getState() == -1 || post.getAuth() == 1) ? -1 : 0);
                     }
                     // @todo 文章的评论的接口
                 } else if ((int) map.get("type") == 1) {//basNotice.getType()==1
@@ -399,7 +399,7 @@ public class MemberServiceImpl implements IMemberService {
                         if (!CommonUtil.isNull(post.getVideo())) {
                             map.put("video", post.getVideo());
                         }
-                        map.put("two_level_deltype", post.getState() == -1 ? -1 : 0);
+                        map.put("two_level_deltype", (post.getState() == -1 || post.getAuth() == 1) ? -1 : 0);
                     }
                     CmmCommentDto  cmmCommentDto = new CmmCommentDto();
                     cmmCommentDto.setId((String) map.get("comment_id"));
@@ -661,7 +661,7 @@ public class MemberServiceImpl implements IMemberService {
                         if (!CommonUtil.isNull(post.getVideo())) {
                             map.put("video", post.getVideo());
                         }
-                        map.put("two_level_deltype", post.getState()  == -1 ? -1 : 0);
+                        map.put("two_level_deltype", (post.getState() == -1 || post.getAuth() == 1)  ? -1 : 0);
                     }
                     String commentId = (String) map.get("commentId");
                     if(StringUtil.isNotNull(commentId)){
@@ -693,7 +693,7 @@ public class MemberServiceImpl implements IMemberService {
                         if (!CommonUtil.isNull(post.getVideo())) {
                             map.put("video", post.getVideo());
                         }
-                        map.put("three_level_deltype", post.getState()  == -1 ? -1 : 0);
+                        map.put("three_level_deltype", (post.getState() == -1 || post.getAuth() == 1)  ? -1 : 0);
                     }
                     String commentId = (String) map.get("comment_id");
                     if(StringUtil.isNotNull(commentId)){
@@ -1731,7 +1731,7 @@ public class MemberServiceImpl implements IMemberService {
                 cmmPostDto.setState(1);
                 CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto);    //postService.selectOne(Condition.create().setSqlSelect("id,content,title,video").eq("id", c.getTargetId()));
                 if (post != null && post.getState() != null) {
-                    bean.setTargetDelType( post.getState()  == -1 ? -1 : 0);
+                    bean.setTargetDelType( (post.getState()  == -1 || post.getAuth() == 1) ? -1 : 0);
                     String title = CommonUtils.filterWord(post.getTitle());
                     if (StringUtils.isNotBlank(title)) {
                         title = FilterEmojiUtil.decodeEmoji(title);
