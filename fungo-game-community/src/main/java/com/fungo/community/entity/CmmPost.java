@@ -164,7 +164,7 @@ V2.4.3版本添加
 	 * 1 正常 2 隐藏 4 关闭回复
 	 */
 	@TableField("auth")
-	private int auth;
+	private Integer auth;
 
 	public Integer getRecommend() {
 		return recommend;
@@ -411,11 +411,11 @@ V2.4.3版本添加
 		this.boomWatchNum = boomWatchNum;
 	}
 
-	public int getAuth() {
+	public Integer getAuth() {
 		return auth;
 	}
 
-	public void setAuth(int auth) {
+	public void setAuth(Integer auth) {
 		this.auth = auth;
 	}
 }

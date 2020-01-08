@@ -138,4 +138,9 @@ V2.4.3版本添加
 	 */
 	private int  queryType;
 
+	/**
+	 *  2020/1/7 13:44
+	 */
+	private int auth;
+
 }

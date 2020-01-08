@@ -556,10 +556,38 @@ public class UserServiceImpl implements IUserService {
                         ArrayList<HashMap<String, Object>> urlList = mapper.readValue(rankImgs, ArrayList.class);
                         author.setDignityImg((String) urlList.get(0).get("url"));
                     } else if (ranked.getRankType() == 2) {//身份
-                        IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
-                        String rankImgs = rank.getRankImgs();
-                        ArrayList<HashMap<String, Object>> urlList = mapper.readValue(rankImgs, ArrayList.class);
-                        author.setStatusImg(urlList);
+//                        IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
+//                        String rankImgs = rank.getRankImgs();
+//                        ArrayList<HashMap<String, Object>> urlList = mapper.readValue(rankImgs, ArrayList.class);
+//                        author.setStatusImg(urlList);
+                        String rankIdtIds = ranked.getRankIdtIds();
+                        List<HashMap<String,Object>> list1 = mapper.readValue(rankIdtIds, ArrayList.class);
+                        List<List<HashMap<String,Object>>> statusLists = new ArrayList<>(  );
+//                        int groupLevel = 0;
+//                        int circleLevel = 0;
+                        for (HashMap<String,Object> map : list1){
+                            Integer rankId = (Integer) map.get( "1" );
+                            IncentRuleRank rank = rankRuleService.selectById(rankId);//最近获得
+                            String rankImgs = rank.getRankImgs();
+                            ArrayList<HashMap<String, Object>> urlList = null;
+                            IncentRuleRankGroup incentRuleRankGroup = incentRuleRankGroupDao.selectById( rank.getRankGroupId());
+//                            groupLevel =  incentRuleRankGroup.getAuth() > groupLevel ? incentRuleRankGroup.getAuth() : groupLevel;
+//                            circleLevel =  incentRuleRankGroup.getAuth() == 2 ? incentRuleRankGroup.getAuth() : circleLevel;
+                            try {
+                                urlList = mapper.readValue(rankImgs, ArrayList.class);
+                                urlList.stream().forEach( x ->{
+                                    x.put( "auth", incentRuleRankGroup.getAuth());
+                                    x.put( "group", incentRuleRankGroup.getId());
+                                    x.put( "groupNmae", incentRuleRankGroup.getGroupName());
+                                } );
+                                statusLists.add( urlList );
+                            } catch (IOException e) {
+                                LOGGER.error( "對象轉換异常",e );
+                            }
+                        }
+//                        author.setGroupLevel(groupLevel);
+//                        author.setCircleLevel( circleLevel );
+                        author.setStatusImgs(statusLists);
                     } else if (ranked.getRankType() == 3) {//成就
                         //找出获得的荣誉合集
                         String rankIdtIds = ranked.getRankIdtIds();
@@ -643,10 +671,38 @@ public class UserServiceImpl implements IUserService {
                             author.setDignityImg( (String) urlList.get( 0 ).get( "url" ) );
                         }
                         else if (ranked.getRankType() == 2) {//身份
-                            IncentRuleRank rank = rankRuleService.selectById( ranked.getCurrentRankId() );//最近获得
-                            String rankImgs = rank.getRankImgs();
-                            ArrayList<HashMap<String, Object>> urlList = mapper.readValue( rankImgs, ArrayList.class );
-                            author.setStatusImg( urlList );
+//                            IncentRuleRank rank = rankRuleService.selectById( ranked.getCurrentRankId() );//最近获得
+//                            String rankImgs = rank.getRankImgs();
+//                            ArrayList<HashMap<String, Object>> urlList = mapper.readValue( rankImgs, ArrayList.class );
+//                            author.setStatusImg( urlList );
+                            String rankIdtIds = ranked.getRankIdtIds();
+                            List<HashMap<String,Object>> list1 = mapper.readValue(rankIdtIds, ArrayList.class);
+                            List<List<HashMap<String,Object>>> statusLists = new ArrayList<>(  );
+//                        int groupLevel = 0;
+//                        int circleLevel = 0;
+                            for (HashMap<String,Object> map : list1){
+                                Integer rankId = (Integer) map.get( "1" );
+                                IncentRuleRank rank = rankRuleService.selectById(rankId);//最近获得
+                                String rankImgs = rank.getRankImgs();
+                                ArrayList<HashMap<String, Object>> urlList = null;
+                                IncentRuleRankGroup incentRuleRankGroup = incentRuleRankGroupDao.selectById( rank.getRankGroupId());
+//                            groupLevel =  incentRuleRankGroup.getAuth() > groupLevel ? incentRuleRankGroup.getAuth() : groupLevel;
+//                            circleLevel =  incentRuleRankGroup.getAuth() == 2 ? incentRuleRankGroup.getAuth() : circleLevel;
+                                try {
+                                    urlList = mapper.readValue(rankImgs, ArrayList.class);
+                                    urlList.stream().forEach( x ->{
+                                        x.put( "auth", incentRuleRankGroup.getAuth());
+                                        x.put( "group", incentRuleRankGroup.getId());
+                                        x.put( "groupNmae", incentRuleRankGroup.getGroupName());
+                                    } );
+                                    statusLists.add( urlList );
+                                } catch (IOException e) {
+                                    LOGGER.error( "對象轉換异常",e );
+                                }
+                            }
+//                        author.setGroupLevel(groupLevel);
+//                        author.setCircleLevel( circleLevel );
+                            author.setStatusImgs(statusLists);
                         } else if (ranked.getRankType() == 3) {//成就
                             //找出获得的荣誉合集
                             String rankIdtIds = ranked.getRankIdtIds();
@@ -954,7 +1010,11 @@ public class UserServiceImpl implements IUserService {
                             s.put( "group", incentRuleRankGroup.getId());
                             s.put( "groupNmae", incentRuleRankGroup.getGroupName());
                         } );
-                        statusLists.add( urlList );
+                        ArrayList<HashMap<String, Object>> finalUrlList = urlList;
+                        boolean isRepetition = statusLists.stream().noneMatch( x -> x.stream().anyMatch( c ->c.get("group").equals( finalUrlList.get( 0).get( "group" ) ) ) );
+                        if(isRepetition){
+                            statusLists.add( urlList );
+                        }
                     } catch (IOException e) {
                         LOGGER.error( "對象轉換异常",e );
                     }

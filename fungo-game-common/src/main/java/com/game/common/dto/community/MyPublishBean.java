@@ -2,10 +2,16 @@ package com.game.common.dto.community;
 
 import com.game.common.dto.StreamInfo;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.*;
 
+@Setter
+@Getter
+@ToString
 public class MyPublishBean implements Serializable{
 
 	@ApiModelProperty(value="标题",example="")
@@ -55,124 +61,8 @@ public class MyPublishBean implements Serializable{
 //	private Date createdAt;
 	private String createdAt;
 
-	
-	
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	public String getContent() {
-		return content;
-	}
-	public void setContent(String content) {
-		this.content = content;
-	}
-	public List<String> getImages() {
-		return images;
-	}
-	public void setImages(List<String> images) {
-		this.images = images;
-	}
-	public String getVideo() {
-		return video;
-	}
-	public void setVideo(String video) {
-		this.video = video;
-	}
-	public String getUpdatedAt() {
-		return updatedAt;
-	}
-	public void setUpdatedAt(String updatedAt) {
-		this.updatedAt = updatedAt;
-	}
-	public List<Map<String, String>> getGameList() {
-		return gameList;
-	}
-	public void setGameList(List<Map<String, String>> gameList) {
-		this.gameList = gameList;
-	}
+	private int auth;
 
 	
-	public int getType() {
-		return type;
-	}
-	public void setType(int type) {
-		this.type = type;
-	}
-	public int getLikeNum() {
-		return likeNum;
-	}
-	public void setLikeNum(int likeNum) {
-		this.likeNum = likeNum;
-	}
-	public int getCommentNum() {
-		return commentNum;
-	}
-	public void setCommentNum(int commentNum) {
-		this.commentNum = commentNum;
-	}
-	public String getObjectId() {
-		return ObjectId;
-	}
-	public void setObjectId(String objectId) {
-		ObjectId = objectId;
-	}
-	public Map<String, Object> getLink_community() {
-		return link_community;
-	}
-	public void setLink_community(Map<String, Object> link_community) {
-		this.link_community = link_community;
-	}
-	public String getVideoCoverImage() {
-		return videoCoverImage;
-	}
-	public void setVideoCoverImage(String videoCoverImage) {
-		this.videoCoverImage = videoCoverImage;
-	}
-	public ArrayList<StreamInfo> getVideoList() {
-		return videoList;
-	}
-	public void setVideoList(ArrayList<StreamInfo> videoList) {
-		this.videoList = videoList;
-	}
-	public String getCoverImage() {
-		return coverImage;
-	}
-	public void setCoverImage(String coverImage) {
-		this.coverImage = coverImage;
-	}
 
-	public int getDeltype() {
-		return deltype;
-	}
-
-	public void setDeltype(int deltype) {
-		this.deltype = deltype;
-	}
-
-	public String getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(String createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public String getCircleId() {
-		return circleId;
-	}
-
-	public void setCircleId(String circleId) {
-		this.circleId = circleId;
-	}
-
-	public String getCircleName() {
-		return circleName;
-	}
-
-	public void setCircleName(String circleName) {
-		this.circleName = circleName;
-	}
 }

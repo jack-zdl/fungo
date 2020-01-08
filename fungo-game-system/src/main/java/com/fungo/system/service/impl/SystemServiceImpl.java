@@ -11,6 +11,7 @@ import com.fungo.system.dao.MemberCircleMapper;
 import com.fungo.system.dao.MemberDao;
 import com.fungo.system.entity.*;
 import com.fungo.system.facede.ICommunityProxyService;
+import com.fungo.system.function.UserTaskFilterService;
 import com.fungo.system.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.FungoRankConstants;
@@ -65,72 +66,54 @@ public class SystemServiceImpl implements SystemService {
 
     @Autowired
     private BasActionDao basActionDao;
-
     @Autowired
     private MemberFollowerService memberFollowerServiceImap;
-
     @Autowired
     private MemberService memberServiceImap;
-
     @Autowired
     private IncentRankedService incentRankedServiceImap;
-
     @Autowired
     private IncentRuleRankService ruleRankServiceImap;
-
     @Autowired
     private ScoreLogService scoreLogServiceImap;
-
     @Autowired
     private IncentAccountScoreService accountScoreServiceImap;
-
     @Autowired
     private IMemberAccountScoreDaoService accountScoreDaoServiceImap;
-
     @Autowired
     private BasActionService actionServiceImap;
-
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
-
     @Autowired
     private IUserService userService;
-
-
     @Autowired
     private ScoreLogService scoreLogService;
-
     @Autowired
     private IncentRuleRankService rankRuleService;
-
     @Autowired
     private ICommunityProxyService communityProxyService;
-
     @Autowired
     private  BasActionDao actionDao;
-
     @Autowired
     private ActionServiceImpl actionServiceImpl;
-
     @Autowired
     private BasActionServiceImap basActionServiceImap;
     @Autowired
     private BasActionService actionService;
-
     @Autowired
     private IncentRuleRankService ruleRankService;
     @Autowired
     private IncentRankedService rankedService;
-
     private static ObjectMapper mapper = new ObjectMapper();
-
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
-
     @Autowired
     private FungoCacheMember fungoCacheMember;
     @Autowired
     private MemberCircleMapper memberCircleMapper;
+    @Autowired
+    private UserTaskFilterService userTaskFilterService;
+
     /**
      * 功能描述: 根据用户id查询被关注人的id集合
      *
@@ -643,6 +626,8 @@ public class SystemServiceImpl implements SystemService {
                 if(memberCmmCircleDto != null && !CommonUtil.isNull( memberCmmCircleDto.getId() )){
                     s.setCircleId( memberCmmCircleDto.getId() );
                 }
+                AuthorBean authorBean = userTaskFilterService.getStatusImages( x.getId());
+                s.setStatusImgs(authorBean.getStatusImgs());
                 finalMemberFollowerDtos.add( s);
             });
         } catch (Exception e) {
