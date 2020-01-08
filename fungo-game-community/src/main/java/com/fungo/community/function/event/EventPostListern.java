@@ -75,12 +75,14 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
             Map<String,String> dataMap = new HashMap<>();
             if( event.getType() == 0 && event.getAuth() == 1 ){
                 dataMap.put("content",new  StringBuffer().append("您的帖子由于不符合圈子规范，暂时被隐藏，如有疑议，请进群联系管理员解决。QQ群：746928618" ).toString());
+                dataMap.put("actionType","3");
             }else if(event.getType() == 0 && event.getAuth() == 2){
                 dataMap.put("content",new  StringBuffer().append("您的文章《").append( objectId ).append(  "》现已被管理员关闭回复功能，如有疑议，加群746928618联系管理员。" ).toString());
+                dataMap.put("actionType","3");
             }else if(event.getType() == 1 && event.getAuth() == 2){
+                dataMap.put("actionType","1");
                 dataMap.put("content",new  StringBuffer().append("您被关闭回复的帖子现已恢复回复功能，点击查看" ).toString());
             }
-            dataMap.put("actionType","1");
             dataMap.put("targetType","1");
             dataMap.put("targetId",postId);
             dataMap.put("userId", "0b8aba833f934452992a972b60e9ad10");

@@ -1,7 +1,6 @@
 package com.fungo.system.service;
 
 import com.fungo.system.dto.MemberNoticeInput;
-import com.fungo.system.entity.MemberNotice;
 import com.game.common.dto.ResultDto;
 import com.game.common.vo.DelObjectListVO;
 
@@ -17,13 +16,6 @@ import java.util.Map;
  * @since 2018-12-04
  */
 public interface IMemberNoticeService {
-
-    /**
-     * 查询用户的消息数据
-     * @param noticeInput 用户查询消息数据封装
-     * @return
-     */
-    List<Map<String,Object>> queryMbNotices(String os,MemberNoticeInput noticeInput);
 
 
     /**
@@ -42,14 +34,14 @@ public interface IMemberNoticeService {
      * @param ntcData 消息数据
      * @return
      */
-    void addMbNotice(String mb_id, Integer ntc_type, Object ntcData);
+//    void addMbNotice(String mb_id, Integer ntc_type, Object ntcData);
 
 
     /**修改用户的消息数据
      *
      * @param memberNotice 用户消息数据实体
      */
-    void updateMbNotice(MemberNotice memberNotice);
+    //void updateMbNotice(MemberNotice memberNotice);
 
 
     void updateSystemByGame() throws Exception;

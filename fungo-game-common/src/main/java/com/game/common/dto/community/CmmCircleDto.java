@@ -72,7 +72,7 @@ public class CmmCircleDto implements Serializable {
     /**
      * 圈主
      */
-    private List<MemberNameDTO> memberCmmCircleMainList ;
+    private List<MemberNameDTO> memberCmmCircleMainList = new ArrayList<>(  );
 
     @Setter
     @Getter

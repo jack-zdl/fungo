@@ -1,7 +1,6 @@
 package com.fungo.system.service.portal;
 
 import com.fungo.system.dto.MemberNoticeInput;
-import com.fungo.system.entity.MemberNotice;
 
 import java.util.List;
 import java.util.Map;

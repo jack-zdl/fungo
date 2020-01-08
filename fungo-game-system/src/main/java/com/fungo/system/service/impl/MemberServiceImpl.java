@@ -2204,10 +2204,10 @@ public class MemberServiceImpl implements IMemberService {
         dataMap.put("userName", "FunGo大助手");
         dataMap.put("msgTime", DateTools.fmtDate(new Date()));
         try {
-            EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
-            noticeEntityWrapper.eq( "mb_id", memberId );
-            noticeEntityWrapper.eq( "ntc_type", 7 );
-            noticeEntityWrapper.eq( "is_read", 2 );
+//            EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
+//            noticeEntityWrapper.eq( "mb_id", memberId );
+//            noticeEntityWrapper.eq( "ntc_type", 7 );
+//            noticeEntityWrapper.eq( "is_read", 2 );
 //            List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
 //            distributedLockByCurator.acquireDistributedLock( memberId );
 //            if (noticeListDB != null && noticeListDB.size() > 0) {

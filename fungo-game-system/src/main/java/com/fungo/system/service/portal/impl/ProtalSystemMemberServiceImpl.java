@@ -569,6 +569,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
         return url;
     }
 
+    @Deprecated
     @Async
     public void updateNoticeMap(String memberId,String key){
         /**
@@ -577,26 +578,26 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
          * @date: 2019/5/29 17:19
          */
         try {
-            EntityWrapper<MemberNotice> memberNoticeEntityWrapper = new EntityWrapper<>();
-            memberNoticeEntityWrapper.eq("mb_id", memberId);
-            memberNoticeEntityWrapper.eq("ntc_type", 7);
-            memberNoticeEntityWrapper.eq("is_read", 2);
-//            distributedLockByCurator.acquireDistributedLock( memberId );
-            List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList(memberNoticeEntityWrapper);
-            if (null != noticeListDB && !noticeListDB.isEmpty()) {
-                for (MemberNotice memberNotice : noticeListDB) {
-                    String ntcDataJsonStr = memberNotice.getNtcData();
-                    Map<String, Object> msgMap = JSON.parseObject(ntcDataJsonStr);
-                    if((int)msgMap.get(key) == 0) continue;
-                    Map<String,Object> oldMap = new HashMap<>();
-                    oldMap.put(key,msgMap.get(key));
-                    updateMap(oldMap,msgMap);
-                    msgMap.put("count",((int)msgMap.get("count") - (int)msgMap.get(key)));
-                    msgMap.put(key,0);
-                    memberNotice.setNtcData(JSONObject.toJSONString(msgMap));
-                    memberNoticeDaoService.updateById(memberNotice);
-                }
-            }
+//            EntityWrapper<MemberNotice> memberNoticeEntityWrapper = new EntityWrapper<>();
+//            memberNoticeEntityWrapper.eq("mb_id", memberId);
+//            memberNoticeEntityWrapper.eq("ntc_type", 7);
+//            memberNoticeEntityWrapper.eq("is_read", 2);
+////            distributedLockByCurator.acquireDistributedLock( memberId );
+//            List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList(memberNoticeEntityWrapper);
+//            if (null != noticeListDB && !noticeListDB.isEmpty()) {
+//                for (MemberNotice memberNotice : noticeListDB) {
+//                    String ntcDataJsonStr = memberNotice.getNtcData();
+//                    Map<String, Object> msgMap = JSON.parseObject(ntcDataJsonStr);
+//                    if((int)msgMap.get(key) == 0) continue;
+//                    Map<String,Object> oldMap = new HashMap<>();
+//                    oldMap.put(key,msgMap.get(key));
+//                    updateMap(oldMap,msgMap);
+//                    msgMap.put("count",((int)msgMap.get("count") - (int)msgMap.get(key)));
+//                    msgMap.put(key,0);
+//                    memberNotice.setNtcData(JSONObject.toJSONString(msgMap));
+//                    memberNoticeDaoService.updateById(memberNotice);
+//                }
+//            }
         }catch (Exception e){
             e.printStackTrace();
             logger.error("删除未读消息",e);

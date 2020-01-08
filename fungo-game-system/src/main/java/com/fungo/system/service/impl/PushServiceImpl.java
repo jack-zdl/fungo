@@ -110,7 +110,7 @@ public class PushServiceImpl implements IPushService {
 
 
 		//把推送给用户的数据保存到数据库临时存储
-		iMemberNoticeService.addMbNotice(memberId, 7, unReadNoticeMap );
+//		iMemberNoticeService.addMbNotice(memberId, 7, unReadNoticeMap );
 		//wsPushMessage.sendMessage(memberId, MessageUtils.msgType_007, msg);
 	}
 	

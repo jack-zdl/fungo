@@ -3,15 +3,10 @@ package com.fungo.system.service.portal.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.dto.MemberNoticeInput;
-import com.fungo.system.entity.MemberNotice;
-import com.fungo.system.service.IMemberNoticeService;
 import com.fungo.system.service.MemberNoticeDaoService;
-import com.fungo.system.service.portal.PortalSystemIIndexService;
 import com.fungo.system.service.portal.PortalSystemIMemberNoticeService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.repo.cache.facade.FungoCacheNotice;
-import com.game.common.util.PKUtil;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,29 +81,29 @@ public class PortalSystemMemberNoticeServiceImpl implements PortalSystemIMemberN
 //            }
 
             //从DB查
-            EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
-            noticeEntityWrapper.eq("mb_id", mb_id);
-            noticeEntityWrapper.eq("ntc_type", ntc_type);
-            noticeEntityWrapper.eq("is_read", 2);
-
-            List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList(noticeEntityWrapper);
-            if (null != noticeListDB && !noticeListDB.isEmpty()) {
-
-                noticesList = new ArrayList<Map<String, Object>>();
-
-                for (MemberNotice memberNotice : noticeListDB) {
-
-                    String ntcDataJsonStr = memberNotice.getNtcData();
-                    Map<String, Object> msgMap = JSON.parseObject(ntcDataJsonStr);
-
-                    noticesList.add(msgMap);
-                    noticeIdList.add(String.valueOf(memberNotice.getId()));
-                }
-
-                logger.info("queryMbNotices-DB:{}", JSON.toJSONString(noticesList));
-                //修改消息状态
-//                updateNotes(mb_id, noticeIdList);
-            }
+//            EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
+//            noticeEntityWrapper.eq("mb_id", mb_id);
+//            noticeEntityWrapper.eq("ntc_type", ntc_type);
+//            noticeEntityWrapper.eq("is_read", 2);
+//
+//            List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList(noticeEntityWrapper);
+//            if (null != noticeListDB && !noticeListDB.isEmpty()) {
+//
+//                noticesList = new ArrayList<Map<String, Object>>();
+//
+//                for (MemberNotice memberNotice : noticeListDB) {
+//
+//                    String ntcDataJsonStr = memberNotice.getNtcData();
+//                    Map<String, Object> msgMap = JSON.parseObject(ntcDataJsonStr);
+//
+//                    noticesList.add(msgMap);
+//                    noticeIdList.add(String.valueOf(memberNotice.getId()));
+//                }
+//
+//                logger.info("queryMbNotices-DB:{}", JSON.toJSONString(noticesList));
+//                //修改消息状态
+////                updateNotes(mb_id, noticeIdList);
+//            }
 
         } catch (Exception ex) {
             logger.error("查询用户的消息数据出现异常:", ex);
@@ -121,43 +116,5 @@ public class PortalSystemMemberNoticeServiceImpl implements PortalSystemIMemberN
         return noticesList;
     }
 
-    /**
-     * 修改消息状态为已读
-     */
-    private void updateNotes(String mb_id, List<String> noticeIdList) {
-
-        for (String noticeId : noticeIdList) {
-
-            MemberNotice memberNotice = new MemberNotice();
-
-            memberNotice.setMbId(mb_id);
-            memberNotice.setId(Long.parseLong(noticeId));
-            updateMbNotice(memberNotice);
-        }
-
-    }
-
-    public void updateMbNotice(MemberNotice memberNotice) {
-        try {
-
-            if (null == memberNotice) {
-                return;
-            }
-            if (StringUtils.isBlank(memberNotice.getMbId())) {
-                return;
-            }
-            if (null == memberNotice.getId() || memberNotice.getId().longValue() <= 0) {
-                return;
-            }
-            MemberNotice updateMemberNotice = new MemberNotice();
-            updateMemberNotice.setIsRead(1);
-            updateMemberNotice.setId(memberNotice.getId());
-            updateMemberNotice.updateById();
-
-        } catch (Exception ex) {
-            logger.error("修改用户的消息数据出现异常:", ex);
-            ex.printStackTrace();
-        }
-    }
 
 }
