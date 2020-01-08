@@ -2053,12 +2053,12 @@ public class PostServiceImpl implements IPostService {
             circleId = memberDto.getCircleId();
         }
         if(StringUtil.isNull(circleId)){
-            return ResultDto.error("-1","用户非圈子身份");
+            return ResultDto.error("-1","普通用户无法操作他人内容");
         }
         
         int circleIdPostId = cmmPostCircleMapper.countCircleIdPostId(postId, circleId);
         if(circleIdPostId==0){
-            return ResultDto.error("-1","文章不归属圈主所在圈子");
+            return ResultDto.error("-1","您的圈主身份有变更，请退出当前页重试");
         }
 
         // 校验行为次数 加精置顶每日仅可各操作一次
@@ -2069,7 +2069,12 @@ public class PostServiceImpl implements IPostService {
             Wrapper<CmmOperationLog> wrapper = new EntityWrapper<CmmOperationLog>().eq("member_id", userId).eq("action_type", actionType).ge("created_at", new Date(zeroT)).le("created_at", endT);
             Integer operationCount = cmmOperationLogMapper.selectCount(wrapper);
             if(operationCount>=1){
-                return ResultDto.error("-1","今日该操作次数已达上限");
+                if(actionType == 1){
+                    return ResultDto.error("-1","圈主每日只可加精一篇文章哦～");
+                }else{
+                    return  ResultDto.error("-1","圈主每日只可置顶一篇文章哦～");
+                }
+
             }
         }
         return  ResultDto.success(circleId);
@@ -2080,11 +2085,11 @@ public class PostServiceImpl implements IPostService {
     public ResultDto<String> top(String userId, String postId) {
         CmmPost post =postService.selectById(postId);
         if(post==null||post.getState()!=1){
-            return ResultDto.error("-1","文章不存在或已下架");
+            return ResultDto.error("-1","该内容不存在");
         }
         Integer type = post.getType();
         if(type==3){
-            return ResultDto.error("-1","文章已处于置顶状态");
+            return ResultDto.error("-1","该文章已被置顶");
         }
         // 校验 圈主身份 圈主当日操作次数
         ResultDto<String> checkPermissions = checkPermissions(userId,postId,2);
@@ -2149,11 +2154,11 @@ public class PostServiceImpl implements IPostService {
     public ResultDto<String> essence(String userId, String postId) {
         CmmPost post = postService.selectById(postId);
         if(post==null||post.getState()!=1){
-            return ResultDto.error("-1","文章不存在或已下架");
+            return ResultDto.error("-1","该内容不存在");
         }
         Integer type = post.getType();
         if(type==2){
-            return ResultDto.error("-1","文章已处于加精状态");
+            return ResultDto.error("-1","该文章已被加精");
         }
 
         // 校验 圈主身份 圈主当日操作次数
@@ -2225,12 +2230,12 @@ public class PostServiceImpl implements IPostService {
     public ResultDto<String> restore(String userId, String postId) {
         CmmPost post = postService.selectById(postId);
         if(post==null){
-            return ResultDto.error("-1","文章不存在");
+            return ResultDto.error("-1","该内容不存在");
         }
         Integer type = post.getType();
 
         if(type!=2&&type!=3){
-            return ResultDto.error("-1","文章当前是普通文章");
+            return ResultDto.error("-1","该文章已被其他管理员处理");
         }
         Integer actionType = type==2?100:200;
         // 校验 圈主身份 圈主当日操作次数
@@ -2270,7 +2275,7 @@ public class PostServiceImpl implements IPostService {
     public ResultDto<String> updatePostTag(String userId, String postId, String tagId) {
         CmmPost post = postService.selectById(postId);
         if(post==null){
-            return ResultDto.error("-1","文章不存在");
+            return ResultDto.error("-1","该内容不存在");
         }
 
         // 校验 圈主身份 圈主当日操作次数
