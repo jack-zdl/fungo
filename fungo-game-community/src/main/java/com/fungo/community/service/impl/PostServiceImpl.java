@@ -964,7 +964,7 @@ public class PostServiceImpl implements IPostService {
             return ResultDto.error("223", "帖子不存在");
         }
         if((post.getAuth() & postInput.getAuth()) == postInput.getAuth()){
-            return ResultDto.ResultDtoFactory.buildSuccess( "帖子重复操作" );
+            throw new  BusinessException( CommonEnum.BANNED_AUTH_POST);
         }
 
         String circleId = null;

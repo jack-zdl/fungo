@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import io.swagger.models.auth.In;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -214,7 +215,7 @@ public class Member extends Model<Member> implements Cloneable  {
 	 * 1 权限正常 2:禁言
 	 */
 	@TableField("auth")
-	private int auth;
+	private Integer auth;
 
 
 	public String getId() {

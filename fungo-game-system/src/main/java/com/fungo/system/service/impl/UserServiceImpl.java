@@ -234,7 +234,7 @@ public class UserServiceImpl implements IUserService {
                     member.setComplete("0");//未完成
                     member.setLevel(1);
                     member.setState(0);
-                    member.setAuth( 1 );
+                    member.setAuth( 0 );
                     //fix bug:修改会员编号出现的重复的情况 修改用户的member_no用户编号 [by mxf 2019-03-06]
                     String mbNo = iPKNoService.genUniqueMbNo(member.getId());
                     member.setMemberNo(mbNo);
@@ -250,11 +250,11 @@ public class UserServiceImpl implements IUserService {
         } else {
             return ResultDto.error("13", "请求参数错误");
         }
-        Member dCosmember = new Member();
-        dCosmember.setId(member.getId());
-        dCosmember.setDeviceId(deviceId);
-        dCosmember.setChannel(channel);
-        memberService.updateById(dCosmember);
+//        Member dCosmember = new Member();
+        member.setId(member.getId());
+        member.setDeviceId(deviceId);
+        member.setChannel(channel);
+        memberService.updateById(member);
         LoginMemberBean bean = new LoginMemberBean();
         bean.setCreatedAt(DateTools.fmtDate(member.getCreatedAt()));
         bean.setUpdatedAt(DateTools.fmtDate(member.getUpdatedAt()));

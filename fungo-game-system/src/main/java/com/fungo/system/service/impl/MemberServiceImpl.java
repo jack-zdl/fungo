@@ -16,6 +16,7 @@ import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IMemeberProxyService;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
+import com.fungo.system.function.UserTaskFilterService;
 import com.fungo.system.helper.lingka.LingKaHelper;
 import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
@@ -104,10 +105,6 @@ public class MemberServiceImpl implements IMemberService {
     private FungoCacheGame fungoCacheGame;
     @Autowired
     private FungoCacheArticle fungoCacheArticle;
-    @Autowired
-    private FungoCacheMood fungoCacheMood;
-    @Autowired
-    private ICommunityProxyService communityProxyService;
     @Autowired(required = false)
     private CommunityFeignClient communityFeignClient;
     @Autowired
@@ -118,15 +115,12 @@ public class MemberServiceImpl implements IMemberService {
     private MemberInfoDao memberInfoDao;
     @Autowired
     private MemberCouponDao memberCouponDao;
-    @Autowired
-    private MemberNoticeDaoService memberNoticeDaoService;
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
     @Autowired
     private LingKaHelper lingKaHelper;
     @Autowired
-    private DistributedLockByCurator distributedLockByCurator;
-
+    private UserTaskFilterService userTaskFilterService;
 
     //
     @Override
@@ -195,9 +189,9 @@ public class MemberServiceImpl implements IMemberService {
             return re;
         }
 
-        re = new FungoPageResultDto<Map<String, Object>>();
+        re = new FungoPageResultDto<>();
 
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> list = null;
         Page p = new Page(inputPage.getPage(), inputPage.getLimit());
         if (0 == inputPage.getType()) {//关注的用户
             list = actionDao.getFollowerUser(p, memberId);
@@ -217,14 +211,16 @@ public class MemberServiceImpl implements IMemberService {
                 //用户官方身份
                 IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", (String) map.get("objectId")).eq("rank_type", 2));
                 if (ranked != null) {
-                    IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
-                    if (rank != null) {
-                        String rankinf = rank.getRankImgs();
-                        ArrayList<HashMap<String, Object>> infolist = mapper.readValue(rankinf, ArrayList.class);
-                        map.put("statusImg", infolist);
-                    } else {
-                        map.put("statusImg", new ArrayList<>());
-                    }
+                    AuthorBean authorBean = userTaskFilterService.getStatusImages( (String) map.get("objectId"));
+                    map.put( "statusImgs",authorBean.getStatusImgs() );
+//                    IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
+//                    if (rank != null) {
+//                        String rankinf = rank.getRankImgs();
+//                        ArrayList<HashMap<String, Object>> infolist = mapper.readValue(rankinf, ArrayList.class);
+//                        map.put("statusImg", infolist);
+//                    } else {
+//                        map.put("statusImg", new ArrayList<>());
+//                    }
                 } else {
                     map.put("statusImg", new ArrayList<>());
                 }
@@ -264,8 +260,8 @@ public class MemberServiceImpl implements IMemberService {
             return re;
         }
 
-        re = new FungoPageResultDto<Map<String, Object>>();
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        re = new FungoPageResultDto<>();
+        List<Map<String, Object>> list = new ArrayList<>();
         re.setData(list);
         Page<BasAction> plist = actionService.selectPage(new Page<BasAction>(inputPage.getPage(), inputPage.getLimit()), new EntityWrapper<BasAction>().eq("type", "5").eq("target_id", memberId).notIn("state", "-1"));
         List<BasAction> list1 = plist.getRecords();
@@ -295,14 +291,16 @@ public class MemberServiceImpl implements IMemberService {
             //用户官方身份
             IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", m.getId()).eq("rank_type", 2));
             if (ranked != null) {
-                IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
-                if (rank != null) {
-                    String rankinf = rank.getRankImgs();
-                    ArrayList<HashMap<String, Object>> infolist = mapper.readValue(rankinf, ArrayList.class);
-                    map.put("statusImg", infolist);
-                } else {
-                    map.put("statusImg", new ArrayList<>());
-                }
+                AuthorBean authorBean = userTaskFilterService.getStatusImages( m.getId() );
+//                IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
+//                if (rank != null) {
+//                    String rankinf = rank.getRankImgs();
+//                    ArrayList<HashMap<String, Object>> infolist = mapper.readValue(rankinf, ArrayList.class);
+//                    map.put("statusImg", infolist);
+//                } else {
+//                    map.put("statusImg", new ArrayList<>());
+//                }
+                map.put( "statusImgs",authorBean.getStatusImgs() );
             } else {
                 map.put("statusImg", new ArrayList<>());
             }

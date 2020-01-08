@@ -101,7 +101,6 @@ public class MemberController {
             return FungoPageResultDto.error("-1", "找不到目标");
         }
         String myId = memberUserPrefile.getLoginId();
-
         return memberService.getFollowee(myId, memberId, inputPage);
     }
 
