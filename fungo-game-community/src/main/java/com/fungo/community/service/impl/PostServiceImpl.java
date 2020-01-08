@@ -997,7 +997,7 @@ public class PostServiceImpl implements IPostService {
             cmmOperationLog.setUpdatedAt( new Date( ) );
             cmmOperationLogMapper.insert( cmmOperationLog);
         }
-        if( postInput.getAuth() == null && postInput.getType() == 0){
+        if( postInput.getType() == 0){
             post.setAuth( ( post.getAuth() | postInput.getAuth()));
         }else {
             post.setAuth( (postInput.getAuth()^post.getAuth()) );
