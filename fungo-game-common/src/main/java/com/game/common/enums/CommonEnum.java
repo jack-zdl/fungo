@@ -32,6 +32,15 @@ public enum CommonEnum implements IEnum {
 	UNACCESSRULE(
 			"-1","权限不足"
 	),
+	BANNED_AUTH(
+			"-1","普通用户无法操作他人内容"
+	),
+	BANNED_AUTH_UPDATE(
+			"-1","您的圈主身份有变更，请退出当前页重试"
+	),
+	BANNED_AUTH_POST(
+			"-1","该文章已被其他管理员处理"
+	),
 	HTTP_WARNING_EMPTY("11","请求数据为空"),
 	//////////////////////
 	LOGIN_TIMEOUT(

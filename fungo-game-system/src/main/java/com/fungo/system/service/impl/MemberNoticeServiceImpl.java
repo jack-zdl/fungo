@@ -1,15 +1,12 @@
 package com.fungo.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.dao.MemberDao;
 import com.fungo.system.dto.MemberNoticeInput;
 import com.fungo.system.entity.BasNotice;
 import com.fungo.system.entity.Member;
 import com.fungo.system.entity.MemberApple;
-import com.fungo.system.entity.MemberNotice;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.helper.mq.MQProduct;
@@ -17,8 +14,6 @@ import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.service.BasNoticeService;
 import com.fungo.system.service.IMemberNoticeService;
 import com.fungo.system.service.MemberNoticeDaoService;
-import com.fungo.system.service.MemberNoticeDaoServiceImpl;
-import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MessageConstants;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
@@ -27,14 +22,11 @@ import com.game.common.dto.community.CmmCmtReplyDto;
 import com.game.common.dto.community.CmmCommentDto;
 import com.game.common.dto.community.MooMessageDto;
 import com.game.common.dto.game.GameEvaluationDto;
-import com.game.common.dto.game.GameOut;
 import com.game.common.dto.game.GameSurveyRelDto;
 import com.game.common.enums.SystemTypeEnum;
 import com.game.common.repo.cache.facade.FungoCacheNotice;
 import com.game.common.util.CommonUtil;
-import com.game.common.util.PKUtil;
 import com.game.common.util.StringUtil;
-import com.game.common.util.UUIDUtils;
 import com.game.common.util.date.DateTools;
 import com.game.common.vo.DelObjectListVO;
 import org.apache.commons.lang.StringUtils;
@@ -79,99 +71,18 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
     @Autowired(required = false)
     private CommunityFeignClient communityFeignClient;
 
-    @Override
-    public List<Map<String, Object>> queryMbNotices(String os,MemberNoticeInput noticeInput) {
-
-        List<Map<String, Object>> noticesList = null;
-        //从redis缓存，获取
-        String mb_id = noticeInput.getMb_id();
-        Integer ntc_type = noticeInput.getNtc_type();
-        String keyPrefix = FungoCoreApiConstant.REDIS_MEMBER_NOTICE + mb_id + String.valueOf(ntc_type.intValue());
-
-        try {
-
-            logger.info("queryMbNotices-input:{}", JSON.toJSONString(noticeInput));
-
-            //从redis中查询出 某个用户某种类型的消息 key集合
-            Set<Object> keySet = fungoCacheNotice.findKeysWithOutSecurity(keyPrefix, "");
-
-            List<String> noticeIdList = new ArrayList<>();
-
-            if (null != keySet) {
-
-                noticesList = new ArrayList<>();
-
-                for (Object o : keySet) {
-                    String key = (String) o;
-
-                    Map<String, Object> msgMap = (Map<String, Object>) fungoCacheNotice.getIndexCache(key);
-                    String  mobileType = (String) msgMap.get("mobileType");
-                    if(os.equals( "" )){
-
-                    }
-                    noticesList.add(msgMap);
-
-                    //同时把DB中的消息状态置为已读
-                    String[] keys = key.split("_");
-                    if (keys.length >= 2) {
-                        String noticeId = keys[keys.length-1];
-                        noticeIdList.add(noticeId);
-                    }
-                }
-                logger.info("queryMbNotices-redis-cache-keys:{}--value:{}", JSON.toJSONString(keySet), JSON.toJSONString(noticesList));
-            }
-
-            if (null != noticesList && !noticesList.isEmpty()) {
-                //修改消息状态
-                updateNotes(mb_id, noticeIdList);
-                return noticesList;
-            }
-            //从DB查
-            EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
-            noticeEntityWrapper.eq("mb_id", mb_id);
-            noticeEntityWrapper.eq("ntc_type", ntc_type);
-            noticeEntityWrapper.eq("is_read", 2);
-
-            List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList(noticeEntityWrapper);
-            if (null != noticeListDB && !noticeListDB.isEmpty()) {
-
-                noticesList = new ArrayList<>();
-
-                for (MemberNotice memberNotice : noticeListDB) {
-
-                    String ntcDataJsonStr = memberNotice.getNtcData();
-                    Map<String, Object> msgMap = JSON.parseObject(ntcDataJsonStr);
-                    noticesList.add(msgMap);
-                    noticeIdList.add(String.valueOf(memberNotice.getId()));
-                }
-                logger.info("queryMbNotices-DB:{}", JSON.toJSONString(noticesList));
-                //修改消息状态
-                updateNotes(mb_id, noticeIdList);
-            }
-
-        } catch (Exception ex) {
-            logger.error("查询用户的消息数据出现异常:", ex);
-            ex.printStackTrace();
-        } finally {
-            //清除redis缓存
-            fungoCacheNotice.excIndexCacheWithOutSecurity(false, keyPrefix, "", null);
-        }
-
-        return noticesList;
-    }
-
 
     /**
      * 修改消息状态为已读
      */
-    private void updateNotes(String mb_id, List<String> noticeIdList) {
-        for (String noticeId : noticeIdList) {
-            MemberNotice memberNotice = new MemberNotice();
-            memberNotice.setMbId(mb_id);
-            memberNotice.setId(Long.parseLong(noticeId));
-            updateMbNotice(memberNotice);
-        }
-    }
+//    private void updateNotes(String mb_id, List<String> noticeIdList) {
+//        for (String noticeId : noticeIdList) {
+//            MemberNotice memberNotice = new MemberNotice();
+//            memberNotice.setMbId(mb_id);
+//            memberNotice.setId(Long.parseLong(noticeId));
+//            updateMbNotice(memberNotice);
+//        }
+//    }
 
 
     @Override
@@ -201,65 +112,66 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
     }
 
 
-    @Override
-    public void addMbNotice(String mb_id, Integer ntc_type, Object ntcData) {
+//
+//    @Override
+//    public void addMbNotice(String mb_id, Integer ntc_type, Object ntcData) {
+//
+//        try {
+//            if (StringUtils.isBlank(mb_id)) {
+//                return;
+//            }
+//            if (null == ntcData) {
+//                return;
+//            }
+//
+//            int clusterIndex_i = Integer.parseInt(clusterIndex);
+//
+//            MemberNotice memberNotice = new MemberNotice();
+//            memberNotice.setId(PKUtil.getInstance(clusterIndex_i).longPK());
+//            memberNotice.setIsRead(2);
+//            memberNotice.setNtcType(ntc_type);
+//            memberNotice.setMbId(mb_id);
+//            memberNotice.setCreatedAt(new Date());
+//            memberNotice.setUpdatedAt(new Date());
+//
+//            memberNotice.setNtcData(JSON.toJSONString(ntcData));
+//
+//            memberNoticeDaoService.insert(memberNotice);
+//
+//            //同时保存到Redis缓存
+//            String keyPrefix = FungoCoreApiConstant.REDIS_MEMBER_NOTICE + mb_id + String.valueOf(ntc_type.intValue());
+//            fungoCacheNotice.excIndexCacheWithOutSecurity(true, keyPrefix, String.valueOf(memberNotice.getId()), ntcData);
+//
+//        } catch (Exception ex) {
+//            logger.error("添加用户的消息数据出现异常:", ex);
+//            ex.printStackTrace();
+//        }
+//    }
 
-        try {
-            if (StringUtils.isBlank(mb_id)) {
-                return;
-            }
-            if (null == ntcData) {
-                return;
-            }
-
-            int clusterIndex_i = Integer.parseInt(clusterIndex);
-
-            MemberNotice memberNotice = new MemberNotice();
-            memberNotice.setId(PKUtil.getInstance(clusterIndex_i).longPK());
-            memberNotice.setIsRead(2);
-            memberNotice.setNtcType(ntc_type);
-            memberNotice.setMbId(mb_id);
-            memberNotice.setCreatedAt(new Date());
-            memberNotice.setUpdatedAt(new Date());
-
-            memberNotice.setNtcData(JSON.toJSONString(ntcData));
-
-            memberNoticeDaoService.insert(memberNotice);
-
-            //同时保存到Redis缓存
-            String keyPrefix = FungoCoreApiConstant.REDIS_MEMBER_NOTICE + mb_id + String.valueOf(ntc_type.intValue());
-            fungoCacheNotice.excIndexCacheWithOutSecurity(true, keyPrefix, String.valueOf(memberNotice.getId()), ntcData);
-
-        } catch (Exception ex) {
-            logger.error("添加用户的消息数据出现异常:", ex);
-            ex.printStackTrace();
-        }
-    }
-
-    @Override
-    public void updateMbNotice(MemberNotice memberNotice) {
-        try {
-
-            if (null == memberNotice) {
-                return;
-            }
-            if (StringUtils.isBlank(memberNotice.getMbId())) {
-                return;
-            }
-
-            if (null == memberNotice.getId() || memberNotice.getId().longValue() <= 0) {
-                return;
-            }
-            MemberNotice updateMemberNotice = new MemberNotice();
-            updateMemberNotice.setIsRead(1);
-            updateMemberNotice.setId(memberNotice.getId());
-            updateMemberNotice.updateById();
-
-        } catch (Exception ex) {
-            logger.error("修改用户的消息数据出现异常:", ex);
-            ex.printStackTrace();
-        }
-    }
+//    @Override
+//    public void updateMbNotice(MemberNotice memberNotice) {
+//        try {
+//
+//            if (null == memberNotice) {
+//                return;
+//            }
+//            if (StringUtils.isBlank(memberNotice.getMbId())) {
+//                return;
+//            }
+//
+//            if (null == memberNotice.getId() || memberNotice.getId().longValue() <= 0) {
+//                return;
+//            }
+//            MemberNotice updateMemberNotice = new MemberNotice();
+//            updateMemberNotice.setIsRead(1);
+//            updateMemberNotice.setId(memberNotice.getId());
+//            updateMemberNotice.updateById();
+//
+//        } catch (Exception ex) {
+//            logger.error("修改用户的消息数据出现异常:", ex);
+//            ex.printStackTrace();
+//        }
+//    }
 
     /**
      * 功能描述: 根据游戏模块更新系统消息
@@ -281,36 +193,36 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                     try {
 //                        distributedLockByCurator.acquireDistributedLock( s.getMemberId() );
                         //从DB查
-                        EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
-                        noticeEntityWrapper.eq( "mb_id", s.getMemberId() );
-                        noticeEntityWrapper.eq( "ntc_type", 7 );
-                        noticeEntityWrapper.eq( "is_read", 2 );
-                        List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
-                        if (noticeListDB != null) {
-                            noticeListDB.parallelStream().forEach( x -> {
-                                String jsonString = x.getNtcData();
-                                JSONObject jsonObject = JSON.parseObject( jsonString );
-                                jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
-                                jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
-                                x.updateById();
-                            } );
-                        } else {
-                            MemberNotice memberNotice = new MemberNotice();
-                            int clusterIndex_i = Integer.parseInt( clusterIndex );
-                            memberNotice.setId( PKUtil.getInstance( clusterIndex_i ).longPK() );
-                            memberNotice.setIsRead( 2 );
-                            memberNotice.setNtcType( 7 );
-                            memberNotice.setMbId( s.getMemberId() );
-                            memberNotice.setCreatedAt( new Date() );
-                            memberNotice.setUpdatedAt( new Date() );
-                            Map map = new ConcurrentHashMap( 4 );
-                            map.put( "count", 1 );
-                            map.put( "like_count", 0 );
-                            map.put( "comment_count", 0 );
-                            map.put( "notice_count", 1 );
-                            memberNotice.setNtcData( JSON.toJSONString( map ) );
-                            memberNoticeDaoService.insert( memberNotice );
-                        }
+//                        EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
+//                        noticeEntityWrapper.eq( "mb_id", s.getMemberId() );
+//                        noticeEntityWrapper.eq( "ntc_type", 7 );
+//                        noticeEntityWrapper.eq( "is_read", 2 );
+//                        List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
+//                        if (noticeListDB != null) {
+//                            noticeListDB.parallelStream().forEach( x -> {
+//                                String jsonString = x.getNtcData();
+//                                JSONObject jsonObject = JSON.parseObject( jsonString );
+//                                jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
+//                                jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
+//                                x.updateById();
+//                            } );
+//                        } else {
+//                            MemberNotice memberNotice = new MemberNotice();
+//                            int clusterIndex_i = Integer.parseInt( clusterIndex );
+//                            memberNotice.setId( PKUtil.getInstance( clusterIndex_i ).longPK() );
+//                            memberNotice.setIsRead( 2 );
+//                            memberNotice.setNtcType( 7 );
+//                            memberNotice.setMbId( s.getMemberId() );
+//                            memberNotice.setCreatedAt( new Date() );
+//                            memberNotice.setUpdatedAt( new Date() );
+//                            Map map = new ConcurrentHashMap( 4 );
+//                            map.put( "count", 1 );
+//                            map.put( "like_count", 0 );
+//                            map.put( "comment_count", 0 );
+//                            map.put( "notice_count", 1 );
+//                            memberNotice.setNtcData( JSON.toJSONString( map ) );
+//                            memberNoticeDaoService.insert( memberNotice );
+//                        }
                         BasNotice basNotice = new BasNotice();
                         basNotice.setType( 6 );
                         basNotice.setIsRead( 0 );
@@ -357,39 +269,39 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
             try {
 //                distributedLockByCurator.acquireDistributedLock( memberId );
                 //从DB查
-                EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
-                noticeEntityWrapper.eq( "mb_id", memberId );
-                noticeEntityWrapper.eq( "ntc_type", 7 );
-                noticeEntityWrapper.eq( "is_read", 2 );
-                List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
-                if (noticeListDB != null && noticeListDB.size() > 0) {
-                    noticeListDB.parallelStream().forEach( x -> {
-                        String jsonString = x.getNtcData();
-                        JSONObject jsonObject = JSON.parseObject( jsonString );
-                        jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
-                        jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
-//                        jsonObject.put( "mobileType", mobileType );
-                        x.setNtcData( jsonObject.toJSONString());
-                        x.updateById();
-                    } );
-                } else {
-                    MemberNotice memberNotice = new MemberNotice();
-                    int clusterIndex_i = Integer.parseInt( clusterIndex );
-                    memberNotice.setId( PKUtil.getInstance( clusterIndex_i ).longPK() );
-                    memberNotice.setIsRead( 2 );
-                    memberNotice.setNtcType( 7 );
-                    memberNotice.setMbId( memberId );
-                    memberNotice.setCreatedAt( new Date() );
-                    memberNotice.setUpdatedAt( new Date() );
-                    Map map = new ConcurrentHashMap( 4 );
-                    map.put( "count", 1 );
-//                    map.put( "mobileType", mobileType );
-                    map.put( "like_count", 0 );
-                    map.put( "comment_count", 0 );
-                    map.put( "notice_count", 1 );
-                    memberNotice.setNtcData( JSON.toJSONString( map ) );
-                    memberNoticeDaoService.insert( memberNotice );
-                }
+//                EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
+//                noticeEntityWrapper.eq( "mb_id", memberId );
+//                noticeEntityWrapper.eq( "ntc_type", 7 );
+//                noticeEntityWrapper.eq( "is_read", 2 );
+//                List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
+//                if (noticeListDB != null && noticeListDB.size() > 0) {
+//                    noticeListDB.parallelStream().forEach( x -> {
+//                        String jsonString = x.getNtcData();
+//                        JSONObject jsonObject = JSON.parseObject( jsonString );
+//                        jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
+//                        jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
+////                        jsonObject.put( "mobileType", mobileType );
+//                        x.setNtcData( jsonObject.toJSONString());
+//                        x.updateById();
+//                    } );
+//                } else {
+//                    MemberNotice memberNotice = new MemberNotice();
+//                    int clusterIndex_i = Integer.parseInt( clusterIndex );
+//                    memberNotice.setId( PKUtil.getInstance( clusterIndex_i ).longPK() );
+//                    memberNotice.setIsRead( 2 );
+//                    memberNotice.setNtcType( 7 );
+//                    memberNotice.setMbId( memberId );
+//                    memberNotice.setCreatedAt( new Date() );
+//                    memberNotice.setUpdatedAt( new Date() );
+//                    Map map = new ConcurrentHashMap( 4 );
+//                    map.put( "count", 1 );
+////                    map.put( "mobileType", mobileType );
+//                    map.put( "like_count", 0 );
+//                    map.put( "comment_count", 0 );
+//                    map.put( "notice_count", 1 );
+//                    memberNotice.setNtcData( JSON.toJSONString( map ) );
+//                    memberNoticeDaoService.insert( memberNotice );
+//                }
                 BasNotice basNotice = new BasNotice();
                 basNotice.setType( 6 );
                 basNotice.setChannel(mobileType);
@@ -485,37 +397,37 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                     dataMap.put("msgTime", DateTools.fmtDate(new Date()));
 //                    distributedLockByCurator.acquireDistributedLock( s );
                     //从DB查
-                    EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
-                    noticeEntityWrapper.eq( "mb_id", s );
-                    noticeEntityWrapper.eq( "ntc_type", 7 );
-                    noticeEntityWrapper.eq( "is_read", 2 );
-                    List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
-                    if (noticeListDB != null && noticeListDB.size() > 0) {
-                        noticeListDB.parallelStream().forEach( x -> {
-                            String jsonString = x.getNtcData();
-                            JSONObject jsonObject = JSON.parseObject( jsonString );
-                            jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
-                            jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
-                            x.setNtcData( jsonObject.toJSONString() );
-                            x.updateById();
-                        } );
-                    } else {
-                        MemberNotice memberNotice = new MemberNotice();
-                        int clusterIndex_i = Integer.parseInt( clusterIndex );
-                        memberNotice.setId( PKUtil.getInstance( clusterIndex_i ).longPK() );
-                        memberNotice.setIsRead( 2 );
-                        memberNotice.setNtcType( 7 );
-                        memberNotice.setMbId( s );
-                        memberNotice.setCreatedAt( new Date() );
-                        memberNotice.setUpdatedAt( new Date() );
-                        Map map = new ConcurrentHashMap( 4 );
-                        map.put( "count", 1 );
-                        map.put( "like_count", 0 );
-                        map.put( "comment_count", 0 );
-                        map.put( "notice_count", 1 );
-                        memberNotice.setNtcData( JSON.toJSONString( map ) );
-                        memberNoticeDaoService.insert( memberNotice );
-                    }
+//                    EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
+//                    noticeEntityWrapper.eq( "mb_id", s );
+//                    noticeEntityWrapper.eq( "ntc_type", 7 );
+//                    noticeEntityWrapper.eq( "is_read", 2 );
+//                    List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
+//                    if (noticeListDB != null && noticeListDB.size() > 0) {
+//                        noticeListDB.parallelStream().forEach( x -> {
+//                            String jsonString = x.getNtcData();
+//                            JSONObject jsonObject = JSON.parseObject( jsonString );
+//                            jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
+//                            jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
+//                            x.setNtcData( jsonObject.toJSONString() );
+//                            x.updateById();
+//                        } );
+//                    } else {
+//                        MemberNotice memberNotice = new MemberNotice();
+//                        int clusterIndex_i = Integer.parseInt( clusterIndex );
+//                        memberNotice.setId( PKUtil.getInstance( clusterIndex_i ).longPK() );
+//                        memberNotice.setIsRead( 2 );
+//                        memberNotice.setNtcType( 7 );
+//                        memberNotice.setMbId( s );
+//                        memberNotice.setCreatedAt( new Date() );
+//                        memberNotice.setUpdatedAt( new Date() );
+//                        Map map = new ConcurrentHashMap( 4 );
+//                        map.put( "count", 1 );
+//                        map.put( "like_count", 0 );
+//                        map.put( "comment_count", 0 );
+//                        map.put( "notice_count", 1 );
+//                        memberNotice.setNtcData( JSON.toJSONString( map ) );
+//                        memberNoticeDaoService.insert( memberNotice );
+//                    }
                     BasNotice basNotice = new BasNotice();
                     basNotice.setType( 6 );
                     basNotice.setIsRead( 0 );
@@ -597,37 +509,37 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                     }
                     dataMap.put("msgTime", DateTools.fmtDate(new Date()));
                     //从DB查
-                    EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
-                    noticeEntityWrapper.eq( "mb_id", s );
-                    noticeEntityWrapper.eq( "ntc_type", 7 );
-                    noticeEntityWrapper.eq( "is_read", 2 );
-                    List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
-                    if (noticeListDB != null && noticeListDB.size() > 0) {
-                        noticeListDB.stream().forEach( x -> {
-                            String jsonString = x.getNtcData();
-                            JSONObject jsonObject = JSON.parseObject( jsonString );
-                            jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
-                            jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
-                            x.setNtcData( jsonObject.toJSONString() );
-                            x.updateById();
-                        } );
-                    } else {
-                        MemberNotice memberNotice = new MemberNotice();
-                        int clusterIndex_i = Integer.parseInt( clusterIndex );
-                        memberNotice.setId( PKUtil.getInstance( clusterIndex_i ).longPK() );
-                        memberNotice.setIsRead( 2 );
-                        memberNotice.setNtcType( 7 );
-                        memberNotice.setMbId( s );
-                        memberNotice.setCreatedAt( new Date() );
-                        memberNotice.setUpdatedAt( new Date() );
-                        Map map = new ConcurrentHashMap( 4 );
-                        map.put( "count", 1 );
-                        map.put( "like_count", 0 );
-                        map.put( "comment_count", 0 );
-                        map.put( "notice_count", 1 );
-                        memberNotice.setNtcData( JSON.toJSONString( map ) );
-                        memberNoticeDaoService.insert( memberNotice );
-                    }
+//                    EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
+//                    noticeEntityWrapper.eq( "mb_id", s );
+//                    noticeEntityWrapper.eq( "ntc_type", 7 );
+//                    noticeEntityWrapper.eq( "is_read", 2 );
+//                    List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
+//                    if (noticeListDB != null && noticeListDB.size() > 0) {
+//                        noticeListDB.stream().forEach( x -> {
+//                            String jsonString = x.getNtcData();
+//                            JSONObject jsonObject = JSON.parseObject( jsonString );
+//                            jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
+//                            jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
+//                            x.setNtcData( jsonObject.toJSONString() );
+//                            x.updateById();
+//                        } );
+//                    } else {
+//                        MemberNotice memberNotice = new MemberNotice();
+//                        int clusterIndex_i = Integer.parseInt( clusterIndex );
+//                        memberNotice.setId( PKUtil.getInstance( clusterIndex_i ).longPK() );
+//                        memberNotice.setIsRead( 2 );
+//                        memberNotice.setNtcType( 7 );
+//                        memberNotice.setMbId( s );
+//                        memberNotice.setCreatedAt( new Date() );
+//                        memberNotice.setUpdatedAt( new Date() );
+//                        Map map = new ConcurrentHashMap( 4 );
+//                        map.put( "count", 1 );
+//                        map.put( "like_count", 0 );
+//                        map.put( "comment_count", 0 );
+//                        map.put( "notice_count", 1 );
+//                        memberNotice.setNtcData( JSON.toJSONString( map ) );
+//                        memberNoticeDaoService.insert( memberNotice );
+//                    }
                     BasNotice basNotice = new BasNotice();
                     basNotice.setType( 6 );
                     basNotice.setIsRead( 0 );
@@ -652,39 +564,39 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
             try {
 //                distributedLockByCurator.acquireDistributedLock( o );
                 //从DB查
-                EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
-                noticeEntityWrapper.eq( "mb_id", o );
-                noticeEntityWrapper.eq( "ntc_type", 7 );
-                noticeEntityWrapper.eq( "is_read", 2 );
-                List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
-                if (noticeListDB != null && noticeListDB.size() > 0) {
-                    noticeListDB.parallelStream().forEach( x -> {
-                        String jsonString = x.getNtcData();
-                        JSONObject jsonObject = JSON.parseObject( jsonString );
-                        jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
-                        jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
-//                        jsonObject.put( "mobileType", channel );
-                        x.setNtcData( jsonObject.toJSONString());
-                        x.updateById();
-                    } );
-                } else {
-                    MemberNotice memberNotice = new MemberNotice();
-                    int clusterIndex_i = Integer.parseInt( clusterIndex );
-                    memberNotice.setId( PKUtil.getInstance( clusterIndex_i ).longPK() );
-                    memberNotice.setIsRead( 2 );
-                    memberNotice.setNtcType( 7 );
-                    memberNotice.setMbId( o );
-                    memberNotice.setCreatedAt( new Date() );
-                    memberNotice.setUpdatedAt( new Date() );
-                    Map map = new ConcurrentHashMap( 4 );
-                    map.put( "count", 1 );
-                    map.put( "like_count", 0 );
-                    map.put( "comment_count", 0 );
-//                    map.put( "mobileType",channel );
-                    map.put( "notice_count", 1 );
-                    memberNotice.setNtcData( JSON.toJSONString( map ) );
-                    memberNoticeDaoService.insert( memberNotice );
-                }
+//                EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
+//                noticeEntityWrapper.eq( "mb_id", o );
+//                noticeEntityWrapper.eq( "ntc_type", 7 );
+//                noticeEntityWrapper.eq( "is_read", 2 );
+//                List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
+//                if (noticeListDB != null && noticeListDB.size() > 0) {
+//                    noticeListDB.parallelStream().forEach( x -> {
+//                        String jsonString = x.getNtcData();
+//                        JSONObject jsonObject = JSON.parseObject( jsonString );
+//                        jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
+//                        jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
+////                        jsonObject.put( "mobileType", channel );
+//                        x.setNtcData( jsonObject.toJSONString());
+//                        x.updateById();
+//                    } );
+//                } else {
+//                    MemberNotice memberNotice = new MemberNotice();
+//                    int clusterIndex_i = Integer.parseInt( clusterIndex );
+//                    memberNotice.setId( PKUtil.getInstance( clusterIndex_i ).longPK() );
+//                    memberNotice.setIsRead( 2 );
+//                    memberNotice.setNtcType( 7 );
+//                    memberNotice.setMbId( o );
+//                    memberNotice.setCreatedAt( new Date() );
+//                    memberNotice.setUpdatedAt( new Date() );
+//                    Map map = new ConcurrentHashMap( 4 );
+//                    map.put( "count", 1 );
+//                    map.put( "like_count", 0 );
+//                    map.put( "comment_count", 0 );
+////                    map.put( "mobileType",channel );
+//                    map.put( "notice_count", 1 );
+//                    memberNotice.setNtcData( JSON.toJSONString( map ) );
+//                    memberNoticeDaoService.insert( memberNotice );
+//                }
                 BasNotice basNotice = new BasNotice();
                 basNotice.setType( 6 );
                 basNotice.setChannel( channel);

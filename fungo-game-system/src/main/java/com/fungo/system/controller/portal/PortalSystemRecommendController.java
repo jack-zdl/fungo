@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.controller.RecommendController;
 import com.fungo.system.entity.Member;
 import com.fungo.system.entity.MemberFollower;
+import com.fungo.system.function.UserTaskFilterService;
 import com.fungo.system.service.ICommunityService;
 import com.fungo.system.service.IUserService;
 import com.fungo.system.service.MemberFollowerService;
 import com.game.common.api.InputPageDto;
+import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.community.FollowUserOutBean;
@@ -50,6 +52,8 @@ public class PortalSystemRecommendController {
     private MemberFollowerService followService;
     @Autowired
     private RecommendController recommendController;
+    @Autowired
+    private UserTaskFilterService userTaskFilterService;
 
     /**
      * PC2.0
@@ -97,7 +101,11 @@ public class PortalSystemRecommendController {
                 }
             }
             try {
-                bean.setStatusImg(userService.getStatusImage(member.getId()));
+                AuthorBean authorBean = userTaskFilterService.getStatusImages( memberId);
+                if(authorBean != null && authorBean.getStatusImgs() != null){
+                    bean.setStatusImgs( authorBean.getStatusImgs());
+                }
+//                bean.setStatusImg(userService.getStatusImage(member.getId()));
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

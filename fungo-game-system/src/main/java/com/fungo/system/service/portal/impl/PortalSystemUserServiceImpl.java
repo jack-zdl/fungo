@@ -10,6 +10,7 @@ import com.fungo.system.dao.MemberCircleMapper;
 import com.fungo.system.dto.FollowInptPageDao;
 import com.fungo.system.entity.*;
 import com.fungo.system.feign.CommunityFeignClient;
+import com.fungo.system.function.UserTaskFilterService;
 import com.fungo.system.service.*;
 import com.fungo.system.service.portal.PortalSystemIUserService;
 import com.game.common.api.InputPageDto;
@@ -69,6 +70,8 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
     private IncentRuleRankGroupDao incentRuleRankGroupDao;
     @Autowired
     private MemberCircleMapper memberCircleMapper;
+    @Autowired
+    private UserTaskFilterService userTaskFilterService;
 
 
     @Override
@@ -250,15 +253,14 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
                     //用户官方身份
                     IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", (String) map.get("objectId")).eq("rank_type", 2));
                     if (ranked != null) {
-                        IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
-                        if (rank != null) {
-                            String rankinf = rank.getRankImgs();
-                            ArrayList<HashMap<String, Object>> infolist = mapper.readValue(rankinf, ArrayList.class);
-                            map.put("statusImg", infolist);
-                        } else {
-                            map.put("statusImg", new ArrayList<>());
+                        AuthorBean authorBean = userTaskFilterService.getStatusImages( (String) map.get("objectId") );
+                        if(authorBean != null || authorBean.getStatusImgs() != null){
+                            map.put("statusImgs", authorBean.getStatusImgs());
+                        }else {
+                            map.put("statusImgs", new ArrayList<>());
                         }
                     } else {
+                        map.put("statusImgs", new ArrayList<>());
                         map.put("statusImg", new ArrayList<>());
                     }
                 }
@@ -329,16 +331,19 @@ public class PortalSystemUserServiceImpl implements PortalSystemIUserService {
                 //用户官方身份
                 IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", m.getId()).eq("rank_type", 2));
                 if (ranked != null) {
-                    IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
-                    if (rank != null) {
-                        String rankinf = rank.getRankImgs();
-                        ArrayList<HashMap<String, Object>> infolist = mapper.readValue(rankinf, ArrayList.class);
-                        map.put("statusImg", infolist);
-                    } else {
-                        map.put("statusImg", new ArrayList<>());
-                    }
+                    AuthorBean authorBean = userTaskFilterService.getStatusImages(  m.getId());
+                    map.put("statusImg",authorBean.getStatusImgs());
+//                    IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
+//                    if (rank != null) {
+//                        String rankinf = rank.getRankImgs();
+//                        ArrayList<HashMap<String, Object>> infolist = mapper.readValue(rankinf, ArrayList.class);
+//                        map.put("statusImg", infolist);
+//                    } else {
+//                        map.put("statusImg", new ArrayList<>());
+//                    }
                 } else {
                     map.put("statusImg", new ArrayList<>());
+                    map.put("statusImgs", new ArrayList<>());
                 }
                 map.put("objectId", m.getId());
                 map.put("createdAt", DateTools.fmtDate(m.getCreatedAt()));
