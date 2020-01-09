@@ -33,6 +33,7 @@ import java.util.Date;
 public class BrowseActionAspect {
 
     private static Logger logger = LoggerFactory.getLogger(BrowseActionAspect.class);
+
     @Autowired
     private TSFeignClient tsFeignClient;
     @Autowired

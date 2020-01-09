@@ -54,6 +54,7 @@ import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.EmojiDealUtil;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import com.game.common.util.exception.BusinessException;
+import com.game.common.util.exception.CommonException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -963,8 +964,8 @@ public class PostServiceImpl implements IPostService {
         if (post == null) {
             return ResultDto.error("223", "帖子不存在");
         }
-        if((post.getAuth() & postInput.getAuth()) == postInput.getAuth()){
-            throw new  BusinessException( CommonEnum.BANNED_AUTH_POST);
+        if( (postInput.getType() != 1) &&  (post.getAuth() & postInput.getAuth()) == postInput.getAuth()){
+            throw new CommonException( CommonEnum.BANNED_AUTH_POST);
         }
 
         String circleId = null;
