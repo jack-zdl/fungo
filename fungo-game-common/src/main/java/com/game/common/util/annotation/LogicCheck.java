@@ -17,7 +17,8 @@ public @interface LogicCheck {
 
         DELETE_POST("DELETE_POST"),
         BANNED_TEXT("BANNED_TEXT"),
-        BANNED_AUTH("BANNED_AUTH");
+        BANNED_AUTH("BANNED_AUTH"),
+        BANNED_POST_AUTH("BANNED_POST_AUTH");
 
         String key;
 

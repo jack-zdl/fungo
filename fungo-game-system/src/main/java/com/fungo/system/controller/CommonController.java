@@ -98,8 +98,8 @@ public class CommonController {
             return ResultDto.error("-1", "找不到对应版本的目标渠道");
         }
 
-        map.put("game_download_switch", channelVersion.getGameDownloadSwitch() == 1 ? true : false);
-        map.put("index_banner_switch", channelVersion.getIndexBannerSwitch() == 1 ? true : false);
+        map.put("game_download_switch",sysVersion.getGameDownloadSwitch() == 1 ? true:  channelVersion.getGameDownloadSwitch() == 1 ? true : false);
+        map.put("index_banner_switch", sysVersion.getIndexBannerSwitch() == 1 ? true: channelVersion.getIndexBannerSwitch() == 1 ? true : false);
         //返回是否登录授权字段
         map.put("is_auth", sysVersion.getIsAuth() == 1 ? true : false);
         re.setData(map);

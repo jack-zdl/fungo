@@ -109,12 +109,15 @@ public class PortalSystemMemberController {
     @PostMapping(value = "/api/portal/system/mine/posts")
     @ApiImplicitParams({})
     public FungoPageResultDto<MyPublishBean> getMyPosts(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody MermberSearchInput input) throws Exception {
-//		String loginId = memberUserPrefile.getLoginId();
+		String loginId = null ;
+        if(memberUserPrefile != null){
+            loginId = memberUserPrefile.getLoginId();
+        }
         String memberId = input.getMemberId();
         if (CommonUtil.isNull(memberId)) {
             return FungoPageResultDto.error("-1", "未指定用户");
         }
-        return iMemberService.getMyPosts(memberId, input);
+        return iMemberService.getMyPosts(loginId,memberId, input);
     }
 
     @ApiOperation(value = "PC2.0我的评论(2.4.3)", notes = "我的评论")

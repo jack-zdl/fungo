@@ -970,6 +970,9 @@ public class GameServiceImpl implements IGameService {
             List<GameSurveyRel> plist = page.getRecords();
             for (GameSurveyRel gameSurveyRel : plist) {
                 Game game = gameService.selectById(gameSurveyRel.getGameId());
+                if(game.getState() != 0){
+                    continue;
+                }
                 MyGameBean bean = new MyGameBean();
                 bean.setAndroidState(game.getAndroidState());
                 bean.setGameContent(game.getDetail());

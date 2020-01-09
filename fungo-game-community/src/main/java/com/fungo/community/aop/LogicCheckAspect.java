@@ -3,9 +3,11 @@ package com.fungo.community.aop;
 import com.fungo.community.dao.mapper.CmmCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
 import com.fungo.community.entity.CmmCircle;
+import com.fungo.community.entity.CmmPost;
 import com.fungo.community.feign.SystemFeignClient;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.dto.community.CommentInput;
 import com.game.common.dto.community.PostInput;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.AbstractResultEnum;
@@ -125,6 +127,27 @@ public class LogicCheckAspect {
                         }else {
                             throw new BusinessException( CommonEnum.BANNED_AUTH);
                         }
+                    }
+                }else if(LogicCheck.LogicEnum.BANNED_POST_AUTH.getKey().equals( s )){
+                    PostInput postInput = (PostInput) param.get( "postInput" );
+                    CommentInput commentInput = (CommentInput) param.get( "commentInput" );
+                    String postId = null;
+                    if(postInput != null){
+                        postId = postInput.getPostId();
+                    }else if(commentInput != null) {
+                        if(1 == commentInput.getTarget_type()){
+                            postId = commentInput.getTarget_id();
+                        }
+                    }else {
+                        return;
+                    }
+                    try {
+                        CmmPost cmmPost = cmmPostDao.selectById( postId );
+                        if(cmmPost != null && cmmPost.getAuth() > 0){
+                            throw new BusinessException( CommonEnum.BANNED_AUTH_POST);
+                        }
+                    }catch (Exception e){
+
                     }
                 }
             });

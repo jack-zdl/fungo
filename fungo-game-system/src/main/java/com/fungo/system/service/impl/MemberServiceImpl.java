@@ -1345,10 +1345,10 @@ public class MemberServiceImpl implements IMemberService {
      * @date: 2019/7/2 10:35
      */
     @Override
-    public FungoPageResultDto<MyPublishBean> getMyPosts(String loginId, InputPageDto input) throws Exception {
+    public FungoPageResultDto<MyPublishBean> getMyPosts(String loginId,String memberId, InputPageDto input) throws Exception {
         FungoPageResultDto<MyPublishBean> re = null;
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS;
-        String keySuffix = loginId + JSON.toJSONString(input);
+        String keySuffix = memberId + JSON.toJSONString(input);
 
         re = (FungoPageResultDto<MyPublishBean>) fungoCacheArticle.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
@@ -1360,7 +1360,7 @@ public class MemberServiceImpl implements IMemberService {
         CmmPostDto param = new CmmPostDto();
         param.setPage(input.getPage());
         param.setLimit(input.getLimit());
-        param.setMemberId(loginId);
+        param.setMemberId(memberId);
         param.setState(1);
 //        param.setQueryType(1);
         FungoPageResultDto<CmmPostDto> cmmPostDtoFungoPageResultDto = communityFeignClient.queryCmmPostList(param);
@@ -1430,7 +1430,7 @@ public class MemberServiceImpl implements IMemberService {
 
             //
             bean.setVideoCoverImage(post.getVideoCoverImage());
-            bean.setDeltype( post.getState() == -1 ? 1 : 0 ); //1 true  已删除  0 false 未删除
+            bean.setDeltype( post.getState() == -1 ? 1 : memberId.equals(loginId) ? (post.getAuth() == 1 ? 1 :0) : (post.getAuth() == 1 ? -1 :0) ); //1 true  已删除  0 false 未删除
             bean.setCreatedAt( DateTools.fmtDate(post.getCreatedAt()));
             blist.add(bean);
         }
@@ -1642,8 +1642,8 @@ public class MemberServiceImpl implements IMemberService {
         } else if (curLv == 11) {
             return 10001;
         }
-
-        return 0;
+        // 2.7 当用户到达12级 显示还是11到12的分值差
+        return 10001;
 
     }
 
@@ -1744,8 +1744,10 @@ public class MemberServiceImpl implements IMemberService {
                 if (post != null && post.getState() != null) {
                     if(memberId.equals(  loginId )){
                         bean.setTargetDelType( post.getState()  == -1  ? -1 :  post.getAuth() == 1 ? 1:  0);
+                    }else {
+                        bean.setTargetDelType( post.getState()  == -1  ? -1 :  post.getAuth() == 1 ?  -1 : 0);
                     }
-                    bean.setTargetDelType( post.getState()  == -1  ? -1 : 0);
+
                     String title = CommonUtils.filterWord(post.getTitle());
                     if (StringUtils.isNotBlank(title)) {
                         title = FilterEmojiUtil.decodeEmoji(title);

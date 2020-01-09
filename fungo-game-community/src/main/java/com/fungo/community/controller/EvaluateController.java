@@ -49,7 +49,7 @@ public class EvaluateController {
             @ApiImplicitParam(name = "target_type", value = "资源类型【1：帖子，2：心情】", paramType = "path", dataType = "string")
 
     })
-    @LogicCheck(loginc = {"BANNED_TEXT"})
+    @LogicCheck(loginc = {"BANNED_TEXT","BANNED_POST_AUTH"})
     public ResultDto<CommentOut> addComment(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody CommentInput commentInput) throws Exception {
         String appVersion = "2.5.1";
         if(StringUtils.isNoneBlank(request.getHeader("appversion"))){

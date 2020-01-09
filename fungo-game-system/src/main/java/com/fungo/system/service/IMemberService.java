@@ -74,7 +74,7 @@ public interface IMemberService {
 	//用户游戏评论
 	FungoPageResultDto<MyEvaluationBean> getMyEvaluationList(String loginId, InputPageDto input) throws Exception;
 	//用户帖子
-	FungoPageResultDto<MyPublishBean> getMyPosts(String loginId, InputPageDto input) throws Exception;
+	FungoPageResultDto<MyPublishBean> getMyPosts(String loginId,String memberId, InputPageDto input) throws Exception;
 	//用户心情
 	FungoPageResultDto<MyPublishBean> getMyMoods(String loginId, InputPageDto input) throws Exception;
 	//用户等级信息
