@@ -6,6 +6,7 @@ import com.game.common.framework.SpringContextUtil;
 import com.game.common.framework.StringPrintWriter;
 import com.game.common.log.IRequestLogger;
 import com.game.common.util.exception.BusinessException;
+import com.game.common.util.exception.CommonException;
 import com.game.common.util.exception.ParamsException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -62,7 +63,10 @@ public class ExceptionHandle {
             builder.deleteCharAt(builder.length() - 1);
             e.printStackTrace();
             return ResultDto.error("-1", "入参未通过验证:" + builder.toString());
-        } else {
+        } else if(e instanceof CommonException){
+            CommonException commonException = (CommonException) e;
+            return ResultDto.ResultDtoFactory.buildWarning( commonException.getCode(), commonException.getMessage());
+        }else {
             e.printStackTrace();
             return ResultDto.error("-1", "服务器非常繁忙，请耐心等一下");
         }
