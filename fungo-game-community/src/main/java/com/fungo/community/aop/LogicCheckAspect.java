@@ -123,6 +123,15 @@ public class LogicCheckAspect {
 
                     if(member ==null){
                         throw new CommonException( CommonEnum.UNACCESSRULE);
+                    }else {
+                        ResultDto<List<MemberDto>> resultDto = systemFeignClient.listMembersByids(Arrays.asList( member.getLoginId() ),null);
+                        if(resultDto != null && resultDto.getData() != null){
+                            List<MemberDto> memberDtos = resultDto.getData();
+                            MemberDto memberDto = memberDtos.get( 0);
+                            if( 1 == memberDto.getAuth()){
+                                throw new CommonException( CommonEnum.POST_UNACCESSRULE);
+                            }
+                        }
                     }
                     ResultDto<List<MemberDto>> resultDto = systemFeignClient.listMembersByids( Collections.singletonList( member.getLoginId() ),null);
                     if(resultDto != null && resultDto.getData() != null){
