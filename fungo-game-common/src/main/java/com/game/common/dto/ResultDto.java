@@ -65,6 +65,10 @@ public class ResultDto<T> extends AbstractResultDto {
         return new ResultDto<>(code, message);
     }
 
+    public static <T> ResultDto<T> returnShowErrorMsg(String message) {
+        return new ResultDto<>("0", message);
+    }
+
     public static <T> ResultDto<T> error(IEnum ienum) {
         return new ResultDto<>(ienum);
     }
