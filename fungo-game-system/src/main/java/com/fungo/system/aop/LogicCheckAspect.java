@@ -12,6 +12,7 @@ import com.game.common.dto.MemberUserProfile;
 import com.game.common.enums.CommonEnum;
 import com.game.common.util.annotation.LogicCheck;
 import com.game.common.util.exception.BusinessException;
+import com.game.common.util.exception.CommonException;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Aspect;
@@ -144,7 +145,7 @@ public class LogicCheckAspect {
                         LOGGER.error( "逻辑检查失败,类型为BANNED_AUTH" ,e);
                     }
                     if(!(author.getCircleLevel() == 2 )){
-                        throw new BusinessException( CommonEnum.UNACCESSRULE);
+                        throw new CommonException( CommonEnum.UNACCESSRULE);
                     }
                 }
             });

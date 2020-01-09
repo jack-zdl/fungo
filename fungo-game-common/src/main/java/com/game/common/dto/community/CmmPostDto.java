@@ -129,6 +129,8 @@ V2.4.3版本添加
 
 	private String circleId;
 
+	private String circleIcon;
+
 	private String circleName;
 
 	/**

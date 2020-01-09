@@ -15,6 +15,7 @@ import com.game.common.enums.CommonEnum;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.annotation.LogicCheck;
 import com.game.common.util.exception.BusinessException;
+import com.game.common.util.exception.CommonException;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Aspect;
@@ -113,7 +114,7 @@ public class LogicCheckAspect {
                     }
 
                     if(member ==null){
-                        throw new BusinessException( CommonEnum.UNACCESSRULE);
+                        throw new CommonException( CommonEnum.UNACCESSRULE);
                     }
                     ResultDto<List<MemberDto>> resultDto = systemFeignClient.listMembersByids( Collections.singletonList( member.getLoginId() ),null);
                     if(resultDto != null && resultDto.getData() != null){
@@ -122,10 +123,10 @@ public class LogicCheckAspect {
                         if(!CommonUtil.isNull( memberDto.getCircleId() )){
                             List<CmmCircle>  cmmCircles  =  cmmCircleMapper.selectCircleByPostId( postId);
                             if(!(cmmCircles != null && cmmCircles.size()>0 && cmmCircles.stream().anyMatch( x -> (x.getId().equals(memberDto.getCircleId() )) ) )){
-                                throw new BusinessException( CommonEnum.BANNED_AUTH_UPDATE);
+                                throw new CommonException( CommonEnum.BANNED_AUTH_UPDATE);
                             }
                         }else {
-                            throw new BusinessException( CommonEnum.BANNED_AUTH);
+                            throw new CommonException( CommonEnum.BANNED_AUTH);
                         }
                     }
                 }else if(LogicCheck.LogicEnum.BANNED_POST_AUTH.getKey().equals( s )){
@@ -144,7 +145,7 @@ public class LogicCheckAspect {
                     try {
                         CmmPost cmmPost = cmmPostDao.selectById( postId );
                         if(cmmPost != null && cmmPost.getAuth() > 0){
-                            throw new BusinessException( CommonEnum.BANNED_AUTH_POST);
+                            throw new CommonException( CommonEnum.BANNED_AUTH_POST);
                         }
                     }catch (Exception e){
 

@@ -44,7 +44,9 @@ public class MyPublishBean implements Serializable{
 	private String circleId;
 	@ApiModelProperty(value="圈子name",example="")
 	private String circleName;
-	
+	@ApiModelProperty(value="圈子icon",example="")
+	private String circleIcon;
+
 	private ArrayList<StreamInfo> videoList = new ArrayList<>();
 	
 	private String coverImage;

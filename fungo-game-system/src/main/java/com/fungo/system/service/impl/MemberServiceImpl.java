@@ -1409,6 +1409,7 @@ public class MemberServiceImpl implements IMemberService {
             bean.setTitle(post.getTitle());
             bean.setVideo(post.getVideo());
             bean.setCircleId(post.getCircleId());
+            bean.setCircleIcon( post.getCircleIcon());
             bean.setUpdatedAt(DateTools.fmtDate(post.getUpdatedAt()));
             bean.setAuth( post.getAuth());
             //@todo  社区主键查询

@@ -178,6 +178,7 @@ public class MSServicePostServiceImpl implements IMSServicePostService {
                         CmmCircle cmmCircle = cmmCircleService.selectById(tCmmPostCircle.getCircleId());
                         if(null != cmmCircle){
                             cmmPostDto.setCircleId(cmmCircle.getId());
+                            cmmPostDto.setCircleIcon( cmmCircle.getCircleIcon());
                             cmmPostDto.setCircleName(cmmCircle.getCircleName());
                         }
                     }
