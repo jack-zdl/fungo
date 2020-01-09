@@ -938,7 +938,9 @@ public class FeignServiceController {
     ResultDto<GameDto> selectGameDetails(String gameId, Integer state) {
         Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", state));
         GameDto gameDto = new GameDto();
-        BeanUtils.copyProperties(game, gameDto);
+        if(game != null){
+            BeanUtils.copyProperties(game, gameDto);
+        }
         return ResultDto.success(gameDto);
     }
 

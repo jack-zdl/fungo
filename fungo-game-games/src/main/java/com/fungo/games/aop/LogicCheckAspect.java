@@ -63,8 +63,8 @@ public class LogicCheckAspect {
                     if(resultDto != null && resultDto.getData() != null){
                         List<MemberDto> memberDtos = resultDto.getData();
                         MemberDto memberDto = memberDtos.get( 0);
-                        if( 2 == memberDto.getAuth()){
-                            throw new BusinessException( CommonEnum.UNACCESSRULE);
+                        if( 1 == memberDto.getAuth()){
+                            throw new BusinessException( CommonEnum.POST_UNACCESSRULE);
                         }
                     }
                 }

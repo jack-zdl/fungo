@@ -2,13 +2,17 @@ package com.fungo.community.aop;
 
 import com.fungo.community.dao.mapper.CmmCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
+import com.fungo.community.dao.service.CmmCommentDaoService;
+import com.fungo.community.dao.service.CmmPostDaoService;
 import com.fungo.community.entity.CmmCircle;
+import com.fungo.community.entity.CmmComment;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.feign.SystemFeignClient;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CommentInput;
 import com.game.common.dto.community.PostInput;
+import com.game.common.dto.community.ReplyInputBean;
 import com.game.common.dto.user.MemberDto;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.CommonEnum;
@@ -53,6 +57,10 @@ public class LogicCheckAspect {
     private SystemFeignClient systemFeignClient;
     @Autowired
     private CmmCircleMapper cmmCircleMapper;
+    @Autowired
+    private CmmCommentDaoService commentService;
+    @Autowired
+    private CmmPostDaoService postService;
 
     @Pointcut("execution(*  com.fungo.community.controller..*.*(..)) && @annotation(com.game.common.util.annotation.LogicCheck)")
     public void before(){
@@ -94,8 +102,8 @@ public class LogicCheckAspect {
                     if(resultDto != null && resultDto.getData() != null){
                         List<MemberDto> memberDtos = resultDto.getData();
                         MemberDto memberDto = memberDtos.get( 0);
-                        if( 2 == memberDto.getAuth()){
-                            throw new BusinessException( CommonEnum.UNACCESSRULE);
+                        if( 1 == memberDto.getAuth()){
+                            throw new CommonException( CommonEnum.POST_UNACCESSRULE);
                         }
                     }
                 }else if(LogicCheck.LogicEnum.BANNED_AUTH.getKey().equals( s)){
@@ -132,6 +140,7 @@ public class LogicCheckAspect {
                 }else if(LogicCheck.LogicEnum.BANNED_POST_AUTH.getKey().equals( s )){
                     PostInput postInput = (PostInput) param.get( "postInput" );
                     CommentInput commentInput = (CommentInput) param.get( "commentInput" );
+                    CommentInput replyInputBean = (CommentInput) param.get( "replyInputBean" );
                     String postId = null;
                     if(postInput != null){
                         postId = postInput.getPostId();
@@ -139,7 +148,18 @@ public class LogicCheckAspect {
                         if(1 == commentInput.getTarget_type()){
                             postId = commentInput.getTarget_id();
                         }
-                    }else {
+                    }else if(replyInputBean != null){
+                        if (replyInputBean.getTarget_type() == 5) {//回复文章评论
+                            CmmComment comment = commentService.selectById( replyInputBean.getTarget_id() );
+                            if (comment != null) {
+                                CmmPost post = postService.selectById( comment.getPostId() );
+                                if(post != null){
+                                    postId = post.getId();
+                                }
+                            }
+                        }
+                    }
+                    else {
                         return;
                     }
                     try {
@@ -148,7 +168,7 @@ public class LogicCheckAspect {
                             throw new CommonException( CommonEnum.BANNED_AUTH_POST);
                         }
                     }catch (Exception e){
-
+                        throw new CommonException( CommonEnum.BANNED_AUTH_POST);
                     }
                 }
             });

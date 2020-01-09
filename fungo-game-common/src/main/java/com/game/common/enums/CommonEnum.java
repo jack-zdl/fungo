@@ -32,6 +32,9 @@ public enum CommonEnum implements IEnum {
 	UNACCESSRULE(
 			"-1","权限不足"
 	),
+	POST_UNACCESSRULE(
+			"-1","您已被禁言，请在官方通知联系解禁"
+	),
 	BANNED_AUTH(
 			"-1","普通用户无法操作他人内容"
 	),
