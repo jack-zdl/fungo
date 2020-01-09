@@ -2053,12 +2053,12 @@ public class PostServiceImpl implements IPostService {
             circleId = memberDto.getCircleId();
         }
         if(StringUtil.isNull(circleId)){
-            return ResultDto.error("-1","普通用户无法操作他人内容");
+            return ResultDto.returnShowErrorMsg("普通用户无法操作他人内容");
         }
         
         int circleIdPostId = cmmPostCircleMapper.countCircleIdPostId(postId, circleId);
         if(circleIdPostId==0){
-            return ResultDto.error("-1","您的圈主身份有变更，请退出当前页重试");
+            return ResultDto.returnShowErrorMsg("您的圈主身份有变更，请退出当前页重试");
         }
 
         // 校验行为次数 加精置顶每日仅可各操作一次
@@ -2066,13 +2066,13 @@ public class PostServiceImpl implements IPostService {
             long current = System.currentTimeMillis();    //当前时间毫秒数
             long zeroT = current/(1000*3600*24)*(1000*3600*24)- TimeZone.getDefault().getRawOffset();  //今天零点零分零秒的毫秒数
             long endT=zeroT+24*60*60*1000-1;  //今天23点59分59秒的毫秒数
-            Wrapper<CmmOperationLog> wrapper = new EntityWrapper<CmmOperationLog>().eq("member_id", userId).eq("action_type", actionType).ge("created_at", new Date(zeroT)).le("created_at", endT);
+            Wrapper<CmmOperationLog> wrapper = new EntityWrapper<CmmOperationLog>().eq("member_id", userId).eq("action_type", actionType).ge("created_at", new Date(zeroT)).le("created_at", new Date(endT));
             Integer operationCount = cmmOperationLogMapper.selectCount(wrapper);
             if(operationCount>=1){
                 if(actionType == 1){
-                    return ResultDto.error("-1","圈主每日只可加精一篇文章哦～");
+                    return ResultDto.returnShowErrorMsg("圈主每日只可加精一篇文章哦～");
                 }else{
-                    return  ResultDto.error("-1","圈主每日只可置顶一篇文章哦～");
+                    return  ResultDto.returnShowErrorMsg("圈主每日只可置顶一篇文章哦～");
                 }
 
             }
@@ -2085,11 +2085,11 @@ public class PostServiceImpl implements IPostService {
     public ResultDto<String> top(String userId, String postId) {
         CmmPost post =postService.selectById(postId);
         if(post==null||post.getState()!=1){
-            return ResultDto.error("-1","该内容不存在");
+            return ResultDto.returnShowErrorMsg("该内容不存在");
         }
         Integer type = post.getType();
         if(type==3){
-            return ResultDto.error("-1","该文章已被置顶");
+            return ResultDto.returnShowErrorMsg("该文章已被置顶");
         }
         // 校验 圈主身份 圈主当日操作次数
         ResultDto<String> checkPermissions = checkPermissions(userId,postId,2);
@@ -2112,10 +2112,8 @@ public class PostServiceImpl implements IPostService {
 
         post.setType(3);
         post.setEditedAt(new Date());
-        boolean b = postService.updateById(post);
-        if (!b) {
-            return ResultDto.error("-1","操作失败");
-        }
+        postService.updateById(post);
+
          //执行精品任务
          //文章上置顶
          doPostCommRecomTopWithExcellentTask(post.getMemberId(), postId);
@@ -2173,11 +2171,11 @@ public class PostServiceImpl implements IPostService {
     public ResultDto<String> essence(String userId, String postId) {
         CmmPost post = postService.selectById(postId);
         if(post==null||post.getState()!=1){
-            return ResultDto.error("-1","该内容不存在");
+            return ResultDto.returnShowErrorMsg("该内容不存在");
         }
         Integer type = post.getType();
         if(type==2){
-            return ResultDto.error("-1","该文章已被加精");
+            return ResultDto.returnShowErrorMsg("该文章已被加精");
         }
 
         // 校验 圈主身份 圈主当日操作次数
@@ -2201,10 +2199,7 @@ public class PostServiceImpl implements IPostService {
 
         post.setType(2);
         post.setEditedAt(new Date());
-        boolean b = postService.updateById(post);
-        if (!b) {
-            return ResultDto.error("-1", "操作失败");
-        }
+        postService.updateById(post);
 
         String memberId = post.getMemberId();
         String articleId = post.getId();
@@ -2275,12 +2270,12 @@ public class PostServiceImpl implements IPostService {
     public ResultDto<String> restore(String userId, String postId) {
         CmmPost post = postService.selectById(postId);
         if(post==null){
-            return ResultDto.error("-1","该内容不存在");
+            return ResultDto.returnShowErrorMsg("该内容不存在");
         }
         Integer type = post.getType();
 
         if(type!=2&&type!=3){
-            return ResultDto.error("-1","该文章已被其他管理员处理");
+            return ResultDto.returnShowErrorMsg("该文章已被其他管理员处理");
         }
         Integer actionType = type==2?100:200;
         // 校验 圈主身份 圈主当日操作次数
@@ -2304,9 +2299,6 @@ public class PostServiceImpl implements IPostService {
 //            post.setEditedAt(new Date());
         post.setUpdatedAt(new Date());
         boolean b = postService.updateById(post);
-        if (!b) {
-            return ResultDto.error("-1", "操作失败");
-        }
 
         //安利墙首页
         fungoCacheIndex.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX, "", null);
@@ -2345,7 +2337,7 @@ public class PostServiceImpl implements IPostService {
     public ResultDto<String> updatePostTag(String userId, String postId, String tagId) {
         CmmPost post = postService.selectById(postId);
         if(post==null){
-            return ResultDto.error("-1","该内容不存在");
+            return ResultDto.returnShowErrorMsg("该内容不存在");
         }
 
         // 校验 圈主身份 圈主当日操作次数
