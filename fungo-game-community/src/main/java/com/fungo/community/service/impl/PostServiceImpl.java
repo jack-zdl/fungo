@@ -2066,7 +2066,7 @@ public class PostServiceImpl implements IPostService {
             long current = System.currentTimeMillis();    //当前时间毫秒数
             long zeroT = current/(1000*3600*24)*(1000*3600*24)- TimeZone.getDefault().getRawOffset();  //今天零点零分零秒的毫秒数
             long endT=zeroT+24*60*60*1000-1;  //今天23点59分59秒的毫秒数
-            Wrapper<CmmOperationLog> wrapper = new EntityWrapper<CmmOperationLog>().eq("member_id", userId).eq("action_type", actionType).ge("created_at", new Date(zeroT)).le("created_at", endT);
+            Wrapper<CmmOperationLog> wrapper = new EntityWrapper<CmmOperationLog>().eq("member_id", userId).eq("action_type", actionType).ge("created_at", new Date(zeroT)).le("created_at", new Date(endT));
             Integer operationCount = cmmOperationLogMapper.selectCount(wrapper);
             if(operationCount>=1){
                 if(actionType == 1){
