@@ -1430,7 +1430,7 @@ public class MemberServiceImpl implements IMemberService {
 
             //
             bean.setVideoCoverImage(post.getVideoCoverImage());
-            bean.setDeltype( post.getState() == -1 ? 1 : memberId.equals(loginId) ? (post.getAuth() == 1 ? 1 :0) : (post.getAuth() == 1 ? -1 :0) ); //1 true  已删除  0 false 未删除
+            bean.setDeltype( post.getState() == -1 ? -1 : memberId.equals(loginId) ? (post.getAuth() == 1 ? 0 :0) : (post.getAuth() == 1 ? -1 :0) ); // -1 删除 0 正常
             bean.setCreatedAt( DateTools.fmtDate(post.getCreatedAt()));
             blist.add(bean);
         }
@@ -1743,7 +1743,11 @@ public class MemberServiceImpl implements IMemberService {
                 CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto);    //postService.selectOne(Condition.create().setSqlSelect("id,content,title,video").eq("id", c.getTargetId()));
                 if (post != null && post.getState() != null) {
                     if(memberId.equals(  loginId )){
-                        bean.setTargetDelType( post.getState()  == -1  ? -1 :  post.getAuth() == 1 ? 1:  0);
+                        if(memberId.equals( post.getMemberId() )){
+                            bean.setTargetDelType( post.getState()  == -1  ? -1 :  (post.getAuth() == 1 ? 1:  0));
+                        }else {
+                            bean.setTargetDelType( post.getState()  == -1  ? -1 :  post.getAuth() == 1 ? -1:  0);
+                        }
                     }else {
                         bean.setTargetDelType( post.getState()  == -1  ? -1 :  post.getAuth() == 1 ?  -1 : 0);
                     }
