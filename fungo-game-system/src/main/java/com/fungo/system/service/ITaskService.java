@@ -29,4 +29,9 @@ public interface ITaskService {
     ResultDto<String> followUser(String userId) throws Exception;
 
     ResultDto<String> openPush(String userId);
+
+
+    ResultDto<String> taskCheckUserFollowOfficialUser(String userId);
+
+    ResultDto<String> taskCheckUserFollowOfficialCircle(String userId);
 }

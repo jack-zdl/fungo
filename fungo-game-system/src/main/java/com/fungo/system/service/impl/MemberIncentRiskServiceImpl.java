@@ -7,6 +7,8 @@ import com.fungo.system.entity.*;
 import com.fungo.system.function.UserTaskFilterService;
 import com.fungo.system.service.*;
 import com.game.common.consts.FunGoGameConsts;
+import com.game.common.dto.AbstractEventDto;
+import com.game.common.dto.AbstractTaskEventDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.enums.NewTaskStatusEnum;
@@ -17,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,6 +46,8 @@ public class MemberIncentRiskServiceImpl implements IMemberIncentRiskService {
     private ScoreLogService scoreLogService;
     @Autowired
     private UserTaskFilterService userTaskFilterService;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public boolean isMatchLevel(String rank_id, String task_id) throws BusinessException {
@@ -101,6 +106,11 @@ public class MemberIncentRiskServiceImpl implements IMemberIncentRiskService {
           分享文章 | 分享游戏任务要给出收益提示
          */
         userTaskFilterService.updateUserTask( userId);
+        // 扫描用户关注的官方账户和官方圈子
+        AbstractEventDto abstractEventDto = new AbstractEventDto( this );
+        abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK.getKey());
+        abstractEventDto.setUserId( userId);
+        applicationEventPublisher.publishEvent(abstractEventDto);
         //用户是否存在
         //查出全部新手任务
         //V2.4.6 新手任务flag 1701

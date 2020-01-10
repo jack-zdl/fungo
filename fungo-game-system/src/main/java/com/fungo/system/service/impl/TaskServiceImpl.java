@@ -8,18 +8,21 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.dao.BannerDao;
+import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.dao.MemberDao;
 import com.fungo.system.entity.*;
+import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
-import com.game.common.dto.AbstractEventDto;
-import com.game.common.dto.ActionInput;
-import com.game.common.dto.ResultDto;
+import com.game.common.dto.*;
+import com.game.common.dto.community.CmmCircleDto;
 import com.game.common.enums.FunGoTaskV243Enum;
 import com.game.common.enums.NewTaskIdenum;
 import com.game.common.enums.NewTaskStatusEnum;
 import com.game.common.repo.cache.facade.FungoCacheTask;
+import com.game.common.util.CommonUtil;
 import com.game.common.util.PKUtil;
+import com.game.common.vo.CircleGamePostVo;
 import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +37,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -48,8 +52,6 @@ public class TaskServiceImpl implements ITaskService {
     private ScoreLogService scoreLogService;
     @Autowired
     private ScoreRuleService scoreRuleService;
-    @Autowired
-    private IScoreRuleService scoreRuleServiceImpl;
     @Autowired
     private ScoreGroupService scoreGroupService;
     @Autowired
@@ -72,6 +74,10 @@ public class TaskServiceImpl implements ITaskService {
     private IActionService actionService;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
+    @Autowired
+    private BasActionDao basActionDao;
+    @Autowired
+    private CommunityFeignClient communityFeignClient;
 
     @SuppressWarnings("rawtypes")
     @Override
@@ -589,6 +595,7 @@ public class TaskServiceImpl implements ITaskService {
             AbstractEventDto abstractEventDto = new AbstractEventDto(this);
             abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.FOLLOW_OFFICIAL_USER.getKey());
             abstractEventDto.setUserId(userId);
+            abstractEventDto.setObjectIdList( memberIdList);
             applicationEventPublisher.publishEvent(abstractEventDto);
             return ResultDto.ResultDtoFactory.buildSuccess( "一键关注官方账户成功" );
         }catch (Exception e){
@@ -611,6 +618,49 @@ public class TaskServiceImpl implements ITaskService {
             resultDto = ResultDto.ResultDtoFactory.buildError( "开启推送通知异常" );
         }
         return resultDto;
+    }
+
+    @Override
+    public ResultDto<String> taskCheckUserFollowOfficialUser(String memberId) {
+        try {
+            List<String> officialUsers = nacosFungoCircleConfig.getOfficialUsers();
+            List<String> followIds = memberDao.getMemberIdList(officialUsers);
+            String actionType = "5";
+            String targetType = "0";
+            followIds = basActionDao.getIdByFollowerId( memberId,actionType,targetType, followIds);
+            if(followIds.isEmpty()) return null;
+
+            AbstractTaskEventDto abstractEventDto = new AbstractTaskEventDto(this);
+            abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_OFFICIAL_USER.getKey());
+            abstractEventDto.setUserId(memberId);
+            abstractEventDto.setObjectIdList(followIds);
+            applicationEventPublisher.publishEvent(abstractEventDto);
+        }catch (Exception e){
+        LOGGER.error( "检查用户是否关注官方账户异常",e );
+        }
+        return null;
+    }
+
+    @Override
+    public ResultDto<String> taskCheckUserFollowOfficialCircle(String userId) {
+        try {
+            CircleGamePostVo circleGamePostVo = new CircleGamePostVo();
+            circleGamePostVo.setType(1 );
+            FungoPageResultDto<CmmCircleDto> fungoPageResultDto =  communityFeignClient.getCircleListByType(circleGamePostVo);
+            if(fungoPageResultDto != null && fungoPageResultDto.getData() != null){
+                List<String> circleIds = fungoPageResultDto.getData().stream().map( CmmCircleDto::getId ).collect( Collectors.toList());
+                circleIds = basActionDao.getIdByFollowerId( userId,"5","11" ,circleIds);
+                if(circleIds.isEmpty()) return null;
+                AbstractTaskEventDto abstractEventDto = new AbstractTaskEventDto(this);
+                abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_OFFICIAL_CIRCLE.getKey());
+                abstractEventDto.setUserId(userId);
+                abstractEventDto.setObjectIdList(circleIds);
+                applicationEventPublisher.publishEvent(abstractEventDto);
+            }
+        }catch (Exception e){
+            LOGGER.error( "检查用户是否关注官方圈子异常",e );
+        }
+        return null;
     }
 
 

@@ -133,4 +133,6 @@ public class ScoreRuleDTO  {
 
     private String levelLimit;
 
+    private String toActionUrl;
+
 }

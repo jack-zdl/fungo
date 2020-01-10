@@ -189,4 +189,7 @@ public interface CommunityFeignClient {
      */
     @GetMapping("/ms/service/cmm/mood/countMoodAndPost")
     ResultDto<Map<String,Integer>> countMoodAndPost(@RequestParam("userId") String userId);
+
+    @PostMapping(value = "/ms/service/cmm/circle/type")
+    FungoPageResultDto<CmmCircleDto> getCircleListByType( @RequestBody CircleGamePostVo circleGamePostVo);
 }

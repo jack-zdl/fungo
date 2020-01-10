@@ -64,7 +64,7 @@ public class MemberIncentTaskController {
     public ResultDto<List<Map<String, Object>>> getMemberTaskProgress(MemberUserProfile memberUserPrefile) {
         String mb_id = memberUserPrefile.getLoginId();
         int task_type = FunGoGameConsts.TASK_RULE_TASK_TYPE_SCOREANDCOIN;
-        ResultDto<List<Map<String, Object>>> resultDto = new ResultDto<List<Map<String, Object>>>();
+        ResultDto<List<Map<String, Object>>> resultDto = new ResultDto<>();
         try {
             List<Map<String, Object>> resutList = iMemberIncentTaskService.getMemberTaskProgress(mb_id, task_type);
             if (null != resutList) {
@@ -95,7 +95,7 @@ public class MemberIncentTaskController {
     @RequestMapping(value = "/api/user/incents/task/checknovicetask", method = RequestMethod.GET)
     public ResultDto<Map<String, Object>> checkeUnfinshedNoviceTask(MemberUserProfile memberUserPrefile, HttpServletRequest request) {
         String os = "";
-        os = (String) request.getHeader("os");
+        os =  request.getHeader("os");
         String userId = memberUserPrefile.getLoginId();
         return iMemberIncentRiskService.checkeUnfinshedNoviceTask(userId, os);
     }

@@ -13,8 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 
 /**
@@ -41,8 +44,22 @@ public class EventTaskListern implements ApplicationListener<AbstractTaskEventDt
         }else if(AbstractEventDto.AbstractEventEnum.FOLLOW_ONE_OFFICIAL_CIRCLE.getKey() == event.getEventType()){
             scoreRuleServiceImpl.achieveMultiScoreRule( userId,NewTaskStatusEnum.JOINOFFICIALCIRLCE_EXP.getKey(),objectId );
             scoreRuleServiceImpl.achieveMultiScoreRule( userId,NewTaskStatusEnum.JOINOFFICIALCIRLCE_COIN.getKey(),objectId );
-        }
+        }else if(AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_OFFICIAL_USER.getKey() == event.getEventType()){
+           List<String> objectList = event.getObjectIdList();
+           objectList.stream().forEach( s ->{
+               scoreRuleServiceImpl.achieveMultiScoreRule( userId,NewTaskStatusEnum.FOLLOWOFFICIALUSER_EXP.getKey(),s);
+               scoreRuleServiceImpl.achieveMultiScoreRule( userId,NewTaskStatusEnum.FOLLOWOFFICIALUSER_COIN.getKey(),s );
+           } );
+       }else if(AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK_OFFICIAL_CIRCLE.getKey() == event.getEventType()){
+           List<String> objectList = event.getObjectIdList();
+           objectList.stream().forEach( s ->{
+               scoreRuleServiceImpl.achieveMultiScoreRule( userId,NewTaskStatusEnum.JOINOFFICIALCIRLCE_EXP.getKey(),s);
+               scoreRuleServiceImpl.achieveMultiScoreRule( userId,NewTaskStatusEnum.JOINOFFICIALCIRLCE_COIN.getKey(),s );
+           } );
+       }
     }
+
+
 
 
 }

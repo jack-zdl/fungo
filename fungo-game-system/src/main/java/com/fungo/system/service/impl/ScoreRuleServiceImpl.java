@@ -155,19 +155,6 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
             Integer result = (Integer.valueOf( ext2 ) | Integer.valueOf( ext2Task));
             incentTasked.setExt2( result.toString());
             incentTasked.updateById();
-//            }
-            //添加新手任务埋点
-            BuriedPointTaskModel buriedPointTaskModel = new BuriedPointTaskModel();
-            buriedPointTaskModel.setDistinctId(memberId);
-            buriedPointTaskModel.setPlatForm( BuriedPointPlatformConstant.PLATFORM_SERVER);
-            buriedPointTaskModel.setEventName( BuriedPointEventConstant.EVENT_KEY_QUEST_COMPLETE);
-
-            buriedPointTaskModel.setQuestId(scoreRule.getId());
-            buriedPointTaskModel.setQuestName(scoreRule.getName());
-            buriedPointTaskModel.setFirstCategory( BuriedPointTaskTypeConstant.TASK_TYPE_NEW);
-            buriedPointTaskModel.setQuestExp(scoreRule.getScore());
-            buriedPointTaskModel.setFinalQuest(iMemberIncentTaskedService.currentTaskIsLast(scoreRule,memberId,FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code()));
-            BuriedPointUtils.publishBuriedPointEvent(buriedPointTaskModel);
 
             //没有执行过
             //3.更新用户经验值账户
@@ -184,6 +171,18 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
 
             //7.添加任务执行日志
             if(accountScore > 0){
+                //添加新手任务埋点
+                BuriedPointTaskModel buriedPointTaskModel = new BuriedPointTaskModel();
+                buriedPointTaskModel.setDistinctId(memberId);
+                buriedPointTaskModel.setPlatForm( BuriedPointPlatformConstant.PLATFORM_SERVER);
+                buriedPointTaskModel.setEventName( BuriedPointEventConstant.EVENT_KEY_QUEST_COMPLETE);
+
+                buriedPointTaskModel.setQuestId(scoreRule.getId());
+                buriedPointTaskModel.setQuestName(scoreRule.getName());
+                buriedPointTaskModel.setFirstCategory( BuriedPointTaskTypeConstant.TASK_TYPE_NEW);
+                buriedPointTaskModel.setQuestExp(scoreRule.getScore());
+                buriedPointTaskModel.setFinalQuest(iMemberIncentTaskedService.currentTaskIsLast(scoreRule,memberId,FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code()));
+                BuriedPointUtils.publishBuriedPointEvent(buriedPointTaskModel);
                 this.addTaskedLog(memberId, scoreRule);
             }
         }catch (Exception e){

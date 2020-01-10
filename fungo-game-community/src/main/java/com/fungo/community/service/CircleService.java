@@ -44,4 +44,6 @@ public interface CircleService {
 
     ResultDto<CmmCircleDto> selectCircleByPostId( String postId) throws Exception;
 
+    FungoPageResultDto<CmmCircleDto> getCircleListByType(CircleGamePostVo circleGamePostVo);
+
 }

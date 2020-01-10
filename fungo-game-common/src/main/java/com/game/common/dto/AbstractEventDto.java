@@ -5,6 +5,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.context.ApplicationEvent;
 
+import java.util.List;
+
 /**
  * <p> 删除文章事件DTO类</p>
  * @Date: 2019/12/5
@@ -42,6 +44,7 @@ public class AbstractEventDto extends ApplicationEvent {
     private int followType;
 //    private String userId;
     private String ObjectId;
+    private List<String> ObjectIdList;
     /************** end eventType = 4*********************/
 
     public AbstractEventDto(Object source) {
@@ -66,7 +69,11 @@ public class AbstractEventDto extends ApplicationEvent {
         OPENPUSH_USER(15),
         VPN_GAME(16),
         FOLLOW_ONE_OFFICIAL_USER(17),
-        FOLLOW_ONE_OFFICIAL_CIRCLE(18);
+        FOLLOW_ONE_OFFICIAL_CIRCLE(18),
+
+        TASK_USER_CHECK_OFFICIAL_USER(19),
+        TASK_USER_CHECK_OFFICIAL_CIRCLE(20),
+        TASK_USER_CHECK(21);
         int key;
         AbstractEventEnum(int k){
             this.key = k;

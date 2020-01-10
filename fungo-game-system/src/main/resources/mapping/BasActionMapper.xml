@@ -271,4 +271,14 @@
 		WHERE  s.target_id IS NULL   ORDER BY x.created_at desc  limit 10
 	</select>
 
+	<select id="getIdByFollowerId" resultType="java.lang.String">
+		select  target_id  from  t_bas_action WHERE member_id = #{memberId}  and type = #{actionType}  and target_type = #{targetType}
+		<if test="followIds != null  ">
+			and  target_id
+			in
+			<foreach collection="followIds" item="item" index="index" open="(" separator="," close=")">  #{item}  </foreach>
+		</if>
+		 ORDER BY created_at desc
+	</select>
+
 </mapper>

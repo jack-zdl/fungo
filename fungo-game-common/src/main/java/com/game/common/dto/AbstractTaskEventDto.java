@@ -5,6 +5,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.context.ApplicationEvent;
 
+import java.util.List;
+
 /**
  * <p> 删除文章事件DTO类</p>
  * @Date: 2019/12/5
@@ -42,6 +44,7 @@ public class AbstractTaskEventDto extends ApplicationEvent {
     private int followType;
 //    private String userId;
     private String ObjectId;
+    private List<String> ObjectIdList;
     /************** end eventType = 4*********************/
 
     public AbstractTaskEventDto(Object source) {

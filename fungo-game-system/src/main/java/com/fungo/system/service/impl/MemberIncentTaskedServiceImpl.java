@@ -11,6 +11,7 @@ import com.fungo.system.function.UserTaskFilterService;
 import com.fungo.system.service.*;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.FunGoGameConsts;
+import com.game.common.dto.AbstractEventDto;
 import com.game.common.enums.FunGoIncentTaskV246Enum;
 import com.game.common.enums.NewTaskIdenum;
 import com.game.common.enums.oldTaskIdenum;
@@ -25,14 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 @Service
 public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService {
@@ -53,6 +52,8 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
     private FungoCacheTask fungoCacheTask;
     @Autowired
     private UserTaskFilterService userTaskFilterService;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
 
     @Cacheable(cacheNames = {FunGoGameConsts.CACHE_EH_NAME}, key = "'" + FunGoGameConsts.CACHE_EH_KEY_PRE_MEMBER + "_TaskRule' + #task_type")
@@ -178,6 +179,10 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
             }
             // 旧数据转换新数据
             userTaskFilterService.updateUserTask( memberId);
+//            AbstractEventDto abstractEventDto = new AbstractEventDto( this );
+//            abstractEventDto.setUserId( memberId );
+//            abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK.getKey() );
+//            applicationEventPublisher.publishEvent(abstractEventDto);
             scoreGroupMapList = new ArrayList<>();
             //第一步获取任务分类 默认查询 task_type =3 分值和虚拟币共有
 //            if (task_type <= 0) {
@@ -333,7 +338,7 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                                     scoreRuleDTO.setIncentTaskedOut( taskedCountMap);
                                 }else {
                                     Map<String,Object> taskedCountMap = new ConcurrentHashMap<>(  );
-                                    taskedCountMap.put( "taskedCount",1);
+                                    taskedCountMap.put( "taskedCount",0);
                                     scoreRuleDTO.setIncentTaskedOut( taskedCountMap);
                                 }
                             }
@@ -377,7 +382,7 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                                         scoreRuleDTO.setIncentTaskedOut( taskedCountMap);
                                     }else {
                                         Map<String,Object> taskedCountMap = new ConcurrentHashMap<>(  );
-                                        taskedCountMap.put( "taskedCount",1);
+                                        taskedCountMap.put( "taskedCount",0);
                                         scoreRuleDTO.setIncentTaskedOut( taskedCountMap);
                                     }
                                 }
@@ -404,6 +409,7 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
                                 scoreRule.setLevelLimit(permRanked.getRankId());
                                 scoreRuleDTO.setToLinkUrl( permRanked.getToLinkUrl());
                                 scoreRuleDTO.setLevelLimit( permRanked.getRankId() );
+                                scoreRuleDTO.setToActionUrl( permRanked.getPermActionUrl());
                             }
                         }
                     }

@@ -3,6 +3,7 @@ package com.fungo.system.function.event;
 import com.fungo.system.config.CuratorConfiguration;
 import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.service.IScoreRuleService;
+import com.fungo.system.service.ITaskService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.AbstractEventDto;
 import com.game.common.dto.ActionInput;
@@ -36,6 +37,8 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
     private FungoCacheArticle fungoCacheArticle;
     @Autowired
     private IScoreRuleService scoreRuleServiceImpl;
+    @Autowired
+    private ITaskService taskServiceImpl;
 
     @Override
     @Async
@@ -123,6 +126,10 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
             String userId = event.getUserId();
             scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.VPN_EXP.getKey());
             scoreRuleServiceImpl.achieveScoreRule( userId, NewTaskStatusEnum.VPN_COIN.getKey());
+        }else if(AbstractEventDto.AbstractEventEnum.TASK_USER_CHECK.getKey() == event.getEventType()){
+            String userId = event.getUserId();
+            taskServiceImpl.taskCheckUserFollowOfficialUser(userId);
+            taskServiceImpl.taskCheckUserFollowOfficialCircle( userId );
         }
     }
 

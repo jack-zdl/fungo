@@ -182,6 +182,12 @@ public class CommunityFacedeHystrixService implements FallbackFactory<CommunityF
                 logger.error(logKey , "countMoodAndPost");
                 return null;
             }
+
+            @Override
+            public FungoPageResultDto<CmmCircleDto> getCircleListByType(CircleGamePostVo circleGamePostVo) {
+                logger.error(logKey , "getCircleListByType");
+                return null;
+            }
         };
 
     }
