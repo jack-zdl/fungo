@@ -5,19 +5,16 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fungo.system.dao.MallSeckillOrderDao;
+import com.fungo.system.dao.ScoreRuleDao;
 import com.fungo.system.dto.UserBean;
-import com.fungo.system.entity.IncentAccountCoin;
-import com.fungo.system.entity.MallSeckillOrder;
-import com.fungo.system.entity.Member;
+import com.fungo.system.entity.*;
 import com.fungo.system.mall.daoService.*;
 import com.fungo.system.mall.entity.*;
 import com.fungo.system.mall.service.IFungoMallSeckillService;
 import com.fungo.system.mall.service.IMallLogsService;
 import com.fungo.system.mall.service.commons.FungoMallSeckillTaskStateCommand;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
-import com.fungo.system.service.IMallSeckillOrderService;
-import com.fungo.system.service.IncentAccountCoinDaoService;
-import com.fungo.system.service.MemberService;
+import com.fungo.system.service.*;
 import com.game.common.buriedpoint.BuriedPointUtils;
 import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
 import com.game.common.buriedpoint.enums.BtnEnum;
@@ -28,6 +25,7 @@ import com.game.common.dto.AbstractEventDto;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.mall.*;
+import com.game.common.enums.NewTaskStatusEnum;
 import com.game.common.repo.cache.facade.FungoCacheSystem;
 import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.*;
@@ -54,7 +52,6 @@ import java.util.stream.Collectors;
 @Service
 public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
 
-
     private static final Logger logger = LoggerFactory.getLogger(FungoMallSeckillServiceImpl.class);
 
     @Autowired
@@ -79,11 +76,16 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
     private IMallSeckillOrderService iMallSeckillOrderServiceImpl;
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
-
     @Value("${fungo.mall.seckill.aesSecretKey}")
     private String aESSecretKey;
     @Value("${sys.config.fungo.cluster.index}")
     private String clusterIndex;
+    @Autowired
+    private IncentRankedService rankedService;
+    @Autowired
+    private ScoreRuleDao scoreRuleDao;
+    @Autowired
+    private IScoreRuleService scoreRuleServiceImpl;
 
 
     @Override
@@ -997,11 +999,21 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
     public ResultDto<String> browseMall(String memberId) {
         ResultDto<String> resultDto = null;
         try {
+            ScoreRule scoreRule = scoreRuleDao.getScoreRule( NewTaskStatusEnum.BROWSESHOP_EXP.getKey());
+            if(scoreRule == null){
+                logger.error("---member-mb_id:{}--执行新手任务---经验值任务---scoreRule:{}", scoreRule);
+            }
+            IncentTasked incentTasked  = scoreRuleServiceImpl.updateExtBygetTasked(memberId, scoreRule.getTaskType());
+            String ext2 = !CommonUtil.isNull( incentTasked.getExt2() ) ? incentTasked.getExt2() : "0";
+            if(((Integer.valueOf( ext2 ) & Integer.valueOf( NewTaskStatusEnum.BROWSESHOP_EXP.getKey()) ) == Integer.valueOf( NewTaskStatusEnum.BROWSESHOP_EXP.getKey()))){
+                resultDto = ResultDto.ResultDtoFactory.buildSuccess( "" );
+            } else {
+                resultDto = ResultDto.ResultDtoFactory.buildSuccess( "任务完成，经验+1，Fun 币+50!" );
+            }
             AbstractEventDto abstractEventDto = new AbstractEventDto(this);
             abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.BROWSE_SHOP.getKey());
             abstractEventDto.setUserId(memberId);
             applicationEventPublisher.publishEvent(abstractEventDto);
-            resultDto = ResultDto.ResultDtoFactory.buildSuccess( "任务完成，经验+1，Fun 币+50!" );
         }catch (Exception e){
             logger.error( "浏览商品礼包event异常,memberId = {}",memberId,e);
             resultDto = ResultDto.ResultDtoFactory.buildError( "浏览商品礼包event异常" );

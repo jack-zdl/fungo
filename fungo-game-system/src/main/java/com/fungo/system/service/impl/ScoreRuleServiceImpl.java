@@ -818,7 +818,6 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
      * 由原来的task_idt_ids 转换成 状态位
      * @date: 2019/12/24 17:37
      */
-    @Async
     @Override
     public synchronized IncentTasked updateExtBygetTasked(String memberId, int task_type) {
         try {
