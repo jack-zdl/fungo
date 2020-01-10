@@ -1055,13 +1055,14 @@ public class UserServiceImpl implements IUserService {
                 author.setGroupStatus( 0);
             }else {
                 int circleLevel = 0;
+                int groupLevel = 0;
                 List<IncentRanked> cardIdlist = rankedService.selectList(new EntityWrapper<IncentRanked>().eq("mb_id", memberId));
                 for (IncentRanked ranked : cardIdlist) {
                   if (ranked.getRankType() == 2) {
                         String rankIdtIds = ranked.getRankIdtIds();
                         List<HashMap<String,Object>> list1 = mapper.readValue(rankIdtIds, ArrayList.class);
                         List<List<HashMap<String,Object>>> statusLists = new ArrayList<>(  );
-                        int groupLevel = 0;
+
                         for (HashMap<String,Object> map : list1){
                             Integer rankId = (Integer) map.get( "1" );
                             IncentRuleRank rank = rankRuleService.selectById(rankId);//最近获得
@@ -1083,7 +1084,7 @@ public class UserServiceImpl implements IUserService {
                         }
                     }
                 }
-                if(circleLevel == 2 && circleLevel > author.getCircleLevel()){
+                if(circleLevel == 2 && groupLevel > author.getGroupLevel()){
                     author.setGroupStatus(1);
                 }
             }
