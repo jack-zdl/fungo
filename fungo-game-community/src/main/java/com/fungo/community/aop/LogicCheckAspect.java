@@ -177,6 +177,7 @@ public class LogicCheckAspect {
                             throw new CommonException( CommonEnum.BANNED_AUTH_POST);
                         }
                     }catch (Exception e){
+                        LOGGER.error( "逻辑检查异常",e);
                         throw new CommonException( CommonEnum.BANNED_AUTH_POST);
                     }
                 }

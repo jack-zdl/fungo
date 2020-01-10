@@ -58,9 +58,6 @@ public class PostHtmlContentController {
      */
     @GetMapping(value = "/api/content/post/html/{postId}")
     public ModelAndView getPostContentHtml(@PathVariable("postId") String postId) throws Exception {
-
-        LOGGER.info("------/api/content/post/html/{postId}:{}", postId);
-
         //内容
         String keyPrefixContent = FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_CONTENT + postId;
         String htmlContent = fungoCacheArticle.getIndexCacheWithStr(keyPrefixContent, "");
@@ -91,18 +88,15 @@ public class PostHtmlContentController {
         if(post==null){
             post = daoPostService.selectById(postId);
         }
-
         if (post == null) {
             throw new Exception("帖子不存在");
         } else {
             List<String> asList = new ArrayList<>();
-
             if (post.getImages() != null) {
                 asList = Arrays.asList(post.getImages().replace("]", "").replace("[", "").replace("\"", "").split(","));
             }
             String origin = post.getHtmlOrigin();
             origin = FilterEmojiUtil.decodeEmoji(origin);
-
             List<Map<String, Object>> gameMapList = new ArrayList<>();
             String gameList = post.getGameList();
             //更新游戏标签中的游戏评分
@@ -110,7 +104,6 @@ public class PostHtmlContentController {
                 ObjectMapper mapper = new ObjectMapper();
                 gameMapList = mapper.readValue(gameList, ArrayList.class);
                 for (Map<String, Object> m : gameMapList) {
-
                     //获取游戏平均分
                     String gameId = (String) m.get("objectId");
                     double gameAverage = 0;
@@ -126,7 +119,6 @@ public class PostHtmlContentController {
                         m.put( "category", String.join(",", categorys.subList(0, 3)));
                     }
                 }
-
                 gameList = mapper.writeValueAsString(gameMapList);
             }
             htmlContent = SerUtils.getWatermarkImageContent(CommonUtils.filterWord(origin), asList, gameList);
@@ -140,19 +132,10 @@ public class PostHtmlContentController {
             if (StringUtils.isNotBlank(EmojiDealUtil.getEmojiUnicodeString(htmlContentTitle))) {
                 titleHtml = FilterEmojiUtil.encodeEmoji(htmlContentTitle);
             }
-
-            //redis cache
-            //文章内容html-内容
-//           fungoCacheArticle.excIndexCache(true, keyPrefixContent, "", hexadecimalHtml);
-//            //文章内容html-标题
-//            fungoCacheArticle.excIndexCache(true, keyPrefixTitle, "", titleHtml);
-
             fungoCacheArticle.setStringCache(keyPrefixContent, "", hexadecimalHtml);
             //文章内容html-标题
             fungoCacheArticle.setStringCache(keyPrefixTitle, "", titleHtml);
-
             return TemplateUtil.returnPostHtmlTemplate(htmlContent, htmlContentTitle);
-
         }
 
     }

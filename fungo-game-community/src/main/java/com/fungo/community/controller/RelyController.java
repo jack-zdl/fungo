@@ -52,7 +52,7 @@ public class RelyController {
             @ApiImplicitParam(name = "target_type", value = "目标对象类型	5", paramType = "path", dataType = "string")
 
     })
-    @LogicCheck(loginc = {"BANNED_AUTH","BANNED_POST_AUTH"})
+    @LogicCheck(loginc = {"BANNED_TEXT","BANNED_POST_AUTH"})
     public ResultDto<ReplyOutBean> addComment(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody ReplyInputBean reply) throws Exception {
         String os = "";
         os = (String) request.getAttribute("os");
