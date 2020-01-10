@@ -124,6 +124,7 @@ public class PortalCommunityPostController {
             @ApiImplicitParam(name = "origin", value = "文本", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "videoId", value = "视频id,  可选", paramType = "form", dataType = "string")
     })
+    @LogicCheck(loginc = {"BANNED_TEXT"})
     public ResultDto<ObjectId> addPost(MemberUserProfile memberUserPrefile, @RequestBody PostInput postInput) throws Exception {
         if (StringUtil.isNull(postInput.getHtml()) || StringUtil.isNull(postInput.getTitle())) {
             return ResultDto.error("-1", "文章内容或者标题不可为空");
@@ -154,6 +155,7 @@ public class PortalCommunityPostController {
             @ApiImplicitParam(name = "images", value = "图片", paramType = "form", dataType = "string[]"),
 
     })
+    @LogicCheck(loginc = {"BANNED_TEXT","BANNED_POST_AUTH"})
     public ResultDto<String> editPost(MemberUserProfile memberUserPrefile, HttpServletRequest request,
                                       @RequestBody PostInput postInput) throws Exception {
         String userId = memberUserPrefile.getLoginId();

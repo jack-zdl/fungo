@@ -139,8 +139,10 @@ public class LogicCheckAspect {
                         MemberDto memberDto = memberDtos.get( 0);
                         if(!CommonUtil.isNull( memberDto.getCircleId() )){
                             List<CmmCircle>  cmmCircles  =  cmmCircleMapper.selectCircleByPostId( postId);
-                            if(!(cmmCircles != null && cmmCircles.size()>0 && cmmCircles.stream().anyMatch( x -> (x.getId().equals(memberDto.getCircleId() )) ) )){
-                                throw new CommonException( CommonEnum.BANNED_AUTH_UPDATE);
+                            if(cmmCircles != null && cmmCircles.size()>0){
+                                if(!(  cmmCircles.stream().anyMatch( x -> (x.getId().equals(memberDto.getCircleId() )) ) )){
+                                    throw new CommonException( CommonEnum.BANNED_AUTH_UPDATE);
+                                }
                             }
                         }else {
                             throw new CommonException( CommonEnum.BANNED_AUTH);

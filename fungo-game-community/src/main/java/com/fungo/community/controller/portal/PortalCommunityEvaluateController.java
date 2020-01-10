@@ -7,6 +7,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.*;
 import com.game.common.util.ValidateUtils;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.LogicCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -39,6 +40,7 @@ public class PortalCommunityEvaluateController {
             @ApiImplicitParam(name = "comment_id", value = "心情id", paramType = "path", dataType = "string"),
             @ApiImplicitParam(name = "user_id", value = "用户id", paramType = "path", dataType = "string")
     })
+
     public FungoPageResultDto<CommentOutPageDto> getCommentList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody CommentInputPageDto commentPage) {
         String memberId = "";
         if (memberUserPrefile != null) {
@@ -71,6 +73,7 @@ public class PortalCommunityEvaluateController {
             @ApiImplicitParam(name = "target_type", value = "资源类型【1：帖子，2：心情】", paramType = "path", dataType = "string")
 
     })
+    @LogicCheck(loginc = {"BANNED_TEXT","BANNED_POST_AUTH"})
     public ResultDto<CommentOut> addComment(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody CommentInput commentInput) throws Exception {
         String appVersion = "2.5.1";
         if(StringUtils.isNoneBlank(request.getHeader("appversion"))){
