@@ -597,7 +597,7 @@ public class TaskServiceImpl implements ITaskService {
             abstractEventDto.setUserId(userId);
             abstractEventDto.setObjectIdList( memberIdList);
             applicationEventPublisher.publishEvent(abstractEventDto);
-            return ResultDto.ResultDtoFactory.buildSuccess( "一键关注官方账户成功" );
+            return ResultDto.ResultDtoFactory.buildSuccess( "关注成功，经验+4，Fun币+50!" );
         }catch (Exception e){
             LOGGER.error( userId+"用户一键关注官方账户失败",e );
             return ResultDto.ResultDtoFactory.buildError("一键关注官方账户失败");

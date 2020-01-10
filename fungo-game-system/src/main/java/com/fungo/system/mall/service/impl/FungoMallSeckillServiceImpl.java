@@ -1001,7 +1001,7 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
             abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.BROWSE_SHOP.getKey());
             abstractEventDto.setUserId(memberId);
             applicationEventPublisher.publishEvent(abstractEventDto);
-            resultDto = ResultDto.ResultDtoFactory.buildSuccess( "浏览商品礼包成功" );
+            resultDto = ResultDto.ResultDtoFactory.buildSuccess( "任务完成，经验+1，Fun 币+50!" );
         }catch (Exception e){
             logger.error( "浏览商品礼包event异常,memberId = {}",memberId,e);
             resultDto = ResultDto.ResultDtoFactory.buildError( "浏览商品礼包event异常" );
