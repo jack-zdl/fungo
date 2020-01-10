@@ -173,7 +173,7 @@ public class MemberIncentTaskedServiceImpl implements IMemberIncentTaskedService
         String keySuffix = task_type + "";
         try {
             //从redis缓存中获取
-            scoreGroupMapList = (List<Map<String, Object>>) fungoCacheTask.getIndexCache(keyPreffix, keySuffix);
+//            scoreGroupMapList = (List<Map<String, Object>>) fungoCacheTask.getIndexCache(keyPreffix, keySuffix);
             if (null != scoreGroupMapList && !scoreGroupMapList.isEmpty()) {
                 return scoreGroupMapList;
             }

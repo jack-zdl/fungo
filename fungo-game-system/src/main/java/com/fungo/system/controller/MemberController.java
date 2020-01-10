@@ -139,10 +139,7 @@ public class MemberController {
     })
     public FungoPageResultDto<Map<String, Object>> getCommentNotice(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPage) throws Exception {
 
-        String appVersion = "";
-//		appVersion = (String) request.getAttribute("appVersion");
-        appVersion = request.getHeader("appversion");
-//		System.out.println("appVersion:"+appVersion);
+        String appVersion =  request.getHeader("appversion");
         return memberService.getCommentNotice(memberUserPrefile.getLoginId(), inputPage, appVersion);
     }
 
