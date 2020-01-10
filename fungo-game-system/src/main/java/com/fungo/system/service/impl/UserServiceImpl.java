@@ -982,8 +982,8 @@ public class UserServiceImpl implements IUserService {
         for (IncentRanked ranked : list) {
             if (ranked.getRankType() == 1) {
                 String rankIdtIds = ranked.getRankIdtIds();
-                List<HashMap<String,Object>> medalList = mapper.readValue(rankIdtIds, ArrayList.class);
-                author.setHonorNumber( medalList.size());
+//                List<HashMap<String,Object>> medalList = mapper.readValue(rankIdtIds, ArrayList.class);
+
                 IncentRuleRank rank = rankRuleService.selectById(ranked.getCurrentRankId());//最近获得
 //                author.setLevel(ranked.getCurrentRankId().intValue());
                 String rankImgs = rank.getRankImgs();
@@ -1027,6 +1027,7 @@ public class UserServiceImpl implements IUserService {
                 String rankIdtIds = ranked.getRankIdtIds();
                 ArrayList<HashMap<String, Object>> rankList = mapper.readValue(rankIdtIds, ArrayList.class);
                 Collections.reverse(rankList);
+                author.setHonorNumber( rankList.size());
                 List<String> honorImgList = new ArrayList<>();
                 int i = 0;
                 ArrayList<String> groupIdList = new ArrayList<>();
