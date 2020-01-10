@@ -147,9 +147,9 @@ public class MemberIncentRiskServiceImpl implements IMemberIncentRiskService {
         String ext2 = !CommonUtil.isNull(tasked.getExt2()) ? tasked.getExt2() : "0";
         Integer status = Integer.valueOf(ext2);
         if( ( (status & Integer.valueOf( NewTaskStatusEnum.JOINOFFICIALCIRLCE_EXP.getKey() )) == Integer.valueOf( NewTaskStatusEnum.JOINOFFICIALCIRLCE_EXP.getKey() ))
-            && ( (status & Integer.valueOf( NewTaskStatusEnum.JOINOFFICIALCIRLCE_EXP.getKey() )) == Integer.valueOf( NewTaskStatusEnum.FOLLOWOFFICIALUSER_EXP.getKey() ))
-            && ( (status & Integer.valueOf( NewTaskStatusEnum.JOINOFFICIALCIRLCE_EXP.getKey() )) == Integer.valueOf( NewTaskStatusEnum.EDITUSER_EXP.getKey() ))
-            && ( (status & Integer.valueOf( NewTaskStatusEnum.JOINOFFICIALCIRLCE_EXP.getKey() )) == Integer.valueOf( NewTaskStatusEnum.BROWSESHOP_EXP.getKey() ))
+            && ( (status & Integer.valueOf( NewTaskStatusEnum.FOLLOWOFFICIALUSER_EXP.getKey() )) == Integer.valueOf( NewTaskStatusEnum.FOLLOWOFFICIALUSER_EXP.getKey() ))
+            && ( (status & Integer.valueOf( NewTaskStatusEnum.EDITUSER_EXP.getKey() )) == Integer.valueOf( NewTaskStatusEnum.EDITUSER_EXP.getKey() ))
+            && ( (status & Integer.valueOf( NewTaskStatusEnum.BROWSESHOP_EXP.getKey() )) == Integer.valueOf( NewTaskStatusEnum.BROWSESHOP_EXP.getKey() ))
         ){
             unfinishedCount = 0;
         }
