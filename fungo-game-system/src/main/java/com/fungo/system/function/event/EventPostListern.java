@@ -149,6 +149,7 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
             }else if(1 == type){
                 memberServiceImpl.addActionTypeNotice(memberId,  MessageConstants.SYSTEM_NOTICE_USER_OFF,"3");
             }
+
         }
         if(!CommonUtil.isNull( memberId )){
             String keyPreffix = FungoCoreApiConstant.FUNGO_CORE_API_TASK_USER_TASK_PROGRESS + "-" + memberId;

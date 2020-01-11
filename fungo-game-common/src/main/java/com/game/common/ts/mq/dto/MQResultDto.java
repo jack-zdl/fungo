@@ -162,7 +162,8 @@ public class MQResultDto {
         SYSTEM_MQ_DATA_TYPE_GAMES_UPDATE(8,"java.util.HashMap"),
         SYSTEM_DATA_TYPE_GAMES_DOWNLOAD(9, "java.util.HashMap"),
         SYSTEM_DATA_TYPE_POST_UPDATE(10, "com.game.common.dto.community.CmmPostDto"),
-        SYSTEM_DATA_TYPE_MOOD_UPDATE(11, "com.game.common.dto.community.MooMoodDto");
+        SYSTEM_DATA_TYPE_MOOD_UPDATE(11, "com.game.common.dto.community.MooMoodDto"),
+        SYSTEM_DATA_TYPE_CMMOPERATIONLOGDTO(12, "com.game.common.dto.CmmOperationLogDto");
 //        SYSTEM_DATA_TYPE_GAME_SURVEY_UPDATE(12, "java.util.ArrayList");
 
         private int code;

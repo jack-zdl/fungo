@@ -8,16 +8,15 @@ import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
 import com.fungo.system.facede.ICommunityProxyService;
 import com.fungo.system.function.MemberLoginedStatisticsService;
+import com.fungo.system.helper.mq.MQProduct;
 import com.fungo.system.service.*;
 import com.game.common.consts.GameConstant;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberLoginConsts;
 import com.game.common.consts.Setting;
-import com.game.common.dto.AbstractEventDto;
-import com.game.common.dto.AuthorBean;
-import com.game.common.dto.FungoPageResultDto;
-import com.game.common.dto.ResultDto;
+import com.game.common.dto.*;
 import com.game.common.dto.community.MemberCmmCircleDto;
+import com.game.common.dto.user.MemberDto;
 import com.game.common.dto.user.MemberOutBean;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.repo.cache.facade.FungoCacheMember;
@@ -89,6 +88,10 @@ public class UserServiceImpl implements IUserService {
     private NacosFungoCircleConfig nacosFungoCircleConfig;
     @Autowired
     private MemberCircleMapper memberCircleMapper;
+    @Autowired
+    private SystemService systemService;
+    @Autowired
+    private MQProduct mqProduct;
 
     @Override
     public ResultDto<LoginMemberBean> bindingPhoneNo(String code, String mobile, String token,String channel,String deviceId) {
@@ -768,6 +771,7 @@ public class UserServiceImpl implements IUserService {
         return ResultDto.success();
     }
 
+
     @Override
     public ResultDto<String> editUser(String memberId, UserBean msg) throws Exception {
         Member member = this.memberService.selectById(memberId);
@@ -793,6 +797,71 @@ public class UserServiceImpl implements IUserService {
         }
         newMemeber.updateById();
         filterStr(memberId, (s) -> (!member.getUserName().equals(s.getUser_name()) ||  !member.getSign().equals(msg.getSign())));
+        //其他会员信息接口 清除
+        String keyPrefixUserCard = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_CARD + memberId;
+        fungoCacheMember.excIndexCache(false, keyPrefixUserCard, "", null);
+        //清除 会员信息（web端）
+        fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_WEBIINFO + memberId, "", null);
+        // 个人资料
+        fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + memberId, "", null);
+        // 个人等级
+        fungoCacheMember.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_RANKS_LEVEL + memberId, "", null);
+        return ResultDto.success("  修改成功  ");
+    }
+
+
+    @Override
+    public ResultDto<String> editUser(String loginId, String memberId, UserBean msg) throws Exception {
+        Member member = this.memberService.selectById(memberId);
+        Member newMemeber = new Member();
+        newMemeber.setId(member.getId());
+        if( msg.getGender() == null)
+            newMemeber.setGender(msg.getGender());
+        if (!CommonUtil.isNull(msg.getUser_name()) && !member.getUserName().equals(msg.getUser_name())) {//昵称
+            //转码表情符号
+            String usereName = msg.getUser_name();
+            newMemeber.setUserName(usereName);
+        }
+        if (!CommonUtil.isNull(msg.getSign()) && null != msg.getSign() &&!"".equals(msg.getSign().trim())&& !member.getSign().equals(msg.getSign())) {//简介
+            newMemeber.setSign(msg.getSign());
+        }
+        String circleId = null;
+        ResultDto<List<MemberDto>> resultDto =  systemService.listMembersByids(Arrays.asList( loginId ),null); //systemFeignClient.listMembersByids( Collections.singletonList( userId ),null);
+        if(resultDto != null && resultDto.getData() != null){
+            List<MemberDto> memberDtos = resultDto.getData();
+            MemberDto memberDto = memberDtos.get( 0);
+            if(!CommonUtil.isNull( memberDto.getCircleId() )){
+                circleId = memberDto.getCircleId();
+            }
+        }
+        if( !CommonUtil.isNull( circleId )  ){
+            CmmOperationLogDto cmmOperationLog = new CmmOperationLogDto();
+            cmmOperationLog.setId( UUIDUtils.getUUID());
+            cmmOperationLog.setCircleId( circleId );
+            cmmOperationLog.setMemberId( loginId);
+            cmmOperationLog.setTargetType(1);
+            cmmOperationLog.setTargetId( memberId);
+            cmmOperationLog.setOldTargetState( String.valueOf( member.getAuth()));
+            cmmOperationLog.setNewTargetState( String.valueOf( msg.getAuth() ));
+            if( msg.getAuth().equals("1") ){
+                cmmOperationLog.setActionType( 6 );
+            }else if(msg.getAuth().equals("0")){
+                cmmOperationLog.setActionType( 600 );
+            }
+            cmmOperationLog.setCreatedAt( new Date( ) );
+            cmmOperationLog.setUpdatedAt( new Date( ) );
+            mqProduct.cmmOperationLogInsert( cmmOperationLog);
+        if(!CommonUtil.isNull( msg.getAuth())){
+            newMemeber.setAuth(Integer.valueOf(  msg.getAuth() ));
+            AbstractEventDto abstractEventDto = new AbstractEventDto( this );
+            abstractEventDto.setEventType( AbstractEventDto.AbstractEventEnum.EDIT_USER_MESSAGE.getKey() );
+            abstractEventDto.setUserId(member.getId() );
+            abstractEventDto.setScore( Integer.valueOf( msg.getAuth()) );
+            applicationEventPublisher.publishEvent( abstractEventDto);
+        }
+        newMemeber.updateById();
+
+        }
         //其他会员信息接口 清除
         String keyPrefixUserCard = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_CARD + memberId;
         fungoCacheMember.excIndexCache(false, keyPrefixUserCard, "", null);

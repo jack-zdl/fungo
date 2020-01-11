@@ -516,7 +516,7 @@ public class ScoreRuleServiceImpl implements IScoreRuleService {
         Map<String, Object> criteriaMap = new HashMap<String, Object>();
         criteriaMap.put("mb_id", mb_id);
         criteriaMap.put("cas_version", lastCasVersion);
-        EntityWrapper<IncentAccountScore> scoreAccountEntityWrapper = new EntityWrapper<IncentAccountScore>();
+        EntityWrapper<IncentAccountScore> scoreAccountEntityWrapper = new EntityWrapper<>();
         scoreAccountEntityWrapper.allEq(criteriaMap);
         boolean updateStatus = accountScoreDaoService.update(scoreAccount, scoreAccountEntityWrapper);
         if (updateStatus) {

@@ -4,14 +4,17 @@ package com.fungo.community.facede;
 import com.alibaba.fastjson.JSON;
 import com.fungo.community.dao.service.MooMoodDaoService;
 import com.fungo.community.dao.service.impl.CmmPostDaoServiceImap;
+import com.fungo.community.entity.CmmOperationLog;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.entity.MooMood;
 import com.fungo.community.service.ICounterService;
+import com.game.common.dto.CmmOperationLogDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.ts.mq.dto.MQResultDto;
 import com.game.common.ts.mq.dto.TransactionMessageDto;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.UniqueIdCkeckUtil;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 /**
@@ -156,7 +160,18 @@ public class CommunityTSMQService {
                     MooMood mooMood  = JSON.parseObject(bodyStr, MooMood.class);
                     mooMoodDaoServiceImpl.updateById(mooMood);
                     return true;
+                }else if(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_CMMOPERATIONLOGDTO.getCode() == mqResultDto.getType() ){
+                try {
+                    String bodyStr = mqResultDto.getBody().toString();
+                    CmmOperationLogDto  cmmOperationLogDto  = JSON.parseObject(bodyStr, CmmOperationLogDto.class);
+                    CmmOperationLog cmmOperationLog = new CmmOperationLog();
+                    BeanUtils.copyProperties(cmmOperationLog,cmmOperationLogDto);
+                    cmmOperationLog.insert();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+                return true;
+            }
             }
         return false;
     }

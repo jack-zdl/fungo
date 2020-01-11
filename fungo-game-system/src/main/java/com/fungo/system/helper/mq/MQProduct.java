@@ -2,6 +2,7 @@ package com.fungo.system.helper.mq;
 
 import com.fungo.system.helper.RabbitMQProduct;
 import com.fungo.system.ts.mq.service.ITransactionMessageService;
+import com.game.common.dto.CmmOperationLogDto;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.community.CmmCommunityDto;
 import com.game.common.dto.community.CmmPostDto;
@@ -124,5 +125,16 @@ public class MQProduct {
         mqResultDto.setType(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_GAMES_DOWNLOAD.getCode());
         mqResultDto.setBody(ssmap);
         rabbitMQProduct.mqGames(mqResultDto);
+    }
+
+    /**
+     * 功能描述: 新增日志表
+     * @date: 2020/1/11 11:35
+     */
+    public void cmmOperationLogInsert(CmmOperationLogDto c){
+        MQResultDto mqResultDto = new MQResultDto();
+        mqResultDto.setType(MQResultDto.SystemMQDataType.SYSTEM_DATA_TYPE_CMMOPERATIONLOGDTO.getCode());
+        mqResultDto.setBody(c);
+        rabbitMQProduct.mqCommunity(mqResultDto);
     }
 }

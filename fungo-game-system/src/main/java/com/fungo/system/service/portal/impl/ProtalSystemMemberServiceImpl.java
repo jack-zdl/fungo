@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.dao.BasNoticeDao;
+import com.fungo.system.dao.IncentRuleRankGroupDao;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
 import com.fungo.system.facede.IMemeberProxyService;
@@ -60,17 +61,17 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
     @Autowired
     private IncentRankedService rankedService;
     @Autowired
-    private MemberNoticeDaoService memberNoticeDaoService;
-    @Autowired
     private FungoCacheNotice fungoCacheNotice;
-    @Autowired
-    private DistributedLockByCurator distributedLockByCurator;
     @Autowired
     private GamesFeignClient gamesFeignClient;
     @Autowired(required = false)
     private CommunityFeignClient communityFeignClient;
     @Autowired
     private MemberNoticeServiceImpl memberNoticeService;
+    @Autowired
+    private IncentRuleRankService rankRuleService;
+    @Autowired
+    private IncentRuleRankGroupDao incentRuleRankGroupDao;
 
     //消息
     @Override
@@ -329,6 +330,49 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
             if (member != null) {
                 map.put("user_avatar", member.getAvatar());
                 map.put("user_name", member.getUserName());
+            }
+            map.put("statusImgs", new ArrayList<>(  ));
+            List<IncentRanked> incentRankeds = rankedService.selectList(new EntityWrapper<IncentRanked>().eq("mb_id", map.get("user_id")));
+            for (IncentRanked identityIncentRanked : incentRankeds) {
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    if (identityIncentRanked.getRankType() == 2) {
+                        IncentRuleRank rank = rankRuleService.selectById(identityIncentRanked.getCurrentRankId());//最近获得
+//                        String rankImgs = rank.getRankImgs();
+//                        ArrayList<HashMap<String, Object>> urlList = mapper.readValue(rankImgs, ArrayList.class);
+//                        author.setStatusImg(urlList);
+                        String rankIdtIds = identityIncentRanked.getRankIdtIds();
+                        List<HashMap<String,Object>> list1 = mapper.readValue(rankIdtIds, ArrayList.class);
+                        List<List<HashMap<String,Object>>> statusLists = new ArrayList<>(  );
+//                        int groupLevel = 0;
+//                        int circleLevel = 0;
+                        for (HashMap<String,Object> map1 : list1){
+                            Integer rankId = (Integer) map1.get( "1" );
+                            IncentRuleRank rank1 = rankRuleService.selectById(rankId);//最近获得
+                            String rankImgs = rank1.getRankImgs();
+                            ArrayList<HashMap<String, Object>> urlList = null;
+                            IncentRuleRankGroup incentRuleRankGroup = incentRuleRankGroupDao.selectById( rank.getRankGroupId());
+//                            groupLevel =  incentRuleRankGroup.getAuth() > groupLevel ? incentRuleRankGroup.getAuth() : groupLevel;
+//                            circleLevel =  incentRuleRankGroup.getAuth() == 2 ? incentRuleRankGroup.getAuth() : circleLevel;
+                            try {
+                                urlList = mapper.readValue(rankImgs, ArrayList.class);
+                                urlList.stream().forEach( x ->{
+                                    x.put( "auth", incentRuleRankGroup.getAuth());
+                                    x.put( "group", incentRuleRankGroup.getId());
+                                    x.put( "groupNmae", incentRuleRankGroup.getGroupName());
+                                } );
+                                statusLists.add( urlList );
+                            } catch (Exception e) {
+                                logger.error( "对象转换异常",e );
+                            }
+                        }
+//                        author.setGroupLevel(groupLevel);
+//                        author.setCircleLevel( circleLevel );
+                        map.put("statusImgs", (statusLists));
+                    }
+                }catch (Exception e){
+                    logger.error( "",e);
+                }
             }
             map.put("statusImg", userService.getStatusImage((String) map.get("user_id")));
             map.put("createdAt", DateTools.fmtDate(basNotice.getCreatedAt()));
@@ -631,6 +675,49 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
             if (member != null) {
                 map.put("user_avatar", member.getAvatar());
                 map.put("user_name", member.getUserName());
+            }
+            map.put("statusImgs", new ArrayList<>(  ));
+            List<IncentRanked> incentRankeds = rankedService.selectList(new EntityWrapper<IncentRanked>().eq("mb_id", map.get("user_id")));
+            for (IncentRanked identityIncentRanked : incentRankeds) {
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    if (identityIncentRanked.getRankType() == 2) {
+                        IncentRuleRank rank = rankRuleService.selectById(identityIncentRanked.getCurrentRankId());//最近获得
+//                        String rankImgs = rank.getRankImgs();
+//                        ArrayList<HashMap<String, Object>> urlList = mapper.readValue(rankImgs, ArrayList.class);
+//                        author.setStatusImg(urlList);
+                        String rankIdtIds = identityIncentRanked.getRankIdtIds();
+                        List<HashMap<String,Object>> list1 = mapper.readValue(rankIdtIds, ArrayList.class);
+                        List<List<HashMap<String,Object>>> statusLists = new ArrayList<>(  );
+//                        int groupLevel = 0;
+//                        int circleLevel = 0;
+                        for (HashMap<String,Object> map1 : list1){
+                            Integer rankId = (Integer) map1.get( "1" );
+                            IncentRuleRank rank1 = rankRuleService.selectById(rankId);//最近获得
+                            String rankImgs = rank1.getRankImgs();
+                            ArrayList<HashMap<String, Object>> urlList = null;
+                            IncentRuleRankGroup incentRuleRankGroup = incentRuleRankGroupDao.selectById( rank.getRankGroupId());
+//                            groupLevel =  incentRuleRankGroup.getAuth() > groupLevel ? incentRuleRankGroup.getAuth() : groupLevel;
+//                            circleLevel =  incentRuleRankGroup.getAuth() == 2 ? incentRuleRankGroup.getAuth() : circleLevel;
+                            try {
+                                urlList = mapper.readValue(rankImgs, ArrayList.class);
+                                urlList.stream().forEach( x ->{
+                                    x.put( "auth", incentRuleRankGroup.getAuth());
+                                    x.put( "group", incentRuleRankGroup.getId());
+                                    x.put( "groupNmae", incentRuleRankGroup.getGroupName());
+                                } );
+                                statusLists.add( urlList );
+                            } catch (Exception e) {
+                                logger.error( "对象转换异常",e );
+                            }
+                        }
+//                        author.setGroupLevel(groupLevel);
+//                        author.setCircleLevel( circleLevel );
+                        map.put("statusImgs", (statusLists));
+                    }
+                }catch (Exception e){
+                    logger.error( "",e);
+                }
             }
             map.put("statusImg", userService.getStatusImage((String) map.get("user_id")));
             map.put("createdAt", DateTools.fmtDate(basNotice.getCreatedAt()));

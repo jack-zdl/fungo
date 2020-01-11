@@ -319,7 +319,11 @@ public class UserController {
         if(errors.hasErrors()){
             return ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FIVE.getKey(),errors.getAllErrors().stream().map( ObjectError::getDefaultMessage).collect(Collectors.joining(",") ));
         }
-        return userService.editUser(msg.getId(), msg);
+        String loginId = null;
+        if(memberUserPrefile != null){
+            loginId = memberUserPrefile.getLoginId();
+        }
+        return userService.editUser(loginId,msg.getId(), msg);
     }
 
 

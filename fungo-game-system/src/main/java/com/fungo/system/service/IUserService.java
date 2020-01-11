@@ -143,8 +143,9 @@ public interface IUserService {
      */
     ResultDto<String> addAppleId(String loginId, AppleInputBean msg) throws Exception;
 
-    //编辑用户信息
     ResultDto<String> editUser(String memberId, UserBean msg) throws Exception;
+    //编辑用户信息
+    ResultDto<String> editUser(String loginId,String memberId, UserBean msg) throws Exception;
 
     //用户信息
     ResultDto<MemberOutBean> getUserInfo(String memberId) throws Exception;
