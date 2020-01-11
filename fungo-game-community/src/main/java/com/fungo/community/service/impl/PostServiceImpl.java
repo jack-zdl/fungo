@@ -2411,11 +2411,6 @@ public class PostServiceImpl implements IPostService {
                 List<MemberDto> memberDtos = resultDto.getData();
                 MemberDto memberDto = memberDtos.get( 0);
                 if(!CommonUtil.isNull( memberDto.getCircleId() )){
-                    CmmPost cmmPost = cmmPostDao.selectById( postId);
-                    if(userId.equals( cmmPost.getMemberId())){
-                        result = ResultDto.ResultDtoFactory.buildSuccess( map);
-                        return result;
-                    }
                     List<CmmCircle>  cmmCircles  =  cmmCircleMapper.selectCircleByPostId( postId);
                     if(cmmCircles != null && cmmCircles.size()>0 && memberDto.getCircleId().equals(cmmCircles.get( 0 ).getId())){
                         map.put("isOk",true);
