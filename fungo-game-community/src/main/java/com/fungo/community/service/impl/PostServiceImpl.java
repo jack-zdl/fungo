@@ -1117,6 +1117,12 @@ public class PostServiceImpl implements IPostService {
                     ex.printStackTrace();
                 }
                 m.put("gameRating", gameAverage);
+                m.put("rating", String.valueOf(gameAverage));
+                String category = (String) m.get( "category" );
+                List<String> categorys = Arrays.asList(category.split(","));
+                if(categorys.size() > 3){
+                    m.put( "category", String.join(",", categorys.subList(0, 3)));
+                }
             }
         }
         String gameList = mapper.writeValueAsString(gameMapList);
