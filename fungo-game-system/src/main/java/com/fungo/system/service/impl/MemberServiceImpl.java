@@ -1897,6 +1897,14 @@ public class MemberServiceImpl implements IMemberService {
                         bean.setReplyToName(m.getUserName());
                     }
                     bean.setParentId( comment.getPostId());
+                    CmmPostDto cmmPostDto = new CmmPostDto();
+                    cmmPostDto.setId(comment.getPostId());
+                    cmmPostDto.setQueryType(1);
+                    cmmPostDto.setState(null);
+                    CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto);    //postService.selectOne(Condition.create().setSqlSelect("id,content,title,video").eq("id", c.getTargetId()));
+                    if (post != null && post.getState() != null) {
+                        bean.setGrandfatherStatus( post.getState() == -1 ? -1 : memberId.equals(post.getMemberId()) ? (post.getAuth() == 1 ? 0 :0) : (post.getAuth() == 1 ? -1 :0) ); // -1 删除 0 正常
+                    }
                 }
             } else if (commentBean.getTargetType() == 6) {
                 // @todo 游戏评论

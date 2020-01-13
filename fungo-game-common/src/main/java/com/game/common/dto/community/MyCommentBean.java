@@ -42,6 +42,8 @@ public class MyCommentBean {
 	 * @date: 2019/9/18 18:25
 	 */
 	private String parentId;
+
+	private int grandfatherStatus;
 	
 	public Integer getTargetType() {
 		return targetType;
@@ -138,5 +140,13 @@ public class MyCommentBean {
 
 	public void setParentId(String parentId) {
 		this.parentId = parentId;
+	}
+
+	public int getGrandfatherStatus() {
+		return grandfatherStatus;
+	}
+
+	public void setGrandfatherStatus(int grandfatherStatus) {
+		this.grandfatherStatus = grandfatherStatus;
 	}
 }

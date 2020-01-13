@@ -360,7 +360,7 @@
 
 	SELECT
 	 <include refid="Base_Column_List"></include>
-	 FROM t_cmm_post cp  WHERE cp.state != -1 AND
+	 FROM t_cmm_post cp  WHERE cp.state != -1 and auth != 1 AND
 	 (
 	    cp.community_id in  (SELECT cc.id  FROM t_cmm_community cc WHERE cc.game_id = #{gameId} )
 	    or cp.id in (SELECT cpg.post_id FROM t_cmm_post_game cpg WHERE cpg.game_id = #{gameId}  )
@@ -370,7 +370,7 @@
     <select id="getGamePostByGameId"  resultType="com.fungo.community.entity.CmmPost">
         SELECT
         <include refid="Base_Column_List"></include>
-        FROM t_cmm_post WHERE state != -1
+        FROM t_cmm_post WHERE state != -1 and auth != 1
     	AND (
 		    id in (
 	            SELECT post_id FROM t_cmm_post_circle WHERE circle_id in (SELECT id FROM t_cmm_circle WHERE game_id =  #{gameId}  and state = 1  )
