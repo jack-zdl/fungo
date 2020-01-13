@@ -216,11 +216,16 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                                             FungoPageResultDto<CmmCommentDto> resultDto = communityFeignClient.queryFirstLevelCmtList(cmmCommentDto);
                                             CmmCommentDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                                             if (message != null) {
+                                                map.put( "three_level_deltype",message.getState() == -1  ? -1 : 0 );
                                                 map.put( "parentType",5);
                                                 map.put( "parentId",message.getPostId() );
                                                 Member member = memberService.selectById(message.getMemberId());
                                                 map.put( "parentMemberId",member.getId() );
                                                 map.put( "parentMemberName",member.getUserName() );
+                                                CmmPostDto post = iMemeberProxyService.selectCmmPost(message.getPostId());
+                                                if(post != null){
+                                                    map.put( "four_level_deltype",post.getState() == -1  ? -1 :  !memberId.equals( post.getMemberId()) ? (post.getAuth() == 1 ? -1 : 0) :   (post.getAuth() == 1 ? 1 : 0));
+                                                }
                                             }
                                         }else if(cmmCmtReply1.getTargetType() == 6){  //游戏评测 t_game_evation 6
                                             GameEvaluationDto param = new GameEvaluationDto();
@@ -228,6 +233,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                                             FungoPageResultDto<GameEvaluationDto>  resultDto = gamesFeignClient.getGameEvaluationPage(param);
                                             GameEvaluationDto gameEvaluationDto = (resultDto.getData() != null && resultDto.getData().size() > 0 ) ? resultDto.getData().get(0) : null;
                                             if(gameEvaluationDto != null){
+                                                map.put( "three_level_deltype",gameEvaluationDto.getState()  == -1 ? -1 : 0 );
                                                 map.put( "parentType",6);
                                                 map.put( "parentId",gameEvaluationDto.getGameId() );
                                                 Member member = memberService.selectById(gameEvaluationDto.getMemberId());
@@ -241,6 +247,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                                             FungoPageResultDto<MooMessageDto> resultDto = communityFeignClient.queryCmmMoodCommentList(mooMessageDto);
                                             MooMessageDto message =    (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
                                             if (message != null) {
+                                                map.put( "three_level_deltype",message.getState()  == -1 ? -1 : 0 );
                                                 map.put( "parentType",8);
                                                 map.put( "parentId",message.getMoodId()  );
                                                 Member member = memberService.selectById(message.getMemberId());
@@ -579,6 +586,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                             if (!CommonUtil.isNull(post.getVideo())) {
                                 map.put("video", post.getVideo());
                             }
+                            map.put( "three_level_deltype",post.getState() == -1  ? -1 :  !memberId.equals( post.getMemberId()) ? (post.getAuth() == 1 ? -1 : 0) :   (post.getAuth() == 1 ? 1 : 0));
                         }
                         map.put("parentId", map.get("post_id"));
                         CmmCommentDto  cmmCommentDto = new CmmCommentDto();
@@ -590,6 +598,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                             Member member = memberService.selectById(commentDto.getMemberId());
                             map.put( "parentName",member.getUserName());
                             map.put( "two_level_deltype",commentDto.getState()  == -1 ? -1 : 0 );
+
                         }
 
                     }else if(map.get("mood_id") != null){
@@ -615,8 +624,12 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                             cmmCommentDto.setState(null);
                             FungoPageResultDto<CmmCommentDto> cmmCommentDtoFungoPageResultDto = communityFeignClient.queryFirstLevelCmtList(cmmCommentDto);
                             CmmCommentDto cmmCommentDto1 =    (cmmCommentDtoFungoPageResultDto.getData() != null && cmmCommentDtoFungoPageResultDto.getData().size() >0 ) ? cmmCommentDtoFungoPageResultDto.getData().get(0) : null ;   //iGameProxyService.selectMooMessageById(commentBean.getTargetId());//mooMessageService.selectOne(Condition.create().setSqlSelect("id,content,member_id").eq("id", c.getTargetId()));
-                            if (message != null) {
+                            if (cmmCommentDto1 != null) {
                                 map.put( "two_level_deltype",cmmCommentDto1.getState()  == -1 ? -1 : 0 );
+                                CmmPostDto post = iMemeberProxyService.selectCmmPost(cmmCommentDto1.getPostId());
+                                if(post != null){
+                                    map.put( "three_level_deltype",post.getState() == -1  ? -1 :  !memberId.equals( post.getMemberId()) ? (post.getAuth() == 1 ? -1 : 0) :   (post.getAuth() == 1 ? 1 : 0));
+                                }
                             }
                         }
                         // 游戲评测
