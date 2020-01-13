@@ -1031,6 +1031,36 @@ public class PostServiceImpl implements IPostService {
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, post.getCommunityId(), null);
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
         fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
+        //安利墙首页
+        fungoCacheIndex.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX, "", null);
+        //帖子列表
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
+        // 清除所有的社区置顶文章
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_ALL_POST_TOPIC, "", null);
+
+        //clear redis cache
+        //文章内容html-内容
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_CONTENT + postId, "", null);
+        //文章内容html-标题
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_HTML_TITLE + postId, "", null);
+        //帖子详情
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_DETAIL, postId, null);
+        //帖子/心情评论列表
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
+        //首页文章帖子列表(v2.4)
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_POST_LIST, "", null);
+        //帖子列表
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
+        //社区置顶文章(2.4.3)
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_TOPIC, post.getCommunityId(), null);
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_POSTS, "", null);
+
+        fungoCacheIndex.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX, "", null);
+        //帖子列表
+        fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_COMMUNITYS_POST_LIST, "", null);
+        fungoCacheArticle.excIndexDecodeCache(false, FungoCoreApiConstant.PUB_CIRCLE);
+        fungoCacheArticle.excIndexDecodeCache(false, FungoCoreApiConstant.PUB_POST);
         return ResultDto.success();
     }
 

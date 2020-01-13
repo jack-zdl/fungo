@@ -133,11 +133,16 @@ public class LogicCheckAspect {
                             }
                         }
                     }
+                    CmmPost post = postService.selectById( postId);
+                    if(post == null || post.getState() == -1){
+                        throw new CommonException( CommonEnum.BANNED_AUTH_POST);
+                    }
                     ResultDto<List<MemberDto>> resultDto = systemFeignClient.listMembersByids( Collections.singletonList( member.getLoginId() ),null);
                     if(resultDto != null && resultDto.getData() != null){
                         List<MemberDto> memberDtos = resultDto.getData();
                         MemberDto memberDto = memberDtos.get( 0);
                         if(!CommonUtil.isNull( memberDto.getCircleId() )){
+
                             List<CmmCircle>  cmmCircles  =  cmmCircleMapper.selectCircleByPostId( postId);
                             if(cmmCircles != null && cmmCircles.size()>0){
                                 if(!(  cmmCircles.stream().anyMatch( x -> (x.getId().equals(memberDto.getCircleId() )) ) )){
@@ -175,7 +180,7 @@ public class LogicCheckAspect {
                     }
                     try {
                         CmmPost cmmPost = cmmPostDao.selectById( postId );
-                        if(cmmPost != null && cmmPost.getAuth() > 0){
+                        if(cmmPost != null &&( cmmPost.getState() == -1 || cmmPost.getAuth() > 0)){
                             throw new CommonException( CommonEnum.BANNED_AUTH_POST);
                         }
                     }catch (Exception e){

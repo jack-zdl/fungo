@@ -103,6 +103,8 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
             String circleId = event.getObjectId();
             sendTaskOfJoinOfficialCircle(memberId,circleId);
         }
+
+
     }
 
     private boolean subCounter(String communityId, String userId) {
