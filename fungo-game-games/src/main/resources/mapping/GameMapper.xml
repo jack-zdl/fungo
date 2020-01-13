@@ -301,7 +301,7 @@
     </select>
 
     <select id="listGameByTags" parameterType="com.game.common.dto.game.TagGameDto" resultMap="BaseResultMap">
-        select  g.id,g.version_child,g.apk,g.tags,g.game_size,g.name,g.icon,g.origin,g.version_main,g.ios_state,g.android_state,g.android_package_name,g.android_status_desc,g.ios_status_desc
+        select  g.id,g.cover_image,g.images,g.version_child,g.apk,g.tags,g.game_size,g.name,g.icon,g.origin,g.version_main,g.ios_state,g.android_state,g.android_package_name,g.android_status_desc,g.ios_status_desc
         ,g.can_fast,g.score
         from t_game g
         <if test="tagIds !=null">
