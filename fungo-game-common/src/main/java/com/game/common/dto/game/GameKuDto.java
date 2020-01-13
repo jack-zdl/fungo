@@ -2,6 +2,8 @@ package com.game.common.dto.game;
 
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Data
@@ -77,7 +79,14 @@ public class GameKuDto  {
 
     private String version;
 
+    /**
+     *  预约状态
+     */
     private Boolean make;
+
+    private String coverImage;
+
+    private List<String> images = new ArrayList<>();
 
 
 }

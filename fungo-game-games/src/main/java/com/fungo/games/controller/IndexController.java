@@ -157,6 +157,7 @@ public class IndexController {
                 map1.put("game_size", game.getGameSize());
                 map1.put("itunesId", game.getItunesId());
                 map1.put("apkUrl", game.getApk()==null?"":game.getApk());
+                map1.put("images",game.getImages());
                 lists.add(map1);
             }
             map.put("game_list", lists);
