@@ -840,7 +840,7 @@ public class GameServiceImpl implements IGameService {
                     it.setRating(0.0);
                 }
                 it.setCategory(game.getTags());
-
+                it.setOrigin(game.getOrigin());
                 ilist.add(it);
             }
             re.setData(ilist);
@@ -2089,6 +2089,7 @@ public class GameServiceImpl implements IGameService {
         return list;
     }
 
+
     /**
      *  实体转化
      * @param gameCircleMap key为游戏id 值为圈子id的map
@@ -2100,6 +2101,15 @@ public class GameServiceImpl implements IGameService {
         GameKuDto gameKuDto = new GameKuDto();
         gameKuDto.setGameId(game.getId());
         BeanUtils.copyProperties(game,gameKuDto);
+
+        try {
+            if (game.getImages() != null) {
+                ObjectMapper mapper = new ObjectMapper();
+                gameKuDto.setImages((ArrayList<String>) mapper.readValue(game.getImages(), ArrayList.class));
+            }
+        } catch (Exception e) {
+            logger.error("GameKuDto 转化游戏图片失败",e);
+        }
         // 处理 描述展示和圈子标识展示
         gameKuDto.setAndroidStatusDesc(gameStatusDesc(gameKuDto.getAndroidStatusDesc()));
         gameKuDto.setIosStatusDesc(gameStatusDesc(gameKuDto.getIosStatusDesc()));

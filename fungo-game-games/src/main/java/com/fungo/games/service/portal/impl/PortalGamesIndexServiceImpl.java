@@ -103,6 +103,7 @@ public class PortalGamesIndexServiceImpl implements PortalGamesIIndexService {
                 map1.put("createdAt", DateTools.fmtDate(game.getCreatedAt()));
                 map1.put("updatedAt", DateTools.fmtDate(game.getUpdatedAt()));
                 map1.put("hot_value", 100);
+                map1.put("images",game.getImages());
                 lists.add(map1);
             }
             map.put("game_list", lists);
