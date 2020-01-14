@@ -155,6 +155,9 @@ public class PortalGamesIGameServiceImpl implements PortalGamesIGameService {
             );
             for (GameSurveyRel gameSurveyRel : plist) {
                 Game game = gameService.selectById(gameSurveyRel.getGameId());
+                if(game.getState() != 0){
+                    continue;
+                }
                 MyGameBean bean = new MyGameBean();
                 bean.setAndroidState(game.getAndroidState());
                 bean.setGameContent(game.getDetail());

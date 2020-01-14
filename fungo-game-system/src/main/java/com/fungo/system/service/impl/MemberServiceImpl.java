@@ -1771,7 +1771,6 @@ public class MemberServiceImpl implements IMemberService {
             bean.setCommentType(commentBean.getType());
             bean.setTargetType(commentBean.getTargetType());
             bean.setTargetId(commentBean.getTargetId());
-            bean.setTargetType(commentBean.getTargetType());
             bean.setUpdatedAt(DateTools.fmtDate(commentBean.getUpdatedAt()));
             bean.setCreatedAt( commentBean.getCreatedAt());
             //回复二级回复
@@ -1809,7 +1808,9 @@ public class MemberServiceImpl implements IMemberService {
                     cmmPostDto.setState(null);
                     CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto);    //postService.selectOne(Condition.create().setSqlSelect("id,content,title,video").eq("id", c.getTargetId()));
                     if (post != null && post.getState() != null) {
-                        bean.setGrandfatherStatus( post.getState() == -1 ? -1 : memberId.equals(post.getMemberId()) ? (((post.getAuth() & 1 ) == 1) ? 1 :0) : (((post.getAuth() & 1 ) == 1) ? -1 :0) ); // -1 删除 0 正常
+                        bean.setGrandfatherStatus( post.getState() == -1 ? -1 : loginId.equals( memberId) ?
+                                (memberId.equals(post.getMemberId()) ? (((post.getAuth() & 1 ) == 1) ? 1 :0) : (((post.getAuth() & 1 ) == 1) ? -1 :0))    :
+                                (((post.getAuth() & 1 ) == 1) ? -1 :0)); // -1 删除 0 正常
                     }
                 }else if(commentBean.getTargetType() == 6){
                     GameEvaluationDto param = new GameEvaluationDto();
@@ -1911,7 +1912,10 @@ public class MemberServiceImpl implements IMemberService {
                     cmmPostDto.setState(null);
                     CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto);    //postService.selectOne(Condition.create().setSqlSelect("id,content,title,video").eq("id", c.getTargetId()));
                     if (post != null && post.getState() != null) {
-                        bean.setGrandfatherStatus( post.getState() == -1 ? -1 : memberId.equals(post.getMemberId()) ? (((post.getAuth() & 1 ) == 1) ? 1 :0) : (((post.getAuth() & 1 ) == 1) ? -1 :0) ); // -1 删除 0 正常
+                        bean.setGrandfatherStatus( post.getState() == -1 ? -1 :
+                                loginId.equals( memberId) ?
+                                        (memberId.equals(post.getMemberId()) ? (((post.getAuth() & 1 ) == 1) ? 1 :0) : (((post.getAuth() & 1 ) == 1) ? -1 :0))    :
+                                        (((post.getAuth() & 1 ) == 1) ? -1 :0)); // -1 删除 0 正常
                     }
                 }
             } else if (commentBean.getTargetType() == 6) {
