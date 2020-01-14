@@ -119,7 +119,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                         if (!CommonUtil.isNull(post.getVideo())) {
                             map.put("video", post.getVideo());
                         }
-                        map.put("one_level_deltype", post.getState() == -1  ? -1 :  !memberId.equals( post.getMemberId()) ? (post.getAuth() == 1 ? -1 : 0) :   (post.getAuth() == 1 ? 1 : 0));
+                        map.put("one_level_deltype", post.getState() == -1  ? -1 :  !memberId.equals( post.getMemberId()) ? (((post.getAuth() & 1 ) == 1) ? -1 : 0) :   (((post.getAuth() & 1 ) == 1)? 1 : 0));
                     }
                 } else if ((int) map.get("type") == 1) {//basNotice.getType()==1
                     map.put("msg_template", "赞了我的评论");
@@ -128,7 +128,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                         if (!CommonUtil.isNull(post.getVideo())) {
                             map.put("video", post.getVideo());
                         }
-                        map.put("two_level_deltype", post.getState() == -1  ? -1 :  !memberId.equals( post.getMemberId()) ? (post.getAuth() == 1 ? -1 : 0) :   (post.getAuth() == 1 ? 1 : 0));
+                        map.put("two_level_deltype", post.getState() == -1  ? -1 :  !memberId.equals( post.getMemberId()) ? (((post.getAuth() & 1 ) == 1) ? -1 : 0) :   (((post.getAuth() & 1 ) == 1)? 1 : 0));
                     }
                     CmmCommentDto  cmmCommentDto = new CmmCommentDto();
                     cmmCommentDto.setId((String) map.get("comment_id"));
@@ -224,7 +224,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                                                 map.put( "parentMemberName",member.getUserName() );
                                                 CmmPostDto post = iMemeberProxyService.selectCmmPost(message.getPostId());
                                                 if(post != null){
-                                                    map.put( "four_level_deltype",post.getState() == -1  ? -1 :  !memberId.equals( post.getMemberId()) ? (post.getAuth() == 1 ? -1 : 0) :   (post.getAuth() == 1 ? 1 : 0));
+                                                    map.put( "four_level_deltype",post.getState() == -1  ? -1 :  !memberId.equals( post.getMemberId()) ? (((post.getAuth() & 1 ) == 1) ? -1 : 0) : (((post.getAuth() & 1 ) == 1) ? 1 : 0));
                                                 }
                                             }
                                         }else if(cmmCmtReply1.getTargetType() == 6){  //游戏评测 t_game_evation 6
@@ -448,7 +448,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                         if (!CommonUtil.isNull(post.getVideo())) {
                             map.put("video", post.getVideo());
                         }
-                        map.put("two_level_deltype", post.getState() == -1  ? -1 :  !memberId.equals( post.getMemberId()) ? (post.getAuth() == 1 ? -1 : 0) :   (post.getAuth() == 1 ? 1 : 0));
+                        map.put("two_level_deltype", post.getState() == -1  ? -1 :  !memberId.equals( post.getMemberId()) ? (((post.getAuth() & 1 ) == 1) ? -1 : 0) :   (((post.getAuth() & 1 ) == 1) ? 1 : 0));
                     }
                     String commentId = (String) map.get("commentId");
                     if(StringUtil.isNotNull(commentId)){
@@ -468,7 +468,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                         if (!CommonUtil.isNull(post.getVideo())) {
                             map.put("video", post.getVideo());
                         }
-                        map.put("three_level_deltype", post.getState() == -1  ? -1 :  !memberId.equals( post.getMemberId()) ? (post.getAuth() == 1 ? -1 : 0) :   (post.getAuth() == 1 ? 1 : 0));
+                        map.put("three_level_deltype", post.getState() == -1  ? -1 :  !memberId.equals( post.getMemberId()) ? (((post.getAuth() & 1 ) == 1) ? -1 : 0) :   (((post.getAuth() & 1 ) == 1) ? 1 : 0));
                     }
 
                     String commentId = (String) map.get("comment_id");
@@ -586,7 +586,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                             if (!CommonUtil.isNull(post.getVideo())) {
                                 map.put("video", post.getVideo());
                             }
-                            map.put( "three_level_deltype",post.getState() == -1  ? -1 :  !memberId.equals( post.getMemberId()) ? (post.getAuth() == 1 ? -1 : 0) :   (post.getAuth() == 1 ? 1 : 0));
+                            map.put( "three_level_deltype",post.getState() == -1  ? -1 :  !memberId.equals( post.getMemberId()) ? (((post.getAuth() & 1 ) == 1) ? -1 : 0) :   (((post.getAuth() & 1 ) == 1) ? 1 : 0));
                         }
                         map.put("parentId", map.get("post_id"));
                         CmmCommentDto  cmmCommentDto = new CmmCommentDto();
