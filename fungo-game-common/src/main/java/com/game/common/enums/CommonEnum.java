@@ -44,6 +44,9 @@ public enum CommonEnum implements IEnum {
 	BANNED_AUTH_POST(
 			"-1","该文章已被其他管理员处理"
 	),
+	BANNED_AUTH_NOT_FOND_POST(
+			"-1","该内容不存在"
+	),
 	HTTP_WARNING_EMPTY("11","请求数据为空"),
 	//////////////////////
 	LOGIN_TIMEOUT(

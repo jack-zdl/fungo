@@ -135,7 +135,7 @@ public class LogicCheckAspect {
                     }
                     CmmPost post = postService.selectById( postId);
                     if(post == null || post.getState() == -1){
-                        throw new CommonException( CommonEnum.BANNED_AUTH_POST);
+                        throw new CommonException( CommonEnum.BANNED_AUTH_NOT_FOND_POST);
                     }
                     ResultDto<List<MemberDto>> resultDto = systemFeignClient.listMembersByids( Collections.singletonList( member.getLoginId() ),null);
                     if(resultDto != null && resultDto.getData() != null){
@@ -180,7 +180,9 @@ public class LogicCheckAspect {
                     }
                     try {
                         CmmPost cmmPost = cmmPostDao.selectById( postId );
-                        if(cmmPost != null &&( cmmPost.getState() == -1 || cmmPost.getAuth() > 0)){
+                        if(cmmPost != null && cmmPost.getState() == -1 ){
+                            throw new CommonException( CommonEnum.BANNED_AUTH_NOT_FOND_POST);
+                        }else if(cmmPost != null &&(  cmmPost.getAuth() > 0)){
                             throw new CommonException( CommonEnum.BANNED_AUTH_POST);
                         }
                     }catch (Exception e){
