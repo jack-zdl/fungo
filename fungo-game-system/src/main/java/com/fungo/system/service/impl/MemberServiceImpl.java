@@ -1808,7 +1808,7 @@ public class MemberServiceImpl implements IMemberService {
                     cmmPostDto.setState(null);
                     CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto);    //postService.selectOne(Condition.create().setSqlSelect("id,content,title,video").eq("id", c.getTargetId()));
                     if (post != null && post.getState() != null) {
-                        bean.setGrandfatherStatus( post.getState() == -1 ? -1 : loginId.equals( memberId) ?
+                        bean.setGrandfatherStatus( post.getState() == -1 ? -1 : memberId.equals( loginId) ?
                                 (memberId.equals(post.getMemberId()) ? (((post.getAuth() & 1 ) == 1) ? 1 :0) : (((post.getAuth() & 1 ) == 1) ? -1 :0))    :
                                 (((post.getAuth() & 1 ) == 1) ? -1 :0)); // -1 删除 0 正常
                     }
@@ -1913,7 +1913,7 @@ public class MemberServiceImpl implements IMemberService {
                     CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto);    //postService.selectOne(Condition.create().setSqlSelect("id,content,title,video").eq("id", c.getTargetId()));
                     if (post != null && post.getState() != null) {
                         bean.setGrandfatherStatus( post.getState() == -1 ? -1 :
-                                loginId.equals( memberId) ?
+                                memberId.equals( loginId) ?
                                         (memberId.equals(post.getMemberId()) ? (((post.getAuth() & 1 ) == 1) ? 1 :0) : (((post.getAuth() & 1 ) == 1) ? -1 :0))    :
                                         (((post.getAuth() & 1 ) == 1) ? -1 :0)); // -1 删除 0 正常
                     }
