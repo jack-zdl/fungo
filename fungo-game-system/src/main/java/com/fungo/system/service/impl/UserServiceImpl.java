@@ -777,7 +777,7 @@ public class UserServiceImpl implements IUserService {
         Member member = this.memberService.selectById(memberId);
         Member newMemeber = new Member();
         newMemeber.setId(member.getId());
-        if( msg.getGender() == null)
+        if( msg.getGender() != null)
             newMemeber.setGender(msg.getGender());
         if (!CommonUtil.isNull(msg.getUser_name()) && !member.getUserName().equals(msg.getUser_name())) {//昵称
             //转码表情符号
