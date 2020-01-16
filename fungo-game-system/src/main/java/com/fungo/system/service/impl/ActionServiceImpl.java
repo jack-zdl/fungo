@@ -391,7 +391,7 @@ public class ActionServiceImpl implements IActionService {
             return ResultDto.error("-1", "不能关注你自己");
         }
 
-        BasAction action = this.getAction(memberId, Setting.ACTION_TYPE_FOLLOW, inputDto);
+        BasAction action = this.getOfficialAction(memberId, Setting.ACTION_TYPE_FOLLOW, inputDto);
 
         //对象是否是用户
         boolean isMember = false;
@@ -430,6 +430,7 @@ public class ActionServiceImpl implements IActionService {
             action.setState( 0 );
             action.setUpdatedAt( new Date( ) );
             action.updateById();
+            isMember = true;
         }
         if (isMember) {
             String userId = memberId;
@@ -869,6 +870,24 @@ public class ActionServiceImpl implements IActionService {
 
     //获取用户行为记录
     public BasAction getAction(String memberId, int type, ActionInput inputDto) {
+        if (0 == type) {
+            return this.actionService.selectOne(new EntityWrapper<BasAction>()
+                    .eq("member_id", memberId)
+                    .eq("target_id", inputDto.getTarget_id())
+                    .eq("target_type", inputDto.getTarget_type())
+                    .eq("type", type));
+        }
+        return this.actionService.selectOne(new EntityWrapper<BasAction>()
+                .eq("member_id", memberId)
+                .eq("target_id", inputDto.getTarget_id())
+                .eq("target_type", inputDto.getTarget_type())
+                .eq("type", type)
+                .eq("state", 0));
+    }
+
+
+    //获取用户行为记录
+    public BasAction getOfficialAction(String memberId, int type, ActionInput inputDto) {
         if (0 == type) {
             return this.actionService.selectOne(new EntityWrapper<BasAction>()
                     .eq("member_id", memberId)
