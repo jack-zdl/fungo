@@ -58,6 +58,7 @@ public class CorsConfigGateway {
         corsConfiguration.addAllowedMethod(HttpMethod.PATCH);
         // corsConfiguration.addAllowedMethod("*");
 
+        corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedHeader("origin");
         corsConfiguration.addAllowedHeader("content-type");
         corsConfiguration.addAllowedHeader("accept");
