@@ -839,7 +839,7 @@ public class UserServiceImpl implements IUserService {
             cmmOperationLog.setId( UUIDUtils.getUUID());
             cmmOperationLog.setCircleId( circleId );
             cmmOperationLog.setMemberId( loginId);
-            cmmOperationLog.setTargetType(1);
+            cmmOperationLog.setTargetType(2);
             cmmOperationLog.setTargetId( memberId);
             cmmOperationLog.setOldTargetState( String.valueOf( member.getAuth()));
             cmmOperationLog.setNewTargetState( String.valueOf( msg.getAuth() ));
