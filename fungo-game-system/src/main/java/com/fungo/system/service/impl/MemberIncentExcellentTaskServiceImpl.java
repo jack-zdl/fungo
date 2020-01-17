@@ -6,6 +6,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.system.entity.*;
 import com.fungo.system.service.*;
+import com.game.common.buriedpoint.BuriedPointUtils;
+import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
+import com.game.common.buriedpoint.constants.BuriedPointPlatformConstant;
+import com.game.common.buriedpoint.constants.BuriedPointProductFunConstant;
+import com.game.common.buriedpoint.constants.BuriedPointTaskTypeConstant;
+import com.game.common.buriedpoint.model.BuriedPointProductModel;
+import com.game.common.buriedpoint.model.BuriedPointTaskModel;
 import com.game.common.common.MemberIncentCommonUtils;
 import com.game.common.consts.FunGoGameConsts;
 import com.game.common.repo.cache.facade.FungoCacheTask;
@@ -214,6 +221,21 @@ public class MemberIncentExcellentTaskServiceImpl implements IMemberIncentExcell
         //6.添加任务执行日志
         this.addTaskedLog(mb_id, scoreRule, target_id);
 
+
+
+        //添加每周任务完成埋点
+        BuriedPointTaskModel buriedPointTaskModel = new BuriedPointTaskModel();
+        buriedPointTaskModel.setDistinctId(mb_id);
+        buriedPointTaskModel.setPlatForm(BuriedPointPlatformConstant.PLATFORM_SERVER);
+        buriedPointTaskModel.setEventName(BuriedPointEventConstant.EVENT_KEY_QUEST_COMPLETE);
+
+        buriedPointTaskModel.setQuestId(scoreRule.getId());
+        buriedPointTaskModel.setQuestName(scoreRule.getName());
+        buriedPointTaskModel.setFirstCategory(BuriedPointTaskTypeConstant.TASK_TYPE_HIGH_QUALITY);
+        buriedPointTaskModel.setQuestExp(scoreRule.getScore());
+        buriedPointTaskModel.setFinalQuest(false);
+        BuriedPointUtils.publishBuriedPointEvent(buriedPointTaskModel);
+
         return 1;
     }
 
@@ -252,6 +274,16 @@ public class MemberIncentExcellentTaskServiceImpl implements IMemberIncentExcell
 
         //4.添加任务执行日志
         this.addTaskedLog(mb_id, scoreRule, target_id);
+
+        // 添加新手任务产生 fun币埋点
+        BuriedPointProductModel buriedPointProductModel = new BuriedPointProductModel();
+        buriedPointProductModel.setDistinctId(mb_id);
+        buriedPointProductModel.setPlatForm(BuriedPointPlatformConstant.PLATFORM_SERVER);
+        buriedPointProductModel.setEventName(BuriedPointEventConstant.EVENT_KEY_GOLD_PRODUCED);
+
+        buriedPointProductModel.setAmount(scoreRule.getScore());
+        buriedPointProductModel.setMethod(BuriedPointProductFunConstant.PRODUCT_FUN_TYPE_TASK);
+        BuriedPointUtils.publishBuriedPointEvent(buriedPointProductModel);
 
         return 1;
     }

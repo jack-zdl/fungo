@@ -22,7 +22,7 @@ public class BuriedPointTaskTypeConstant {
     /**
      * 任务类型 - 精品任务
      */
-    public final static String TASK_TYPE_HIGH_QUALITY = "精品任务";
+    public final static String TASK_TYPE_HIGH_QUALITY = "挑战任务";
 
 
 
