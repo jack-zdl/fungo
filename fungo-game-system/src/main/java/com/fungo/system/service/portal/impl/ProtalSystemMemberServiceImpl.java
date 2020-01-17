@@ -358,7 +358,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                             IncentRuleRank rank1 = rankRuleService.selectById(rankId);//最近获得
                             String rankImgs = rank1.getRankImgs();
                             ArrayList<HashMap<String, Object>> urlList = null;
-                            IncentRuleRankGroup incentRuleRankGroup = incentRuleRankGroupDao.selectById( rank.getRankGroupId());
+                            IncentRuleRankGroup incentRuleRankGroup = incentRuleRankGroupDao.selectById( rank1.getRankGroupId());
 //                            groupLevel =  incentRuleRankGroup.getAuth() > groupLevel ? incentRuleRankGroup.getAuth() : groupLevel;
 //                            circleLevel =  incentRuleRankGroup.getAuth() == 2 ? incentRuleRankGroup.getAuth() : circleLevel;
                             try {
@@ -709,7 +709,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                             IncentRuleRank rank1 = rankRuleService.selectById(rankId);//最近获得
                             String rankImgs = rank1.getRankImgs();
                             ArrayList<HashMap<String, Object>> urlList = null;
-                            IncentRuleRankGroup incentRuleRankGroup = incentRuleRankGroupDao.selectById( rank.getRankGroupId());
+                            IncentRuleRankGroup incentRuleRankGroup = incentRuleRankGroupDao.selectById( rank1.getRankGroupId());
 //                            groupLevel =  incentRuleRankGroup.getAuth() > groupLevel ? incentRuleRankGroup.getAuth() : groupLevel;
 //                            circleLevel =  incentRuleRankGroup.getAuth() == 2 ? incentRuleRankGroup.getAuth() : circleLevel;
                             try {

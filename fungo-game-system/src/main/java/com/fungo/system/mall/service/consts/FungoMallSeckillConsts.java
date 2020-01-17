@@ -102,7 +102,7 @@ public class FungoMallSeckillConsts {
      *  京东卡 10元消息
      */
     public static final String MSG_SECKILL_SUCCESS_JD_TEN = "恭喜您获得“<span style='color:#242529'>京东卡（10元）</span>”， 卡号为：<span style='color:#242529'>{</span>， 密码为：<span style='color:#242529'>}</span> \n" +
-            "请在 <span style='color:#242529'>[</span> 前至京东App-我的钱包-礼品卡界面兑换";
+            "请在 <span style='color:#242529'>[</span> 期间至京东App-我的钱包-礼品卡界面兑换";
 
 
     /**
