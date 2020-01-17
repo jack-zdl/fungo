@@ -289,7 +289,7 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
             mallGoods.setGoodsStatus(fungoMallDto.getGoodsStatus());
             mallGoods.setGoodsType(fungoMallDto.getGoodsType());
             mallGoods.setSort(fungoMallDto.getSort());
-            mallGoods.setGoodsIntro( "由手动添加商品");
+            mallGoods.setGoodsIntro( "");
             mallGoods.setCreatedAt(new Date());
             mallGoods.setUpdatedAt(new Date());
             mallGoodsDaoService.insert(mallGoods);
