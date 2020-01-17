@@ -76,7 +76,15 @@ public class MallGoods extends Model<MallGoods> {
 	 *    21 零卡
 	 *    22 京东卡
 	 *    23 QB卡
+	 *
 	 * 3 游戏礼包
+	 *
+	 * 4 春节礼品
+	 *  41 春节购1元档
+	 * 	42 春节购5元档
+	 * 	43 春节购10元档
+	 * 	44 春节购50元档
+	 * 	45 春节购100元档
      */
 	@TableField("goods_type")
 	private Integer goodsType;

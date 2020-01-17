@@ -102,6 +102,39 @@ public class FungoMallSeckillSuccessAdviceService {
                     msgDataContent = msgDataContent.replace("{", cardSn).replace("}", cardPwd);
                     msgContentMap.put("actionType", "2");
                     break;
+                //春节购1元档
+                case 41:
+                    msgDataContent = FungoMallSeckillConsts.MSG_SECKILL_SUCCESS_SPRING_FESTIVAL;
+                    msgDataContent = msgDataContent.replace("{", "1");
+                    msgContentMap.put("actionType", "2");
+                    break;
+                //春节购5元档
+                case 42:
+                    msgDataContent = FungoMallSeckillConsts.MSG_SECKILL_SUCCESS_SPRING_FESTIVAL;
+                    msgDataContent = msgDataContent.replace("{", "5");
+                    msgContentMap.put("actionType", "2");
+                    break;
+
+                //春节购10元档
+                case 43:
+                    msgDataContent = FungoMallSeckillConsts.MSG_SECKILL_SUCCESS_SPRING_FESTIVAL;
+                    msgDataContent = msgDataContent.replace("{", "10");
+                    msgContentMap.put("actionType", "2");
+                    break;
+
+                //春节购50元档
+                case 44:
+                    msgDataContent = FungoMallSeckillConsts.MSG_SECKILL_SUCCESS_SPRING_FESTIVAL;
+                    msgDataContent = msgDataContent.replace("{", "50");
+                    msgContentMap.put("actionType", "2");
+                    break;
+
+                //春节购100元档
+                case 45:
+                    msgDataContent = FungoMallSeckillConsts.MSG_SECKILL_SUCCESS_SPRING_FESTIVAL;
+                    msgDataContent = msgDataContent.replace("{", "100");
+                    msgContentMap.put("actionType", "2");
+                    break;
                 case 24:
                     msgDataContent = FungoMallSeckillConsts.FESTIVAL_GOODS_SUCCESS_lv1;
                     msgDataContent = msgDataContent.replace("{", goodsName).replace("}", cardSn);

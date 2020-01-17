@@ -146,12 +146,18 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                                        22 京东卡
                                        23 QB卡
                                        26 谷歌账号
+                                       211
+                                       212
+                                       213
+                                       214
+                                       215
                                     3 游戏礼包
              * goods_status 产品状态 :
              *                       -1 已删除 ，1 已 下架  ，  2 已 上架
              */
             List<String> goods_types = new ArrayList<>();
             goods_types.add("1");goods_types.add("2");goods_types.add("21");goods_types.add("22");goods_types.add("23");goods_types.add("26");goods_types.add("27");goods_types.add("28");
+            goods_types.add("41");goods_types.add("42");goods_types.add("43");goods_types.add("44");goods_types.add("45");
             List<Map<String, Object>> goodsMapList = mallSeckillDaoService.querySeckillGoods(queryStartDate, queryEndDate, goods_types, 2);
             if (null != goodsMapList && !goodsMapList.isEmpty()) {
                 goodsOutBeanList = new ArrayList<MallGoodsOutBean>();

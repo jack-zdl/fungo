@@ -245,6 +245,10 @@ public class FungoMallScanOrderWithSeckillService {
                                                 // @todo
                                                 vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
                                                 break;
+                                            case 211:
+                                                // @todo
+                                                vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods);
+                                                break;
                                             case 3:
                                                 vCardNewWithOrderGoods = updateOrderGoodsInfoWithVCard(mb_id, orderId, goods,31);
                                                 break;

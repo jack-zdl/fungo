@@ -98,6 +98,13 @@ public class FungoMallSeckillConsts {
     public static final String MSG_SECKILL_SUCCESS_QB_TEN = "恭喜您获得“<span style='color:#242529'>10QB</span>”， 卡号：<span style='color:#242529'>{</span>  密码为：<span style='color:#242529'>}</span> \n" +
             " 请至官网：<a href='https://pay.qq.com'><span style='color:#4995D7'>https://pay.qq.com/</span> </a>进行兑换";
 
+
+    /**
+     * QB 10元 消息
+     */
+    public static final String MSG_SECKILL_SUCCESS_SPRING_FESTIVAL = "您已成功购买{ 元档，请加群746928618联系活动娘进行购买想要的商品。注：商品价值必须在10元以上才接受兑换，请在2月6日前完成兑换，过期不候。";
+
+
     /**
      *  京东卡 10元消息
      */
