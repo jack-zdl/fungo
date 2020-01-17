@@ -1591,6 +1591,27 @@ public class FungoMallSeckillServiceImpl implements IFungoMallSeckillService {
                 break;
             case 28:
                 orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+
+                break;
+            case 41:
+                orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+
+                break;
+            case 42:
+                orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+
+                break;
+            case 43:
+                orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+
+                break;
+            case 44:
+                orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+
+                break;
+            case 45:
+                orderSN = "V" + String.valueOf(PKUtil.getInstance(clusterIndex_i).longPK());
+
                 break;
             default:
                 break;
