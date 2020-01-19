@@ -183,7 +183,15 @@ public class GameDto extends InputPageDto  implements Serializable{
      */
 	private Integer commentNum;
 
+	private Long gameIdtSn;
 
+	public Long getGameIdtSn() {
+		return gameIdtSn;
+	}
+
+	public void setGameIdtSn(Long gameIdtSn) {
+		this.gameIdtSn = gameIdtSn;
+	}
 
 	public String getId() {
 		return id;

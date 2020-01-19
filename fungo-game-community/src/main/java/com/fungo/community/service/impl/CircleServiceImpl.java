@@ -252,6 +252,7 @@ public class CircleServiceImpl implements CircleService {
             ResultDto<GameDto>  resultGameDto = gameFeignClient.selectGameDetails(cmmCircleDto.getGameId(),0);
             if(resultGameDto != null && resultGameDto.getData() != null && !CommonUtil.isNull( resultGameDto.getData().getId()) ){
                 cmmCircleDto.setGameStatus(1);
+                cmmCircleDto.setGameIdtSn(cmmCircleDto.getGameIdtSn());
             }
             List<Map<String, Object>> map = getCirclePayer(cmmCircle);
             cmmCircleDto.setEliteMembers(map);

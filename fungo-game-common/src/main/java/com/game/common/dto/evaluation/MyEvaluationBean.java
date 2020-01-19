@@ -27,7 +27,18 @@ public class MyEvaluationBean {
 	private List<String> Images = new ArrayList<>();
 	@ApiModelProperty(value="是否已修改",example="")
 	private boolean updated;
-	
+
+	@ApiModelProperty(value="游戏数字id",example="")
+	private Long gameIdtSn;
+
+	public Long getGameIdtSn() {
+		return gameIdtSn;
+	}
+
+	public void setGameIdtSn(Long gameIdtSn) {
+		this.gameIdtSn = gameIdtSn;
+	}
+
 	public String getGameName() {
 		return gameName;
 	}

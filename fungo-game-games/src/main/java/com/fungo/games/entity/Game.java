@@ -28,7 +28,7 @@ public class Game extends Model<Game> {
      * 标签
      */
 	private String tags;
-    /**
+    /**game_idt_sn
      * 视频地址
      */
 	private String video;

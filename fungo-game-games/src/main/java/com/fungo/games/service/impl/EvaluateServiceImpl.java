@@ -977,10 +977,11 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 ArrayList<String> images = mapper.readValue(eva.getImages(), ArrayList.class);
                 bean.setImages(images);
             }
-            Game game = gameService.selectOne(Condition.create().setSqlSelect("id,icon,name").eq("id", eva.getGameId()));
+            Game game = gameService.selectOne(Condition.create().setSqlSelect("id,icon,name,game_idt_sn as gameIdtSn").eq("id", eva.getGameId()));
             if (game != null) {
                 bean.setIcon(game.getIcon());
                 bean.setGameName(game.getName());
+                bean.setGameIdtSn(game.getGameIdtSn());
             }
             if(eva.getCreatedAt().compareTo(eva.getUpdatedAt()) != 0){
                 bean.setUpdated(true);
