@@ -185,13 +185,6 @@ public class GameDto extends InputPageDto  implements Serializable{
 
 	private Long gameIdtSn;
 
-	public Long getGameIdtSn() {
-		return gameIdtSn;
-	}
-
-	public void setGameIdtSn(Long gameIdtSn) {
-		this.gameIdtSn = gameIdtSn;
-	}
 
 	public String getId() {
 		return id;
@@ -543,6 +536,14 @@ public class GameDto extends InputPageDto  implements Serializable{
 
 	public void setCommentNum(Integer commentNum) {
 		this.commentNum = commentNum;
+	}
+
+	public Long getGameIdtSn() {
+		return gameIdtSn;
+	}
+
+	public void setGameIdtSn(Long gameIdtSn) {
+		this.gameIdtSn = gameIdtSn;
 	}
 
 	@Override

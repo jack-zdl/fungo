@@ -42,6 +42,9 @@ public class CircleCardDataBean {
 	private String targetId;
 	@ApiModelProperty(value="业务类型",example="")
 	private int targetType;
+
+	// 游戏编号
+	private Long gameIdtSn;
 //
 //	@ApiModelProperty(value="创建时间",example="")
 //	private String createdAt;

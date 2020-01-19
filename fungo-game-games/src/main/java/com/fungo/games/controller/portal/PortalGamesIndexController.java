@@ -375,6 +375,7 @@ public class PortalGamesIndexController {
             bean.setGameId(gameEvaluation.getGameId());
             bean.setGameName(game.getName());
             bean.setRecommend(gameEvaluation.getIsRecommend().equals("1") ? true : false);
+            bean.setGameIdtSn( game.getGameIdtSn());
             list.add(bean);
         }
         PageTools.pageToResultDto( re,page);

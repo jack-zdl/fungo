@@ -31,6 +31,9 @@ public class AmwayWallBean {
 	 * 图片s
 	 */
 	private List<String> images;
+
+	// 游戏编号
+	private Long gameIdtSn;
 	
 	public AuthorBean getAuthor() {
 		return author;
@@ -92,5 +95,13 @@ public class AmwayWallBean {
 	}
 	public void setImages(List<String> images) {
 		this.images = images;
+	}
+
+	public Long getGameIdtSn() {
+		return gameIdtSn;
+	}
+
+	public void setGameIdtSn(Long gameIdtSn) {
+		this.gameIdtSn = gameIdtSn;
 	}
 }
