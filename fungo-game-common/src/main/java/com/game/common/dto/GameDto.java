@@ -185,8 +185,6 @@ public class GameDto extends InputPageDto  implements Serializable{
 
 	private Long gameIdtSn;
 
-	private Long gameIdtSn;
-
 
 	public String getId() {
 		return id;
