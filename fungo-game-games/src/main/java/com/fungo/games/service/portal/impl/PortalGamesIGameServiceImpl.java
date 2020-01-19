@@ -160,6 +160,7 @@ public class PortalGamesIGameServiceImpl implements PortalGamesIGameService {
                     continue;
                 }
                 MyGameBean bean = new MyGameBean();
+                bean.setGameIdtSn(game.getGameIdtSn());
                 bean.setAndroidState(game.getAndroidState());
                 bean.setGameContent(game.getDetail());
                 bean.setGameIcon(game.getIcon());
@@ -187,6 +188,7 @@ public class PortalGamesIGameServiceImpl implements PortalGamesIGameService {
                 List<Game>  gamesList =  gameDao.getGameList(gameIds);
                 gamesList.stream().forEach(game ->{
                     MyGameBean bean = new MyGameBean();
+                    bean.setGameIdtSn(game.getGameIdtSn());
                     bean.setAndroidState(game.getAndroidState() == null ? 0 : game.getAndroidState()  );
                     bean.setGameContent(game.getDetail());
                     bean.setGameIcon(game.getIcon());

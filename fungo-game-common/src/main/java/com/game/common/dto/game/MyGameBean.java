@@ -23,6 +23,18 @@ public class MyGameBean {
 	private String phoneModel;
 	@ApiModelProperty(value = "游戏评分(v2.4)", example = "")
 	private double rating;
+
+	@ApiModelProperty(value="游戏数字id",example="")
+	private Long gameIdtSn;
+
+	public Long getGameIdtSn() {
+		return gameIdtSn;
+	}
+
+	public void setGameIdtSn(Long gameIdtSn) {
+		this.gameIdtSn = gameIdtSn;
+	}
+
 	public String getGameName() {
 		return gameName;
 	}
