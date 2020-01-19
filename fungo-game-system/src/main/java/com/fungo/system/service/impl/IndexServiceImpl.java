@@ -9,6 +9,7 @@ import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IMemeberProxyService;
 import com.fungo.system.facede.IndexProxyService;
 import com.fungo.system.feign.CommunityFeignClient;
+import com.fungo.system.function.GameFilterService;
 import com.fungo.system.service.BannerService;
 import com.fungo.system.service.IIndexService;
 import com.fungo.system.service.IUserService;
@@ -73,6 +74,8 @@ public class IndexServiceImpl implements IIndexService {
     private BannerDao bannerDao;
     @Autowired
     private CommunityFeignClient communityFeignClient;
+    @Autowired
+    private GameFilterService gameFilterService;
 
 
     @Override
@@ -281,6 +284,9 @@ public class IndexServiceImpl implements IIndexService {
                 b1.setActionType(String.valueOf(b.getActionType()));
                 b1.setTargetType(b.getTargetType());
                 b1.setTargetId(b.getTargetId());
+                if(3 == b.getTargetType()){
+                    b1.setGameIdtSn( gameFilterService.getGameDto( b.getTargetId()) );
+                }
                 b1.setStartDate(DateTools.fmtDate(b.getBeginDate()));
                 b1.setEndDate(DateTools.fmtDate(b.getEndDate()));
                 list.add(b1);
@@ -920,8 +926,8 @@ public class IndexServiceImpl implements IIndexService {
             b1.setActionType(String.valueOf(banner.getActionType()));
             b1.setTargetType(banner.getTargetType());
             b1.setTargetId(banner.getTargetId());
-            if(){
-
+            if(3 == banner.getTargetType()){
+               b1.setGameIdtSn( gameFilterService.getGameDto( banner.getTargetId()) );
             }
             b1.setStartDate(DateTools.fmtDate(banner.getBeginDate()));
             b1.setEndDate(DateTools.fmtDate(banner.getEndDate()));

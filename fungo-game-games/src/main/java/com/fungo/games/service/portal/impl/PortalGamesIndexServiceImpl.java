@@ -100,6 +100,7 @@ public class PortalGamesIndexServiceImpl implements PortalGamesIIndexService {
                 map1.put("cover_image", game.getCoverImage());
                 map1.put("icon", game.getIcon());
                 map1.put("objectId", game.getId());
+                map1.put( "gameIdtSn",game.getGameIdtSn());
                 map1.put("createdAt", DateTools.fmtDate(game.getCreatedAt()));
                 map1.put("updatedAt", DateTools.fmtDate(game.getUpdatedAt()));
                 map1.put("hot_value", 100);

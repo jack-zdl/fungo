@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.entity.Banner;
 import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IndexProxyService;
+import com.fungo.system.function.GameFilterService;
 import com.fungo.system.service.BannerService;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
@@ -44,15 +45,14 @@ public class PortalSystemAdvertController {
 //    private GameDao gameDao;
 //    @Autowired
 //    private CmmPostService postService;
-
     @Autowired
     private FungoCacheAdvert fungoCacheAdvert;
-
     @Autowired
     private IndexProxyService indexProxyService;
-
     @Autowired
     private IGameProxyService iGameProxyService;
+    @Autowired
+    private GameFilterService gameFilterService;
 
     @ApiOperation(value = "PC2.0发现页轮播", notes = "")
     @RequestMapping(value = "/api/portal/system/recommend/discover", method = RequestMethod.GET)
@@ -82,6 +82,9 @@ public class PortalSystemAdvertController {
                 if (post != null) {
                     map1.put("video", post.getVideo());
                 }
+            }
+            if(3 == banner.getTargetType()){
+                map1.put("gameIdtSn", String.valueOf( gameFilterService.getGameDto( banner.getTargetId()) ) );
             }
             map1.put("objectId", banner.getTargetId());
             map1.put("cover_image", banner.getCoverImage());

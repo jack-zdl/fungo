@@ -167,6 +167,7 @@ public class GameHomeServiceImpl implements GameHomeService {
             homePageBean = new HomePageBean();
             homePageBean.setId(homePage.getId());
             homePageBean.setGameId(homePage.getGameId());
+            homePageBean.setGameIdtSn( game.getGameIdtSn());
             if(null!=game){
                 homePageBean.setImages(game.getImages());
                 homePageBean.setCoverImage(game.getCoverImage());

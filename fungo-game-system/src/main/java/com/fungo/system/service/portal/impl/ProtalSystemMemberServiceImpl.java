@@ -12,6 +12,7 @@ import com.fungo.system.entity.*;
 import com.fungo.system.facede.IMemeberProxyService;
 import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
+import com.fungo.system.function.GameFilterService;
 import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.service.*;
 import com.fungo.system.service.impl.MemberNoticeServiceImpl;
@@ -72,6 +73,8 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
     private IncentRuleRankService rankRuleService;
     @Autowired
     private IncentRuleRankGroupDao incentRuleRankGroupDao;
+    @Autowired
+    private GameFilterService gameFilterService;
 
     //消息
     @Override
@@ -236,6 +239,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                                                 map.put( "three_level_deltype",gameEvaluationDto.getState()  == -1 ? -1 : 0 );
                                                 map.put( "parentType",6);
                                                 map.put( "parentId",gameEvaluationDto.getGameId() );
+                                                map.put( "parentIdNumber",gameFilterService.getGameDto( gameEvaluationDto.getGameId()) );
                                                 Member member = memberService.selectById(gameEvaluationDto.getMemberId());
                                                 map.put( "parentMemberId",member.getId() );
                                                 map.put( "parentMemberName",member.getUserName() );
@@ -280,6 +284,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                                     map.put( "two_level_deltype",gameEvaluationDto.getState() == -1 ? -1 : 0 );
                                     map.put( "parentType",6);
                                     map.put( "parentId",gameEvaluationDto.getGameId() );
+                                    map.put( "parentIdNumber",gameFilterService.getGameDto( gameEvaluationDto.getGameId()) );
                                     Member member = memberService.selectById(gameEvaluationDto.getMemberId());
                                     map.put( "parentMemberId",member.getId() );
                                     map.put( "parentMemberName",member.getUserName() );
@@ -659,6 +664,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
 
                     }else if(map.get("game_id") != null){
                         map.put("parentId", map.get("game_id"));
+                        map.put( "parentIdNumber",gameFilterService.getGameDto( (String) map.get("game_id")) );
                         String evaluationId = (String) map.get("evaluation_id");
                         GameEvaluationDto param = new GameEvaluationDto();
                         param.setId(evaluationId);
