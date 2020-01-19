@@ -190,6 +190,7 @@ public class GameHomeServiceImpl implements GameHomeService {
                 homePageBean.setGameSize(game.getGameSize());
                 homePageBean.setAndroidPackageName(game.getAndroidPackageName());
                 homePageBean.setIcon(game.getIcon());
+                homePageBean.setGameIdtSn( game.getGameIdtSn());
             }
             if (StringUtils.isNotBlank(memberId)) {
                 GameSurveyRel srel = this.surveyRelService.selectOne(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", homePage.getGameId()).eq("phone_model", os).eq("state", 0));

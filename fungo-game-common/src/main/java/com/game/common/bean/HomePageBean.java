@@ -122,5 +122,6 @@ public class HomePageBean {
 	 */
 	private String coverImage;
 
+	private Long gameIdtSn;
 
 }

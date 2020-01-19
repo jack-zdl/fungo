@@ -295,6 +295,7 @@ public class Game extends Model<Game> {
 	private double score;
 
 
+
 	public String getId() {
 		return id;
 	}
@@ -775,6 +776,8 @@ public class Game extends Model<Game> {
 	public void setPreviousWeekDownloadNum(Long previousWeekDownloadNum) {
 		this.previousWeekDownloadNum = previousWeekDownloadNum;
 	}
+
+
 
 	@Override
 	protected Serializable pkVal() {

@@ -920,6 +920,9 @@ public class IndexServiceImpl implements IIndexService {
             b1.setActionType(String.valueOf(banner.getActionType()));
             b1.setTargetType(banner.getTargetType());
             b1.setTargetId(banner.getTargetId());
+            if(){
+
+            }
             b1.setStartDate(DateTools.fmtDate(banner.getBeginDate()));
             b1.setEndDate(DateTools.fmtDate(banner.getEndDate()));
         }

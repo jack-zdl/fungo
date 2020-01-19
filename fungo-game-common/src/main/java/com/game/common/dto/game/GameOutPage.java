@@ -46,6 +46,7 @@ public class GameOutPage {
 	private String iosStatusDesc;
 	//ios状态描述
 	private String tags;
+
 	
 	public String getObjectId() {
 		return objectId;

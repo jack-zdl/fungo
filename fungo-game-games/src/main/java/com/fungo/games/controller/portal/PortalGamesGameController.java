@@ -23,6 +23,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,6 +61,30 @@ public class PortalGamesGameController {
     private GameCollectionItemService gameCollectionItemService;
     @Autowired
     private GameDao gameDao;
+
+
+    @ApiOperation(value = "游戏详情", notes = "")
+    @RequestMapping(value = "/api/portal/games/content/game/number/{gameId}", method = RequestMethod.GET)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "gameId", value = "游戏id", paramType = "path", dataType = "string"),
+    })
+    public ResultDto<GameOut> getGameDetailByNumber(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @PathVariable("gameId") String gameId) {
+        String memberId = "";
+        String os = "";
+        if (memberUserPrefile != null) {
+            memberId = memberUserPrefile.getLoginId();
+        }
+        os = (String) request.getAttribute("os");
+        if (StringUtils.isBlank(os)) {
+            os = request.getHeader("os");
+        }
+        try {
+            return gameService.getGameDetailByNumber(gameId, memberId, os);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultDto.error("-1", "操作失败");
+        }
+    }
 
     @ApiOperation(value = "PC2.0游戏详情(2.4修改/api/content/evaluations|)", notes = "")
     @RequestMapping(value = "/api/portal/games/content/game/{gameId}", method = RequestMethod.GET)

@@ -69,6 +69,7 @@ public class PortalGamesIGameServiceImpl implements PortalGamesIGameService {
             out.setIcon((String) map.get("icon"));
             out.setName((String) map.get("name"));
             out.setObjectId((String) map.get("game_id"));
+            out.setGameIdtSn( (Long) map.get( "gameIdtSn" ) );
             HashMap<String, BigDecimal> rateData = gameDao.getRateData((String) map.get("game_id"));
             if (rateData != null) {
                 if (rateData.get("avgRating") != null) {

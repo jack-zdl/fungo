@@ -23,7 +23,8 @@ public interface IGameService {
 	 * @throws Exception
 	 */
 	public ResultDto<GameOut> getGameDetail(String gameId, String memberId, String ptype) throws Exception;
-	
+
+	ResultDto<GameOut> getGameDetailByNumber(String gameNumber,String memberId,String ptype);
 	/**
 	 * 游戏列表
 	 * @param gameInputDto

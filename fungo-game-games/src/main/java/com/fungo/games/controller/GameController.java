@@ -56,6 +56,30 @@ public class GameController {
     @Autowired
     private FungoCacheGame fungoCacheGame;
 
+    @ApiOperation(value = "游戏详情", notes = "")
+    @RequestMapping(value = "/api/content/game/number/{gameId}", method = RequestMethod.GET)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "gameId", value = "游戏id", paramType = "path", dataType = "string"),
+    })
+    public ResultDto<GameOut> getGameDetailByNumber(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @PathVariable("gameId") String gameId) {
+        String memberId = "";
+        String os = "";
+        if (memberUserPrefile != null) {
+            memberId = memberUserPrefile.getLoginId();
+        }
+        os = (String) request.getAttribute("os");
+        if (StringUtils.isBlank(os)) {
+            os = request.getHeader("os");
+        }
+        try {
+            return gameService.getGameDetail(gameId, memberId, os);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultDto.error("-1", "操作失败");
+        }
+    }
+
+
     @ApiOperation(value = "游戏详情(2.4修改/api/content/evaluations|)", notes = "")
     @RequestMapping(value = "/api/content/game/{gameId}", method = RequestMethod.GET)
     @ApiImplicitParams({
