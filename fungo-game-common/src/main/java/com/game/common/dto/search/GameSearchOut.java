@@ -55,6 +55,8 @@ public class GameSearchOut {
 
 	private String version;
 
+	private Long gameIdsSn;
+
 //	@ApiModelProperty(value="是否同意条款",example="")
 //	private boolean isClause=false;
 //	@ApiModelProperty(value="是否绑定appleId",example="")
@@ -280,4 +282,12 @@ public class GameSearchOut {
     public void setVersion(String version) {
         this.version = version;
     }
+
+	public Long getGameIdsSn() {
+		return gameIdsSn;
+	}
+
+	public void setGameIdsSn(Long gameIdsSn) {
+		this.gameIdsSn = gameIdsSn;
+	}
 }

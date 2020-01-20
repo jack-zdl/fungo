@@ -1452,6 +1452,7 @@ public class GameServiceImpl implements IGameService {
                 out.setLink_community(game.getCommunityId());
                 Integer reNum = game.getRecommendNum();
                 Integer unredNum = game.getUnrecommendNum();
+
 //			out.setRecommend_num(reNum);
 //			out.setUnrecommend_num(unredNum);
 //			out.setEvaluation_num(reNum + unredNum);
@@ -1471,7 +1472,7 @@ public class GameServiceImpl implements IGameService {
                 }
                 out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
                 out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
-
+                out.setGameIdsSn( game.getGameIdtSn());
                 out.setCategory(gameTagStrs);
                 /**
                  * 功能描述: 添加游戏关联圈子
