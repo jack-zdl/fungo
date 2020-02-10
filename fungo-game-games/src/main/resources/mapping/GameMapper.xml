@@ -373,4 +373,5 @@
         where  state = 0  and ( name LIKE  concat(concat('%',#{keyword}),'%')OR google_deputy_name LIKE concat(concat('%',#{keyword}),'%') )
     </select>
 
+
 </mapper>
