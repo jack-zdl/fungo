@@ -19,6 +19,7 @@ import com.game.common.util.ValidateUtils;
 import com.game.common.util.annotation.JsonView;
 import com.game.common.util.annotation.LogicCheck;
 import com.game.common.util.token.TokenService;
+import com.game.common.util.annotation.MD5;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -35,7 +36,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -130,6 +130,7 @@ public class UserController {
             @ApiImplicitParam(name = "password", value = "密码", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "code", value = "验证码", paramType = "form", dataType = "string")
     })
+    @MD5(value = "mobile,password")
     public ResultDto<LoginMemberBean> login(HttpServletRequest request, @RequestBody MsgInput msg) throws  Exception {
         String appversion = request.getHeader("appversion");
         String deviceId = request.getHeader("deviceId");
