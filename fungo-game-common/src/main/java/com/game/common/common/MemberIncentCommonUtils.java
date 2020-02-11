@@ -55,4 +55,15 @@ public final class MemberIncentCommonUtils {
         return new Long( "2592000000" );
     }
 
+    public static boolean checkNumber(String numberStr){
+        boolean result = false;
+        try {
+            Long number = Long.valueOf(numberStr);
+            result = true;
+        }catch (Exception e){
+            result = false;
+        }
+        return result;
+    }
+
 }

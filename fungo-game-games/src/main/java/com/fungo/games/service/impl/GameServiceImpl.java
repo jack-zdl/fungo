@@ -20,6 +20,7 @@ import com.fungo.games.helper.es.ESDAOServiceImpl;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.buriedpoint.BuriedPointUtils;
+import com.game.common.common.MemberIncentCommonUtils;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.Setting;
 import com.game.common.dto.FungoPageResultDto;
@@ -682,7 +683,13 @@ public class GameServiceImpl implements IGameService {
             return ResultDto.success(outResult);
         }
 //            Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", "0"));
-        Game game = gameService.selectOne(new EntityWrapper<Game>().eq("game_idt_sn", gameNumber).eq("state", "0"));
+        Game game = null;
+        if(MemberIncentCommonUtils.checkNumber(gameNumber)){
+            game = gameService.selectOne(new EntityWrapper<Game>().eq("game_idt_sn", gameNumber).eq("state", "0"));
+        }else {
+            game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameNumber).eq("state", "0"));
+        }
+
         if (game == null) {
             return ResultDto.error( AbstractResultEnum.CODE_GAME_THREE.getKey(), "找不到目标游戏");
         }

@@ -130,7 +130,7 @@ public class UserController {
             @ApiImplicitParam(name = "password", value = "密码", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "code", value = "验证码", paramType = "form", dataType = "string")
     })
-    @MD5(value = "mobile,password")
+//    @MD5(value = "mobile,password")
     public ResultDto<LoginMemberBean> login(HttpServletRequest request, @RequestBody MsgInput msg) throws  Exception {
         String appversion = request.getHeader("appversion");
         String deviceId = request.getHeader("deviceId");
@@ -141,7 +141,6 @@ public class UserController {
             MemberUserProfile userPrefile = new MemberUserProfile();
             userPrefile.setLoginId(bean.getObjectId());
             userPrefile.setName(bean.getUsername());
-
             bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), MemberIncentCommonUtils.pastDate()));
         }
         return re;

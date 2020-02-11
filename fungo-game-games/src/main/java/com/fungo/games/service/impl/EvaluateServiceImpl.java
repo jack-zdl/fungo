@@ -24,6 +24,7 @@ import com.game.common.buriedpoint.constants.BuriedPointCommunityConstant;
 import com.game.common.buriedpoint.constants.BuriedPointEventConstant;
 import com.game.common.buriedpoint.model.BuriedPointGameScoreModel;
 import com.game.common.buriedpoint.model.BuriedPointReplyModel;
+import com.game.common.common.MemberIncentCommonUtils;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.dto.ActionInput;
@@ -780,7 +781,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
             }
             re = new FungoPageResultDto<>();
             List<EvaluationOutPageDto> relist = new ArrayList<EvaluationOutPageDto>();
-            Game game = gameService.selectOne(new EntityWrapper<Game>().eq("game_idt_sn", gameNumber).eq("state", "0"));
+            Game game = null;
+            if(MemberIncentCommonUtils.checkNumber(gameNumber)){
+                game = gameService.selectOne(new EntityWrapper<Game>().eq("game_idt_sn", gameNumber).eq("state", "0"));
+            }else {
+                game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameNumber).eq("state", "0"));
+            }
+//            Game game = gameService.selectOne(new EntityWrapper<Game>().eq("game_idt_sn", gameNumber).eq("state", "0"));
             if (game == null) {
                 return FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(AbstractResultEnum.CODE_GAME_THREE.getKey(), AbstractResultEnum.CODE_GAME_THREE.getFailevalue());
             }
