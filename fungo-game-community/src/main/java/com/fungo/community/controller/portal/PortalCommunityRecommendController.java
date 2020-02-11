@@ -275,6 +275,7 @@ public class PortalCommunityRecommendController {
                         map.put("gameId", gameDto.getId());
                         map.put("gameName", gameDto.getName());
                         map.put("gameIcon", gameDto.getIcon());
+                        map.put("gameIdtSn",gameDto.getGameIdtSn());
                         //!fixme 获取游戏平均分
                         /*
                         HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
