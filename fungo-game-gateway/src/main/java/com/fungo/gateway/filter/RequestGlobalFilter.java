@@ -39,7 +39,7 @@ public class RequestGlobalFilter implements GlobalFilter, Ordered {
         // 获取请求路径前缀（api-dev/api-prod）
         String url = request.getPath().value();
         String newPath = "";
-        if(url.contains( "/api/encrypt" )){
+        if(url.contains( "/encrypt" )){
             String[] pathList = url.split( "encrypt/" );
             try {
                String key =  private_key ;
@@ -51,7 +51,7 @@ public class RequestGlobalFilter implements GlobalFilter, Ordered {
                 }else {
                     return  unusualDeal(exchange,response);
                 }
-                newPath = "/api/"+newPath;
+                newPath = "/api"+newPath;
                 ServerHttpRequest newRequest = request.mutate().path(newPath).build();
                 return chain.filter(exchange.mutate().request(newRequest).build());  //.request(newRequest)
             } catch (Exception e) {

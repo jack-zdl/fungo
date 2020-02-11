@@ -1447,6 +1447,7 @@ public class GameServiceImpl implements IGameService {
                 out.setTag(gameTagStrs);
                 out.setIcon(game.getIcon());
                 out.setCover_image(game.getCoverImage());
+                out.setCoverImage(game.getCoverImage());
                 out.setIntro(game.getIntro());
                 out.setDeveloper(game.getDeveloper());
                 out.setLink_community(game.getCommunityId());
@@ -1534,6 +1535,14 @@ public class GameServiceImpl implements IGameService {
                     }
                 }
                 out.setVersion( CommonUtil.isNull(game.getVersionChild()) ? game.getVersionMain() : game.getVersionMain()+"."+game.getVersionChild() );
+                try {
+                    if (game.getImages() != null) {
+                        ObjectMapper mapper = new ObjectMapper();
+                        out.setImages((ArrayList<String>) mapper.readValue(game.getImages(), ArrayList.class));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 dataList.add(out);
             }
             re.setData(dataList);

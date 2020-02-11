@@ -22,6 +22,8 @@ public interface IEvaluateService {
 
 	FungoPageResultDto<EvaluationOutPageDto> getEvaluationList(String memberId, EvaluationInputPageDto pagedto);//获取评价列表(默认获取两条回复)
 
+	FungoPageResultDto<EvaluationOutPageDto> getEvaluationGamenumberList(String memberId, EvaluationInputPageDto pagedto);//获取评价列表(默认获取两条回复)
+
 	ResultDto<EvaluationOutBean> anliEvaluationDetail(String memberId, String evaluationId);//安利墙游戏评价详情
 //	根据后台标签id集合，分类标签，游戏id
 	boolean feignAddGameTagInsert(List<String> tags, String categoryId, String gameId);
