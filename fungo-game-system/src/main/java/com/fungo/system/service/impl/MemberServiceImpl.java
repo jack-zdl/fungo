@@ -1598,6 +1598,7 @@ public class MemberServiceImpl implements IMemberService {
                         map.put("gameId", game.getId());
                         map.put("gameName", game.getName());
                         map.put("gameIcon", game.getIcon());
+                        map.put("gameIdtSn", String.valueOf(game.getGameIdtSn()));
                         gameList.add(map);
                     }
                 }
