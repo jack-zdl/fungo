@@ -273,6 +273,7 @@ public class ProtalGamesEvaluateServiceImpl implements ProtalGameIEvaluateServic
             eva.setGameIcon(game.getIcon());
             eva.setGameIntro(game.getIntro());
             eva.setGameName(game.getName());
+            eva.setGameIdtSn(game.getGameIdtSn());
         }
         int sort = eva.getSort();
         String id = eva.getObjectId();

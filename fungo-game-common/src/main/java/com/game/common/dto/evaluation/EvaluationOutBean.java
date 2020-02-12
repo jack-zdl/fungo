@@ -36,6 +36,7 @@ public class EvaluationOutBean {
 	private String gameName;
 	private String gameIcon;
 	private String gameIntro;
+	private Long gameIdtSn;
 	
 	public String getContent() {
 		return content;
@@ -166,6 +167,12 @@ public class EvaluationOutBean {
 	public void setGameIntro(String gameIntro) {
 		this.gameIntro = gameIntro;
 	}
-	
-	
+
+	public Long getGameIdtSn() {
+		return gameIdtSn;
+	}
+
+	public void setGameIdtSn(Long gameIdtSn) {
+		this.gameIdtSn = gameIdtSn;
+	}
 }

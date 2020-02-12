@@ -1819,6 +1819,10 @@ public class MemberServiceImpl implements IMemberService {
                     FungoPageResultDto<GameEvaluationDto> resultDto = gamesFeignClient.getGameEvaluationPage(param);
                     GameEvaluationDto evaluation =  (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;
                     bean.setParentId( evaluation != null ? evaluation.getGameId() : "");
+                    GameDto gameDto  = gamesFeignClient.selectOne(evaluation.getGameId());
+                    if(gameDto != null){
+                        bean.setGameIdtSn( gameDto.getGameIdtSn());
+                    }
 
                 }if(commentBean.getTargetType() == 8 ){
                     MooMessageDto mooMessageDto = new MooMessageDto();
@@ -1939,6 +1943,10 @@ public class MemberServiceImpl implements IMemberService {
                         bean.setReplyToName(m.getUserName());
                     }
                     bean.setParentId( evaluation.getGameId());
+                    GameDto gameDto  = gamesFeignClient.selectOne(evaluation.getGameId());
+                    if(gameDto != null){
+                        bean.setGameIdtSn( gameDto.getGameIdtSn());
+                    }
                 }
             } else if (commentBean.getTargetType() == 8) {
                 // @todo 社区接口

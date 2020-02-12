@@ -204,6 +204,7 @@ public class PortalGamesGameController {
                 map1.put("objectId", game.getId());
                 map1.put("createdAt", DateTools.fmtDate(game.getCreatedAt()));
                 map1.put("updatedAt", DateTools.fmtDate(game.getUpdatedAt()));
+                map1.put("gameIdtSn", game.getGameIdtSn());
                 map1.put("hot_value", 100);
                 lists.add(map1);
             }
