@@ -40,7 +40,6 @@ public class HelloController {
             jsonObject.put( "publicKey",publicKey );
             resultDto = ResultDto.ResultDtoFactory.buildSuccess(jsonObject );
         } catch (Exception e) {
-            e.printStackTrace();
             resultDto = ResultDto.ResultDtoFactory.buildError( "获取公钥和时间戳异常" );
         }
         return resultDto;

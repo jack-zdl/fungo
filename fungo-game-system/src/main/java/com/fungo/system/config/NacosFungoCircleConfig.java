@@ -66,6 +66,9 @@ public class NacosFungoCircleConfig {
     @Value(value = "${fungo.cloud.official.users}")
     public List<String> officialUsers;
 
+    @Value(value = "{fungo.cloud.rsa.active}")
+    public String rsaActive;
+
     public String getBasLog() {
         return basLog;
     }
@@ -216,5 +219,13 @@ public class NacosFungoCircleConfig {
 
     public void setOfficialUsers(List<String> officialUsers) {
         this.officialUsers = officialUsers;
+    }
+
+    public String getRsaActive() {
+        return rsaActive;
+    }
+
+    public void setRsaActive(String rsaActive) {
+        this.rsaActive = rsaActive;
     }
 }

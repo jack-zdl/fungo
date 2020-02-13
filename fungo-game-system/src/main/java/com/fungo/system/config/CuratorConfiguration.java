@@ -53,6 +53,9 @@ public class CuratorConfiguration {
     @Value(value = "zk.notice.login")
     private String loginNum;
 
+    @Value(value = "fungo.cloud.rsa.active")
+    private String rsaActive;
+
     @Bean(initMethod = "start")
     public CuratorFramework curatorFramework() {
         return CuratorFrameworkFactory.newClient(
@@ -109,5 +112,53 @@ public class CuratorConfiguration {
 
     public void setLoginNum(String loginNum) {
         this.loginNum = loginNum;
+    }
+
+    public int getRetryCount() {
+        return retryCount;
+    }
+
+    public void setRetryCount(int retryCount) {
+        this.retryCount = retryCount;
+    }
+
+    public int getElapsedTimeMs() {
+        return elapsedTimeMs;
+    }
+
+    public void setElapsedTimeMs(int elapsedTimeMs) {
+        this.elapsedTimeMs = elapsedTimeMs;
+    }
+
+    public String getConnectString() {
+        return connectString;
+    }
+
+    public void setConnectString(String connectString) {
+        this.connectString = connectString;
+    }
+
+    public int getSessionTimeoutMs() {
+        return sessionTimeoutMs;
+    }
+
+    public void setSessionTimeoutMs(int sessionTimeoutMs) {
+        this.sessionTimeoutMs = sessionTimeoutMs;
+    }
+
+    public int getConnectionTimeoutMs() {
+        return connectionTimeoutMs;
+    }
+
+    public void setConnectionTimeoutMs(int connectionTimeoutMs) {
+        this.connectionTimeoutMs = connectionTimeoutMs;
+    }
+
+    public String getRsaActive() {
+        return rsaActive;
+    }
+
+    public void setRsaActive(String rsaActive) {
+        this.rsaActive = rsaActive;
     }
 }
