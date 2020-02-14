@@ -18,6 +18,7 @@ import com.game.common.dto.game.TagOutPage;
 import com.game.common.repo.cache.facade.FungoCacheIndex;
 import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.MD5ParanCheck;
 import com.game.common.util.date.DateTools;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -91,6 +92,7 @@ public class PortalGamesGameController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "gameId", value = "游戏id", paramType = "path", dataType = "string"),
     })
+    @MD5ParanCheck()
     public ResultDto<GameOut> getGameDetail(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @PathVariable("gameId") String gameId) {
         String memberId = "";
         String os = "";
@@ -150,6 +152,7 @@ public class PortalGamesGameController {
     @RequestMapping(value = "/api/recommend/pc/gamegroup", method = RequestMethod.POST)
     @ApiImplicitParams({
     })
+    @MD5ParanCheck(param = {"page","limit"})
     public FungoPageResultDto<Map<String, Object>> pcGameGroup(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto input) {
         return indexService.pcGameGroup(input);
     }

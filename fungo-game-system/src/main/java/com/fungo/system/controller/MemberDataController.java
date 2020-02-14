@@ -7,6 +7,7 @@ import com.fungo.system.facede.ICommunityProxyService;
 import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.service.MemberService;
 import com.fungo.system.service.ScoreLogService;
+import com.game.common.util.annotation.MD5ParanCheck;
 import com.game.common.util.date.DateTools;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -60,6 +61,7 @@ public class MemberDataController {
 	
 	@RequestMapping(value = "/api/inittaskhonor", method = RequestMethod.GET)
 	//用户徽章
+	@MD5ParanCheck()
 	public List<Map<String,Object>> initTaskHonor() throws Exception {
 		//文章精选 评测精选 收到点赞
 		

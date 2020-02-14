@@ -11,6 +11,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.CmmPostDto;
 import com.game.common.repo.cache.facade.FungoCacheAdvert;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.MD5ParanCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -57,6 +58,7 @@ public class PortalSystemAdvertController {
     @ApiOperation(value = "PC2.0发现页轮播", notes = "")
     @RequestMapping(value = "/api/portal/system/recommend/discover", method = RequestMethod.GET)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<List<Map<String, String>>> discover(@Anonymous MemberUserProfile memberUserPrefile) {
 
         ResultDto<List<Map<String, String>>> re = new ResultDto<List<Map<String, String>>>();

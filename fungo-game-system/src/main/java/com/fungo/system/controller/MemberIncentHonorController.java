@@ -3,6 +3,7 @@ package com.fungo.system.controller;
 import com.fungo.system.service.IMemberIncentHonorService;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.util.annotation.MD5ParanCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -39,6 +40,7 @@ public class MemberIncentHonorController {
     @ApiOperation(value = "获取用户荣誉(v2.4.3)", notes = "")
     @RequestMapping(value = "/api/user/incents/spirit/honors", method = RequestMethod.GET)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<List<Map<String, Object>>> getUserHonors(MemberUserProfile memberUserPrefile) {
 
         LOGGER.info("call /api/user/incents/spirit/honors");
@@ -60,6 +62,7 @@ public class MemberIncentHonorController {
     @ApiOperation(value = "获取其它用户荣誉(v2.4.3)", notes = "")
     @RequestMapping(value = "/api/user/incents/spirit/userhonors/{userId}", method = RequestMethod.GET)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<List<Map<String, Object>>> getHonors(MemberUserProfile memberUserPrefile,@PathVariable("userId") String userId) {
 
         LOGGER.info("call /api/user/incents/spirit/honors");

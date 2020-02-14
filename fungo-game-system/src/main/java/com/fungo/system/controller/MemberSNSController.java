@@ -6,6 +6,7 @@ import com.fungo.system.service.IMemberSNSService;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.util.annotation.JsonView;
+import com.game.common.util.annotation.MD5ParanCheck;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
@@ -46,6 +47,7 @@ public class MemberSNSController {
     @ApiImplicitParams({})
     @RequestMapping(value = "/api/user/sns/bind", method = RequestMethod.POST)
     @JsonView
+    @MD5ParanCheck()
     public ResultDto<MemberSNSBindOutput> bindThirdSNSWithLogged(MemberUserProfile memberprofile, HttpServletRequest request,
                                                                  @Valid @RequestBody MemberSNSBindInput bindInput) throws Exception {
         String mb_id = memberprofile.getLoginId();

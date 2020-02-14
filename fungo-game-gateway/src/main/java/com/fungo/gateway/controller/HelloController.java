@@ -34,10 +34,12 @@ public class HelloController {
         try {
             //加密字符串
             long days = DateTools.getAddDays( nacosFungoCircleConfig.getFestivalDays());
-            String publicKey = nacosFungoCircleConfig.getRsaPublicKey(); //"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCpt9/cMYK42vKTrTQZxXlaJ41SEffYdm8Mcdac0yE4MKEoocChuzCWpo8gGUsmaL620rfmgEOsxqb8suYcTxOGltwWphi5wBQJoIIW8sJx7dZpU2anxtuDsMsNQFlsJyQZvA8frNrfD6ezyTv9khrKbBFmIAk9oV9um2dfXfn8bwIDAQAB";
+            String publicKey = nacosFungoCircleConfig.getRsaPublicKey();
+            String keyString = nacosFungoCircleConfig.getKeyString();
             JSONObject jsonObject = new JSONObject( );
             jsonObject.put( "days",days );
             jsonObject.put( "publicKey",publicKey );
+            jsonObject.put( "keyString",keyString );
             resultDto = ResultDto.ResultDtoFactory.buildSuccess(jsonObject );
         } catch (Exception e) {
             resultDto = ResultDto.ResultDtoFactory.buildError( "获取公钥和时间戳异常" );

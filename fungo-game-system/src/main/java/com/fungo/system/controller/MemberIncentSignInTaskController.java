@@ -3,6 +3,7 @@ package com.fungo.system.controller;
 import com.fungo.system.service.IMemberIncentSignInTaskService;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.util.annotation.MD5ParanCheck;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,6 +31,7 @@ public class MemberIncentSignInTaskController {
      * @return
      */
     @RequestMapping(value = "/api/user/incents/signin", method = RequestMethod.POST)
+    @MD5ParanCheck()
     public ResultDto<Map> checkIn(MemberUserProfile memberUserPrefile) {
         String userId = memberUserPrefile.getLoginId();
         return iMemberIncentSignInTaskService.exSignIn(userId);

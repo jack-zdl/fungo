@@ -8,6 +8,7 @@ import com.fungo.system.service.IPushService;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.MD5ParanCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -28,6 +29,7 @@ public class PushController {
 	@ApiOperation(value="绑定设备", notes="")
 	@RequestMapping(value="/api/push/bind", method= RequestMethod.POST)
 	@ApiImplicitParams({})
+	@MD5ParanCheck()
 	public ResultDto<String> bindDevice(MemberUserProfile memberUserPrefile, @RequestBody DeviceInput input) throws Exception {
 		return pushService.bindDevice(memberUserPrefile.getLoginId(), input);
 	}
@@ -35,6 +37,7 @@ public class PushController {
 	@ApiOperation(value="解绑设备", notes="")
 	@RequestMapping(value="/api/push/unbind", method= RequestMethod.POST)
 	@ApiImplicitParams({})
+	@MD5ParanCheck()
 	public ResultDto<String> unbindDevice(MemberUserProfile memberUserPrefile,@RequestBody DeviceInput input) throws Exception {
 		return pushService.unbindById(memberUserPrefile.getLoginId(), input.getDeviceId());
 	}
@@ -42,6 +45,7 @@ public class PushController {
 	@ApiOperation(value="推送返回(非调用)", notes="")
 	@RequestMapping(value="/api/push/info", method= RequestMethod.POST)
 	@ApiImplicitParams({})
+	@MD5ParanCheck()
 	public PushBizMsgTpl<PushDemo> pushReturn(MemberUserProfile memberUserPrefile, @RequestBody DeviceInput input) throws Exception {
 		
 		return null;

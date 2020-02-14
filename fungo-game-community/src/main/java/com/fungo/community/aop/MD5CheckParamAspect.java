@@ -1,11 +1,9 @@
-package com.fungo.system.aop;
+package com.fungo.community.aop;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fungo.system.config.NacosFungoCircleConfig;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.util.SecurityMD5;
-import com.game.common.util.SpringBeanFactory;
 import com.game.common.util.annotation.MD5ParanCheck;
 import com.game.common.util.date.DateTools;
 import org.aspectj.lang.JoinPoint;
@@ -24,13 +22,13 @@ import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.util.Arrays;
-
 
 @Order(1)
 @Aspect
@@ -39,15 +37,12 @@ public class MD5CheckParamAspect {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( MD5CheckParamAspect.class);
 
-
-
     @Resource
     private MappingJackson2HttpMessageConverter converter;
-    @Resource
-    private NacosFungoCircleConfig nacosFungoCircleConfig;
 
 
-    @Pointcut("execution(* com.fungo.system.controller.*.*(..)) && @annotation(com.game.common.util.annotation.MD5ParanCheck) ")
+
+    @Pointcut("execution(* com.fungo.community.controller.*.*(..)) && @annotation(com.game.common.util.annotation.MD5ParanCheck)")
     public void before(){
     }
 
@@ -69,7 +64,6 @@ public class MD5CheckParamAspect {
 //                response.sendError( -1,AbstractResultEnum.CODE_CLOUD_MD5_AUTHORITY.getFailevalue() );
 //                converter.write(response, MediaType.APPLICATION_JSON, outputMessage);
 //                response.getOutputStream().close();
-
             }else {
                 //重点 这里就是获取@RequestBody参数的关键  调试的情况下 可以看到o变量已经获取到了请求的参数
 //            LOGGER.info("REQUEST：" + JSONObject.toJSONString(joinPoint.getArgs()[1]));
@@ -77,7 +71,7 @@ public class MD5CheckParamAspect {
                 JSONObject jsonObject = JSON.parseObject( jsonString );
                 String[] paramString =  limit.param();
                 StringBuffer stringBuffer = new StringBuffer("");
-                Arrays.stream( paramString ).forEach(s -> {
+                Arrays.stream( paramString ).forEach( s -> {
                     String checkParam = jsonObject.getString( s);
                     stringBuffer.append( "&"+s+"="+checkParam );
                 });

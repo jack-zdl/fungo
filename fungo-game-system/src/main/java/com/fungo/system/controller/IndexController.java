@@ -12,6 +12,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.index.CardIndexBean;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.MD5ParanCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -44,6 +45,7 @@ public class IndexController {
     /*
      * iosChannel (int,optional): 1,2,3 (1:appStore上线,2:appTestFlight开发包,3:appInhouse企业包)
      */
+    @MD5ParanCheck()
     public FungoPageResultDto<CardIndexBean> recommendList(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPageDto) {
         //iOS渠道
         String iosChannel = "";
@@ -69,6 +71,7 @@ public class IndexController {
     /*
      * iosChannel (int,optional): 1,2,3 (1:appStore上线,2:appTestFlight开发包,3:appInhouse企业包)
      */
+    @MD5ParanCheck()
     public ResultDto<JSONObject> festivalSwitch(HttpServletRequest request) {
         //iOS渠道
         String iosChannel = "";

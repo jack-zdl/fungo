@@ -25,6 +25,7 @@ import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
 import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.MD5ParanCheck;
 import com.game.common.util.date.DateTools;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
@@ -190,6 +191,7 @@ public class PortalGamesIndexController {
     @RequestMapping(value = "/api/portal/games/recommend/pc/gamegroup", method = RequestMethod.POST)
     @ApiImplicitParams({
     })
+    @MD5ParanCheck(param = {"page","limit","amount"})
     public FungoPageResultDto<Map<String, Object>> pcGameGroup(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody PCGameGroupVO input) {
         return portalGamesIIndexService.pcGameGroup(input);
     }

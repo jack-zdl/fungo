@@ -20,6 +20,7 @@ import com.game.common.util.AesUtil;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.MD5ParanCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -85,6 +86,7 @@ public class GameController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "gameId", value = "游戏id", paramType = "path", dataType = "string"),
     })
+    @MD5ParanCheck()
     public ResultDto<GameOut> getGameDetail(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @PathVariable("gameId") String gameId) {
         String memberId = "";
         String os = "";

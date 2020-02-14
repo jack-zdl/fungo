@@ -10,6 +10,7 @@ import com.game.common.dto.index.BannerBean;
 import com.game.common.dto.mall.MallBannersInput;
 import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.MD5ParanCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -45,6 +46,7 @@ public class ActionController {
             @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
     })
+    @MD5ParanCheck(param = {"target_id","target_type"})
     public ResultDto<String> like(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody ActionInput inputDto) throws Exception {
         String appVersion = "";
         appVersion = request.getHeader("appversion");
@@ -57,6 +59,7 @@ public class ActionController {
             @ApiImplicitParam(name = "target_id",value = "目标对象",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string"),
     })
+    @MD5ParanCheck(param = {"target_id","target_type"})
     public ResultDto<String> unlike(MemberUserProfile memberUserPrefile,@RequestBody ActionInput inputDto) throws Exception {
         return actionService.unLike(memberUserPrefile.getLoginId(), inputDto);
     }
@@ -68,6 +71,7 @@ public class ActionController {
             @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
     })
+    @MD5ParanCheck(param = {"target_id","target_type"})
     public ResultDto<String> share(MemberUserProfile memberUserPrefile,@RequestBody ActionInput inputDto) throws Exception {
         return actionService.share(memberUserPrefile.getLoginId(), inputDto);
     }
@@ -79,6 +83,7 @@ public class ActionController {
             @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
     })
+    @MD5ParanCheck(param = {"target_id","target_type"})
     public ResultDto<String> collect(MemberUserProfile memberUserPrefile,@RequestBody ActionInput inputDto) throws Exception{
         return actionService.collect(memberUserPrefile.getLoginId(), inputDto);
     }
@@ -90,6 +95,7 @@ public class ActionController {
             @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
     })
+    @MD5ParanCheck(param = {"target_id","target_type"})
     public ResultDto<String> unCollect(MemberUserProfile memberUserPrefile,@RequestBody ActionInput inputDto) throws Exception {
         return actionService.unCollect(memberUserPrefile.getLoginId(), inputDto);
     }
@@ -101,6 +107,7 @@ public class ActionController {
             @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
     })
+    @MD5ParanCheck(param = {"target_id","target_type"})
     public ResultDto<String> follow(MemberUserProfile memberUserPrefile,@RequestBody ActionInput inputDto) throws Exception {
         return actionService.follow(memberUserPrefile.getLoginId(), inputDto);
     }
@@ -112,6 +119,7 @@ public class ActionController {
             @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
     })
+    @MD5ParanCheck(param = {"target_id","target_type"})
     public ResultDto<String> unFollow(MemberUserProfile memberUserPrefile,@RequestBody ActionInput inputDto) throws Exception {
         return actionService.unFollow(memberUserPrefile.getLoginId(), inputDto);
     }
@@ -123,6 +131,7 @@ public class ActionController {
             @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
     })
+    @MD5ParanCheck(param = {"target_id","target_type","information"})
     public ResultDto<String> report(MemberUserProfile memberUserPrefile,@RequestBody ActionInput inputDto) throws Exception {
         return this.actionService.report(memberUserPrefile.getLoginId(),inputDto);
     }
@@ -134,6 +143,7 @@ public class ActionController {
             @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
     })
+    @MD5ParanCheck(param = {"target_id"})
     public ResultDto<String> downLoad(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody ActionInput inputDto)  throws Exception{
         String memberId="";
         if(memberUserPrefile!=null) {
@@ -224,7 +234,5 @@ public class ActionController {
         }
         return actionService.useSomeTimeFast(memberId);
     }
-
-
 
 }

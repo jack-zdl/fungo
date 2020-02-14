@@ -15,6 +15,7 @@ import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.*;
 import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.MD5ParanCheck;
 import com.game.common.vo.MemberFollowerVo;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -55,6 +56,7 @@ public class SystemController {
      * @date: 2019/5/10 11:34
      */
     @RequestMapping(value = "/followerids", method = RequestMethod.POST)
+    @MD5ParanCheck()
     public FungoPageResultDto<String> getFollowerUserId(@RequestBody MemberFollowerVo memberFollowerVo){
         FungoPageResultDto<String> re = null;
         try {
@@ -75,6 +77,7 @@ public class SystemController {
      * @date: 2019/5/10 17:15
      */
     @RequestMapping(value = "/memberFollowers")
+    @MD5ParanCheck()
     public FungoPageResultDto<MemberFollowerDto> getMemberFollowerList( @RequestBody MemberFollowerVo memberFollowerVo){
         FungoPageResultDto<MemberFollowerDto> re = null;
         try {
@@ -91,6 +94,7 @@ public class SystemController {
      * 社区使用--获取用户与指定用户之间的关注关系
      */
     @RequestMapping(value = "/getMemberFollower1")
+    @MD5ParanCheck()
     public ResultDto<MemberFollowerDto> getMemberFollower1( @RequestBody MemberFollowerDto memberFollowerDto){
         ResultDto<MemberFollowerDto> re = null;
         try {
@@ -109,6 +113,7 @@ public class SystemController {
      * @return
      */
     @RequestMapping(value = "/getRecentBrowseCommunityByUserId")
+    @MD5ParanCheck()
     public ResultDto<List<String>> getRecentBrowseCommunityByUserId(@RequestParam("userId") String userId){
         ResultDto<List<String>> re = null;
         try {
@@ -129,6 +134,7 @@ public class SystemController {
      * @date: 2019/5/10 17:41
      */
     @RequestMapping(value = "/members")
+    @MD5ParanCheck()
     public FungoPageResultDto<MemberDto> getMemberDtoList(@RequestBody MemberDto memberDto){
         FungoPageResultDto<MemberDto> re = null;
         try {
@@ -147,6 +153,7 @@ public class SystemController {
      * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.user.MemberDto>
      */
     @RequestMapping(value = "/listMemberDtoPag")
+    @MD5ParanCheck()
     public FungoPageResultDto<MemberDto> listMemberDtoPag(@RequestBody MemberDto memberDto){
         FungoPageResultDto<MemberDto> re = null;
         try {
@@ -163,6 +170,7 @@ public class SystemController {
      * 功能描述: 根据用户id集合查询用户详情 state为null就不根据状态查询
      */
     @RequestMapping(value = "/listMembersByids")
+    @MD5ParanCheck()
     public ResultDto<List<MemberDto>> listMembersByids(@RequestBody List<String> ids,@RequestParam(value = "state",required = false) Integer state){
         ResultDto<List<MemberDto>> re = null;
         try {
@@ -179,6 +187,7 @@ public class SystemController {
      * 功能描述: .找出官方推荐玩家
      */
     @RequestMapping(value = "/listRecommendedMebmber")
+    @MD5ParanCheck()
     public ResultDto<List<MemberDto>> listRecommendedMebmber(@RequestParam("limit") Integer limit,@RequestParam("currentMbId") String currentMbId,@RequestBody List<String> wathMbsSet){
         ResultDto<List<MemberDto>> re = null;
         try {
@@ -195,6 +204,7 @@ public class SystemController {
      * 功能描述: 根据用户id查询用户详情
      */
     @GetMapping(value = "/getMembersByid")
+    @MD5ParanCheck()
     public ResultDto<MemberDto> getMembersByid(@RequestParam(value = "memberId" ,required = false) String id){
         if(StringUtil.isNull(id)){
             return ResultDto.error("-1","用户id不可为空");
@@ -215,6 +225,7 @@ public class SystemController {
      *  根据用户id和用户权益(等级、身份、荣誉)类型，获取用户权益数据
      */
     @RequestMapping(value = "/listIncentrankeByids")
+    @MD5ParanCheck()
     public ResultDto<List<IncentRankedDto>> listIncentrankeByids(@RequestBody List<String> ids,@RequestParam("rankType") Integer rankType){
         ResultDto<List<IncentRankedDto>> re = null;
         try {
@@ -230,6 +241,7 @@ public class SystemController {
 
 
     @RequestMapping(value = "/incentrankes")
+    @MD5ParanCheck()
     public FungoPageResultDto<IncentRankedDto> getIncentRankedList(@RequestBody IncentRankedDto incentRankedDto){
         FungoPageResultDto<IncentRankedDto> re = null;
         try {
@@ -249,6 +261,7 @@ public class SystemController {
             @ApiImplicitParam(name = "level",value = "期望变更到的等级",paramType = "form",dataType = "integer")
     })
   @PostMapping(value = "/changeMemberLevel")
+   @MD5ParanCheck()
     public ResultDto<String> changeMemberLevel(@RequestBody MemberDto memberDto){
         ResultDto<String> re = null;
         if(memberDto.getId()==null||memberDto.getLevel()==null){
@@ -272,6 +285,7 @@ public class SystemController {
             @ApiImplicitParam(name = "id",value = "用户id",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "exp",value = "希望扣减的经验(非扣减后的经验)",paramType = "form",dataType = "integer")
     })
+    @MD5ParanCheck()
     public ResultDto<String> decMemberExp(@RequestBody MemberDto memberDto){
         ResultDto<String> re = null;
         if(memberDto.getId()==null||memberDto.getExp()==null){
@@ -295,6 +309,7 @@ public class SystemController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "memberId",value = "用户id",paramType = "form",dataType = "string")
     })
+    @MD5ParanCheck()
     public ResultDto<List<String>> listFollowerCommunityId(@RequestParam("memberId") String memberId){
         ResultDto<List<String>> re = null;
         if(memberId==null){
@@ -320,6 +335,7 @@ public class SystemController {
             @ApiImplicitParam(name = "memberId",value = "会员id",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "state",value = "状态",paramType = "form",dataType = "integer")
     })
+    @MD5ParanCheck()
     public ResultDto<Integer> countActionNum(@RequestBody BasActionDto basActionDto){
         ResultDto<Integer> re = null;
         try {
@@ -338,6 +354,7 @@ public class SystemController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "keyword",value = "要搜索的用户名",paramType = "form",dataType = "string")
     })
+    @MD5ParanCheck()
     public ResultDto<Integer> countSerchUserName(@RequestParam("keyword") String keyword){
         ResultDto<Integer> re = null;
         try {
@@ -357,6 +374,7 @@ public class SystemController {
             @ApiImplicitParam(name = "targetid",value = "业务id",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "memberId",value = "会员id",paramType = "form",dataType = "string")
     })
+    @MD5ParanCheck()
     public ResultDto<Integer> countActionNumGameUse(@RequestBody BasActionDto basActionDto){
         ResultDto<Integer> re = null;
         try {
@@ -378,6 +396,7 @@ public class SystemController {
             @ApiImplicitParam(name = "memberId",value = "会员id",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "state",value = "状态",paramType = "form",dataType = "integer")
     })
+    @MD5ParanCheck()
     public ResultDto<List<BasActionDto>> listActionByCondition(@RequestBody BasActionDto basActionDto){
         ResultDto<List<BasActionDto>> re = null;
         try {
@@ -393,6 +412,7 @@ public class SystemController {
 
     @GetMapping(value = "/listGameHisIds")
     @ApiOperation(value="获取历史浏览游戏id集合")
+    @MD5ParanCheck()
     public ResultDto<List<String>> listGameHisIds(@RequestParam("memberid") String memberid){
         ResultDto<List<String>> re = null;
         try {
@@ -416,6 +436,7 @@ public class SystemController {
             @ApiImplicitParam(name = "memberId",value = "会员id",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "state",value = "状态",paramType = "form",dataType = "integer")
     })
+    @MD5ParanCheck()
     public ResultDto<List<String>> listtargetId(@RequestBody BasActionDto basActionDto){
         ResultDto<List<String>> re = null;
         try {
@@ -437,6 +458,7 @@ public class SystemController {
             @ApiImplicitParam(name = "targetid",value = "业务id",paramType = "form",dataType = "string"),
             @ApiImplicitParam(name = "information",value = "内容",paramType = "form",dataType = "string")
     })
+    @MD5ParanCheck()
     public ResultDto<String> addAction(@RequestBody BasActionDto basActionDto){
         ResultDto<String> re = null;
         try {
@@ -451,6 +473,7 @@ public class SystemController {
 
     @PostMapping(value = "/exTask")
     @ApiOperation(value="执行任务")
+    @MD5ParanCheck()
     public ResultDto<Map<String, Object>> exTask(@RequestBody TaskDto taskDto){
         ResultDto<Map<String, Object>> re = null;
         try {
@@ -466,6 +489,7 @@ public class SystemController {
 
     @GetMapping("/getAuthor")
     @ApiOperation(value="获取会员信息")
+    @MD5ParanCheck()
     public ResultDto<AuthorBean> getAuthor(String memberId){
         ResultDto<AuthorBean> re = null;
         try {
@@ -480,6 +504,7 @@ public class SystemController {
 
     @GetMapping("/getAuthorList")
     @ApiOperation(value="获取会员信息")
+    @MD5ParanCheck()
     public FungoPageResultDto<AuthorBean> getAuthorList(@RequestParam("memberIds") String memberIds){
         FungoPageResultDto<AuthorBean> re = null;
         try {

@@ -3,6 +3,7 @@ package com.fungo.system.controller;
 import com.fungo.system.service.IMemberIncentDignityService;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.util.annotation.MD5ParanCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -36,6 +37,7 @@ public class MemberIncentDignityController {
     @ApiOperation(value = "获取用户身份(v2.4.3)", notes = "")
     @RequestMapping(value = "/api/user/incents/spirit/dignity", method = RequestMethod.GET)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<Map<String, Object>> UserDignity(MemberUserProfile memberUserPrefile) {
 
         LOGGER.info("call /api/user/incents/spirit/dignity");

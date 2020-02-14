@@ -7,6 +7,7 @@ import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.search.GameSearchOut;
 import com.game.common.dto.search.SearchInputPageDto;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.MD5ParanCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -82,6 +83,7 @@ public class SearchController {
             @ApiImplicitParam(name = "tag", value = "游戏分类", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "sort", value = "排序字段（‘+，- ，表示返回顺序）", paramType = "form", dataType = "string")
     })
+    @MD5ParanCheck(param = {"page","limit","key_word"})
     public FungoPageResultDto<GameSearchOut> searchGames(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto, HttpServletRequest request) {
         int page = searchInputDto.getPage();
 

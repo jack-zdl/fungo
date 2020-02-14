@@ -29,6 +29,7 @@ public class RequestGlobalFilter implements GlobalFilter, Ordered {
 
     @Autowired
     NacosFungoCircleConfig nacosFungoCircleConfig;
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
