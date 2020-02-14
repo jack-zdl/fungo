@@ -1,11 +1,9 @@
 package com.fungo.gateway.filter;
 
 import com.fungo.gateway.common.AbstractResultEnum;
-import com.fungo.gateway.config.NacosFungoCircleConfig;
 import com.fungo.gateway.utils.RSAEncryptUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -26,19 +24,14 @@ import java.util.List;
 @RefreshScope
 public class CustomerGatewayFilter implements GatewayFilter, Ordered {
 
-
     private static final Logger LOGGER = LoggerFactory.getLogger(FungoGatewayFilter.class);
 
-    private static final String COUNT_START_TIME = "countStartTime";
 
     @Value( value = "${fungo.cloud.rsa.publicKey}")
     public String rsaPublicKey;
 
     @Value( value = "${fungo.cloud.rsa.privateKey}")
     public String rsaPrivateKey;
-
-    @Value( value = "${fungo.cloud.festival.days}")
-    public int festivalDays;
 
     @Value( value = "${fungo.cloud.rsa.keyString}")
     public String keyString;
@@ -52,7 +45,7 @@ public class CustomerGatewayFilter implements GatewayFilter, Ordered {
             String private_key =  rsaPrivateKey ;
             String rsaString = keyString ; //nacosFungoCircleConfig.getKeyString();
             List<String> ecc = request.getHeaders().get("ecc");
-            if(ecc.size()> 0 && !"".equals(ecc.get(0))){
+            if(ecc != null && ecc.size()> 0 && !"".equals(ecc.get(0))){
                 String pravite = RSAEncryptUtils.encrypt(rsaString,rsaPublicKey);
                 String newPath = RSAEncryptUtils.decrypt(ecc.get(0), private_key);
                 if(newPath.equals(rsaString)){

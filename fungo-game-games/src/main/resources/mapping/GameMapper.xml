@@ -116,7 +116,13 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, tags, video, update_log AS updateLog, apk, download_num AS downloadNum, itunes_id AS itunesId, compatibility, version_child AS versionChild, images, game_size AS gameSize, release_image AS releaseImage, name, cover_image AS coverImage, image_ratio AS imageRatio, icon, edited_at AS editedAt, community_id AS communityId, member_id AS memberId, origin, recommend_num AS recommendNum, unrecommend_num AS unrecommendNum, state, intro, developer, version_main AS versionMain, isbn_id AS isbnId, detail, created_at AS createdAt, updated_at AS updatedAt, created_by AS createdBy, updated_by AS updatedBy, ios_state AS iosState, android_state AS androidState, developer_id AS developerId, test_number AS testNumber, tset_date AS tsetDate, isbn_image AS isbnImage, copyright_id AS copyrightId, copyright_image AS copyrightImage, credentials, issue_id AS issueId, android_package_name AS androidPackageName
+        id, tags, video, update_log AS updateLog, apk, download_num AS downloadNum, itunes_id AS itunesId, compatibility,
+         version_child AS versionChild, images, game_size AS gameSize, release_image AS releaseImage, name, cover_image AS coverImage,
+          image_ratio AS imageRatio, icon, edited_at AS editedAt, community_id AS communityId, member_id AS memberId, origin, recommend_num AS recommendNum,
+          unrecommend_num AS unrecommendNum, state, intro, developer, version_main AS versionMain, isbn_id AS isbnId, detail, created_at AS createdAt,
+           updated_at AS updatedAt, created_by AS createdBy, updated_by AS updatedBy, ios_state AS iosState, android_state AS androidState,
+           developer_id AS developerId, test_number AS testNumber, tset_date AS tsetDate, isbn_image AS isbnImage, copyright_id AS copyrightId,
+            copyright_image AS copyrightImage, credentials, issue_id AS issueId, android_package_name AS androidPackageName ,game_idt_sn as gameIdtSn
     </sql>
 
 

@@ -742,7 +742,7 @@ public class GameServiceImpl implements IGameService {
             out.setPackageName(game.getAndroidPackageName());
 
             out.setVideo(game.getVideo());
-            out.setApk(game.getApk());
+//            out.setApk(game.getApk());
             out.setCover_image(game.getCoverImage());
             out.setDetail(game.getDetail());
             out.setDeveloper(game.getDeveloper());
