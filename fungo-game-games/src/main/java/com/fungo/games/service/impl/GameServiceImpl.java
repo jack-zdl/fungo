@@ -691,7 +691,7 @@ public class GameServiceImpl implements IGameService {
         }
 
         if (game == null) {
-            return ResultDto.error( AbstractResultEnum.CODE_GAME_THREE.getKey(), "找不到目标游戏");
+            return ResultDto.error( AbstractResultEnum.CODE_GAME_THREE.getKey(), AbstractResultEnum.CODE_GAME_THREE.getFailevalue());
         }
         String gameId = game.getId();
         try {
@@ -1480,7 +1480,7 @@ public class GameServiceImpl implements IGameService {
                 }
                 out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
                 out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
-                out.setGameIdsSn( game.getGameIdtSn());
+                out.setGameIdtSn( game.getGameIdtSn());
                 out.setCategory(gameTagStrs);
                 /**
                  * 功能描述: 添加游戏关联圈子

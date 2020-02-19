@@ -47,6 +47,8 @@ public class EvaluationOutPageDto {
 	private int trait3;
 	private int trait4;
 	private int trait5;
+
+	private String evaluationMemberId;
 	
 	public String getContent() {
 		return content;
@@ -188,5 +190,13 @@ public class EvaluationOutPageDto {
 
 	public void setTrait5(int trait5) {
 		this.trait5 = trait5;
+	}
+
+	public String getEvaluationMemberId() {
+		return evaluationMemberId;
+	}
+
+	public void setEvaluationMemberId(String evaluationMemberId) {
+		this.evaluationMemberId = evaluationMemberId;
 	}
 }

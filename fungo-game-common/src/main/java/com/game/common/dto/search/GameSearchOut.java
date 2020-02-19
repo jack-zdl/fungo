@@ -58,7 +58,7 @@ public class GameSearchOut {
 
 	private String version;
 
-	private Long gameIdsSn;
+	private Long gameIdtSn;
 
 	private List<String> images = new ArrayList<>();
 
@@ -288,12 +288,12 @@ public class GameSearchOut {
         this.version = version;
     }
 
-	public Long getGameIdsSn() {
-		return gameIdsSn;
+	public Long getGameIdtSn() {
+		return gameIdtSn;
 	}
 
-	public void setGameIdsSn(Long gameIdsSn) {
-		this.gameIdsSn = gameIdsSn;
+	public void setGameIdtSn(Long gameIdtSn) {
+		this.gameIdtSn = gameIdtSn;
 	}
 
 	public List<String> getImages() {
