@@ -143,7 +143,7 @@ public class UserServiceImpl implements IUserService {
                 member = new Member();
                 //set id
                 member.setId(UUIDUtils.getUUID());
-                member.setUserName(geUserName(mobile));
+
                 member.setMobilePhoneNum(mobile);
                 member.setMobilePhoneVerified("1");
                 member.setPassword(SecurityMD5.MD5(password));
@@ -157,6 +157,7 @@ public class UserServiceImpl implements IUserService {
                 //fix bug:修改会员编号出现的重复的情况 修改用户的member_no用户编号 [by mxf 2019-03-06]
                 String mbNo = iPKNoService.genUniqueMbNo(member.getId());
                 member.setMemberNo(mbNo);
+                member.setUserName(mbNo); //geUserName(mobile)
                 //end
                 //保存用户数据
                 memberService.insert(member);
@@ -227,7 +228,7 @@ public class UserServiceImpl implements IUserService {
                     if(StringUtils.isNotBlank(channel)){
                         member.setChannel(channel);
                     }
-                    member.setUserName(geUserName(mobile));
+//                    member.setUserName(geUserName(mobile));
                     member.setMobilePhoneNum(mobile);
                     member.setMobilePhoneVerified("1");
                     member.setHasPassword("0");//没设置密码
@@ -241,6 +242,7 @@ public class UserServiceImpl implements IUserService {
                     //fix bug:修改会员编号出现的重复的情况 修改用户的member_no用户编号 [by mxf 2019-03-06]
                     String mbNo = iPKNoService.genUniqueMbNo(member.getId());
                     member.setMemberNo(mbNo);
+                    member.setUserName(mbNo);
                     //添加用户数据
                     memberService.insert(member);
                     LOGGER.info("用户注册-手机验证-初始化数据  memberId : {}, phoneNumber:{}", member.getId(), mobile);
@@ -296,7 +298,7 @@ public class UserServiceImpl implements IUserService {
                     if (member == null) {//如果第一次进行会员注册
                         member = new Member();
                         member.setId(UUIDUtils.getUUID());
-                        member.setUserName(geUserName(mobile));
+//                        member.setUserName(geUserName(mobile));
                         member.setMobilePhoneNum(mobile);
                         member.setMobilePhoneVerified("1");
                         member.setHasPassword("0");//没设置密码
@@ -309,6 +311,7 @@ public class UserServiceImpl implements IUserService {
                         //fix bug:修改会员编号出现的重复的情况 修改用户的member_no用户编号 [by mxf 2019-03-06]
                         String mbNo = iPKNoService.genUniqueMbNo(member.getId());
                         member.setMemberNo(mbNo);
+                        member.setUserName(mbNo);
                         //添加用户数据
                         memberService.insert(member);
                         this.initUserRank(member.getId());
@@ -775,6 +778,10 @@ public class UserServiceImpl implements IUserService {
     @Override
     public ResultDto<String> editUser(String memberId, UserBean msg) throws Exception {
         Member member = this.memberService.selectById(memberId);
+        List<String> memberIds = memberDao.getMember(msg.getUser_name());
+        if(memberIds != null && memberIds.size() > 0){
+            return ResultDto.ResultDtoFactory.buildError("姓名重复");
+        }
         Member newMemeber = new Member();
         newMemeber.setId(member.getId());
         if( msg.getGender() != null)
