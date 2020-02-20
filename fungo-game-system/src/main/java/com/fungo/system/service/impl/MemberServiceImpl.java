@@ -692,7 +692,7 @@ public class MemberServiceImpl implements IMemberService {
 
         for (BasNotice basNotice : t) {
 
-            Map<String, Object> map = new HashMap<String, Object>();
+            Map<String, Object> map = new HashMap<>();
 
             try {
 
@@ -703,7 +703,8 @@ public class MemberServiceImpl implements IMemberService {
                 }
 
                 map.put("video", "");
-                map = objectMapper.readValue(basNotice.getData(), Map.class);
+                map = JSON.parseObject(basNotice.getData());
+//                map = objectMapper.readValue(basNotice.getData(), Map.class);
                 map.put( "noticeId",basNotice.getId());
                 if (basNotice.getType() == 3) {
                     //@todo  文章的接口
@@ -927,7 +928,7 @@ public class MemberServiceImpl implements IMemberService {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("map转换失败",e);
             }
             IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", (String) map.get("user_id")).eq("rank_type", 1));
             Member member = memberService.selectById((String) map.get("user_id"));

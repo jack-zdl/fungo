@@ -778,9 +778,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public ResultDto<String> editUser(String memberId, UserBean msg) throws Exception {
         Member member = this.memberService.selectById(memberId);
-        List<String> memberIds = memberDao.getMember(msg.getUser_name());
-        if(memberIds != null && memberIds.size() > 0){
-            return ResultDto.ResultDtoFactory.buildError("姓名重复");
+        if(!CommonUtil.isNull(msg.getUser_name())){
+            List<String> memberIds = memberDao.getMember(msg.getUser_name());
+            if(memberIds != null && memberIds.size() > 0){
+                return ResultDto.ResultDtoFactory.buildError("姓名重复");
+            }
         }
         Member newMemeber = new Member();
         newMemeber.setId(member.getId());
