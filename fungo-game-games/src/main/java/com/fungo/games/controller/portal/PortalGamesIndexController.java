@@ -339,6 +339,10 @@ public class PortalGamesIndexController {
 //            bean.setAuthor(this.userService.getAuthor(gameEvaluation.getMemberId()));
             bean.setAuthor(iEvaluateProxyService.getAuthor(gameEvaluation.getMemberId()));
             Game game = this.gameService.selectById(gameEvaluation.getGameId());
+            // 许书庆  过滤掉下架游戏
+            if( game.getState() != 0){
+                continue;
+            }
             bean.setEvaluation(CommonUtils.filterWord(gameEvaluation.getContent()));
             bean.setEvaluationId(gameEvaluation.getId());
             ObjectMapper objectMapper = new ObjectMapper();

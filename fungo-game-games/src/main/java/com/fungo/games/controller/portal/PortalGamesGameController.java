@@ -189,6 +189,9 @@ public class PortalGamesGameController {
             List<Map<String, Object>> lists = new ArrayList<Map<String, Object>>();
             for (GameCollectionItem gameCollectionItem : ilist) {
                 Game game = this.gameServiceImpl.selectById(gameCollectionItem.getGameId());
+                if( game.getState() != 0){
+                    continue;
+                }
                 HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
                 Map<String, Object> map1 = new HashMap<String, Object>();
                 if (rateData != null) {
