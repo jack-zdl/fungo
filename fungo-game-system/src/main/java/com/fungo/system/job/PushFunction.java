@@ -29,21 +29,16 @@ public class PushFunction {
     //执行状态 0 未执行 1执行中 2已执行
     private static int executeState = 0;
 
-//    @Scheduled(cron = "0 0/2 * * * ?")//每日隔2分钟执行
     public void pushControllerNotice() {
 
         if (executeState == 1) {
             return;
         }
-
         setExecuteState(1);
         //获取所有连接
-
         //获取未推送消息
         List<HashMap<String, Object>> notices = noticeDao.getUnpushNotices();
-
         if (notices != null && notices.size() > 0) {
-
             for (HashMap<String, Object> map : notices) {//查找用户连接
                 String memberId = (String) map.get("member_id");
                 List<LinkSession> linkList = LocalLinkSessionPoolsImpl.getInstance().queryByUserId(memberId);
@@ -55,43 +50,9 @@ public class PushFunction {
                         e.printStackTrace();
                     }
                 }
-
             }
         }
-//		List<LinkSession> linkList = LocalLinkSessionPoolsImpl.getInstance().queryAllLinkSession();
-//		
-//		setExecuteState(1);
-//		for(LinkSession link : linkList) {
-//			
-//			
-//			String userId = link.getUserId();
-//			if(!CommonUtil.isNull(userId)) {//获取需要推送的消息,并且推送
-//				int count = basNoticeService.selectCount(new EntityWrapper<BasNotice>().eq("member_id",userId).eq("is_push", 0).eq("type", 6));
-//				if(count > 0) {
-//					Session session = link.getSession();
-//					Map headers = (Map) session.getUserProperties().get("headers");
-//					String appVersion = "";
-//					Object o = headers.get("appversion");
-//					try {
-//						if(o != null) {
-//							List<String> app = (List<String>) headers.get("appversion");
-//							appVersion = app.get(0);
-//						}
-//						LOGGER.info("检测到有需要推送的消息,开始推送,用户id : {},当前app版本 : {}",userId,appVersion);
-//						pushService.push(userId, -1, appVersion);
-//					} catch (Exception e) {
-//						LOGGER.info("推送失败,用户id : {},当前app版本 : {}",userId,appVersion);
-//						e.printStackTrace();
-//					}
-//				}
-//			}
-//		}
         setExecuteState(2);
-
-    }
-
-    public static int getExecuteState() {
-        return executeState;
     }
 
     public static void setExecuteState(int executeState) {

@@ -176,51 +176,33 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
 
     //添加秒杀的商品
     public void addGoodsSeckill(String goodId,String stocks) {
-
         try {
-
             Long goodsId = Long.valueOf(goodId);
             MallGoods mallGoods = mallGoodsDaoService.selectById(goodId);
-
             String goodsName = mallGoods.getGoodsName();  //fungoMallDto.getGoodsName();
-
             String MarketPriceVcy = mallGoods.getMarketPriceVcy().toString();  //String.valueOf(fungoMallDto.getPrice());
-
             String stock = stocks; //fungoMallDto.getStock();
-
             String startDate = DateTools.getCurrentDate( "-"); // fungoMallDto.getStartDate();
-
             String endDate =  DateTools.getCurrentDate( "-"); //;
-
-
             //秒杀表
             MallSeckill seckill = new MallSeckill();
             seckill.setId(PKUtil.getInstance().longPK());
             seckill.setGoodsId(goodsId);
-
             seckill.setGoodsName(goodsName);
-
             //价格加密保存
             String seckillPriceVcyEncrypt = FungoAESUtil.encrypt(String.valueOf(MarketPriceVcy),
                     aESSecretKey + FungoMallSeckillConsts.AES_SALT);
             seckill.setSeckillPriceVcy(seckillPriceVcyEncrypt);
-
             //总库存加密保存
             String totalStockEncrypt = FungoAESUtil.encrypt(stock, aESSecretKey + FungoMallSeckillConsts.AES_SALT);
             seckill.setTotalStock(totalStockEncrypt);
-
-
             //剩余库存加密保存
             String residueStockEncrypt = FungoAESUtil.encrypt(stock, aESSecretKey + FungoMallSeckillConsts.AES_SALT);
             seckill.setResidueStock(residueStockEncrypt);
-
-
             String queryStartDate = startDate + " 00:00:00";
             String queryEndDate = endDate + " 23:59:59";
-
             seckill.setStartTime(DateUtils.parseDate(queryStartDate, "yyyy-MM-dd HH:mm:ss"));
             seckill.setEndTime(DateUtils.parseDate(queryEndDate, "yyyy-MM-dd HH:mm:ss"));
-
             seckill.setCreatedAt(new Date());
             seckill.setUpdatedAt(new Date());
             MallSeckill mallSeckill = mallSeckillDao.querySeckillGoodsByGoodId(goodId, queryStartDate,queryEndDate );
@@ -229,11 +211,9 @@ public class FungoMallGoodsServiceImpl implements IFungoMallGoodsService {
             }else {
                 seckill.setId(mallSeckill.getId());
                 mallSeckillDaoServicel.updateById(seckill);
-
             }
         } catch (Exception ex) {
             logger.error( "新增每日库存失败,商品id="+ goodId);
-            ex.printStackTrace();
         }
     }
 

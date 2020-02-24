@@ -36,11 +36,8 @@ public class FungoMallSeckillTaskService {
      * 处理秒杀开始后，已经下的单子
      * 每2秒执行扫描一次订单表
      */
-//    @Scheduled(cron = "0/2 * * * * ? ")
     public void excuteSeckillOrderScan() throws Exception {
         try {
-
-            LOGGER.info("扫描订单表定时器启动...");
             //验证是否继续扫描订单表
             FungoMallSeckillTaskStateCommand seckillTaskStateCommand = FungoMallSeckillTaskStateCommand.getInstance();
             if (1 == seckillTaskStateCommand.getIsScanOrder()) {
@@ -51,11 +48,9 @@ public class FungoMallSeckillTaskService {
                 ) {
                     fungoMallScanOrderWithSeckillService.scanOrderWithSeckill();
                 }
-                LOGGER.info("扫描订单表定时器执行完成。");
             }
         } catch (Exception ex) {
             LOGGER.error("扫描订单表，处理订单,出现异常", ex);
-            ex.printStackTrace();
             throw new BusinessException("-1", "扫描订单表，处理订单,出现异常");
         }
     }
@@ -66,14 +61,11 @@ public class FungoMallSeckillTaskService {
      * 处理 秒杀失败的订单(创建订单超过4小时)，把用户已冻结的fungo币账户解冻，同时设置订单为 3 无效订单
      *
      */
-//    @Scheduled(cron = "0 0 0/4 * * ? ")
     public void excuteSeckillOrderScanWithFailure() {
         try {
             LOGGER.info("处理秒杀失败的订单定时器启动...");
             FungoMallSeckillTaskStateCommand seckillTaskStateCommand = FungoMallSeckillTaskStateCommand.getInstance();
-
             if (1 == seckillTaskStateCommand.getIsScanOrder()) {
-
                 //处理订单
                 //若开始处理，则等当前处理周期完成后才继续下一次扫描
                 if (1 == FungoMallSeckillTaskStateCommand.getInstance().getScanOrderIsOkWithFailureOrder()
@@ -81,12 +73,9 @@ public class FungoMallSeckillTaskService {
                 ) {
                     fungoMallFailureOrderService.scanOrderWithSeckillFailure();
                 }
-
             }
-            LOGGER.info("处理秒杀失败的订单定时器执行完成。");
         } catch (Exception ex) {
             LOGGER.error("处理秒杀失败的订单,出现异常", ex);
-            ex.printStackTrace();
         }
     }
 

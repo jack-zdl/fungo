@@ -25,20 +25,14 @@ public class DTPTransactionMessageScheduledJob   {
     @Autowired
     private DTPTransactionMessageScheduledService dTPTransactionMessageScheduledService;
 
-    //每60秒 执行任务
-//    @Scheduled(cron = "0/60 * * * * ?")
     public void execute() {
-
-
         Map<String ,Object> param = new HashMap<>();
-
-                 dTPTransactionMessageScheduledService.handleWaitingConfirmTimeOutMessages(param);
-
+        dTPTransactionMessageScheduledService.handleWaitingConfirmTimeOutMessages(param);
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             LOGGER.error( "分布式事务之消息状态监控定时任务",e );
         }
-                    dTPTransactionMessageScheduledService.handleSendingTimeOutMessage(param);
+        dTPTransactionMessageScheduledService.handleSendingTimeOutMessage(param);
     }
 }

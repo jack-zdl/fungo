@@ -191,38 +191,6 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                 watch.start( "parallelStream start" );
                 gameSurveyRelList.parallelStream().forEach( s -> {
                     try {
-//                        distributedLockByCurator.acquireDistributedLock( s.getMemberId() );
-                        //从DB查
-//                        EntityWrapper<MemberNotice> noticeEntityWrapper = new EntityWrapper<>();
-//                        noticeEntityWrapper.eq( "mb_id", s.getMemberId() );
-//                        noticeEntityWrapper.eq( "ntc_type", 7 );
-//                        noticeEntityWrapper.eq( "is_read", 2 );
-//                        List<MemberNotice> noticeListDB = memberNoticeDaoService.selectList( noticeEntityWrapper );
-//                        if (noticeListDB != null) {
-//                            noticeListDB.parallelStream().forEach( x -> {
-//                                String jsonString = x.getNtcData();
-//                                JSONObject jsonObject = JSON.parseObject( jsonString );
-//                                jsonObject.put( "notice_count", (int) jsonObject.get( "notice_count" ) + 1 );
-//                                jsonObject.put( "count", (int) jsonObject.get( "count" ) + 1 );
-//                                x.updateById();
-//                            } );
-//                        } else {
-//                            MemberNotice memberNotice = new MemberNotice();
-//                            int clusterIndex_i = Integer.parseInt( clusterIndex );
-//                            memberNotice.setId( PKUtil.getInstance( clusterIndex_i ).longPK() );
-//                            memberNotice.setIsRead( 2 );
-//                            memberNotice.setNtcType( 7 );
-//                            memberNotice.setMbId( s.getMemberId() );
-//                            memberNotice.setCreatedAt( new Date() );
-//                            memberNotice.setUpdatedAt( new Date() );
-//                            Map map = new ConcurrentHashMap( 4 );
-//                            map.put( "count", 1 );
-//                            map.put( "like_count", 0 );
-//                            map.put( "comment_count", 0 );
-//                            map.put( "notice_count", 1 );
-//                            memberNotice.setNtcData( JSON.toJSONString( map ) );
-//                            memberNoticeDaoService.insert( memberNotice );
-//                        }
                         BasNotice basNotice = new BasNotice();
                         basNotice.setType( 6 );
                         basNotice.setIsRead( 0 );
@@ -238,8 +206,6 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
                         ids.add( s.getId() );
                     } catch (Exception e) {
                         logger.error( "更新系统消息失败,用户id:{},游戏id:{}", s.getMemberId(), s.getGameId(), e );
-                    } finally {
-//                        distributedLockByCurator.releaseDistributedLock( s.getMemberId() );
                     }
                 } );
                 watch.stop();
@@ -253,9 +219,6 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
             logger.error( "根据游戏模块更新系统消息异常", e );
             throw new Exception( "根据游戏模块更新系统消息异常" );
         }
-
-
-
     }
 
     /**

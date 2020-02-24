@@ -102,12 +102,7 @@ public class SeacherServiceImpl implements ISeacherService {
 
     @Async
     public void updateGameKeywords() {
-
-        System.out.println("........执行获取关键字过滤.");
         initFilterWord();
-
-        System.out.println("........执行游戏热值计算.");
-
         List<HotValue> vlist = basLogDao.getHotValue();
         if (vlist != null && vlist.size() != 0) {
             List<String> list = new ArrayList<>();
@@ -116,8 +111,6 @@ public class SeacherServiceImpl implements ISeacherService {
             }
             GuavaCache.put("hotSearchWord", list);
         }
-        System.out.println("........执行游戏热值计算结束.");
-
     }
 
 
