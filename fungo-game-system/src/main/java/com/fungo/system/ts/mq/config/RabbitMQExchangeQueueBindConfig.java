@@ -35,7 +35,6 @@ public class RabbitMQExchangeQueueBindConfig {
         //配置持久化
         Map<String, Object> arguments = new HashMap<>(4);
         TopicExchange contractTopicExchange = new TopicExchange(RabbitMQEnum.Exchange.EXCHANGE_TOPIC.getName(), true, false, arguments);
-        LOGGER.info("RabbitMqExchangeQueueBindConfig-createTopicExchange-create-success");
         return contractTopicExchange;
     }
 
@@ -63,7 +62,6 @@ public class RabbitMQExchangeQueueBindConfig {
     Queue topicQueueSystem() {
         //队列持久化
         Queue queue = new Queue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM.getName(), true, false, false);
-        LOGGER.info("RabbitMqExchangeQueueBindConfig-topicQueue-create-success");
         return queue;
     }
 
@@ -71,7 +69,6 @@ public class RabbitMQExchangeQueueBindConfig {
     Queue topicQueueSystemUser() {
         //队列持久化
         Queue queue = new Queue(RabbitMQEnum.MQQueueName.MQ_QUEUE_TOPIC_NAME_SYSTEM_USER.getName(), true, false, false);
-        LOGGER.info("RabbitMqExchangeQueueBindConfig-topicQueue-create-success");
         return queue;
     }
 
@@ -101,14 +98,12 @@ public class RabbitMQExchangeQueueBindConfig {
     @Bean("bindingTopicExchageQueueSystem")
     Binding bindingTopicExchageQueueSystem() {
         Binding binding = BindingBuilder.bind(topicQueueSystem()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM.getName());
-        LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingTopicExchageQueue-create-success");
         return binding;
     }
 
     @Bean("bindingTopicExchageQueueSystemUser")
     Binding bindingTopicExchageQueueSystemUser() {
         Binding binding = BindingBuilder.bind(topicQueueSystemUser()).to(createTopicExchange()).with(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_SYSTEM_USER.getName());
-        LOGGER.info("RabbitMqExchangeQueueBindConfig-bindingTopicExchageQueue-create-success");
         return binding;
     }
 

@@ -38,7 +38,6 @@ public class PushFunction {
 
         setExecuteState(1);
         //获取所有连接
-        LOGGER.info("管理台消息推送执行。。。。");
 
         //获取未推送消息
         List<HashMap<String, Object>> notices = noticeDao.getUnpushNotices();
@@ -51,10 +50,8 @@ public class PushFunction {
                 for (LinkSession link : linkList) {//有连接 推送
                     String appVersion = link.getAppversion();
                     try {
-                        LOGGER.info("检测到有需要推送的消息,开始推送,用户id : {},当前app版本 : {}", memberId, appVersion);
                         pushService.push(memberId, -1, appVersion);
                     } catch (Exception e) {
-                        LOGGER.info("推送失败,用户id : {},当前app版本 : {}", memberId, appVersion);
                         e.printStackTrace();
                     }
                 }

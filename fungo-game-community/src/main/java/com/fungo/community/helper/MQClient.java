@@ -25,7 +25,6 @@ public class MQClient {
 
     @RabbitListener(queues = MQConfig.TOPIC_QUEUE_COMMUNITY_INSERT)
     public void topicReceiveCommunityInsert(@Payload CmmCommunityDto cmmCommunityDto, Message message, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag, Channel channel){
-        logger.info("mq消费开始"+MQConfig.TOPIC_QUEUE_COMMUNITY_INSERT);
         System.out.println("mq消费信息" + cmmCommunityDto.toString());
         boolean autoAck=false;
         //消息消费完成确认
@@ -43,7 +42,6 @@ public class MQClient {
                         logger.error("游戏插入失败",e);
                         channel.basicReject(envelope.getDeliveryTag(), true); // 消费者拒绝消费,重新放入队列
                     }finally {
-                        logger.info("mq消费结束"+MQConfig.TOPIC_QUEUE_COMMUNITY_INSERT);
                     }
                 }
             };

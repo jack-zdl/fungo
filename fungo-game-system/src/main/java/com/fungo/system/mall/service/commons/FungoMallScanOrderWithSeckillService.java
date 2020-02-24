@@ -111,7 +111,6 @@ public class FungoMallScanOrderWithSeckillService {
 
         try {
 
-            logger.info("扫描订单表,处理已确定和已冻结余额的订单....");
 
             //开始扫描订单，设置处理订单状态为 2 正在扫描订单处理中
             FungoMallSeckillTaskStateCommand.getInstance().setScanOrderIsOk(2);
@@ -181,8 +180,6 @@ public class FungoMallScanOrderWithSeckillService {
                                     }
                                     //3.1 若库存不足，把冻结余额 加回到 可用余额中，同时标记订单为 8 商品库存不足，继续处理下一个商品
                                     if (!isFullGoodsStock) {
-                                        logger.info("mb_id:{}--order_id:{}--goods_id:{}--商品库存不足，解冻用户fungo币账户,修改订单状态: 8 商品库存不足,4 被冻结额已解冻, -1 未发货",
-                                                mb_id, orderId, goods.getGoodsId());
                                         //解冻用户fungo币账户
                                         this.unfreezeAccountCoinWithMember(mb_id, goodsPriceVcy);
                                         //修改订单状态 8 商品库存不足  4 被冻结额已解冻   -1 未发货
@@ -195,8 +192,7 @@ public class FungoMallScanOrderWithSeckillService {
                                     boolean dedCoinAccoutResult = this.deductionAccountCoinWithMember(mb_id, goodsPriceVcy);
                                     if (!dedCoinAccoutResult) {
                                         //若扣减冻结账户失败 同时标记订单为 3  无效   5 扣减冻结失败 ，继续处理下一个商品
-                                        logger.info("mb_id:{}--order_id:{}--goods_id:{}--扣减冻结用户账户的商品价格额失败,修改订单状态: 3 无效, 5 扣减冻结失败 ,-1 未发货",
-                                                mb_id, orderId, goods.getGoodsId());
+
                                         //修改订单状态  3 无效   5 扣减冻结失败   -1 未发货
                                         updateOrderStatusWithScan(mb_id, orderId, 3, 5, -1);
                                         continue;
@@ -207,8 +203,7 @@ public class FungoMallScanOrderWithSeckillService {
                                     if (3 != goods.getGoodsType().intValue()) {
                                         boolean goodsStockUpdateResult = deductionGoodsStock(mallSeckill, goodsNumber);
                                         if (!goodsStockUpdateResult) {
-                                            logger.info("mb_id:{}--order_id:{}--goods_id:{}--扣减库存失败，解冻用户fungo币账户,修改订单状态: 8 商品库存不足,4 被冻结额已解冻 ,-1 未发货",
-                                                    mb_id, orderId, goods.getGoodsId());
+
                                             //扣减库存失败
                                             //解冻用户fungo币账户
                                             this.unfreezeAccountCoinWithMember(mb_id, goodsPriceVcy);
@@ -223,8 +218,6 @@ public class FungoMallScanOrderWithSeckillService {
                                         //6. 交易成功修改订单状态  5 交易成功 & 2 已付款   &  4 无收货信息
                                         boolean isUpdateSucc = updateOrderStatusWithScan(mb_id, orderId, 5, 2, 4);
 
-                                        logger.info("mb_id:{}--order_id:{}--goods_id:{}--交易成功修改订单状态:5 交易成功,2 已付款,4 无收货信息",
-                                                mb_id, orderId, goods.getGoodsId());
 
                                         //6.1 若是虚拟商品，把虚拟卡号，转移给用户对应的虚拟商品 ,
                                         // 修改虚拟卡表为已经卖出状态，同时把虚拟卡信息保存到订单商品表中
@@ -295,12 +288,10 @@ public class FungoMallScanOrderWithSeckillService {
                                 }
                             }
                             // 9. 清除缓存的订单数据
-                            logger.info("用户订单交易成功，删除该用户订单缓存,mb_id:{}", mb_id);
                             removeCacheWithOrders(mb_id, String.valueOf(orderId));
                             removeCacheWithOrders(mb_id, "");
 
                             String cacheKey = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INCENTS_FORTUNE_COIN_POST + mb_id;
-                            logger.info("扫描处理订单-清除缓存的用户fun币消耗", cacheKey);
                             fungoCacheTask.excIndexCache(false, cacheKey, "", null);
 
                         }

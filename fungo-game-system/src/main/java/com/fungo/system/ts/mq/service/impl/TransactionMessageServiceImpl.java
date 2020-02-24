@@ -79,8 +79,6 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
 
         boolean isInsert = messageDomain.insert();
 
-        LOGGER.info("--ts--mq---预存储消息--isInsert:{}---messageDomain:{}", isInsert, JSON.toJSON(messageDomain));
-
         return messageDomain.getMessageId();
     }
 
@@ -111,7 +109,6 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
 
         try {
             mQDataSendService.sendMQTopic(msgSender);
-            LOGGER.info("--ts--mq---确认并发送消息执行完成--msgSenderDto:{}", JSON.toJSON(msgSender));
         } catch (Exception e) {
             LOGGER.error("--ts--mq---确认并发送消息--发送失败", e);
         }
@@ -160,7 +157,6 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
 
             mQDataSendService.sendMQTopic(msgSender);
 
-            LOGGER.info("--ts--mq---存储并发送消息执行完成--msgSenderDto:{}----isInsert:{}", JSON.toJSON(msgSender), isInsert);
 
         } catch (Exception e) {
             LOGGER.error("--ts--mq---存储并发送消息--发送失败", e);
@@ -193,7 +189,6 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
 
         try {
             mQDataSendService.sendMQTopic(msgSender);
-            LOGGER.info("--ts--mq---直接发送消息执行完成--msgSenderDto:{}", JSON.toJSON(msgSender));
         } catch (Exception e) {
             LOGGER.error("--ts--mq---直接发送消息--发送失败", e);
         }
@@ -206,7 +201,6 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
             throw new BusinessException("-1", "消息ID不能小于或者等于0");
         }
         boolean isDelete = sysTsMsgDaoService.deleteById(messageId);
-        LOGGER.info("--ts--mq-----根据消息ID删除消息--messageId:{}--isDelete:{}", messageId, isDelete);
     }
 
 
@@ -243,7 +237,6 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
         try {
             mQDataSendService.sendMQTopic(msgSender);
 
-            LOGGER.info("--ts--mq---重发消息执行完成--msgSenderDto:{}", JSON.toJSON(msgSender));
         } catch (Exception e) {
             LOGGER.error("--ts--mq---重发送消息--发送失败", e);
         }
@@ -278,7 +271,6 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
 
         try {
             mQDataSendService.sendMQTopic(msgSender);
-            LOGGER.info("--ts--mq---根据messageId重发某条消息执行完成--msgSenderDto:{}", JSON.toJSON(msgSender));
         } catch (Exception e) {
             LOGGER.error("--ts--mq---根据messageId重发某条消息--发送失败", e);
         }
@@ -296,7 +288,6 @@ public class TransactionMessageServiceImpl implements ITransactionMessageService
         message.setEditTime(new Date());
         boolean isUpdate = message.updateById();
 
-        LOGGER.info("--ts--mq-----将消息标记为死亡消息--messageId:{}--isUpdate:{}", messageId, isUpdate);
     }
 
 

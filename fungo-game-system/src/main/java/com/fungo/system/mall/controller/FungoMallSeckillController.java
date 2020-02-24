@@ -50,7 +50,7 @@ public class FungoMallSeckillController {
 
 
     /**
-     * 获取每日秒杀商品列表接口
+     * 返回秒杀商品信息（全是字符串，然后由前端解析）
      * @return 返回 以json字符串方式返回商品数据
      */
     @PostMapping("/api/mall/goods/seckill/list")
@@ -60,21 +60,15 @@ public class FungoMallSeckillController {
         if (null != memberUserPrefile) {
             loginId = memberUserPrefile.getLoginId();
         }
-
-
         String realIp = "";
         if (null != request) {
             realIp = request.getHeader("x-forwarded-for");
         }
-
         String goodsListForSeckill = iFungoMallSeckillService.getGoodsListForSeckillJson(loginId, realIp);
-
         if (StringUtils.isNoneBlank(goodsListForSeckill)) {
             ResultDto<String> resultDto = new ResultDto<String>();
-
             resultDto.setData(goodsListForSeckill);
             resultDto.setMessage(DateTools.fmtDate(new Date()));
-
             return resultDto;
         }
         return ResultDto.success(DateTools.fmtDate(new Date()));

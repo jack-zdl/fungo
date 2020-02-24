@@ -113,18 +113,15 @@ public class DTPTransactionMessageScheduledService {
         if (null == messageMap || messageMap.isEmpty()) {
             return;
         }
-        LOGGER.info("开始处理[waiting_confirm]状态的消息,总条数[" + messageMap.size() + "]");
 
         // 单条消息处理（目前该状态的消息，消费队列全部是accounting，如果后期有业务扩充，需做队列判断，做对应的业务处理。）
         for (Map.Entry<String, TransactionMessageDomain> entry : messageMap.entrySet()) {
             TransactionMessageDomain message = entry.getValue();
             try {
 
-                LOGGER.info("开始处理[waiting_confirm]消息ID为[" + message.getMessageId() + "]的消息");
 
                 dTPTransactionMessageService.confirmAndSendMessage(message.getMessageId());
 
-                LOGGER.info("结束处理[waiting_confirm]消息ID为[" + message.getMessageId() + "]的消息");
             } catch (Exception e) {
                 LOGGER.error("处理[waiting_confirm]消息ID为[" + message.getMessageId() + "]的消息异常：", e);
             }
@@ -145,7 +142,6 @@ public class DTPTransactionMessageScheduledService {
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        LOGGER.info("开始处理[SENDING]状态的消息,总条数[" + messageMap.size() + "]");
 
         // 根据配置获取通知间隔时间
         Map<Integer, Integer> notifyParam = getSendTime();
@@ -154,12 +150,10 @@ public class DTPTransactionMessageScheduledService {
         for (Map.Entry<String, TransactionMessageDomain> entry : messageMap.entrySet()) {
             TransactionMessageDomain message = entry.getValue();
             try {
-                LOGGER.info("开始处理[SENDING]消息ID为[" + message.getMessageId() + "]的消息");
 
                 // 判断发送次数
                 int maxTimes = msgMaxSendTimes;
 
-                LOGGER.info("[SENDING]消息ID为[" + message.getMessageId() + "]的消息,已经重新发送的次数[" + message.getMessageSendTimes() + "]");
 
                 // 如果超过最大发送次数直接退出
                 if (maxTimes < message.getMessageSendTimes()) {
@@ -177,20 +171,16 @@ public class DTPTransactionMessageScheduledService {
 
                 // 判断是否达到了可以再次发送的时间条件
                 if (hasTime > needTime) {
-                    LOGGER.info("currentTime[" + sdf.format(new Date()) + "],[SENDING]消息上次发送时间[" + sdf.format(message.getEditTime()) + "],必须过了[" + times + "]分钟才可以再发送。");
                     continue;
                 }
 
                 // 重新发送消息
-                LOGGER.info("[SENDING]消息ID为[" + message.getMessageId() + "]的消息,执行重新发送");
 
                 TransactionMessageDto transactionMessageDto = new TransactionMessageDto();
                 //bean copy dto-->entity
                 BeanUtils.copyProperties(message, transactionMessageDto);
 
                 dTPTransactionMessageService.reSendMessage(transactionMessageDto);
-
-                LOGGER.info("结束处理[SENDING]消息ID为[" + message.getMessageId() + "]的消息");
 
             } catch (Exception e) {
                 LOGGER.error("处理[SENDING]消息ID为[" + message.getMessageId() + "]的消息异常：", e);

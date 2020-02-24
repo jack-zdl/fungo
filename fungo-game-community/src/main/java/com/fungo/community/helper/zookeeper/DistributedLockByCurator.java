@@ -51,11 +51,8 @@ public class DistributedLockByCurator implements InitializingBean {
                         .withMode( CreateMode.EPHEMERAL)
                         .withACL( ZooDefs.Ids.OPEN_ACL_UNSAFE)
                         .forPath(keyPath);
-                logger.info("community acquireDistributedLock success to acquire lock for path:{}", keyPath);
                 break;
             } catch (Exception e) {
-                logger.info("community acquireDistributedLock failed to acquire lock for path:{}", keyPath);
-                logger.info("community acquireDistributedLock while try again .......");
                 try {
                     if (countDownLatch.getCount() <= 0) {
                         countDownLatch = new CountDownLatch(1);
@@ -99,7 +96,6 @@ public class DistributedLockByCurator implements InitializingBean {
         cache.getListenable().addListener((client, event) -> {
             if (event.getType().equals( PathChildrenCacheEvent.Type.CHILD_REMOVED)) {
                 String oldPath = event.getData().getPath();
-                logger.info("community addWatcher function success to release lock for path:{}", oldPath);
                 if (oldPath.contains(path)) {
                     //释放计数器，让当前的请求获取锁
                     countDownLatch.countDown();
@@ -122,7 +118,6 @@ public class DistributedLockByCurator implements InitializingBean {
                         .forPath(path);
             }
             addWatcher(curatorConfiguration.getNoticeLock());
-            logger.info("community afterPropertiesSet function root path 的 watcher 事件创建成功");
         } catch (Exception e) {
             logger.error("community afterPropertiesSet function   connect zookeeper fail，please check the log >> {}", e.getMessage(), e);
         }

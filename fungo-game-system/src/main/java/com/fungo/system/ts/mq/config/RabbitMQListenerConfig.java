@@ -55,7 +55,6 @@ public class RabbitMQListenerConfig {
             public void onMessage(Message message, Channel channel) throws Exception {
 
                 String msgBody = StringUtils.toEncodedString(message.getBody(), Charset.forName("UTF-8"));
-                LOGGER.info("mqDirectMessageListener-onMessage-msgBody:{}", msgBody);
 
                 //同步 业务处理
                boolean isExcute = mQDataReceiveService.onMessageWithMQDirect(msgBody);
@@ -118,7 +117,6 @@ public class RabbitMQListenerConfig {
             public void onMessage(Message message, Channel channel) throws Exception {
 
                 String msgBody = StringUtils.toEncodedString(message.getBody(), Charset.forName("UTF-8"));
-                LOGGER.info("MQTopicQueueListener-onMessage-msgBody:{}", msgBody);
                 //同步业务处理
                 mQDataReceiveService.onMessageWithMQTopic(msgBody);
                 //无论是否成功都ack  - 重试交给job

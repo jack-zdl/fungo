@@ -40,7 +40,6 @@ public class MQDataReceiveServiceImpl implements MQDataReceiveService {
             return true;
         }
         try {
-            LOGGER.info("MQDataReceiveServiceImpl-onMessageWithMQDirect-msg:{}", msgData);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -49,7 +48,6 @@ public class MQDataReceiveServiceImpl implements MQDataReceiveService {
 
     @Override
     public boolean onMessageWithMQTopic(String msgData) {
-        LOGGER.info("系统服务接收到消息 - {}", msgData);
         if (StringUtils.isBlank(msgData)) {
             return true;
         }

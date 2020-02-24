@@ -97,13 +97,11 @@ public class VideoServiceImpl implements IVideoService {
         //获取视频id，区别视频是否是首次上传
         String videoId = param.get("videoId");
 
-        LOGGER.info("获取视频播放地址，请求-videoId：{}", videoId);
 
         if (StringUtils.isNotBlank(videoId)) {
 
             List<Map<String, String>> payURL = this.parserPayURL(aliyunClient, videoId);
 
-            LOGGER.info("获取视频播放地址，响应-payURLs：{}", payURL);
 
             return payURL;
         }
@@ -240,9 +238,6 @@ public class VideoServiceImpl implements IVideoService {
                 String videoId = response.getVideoId();
 
 
-                LOGGER.info("获取视频首次上传的token等凭证，vdReqId：{}，vdToken：{}，vdUploadAddr：{}，videoId：", vdReqId,
-                        vdToken, vdUploadAddr, videoId);
-
                 vodUpoadAuthMap.put("vdReqId", vdReqId);
                 vodUpoadAuthMap.put("vdToken", vdToken);
                 vodUpoadAuthMap.put("vdUploadAddr", vdUploadAddr);
@@ -297,8 +292,7 @@ public class VideoServiceImpl implements IVideoService {
                 //vodUpoadAuthMap.put("vodAccessKeyId", vodAccessKeyId);
                 //vodUpoadAuthMap.put("vodAccessKeySecret", vodAccessKeySecret);
 
-                LOGGER.info("若首次视频上传失败，则刷新再次上传的凭证，vdReqId：{}，vdToken：{}，videoId：", vdReqId,
-                        vdToken, videoId);
+
             }
 
         } catch (ServerException e) {
@@ -357,16 +351,10 @@ public class VideoServiceImpl implements IVideoService {
 
         UploadVideoImpl uploader = new UploadVideoImpl();
         UploadURLStreamResponse response = uploader.uploadURLStream(request);
-           LOGGER.info("网络流上传接口RequestId=" + response.getRequestId() + "\n"); //请求视频点播服务的请求ID
         if (response.isSuccess()) {
-           LOGGER.info("网络流上传接口--压缩成功");
-            LOGGER.info("网络流上传接口VideoId=" + response.getVideoId() + "\n");
+
         } else {
             /* 如果设置回调URL无效，不影响视频上传，可以返回VideoId同时会返回错误码。其他情况上传失败时，VideoId为空，此时需要根据返回错误码分析具体错误原因 */
-            LOGGER.info("网络流上传接口-压缩失败");
-            LOGGER.info("网络流上传接口-VideoId=" + response.getVideoId() + "\n");
-            LOGGER.info("网络流上传接口-ErrorCode=" + response.getCode() + "\n");
-            LOGGER.info("网络流上传接口-ErrorMessage=" + response.getMessage() + "\n");
         }
         return response.getVideoId();
     }
@@ -389,19 +377,13 @@ public class VideoServiceImpl implements IVideoService {
             }
             //播放地址
             for (GetPlayInfoResponse.PlayInfo playInfo : playInfoList) {
-                LOGGER.info("获得压缩视频播放地址-PlayInfo.PlayURL = " + playInfo.getPlayURL() + "\n");
-                LOGGER.info("获得压缩视频播放地址-PlayInfo.Bitrate = " + playInfo.getBitrate() + "\n");
-                LOGGER.info("获得压缩视频播放地址-PlayInfo.Format = " + playInfo.getFormat() + "\n");
+
 
             }
             //Base信息
-            LOGGER.info("获得压缩视频播放地址-VideoBase.Title = " + response.getVideoBase().getTitle() + "\n");
         } catch (Exception e) {
             LOGGER.error("获得压缩视频播放地址-ErrorMessage = " ,e);
-            e.printStackTrace();
         }
-        LOGGER.info("获得压缩视频播放地址-RequestId = " + response.getRequestId() + "\n");
-
         return url.substring(0, url.lastIndexOf("?"));
     }
     

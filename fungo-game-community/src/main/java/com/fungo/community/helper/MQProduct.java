@@ -55,7 +55,6 @@ public class MQProduct {
         transactionMessageDto.setRoutingKey(RabbitMQEnum.QueueRouteKey.QUEUE_ROUTE_KEY_TOPIC_GAMES.getName());
         ResultDto<Long> messageResult = tSMQFacedeService.saveAndSendMessage(transactionMessageDto);
 
-        logger.info("--添加评论-执行发送消息--MQ执行结果：messageResult:{}", JSON.toJSONString(messageResult));
     }
 
 }

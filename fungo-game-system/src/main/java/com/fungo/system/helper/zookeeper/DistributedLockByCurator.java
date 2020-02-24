@@ -49,11 +49,9 @@ public class DistributedLockByCurator implements InitializingBean {
                         .withMode( CreateMode.EPHEMERAL)
                         .withACL( ZooDefs.Ids.OPEN_ACL_UNSAFE)
                         .forPath(keyPath);
-                logger.info("systyem success to acquire lock for path:{}", keyPath);
                 break;
             } catch (Exception e) {
-                logger.info("systyem failed to acquire lock for path:{}", keyPath);
-                logger.info("systyem while try again .......");
+
 //                try {
 //                    if (countDownLatch.getCount() <= 0) {
 //                        countDownLatch = new CountDownLatch(1);
@@ -97,10 +95,8 @@ public class DistributedLockByCurator implements InitializingBean {
         cache.getListenable().addListener((client, event) -> {
             if (event.getType().equals( PathChildrenCacheEvent.Type.CHILD_REMOVED)) {
                 String oldPath = event.getData().getPath();
-                logger.info("监听事件-删除节点 :{}", oldPath);
                 if (oldPath.contains(path)) {
                     //释放计数器，让当前的请求获取锁
-                    logger.info("----------------监听事件-删除节点 :{}", path,oldPath);
 //                    countDownLatch.countDown();
                 }
             }
@@ -121,7 +117,6 @@ public class DistributedLockByCurator implements InitializingBean {
                         .forPath(path);
             }
             addWatcher(curatorConfiguration.getNoticeLock());
-            logger.info("systyem root path 的 watcher 事件创建成功");
         } catch (Exception e) {
             logger.error("systyem connect zookeeper fail，please check the log >> {}", e.getMessage(), e);
         }
@@ -168,11 +163,8 @@ public class DistributedLockByCurator implements InitializingBean {
                         .withMode( CreateMode.EPHEMERAL)
                         .withACL( ZooDefs.Ids.OPEN_ACL_UNSAFE)
                         .forPath(keyPath);
-                logger.info("systyem success to acquire lock for path:{}", keyPath);
                 break;
             } catch (Exception e) {
-                logger.info("systyem failed to acquire lock for path:{}", keyPath);
-                logger.info("systyem while try again .......");
 //                try {
 //                    if (countDownLatch.getCount() <= 0) {
 //                        countDownLatch = new CountDownLatch(1);
