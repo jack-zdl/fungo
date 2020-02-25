@@ -134,7 +134,6 @@ public class JobController {
     public ResultDto<String> checkSystemNotice(  ){
         ResultDto<String> re = null;
         try {
-//            iFungoMallGoodsService.checkSystemNotice();
             iMemberNoticeService.updateSystemByGame();
             re = ResultDto.success("定时检查系统管控台系统消息定期任务执行成功");
         }catch (Exception e){

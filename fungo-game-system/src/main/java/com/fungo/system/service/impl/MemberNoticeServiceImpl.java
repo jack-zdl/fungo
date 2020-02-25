@@ -84,33 +84,33 @@ public class MemberNoticeServiceImpl implements IMemberNoticeService {
 //        }
 //    }
 
-
-    @Override
-    public void deleteMbNotices(String mb_id, Integer ntc_type, Long noticeId) {
-        try {
-
-            if (StringUtils.isBlank(mb_id)) {
-                return;
-            }
-            if (null == ntc_type) {
-                return;
-            }
-
-            Map<String, Object> paramMap = new HashMap<String, Object>();
-
-            if (StringUtils.isNotBlank(mb_id) && ntc_type.intValue() > 0) {
-                paramMap.put("mb_id", mb_id);
-                paramMap.put("ntc_type", ntc_type);
-            } else {
-                paramMap.put("id", noticeId);
-            }
-            memberNoticeDaoService.deleteByMap(paramMap);
-        } catch (Exception ex) {
-            logger.error("删除用户的消息数据出现异常:", ex);
-            ex.printStackTrace();
-        }
-    }
-
+//
+//    @Override
+//    public void deleteMbNotices(String mb_id, Integer ntc_type, Long noticeId) {
+//        try {
+//
+//            if (StringUtils.isBlank(mb_id)) {
+//                return;
+//            }
+//            if (null == ntc_type) {
+//                return;
+//            }
+//
+//            Map<String, Object> paramMap = new HashMap<String, Object>();
+//
+//            if (StringUtils.isNotBlank(mb_id) && ntc_type.intValue() > 0) {
+//                paramMap.put("mb_id", mb_id);
+//                paramMap.put("ntc_type", ntc_type);
+//            } else {
+//                paramMap.put("id", noticeId);
+//            }
+//            memberNoticeDaoService.deleteByMap(paramMap);
+//        } catch (Exception ex) {
+//            logger.error("删除用户的消息数据出现异常:", ex);
+//            ex.printStackTrace();
+//        }
+//    }
+//
 
 //
 //    @Override
