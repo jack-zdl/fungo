@@ -25,6 +25,7 @@ import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
 import com.game.common.util.StringUtil;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.MD5ParanCheck;
 import com.game.common.util.date.DateTools;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
@@ -166,6 +167,7 @@ public class PortalGamesIndexController {
     @RequestMapping(value = "/api/portal/games/recommend/pc/gamegroup", method = RequestMethod.POST)
     @ApiImplicitParams({
     })
+    @MD5ParanCheck(param = {"page","limit","amount"})
     public FungoPageResultDto<Map<String, Object>> pcGameGroup(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody PCGameGroupVO input) {
         return portalGamesIIndexService.pcGameGroup(input);
     }
@@ -289,6 +291,10 @@ public class PortalGamesIndexController {
 //            bean.setAuthor(this.userService.getAuthor(gameEvaluation.getMemberId()));
             bean.setAuthor(iEvaluateProxyService.getAuthor(gameEvaluation.getMemberId()));
             Game game = this.gameService.selectById(gameEvaluation.getGameId());
+            // 许书庆  过滤掉下架游戏
+            if( game.getState() != 0){
+                continue;
+            }
             bean.setEvaluation(CommonUtils.filterWord(gameEvaluation.getContent()));
             bean.setEvaluationId(gameEvaluation.getId());
             ObjectMapper objectMapper = new ObjectMapper();

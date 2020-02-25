@@ -150,6 +150,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                     GameEvaluationDto gameEvaluationDto = (resultDto.getData() != null && resultDto.getData().size() > 0 ) ? resultDto.getData().get(0) : null;
                     if(gameEvaluationDto != null){
                         map.put( "one_level_deltype",gameEvaluationDto.getState() == -1 ? -1 : 0 );
+                        map.put( "gameIdtSn",gameFilterService.getGameDto( gameEvaluationDto.getGameId()) );
                     }
                     String gameId = (String) map.get("game_id");
                     GameDto gameDto = new GameDto();
@@ -239,7 +240,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                                                 map.put( "three_level_deltype",gameEvaluationDto.getState()  == -1 ? -1 : 0 );
                                                 map.put( "parentType",6);
                                                 map.put( "parentId",gameEvaluationDto.getGameId() );
-                                                map.put( "parentIdNumber",gameFilterService.getGameDto( gameEvaluationDto.getGameId()) );
+                                                map.put( "gameIdtSn",gameFilterService.getGameDto( gameEvaluationDto.getGameId()) );
                                                 Member member = memberService.selectById(gameEvaluationDto.getMemberId());
                                                 map.put( "parentMemberId",member.getId() );
                                                 map.put( "parentMemberName",member.getUserName() );
@@ -284,7 +285,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                                     map.put( "two_level_deltype",gameEvaluationDto.getState() == -1 ? -1 : 0 );
                                     map.put( "parentType",6);
                                     map.put( "parentId",gameEvaluationDto.getGameId() );
-                                    map.put( "parentIdNumber",gameFilterService.getGameDto( gameEvaluationDto.getGameId()) );
+                                    map.put( "gameIdtSn",gameFilterService.getGameDto( gameEvaluationDto.getGameId()) );
                                     Member member = memberService.selectById(gameEvaluationDto.getMemberId());
                                     map.put( "parentMemberId",member.getId() );
                                     map.put( "parentMemberName",member.getUserName() );
@@ -508,6 +509,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                     GameEvaluationDto gameEvaluationDto = (resultDto.getData() != null && resultDto.getData().size() > 0 ) ? resultDto.getData().get(0) : null;
                     if(gameEvaluationDto != null){
                         map.put( "two_level_deltype",gameEvaluationDto.getState()  == -1 ? -1 : 0 );
+                        map.put( "gameIdtSn",gameFilterService.getGameDto( gameEvaluationDto.getGameId()) );
                     }
                     String replyId = (String) map.get("replyId");
                     if(StringUtil.isNotNull(replyId)){
@@ -647,6 +649,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                             GameEvaluationDto gameEvaluationDto = (gameEvaluationPage.getData() != null && gameEvaluationPage.getData().size() > 0 ) ? gameEvaluationPage.getData().get(0) : null;
                             if(gameEvaluationDto != null){
                                 map.put( "two_level_deltype",gameEvaluationDto.getState()  == -1 ? -1 : 0 );
+                                map.put( "gameIdtSn",gameFilterService.getGameDto( gameEvaluationDto.getGameId()) );
                             }
                         }
 
@@ -664,7 +667,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
 
                     }else if(map.get("game_id") != null){
                         map.put("parentId", map.get("game_id"));
-                        map.put( "parentIdNumber",gameFilterService.getGameDto( (String) map.get("game_id")) );
+                        map.put( "gameIdtSn",gameFilterService.getGameDto( (String) map.get("game_id")) );
                         String evaluationId = (String) map.get("evaluation_id");
                         GameEvaluationDto param = new GameEvaluationDto();
                         param.setId(evaluationId);
@@ -673,6 +676,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                         if(gameEvaluationDto != null){
                             Member member = memberService.selectById(gameEvaluationDto.getMemberId());
                             map.put( "parentName",member.getUserName());
+                            map.put( "gameIdtSn",gameFilterService.getGameDto( gameEvaluationDto.getGameId()) );
                         }
                     }
                 }
@@ -817,6 +821,8 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
                         if(resultDto != null && resultDto.getData()!= null && resultDto.getData().size() > 0){
                             gameEvaluationDto = resultDto.getData().get(0);
                             bean.setParentId(gameEvaluationDto.getGameId());
+                            GameDto gameDto = gamesFeignClient.selectOne(gameEvaluationDto.getGameId());
+                            bean.setGameIdtSn(gameDto != null ? gameDto.getGameIdtSn() : 0L);
                         }
                     }
                     bean.setHref(map.get("href"));

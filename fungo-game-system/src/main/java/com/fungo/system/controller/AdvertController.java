@@ -14,6 +14,7 @@ import com.game.common.dto.community.CmmPostDto;
 import com.game.common.repo.cache.facade.FungoCacheAdvert;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.MD5ParanCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -45,6 +46,7 @@ public class AdvertController {
     @ApiOperation(value = "首页游戏banner接口(v2.3)", notes = "")
     @ApiImplicitParams({})
     @RequestMapping(value = "/api/advert", method = RequestMethod.GET)
+    @MD5ParanCheck()
     public ResultDto<List<AdvertOutBean>> getAdvert() {
         ResultDto<List<AdvertOutBean>> re = new ResultDto<>();
         List<AdvertOutBean> list = null;
@@ -94,6 +96,7 @@ public class AdvertController {
     @ApiOperation(value = "首页游戏banner接口(v2.3)", notes = "")
     @ApiImplicitParams({})
     @RequestMapping(value = "/api/adt/bnr", method = RequestMethod.GET)
+    @MD5ParanCheck()
     public ResultDto<List<AdvertOutBean>> getAdvertWithPc() {
         ResultDto<List<AdvertOutBean>> re = new ResultDto<>();
         List<AdvertOutBean> list = (List<AdvertOutBean>) fungoCacheAdvert.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_BNR, "");
@@ -124,6 +127,7 @@ public class AdvertController {
     @ApiOperation(value = "发现页轮播", notes = "")
     @RequestMapping(value = "/api/recommend/discover", method = RequestMethod.GET)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<List<Map<String, String>>> discover(@Anonymous MemberUserProfile memberUserPrefile) {
         ResultDto<List<Map<String, String>>> re = new ResultDto<>();
 //        List<Map<String, String>> listResult = (List<Map<String, String>>) fungoCacheAdvert.getIndexCache(FUNGO_CORE_API_ADVERT_RECOMMEND_DISCOVER, "");

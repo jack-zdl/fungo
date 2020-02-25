@@ -99,6 +99,20 @@ public class PortalGamesEvaluateController {
 		}
 		return this.evaluateService.getEvaluationList(memberId, pagedto);
 	}
+
+	@ApiOperation(value="游戏评价列表", notes="")
+	@RequestMapping(value="/api/portal/games/content/evaluations/gamenumber", method= RequestMethod.POST)
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "comment_id",value = "心情id",paramType = "path",dataType = "string"),
+			@ApiImplicitParam(name = "user_id",value = "用户id",paramType = "path",dataType = "string")
+	})
+	public FungoPageResultDto<EvaluationOutPageDto> getEvaluationGamenumberList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody EvaluationInputPageDto pagedto) {
+		String memberId="";
+		if(memberUserPrefile!=null) {
+			memberId=memberUserPrefile.getLoginId();
+		}
+		return this.evaluateService.getEvaluationGamenumberList(memberId, pagedto);
+	}
 	
 	@ApiOperation(value="安利墙游戏评价详情", notes="")
 	@RequestMapping(value="/api/portal/games/content/anliEvaluation/{evaluationId}", method= RequestMethod.GET)

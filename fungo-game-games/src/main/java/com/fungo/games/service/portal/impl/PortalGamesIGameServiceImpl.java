@@ -186,7 +186,7 @@ public class PortalGamesIGameServiceImpl implements PortalGamesIGameService {
             if(resultDto != null && CommonEnum.SUCCESS.code().equals(String.valueOf(resultDto.getStatus())) && resultDto.getData().size() > 0){
                 List<String> gameIds =  resultDto.getData();
                 List<Game>  gamesList =  gameDao.getGameList(gameIds);
-                gamesList.stream().forEach(game ->{
+                gamesList.stream().filter(s ->s.getState()==0).forEach(game ->{
                     MyGameBean bean = new MyGameBean();
                     bean.setGameIdtSn(game.getGameIdtSn());
                     bean.setAndroidState(game.getAndroidState() == null ? 0 : game.getAndroidState()  );

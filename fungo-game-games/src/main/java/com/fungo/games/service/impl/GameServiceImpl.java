@@ -20,6 +20,7 @@ import com.fungo.games.helper.es.ESDAOServiceImpl;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.buriedpoint.BuriedPointUtils;
+import com.game.common.common.MemberIncentCommonUtils;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.Setting;
 import com.game.common.dto.FungoPageResultDto;
@@ -682,9 +683,15 @@ public class GameServiceImpl implements IGameService {
             return ResultDto.success(outResult);
         }
 //            Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", "0"));
-        Game game = gameService.selectOne(new EntityWrapper<Game>().eq("game_idt_sn", gameNumber).eq("state", "0"));
+        Game game = null;
+        if(MemberIncentCommonUtils.checkNumber(gameNumber)){
+            game = gameService.selectOne(new EntityWrapper<Game>().eq("game_idt_sn", gameNumber).eq("state", "0"));
+        }else {
+            game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameNumber).eq("state", "0"));
+        }
+
         if (game == null) {
-            return ResultDto.error( AbstractResultEnum.CODE_GAME_THREE.getKey(), "找不到目标游戏");
+            return ResultDto.error( AbstractResultEnum.CODE_GAME_THREE.getKey(), AbstractResultEnum.CODE_GAME_THREE.getFailevalue());
         }
         String gameId = game.getId();
         try {
@@ -735,7 +742,7 @@ public class GameServiceImpl implements IGameService {
             out.setPackageName(game.getAndroidPackageName());
 
             out.setVideo(game.getVideo());
-            out.setApk(game.getApk());
+//            out.setApk(game.getApk());
             out.setCover_image(game.getCoverImage());
             out.setDetail(game.getDetail());
             out.setDeveloper(game.getDeveloper());
@@ -1447,6 +1454,7 @@ public class GameServiceImpl implements IGameService {
                 out.setTag(gameTagStrs);
                 out.setIcon(game.getIcon());
                 out.setCover_image(game.getCoverImage());
+                out.setCoverImage(game.getCoverImage());
                 out.setIntro(game.getIntro());
                 out.setDeveloper(game.getDeveloper());
                 out.setLink_community(game.getCommunityId());
@@ -1472,7 +1480,7 @@ public class GameServiceImpl implements IGameService {
                 }
                 out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
                 out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
-                out.setGameIdsSn( game.getGameIdtSn());
+                out.setGameIdtSn( game.getGameIdtSn());
                 out.setCategory(gameTagStrs);
                 /**
                  * 功能描述: 添加游戏关联圈子
@@ -1534,6 +1542,14 @@ public class GameServiceImpl implements IGameService {
                     }
                 }
                 out.setVersion( CommonUtil.isNull(game.getVersionChild()) ? game.getVersionMain() : game.getVersionMain()+"."+game.getVersionChild() );
+                try {
+                    if (game.getImages() != null) {
+                        ObjectMapper mapper = new ObjectMapper();
+                        out.setImages((ArrayList<String>) mapper.readValue(game.getImages(), ArrayList.class));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 dataList.add(out);
             }
             re.setData(dataList);

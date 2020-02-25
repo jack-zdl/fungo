@@ -18,6 +18,7 @@ import com.game.common.framework.file.IFileService;
 import com.game.common.util.ValidateUtils;
 import com.game.common.util.annotation.JsonView;
 import com.game.common.util.annotation.LogicCheck;
+import com.game.common.util.annotation.MD5ParanCheck;
 import com.game.common.util.token.TokenService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -35,7 +36,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -82,6 +82,7 @@ public class UserController {
             @ApiImplicitParam(name = "password", value = "密码", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "code", value = "验证码", paramType = "form", dataType = "string")
     })
+    @MD5ParanCheck(param = {"mobile","password","code"})
     public ResultDto<LoginMemberBean> register(@RequestBody MsgInput msg) throws  Exception {
         ValidateUtils.is(msg.getMobile()).notNull().maxLength(11).minLength(11);
         ResultDto<LoginMemberBean> re = userService.register(msg.getMobile(), msg.getPassword(), msg.getCode());
@@ -130,6 +131,7 @@ public class UserController {
             @ApiImplicitParam(name = "password", value = "密码", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "code", value = "验证码", paramType = "form", dataType = "string")
     })
+    @MD5ParanCheck(param = {"mobile","password"})
     public ResultDto<LoginMemberBean> login(HttpServletRequest request, @RequestBody MsgInput msg) throws  Exception {
         String appversion = request.getHeader("appversion");
         String deviceId = request.getHeader("deviceId");
@@ -140,7 +142,6 @@ public class UserController {
             MemberUserProfile userPrefile = new MemberUserProfile();
             userPrefile.setLoginId(bean.getObjectId());
             userPrefile.setName(bean.getUsername());
-
             bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), MemberIncentCommonUtils.pastDate()));
         }
         return re;

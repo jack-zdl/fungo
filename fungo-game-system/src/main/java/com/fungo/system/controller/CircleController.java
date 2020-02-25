@@ -8,6 +8,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.index.CardIndexBean;
 import com.game.common.dto.index.CircleCardDataBean;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.MD5ParanCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -47,6 +48,7 @@ public class CircleController {
     @ApiOperation(value = "v2.5", notes = "")
     @RequestMapping(value = "/api/system/circle/event/list", method = RequestMethod.POST)
     @ApiImplicitParams({})
+    @MD5ParanCheck(param = {"page","limit","filter"})
     public FungoPageResultDto<CardIndexBean> circleEventList(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPageDto) {
         FungoPageResultDto<CardIndexBean> re = null;
         try {
@@ -78,6 +80,7 @@ public class CircleController {
     @ApiOperation(value = "v2.6", notes = "")
     @RequestMapping(value = "/api/system/circle/event/homePage", method = RequestMethod.GET)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<CircleCardDataBean> queryHomePage(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request) {
         ResultDto<CircleCardDataBean> re = null;
         String iosChannel = "";
@@ -104,6 +107,7 @@ public class CircleController {
     @ApiOperation(value = "v2.6", notes = "")
     @RequestMapping(value = "/api/system/circle/event/queryStartUp", method = RequestMethod.GET)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<List<CircleCardDataBean>> queryStartUp(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request) {
         ResultDto<List<CircleCardDataBean>> re = null;
         String iosChannel = "";
@@ -130,6 +134,7 @@ public class CircleController {
     @ApiOperation(value = "v2.6", notes = "")
     @RequestMapping(value = "/api/system/circle/event/queryOpenScreen", method = RequestMethod.GET)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<CircleCardDataBean> queryOpenScreen(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request) {
         ResultDto<CircleCardDataBean> re = null;
         //Android  iOS

@@ -33,6 +33,8 @@ public class SysNoticeBean {
     private String video;
 	@ApiModelProperty(value="父级id",example="")
     private String parentId;
+	@ApiModelProperty(value="游戏编号",example="")
+	private Long gameIdtSn;
 
 	public String getMsgId() {
 		return msgId;
@@ -114,4 +116,12 @@ public class SysNoticeBean {
 	public void setParentId(String parentId) {
 		this.parentId = parentId;
 	}
+
+    public Long getGameIdtSn() {
+        return gameIdtSn;
+    }
+
+    public void setGameIdtSn(Long gameIdtSn) {
+        this.gameIdtSn = gameIdtSn;
+    }
 }

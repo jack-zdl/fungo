@@ -43,6 +43,8 @@ public class MyCommentBean {
 	 */
 	private String parentId;
 
+	private Long gameIdtSn;
+
 	private int grandfatherStatus;
 	
 	public Integer getTargetType() {
@@ -140,6 +142,14 @@ public class MyCommentBean {
 
 	public void setParentId(String parentId) {
 		this.parentId = parentId;
+	}
+
+	public Long getGameIdtSn() {
+		return gameIdtSn;
+	}
+
+	public void setGameIdtSn(Long gameIdtSn) {
+		this.gameIdtSn = gameIdtSn;
 	}
 
 	public int getGrandfatherStatus() {

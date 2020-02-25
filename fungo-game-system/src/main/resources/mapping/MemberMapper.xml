@@ -249,5 +249,7 @@
         </foreach>
     </select>
 
-    
+    <select id="getMember" resultType="java.lang.String">
+        SELECT id FROM t_member WHERE state = 0 and user_name = #{userName}
+    </select>
 </mapper>

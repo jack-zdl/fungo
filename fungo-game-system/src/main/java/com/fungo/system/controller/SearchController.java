@@ -8,6 +8,7 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.search.SearCount;
 import com.game.common.dto.search.SearchInputPageDto;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.MD5ParanCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -54,6 +55,7 @@ public class SearchController {
             @ApiImplicitParam(name = "limit", value = "每页显示数", paramType = "form", dataType = "int"),
             @ApiImplicitParam(name = "userId", value = "是否关注的数据,如果需要返回则传入当前用户的user_id", paramType = "form", dataType = "string")
     })
+    @MD5ParanCheck()
     public FungoPageResultDto<AuthorBean> searchUsers(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto) {
         int page = searchInputDto.getPage();
         int limit = searchInputDto.getLimit();
@@ -81,6 +83,7 @@ public class SearchController {
     @ApiOperation(value = "搜索数据统计", notes = "")
     @RequestMapping(value = "/api/search/searchcount/{keyword}", method = RequestMethod.GET)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<SearCount> getSearchCount(@PathVariable("keyword") String keyword) {
         if (StringUtils.isNotBlank(keyword)) {
             keyword = keyword.trim();

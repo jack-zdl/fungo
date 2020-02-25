@@ -2,6 +2,7 @@ package com.game.common.dto.search;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameSearchOut {
@@ -21,6 +22,8 @@ public class GameSearchOut {
 	private String tag;
 	
 	private String cover_image;
+
+	private String coverImage;
 	private String intro;
 	private double rating;
 	@ApiModelProperty(value="安卓游戏状态",example="")
@@ -55,7 +58,9 @@ public class GameSearchOut {
 
 	private String version;
 
-	private Long gameIdsSn;
+	private Long gameIdtSn;
+
+	private List<String> images = new ArrayList<>();
 
 //	@ApiModelProperty(value="是否同意条款",example="")
 //	private boolean isClause=false;
@@ -283,11 +288,27 @@ public class GameSearchOut {
         this.version = version;
     }
 
-	public Long getGameIdsSn() {
-		return gameIdsSn;
+	public Long getGameIdtSn() {
+		return gameIdtSn;
 	}
 
-	public void setGameIdsSn(Long gameIdsSn) {
-		this.gameIdsSn = gameIdsSn;
+	public void setGameIdtSn(Long gameIdtSn) {
+		this.gameIdtSn = gameIdtSn;
+	}
+
+	public List<String> getImages() {
+		return images;
+	}
+
+	public void setImages(List<String> images) {
+		this.images = images;
+	}
+
+	public String getCoverImage() {
+		return coverImage;
+	}
+
+	public void setCoverImage(String coverImage) {
+		this.coverImage = coverImage;
 	}
 }

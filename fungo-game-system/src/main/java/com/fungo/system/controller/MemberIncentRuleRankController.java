@@ -4,6 +4,7 @@ package com.fungo.system.controller;
 import com.fungo.system.service.IMemberIncentRuleRankService;
 import com.game.common.consts.FunGoGameConsts;
 import com.game.common.dto.ResultDto;
+import com.game.common.util.annotation.MD5ParanCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -39,6 +40,7 @@ public class MemberIncentRuleRankController {
     @ApiOperation(value = "身份规则(v2.4.3)", notes = "")
     @RequestMapping(value = "/api/user/incents/rule/dignities", method = RequestMethod.GET)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<List<Map<String, Object>>> dignityRules() {
         //查看评测身份
         Long rankGroupId = 0L;
@@ -58,6 +60,7 @@ public class MemberIncentRuleRankController {
     @ApiOperation(value = "荣誉规则(v2.4.3)", notes = "")
     @RequestMapping(value = "/api/user/incents/rule/honors", method = RequestMethod.GET)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<List<Map<String, Object>>> getHonorRules() {
         //查看荣誉规则
         Long rankGroupId = 0L;

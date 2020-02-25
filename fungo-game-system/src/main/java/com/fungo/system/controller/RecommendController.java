@@ -11,6 +11,7 @@ import com.game.common.dto.community.FollowUserOutBean;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.PageTools;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.MD5ParanCheck;
 import com.game.common.util.date.DateTools;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
@@ -50,6 +51,7 @@ public class RecommendController {
     @RequestMapping(value = "/api/recommend/users", method = RequestMethod.POST)
     @ApiImplicitParams({
     })
+    @MD5ParanCheck()
     public FungoPageResultDto<FollowUserOutBean> getDynamicsUsersList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto) {
         FungoPageResultDto<FollowUserOutBean> re = new FungoPageResultDto<FollowUserOutBean>();
         List<FollowUserOutBean> list = new ArrayList<FollowUserOutBean>();

@@ -6,6 +6,8 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -312,5 +314,55 @@ public class DateTools {
         return "";
     }
 
+    /**
+     * 功能描述: 将当前时间加 指定得天数返回时间戳
+     * @param: []
+     * @return: java.lang.String
+     * @date: 2019/11/21 10:27
+     */
+    public static long getAddDays(int days){
+        try {
+            LocalDate afterThreeDays = LocalDate.now().plusDays(days);
+            long day1 = afterThreeDays.atStartOfDay( ZoneOffset.ofHours(8)).toInstant().toEpochMilli();
+            return day1;
+        }catch (Exception e){
+            e.printStackTrace();//( "将当前时间加指定得天数返回时间戳出现异常",e);
+        }
+        return System.currentTimeMillis()+100000;
+
+    }
+
+    /**
+     * 功能描述: 将当前时间加 指定得天数返回时间戳
+     * @param: []
+     * @return: java.lang.String
+     * @date: 2019/11/21 10:27
+     */
+    /**
+     * 功能描述: 将当前时间加 指定得天数返回时间戳
+     * @param: []
+     * @return: java.lang.String
+     * @date: 2019/11/21 10:27
+     */
+    public static long getAddMinute(int minute){
+        try {
+            LocalDateTime afterThreeDays = LocalDateTime.now();
+//            System.out.println("MINUTES"+afterThreeDays);
+//            afterThreeDays = afterThreeDays.minusMinutes(minute);
+//            System.out.println("MINUTES----"+afterThreeDays);
+//            afterThreeDays = afterThreeDays.plusMinutes(minute);
+//            System.out.println("MINUTES----====="+afterThreeDays);
+//            long day1 = afterThreeDays.atStartOfDay( ZoneOffset.ofHours(8)).toInstant().toEpochMilli();
+//            Long milliSecond = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli(); // 毫秒数
+            afterThreeDays= afterThreeDays.withSecond(0).withNano(0).withMinute(0);
+            System.out.println("MINUTES----=====10"+afterThreeDays);
+//            val newNow = LocalDateTime.ofInstant(Instant.ofEpochMilli(milliseconds), ZoneOffset.UTC)
+            Long milliSecond = afterThreeDays.toInstant(ZoneOffset.of("+8")).toEpochMilli(); // 毫秒数
+            return milliSecond;
+        }catch (Exception e){
+            // LOGGER.error( "将当前时间加指定得天数返回时间戳出现异常",e);
+        }
+        return System.currentTimeMillis()+60000;
+    }
     //--------
 }

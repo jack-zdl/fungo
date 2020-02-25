@@ -26,6 +26,7 @@ import com.game.common.util.CommonUtil;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.MD5ParanCheck;
 import com.game.common.util.exception.BusinessException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -68,6 +69,7 @@ public class MemberController {
     @ApiOperation(value = "获取我的收藏", notes = "获取我的收藏")
     @RequestMapping(value = "/api/mine/collection", method = RequestMethod.POST)
     @ApiImplicitParams({})
+    @MD5ParanCheck(param = {"sort","type","limit","page"})
     public FungoPageResultDto<CollectionOutBean> getCollection(MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPage) {
         return memberService.getCollection(memberUserPrefile.getLoginId(), inputPage);
     }
@@ -79,6 +81,7 @@ public class MemberController {
             @ApiImplicitParam(name = "page", value = "请求页", paramType = "form", dataType = "number"),
             @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "number")
     })
+    @MD5ParanCheck(param = {"memberId","type","limit","page"})
     public FungoPageResultDto<Map<String, Object>> getFollower(MemberUserProfile memberUserPrefile, @RequestBody FollowInptPageDao inputPage) throws Exception {
         String memberId = inputPage.getMemberId();
         if (CommonUtil.isNull(memberId)) {
@@ -94,6 +97,7 @@ public class MemberController {
             @ApiImplicitParam(name = "page", value = "请求页", paramType = "form", dataType = "number"),
             @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "number")
     })
+    @MD5ParanCheck(param = {"memberId","type","limit","page"})
     public FungoPageResultDto<Map<String, Object>> getFollowee(MemberUserProfile memberUserPrefile, @RequestBody FollowInptPageDao inputPage) throws Exception {
         String memberId = inputPage.getMemberId();
         if (CommonUtil.isNull(memberId)) {
@@ -121,6 +125,7 @@ public class MemberController {
             @ApiImplicitParam(name = "page", value = "请求页", paramType = "form", dataType = "number"),
             @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "number")
     })
+    @MD5ParanCheck(param = {"page","limit"})
     public FungoPageResultDto<Map<String, Object>> getLikeNotice(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPage) throws Exception {
         String appVersion = "";
         appVersion = request.getHeader("appversion");
@@ -134,6 +139,7 @@ public class MemberController {
             @ApiImplicitParam(name = "page", value = "请求页", paramType = "form", dataType = "number"),
             @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "number")
     })
+    @MD5ParanCheck(param = {"page","limit"})
     public FungoPageResultDto<Map<String, Object>> getCommentNotice(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPage) throws Exception {
         String appVersion =  request.getHeader("appversion");
         return memberService.getCommentNotice(memberUserPrefile.getLoginId(), inputPage, appVersion);
@@ -147,6 +153,7 @@ public class MemberController {
     @ApiOperation(value = "获取我的未读消息", notes = "获取我的未读消息")  
     @RequestMapping(value = "/api/mine/notification", method = RequestMethod.POST)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<Map<String, Object>> getUnReadNotice(MemberUserProfile memberUserPrefile, HttpServletRequest request) {
         String appVersion = "";
         appVersion = request.getHeader("appversion");
@@ -165,6 +172,7 @@ public class MemberController {
     @ApiOperation(value = "获取系统消息", notes = "获取系统消息")
     @RequestMapping(value = "/api/mine/system", method = RequestMethod.POST)
     @ApiImplicitParams({})
+    @MD5ParanCheck(param = {"page","limit"})
     public FungoPageResultDto<SysNoticeBean> getSystemNotice(MemberUserProfile memberUserPrefile,HttpServletRequest request, @RequestBody InputPageDto inputPage) {
         String os = request.getHeader("os");
         if(os == null){
@@ -177,6 +185,7 @@ public class MemberController {
     @ApiOperation(value = "获取我的时间线", notes = "获取我的时间线")
     @RequestMapping(value = "/api/mine/timeline", method = RequestMethod.POST)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public FungoPageResultDto<Map<String, Object>> getTimeLine(MemberUserProfile memberUserPrefile) {
         return memberService.getTimeLine(memberUserPrefile.getLoginId());
     }
@@ -199,6 +208,7 @@ public class MemberController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "cardId", value = "用户id", paramType = "path", dataType = "number")
     })
+    @MD5ParanCheck()
     public FungoPageResultDto<Map<String, Object>> getUserTimeline(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody TimeLineInputPage inputpage) throws ParseException {
         FungoPageResultDto<Map<String, Object>> re = null;
         String keySuffix = JSON.toJSONString(inputpage);
@@ -308,6 +318,7 @@ public class MemberController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "cardId", value = "用户id", paramType = "path", dataType = "number")
     })
+    @MD5ParanCheck()
     public ResultDto<AuthorBean> getUserCard(@Anonymous MemberUserProfile memberUserPrefile, @PathVariable("cardId") String cardId) {
 //		ResultDto<CardBean> re =new ResultDto<CardBean>();
 //		CardBean bean =new CardBean();
@@ -359,6 +370,7 @@ public class MemberController {
     @RequestMapping(value = "/api/user/webInfo", method = RequestMethod.GET)
     @ApiImplicitParams({
     })
+    @MD5ParanCheck()
     public ResultDto<AuthorBean> getWebUserInfo(MemberUserProfile memberUserPrefile) {
         String memberId = memberUserPrefile.getLoginId();
 
@@ -380,6 +392,7 @@ public class MemberController {
     @ApiOperation(value = "我的文章(2.4.3)", notes = "我的文章")
     @RequestMapping(value = "/api/mine/posts", method = RequestMethod.POST)
     @ApiImplicitParams({})
+    @MD5ParanCheck(param = {"memberId","limit","page"})
     public FungoPageResultDto<MyPublishBean> getMyPosts(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody MermberSearchInput input) throws Exception {
         String loginId = null;
         if(memberUserPrefile != null){
@@ -395,6 +408,7 @@ public class MemberController {
     @ApiOperation(value = "我的心情(2.4.3)", notes = "我的心情")
     @RequestMapping(value = "/api/mine/moods", method = RequestMethod.POST)
     @ApiImplicitParams({})
+    @MD5ParanCheck(param = {"memberId","limit","page"})
     public FungoPageResultDto<MyPublishBean> getMyMoods(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody MermberSearchInput input) throws Exception {
 //		String loginId = memberUserPrefile.getLoginId();
         String memberId = input.getMemberId();
@@ -407,6 +421,7 @@ public class MemberController {
     @ApiOperation(value = "我的评论(2.4.3)", notes = "我的评论")
     @RequestMapping(value = "/api/mine/comments", method = RequestMethod.POST)
     @ApiImplicitParams({})
+    @MD5ParanCheck(param = {"memberId","limit","page"})
     public FungoPageResultDto<MyCommentBean> getMyComments(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody MermberSearchInput input) throws Exception {
 
         String loginId = null ;
@@ -423,6 +438,7 @@ public class MemberController {
     @ApiOperation(value = "我的等级信息(2.4.3)", notes = "我的等级信息(2.4.3)")
     @RequestMapping(value = "/api/user/incents/spirit/ranks", method = RequestMethod.GET)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<MemberLevelBean> getMemberLevel(MemberUserProfile memberUserPrefile) {
         String loginId = memberUserPrefile.getLoginId();
         return memberService.getMemberLevel(loginId);
@@ -431,6 +447,7 @@ public class MemberController {
     @ApiOperation(value = "获取我的发布", notes = "")
     @RequestMapping(value = "/api/mine/publish", method = RequestMethod.POST)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<Map<String, Integer>> getPublishCount(MemberUserProfile memberUserPrefile, @RequestBody MermberSearchInput input) {
         String memberId = "";
         if (CommonUtil.isNull(memberId)) {
@@ -443,6 +460,7 @@ public class MemberController {
     @ApiOperation(value = "获取我的中秋抽奖权限", notes = "")
     @RequestMapping(value = "/api/mine/lottery", method = RequestMethod.POST)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<Map<String, Integer>> getLotteryPermission(MemberUserProfile memberUserPrefile) {
         String memberId = memberUserPrefile.getLoginId();
         if (CommonUtil.isNull(memberId)) {

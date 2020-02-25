@@ -8,6 +8,7 @@ import com.fungo.system.service.IMemberIncentAccountService;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.util.annotation.MD5ParanCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -39,6 +40,7 @@ public class MemberIncentAccountController {
     @ApiOperation(value = "获取用户经验值(v2.4.3)", notes = "")
     @RequestMapping(value = "/api/user/incents/fortune/exp", method = RequestMethod.GET)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<AccountScoreOutBean> getExpAccountOfMember(MemberUserProfile memberUserPrefile) {
         ResultDto<AccountScoreOutBean> resultDto = new ResultDto<AccountScoreOutBean>();
         AccountScoreOutBean expAccountOfMember = iMemberIncentAccountService.getExpAccountOfMember(memberUserPrefile.getLoginId());
@@ -54,6 +56,7 @@ public class MemberIncentAccountController {
     @ApiOperation(value = "获取用户虚拟币值(v2.4.3)", notes = "")
     @RequestMapping(value = "/api/user/incents/fortune/coin", method = RequestMethod.GET)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<AccountCoinOutBean> getCoinAccountOfMember(MemberUserProfile memberUserPrefile) {
         ResultDto<AccountCoinOutBean> resultDto = new ResultDto<AccountCoinOutBean>();
         AccountCoinOutBean accountCoinOutBean = iMemberIncentAccountService.getCoinAccountOfMember(memberUserPrefile.getLoginId());
@@ -68,6 +71,7 @@ public class MemberIncentAccountController {
     @ApiOperation(value = "获取用户虚拟币账户(v2.4.3)-获取用户fungo比账号获取|消费明细", notes = "")
     @RequestMapping(value = "/api/user/incents/fortune/coin", method = RequestMethod.POST)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public FungoPageResultDto<CoinBean> getCoinAccount(MemberUserProfile memberUserPrefile, @RequestBody AccountRecordInput input) {
         return iMemberIncentAccountService.getCoinAccount(memberUserPrefile.getLoginId(),input);
     }

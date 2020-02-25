@@ -692,7 +692,7 @@ public class MemberServiceImpl implements IMemberService {
 
         for (BasNotice basNotice : t) {
 
-            Map<String, Object> map = new HashMap<String, Object>();
+            Map<String, Object> map = new HashMap<>();
 
             try {
 
@@ -703,7 +703,8 @@ public class MemberServiceImpl implements IMemberService {
                 }
 
                 map.put("video", "");
-                map = objectMapper.readValue(basNotice.getData(), Map.class);
+                map = JSON.parseObject(basNotice.getData());
+//                map = objectMapper.readValue(basNotice.getData(), Map.class);
                 map.put( "noticeId",basNotice.getId());
                 if (basNotice.getType() == 3) {
                     //@todo  文章的接口
@@ -927,7 +928,7 @@ public class MemberServiceImpl implements IMemberService {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("map转换失败",e);
             }
             IncentRanked ranked = rankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", (String) map.get("user_id")).eq("rank_type", 1));
             Member member = memberService.selectById((String) map.get("user_id"));
@@ -1598,6 +1599,7 @@ public class MemberServiceImpl implements IMemberService {
                         map.put("gameId", game.getId());
                         map.put("gameName", game.getName());
                         map.put("gameIcon", game.getIcon());
+                        map.put("gameIdtSn", String.valueOf(game.getGameIdtSn()));
                         gameList.add(map);
                     }
                 }
@@ -1819,6 +1821,10 @@ public class MemberServiceImpl implements IMemberService {
                     FungoPageResultDto<GameEvaluationDto> resultDto = gamesFeignClient.getGameEvaluationPage(param);
                     GameEvaluationDto evaluation =  (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;
                     bean.setParentId( evaluation != null ? evaluation.getGameId() : "");
+                    GameDto gameDto  = gamesFeignClient.selectOne(evaluation.getGameId());
+                    if(gameDto != null){
+                        bean.setGameIdtSn( gameDto.getGameIdtSn());
+                    }
 
                 }if(commentBean.getTargetType() == 8 ){
                     MooMessageDto mooMessageDto = new MooMessageDto();
@@ -1939,6 +1945,10 @@ public class MemberServiceImpl implements IMemberService {
                         bean.setReplyToName(m.getUserName());
                     }
                     bean.setParentId( evaluation.getGameId());
+                    GameDto gameDto  = gamesFeignClient.selectOne(evaluation.getGameId());
+                    if(gameDto != null){
+                        bean.setGameIdtSn( gameDto.getGameIdtSn());
+                    }
                 }
             } else if (commentBean.getTargetType() == 8) {
                 // @todo 社区接口

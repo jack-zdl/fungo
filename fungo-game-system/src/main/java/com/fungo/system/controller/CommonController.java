@@ -9,6 +9,7 @@ import com.fungo.system.service.SysVersionChannelService;
 import com.fungo.system.service.SysVersionService;
 import com.game.common.dto.*;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.MD5ParanCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -48,6 +49,7 @@ public class CommonController {
     @ApiOperation(value = "举报/反馈类型", notes = "")
     @RequestMapping(value = "/api/report/category", method = RequestMethod.GET)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<List<String>> getReportType(HttpServletRequest request) {
         String type = request.getParameter("type");
         return commonService.getReportType(type);
@@ -56,6 +58,7 @@ public class CommonController {
     @ApiOperation(value = "app配置信息", notes = "")
     @RequestMapping(value = "/api/config", method = RequestMethod.GET)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<Map<String, Boolean>> getAppConfig() {
         ResultDto<Map<String, Boolean>> re = new ResultDto<>();
         Map<String, Boolean> map = new HashMap<>();
@@ -69,6 +72,7 @@ public class CommonController {
     @ApiOperation(value = "app配置信息(2.4渠道)", notes = "")
     @RequestMapping(value = "/api/config", method = RequestMethod.POST)
     @ApiImplicitParams({})
+    @MD5ParanCheck(param = {"channelCode","version"})
     public ResultDto<Map<String, Boolean>> getAndroidAppConfig(@RequestBody AppConfigGetInput input, HttpServletRequest request) {
         String os = (String) request.getAttribute("os");
         ResultDto<Map<String, Boolean>> re = new ResultDto<>();
@@ -104,6 +108,7 @@ public class CommonController {
             @ApiImplicitParam(name = "title", value = "标题", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "content", value = "内容", paramType = "form", dataType = "string")
     })
+    @MD5ParanCheck(param = {"title","content"})
     public ResultDto<String> addFeedback(MemberUserProfile memberUserPrefile, @RequestBody FeedbackBean feedBack) throws Exception {
         return commonService.feedback(memberUserPrefile.getLoginId(), feedBack);
     }
@@ -111,6 +116,7 @@ public class CommonController {
     @ApiOperation(value = "检查更新(安卓)", notes = "")
     @RequestMapping(value = "/api/checkupdate", method = RequestMethod.POST)
     @ApiImplicitParams({})
+    @MD5ParanCheck()
     public ResultDto<Map<String, Object>> checkupdate(@Anonymous MemberUserProfile memberUserPrefile) {
         ResultDto<Map<String, Object>> re = new ResultDto<>();
         Map<String, Object> map = new HashMap<>();
@@ -128,6 +134,7 @@ public class CommonController {
     @ApiOperation(value = "检查更新(安卓2.4之后)", notes = "")
     @RequestMapping(value = "/api/checkappupdate", method = RequestMethod.POST)
     @ApiImplicitParams({})
+    @MD5ParanCheck(param = {"currentVersion","phoneType"})
     public ResultDto<Map<String, Object>> checkAppUpdate(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody VersionInput input) {
         ResultDto<Map<String, Object>> re = new ResultDto<>();
         //客户端当前版本
@@ -169,6 +176,7 @@ public class CommonController {
     @ApiOperation(value = "ios检查更新(2.4.3)", notes = "")
     @RequestMapping(value = "/api/checkiosupdate", method = RequestMethod.POST)
     @ApiImplicitParams({})
+    @MD5ParanCheck(param = {"currentVersion","channelCode"})
     public ResultDto<Map<String, Object>> checkIOSUpdate(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody VersionInput input) {
         ResultDto<Map<String, Object>> re = new ResultDto<>();
         String currentVersion = input.getCurrentVersion();
@@ -216,6 +224,7 @@ public class CommonController {
 
     @ApiOperation(value = "关于我们", notes = "")
     @RequestMapping(value = "/api/about", method = RequestMethod.GET)
+    @MD5ParanCheck()
     public ResultDto<Map<String, String>> getTaskHelp(@Anonymous MemberUserProfile memberUserPrefile) {
         ResultDto<Map<String, String>> re = new ResultDto<>();
         Map<String, String> map = new HashMap<>();
@@ -226,6 +235,7 @@ public class CommonController {
 
     @ApiOperation(value = "游戏评价打星说明 (v 2.4)", notes = "")
     @RequestMapping(value = "/api/starInfo", method = RequestMethod.GET)
+    @MD5ParanCheck()
     public ResultDto<ArrayList<StartInfo>> getStarInfo(@Anonymous MemberUserProfile memberUserPrefile) {
 //		ArrayList<StartInfo> list = (ArrayList<StartInfo>) GuavaCache.get("startInfo");
         ArrayList<StartInfo> list = new ArrayList<>();
@@ -244,6 +254,7 @@ public class CommonController {
 
     @ApiOperation(value = "游戏评价特征说明(v 2.4)", notes = "")
     @RequestMapping(value = "/api/trait", method = RequestMethod.GET)
+    @MD5ParanCheck()
     public ResultDto<ArrayList<Trait>> gettraitInfo(@Anonymous MemberUserProfile memberUserPrefile) {
         ArrayList<Trait> list = new ArrayList<>();
         list.add(new Trait("trait1", "画面"));

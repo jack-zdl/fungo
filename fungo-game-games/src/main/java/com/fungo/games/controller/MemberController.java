@@ -10,6 +10,8 @@ import com.game.common.dto.game.MyGameBean;
 import com.game.common.dto.game.MyGameInputPageDto;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.annotation.Anonymous;
+import com.game.common.util.annotation.MD5ParanCheck;
+import com.game.common.util.exception.BusinessException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -30,6 +32,7 @@ public class MemberController {
     @ApiOperation(value = "我的游戏列表", notes = "我的游戏列表")
     @RequestMapping(value = "/api/mine/gameList", method = RequestMethod.POST)
     @ApiImplicitParams({})
+    @MD5ParanCheck(param = {"page","limit","type"})
     public FungoPageResultDto<MyGameBean> getGameList(MemberUserProfile memberUserPrefile, @RequestBody MyGameInputPageDto inputPage, HttpServletRequest request) {
         String os = (String) request.getAttribute("os");
         return iGameService.getMyGameList(memberUserPrefile.getLoginId(), inputPage,os);
