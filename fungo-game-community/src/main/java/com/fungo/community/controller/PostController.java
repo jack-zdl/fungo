@@ -8,7 +8,6 @@ import com.fungo.community.dao.mapper.CmmPostCircleMapper;
 import com.fungo.community.dao.mapper.CmmPostDao;
 import com.fungo.community.dao.service.CmmCommunityDaoService;
 import com.fungo.community.dao.service.CmmPostDaoService;
-import com.fungo.community.dao.service.impl.ESDAOServiceImpl;
 import com.fungo.community.entity.CmmCircle;
 import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
@@ -40,7 +39,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -93,7 +91,6 @@ public class PostController {
         if (page < 1) {
             return new FungoPageResultDto<>();
         }
-
         int limit = searchInputDto.getLimit();
         return bsPostService.searchPosts(keyword, page, limit);
     }
@@ -112,13 +109,9 @@ public class PostController {
         if (page < 1) {
             return new FungoPageResultDto<GameDto>();
         }
-
         int limit = searchInputDto.getLimit();
         return bsPostService.queryCmmPostRefGameIds(keyword, page, limit);
     }
-
-
-
 
     @ApiOperation(value = "发帖", notes = "")
     @PostMapping(value = "/api/content/post")
@@ -140,7 +133,6 @@ public class PostController {
         return bsPostService.addPost(postInput, userId);
     }
 
-
     @ApiOperation(value = "发帖之前检查视频", notes = "")
     @PostMapping(value = "/api/content/post/check")
     @ApiImplicitParams({
@@ -157,9 +149,6 @@ public class PostController {
         return bsPostService.checkVedioPost(postInput, userId);
     }
 
-
-
-
     @ApiOperation(value = "删帖", notes = "")
     @DeleteMapping(value = "/api/content/post/{postId}")
     @ApiImplicitParams({
@@ -171,7 +160,6 @@ public class PostController {
         String userId = memberUserPrefile.getLoginId();
         return bsPostService.deletePost(postId, userId);
     }
-
 
     @ApiOperation(value = "修改帖子", notes = "")
     @PutMapping(value = "/api/content/post")
@@ -192,7 +180,6 @@ public class PostController {
         return bsPostService.editPost(postInput, userId, os);
     }
 
-
     @ApiOperation(value = "帖子详情", notes = "")
     @GetMapping(value = "/api/content/post/{postId}")
     @ApiImplicitParams({
@@ -209,7 +196,7 @@ public class PostController {
         try {
             return bsPostService.getPostDetails(postId, userId, os);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error( "帖子详情Controller层异常",e );
             return ResultDto.error("-1", "操作失败");
         }
     }
@@ -224,7 +211,6 @@ public class PostController {
             @ApiImplicitParam(name = "community_id", value = "社区id", paramType = "form", dataType = "String")
     })
     public FungoPageResultDto<PostOutBean> getPostContentList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody PostInputPageDto postInputPageDto) {
-
         String userId = "";
         if (memberUserPrefile != null) {
             userId = memberUserPrefile.getLoginId();
@@ -237,7 +223,6 @@ public class PostController {
         }
     }
 
-
     @ApiOperation(value = "社区置顶文章(2.4.3)", notes = "")
     @GetMapping(value = "/api/content/post/topic/{communityId}")
     public FungoPageResultDto<Map<String, String>> getTopicPosts(@Anonymous MemberUserProfile memberUserPrefile, @PathVariable("communityId") String communityId) {
@@ -249,7 +234,6 @@ public class PostController {
     public FungoPageResultDto<PostOutBean> getTopicPosts(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody PostInputPageDto inputPageDto) {
         return bsPostService.getTopicPosts(memberUserPrefile , inputPageDto);
     }
-
 
     /**
      * 首页文章帖子列表
@@ -271,24 +255,19 @@ public class PostController {
         if (memberUserPrefile != null) {
             keySuffix = memberUserPrefile.getLoginId() + JSON.toJSONString(inputPageDto);
         }
-
         re = (FungoPageResultDto<PostOutBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
         }
-
         re = new FungoPageResultDto<PostOutBean>();
         List<PostOutBean> list = new ArrayList<PostOutBean>();
         re.setData(list);
-
         String filter = inputPageDto.getFilter();
-
         Page<CmmPost> page = null;
         //查询的分页文章(帖子)数据
         List<CmmPost> plist = null;
         //总记录数
         int total = 0;
-
         Long rowId = inputPageDto.getRowId();
         String lastUpdateDate = inputPageDto.getLastUpdateDate();
         boolean isHaveRowIDAndLastUpdateDate = true;
@@ -317,29 +296,21 @@ public class PostController {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-
                 if (olist.size() > 0) {
-
                     EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<CmmPost>();
                     postEntityWrapper.in("community_id", olist).eq("state", 1);
-
                     //设置数据rowId和最后更新时间
                     queryPagePostWithRowIdUpdate(rowId, lastUpdateDate, postEntityWrapper);
-
                     postEntityWrapper.orderBy("updated_at", false);
                     //fix bug: 修改查询小于id和updated_at分页数据 [by mxf 2019-05-05]
                     if (!isHaveRowIDAndLastUpdateDate) {
-
                         page = this.daoPostService.selectPage(new Page<CmmPost>(inputPageDto.getPage(), inputPageDto.getLimit()), postEntityWrapper);
                         plist = page.getRecords();
                         total = page.getTotal();
-
                     } else {
-
                         //设置分页
                         postEntityWrapper.last("limit " + inputPageDto.getLimit());
                         plist = daoPostService.selectList(postEntityWrapper);
-
                         //查询总记录数
                         EntityWrapper<CmmPost> postEntityWrapperCount = new EntityWrapper<CmmPost>();
                         postEntityWrapperCount.in("community_id", olist).eq("state", 1);
@@ -347,16 +318,12 @@ public class PostController {
                     }
                 }
             }
-
         } else if ("2".equals(filter)) {
             if (memberUserPrefile != null) {
-
                 //获取关注用户id集合
-                List<String> olist = new ArrayList<String>();
-
+                List<String> olist = new ArrayList<>();
                 MemberFollowerVo memberFollowerVo = new MemberFollowerVo();
                 memberFollowerVo.setMemberId(memberUserPrefile.getLoginId());
-
                 FungoPageResultDto<String> followerUserIdResult = null;
                 try {
                     followerUserIdResult = systemFeignClient.getFollowerUserId(memberFollowerVo);
@@ -364,7 +331,7 @@ public class PostController {
                         olist.addAll(followerUserIdResult.getData());
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    LOGGER.error( "获取关注用户id集合异常",ex );
                 }
                 if (olist.size() > 0) {
 
@@ -439,7 +406,7 @@ public class PostController {
                         memberIdList.addAll(followerUserIdResult.getData());
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    LOGGER.error( "获取关注用户id集合异常",ex );
                 }
 
                 // 获取关注社区ID集合
@@ -602,43 +569,30 @@ public class PostController {
                     }
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error( "获取IOException文章异常",e );
             }
-
             //是否点赞
             if (memberUserPrefile == null) {
-
                 bean.setLiked(false);
-
             } else {
-
                 BasActionDto basActionDto = new BasActionDto();
-
                 basActionDto.setMemberId(memberUserPrefile.getLoginId());
                 basActionDto.setType(0);
                 basActionDto.setState(0);
                 basActionDto.setTargetId(cmmPost.getId());
-
                 int liked = 0;
-
                 try {
                     ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
-
                     if (null != resultDto) {
                         liked = resultDto.getData();
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    LOGGER.error( "获取是否点赞异常",ex );
                 }
-
-
                 bean.setLiked(liked > 0 ? true : false);
             }
-
-            //
             bean.setVideoCoverImage(cmmPost.getVideoCoverImage());
             bean.setType(cmmPost.getType());
-
             /**
              * 功能描述: 根据文章查询是否有圈子
              * @auther: dl.zhang
@@ -654,12 +608,9 @@ public class PostController {
         }
         //设置分页参数
         PageTools.pageToResultDto(re, total, inputPageDto.getLimit(), inputPageDto.getPage());
-
-        //redis cache
         fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
         return re;
     }
-
 
     /**
      * 设置社区-帖子|文章分页查询条件
@@ -686,7 +637,6 @@ public class PostController {
         }
         return bsPostService.top(userId,postInput.getPostId());
     }
-
 
     @ApiOperation(value="精华", notes="")
     @RequestMapping(value="/api/content/post/essence", method= RequestMethod.POST)
@@ -724,8 +674,6 @@ public class PostController {
         return bsPostService.updatePostTag(userId,postInput.getPostId(),postInput.getTagId());
     }
 
-
-
     @ApiOperation(value = "帖子權限", notes = "")
     @GetMapping(value = "/api/content/post/auth/{postId}")
     @ApiImplicitParams({
@@ -744,7 +692,6 @@ public class PostController {
         }
     }
 
-
     @ApiOperation(value = "修改文章", notes = "")
     @PutMapping(value = "/api/content/post/edit")
     @ApiImplicitParams({
@@ -760,6 +707,5 @@ public class PostController {
         String userId = memberUserPrefile.getLoginId();
         return bsPostService.editPost(postInput, userId);
     }
-
 
 }

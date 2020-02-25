@@ -46,8 +46,6 @@ public class AdvertController {
     @ApiImplicitParams({})
     @RequestMapping(value = "/api/advert", method = RequestMethod.GET)
     public ResultDto<List<AdvertOutBean>> getAdvert() {
-
-        //from redis
         ResultDto<List<AdvertOutBean>> re = new ResultDto<>();
         List<AdvertOutBean> list = null;
         list = (List<AdvertOutBean>) fungoCacheAdvert.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_INDEX, "");
@@ -55,52 +53,38 @@ public class AdvertController {
             re.setData(list);
             return re;
         }
-
         list = new ArrayList<>();
         //获取广告位
         List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0001").eq("state", 0).orderBy("sort", false));
         for (Banner banner : blist) {
-
-
             //业务类型:  3：游戏，1：帖子   [by mxf 2019-06-12 V2.5]
             Integer targetType = banner.getTargetType();
-
             //若targetType值为空或者0，则不展示，即不返回给前端
             if ( banner.getActionType() == 1 &&(null == targetType || 0 == targetType)) {
                 continue;
             }
-
-            //end
-
             AdvertOutBean bean = new AdvertOutBean();
             bean.setBizId(banner.getTargetId());
             if(banner.getActionType() == 2){
                 bean.setLinkUrl(banner.getHref());
             }
             bean.setBizType(targetType);
-
             if (3 == targetType) {
                 GameDto param = new GameDto();
                 param.setId(banner.getTargetId());
                 GameDto game = iGameProxyService.selectGameById(param);
                 bean.setGameIconURL(game.getIcon());
             }
-
             bean.setContent(CommonUtils.filterWord(banner.getIntro()));
             bean.setImageUrl(banner.getCoverImage());
             bean.setName(banner.getTag());
             bean.setTitle(CommonUtils.filterWord(banner.getTitle()));
             list.add(bean);
         }
-
         re.setData(list);
-
-        //redis cache
         fungoCacheAdvert.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_INDEX, "", list);
-
         return re;
     }
-
 
     /**
      * /api/advert接口为了适应pc关键字限制的问题
@@ -111,15 +95,12 @@ public class AdvertController {
     @ApiImplicitParams({})
     @RequestMapping(value = "/api/adt/bnr", method = RequestMethod.GET)
     public ResultDto<List<AdvertOutBean>> getAdvertWithPc() {
-
         ResultDto<List<AdvertOutBean>> re = new ResultDto<>();
-        //from redis
         List<AdvertOutBean> list = (List<AdvertOutBean>) fungoCacheAdvert.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_BNR, "");
         if (null != list && !list.isEmpty()) {
             re.setData(list);
             return re;
         }
-
         //获取广告位
         List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0001").eq("state", 0).orderBy("sort", false));
         if (null != blist && !blist.isEmpty()) {
@@ -132,22 +113,18 @@ public class AdvertController {
                 bean.setImageUrl(banner.getCoverImage());
                 bean.setName(banner.getTag());
                 bean.setTitle(CommonUtils.filterWord(banner.getTitle()));
-
                 list.add(bean);
             }
             re.setData(list);
-            //redis cache
             fungoCacheAdvert.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_BNR, "", list);
         }
         return re;
     }
 
-
     @ApiOperation(value = "发现页轮播", notes = "")
     @RequestMapping(value = "/api/recommend/discover", method = RequestMethod.GET)
     @ApiImplicitParams({})
     public ResultDto<List<Map<String, String>>> discover(@Anonymous MemberUserProfile memberUserPrefile) {
-
         ResultDto<List<Map<String, String>>> re = new ResultDto<>();
 //        List<Map<String, String>> listResult = (List<Map<String, String>>) fungoCacheAdvert.getIndexCache(FUNGO_CORE_API_ADVERT_RECOMMEND_DISCOVER, "");
 //        if (null != listResult && !listResult.isEmpty()) {
@@ -192,7 +169,6 @@ public class AdvertController {
             list.add(map1);
         }
         re.setData(list);
-        //redis cache
         fungoCacheAdvert.excIndexCache(true, FUNGO_CORE_API_ADVERT_RECOMMEND_DISCOVER, "", list);
         return re;
     }

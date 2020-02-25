@@ -1,6 +1,5 @@
 package com.fungo.system.controller;
 
-import com.fungo.system.entity.Banner;
 import com.fungo.system.service.IIndexService;
 import com.game.common.api.InputPageDto;
 import com.game.common.dto.FungoPageResultDto;
@@ -15,12 +14,10 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.objenesis.instantiator.android.Android10Instantiator;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -53,10 +50,8 @@ public class CircleController {
     public FungoPageResultDto<CardIndexBean> circleEventList(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPageDto) {
         FungoPageResultDto<CardIndexBean> re = null;
         try {
-            //iOS渠道
             String iosChannel = "";
             String os = "";
-
             os = (String) request.getAttribute("os");
             if (request.getHeader("iosChannel") != null) {
                 iosChannel = request.getHeader("iosChannel");
@@ -72,7 +67,6 @@ public class CircleController {
         return re;
     }
 
-
     /**
      * 功能描述: 首页活动位banner数据接口
      *
@@ -86,7 +80,6 @@ public class CircleController {
     @ApiImplicitParams({})
     public ResultDto<CircleCardDataBean> queryHomePage(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request) {
         ResultDto<CircleCardDataBean> re = null;
-        //iOS渠道
         String iosChannel = "";
         String os = "";
         os = (String) request.getAttribute("os");
@@ -99,8 +92,6 @@ public class CircleController {
         re = indexService.queryHomePage(os, iosChannel, app_channel, appVersion);
         return re;
     }
-
-
 
     /**
      * 功能描述: app端获取管控台设置的启动页banner
@@ -115,7 +106,6 @@ public class CircleController {
     @ApiImplicitParams({})
     public ResultDto<List<CircleCardDataBean>> queryStartUp(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request) {
         ResultDto<List<CircleCardDataBean>> re = null;
-        //iOS渠道
         String iosChannel = "";
         String os = "";
         os = (String) request.getAttribute("os");
@@ -128,7 +118,6 @@ public class CircleController {
         re = indexService.queryStartUp(os, iosChannel, app_channel, appVersion);
         return re;
     }
-
 
     /**
      * 功能描述: app端获取管控台设置的开屏页banner
@@ -149,6 +138,4 @@ public class CircleController {
         re = indexService.queryOpenScreen(os);
         return re;
     }
-
-
 }

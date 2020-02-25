@@ -16,8 +16,8 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
+
 
 @SuppressWarnings("all")
 @RestController
@@ -30,7 +30,6 @@ public class PortalCommunityController {
     private ICommunityService communityService;
     @Autowired
     private IPortalCommunityService iPortalCommunityService;
-
 
     @ApiOperation(value = "PC2.0社区详情", notes = "")
     @ApiImplicitParams({
@@ -47,7 +46,7 @@ public class PortalCommunityController {
         try {
             return communityService.getCommunityDetail(communityId, userId);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error( "PortalCommunityController.getCommunityDetail异常",e );
             return ResultDto.error("-1", "操作失败");
         }
     }

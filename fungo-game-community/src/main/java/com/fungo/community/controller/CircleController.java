@@ -56,7 +56,6 @@ public class CircleController {
        try {
            re = circleServiceImpl.selectCircle(memberId,cmmCircleVo);
        }catch (Exception e){
-           e.printStackTrace();
            LOGGER.error("获取圈子列表列表及详情",e);
             re = FungoPageResultDto.FungoPageResultDtoFactory.buildError("获取圈子列表异常，请联系管理员");
        }
@@ -79,7 +78,6 @@ public class CircleController {
         try {
             re = circleServiceImpl.selectCircleById(memberId,circleId);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("获取活动列表异常",e);
             re = ResultDto.error(CommonEnum.ERROR.code(),"获取圈子列表异常，请联系管理员");
         }
@@ -102,7 +100,6 @@ public class CircleController {
         try {
             re = circleServiceImpl.selectCircleType(memberId);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("app端获取圈子下属的文章",e);
             re = ResultDto.error(CommonEnum.ERROR.code(),"app端获取圈子下属的文章，请联系管理员");
         }
@@ -132,7 +129,6 @@ public class CircleController {
             re.setData(Collections.emptyList());
             return re;
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("app端获取圈子下属的文章",e);
             re = ResultDto.error(CommonEnum.ERROR.code(),"app端获取圈子下属的文章，请联系管理员");
         }
@@ -156,7 +152,6 @@ public class CircleController {
         try {
             re = circleServiceImpl.selectCirclePost(memberId,cmmCirclePostVo);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("app端获取圈子下属的文章",e);
             re = FungoPageResultDto.error(CommonEnum.ERROR.code(),"app端获取圈子下属的文章，请联系管理员");
         }
@@ -200,7 +195,6 @@ public class CircleController {
             CircleGamePostVo circleGamePostVo = new CircleGamePostVo(CircleGamePostVo.CircleGamePostTypeEnum.GAMESID.getKey(),gameId,"");
             re = circleServiceImpl.selectCircleByGame(memberId,circleGamePostVo);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("该游戏是否开通圈子",e);
             re = ResultDto.error("-1","该游戏是否开通圈子");
         }
@@ -224,7 +218,6 @@ public class CircleController {
         try {
             re = circleServiceImpl.selectCircleGamePost(memberId,circleGamePostVo);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("app端获取游戏圈子的文章",e);
             re = FungoPageResultDto.error("-1","app端获取游戏圈子的文章");
         }
@@ -271,7 +264,6 @@ public class CircleController {
         try {
             re = circleServiceImpl.selectCirclePlayer(memberId,cmmCirclePostVo);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("app端获取圈子的所有玩家榜",e);
             re = FungoPageResultDto.error("-1","app端获取圈子的所有玩家榜异常");
         }

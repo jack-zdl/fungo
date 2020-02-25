@@ -2,14 +2,9 @@ package com.fungo.system.controller;
 
 import cn.yueshutong.springbootstartercurrentlimiting.method.annotation.CurrentLimiter;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
-import com.auth0.jwt.internal.org.apache.commons.lang3.StringUtils;
 import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.dto.FungoMallDto;
-import com.fungo.system.mall.entity.MallGoods;
 import com.fungo.system.mall.service.IFungoMallGoodsService;
-import com.fungo.system.mall.service.commons.FungoMallScanOrderWithSeckillService;
-import com.fungo.system.service.impl.MemberServiceImpl;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
@@ -20,17 +15,12 @@ import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.CommonEnum;
 import com.game.common.repo.cache.facade.FungoCacheTask;
 import com.game.common.util.CommonUtil;
-import com.game.common.util.SpringBeanFactory;
 import com.game.common.util.annotation.Anonymous;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-
 
 /**
  * <p>添加商品</p>
@@ -50,8 +40,6 @@ public class FungoMallController {
     private NacosFungoCircleConfig nacosFungoCircleConfig;
     @Autowired
     private FungoCacheTask fungoCacheTask;
-
-
 
     @PostMapping("/mall/addGoods/")
     public ResultDto<Object> addGoods(@RequestBody FungoMallDto fungoMallDto){
@@ -135,8 +123,6 @@ public class FungoMallController {
         return isOk;
     }
 
-
-
     /**
      * 功能描述:
      * <p>中秋节日抽奖记录</p>
@@ -148,7 +134,6 @@ public class FungoMallController {
     @PostMapping("/mall/drawn/")
     public ResultDto<JSON> drawnFestivalMall(MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto){
         String memberId = memberUserPrefile.getLoginId();
-
         ResultDto<JSON> isOk = iFungoMallGoodsService.drawnFestivalMall(memberId);
         if(CommonEnum.SUCCESS.code().equals(String.valueOf(isOk.getStatus()))){
             return isOk;
@@ -168,6 +153,5 @@ public class FungoMallController {
     public ResultDto<JSON> getFestivalPostId(@Anonymous MemberUserProfile memberUserPrefile){
         return ResultDto.ResultDtoFactory.buildSuccess((Object) nacosFungoCircleConfig.getFestivalPostId());
     }
-
 
 }

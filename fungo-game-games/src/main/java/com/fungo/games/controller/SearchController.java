@@ -1,6 +1,5 @@
 package com.fungo.games.controller;
 
-
 import com.fungo.games.service.IGameService;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
@@ -14,11 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
-import javax.annotation.Resources;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 /**
  * 搜索服务
@@ -32,8 +27,6 @@ public class SearchController {
     @Autowired
     private IGameService gameService;
 
-
-
     @ApiOperation(value = "联想游戏", notes = "联想出搜索内容其余关键字")
     @RequestMapping(value = "/api/search/games/keyword", method = RequestMethod.POST)
     @ApiImplicitParams({
@@ -45,12 +38,9 @@ public class SearchController {
     })
     public FungoPageResultDto<String> searchGamesKeyword(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto, HttpServletRequest request) {
         int page = searchInputDto.getPage();
-
-        //fix: 页码 小于1 返回空 [by mxf 2019-01-30]
         if (page < 1) {
             return new FungoPageResultDto<String>();
         }
-
         int limit = searchInputDto.getLimit();
         String keyword = searchInputDto.getKey_word();
         if (StringUtils.isNotBlank(keyword)) {
@@ -67,7 +57,6 @@ public class SearchController {
         try {
             return gameService.searchGamesKeyword(page, limit, keyword, tag, sort, os, memberId);
         } catch (Exception e) {
-            e.printStackTrace();
             return FungoPageResultDto.error("-1", "操作失败");
         }
     }
@@ -84,12 +73,9 @@ public class SearchController {
     })
     public FungoPageResultDto<GameSearchOut> searchGames(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto, HttpServletRequest request) {
         int page = searchInputDto.getPage();
-
-        //fix: 页码 小于1 返回空 [by mxf 2019-01-30]
         if (page < 1) {
             return new FungoPageResultDto<GameSearchOut>();
         }
-
         int limit = searchInputDto.getLimit();
         String keyword = searchInputDto.getKey_word();
         if (StringUtils.isNotBlank(keyword)) {
@@ -106,7 +92,6 @@ public class SearchController {
         try {
             return gameService.searchGames(page, limit, keyword, tag, sort, os, memberId);
         } catch (Exception e) {
-            e.printStackTrace();
             return FungoPageResultDto.error("-1", "操作失败");
         }
     }

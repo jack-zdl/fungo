@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
 /**
  * <p></p>
  *
@@ -95,7 +93,6 @@ public class JobController {
         return re;
     }
 
-
     @GetMapping("/updateGameKeywords")
     public ResultDto<String> updateGameKeywords(){
         ResultDto<String> re = null;
@@ -135,7 +132,6 @@ public class JobController {
     public ResultDto<String> checkSystemNotice(  ){
         ResultDto<String> re = null;
         try {
-//            iFungoMallGoodsService.checkSystemNotice();
             iMemberNoticeService.updateSystemByGame();
             re = ResultDto.success("定时检查系统管控台系统消息定期任务执行成功");
         }catch (Exception e){
@@ -144,7 +140,6 @@ public class JobController {
         }
         return re;
     }
-
 
     /**
      * 功能描述: 定时更新邀请用户是否满足奖励条件
@@ -165,7 +160,6 @@ public class JobController {
         return re;
     }
 
-
     /**
      * 功能描述: 定时更新邀请用户是否满足奖励条件
      * @return: com.game.common.dto.ResultDto<java.lang.String>
@@ -184,8 +178,6 @@ public class JobController {
         }
         return re;
     }
-
-
 
     /**
      * 功能描述: 定时更新邀请用户是否满足奖励条件

@@ -1,8 +1,6 @@
 package com.fungo.games.controller;
 
-
 import com.fungo.games.entity.BasTag;
-import com.fungo.games.service.BasTagService;
 import com.fungo.games.service.IGameService;
 import com.fungo.games.service.ITagService;
 import com.game.common.dto.MemberUserProfile;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 @RestController
@@ -37,7 +34,6 @@ public class TagController {
 	@RequestMapping(value="/api/tag/taglist", method= {RequestMethod.POST , RequestMethod.GET})
 	public ResultDto<List> getTagListAll(@Anonymous MemberUserProfile memberUserPrefile) {
 		return iTagService.getTagListAll();
-		
 	}
 	
 	@ApiOperation(value="根据游戏ID获取游戏标签列表(2.4修改)", notes="")
@@ -46,8 +42,7 @@ public class TagController {
 		@ApiImplicitParam(name = "gameId",value = "游戏id",paramType = "form",dataType = "string"),
 		@ApiImplicitParam(name = "filter",value = "过滤字段",paramType = "form",dataType = "string")
 	})
-	public ResultDto<List> getGameTagList(@Anonymous MemberUserProfile memberUserPrefile,
-										  @RequestBody TagInput tagInput) {
+	public ResultDto<List> getGameTagList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody TagInput tagInput) {
 		String userId = "";
 		if(memberUserPrefile != null) {
 			userId = memberUserPrefile.getLoginId();
@@ -55,8 +50,6 @@ public class TagController {
 		String gameId = tagInput.getGameId();
 		return iGameService.getGameTagList(gameId,userId);
 	}
-
-
 
 	@ApiOperation(value="新增游戏标签", notes="")
 	@RequestMapping(value="/api/tag/game/addtag", method= RequestMethod.POST)
@@ -71,8 +64,6 @@ public class TagController {
 		try {
 			return iGameService.addGameTag(idList, userId, gameId);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			return ResultDto.error("-1", "操作失败");
 		} 
 	}
@@ -91,7 +82,6 @@ public class TagController {
 			userId = memberUserPrefile.getLoginId();
 		}
 		return iGameService.addGameTagAttitude(userId,tagRelId,attitude);
-		
 	}
 	
 	@ApiOperation(value="获取热门游戏标签", notes="")
@@ -112,15 +102,10 @@ public class TagController {
 		return iTagService.listPostTag();
 	}
 
-
-	//  v2.6 标签改版
 	@ApiOperation(value="获取所有分类及其下标签", notes="")
 	@RequestMapping(value="/api/game/tag/listAllGroupAndTag", method= RequestMethod.GET)
 	public ResultDto<List<BasTagGroupDto>> listAllGroupAndTag() {
 		return iTagService.listAllGroupAndTag();
 	}
 
-
-
-	
 }

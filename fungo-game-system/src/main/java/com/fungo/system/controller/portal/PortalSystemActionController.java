@@ -5,7 +5,6 @@ import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
-import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.CommonEnum;
 import com.game.common.repo.cache.facade.FungoCacheMood;
 import com.game.common.util.annotation.Anonymous;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -105,7 +103,6 @@ public class PortalSystemActionController {
         return this.actionService.report(memberUserPrefile.getLoginId(),inputDto);
     }
 
-
     @ApiOperation(value="下载", notes="")
     @RequestMapping(value="/api/portal/system/action/download", method= RequestMethod.POST)
     @ApiImplicitParams({
@@ -120,7 +117,6 @@ public class PortalSystemActionController {
         }
         return this.actionService.downLoad(memberId, inputDto);
     }
-
 
     @ApiOperation(value="分享", notes="")
     @RequestMapping(value="/api/portal/system/action/share", method= RequestMethod.POST)

@@ -1,6 +1,5 @@
 package com.fungo.community.controller;
 
-
 import com.fungo.community.service.IMoodService;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ObjectId;
@@ -19,8 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.DELETE;
-
 /**
  * 心情
  * @author sam
@@ -34,9 +31,6 @@ public class MoodController {
 
 	@Autowired
 	private IMoodService moodService;
-
-
-
 
 	@ApiOperation(value="发布心情", notes="")
 	@PostMapping(value="/api/content/mood")
@@ -53,9 +47,6 @@ public class MoodController {
 		return moodService.addMood(memberUserPrefile.getLoginId(),input);
 	}
 
-
-
-	
 	@ApiOperation(value="删心情", notes="")
 	@DeleteMapping(value="/api/content/mood/{moodId}")
 	@ApiImplicitParams({
@@ -65,9 +56,6 @@ public class MoodController {
 		return this.moodService.delMood(memberUserPrefile.getLoginId(), moodId);
 	}
 
-
-
-	
 	@ApiOperation(value="获取心情", notes="")
 	@GetMapping(value="/api/content/mood/{moodId}")
 	@ApiImplicitParams({
@@ -78,10 +66,7 @@ public class MoodController {
 		if(memberUserPrefile!=null) {
 			memberId=memberUserPrefile.getLoginId();
 		}
-	
 		return this.moodService.getMood(memberId, moodId);
 	}
-	
 
-	//----------
 }

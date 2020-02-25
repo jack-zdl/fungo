@@ -21,6 +21,8 @@ import com.game.common.util.date.DateTools;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +45,8 @@ import java.util.List;
 @RestController
 @Api(value = "", description = "PC2.0推荐")
 public class PortalSystemRecommendController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PortalSystemRecommendController.class);
 
     @Autowired
     private ICommunityService iCommunityService;
@@ -69,7 +73,6 @@ public class PortalSystemRecommendController {
     @ApiImplicitParams({
     })
     public FungoPageResultDto<FollowUserOutBean> getDynamicsUsersList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto) {
-
         FungoPageResultDto<FollowUserOutBean> re = new FungoPageResultDto<>();
         List<FollowUserOutBean> list = new ArrayList<>();
         re.setData(list);
@@ -85,7 +88,6 @@ public class PortalSystemRecommendController {
             FollowUserOutBean bean = new FollowUserOutBean();
             bean.setAvatar(member.getAvatar());
             bean.setCreatedAt(DateTools.fmtDate(member.getCreatedAt()));
-
             bean.setLevel(member.getLevel());
             bean.setMemberNo(member.getMemberNo());
             bean.setObjectId(member.getId());
@@ -107,8 +109,7 @@ public class PortalSystemRecommendController {
                 }
 //                bean.setStatusImg(userService.getStatusImage(member.getId()));
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOGGER.error( "玩家推荐规则",e);
             }
             if (!CommonUtil.isNull(member.getSign())) {
                 bean.setSign(member.getSign());
@@ -121,26 +122,20 @@ public class PortalSystemRecommendController {
         return re;
     }
 
-
     //手动分页
     public Page<Member> pageFormat(List<Member> members, int page, int limit) {
         int totalCount = members.size();//总条数
-
         int totalPage = (int) Math.ceil((double) totalCount / limit);//总页数
-
         if (members.size() == 0) {
-
         } else if (page == totalPage) {
             members = members.subList(limit * (page - 1), totalCount);
         } else {
             members = members.subList(limit * (page - 1), limit * page);
         }
-
         Page<Member> memberPage = new Page<>(page, limit);
         memberPage.setRecords(members);
         memberPage.setCurrent(page);
         memberPage.setTotal(totalCount);
-
         return memberPage;
     }
 }

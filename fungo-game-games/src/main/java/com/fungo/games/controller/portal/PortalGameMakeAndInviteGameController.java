@@ -27,12 +27,13 @@ import com.game.common.util.date.DateTools;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,6 +43,9 @@ import java.util.Map;
 @RestController
 @Api(value = "", description = "预约/邀请")
 public class PortalGameMakeAndInviteGameController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PortalHomePageController.class);
+
     @Autowired
     private IMakeAndInviteGameService makeAndInviteGameService;
     @Autowired
@@ -80,11 +84,10 @@ public class PortalGameMakeAndInviteGameController {
     @RequestMapping(value = "/api/portal/games/make/game/clause", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public ResultDto<Map<String, String>> getgameClause(@Anonymous MemberUserProfile memberUserPrefile) {
-        ResultDto<Map<String, String>> re = new ResultDto<Map<String, String>>();
-        Map<String, String> map = new HashMap<String, String>();
+        ResultDto<Map<String, String>> re = new ResultDto<>();
+        Map<String, String> map = new HashMap<>();
         map.put("url", "http://static.fungoweb.com/static/site/pages/testxy.html");
         re.setData(map);
-        ;
         return re;
     }
 
@@ -92,8 +95,8 @@ public class PortalGameMakeAndInviteGameController {
     @RequestMapping(value = "/api/portal/games/make/game/help", method = RequestMethod.GET)
     @ApiImplicitParams({})
     public ResultDto<Map<String, String>> getgameTestHelp() {
-        ResultDto<Map<String, String>> re = new ResultDto<Map<String, String>>();
-        Map<String, String> map = new HashMap<String, String>();
+        ResultDto<Map<String, String>> re = new ResultDto<>();
+        Map<String, String> map = new HashMap<>();
         map.put("url", "http://static.fungoweb.com/static/site/pages/testHelp.html");
         re.setData(map);
         return re;
@@ -125,10 +128,8 @@ public class PortalGameMakeAndInviteGameController {
     @RequestMapping(value = "/api/portal/games/invite/game", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public ResultDto<String> getInviteGaem(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InviteInput inputPageDto) {
-
         String appVersion = "";
         appVersion = request.getHeader("appversion");
-
         //IncentRanked ranked = incentRankedService.selectOne(new EntityWrapper<IncentRanked>().eq("mb_id", memberUserPrefile.getLoginId()).eq("rank_type", 1));
 //		if(ranked.getCurrentRankId() < 2) {
 //			return ResultDto.error("-1","需要到2级才能邀请玩家");
@@ -136,7 +137,6 @@ public class PortalGameMakeAndInviteGameController {
         if (CommonUtil.isNull(inputPageDto.getMemberId())) {
             return ResultDto.error("-1", "未找到邀请对象");
         }
-
         if (inputPageDto.getMemberId().equals(memberUserPrefile.getLoginId())) {
             return ResultDto.error("-1", "不能邀请你自己");
         }
@@ -159,7 +159,6 @@ public class PortalGameMakeAndInviteGameController {
             }
             //判断用户是否已被邀请
             GameInvite tem = gameInviteService.selectOne(new EntityWrapper<GameInvite>().eq("game_id", inputPageDto.getGameId()).eq("invite_member_id", inputPageDto.getMemberId()));
-
             if (tem != null) {
                 noticeId = tem.getNoticeId();
                 int count = gameInviteService.selectCount(new EntityWrapper<GameInvite>().eq("game_id", inputPageDto.getGameId()).eq("invite_member_id", inputPageDto.getMemberId()).orderBy( "created_at",false ));
@@ -192,7 +191,7 @@ public class PortalGameMakeAndInviteGameController {
                 try {
                     basNoticeDto.setData(objectMapper.writeValueAsString(msg));
                 } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                    LOGGER.error( "邀请(v2.3)异常",e);
                 }
 //                逻辑块变动,根据id修改basNotice数据
                 mqProduct.basNoticeUpdateById(basNoticeDto);
@@ -225,7 +224,7 @@ public class PortalGameMakeAndInviteGameController {
                 try {
                     basNoticeDto.setData(objectMapper.writeValueAsString(msg));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error( "邀请(v2.3)basnotice信息异常",e);
                 }
                 basNoticeDto.setIsRead(0);
                 basNoticeDto.setMemberId(inputPageDto.getMemberId());
@@ -246,11 +245,9 @@ public class PortalGameMakeAndInviteGameController {
             try {
                 mqProduct.push(inputPageDto.getMemberId(), 3, appVersion);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error( "邀请(v2.3)MQ信息异常",e);
             }
-
         }
-
         ResultDto<String> re = new ResultDto<String>();
         re.setMessage("邀请成功");
         return re;
@@ -271,7 +268,6 @@ public class PortalGameMakeAndInviteGameController {
         return re;
     }
 
-
     public MsgTplBean getMsg(String gameId, String content) {
         MsgTplBean msg = new MsgTplBean();
         msg.setActionType("1");
@@ -286,7 +282,5 @@ public class PortalGameMakeAndInviteGameController {
         msg.setMsgTime(DateTools.fmtDate(new Date()));
         return msg;
     }
-
-
 
 }

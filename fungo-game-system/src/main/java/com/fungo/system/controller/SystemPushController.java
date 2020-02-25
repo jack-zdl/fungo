@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.validation.Valid;
 
 /**
@@ -23,10 +22,8 @@ import javax.validation.Valid;
 @RestController
 public class SystemPushController {
 
-
     @Autowired
     private ISysPushDeviceTokenService iSysPushDeviceTokenService;
-
 
     /**
      * 消息推送目标设备token数据处理
@@ -36,7 +33,6 @@ public class SystemPushController {
      */
     @RequestMapping(value = "/api/sys/device/token", method = RequestMethod.POST)
     public ResultDto<String> bindThirdSNSWithLogged(@Valid @RequestBody GameSysPushDeviceTokenInput gameSysPushDeviceTokenInput) throws Exception {
-
         if (null == gameSysPushDeviceTokenInput) {
             return ResultDto.error("-1", "请输入必填项参数");
         }
@@ -47,6 +43,4 @@ public class SystemPushController {
         return ResultDto.error("-1", "操作失败");
     }
 
-
-    //--------
 }

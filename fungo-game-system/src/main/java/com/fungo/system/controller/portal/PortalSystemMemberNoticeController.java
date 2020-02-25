@@ -1,7 +1,6 @@
 package com.fungo.system.controller.portal;
 
 import com.fungo.system.dto.MemberNoticeInput;
-import com.fungo.system.service.IMemberNoticeService;
 import com.fungo.system.service.portal.PortalSystemIMemberNoticeService;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
@@ -28,7 +27,6 @@ import java.util.Map;
 @RestController
 public class PortalSystemMemberNoticeController {
 
-
     @Autowired
     private PortalSystemIMemberNoticeService iMemberNoticeService;
 
@@ -43,11 +41,8 @@ public class PortalSystemMemberNoticeController {
     @RequestMapping(value = "/api/portal/system/user/notices", method = RequestMethod.POST)
     public ResultDto<List<Map<String, Object>>> bindThirdSNSWithLogged(MemberUserProfile memberprofile, HttpServletRequest request,
                                                                        @Valid @RequestBody MemberNoticeInput noticeInput) throws Exception {
-
         noticeInput.setMb_id(memberprofile.getLoginId());
-
         List<Map<String, Object>> noticesList = iMemberNoticeService.queryMbNotices(noticeInput);
-
         if (null != noticesList && !noticesList.isEmpty()) {
             return ResultDto.success(noticesList);
         }

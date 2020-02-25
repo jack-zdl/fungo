@@ -36,13 +36,10 @@ public class MemberIncentAccountController {
     @Autowired
     private IMemberIncentAccountService iMemberIncentAccountService;
 
-
     @ApiOperation(value = "获取用户经验值(v2.4.3)", notes = "")
     @RequestMapping(value = "/api/user/incents/fortune/exp", method = RequestMethod.GET)
     @ApiImplicitParams({})
     public ResultDto<AccountScoreOutBean> getExpAccountOfMember(MemberUserProfile memberUserPrefile) {
-
-        LOGGER.info("call /api/user/incents/fortune/exp");
         ResultDto<AccountScoreOutBean> resultDto = new ResultDto<AccountScoreOutBean>();
         AccountScoreOutBean expAccountOfMember = iMemberIncentAccountService.getExpAccountOfMember(memberUserPrefile.getLoginId());
         if (null != expAccountOfMember) {
@@ -58,9 +55,6 @@ public class MemberIncentAccountController {
     @RequestMapping(value = "/api/user/incents/fortune/coin", method = RequestMethod.GET)
     @ApiImplicitParams({})
     public ResultDto<AccountCoinOutBean> getCoinAccountOfMember(MemberUserProfile memberUserPrefile) {
-
-        LOGGER.info("call /api/user/incents/fortune/coin");
-
         ResultDto<AccountCoinOutBean> resultDto = new ResultDto<AccountCoinOutBean>();
         AccountCoinOutBean accountCoinOutBean = iMemberIncentAccountService.getCoinAccountOfMember(memberUserPrefile.getLoginId());
         if (null != accountCoinOutBean) {
@@ -76,8 +70,6 @@ public class MemberIncentAccountController {
     @ApiImplicitParams({})
     public FungoPageResultDto<CoinBean> getCoinAccount(MemberUserProfile memberUserPrefile, @RequestBody AccountRecordInput input) {
         return iMemberIncentAccountService.getCoinAccount(memberUserPrefile.getLoginId(),input);
-
     }
-
 
 }

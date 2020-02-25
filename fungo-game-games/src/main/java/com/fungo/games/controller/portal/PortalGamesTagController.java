@@ -29,12 +29,6 @@ public class PortalGamesTagController {
 	@Autowired
 	private ITagService iTagService;
 
-	@Autowired
-	private IGameService iGameService;
-	
-
-
-
 	@ApiOperation(value="获得文章分类标签", notes="")
 	@RequestMapping(value="/api/portal/games/tag/listPostTag", method= RequestMethod.GET)
 	public ResultDto<List<BasTag>> listPostTag() {

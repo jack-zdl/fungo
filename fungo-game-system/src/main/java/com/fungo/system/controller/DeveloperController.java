@@ -25,8 +25,6 @@ import java.util.Map;
 public class DeveloperController {
 
 	@Autowired
-	private DeveloperService developerService;
-	@Autowired
 	private IDeveloperService iDeveloperService;
 	
 	@ApiOperation(value="绑定开发者信息", notes="")

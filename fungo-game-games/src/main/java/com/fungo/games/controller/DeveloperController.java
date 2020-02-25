@@ -1,14 +1,11 @@
 package com.fungo.games.controller;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-
 import com.fungo.games.service.IDeveloperService;
 import com.game.common.dto.DeveloperGame.DeveloperGamePageInput;
 import com.game.common.dto.DeveloperGame.DeveloperQueryIn;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
-import com.game.common.dto.game.AddGameInputBean;
 import com.game.common.dto.game.GameHistoryOut;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
@@ -16,9 +13,6 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -108,8 +102,6 @@ public class DeveloperController {
 	@RequestMapping(value="/api/developer/gemeAnalyze", method= RequestMethod.POST)
 	@ApiImplicitParams({})
 	public ResultDto<List<Map<String,Object>>> gemeAnalyze(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody DeveloperQueryIn input){
-
-		
 		return iDeveloperService.gemeAnalyzeLog(input);
 	}
 	
@@ -129,7 +121,6 @@ public class DeveloperController {
 //		if(!b) {
 //			return FungoPageResultDto.error("-1", "没有开发者权限");
 //		}
-		
 		return iDeveloperService.gameHistory(memberUserPrefile.getLoginId(),input);
 	}
 	

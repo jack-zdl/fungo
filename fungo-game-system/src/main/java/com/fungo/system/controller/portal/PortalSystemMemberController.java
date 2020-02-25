@@ -1,13 +1,8 @@
 package com.fungo.system.controller.portal;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
-import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.dto.*;
 import com.fungo.system.service.IMemberService;
-import com.fungo.system.service.IUserService;
-import com.fungo.system.service.impl.MemberServiceImpl;
 import com.fungo.system.service.portal.PortalSystemIMemberService;
 import com.fungo.system.service.portal.PortalSystemIUserService;
 import com.game.common.api.InputPageDto;
@@ -57,14 +52,12 @@ public class PortalSystemMemberController {
             @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "number")
     })
     public FungoPageResultDto<Map<String, Object>> getLikeNotice(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPage) throws Exception {
-
         String appVersion = "2.5.1";
         if(StringUtils.isNoneBlank(request.getHeader("appversion"))){
             appVersion = request.getHeader("appversion");
         }
         return memberService.getLikeNotice(memberUserPrefile.getLoginId(), inputPage, appVersion);
     }
-
 
     @ApiOperation(value = "获取评论我的", notes = "获取评论我的")
     @RequestMapping(value = "/api/portal/system/mine/comment", method = RequestMethod.POST)
@@ -73,14 +66,12 @@ public class PortalSystemMemberController {
             @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "number")
     })
     public FungoPageResultDto<Map<String, Object>> getCommentNotice(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPage) throws Exception {
-
         String appVersion = "2.5.1";
         if(StringUtils.isNoneBlank(request.getHeader("appversion"))){
             appVersion = request.getHeader("appversion");
         }
         return memberService.getCommentNotice(memberUserPrefile.getLoginId(), inputPage, appVersion);
     }
-
 
     @ApiOperation(value = "获取系统消息", notes = "获取系统消息")
     @RequestMapping(value = "/api/portal/system/mine/system", method = RequestMethod.POST)
@@ -97,7 +88,6 @@ public class PortalSystemMemberController {
     @RequestMapping(value = "/api/portal/system/mine/moods", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public FungoPageResultDto<MyPublishBean> getMyMoods(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody MermberSearchInput input) throws Exception {
-//		String loginId = memberUserPrefile.getLoginId();
         String memberId = input.getMemberId();
         if (CommonUtil.isNull(memberId)) {
             return FungoPageResultDto.error("-1", "未指定用户");
@@ -128,14 +118,12 @@ public class PortalSystemMemberController {
         if(memberUserPrefile != null){
             loginId = memberUserPrefile.getLoginId();
         }
-
         String memberId = input.getMemberId();
         if (CommonUtil.isNull(memberId)) {
             return FungoPageResultDto.error("-1", "未指定用户");
         }
         return iMemberService.getMyComments(loginId,memberId, input);
     }
-
 
     @ApiOperation(value = "PC2.0其他会员信息", notes = "PC2.0其他会员信息")
     @RequestMapping(value = "/api/portal/system/user/card/{cardId}", method = RequestMethod.GET)
@@ -201,7 +189,6 @@ public class PortalSystemMemberController {
             return FungoPageResultDto.error("-1", "找不到目标");
         }
         String myId = memberUserPrefile.getLoginId();
-
         return portalSystemIUserService.getFollower(myId, memberId, inputPage);
     }
 
@@ -227,7 +214,6 @@ public class PortalSystemMemberController {
                 return re;
             }
             re =  portalSystemIUserService.getFollowee(myId, memberId, inputPage);
-            //redis cache
             fungoCacheMember.excIndexCache(true, keyPrefix, keySuffix, re);
         }catch (Exception e){
             logger.error("PortalSystemMemberController.getFollowee获取我的粉丝异常",e);

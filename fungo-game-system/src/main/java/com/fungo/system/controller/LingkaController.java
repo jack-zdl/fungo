@@ -1,26 +1,19 @@
 package com.fungo.system.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.fungo.system.config.NacosFungoCircleConfig;
-import com.fungo.system.facede.impl.GameProxyServiceImpl;
-import com.fungo.system.helper.mq.MQProduct;
 import com.fungo.system.service.MemberPlayLogService;
 import com.fungo.system.service.SysVersionService;
 import com.fungo.system.tools.WXPayUtil;
-import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
-import com.game.common.dto.community.CmmPostDto;
 import com.game.common.vo.MemberPlayLogVO;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -178,7 +171,7 @@ public class LingkaController {
             response.setContentType("text/xml");
             response.getWriter().println("fail");
         }
-            return;
+        return;
     }
 
     /**
@@ -188,7 +181,6 @@ public class LingkaController {
     @PostMapping(value = "/api/system/vip/hide")
     @ResponseBody
     public ResultDto<HashMap<String, Object>> getVipHide(HttpServletRequest request,@RequestBody Map<String,Object> hashMap){
-
         String appVersion = "2.5.1";
         if(StringUtils.isNoneBlank( (String) hashMap.get("version") )){
             appVersion = (String) hashMap.get("version");
@@ -204,7 +196,6 @@ public class LingkaController {
         }
        return sysVersionService.getVipHide(appVersion,os,app_channel );
     }
-
 
     @PostMapping("/api/system/vip/aliPayAuthCallBack")
     public String aliPayAuthCallBack(HttpServletRequest request) {
@@ -236,21 +227,16 @@ public class LingkaController {
         } catch (final Exception e) {
 //            logger.error("支付宝回调地址", e);
             return "fail";
-        } finally {
-//            lock.unlock();
         }
     }
 
 
     @PostMapping("/api/system/vip/wxPaymentNotify")
     public String wxPaymentNotify(HttpServletRequest request, HttpServletResponse response) {
-
 //        RedissonClient redisson = RedissonUtil.getRedissonInstance();
 //        RLock lock = null;
         Map<String, String> returnData = new HashMap<>();
         try {
-//            logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<微信支付回调>>>>>>>>>>>>>>>>>>>>>>");
-
             InputStream inStream = request.getInputStream();
             ByteArrayOutputStream outSteam = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024];
@@ -258,21 +244,13 @@ public class LingkaController {
             while ((len = inStream.read(buffer)) != -1) {
                 outSteam.write(buffer, 0, len);
             }
-
-
             String resultxml = new String(outSteam.toByteArray(), "utf-8");
             outSteam.close();
             inStream.close();
-
-
 //            WeChatConfig config = new WeChatConfig();
 //            WXPay wxpay = new WXPay(config);
-
-
             Map<String, String> notifyMap = WXPayUtil.xmlToMap(resultxml); // 转换成map
 //            logger.info("###################################", JSONObject.toJSONString(notifyMap));
-
-
 //            if (wxpay.isPayResultNotifySignatureValid(notifyMap)) {
 //                String outTradeNo = notifyMap.get("out_trade_no");
 //                lock = redisson.getLock("wxPay:lock:" + outTradeNo);
@@ -288,15 +266,12 @@ public class LingkaController {
 //            }
         } catch (final Exception e) {
             try {
-//                logger.error("微信通知回调地址", e);
                 returnData.put("return_code", "FAIL");
                 returnData.put("return_msg", "异常不正确");
                 return WXPayUtil.mapToXml(returnData);
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
-        } finally {
-//            lock.unlock();
         }
         return null;
     }

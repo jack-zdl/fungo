@@ -156,10 +156,8 @@ public class PortalSystemThirdPartyController {
     @ApiImplicitParams({})
     @RequestMapping(value = "/api/portal/system/user/login/thirdpartypc", method = RequestMethod.POST)
     public ResultDto<LoginMemberBean> thirdUserLoginPc(HttpServletRequest request, @RequestBody ThirdLoginPcInput input) throws Exception {
-
         String host = request.getHeader("host");
         String appversion = request.getHeader("appversion");
-
         String code = input.getCode();
         int type = input.getPlatformType();
         ResultDto<ThirdLoginInput> thirdRe = null;
@@ -172,11 +170,9 @@ public class PortalSystemThirdPartyController {
         } else {
             return ResultDto.error("-1", "请求参数错误");
         }
-
         if (!thirdRe.isSuccess()) {
             return ResultDto.error("-1", thirdRe.getMessage());
         }
-
         ResultDto<LoginMemberBean> re = thirdLoginService.thirdPartyLogin(thirdRe.getData(), "pc", appversion,null);
         if (re.isSuccess()) {
             LoginMemberBean bean = re.getData();

@@ -62,7 +62,6 @@ public class PortalGamesGameController {
     @Autowired
     private GameDao gameDao;
 
-
     @ApiOperation(value = "游戏详情", notes = "")
     @RequestMapping(value = "/api/portal/games/content/game/number/{gameId}", method = RequestMethod.GET)
     @ApiImplicitParams({
@@ -81,7 +80,6 @@ public class PortalGamesGameController {
         try {
             return gameService.getGameDetailByNumber(gameId, memberId, os);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResultDto.error("-1", "操作失败");
         }
     }
@@ -101,7 +99,6 @@ public class PortalGamesGameController {
         try {
             return gameService.getGameDetail(gameId, memberId, os);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResultDto.error("-1", "操作失败");
         }
     }
@@ -114,13 +111,11 @@ public class PortalGamesGameController {
         return gameService.getGameTags();
     }
 
-
     @ApiOperation(value = "获取最近评论的游戏(2.4.3)", notes = "")
     @RequestMapping(value = "/api/portal/games/content/game/recenteva", method = RequestMethod.POST)
     @ApiImplicitParams({
     })
     public FungoPageResultDto<GameOutPage> recentEvaluatedGamesByMember(MemberUserProfile memberUserPrefile, @RequestBody InputPageDto input) {
-
         String userId = memberUserPrefile.getLoginId();
         return gameService.recentEvaluatedGamesByMember(userId, input);
     }
@@ -134,48 +129,37 @@ public class PortalGamesGameController {
             @ApiImplicitParam(name = "tag", value = "游戏分类", paramType = "path", dataType = "string")
     })
     public FungoPageResultDto<GameOutPage> getGameList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody GameInputPageDto gameInputDto, HttpServletRequest request) {
-
         String memberId = "";
         String os = "";
         if (memberUserPrefile != null) {
             memberId = memberUserPrefile.getLoginId();
         }
         os = (String) request.getAttribute("os");
-
         return gameService.getGameList(gameInputDto, memberId, os);
     }
 
-
     @ApiOperation(value = "pc端发现页游戏合集", notes = "")
     @RequestMapping(value = "/api/recommend/pc/gamegroup", method = RequestMethod.POST)
-    @ApiImplicitParams({
-    })
+    @ApiImplicitParams({ })
     public FungoPageResultDto<Map<String, Object>> pcGameGroup(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto input) {
         return indexService.pcGameGroup(input);
     }
-
 
     @ApiOperation(value = "pc端游戏合集详情", notes = "")
     @GetMapping(value = "/api/recommend/pc/groupdetail/{groupId}")
     @ApiImplicitParams({
     })
     public ResultDto<Map<String, Object>> groupDetail(@Anonymous MemberUserProfile memberUserPrefile, @PathVariable("groupId") String groupId) {
-
-
         Map<String, Object> map = null;
         ResultDto<Map<String, Object>> resultMap = null;
-
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_PC_GROUPDETAIL;
         map = (Map<String, Object>) fungoCacheIndex.getIndexCache(keyPrefix, groupId);
-
         if (null != map) {
             resultMap = ResultDto.success(map);
             return resultMap;
         }
-
         GameCollectionGroup group = gameCollectionGroupService.selectById(groupId);
         map = new HashMap<>();
-
         if (group != null) {
             map.put("topic_name", group.getName());
             List<GameCollectionItem> ilist = this.gameCollectionItemService.selectList(new EntityWrapper<GameCollectionItem>().eq("group_id", group.getId()).eq("show_state", "1")
@@ -208,30 +192,22 @@ public class PortalGamesGameController {
                 lists.add(map1);
             }
             map.put("game_list", lists);
-
         }
-
         resultMap = ResultDto.success(map);
-        //redis cacahe
         fungoCacheIndex.excIndexCache(true, keyPrefix, groupId, map);
-
         return resultMap;
     }
-
 
     @ApiOperation(value = "最近浏览游戏列表", notes = "")
     @RequestMapping(value = "/api/portal/games/content/viewGames", method = RequestMethod.GET)
     public ResultDto<List<GameOutPage>> viewGames(@Anonymous MemberUserProfile memberUserPrefile) {
         String memberId = "";
-        String os = "";
         if (memberUserPrefile != null) {
             memberId = memberUserPrefile.getLoginId();
         }
         if(StringUtil.isNull(memberId)){
             return ResultDto.error("-1","请登录");
         }
-        //"cec9c9dfe70b4ba9b684f81e617f4833"
         return gameService.viewGames(memberId);
     }
-
 }

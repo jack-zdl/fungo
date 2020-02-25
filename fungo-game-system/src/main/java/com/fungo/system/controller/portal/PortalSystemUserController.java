@@ -1,15 +1,12 @@
 package com.fungo.system.controller.portal;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fungo.system.dto.AppleInputBean;
 import com.fungo.system.dto.MobileusableBean;
 import com.fungo.system.dto.MsgInput;
 import com.fungo.system.dto.UserBean;
 import com.fungo.system.entity.LoginMemberBean;
 import com.fungo.system.entity.Member;
-import com.fungo.system.entity.MemberApple;
 import com.fungo.system.function.MemberLoginedStatisticsService;
 import com.fungo.system.service.*;
 import com.game.common.common.MemberIncentCommonUtils;
@@ -31,11 +28,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -52,51 +47,22 @@ import java.util.UUID;
 public class PortalSystemUserController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PortalSystemUserController.class);
+
     @Autowired
     private MessageCodeService messageCodeService;
-
-
     @Autowired
     private IUserService userService;
-
-
     @Autowired
     private MemberService memberService;
-
-
     @Autowired
     private TokenService tokenService;
-
-
     @Autowired
     private ObjectMapper objectMapper;
-
-
-    @Autowired
-    private MemberAppleService memberAppleService;
-
-
-    @Autowired
-    private IncentRuleRankService rankRuleService;
-
-
-    @Autowired
-    private IncentRankedService rankedService;
-
-
-    @Autowired
-    private IGameProxy gameProxy;
-
     @Autowired
     private MemberLoginedStatisticsService memberLoginedStatisticsService;
-
-    @Autowired
-    private BasActionService actionService;
-
     //用户成长业务
     @Resource(name = "memberIncentDoTaskFacadeServiceImpl")
     private IMemberIncentDoTaskFacadeService iMemberIncentDoTaskFacadeService;
-
 
     @ApiOperation(value = "用户注册《pc用》", notes = "用户注册《pc用》")
     @RequestMapping(value = "/api/portal/system/user/register", method = RequestMethod.POST)
@@ -126,11 +92,8 @@ public class PortalSystemUserController {
             @ApiImplicitParam(name = "captcha", value = "验证码", paramType = "form", dataType = "string")
     })
     public ResultDto<LoginMemberBean> loginpc(HttpSession session, @RequestBody MsgInput msg) throws JsonProcessingException, Exception {
-
         ValidateUtils.is(msg.getMobile()).notNull().maxLength(11).minLength(11);
         String imageCode = (String) session.getAttribute("imageCode");
-        System.out.println("HttpSession session" + imageCode);
-
         if (msg.getCaptcha() == null || imageCode == null || !imageCode.toLowerCase().equals(msg.getCaptcha().toLowerCase())) {
             return ResultDto.error("100", "验证码错误");
         }
@@ -153,9 +116,6 @@ public class PortalSystemUserController {
             @ApiImplicitParam(name = "code", value = "验证码", paramType = "form", dataType = "string")
     })
     public ResultDto<LoginMemberBean> login(HttpServletRequest request, @RequestBody MsgInput msg) throws  Exception {
-//		ValidateUtils.is(msg.getMobile()).notNull().maxLength(11).minLength(11);
-//		String os = "";
-//		os = (String)request.getAttribute("os");
         String appversion = request.getHeader("appversion");
         ResultDto<LoginMemberBean> re = userService.login(msg.getMobile(), msg.getPassword(), msg.getCode(), appversion,null,null);
         if (re.isSuccess()) {
@@ -209,8 +169,6 @@ public class PortalSystemUserController {
         ValidateUtils.is(msg.getCode()).notNull().minLength(6).and(msg.getMobile()).notNull().maxLength(11).minLength(11);
     }
 
-    /*********************************************************************************/
-
     @ApiOperation(value = "修改密码", notes = "修改密码")
     @RequestMapping(value = "/api/portal/system/mine/updatepassword", method = RequestMethod.POST)
     @ApiImplicitParams({
@@ -222,13 +180,11 @@ public class PortalSystemUserController {
         return this.userService.updatepassword(memberUserPrefile.getLoginId(), msg.getOld_password(), msg.getNew_password());
     }
 
-
     @ApiOperation(value = "退出登录", notes = "退出登录")
     @RequestMapping(value = "/api/portal/system/mine/logout", method = RequestMethod.POST)
     @ApiImplicitParams({
     })
     public ResultDto<String> logon(MemberUserProfile memberUserPrefile) {
-
         memberLoginedStatisticsService.removeLogoutFromBucket(memberUserPrefile.getLoginId());
         return ResultDto.success();
     }
@@ -243,7 +199,6 @@ public class PortalSystemUserController {
         ValidateUtils.is(msg.getCode()).notNull().and(msg.getMobile()).notNull();
         return this.userService.updateMobile(memberUserPrefile.getLoginId(), msg.getCode(), msg.getMobile());
     }
-
 
     @ApiOperation(value = "用户身份校验(配合修改密码操作)", notes = "用户身份校验(配合修改密码操作)")
     @RequestMapping(value = "/api/portal/system/mine/verify", method = RequestMethod.POST)
@@ -279,7 +234,6 @@ public class PortalSystemUserController {
 
     /*********************************************设置资料************************************/
 
-
     @ApiOperation(value = "个人资料", notes = "用户身份校验(配合修改密码操作)")
     @RequestMapping(value = "/api/portal/system/mine/info", method = RequestMethod.GET)
     @ApiImplicitParams({})
@@ -290,7 +244,6 @@ public class PortalSystemUserController {
         }
         return userService.getUserInfo(memberId);
     }
-
 
     @ApiOperation(value = "编辑个人资料", notes = "编辑个人资料")
     @RequestMapping(value = "/api/portal/system/mine/info", method = RequestMethod.POST)
@@ -307,13 +260,11 @@ public class PortalSystemUserController {
         return userService.editUser(memberId, msg);
     }
 
-
     @ApiOperation(value = "验证手机验证码有效性", notes = "验证手机验证码有效性")
     @RequestMapping(value = "/api/portal/system/user/verifycode", method = RequestMethod.POST)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "mobile", value = "手机号", paramType = "form", dataType = "String"),
             @ApiImplicitParam(name = "code", value = "验证码", paramType = "form", dataType = "String")
-
     })
     public ResultDto<Boolean> verifycode(@RequestBody MsgInput msgInput) {
         ResultDto<Boolean> res = new ResultDto<Boolean>();
@@ -325,7 +276,6 @@ public class PortalSystemUserController {
         }
         return res;
     }
-
 
     @Autowired
     private IFileService fileService;
@@ -359,11 +309,8 @@ public class PortalSystemUserController {
         Member member = this.memberService.selectById(memberUserPrefile.getLoginId());
         member.setAvatar(imagePath);
         member.updateById();
-
         //V2.4.6版本之前任务
         //gameProxy.addTaskCore(Setting.ACTION_TYPE_AVATAR, memberUserPrefile.getLoginId(), "", -1);
-
-
         //V2.4.6版本任务
         //1 经验值
         iMemberIncentDoTaskFacadeService.exTask(memberUserPrefile.getLoginId(), FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
@@ -371,21 +318,15 @@ public class PortalSystemUserController {
         //2 fungo币
         iMemberIncentDoTaskFacadeService.exTask(memberUserPrefile.getLoginId(), FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE.code(),
                 MemberIncentTaskConsts.INECT_TASK_VIRTUAL_COIN_TASK_CODE_IDT, FunGoIncentTaskV246Enum.TASK_GROUP_NEWBIE_UPATE_AVATAR_COIN.code());
-
         ResultDto<Map<String, String>> re = new ResultDto<Map<String, String>>();
         Map<String, String> map = new HashMap<String, String>();
         map.put("url", imagePath);
         re.setData(map);
-
         re.setMessage("编辑成功");
-
         return re;
     }
-
 
     public String getAllowSuffix() {
         return allowSuffix;
     }
-
-
 }

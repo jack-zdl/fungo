@@ -40,15 +40,10 @@ public class MemberIncentRuleRankController {
     @RequestMapping(value = "/api/user/incents/rule/dignities", method = RequestMethod.GET)
     @ApiImplicitParams({})
     public ResultDto<List<Map<String, Object>>> dignityRules() {
-
-        LOGGER.info("call /api/user/incents/rule/dignities");
-
         //查看评测身份
         Long rankGroupId = 0L;
         int rankType = FunGoGameConsts.INCENT_RULE_RANK_FLAG_HONORS_EVALUATIONER;
         int rankFlag = FunGoGameConsts.INCENT_RULE_RANK_FLAG_HONORS_NULL;
-
-
         ResultDto<List<Map<String, Object>>> resultDto = new ResultDto<List<Map<String, Object>>>();
         List<Map<String, Object>> resutList = iMemberIncentRuleRankService.getIncentRule(rankGroupId, rankType, rankFlag, true);
         if (null != resutList) {
@@ -64,15 +59,10 @@ public class MemberIncentRuleRankController {
     @RequestMapping(value = "/api/user/incents/rule/honors", method = RequestMethod.GET)
     @ApiImplicitParams({})
     public ResultDto<List<Map<String, Object>>> getHonorRules() {
-
-        LOGGER.info("call /api/user/incents/rule/honors");
-
         //查看荣誉规则
         Long rankGroupId = 0L;
         int rankType = FunGoGameConsts.INCENT_RULE_RANK_TYPE_HONORS;
         int rankFlag = FunGoGameConsts.INCENT_RULE_RANK_FLAG_HONORS_NULL;
-
-
         ResultDto<List<Map<String, Object>>> resultDto = new ResultDto<List<Map<String, Object>>>();
         List<Map<String, Object>> resutList = iMemberIncentRuleRankService.getIncentRule(rankGroupId, rankType, rankFlag, true);
         if (null != resutList) {
@@ -82,7 +72,4 @@ public class MemberIncentRuleRankController {
         }
         return resultDto;
     }
-
-
-    //----------
 }

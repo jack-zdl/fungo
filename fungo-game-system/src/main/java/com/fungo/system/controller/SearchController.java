@@ -13,9 +13,10 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 
 /**
  * 搜索服务
@@ -26,6 +27,8 @@ import org.springframework.web.bind.annotation.*;
 @Api(value = "", description = "搜索服务")
 public class SearchController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger( SearchController.class);
+
     @Autowired
     private ISeacherService searchService;
 
@@ -34,13 +37,11 @@ public class SearchController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "用户id", paramType = "form", dataType = "string"),
     })
-
     public ResultDto getKeywords(@Anonymous MemberUserProfile memberUserPrefile) {
-
         try {
             return searchService.getKeywords();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error( "获取搜索关键词异常",e);
             return ResultDto.error("-1", "操作失败");
         }
     }
@@ -56,12 +57,10 @@ public class SearchController {
     public FungoPageResultDto<AuthorBean> searchUsers(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto) {
         int page = searchInputDto.getPage();
         int limit = searchInputDto.getLimit();
-
         //fix: 页码 小于1 返回空 [by mxf 2019-01-30]
         if (page < 1) {
             return new FungoPageResultDto<AuthorBean>();
         }
-
         String keyword = searchInputDto.getKey_word();
         if (StringUtils.isNotBlank(keyword)) {
             keyword = keyword.trim();
@@ -73,7 +72,7 @@ public class SearchController {
         try {
             return searchService.searchUsers(keyword, page, limit, userId);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error( "搜索用户异常",e);
             return FungoPageResultDto.error("-1", "操作失败");
         }
 

@@ -2,7 +2,6 @@ package com.fungo.system.controller;
 
 import com.fungo.system.dto.VodIntroInput;
 import com.fungo.system.service.IFGoGameApiAliVodService;
-import com.fungo.system.service.IVdService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -23,10 +22,8 @@ public class VideoController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VideoController.class);
 
-
     @Autowired
     private IFGoGameApiAliVodService ifGoGameApiAliVodService;
-
 
     @ApiOperation(value = "视频压缩回调", notes = "")
     @RequestMapping(value = "/vd/callback", method = RequestMethod.POST)
@@ -34,10 +31,8 @@ public class VideoController {
             @ApiImplicitParam(name = "image", value = "验证码", paramType = "form", dataType = "file"),
     })
     public void callBack(@RequestBody String video) throws Exception {
-        System.out.println("压缩回调...");
         ifGoGameApiAliVodService.callBack(video);
     }
-
 
     /**
      * 从阿里云获取上传视频凭证
@@ -59,8 +54,6 @@ public class VideoController {
         return ifGoGameApiAliVodService.getUploadAuth(vodIntroInput);
     }
 
-
-
     /**
      * 从阿里云获取上传视频的播放地址
      *
@@ -76,5 +69,4 @@ public class VideoController {
         return ifGoGameApiAliVodService.getVideoPayURL(vodIntroInput);
     }
 
-    //-----------
 }

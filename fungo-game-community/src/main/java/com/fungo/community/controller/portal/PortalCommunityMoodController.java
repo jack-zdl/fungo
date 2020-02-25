@@ -44,7 +44,6 @@ public class PortalCommunityMoodController {
         return this.moodService.getMood(memberId, moodId);
     }
 
-
     @ApiOperation(value="PC2.0发布心情", notes="")
     @PostMapping(value="/api/portal/community/content/mood")
     @ApiImplicitParams({

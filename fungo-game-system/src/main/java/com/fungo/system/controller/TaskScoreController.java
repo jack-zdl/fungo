@@ -1,9 +1,7 @@
 package com.fungo.system.controller;
 
-import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.helper.TaskUrl;
 import com.fungo.system.service.IMemberIncentSignInTaskService;
-import com.fungo.system.service.IScoreRuleService;
 import com.fungo.system.service.ITaskService;
 import com.fungo.system.service.MemberPlayLogService;
 import com.game.common.dto.MemberUserProfile;
@@ -13,12 +11,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
-
 import static org.terracotta.modules.ehcache.ToolkitInstanceFactoryImpl.LOGGER;
 
 /**
@@ -30,6 +28,7 @@ import static org.terracotta.modules.ehcache.ToolkitInstanceFactoryImpl.LOGGER;
 @Api(value = "", description = "任务积分")
 public class TaskScoreController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskScoreController.class);
 
     @Autowired
     private ITaskService taskService;
@@ -47,7 +46,7 @@ public class TaskScoreController {
             //return taskService.checkInfo(userId);
             return iMemberIncentSignInTaskService.getMemberSignInInfo(userId);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error( "获得签到信息异常",e);
             return ResultDto.error("-1", "操作失败");
         }
     }
@@ -68,7 +67,7 @@ public class TaskScoreController {
         try {
             return taskService.getTaskList(userId, category_id);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error( "获得任务列表异常",e);
             return ResultDto.error("-1", "操作失败");
         }
     }
@@ -90,7 +89,7 @@ public class TaskScoreController {
             //return taskService.checkIn(userId);
             return iMemberIncentSignInTaskService.exSignIn(userId);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error( "签到异常",e);
             return ResultDto.error("-1", "操作失败");
         }
     }

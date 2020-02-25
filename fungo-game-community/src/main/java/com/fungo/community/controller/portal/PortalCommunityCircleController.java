@@ -1,6 +1,5 @@
 package com.fungo.community.controller.portal;
 
-import com.fungo.community.job.CircleHotValueJob;
 import com.fungo.community.service.CircleService;
 import com.fungo.community.service.portal.IPortalCommunityPostService;
 import com.game.common.dto.FungoPageResultDto;
@@ -9,7 +8,6 @@ import com.game.common.dto.ResultDto;
 import com.game.common.dto.community.*;
 import com.game.common.enums.CommonEnum;
 import com.game.common.util.CommonUtil;
-import com.game.common.util.CommonUtils;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.vo.CircleGamePostVo;
 import com.game.common.vo.CmmCirclePostVo;
@@ -23,11 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -61,11 +55,10 @@ public class PortalCommunityCircleController {
     @ApiImplicitParams({})
     public ResultDto<CmmCircleDto>  selectCircleByPostId(@Anonymous MemberUserProfile memberUserPrefile, @PathVariable("postId") String postId) {
         ResultDto<CmmCircleDto>  re = null;
-        String memberId = memberUserPrefile == null ? "" : memberUserPrefile.getLoginId();
+//        String memberId = memberUserPrefile == null ? "" : memberUserPrefile.getLoginId();
         try {
             re = circleServiceImpl.selectCircleByPostId(postId);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("app端获取圈子的所有玩家榜",e);
             re = ResultDto.error("-1","app端获取圈子的所有玩家榜异常");
         }
@@ -89,7 +82,6 @@ public class PortalCommunityCircleController {
         try {
             re = portalCommunityPostService.selectCircleGamePost(memberId,circleGamePostVo);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("app端获取游戏圈子的文章",e);
             re = FungoPageResultDto.error("-1","app端获取游戏圈子的文章");
         }
@@ -113,7 +105,6 @@ public class PortalCommunityCircleController {
         try {
             re = circleServiceImpl.selectGameCircle (memberId,circleGamePostVo);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("app端获取游戏相关的圈子",e);
             re = FungoPageResultDto.error("-1","app端获取游戏相关的圈子");
         }
@@ -132,13 +123,11 @@ public class PortalCommunityCircleController {
     @ApiImplicitParams({})
     public ResultDto<CmmCircleDto> selectCircle(@Anonymous MemberUserProfile memberUserPrefile, @PathVariable("circleId")  String circleId) {
         if(CommonUtil.isNull(circleId) || circleId.length() != 32) return  ResultDto.ResultDtoFactory.buildError( "圈子id不符合规范" );
-
         ResultDto<CmmCircleDto> re = null;
         String memberId = memberUserPrefile == null ? "" : memberUserPrefile.getLoginId();
         try {
             re = circleServiceImpl.selectCircleById(memberId,circleId);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("获取活动列表异常",e);
             re = ResultDto.error(CommonEnum.ERROR.code(),"获取圈子列表异常，请联系管理员");
         }
@@ -162,7 +151,6 @@ public class PortalCommunityCircleController {
         try {
             re = circleServiceImpl.selectCirclePost(memberId,cmmCirclePostVo);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("app端获取圈子下属的文章",e);
             re = FungoPageResultDto.error(CommonEnum.ERROR.code(),"app端获取圈子下属的文章，请联系管理员");
         }
@@ -192,15 +180,11 @@ public class PortalCommunityCircleController {
             re.setData(Collections.emptyList());
             return re;
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("app端获取圈子下属的文章",e);
             re = ResultDto.error(CommonEnum.ERROR.code(),"app端获取圈子下属的文章，请联系管理员");
         }
         return re;
     }
-
-
-
 
     /**
      * 功能描述: PC端获取圈子列表列表及详情
@@ -218,12 +202,10 @@ public class PortalCommunityCircleController {
         try {
             re = circleServiceImpl.selectCircle(memberId,cmmCircleVo);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("获取圈子列表列表及详情",e);
             re = FungoPageResultDto.FungoPageResultDtoFactory.buildError("获取圈子列表异常，请联系管理员");
         }
         return re;
     }
-
 
 }

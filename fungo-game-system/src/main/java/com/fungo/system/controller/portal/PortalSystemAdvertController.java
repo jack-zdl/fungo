@@ -41,10 +41,6 @@ import static com.game.common.consts.FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_
 public class PortalSystemAdvertController {
     @Autowired
     private BannerService bannerService;
-//    @Autowired
-//    private GameDao gameDao;
-//    @Autowired
-//    private CmmPostService postService;
     @Autowired
     private FungoCacheAdvert fungoCacheAdvert;
     @Autowired
@@ -58,15 +54,12 @@ public class PortalSystemAdvertController {
     @RequestMapping(value = "/api/portal/system/recommend/discover", method = RequestMethod.GET)
     @ApiImplicitParams({})
     public ResultDto<List<Map<String, String>>> discover(@Anonymous MemberUserProfile memberUserPrefile) {
-
         ResultDto<List<Map<String, String>>> re = new ResultDto<List<Map<String, String>>>();
-        List<Map<String, String>> listResult = (List<Map<String, String>>) fungoCacheAdvert.getIndexCache(FUNGO_CORE_API_ADVERT_RECOMMEND_DISCOVER,
-                "");
+        List<Map<String, String>> listResult = (List<Map<String, String>>) fungoCacheAdvert.getIndexCache(FUNGO_CORE_API_ADVERT_RECOMMEND_DISCOVER,"");
         if (null != listResult && !listResult.isEmpty()) {
             re.setData(listResult);
             return re;
         }
-
         List<Map<String, String>> list = new ArrayList<Map<String, String>>();
         //获取广告位
         List<Banner> blist = bannerService.selectList(new EntityWrapper<Banner>().eq("position_code", "0002").eq("state", 0).orderBy("sort", false));
@@ -95,7 +88,6 @@ public class PortalSystemAdvertController {
             list.add(map1);
         }
         re.setData(list);
-        //redis cache
         fungoCacheAdvert.excIndexCache(true, "/api/recommend/discover", "", list);
         return re;
     }

@@ -17,12 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * <p>pc2.0 首页</p>
- *
  * @Author: dl.zhang
  * @Date: 2019/5/27
  */
@@ -46,12 +44,10 @@ public class PortalGamesSearchController {
     })
     public FungoPageResultDto<GameSearchOut> searchGames(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto, HttpServletRequest request) {
         int page = searchInputDto.getPage();
-
         //fix: 页码 小于1 返回空 [by mxf 2019-01-30]
         if (page < 1) {
             return new FungoPageResultDto<GameSearchOut>();
         }
-
         int limit = searchInputDto.getLimit();
         String keyword = searchInputDto.getKey_word();
         String tag = searchInputDto.getTag();
@@ -65,7 +61,6 @@ public class PortalGamesSearchController {
         try {
             return iGameService.searchGames(page, limit, keyword, tag, sort, os, memberId);
         } catch (Exception e) {
-            e.printStackTrace();
             return FungoPageResultDto.error("-1", "操作失败");
         }
     }
@@ -80,7 +75,6 @@ public class PortalGamesSearchController {
             @ApiImplicitParam(name = "sort", value = "排序字段（‘+，- ，表示返回顺序）", paramType = "form", dataType = "string")
     })
     public FungoPageResultDto<GameOutPage> searchGamesByDownload(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto input) {
-        int page = input.getPage();
         String memberId = "";
         if (memberUserPrefile != null) {
             memberId = memberUserPrefile.getLoginId();

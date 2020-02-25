@@ -1,7 +1,6 @@
 package com.fungo.system.controller.portal;
 
 import com.fungo.system.dto.DeveloperBean;
-import com.fungo.system.service.DeveloperService;
 import com.fungo.system.service.IDeveloperService;
 import com.game.common.dto.DeveloperGame.DeveloperGameOut;
 import com.game.common.dto.DeveloperGame.DeveloperGamePageInput;
@@ -18,7 +17,6 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +24,7 @@ import java.util.Map;
 @RestController
 @Api(value="",description="开发者")
 public class PortalSystemDeveloperController {
-
-	@Autowired
-	private DeveloperService developerService;
+;
 	@Autowired
 	private IDeveloperService iDeveloperService;
 	
@@ -53,7 +49,6 @@ public class PortalSystemDeveloperController {
 	}
 
 	/**
-	 *
 	 * @param memberUserPrefile
 	 * @param input
 	 * @return
@@ -82,7 +77,6 @@ public class PortalSystemDeveloperController {
 	}
 
 	/**
-	 *
 	 * @param memberUserPrefile
 	 * @param input
 	 * @return
@@ -95,7 +89,6 @@ public class PortalSystemDeveloperController {
 	}
 
 	/**
-	 *
 	 * @param memberUserPrefile
 	 * @param input
 	 * @return
@@ -108,7 +101,6 @@ public class PortalSystemDeveloperController {
 	}
 
 	/**
-	 *
 	 * @param memberUserPrefile
 	 * @param input
 	 * @return
@@ -122,7 +114,6 @@ public class PortalSystemDeveloperController {
 	}
 
 	/**
-	 *
 	 * @param memberUserPrefile
 	 * @param input
 	 * @return
@@ -131,15 +122,10 @@ public class PortalSystemDeveloperController {
 	@RequestMapping(value="/api/portal/system/developer/gameHistory", method= RequestMethod.POST)
 	@ApiImplicitParams({})
 	public FungoPageResultDto<GameHistoryOut> gameHistory(MemberUserProfile memberUserPrefile, @RequestBody DeveloperGamePageInput input){
-//		boolean b = iDeveloperService.checkDpPower(memberUserPrefile.getLoginId());
-//		if(!b) {
-//			return FungoPageResultDto.error("-1", "没有开发者权限");
-//		}
 		return iDeveloperService.gameHistory(memberUserPrefile.getLoginId(),input);
 	}
 
 	/**
-	 *
 	 * @param memberUserPrefile
 	 * @param input
 	 * @return
@@ -151,9 +137,6 @@ public class PortalSystemDeveloperController {
 		return iDeveloperService.updateGame(memberUserPrefile,input);
 	}
 
-	/**
-	 * @todo
-	 */
 	@ApiOperation(value="开发者更新游戏", notes="")
 	@RequestMapping(value="/api/portal/system/developer/test", method= RequestMethod.POST)
 	@ApiImplicitParams({})

@@ -15,7 +15,7 @@ public class InitBeanConfiguration {
     private static Logger logger = LoggerFactory.getLogger(InitBeanConfiguration.class);
 
 
-//    @Bean(name = "cacheManager")https://blog.csdn.net/just4you/article/details/88397946
+//    @Bean(name = "cacheManager")
 //    public CacheManager CacheManager(EhCacheManagerFactoryBean bean){
 //        EhCacheManagerFactoryBean cacheManagerFactoryBean = new EhCacheManagerFactoryBean();
 //        cacheManagerFactoryBean.setConfigLocation(new ClassPathResource("ehcache.xml"));

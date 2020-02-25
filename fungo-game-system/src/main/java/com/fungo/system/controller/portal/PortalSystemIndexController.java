@@ -40,8 +40,6 @@ public class PortalSystemIndexController {
     private static final Logger LOGGER = LoggerFactory.getLogger(PortalSystemIndexController.class);
 
     @Autowired
-    private BannerService bannerService;
-    @Autowired
     private FungoCacheIndex fungoCacheIndex;
     @Autowired
     private FungoCacheAdvert fungoCacheAdvert;
@@ -59,9 +57,7 @@ public class PortalSystemIndexController {
     @ApiImplicitParams({})
     @RequestMapping(value = "/api/portal/system/adt/bnr", method = RequestMethod.GET)
     public ResultDto<List<AdvertOutBean>> getAdvertWithPc() {
-
         ResultDto<List<AdvertOutBean>> re = null;
-        //from redis
         try {
             List<AdvertOutBean> list = (List<AdvertOutBean>) fungoCacheAdvert.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_ADVERT_BNR, "");
             if (null != list && !list.isEmpty()) {
@@ -70,7 +66,6 @@ public class PortalSystemIndexController {
                 return re;
             }
             re = portalSystemIIndexServiceImpl.getAdvertWithPc();
-            //redis cache
             fungoCacheAdvert.excIndexCache(true, "/api/portal/index/adt/bnr", "", list);
         }catch (Exception e){
             LOGGER.error("首页游戏banner接口(v2.3)",e);
@@ -84,19 +79,16 @@ public class PortalSystemIndexController {
      * 功能描述: 首页安利墙和精品文章1和2和社区文章
      * @param: [memberUserPrefile, request, inputPageDto]
      * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
+     *     iosChannel (int,optional): 1,2,3 (1:appStore上线,2:appTestFlight开发包,3:appInhouse企业包)
      * @auther: dl.zhang
      * @date: 2019/5/27 11:12
      */
     @ApiOperation(value = "首页(v2.4)", notes = "")
     @PostMapping(value = "/api/portal/system/recommend/index")
     @ApiImplicitParams({})
-    /*
-     * iosChannel (int,optional): 1,2,3 (1:appStore上线,2:appTestFlight开发包,3:appInhouse企业包)
-     */
     public FungoPageResultDto<CardIndexBean> recommendList(@RequestBody InputPageDto inputPageDto) {
         FungoPageResultDto<CardIndexBean> re = null;
         try {
-            //先从Redis获取
             String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_INDEX;
             String keySuffix = JSON.toJSONString(inputPageDto);
             re = (FungoPageResultDto<CardIndexBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);

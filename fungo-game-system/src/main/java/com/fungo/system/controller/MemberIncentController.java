@@ -25,15 +25,6 @@ import java.util.List;
 @RestController
 public class MemberIncentController {
 
-    @Autowired
-    private IMemberIncentAccountService incentAccountService;
-
-    @Autowired
-    private IMemberIncentRuleRankService iMemberIncentRuleRankService;
-
-    @Autowired
-    private IMemberIncentRiskService iMemberIncentRiskService;
-
     @ApiOperation(value = "增加身份规则(v2.4.3)", notes = "")
     @RequestMapping(value = "/api/user/incents/rule/dignity", method = RequestMethod.POST)
     @ApiImplicitParams({})

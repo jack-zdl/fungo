@@ -1,23 +1,21 @@
 package com.fungo.system.controller.portal;
 
-
-
 import com.fungo.system.service.ISeacherService;
 import com.fungo.system.service.portal.PortalSystemISeacherService;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
-import com.game.common.dto.community.CommunitySearchOut;
 import com.game.common.dto.search.SearCount;
 import com.game.common.dto.search.SearchInputPageDto;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 
 /**
  *  PC端门户-搜索
@@ -27,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class PortalSystemSearchController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PortalSystemRecommendController.class);
 
     @Autowired
     private ISeacherService searchService;
@@ -38,13 +37,11 @@ public class PortalSystemSearchController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "用户id", paramType = "form", dataType = "string"),
     })
-
     public ResultDto getKeywords(@Anonymous MemberUserProfile memberUserPrefile) {
-
         try {
             return searchService.getKeywords();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error( "获取搜索关键词异常",e);
             return ResultDto.error("-1", "操作失败");
         }
     }
@@ -60,12 +57,9 @@ public class PortalSystemSearchController {
     public FungoPageResultDto<AuthorBean> searchUsers(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody SearchInputPageDto searchInputDto) {
         int page = searchInputDto.getPage();
         int limit = searchInputDto.getLimit();
-
-        //fix: 页码 小于1 返回空 [by mxf 2019-01-30]
         if (page < 1) {
             return new FungoPageResultDto<AuthorBean>();
         }
-
         String keyword = searchInputDto.getKey_word();
         String userId = "";
         if (memberUserPrefile != null) {
@@ -74,10 +68,9 @@ public class PortalSystemSearchController {
         try {
             return portalSystemISeacherService.searchUsers(keyword, page, limit, userId);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error( "搜索用户异常",e);
             return FungoPageResultDto.error("-1", "操作失败");
         }
-
     }
 
     @ApiOperation(value = "搜索数据统计", notes = "")
@@ -87,7 +80,4 @@ public class PortalSystemSearchController {
         return searchService.getSearchCount(keyword);
     }
 
-
-
-//---------
 }
