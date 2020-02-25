@@ -14,18 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @Api(value = "", description = "视频点播")
 public class PortalSystemVideoController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( PortalSystemVideoController.class);
 
-
     @Autowired
     private IFGoGameApiAliVodService ifGoGameApiAliVodService;
-
-
 
     /**
      * 从阿里云获取上传视频凭证
@@ -46,6 +42,5 @@ public class PortalSystemVideoController {
     public String getUploadAuthFromAliVod(@RequestBody VodIntroInput vodIntroInput) {
         return ifGoGameApiAliVodService.getUploadAuth(vodIntroInput);
     }
-
 
 }

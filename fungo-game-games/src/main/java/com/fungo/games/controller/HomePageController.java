@@ -35,15 +35,10 @@ public class HomePageController {
     @Autowired
     private GameHomeService gameHomeService;
 
-    @Autowired
-    private IIndexService indexService;
-
-
     @ApiOperation(value = "首页查询(v2.6)", notes = "")
     @RequestMapping(value = "/api/games/queryHomePage", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public FungoPageResultDto<HomePageBean> queryHomePage(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPageDto) {
-        LOGGER.info("首页信息查询**************queryHomePage");
         String memberId = "";
         String os = "";
         if (memberUserPrefile != null) {
@@ -53,12 +48,10 @@ public class HomePageController {
         return gameHomeService.queryHomePage(inputPageDto, memberId, os);
     }
 
-
     @ApiOperation(value = "新游信息查询(v2.6)", notes = "")
     @RequestMapping(value = "/api/games/queryNewGame", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public FungoPageResultDto<NewGameBean> queryNewGame(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPageDto) {
-        LOGGER.info("首页信息查询**************queryNewGame");
         String memberId = "";
         String os = "";
         if (memberUserPrefile != null) {
@@ -73,7 +66,6 @@ public class HomePageController {
     @RequestMapping(value = "/api/games/queryOldGame", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public FungoPageResultDto<NewGameBean> queryOldGame(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPageDto) {
-        LOGGER.info("首页信息查询**************queryNewGame");
         return gameHomeService.queryOldGame(inputPageDto);
     }
 
@@ -82,7 +74,6 @@ public class HomePageController {
     @RequestMapping(value = "/api/games/queryCollectionGroup", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public FungoPageResultDto<AdminCollectionGroup> queryCollectionGroup(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody AdminCollectionVo input) {
-        LOGGER.info("合集组信息列表查询**************queryCollectionGroup");
         return gameHomeService.queryCollectionGroup(input);
     }
 
@@ -91,7 +82,6 @@ public class HomePageController {
     @RequestMapping(value = "/api/games/queryCollectionItem", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public ResultDto<AdminCollectionGroup> queryCollectionItem(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody AdminCollectionVo input) {
-        LOGGER.info("合集项信息查询**************queryCollectionItem");
         String memberId = "";
         String os = "";
         if (memberUserPrefile != null) {
@@ -100,6 +90,5 @@ public class HomePageController {
         os = (String) request.getAttribute("os");
         return gameHomeService.queryCollectionItem(input, memberId, os);
     }
-
 
 }

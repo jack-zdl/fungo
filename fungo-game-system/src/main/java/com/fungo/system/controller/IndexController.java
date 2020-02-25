@@ -1,7 +1,6 @@
 package com.fungo.system.controller;
 
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.service.IIndexService;
@@ -20,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -47,10 +45,8 @@ public class IndexController {
      */
     @MD5ParanCheck()
     public FungoPageResultDto<CardIndexBean> recommendList(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPageDto) {
-        //iOS渠道
         String iosChannel = "";
         String os = "";
-
         os = (String) request.getAttribute("os");
         if (request.getHeader("iosChannel") != null) {
             iosChannel = request.getHeader("iosChannel");
@@ -64,7 +60,6 @@ public class IndexController {
         return indexService.index(inputPageDto, os, iosChannel, app_channel, appVersion);
     }
 
-
     @ApiOperation(value = "首页(v2.4)", notes = "")
     @GetMapping(value = "/api/system/festival")
     @ApiImplicitParams({})
@@ -74,13 +69,11 @@ public class IndexController {
     @MD5ParanCheck()
     public ResultDto<JSONObject> festivalSwitch(HttpServletRequest request) {
         //iOS渠道
-        String iosChannel = "";
-        String os = "";
-
-        os = (String) request.getAttribute("os");
-        if (request.getHeader("iosChannel") != null) {
-            iosChannel = request.getHeader("iosChannel");
-        }
+//        String iosChannel = "";
+//        String os = (String) request.getAttribute("os");
+//        if (request.getHeader("iosChannel") != null) {
+//            iosChannel = request.getHeader("iosChannel");
+//        }
         JSONObject json = new JSONObject(  );
         String picture = nacosFungoCircleConfig.getFestivalPicture();
         String linkUrl = nacosFungoCircleConfig.getFestivallinkUrl();
@@ -95,10 +88,6 @@ public class IndexController {
             json.put( "linkUrl",linkUrl );
             return ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_OFF.getKey(),AbstractResultEnum.CODE_SYSTEM_FESTIVAL_SWITCH_OFF.getSuccessValue(),json);
         }
-
     }
 
-
-
-//-------
 }

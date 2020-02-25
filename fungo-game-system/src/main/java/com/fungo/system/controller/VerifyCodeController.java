@@ -1,6 +1,8 @@
 package com.fungo.system.controller;
 
 import com.game.common.util.ImageUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -14,7 +16,10 @@ import java.util.Map;
 @Controller
 public class VerifyCodeController {
 
-    @RequestMapping(value="/api/user/captcha")
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(VerifyCodeController.class);
+
+	@RequestMapping(value="/api/user/captcha")
 	public void createImage(HttpServletResponse response, HttpSession session){
 		response.setContentType("image/jpeg");
 		//禁止图像缓存。
@@ -27,8 +32,7 @@ public class VerifyCodeController {
 		 try {
 			ImageUtil.outputImage(w, h, response.getOutputStream(), verifyCode);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			 LOGGER.error( "VerifyCodeController.createImage异常",e);
 		}
 	}
 

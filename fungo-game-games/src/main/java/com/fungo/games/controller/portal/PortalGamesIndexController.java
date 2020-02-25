@@ -58,28 +58,20 @@ public class PortalGamesIndexController {
 
     @Autowired
     private IIndexService indexService;
-
     @Autowired
     private FungoCacheIndex fungoCacheIndex;
-
     @Autowired
     private IEvaluateProxyService iEvaluateProxyService;
-
     @Autowired
     private GameCollectionGroupService gameCollectionGroupService;
-
     @Autowired
     private GameCollectionItemService gameCollectionItemService;
-
     @Autowired
     private GameService gameService;
-
     @Autowired
     private GameDao gameDao;
-
     @Autowired
     private GameEvaluationService gameEvaluationService;
-
     @Autowired
     private PortalGamesIIndexService portalGamesIIndexService;
 
@@ -88,29 +80,23 @@ public class PortalGamesIndexController {
     @ApiImplicitParams({
     })
     public FungoPageResultDto<Map<String, Object>> topic(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto input) {
-
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECM_TOPIC + "POST";
         String keySuffix = JSON.toJSONString(input);
         FungoPageResultDto<Map<String, Object>> re = (FungoPageResultDto<Map<String, Object>>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
-
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
         }
-
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         //游戏合集
         Page<GameCollectionGroup> gpage = gameCollectionGroupService.selectPage(new Page<>(input.getPage(), input.getLimit()), new EntityWrapper<GameCollectionGroup>().eq("state", "0").orderBy("sort", false));
-
         List<GameCollectionGroup> clist = gpage.getRecords();
         for (Iterator iterator = clist.iterator(); iterator.hasNext(); ) {
             GameCollectionGroup gameCollectionGroup = (GameCollectionGroup) iterator.next();
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("topic_name", gameCollectionGroup.getName());
             map.put("group_id", gameCollectionGroup.getId());
-
             //游戏合集项
             List<GameCollectionItem> ilist = this.gameCollectionItemService.selectList(new EntityWrapper<GameCollectionItem>().eq("group_id", gameCollectionGroup.getId()).eq("show_state", "1").orderBy("sort", false));
-
             if (ilist == null || ilist.size() == 0) {//如果合集为空，跳过
                 continue;
             }
@@ -121,8 +107,7 @@ public class PortalGamesIndexController {
             List<String> communityIds = getCommunity(gameMap);
             //获取社区推荐度
             Map<String, Integer> followeeNum = iEvaluateProxyService.listCommunityFolloweeNum(communityIds);
-            List<Map<String, Object>> lists = new ArrayList<Map<String, Object>>();
-
+            List<Map<String, Object>> lists = new ArrayList<>();
             for (GameCollectionItem gameCollectionItem : ilist) {
                 Game game = gameMap.get(gameCollectionItem.getGameId());
                 if(game == null){
@@ -148,8 +133,6 @@ public class PortalGamesIndexController {
                 if (followeeNum != null){
                     followeeNumValue = followeeNum.get(game.getCommunityId());
                 }
-
-
                 map1.put("name", game.getName());
                 map1.put("androidState", game.getAndroidState());
                 map1.put("iosState", game.getIosState());
@@ -159,13 +142,11 @@ public class PortalGamesIndexController {
                 map1.put("objectId", game.getId());
                 map1.put("createdAt", DateTools.fmtDate(game.getCreatedAt()));
                 map1.put("updatedAt", DateTools.fmtDate(game.getUpdatedAt()));
-
                 int hot_value = 0;
                 if (null != followeeNumValue) {
                     hot_value = followeeNumValue*2;
                 }
                 map1.put("hot_value", hot_value);
-
                 map1.put("androidPackageName", game.getAndroidPackageName() == null ? "" : game.getAndroidPackageName());
                 map1.put("game_size", game.getGameSize());
                 map1.put("itunesId", game.getItunesId());
@@ -175,15 +156,10 @@ public class PortalGamesIndexController {
             map.put("game_list", lists);
             list.add(map);
         }
-
         re = new FungoPageResultDto<Map<String, Object>>();
         re.setData(list);
         PageTools.pageToResultDto(re, gpage);
-
-
-        //reids cache
         fungoCacheIndex.excIndexCacheWithTime(true, keyPrefix, keySuffix, re,3*60);
-
         return re;
     }
 
@@ -196,28 +172,21 @@ public class PortalGamesIndexController {
         return portalGamesIIndexService.pcGameGroup(input);
     }
 
-
     @ApiOperation(value = "PC2.0端游戏合集详情", notes = "")
     @GetMapping(value = "/api/portal/games/recommend/pc/groupdetail/{groupId}")
     @ApiImplicitParams({
     })
     public ResultDto<Map<String, Object>> groupDetail(@Anonymous MemberUserProfile memberUserPrefile, @PathVariable("groupId") String groupId) {
-
-
         Map<String, Object> map = null;
         ResultDto<Map<String, Object>> resultMap = null;
-
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_INDEX_RECOMMEND_PC_GROUPDETAIL;
         map = (Map<String, Object>) fungoCacheIndex.getIndexCache(keyPrefix, groupId);
-
         if (null != map) {
             resultMap = ResultDto.success(map);
             return resultMap;
         }
-
         GameCollectionGroup group = gameCollectionGroupService.selectById(groupId);
         map = new HashMap<>();
-
         if (group != null) {
             map.put("topic_name", group.getName());
             List<GameCollectionItem> ilist = this.gameCollectionItemService.selectList(new EntityWrapper<GameCollectionItem>().eq("group_id", group.getId()).eq("show_state", "1")
@@ -253,16 +222,11 @@ public class PortalGamesIndexController {
                 lists.add(map1);
             }
             map.put("game_list", lists);
-
         }
-
         resultMap = ResultDto.success(map);
-        //redis cacahe
         fungoCacheIndex.excIndexCache(true, keyPrefix, groupId, map);
-
         return resultMap;
     }
-
 
     @ApiOperation(value = "PC2.0安利墙游戏评价列表(v2.3)", notes = "")
     @RequestMapping(value = "/api/portal/games/amwaywall/list", method = RequestMethod.POST)
@@ -283,15 +247,10 @@ public class PortalGamesIndexController {
         List<GameEvaluation> plist = page.getRecords();
         for (GameEvaluation gameEvaluation : plist) {
             AmwayWallBean bean = new AmwayWallBean();
-
             bean.setAuthor(iEvaluateProxyService.getAuthor(gameEvaluation.getMemberId()));
             Game game = this.gameService.selectById(gameEvaluation.getGameId());
-
-
-
             bean.setEvaluation(CommonUtils.filterWord(gameEvaluation.getContent()));
             bean.setEvaluationId(gameEvaluation.getId());
-
             bean.setGameImage(game.getCoverImage());
             bean.setGameIcon(game.getIcon());
             bean.setGameId(gameEvaluation.getGameId());
@@ -303,28 +262,21 @@ public class PortalGamesIndexController {
             list.add(bean);
         }
         PageTools.pageToResultDto(re, page);
-
-        //Redis cache
         fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
         return re;
-
     }
 
     @ApiOperation(value = "安利墙首页接口(v2.3)", notes = "")
     @RequestMapping(value = "/api/portal/games/amwaywall", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public FungoPageResultDto<AmwayWallBean> getAmwayWall(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto) {
-
-        //从redis获取
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_INDEX_AMWAYWALL;
         String keySuffix = JSON.toJSONString(inputPageDto);
         FungoPageResultDto<AmwayWallBean> re = (FungoPageResultDto<AmwayWallBean>) fungoCacheIndex.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
         }
-
         re = new FungoPageResultDto<AmwayWallBean>();
-
         List<AmwayWallBean> list = new ArrayList<AmwayWallBean>();
         re.setData(list);
         //精选游戏评测
@@ -385,11 +337,9 @@ public class PortalGamesIndexController {
             list.add(bean);
         }
         PageTools.pageToResultDto( re,page);
-        //save redis
         fungoCacheIndex.excIndexCache(true, keyPrefix, keySuffix, re);
         return re;
     }
-
 
     private List<String> getCommunity(Map<String, Game> gameMap) {
         ArrayList<String> list = new ArrayList<>();
@@ -414,5 +364,4 @@ public class PortalGamesIndexController {
         }
         return list;
     }
-
 }

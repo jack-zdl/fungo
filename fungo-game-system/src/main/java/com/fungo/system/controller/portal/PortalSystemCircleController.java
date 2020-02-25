@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -52,7 +51,6 @@ public class PortalSystemCircleController {
            //iOS渠道
            String iosChannel = "";
            String os = "";
-
            os = (String) request.getAttribute("os");
            if (request.getHeader("iosChannel") != null) {
                iosChannel = request.getHeader("iosChannel");
@@ -62,18 +60,14 @@ public class PortalSystemCircleController {
            String appVersion = request.getHeader("appVersion");
            re = indexService.circleEventList(inputPageDto, os, iosChannel, app_channel, appVersion);
        }catch (Exception e){
-           e.printStackTrace();
            LOGGER.error("获取活动列表异常",e);
             re = FungoPageResultDto.error("-1","获取活动列表异常，请联系管理员");
        }
         return re;
     }
 
-
-
     /**
      * 功能描述: 首页活动位banner数据接口
-     *
      * @param: [memberUserPrefile, request, inputPageDto]
      * @return: com.game.common.dto.FungoPageResultDto<com.game.common.dto.index.CardIndexBean>
      * @auther: Carlos
@@ -97,7 +91,5 @@ public class PortalSystemCircleController {
         re = indexService.queryPcHomePage(os, iosChannel, app_channel, appVersion);
         return re;
     }
-
-
 
 }

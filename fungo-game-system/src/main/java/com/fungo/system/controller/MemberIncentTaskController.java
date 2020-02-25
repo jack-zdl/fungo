@@ -90,7 +90,6 @@ public class MemberIncentTaskController {
         return ResultDto.success(b);
     }
 
-
     @ApiOperation(value = "查询用户是否有新手任务", notes = "")
     @RequestMapping(value = "/api/user/incents/task/checknovicetask", method = RequestMethod.GET)
     public ResultDto<Map<String, Object>> checkeUnfinshedNoviceTask(MemberUserProfile memberUserPrefile, HttpServletRequest request) {

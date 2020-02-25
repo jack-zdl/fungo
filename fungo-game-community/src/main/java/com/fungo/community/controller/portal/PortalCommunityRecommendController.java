@@ -27,12 +27,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,29 +52,22 @@ import java.util.List;
 @Api(value = "", description = "PC2.0推荐")
 public class PortalCommunityRecommendController {
 
+    private static final Logger logger = LoggerFactory.getLogger( PortalCommunityRecommendController.class);
+
     @Autowired
     private MooMoodDaoService mooMoodService;
-
     @Autowired
     private CmmCommunityDaoService cmmCommunityService;
-
     @Autowired
     private ICommunityService iCommunityService;
-
-
     @Autowired
     private FungoCacheMood fungoCacheMood;
-
-
     //依赖系统和用户微服务
     @Autowired(required = false)
     private SystemFeignClient systemFeignClient;
-
-
     //依赖游戏微服务
     @Autowired(required = false)
     private GameFeignClient gameFeignClient;
-
 
     /**
      * PC2.0获取心情动态列表
@@ -129,7 +123,7 @@ public class PortalCommunityRecommendController {
                     olist.addAll(followerUserIdResult.getData());
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                logger.error( "获取关注用户id集合异常",ex);
             }
             if (olist.size() > 0) {
                 EntityWrapper moodEntityWrapper = new EntityWrapper<MooMood>();
@@ -196,7 +190,7 @@ public class PortalCommunityRecommendController {
                     authorBean = beanResultDto.getData();
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                logger.error( "根据用户id查询用户详情异常",ex);
             }
             bean.setAuthor(authorBean);
             if (StringUtils.isNotBlank(mooMood.getContent())) {
@@ -236,7 +230,7 @@ public class PortalCommunityRecommendController {
                     ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
                     followed = resultDto.getData();
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    logger.error( "获取点赞数行为类型点赞异常",ex);
                 }
                 bean.setLiked(followed > 0 ? true : false);
             }
@@ -268,7 +262,7 @@ public class PortalCommunityRecommendController {
                             gameDto =  gameDtoResultDto.getData();
                         }
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        logger.error( "根据游戏id和状态查询游戏详情异常",ex);
                     }
                     if (gameDto != null) {
                         HashMap<String, Object> map = new HashMap<>();

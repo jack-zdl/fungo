@@ -1,7 +1,5 @@
 package com.fungo.games.controller;
 
-
-
 import com.fungo.games.service.IGameToolsService;
 import com.game.common.dto.ResultDto;
 import io.swagger.annotations.Api;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +28,6 @@ import java.util.Map;
 @RestController
 public class GameToolsController {
 
-
     private static final Logger LOGGER = LoggerFactory.getLogger(GameToolsController.class);
 
     @Autowired
@@ -44,8 +40,6 @@ public class GameToolsController {
                     paramType = "path",dataType = "int")
     })
     public ResultDto<List<Map<String, Object>>> getGameTools(@PathVariable("plaType") Integer plaType) {
-
-        LOGGER.info("call /api/tools/game/list/{}",plaType);
         ResultDto<List<Map<String, Object>>> listResultDto = new ResultDto<List<Map<String, Object>>>();
         List<Map<String, Object>> gameToolsList = iGameToolsService.getGameTools(plaType);
         if (null != gameToolsList) {

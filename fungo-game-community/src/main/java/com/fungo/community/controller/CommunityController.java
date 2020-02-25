@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
 
@@ -28,8 +27,6 @@ public class CommunityController {
 
     @Autowired
     private ICommunityService communityService;
-
-
 
     @ApiOperation(value = "社区列表", notes = "")
     @ApiImplicitParams({
@@ -49,7 +46,6 @@ public class CommunityController {
 
     }
 
-
     @ApiOperation(value = "社区详情", notes = "")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "communityId", value = "社区id", paramType = "path", dataType = "string"),
@@ -65,7 +61,7 @@ public class CommunityController {
         try {
             return communityService.getCommunityDetail(communityId, userId);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error( "社区详情异常",e );
             return ResultDto.error("-1", "操作失败");
         }
     }
@@ -82,16 +78,12 @@ public class CommunityController {
             userId = memberUserPrefile.getLoginId();
         }
         return communityService.memberList(userId, input);
-
     }
 
     @PostMapping(value = "/api/content/community/post")
     public int selectPostCount(CmmPostDto cmmPost) {
         return 1;
     }
-
-
-
 
     @ApiOperation(value = "搜索社区", notes = "")
     @PostMapping(value = "/api/search/communitys")
@@ -118,7 +110,5 @@ public class CommunityController {
     public ResultDto<Map<String,Integer>> listCommunityFolloweeNum(@RequestBody List<String> communityIds){
         return communityService.listCommunityFolloweeNum(communityIds);
     }
-
-    //-----------
 
 }

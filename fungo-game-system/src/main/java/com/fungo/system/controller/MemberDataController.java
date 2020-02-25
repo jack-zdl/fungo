@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -42,51 +41,30 @@ public class MemberDataController {
 	@Autowired
 	private IGameProxyService gameProxyService;
 
-
-	
 	private static final Logger LOGGER = LoggerFactory.getLogger(MemberDataController.class);
-	
-	
-	//连续7天未登录用户
-	public void getUnLoginUsers() {
-		
-		//所有用户的最后登录时间(访问接口)
-		
-		//与今天相距7天
-		
-		//
-	}
-	
-	
-	
+
 	@RequestMapping(value = "/api/inittaskhonor", method = RequestMethod.GET)
 	//用户徽章
 	@MD5ParanCheck()
 	public List<Map<String,Object>> initTaskHonor() throws Exception {
 		//文章精选 评测精选 收到点赞
-		
 		LOGGER.info("开始添加用户徽章");
 		//@todo 社区微服务
 		//精品文章
 		//List<Map> postMapList = new CopyOnWriteArrayList<>(); //memberDao.getHonorQualificationOfEssencePost();
 		List<Map> postMapList = communityProxyService.getHonorQualificationOfEssencePost();
-
 		//@todo 游戏微服务
 		//精品评测
 		List<Map> evaMapList = gameProxyService.getHonorQualificationOfEssenceEva();//new CopyOnWriteArrayList<>(); //memberDao.getHonorQualificationOfEssenceEva();
-		
 		//点赞
 		List<Map> likeMapList = memberDao.getHonorQualificationOfBeLiked();
-		
 		List<Map<String,Object>> total = new ArrayList<>();
-		
 		for(Map postMap:postMapList) {
 			Map<String,Object> map = new HashMap<>();
 			map.put("member_id", postMap.get("member_id"));
 			map.put("post_count", postMap.get("post_count"));
 			total.add(map);
 		}
-		
 		boolean b = false;
 		for(Map evaMap:evaMapList) {
 			for(Map<String,Object> map:total) {
@@ -106,7 +84,6 @@ public class MemberDataController {
 				total.add(map);
 			}
 		}
-		
 		for(Map likeMap:likeMapList) {
 			for(Map<String,Object> map:total) {
 				String memberId = (String) map.get("member_id");
@@ -127,10 +104,7 @@ public class MemberDataController {
 		}
 		exportExcel(total);
 //		initHonor(total);
-		LOGGER.info("添加完毕");
-//		System.out.println(total);
 		return total;
-		
 	}
 	 
 	/**
@@ -299,7 +273,4 @@ public class MemberDataController {
 		 }
 	 }
 	 
-	 public static void main(String[] args) {
-
-	}
 }

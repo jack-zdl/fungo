@@ -48,7 +48,6 @@ public class SystemLogCollectController {
     @ApiImplicitParams({})
     @RequestMapping(value = "/api/sys/log/collect", method = RequestMethod.POST)
     public ResultDto<String> bindThirdSNSWithLogged(@Anonymous MemberUserProfile memberprofile, @RequestBody LogCollectInput collectInput) throws Exception {
-
         String mb_id = "";
         if (null != memberprofile) {
             mb_id = memberprofile.getLoginId();
@@ -60,5 +59,4 @@ public class SystemLogCollectController {
         return ResultDto.success();
     }
 
-    //--------
 }

@@ -2,6 +2,7 @@ package com.fungo.system.controller;
 
 
 import com.fungo.system.function.MallSeckillOrderFileService;
+import com.fungo.system.service.impl.MemberIncentSignInTaskServiceImpl;
 import com.fungo.system.upload.bean.req.UploadInput;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
@@ -11,15 +12,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.fileupload.disk.DiskFileItem;
-import org.aspectj.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -37,6 +34,9 @@ import java.util.*;
 @RestController
 @Api(value = "", description = "文件上传")
 public class UploadController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UploadController.class);
+
     @Autowired
     private IFileService fileService;
     @Autowired
@@ -55,8 +55,6 @@ public class UploadController {
     }
 
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UploadController.class);
-
     @ApiOperation(value = "图片上传", notes = "")
     @RequestMapping(value = "/api/upload/image", method = RequestMethod.POST)
     @ApiImplicitParams({
@@ -68,7 +66,6 @@ public class UploadController {
         if (length == -1) {
             throw new Exception("请上传允许格式的文件");
         }
-
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
         String datePath = sdf.format(new Date());
         String name = UUID.randomUUID().toString();
@@ -95,31 +92,23 @@ public class UploadController {
             @ApiImplicitParam(name = "imageUrl", value = "", paramType = "json", dataType = "String"),
     })
     public ResultDto<Map<String, String>> uploadFile(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody UploadInput input) throws Exception {
-
         URL url = null;
-
         String imageUrl = input.getImageUrl();
-
         if(imageUrl.startsWith("//")) {
             imageUrl = "https:"+imageUrl;
         }
-
         //后缀
         String suffix = imageUrl.substring(imageUrl.lastIndexOf(".")+1).toLowerCase();
         List<String> asList = Arrays.asList(getAllowSuffix().split(","));
-
         if(!asList.contains(suffix)) {
             suffix = "jpg";
         }
-
 		try {
-
 			url = new URL(imageUrl);
 		} catch (MalformedURLException e) {
 			LOGGER.info("图片上传失败! url: {}",input.getImageUrl());
 			return ResultDto.error("-1","不支持的图片地址,需要https或http协议头");
 		}
-
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
         String datePath = sdf.format(new Date());
         String name = UUID.randomUUID().toString();
@@ -130,8 +119,6 @@ public class UploadController {
         map.put("url", imagePath);
         re.setData(map);
         re.setMessage("上传成功");
-
-        LOGGER.info("图片上传成功! url: {}", input.getImageUrl());
         return re;
     }
 
@@ -232,7 +219,7 @@ public class UploadController {
             os.close();
             ins.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error( "UploadController.inputStreamToFile异常",e);
         }
     }
 

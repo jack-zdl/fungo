@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Arrays;
@@ -67,7 +66,6 @@ public class MemberNoticeController {
 //            os = "";
 //        }
 //        List<Map<String, Object>> noticesList = iMemberNoticeService.queryMbNotices(os,noticeInput);
-
         String appVersion = "2.5.1";
         if(StringUtils.isNoneBlank(request.getHeader("appversion"))){
             appVersion = request.getHeader("appversion");
@@ -90,21 +88,15 @@ public class MemberNoticeController {
 //        return resultDto;
     }
 
-
-
     /**
      * 建立用户的ios测试，厂商testflight消息接口
-     * @param memberprofile
      * @param noticeInput
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/api/user/ios/notices", method = RequestMethod.POST)
     public ResultDto<List<Map<String, Object>>> updateUserIosNotice( @Valid @RequestBody MemberNoticeInput noticeInput) throws Exception {
-
-
         List<Map<String, Object>> noticesList = iMemberNoticeService.insertMbNotices(noticeInput);
-
         if (null != noticesList && !noticesList.isEmpty()) {
             return ResultDto.success(noticesList);
         }
@@ -112,7 +104,6 @@ public class MemberNoticeController {
         resultDto.setData(Collections.emptyList());
         return resultDto;
     }
-
 
     /**
      * 删除个人消息
@@ -151,5 +142,4 @@ public class MemberNoticeController {
         }
         return resultDto;
     }
-
 }

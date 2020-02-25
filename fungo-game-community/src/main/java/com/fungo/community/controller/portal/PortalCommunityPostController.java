@@ -12,7 +12,6 @@ import com.fungo.community.entity.CmmCommunity;
 import com.fungo.community.entity.CmmPost;
 import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.service.IPostService;
-import com.fungo.community.service.impl.PostServiceImpl;
 import com.fungo.community.service.portal.IPortalPostService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.*;
@@ -45,7 +44,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
@@ -144,7 +142,6 @@ public class PortalCommunityPostController {
         return bsPostService.deletePost(postId, userId);
     }
 
-
     @ApiOperation(value = "PC2.0修改帖子", notes = "")
     @RequestMapping(value = "/api/portal/community/content/post", method = RequestMethod.PUT)
     @ApiImplicitParams({
@@ -163,7 +160,6 @@ public class PortalCommunityPostController {
         String os = "";
         os = (String) request.getAttribute("os");
         return bsPostService.editPost(postInput, userId, os);
-//		return ResultDto.success();
     }
 
 
@@ -184,7 +180,7 @@ public class PortalCommunityPostController {
         try {
             return bsPostService.getPostDetails(postId, userId, os);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error( "PC2.0帖子详情异常",e);
             return ResultDto.error("-1", "操作失败");
         }
     }
@@ -203,7 +199,6 @@ public class PortalCommunityPostController {
         if (page < 1) {
             return new FungoPageResultDto<Map<String, Object>>();
         }
-
         int limit = searchInputDto.getLimit();
         return bsPostService.searchPosts(keyword, page, limit);
     }
@@ -223,7 +218,6 @@ public class PortalCommunityPostController {
             return new FungoPageResultDto<>();
         }
         int limit = searchInputDto.getLimit();
-//        esdaoService.addESPosts();
         Page<CmmPost> cmmPosts =   esdaoService.getAllPosts(keyword,page,limit);
         return FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(cmmPosts.getRecords(),-1,new Page());
     }
@@ -306,7 +300,7 @@ public class PortalCommunityPostController {
                         olist.addAll(listFollowerCommunityIdResult.getData());
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    logger.error( "获取关注社区id集合异常",ex);
                 }
                 if (olist.size() > 0) {
                     EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<CmmPost>();
@@ -345,7 +339,7 @@ public class PortalCommunityPostController {
                         olist.addAll(followerUserIdResult.getData());
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    logger.error( "获取关注用户id集合异常",ex);
                 }
                 if (olist.size() > 0) {
                     EntityWrapper<CmmPost> postEntityWrapper = new EntityWrapper<CmmPost>();
@@ -406,7 +400,7 @@ public class PortalCommunityPostController {
                         memberIdList.addAll(followerUserIdResult.getData());
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    logger.error( "获取关注用户id集合 和 社区ID集合异常",ex);
                 }
                 // 获取关注社区ID集合
                 List<String> communityIdList = new ArrayList<String>();
@@ -510,7 +504,7 @@ public class PortalCommunityPostController {
                     authorBean = beanResultDto.getData();
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                logger.error( "根据用户id查询用户详情异常",ex);
             }
             bean.setAuthor(authorBean);
             //systemFeignClient.list
@@ -553,7 +547,7 @@ public class PortalCommunityPostController {
                     //bean.setImages(readValue.size() > 3 ? readValue.subList(0, 3) : readValue);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error( "获取文章异常",e);
             }
             //是否点赞
             if (memberUserPrefile == null) {
@@ -575,14 +569,12 @@ public class PortalCommunityPostController {
                         liked = resultDto.getData();
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    logger.error( "获取点赞数异常",ex);
                 }
                 bean.setLiked(liked > 0 ? true : false);
             }
-            //
             bean.setVideoCoverImage(cmmPost.getVideoCoverImage());
             bean.setType(cmmPost.getType());
-
             list.add(bean);
         }
         //PageTools.pageToResultDto(re, page);
@@ -615,7 +607,6 @@ public class PortalCommunityPostController {
         }
     }
 
-
     @ApiOperation(value = "帖子權限", notes = "")
     @GetMapping(value = "/api/portal/community/content/post/auth/{postId}")
     @ApiImplicitParams({
@@ -630,10 +621,10 @@ public class PortalCommunityPostController {
         try {
             return bsPostService.getPostAuth(postId, userId);
         } catch (Exception e) {
+            logger.error( "帖子權限异常",e);
             return ResultDto.error("-1", "操作失败");
         }
     }
-
 
     @ApiOperation(value = "修改文章", notes = "")
     @PutMapping(value = "/api/portal/community/content/post/edit")
@@ -650,9 +641,5 @@ public class PortalCommunityPostController {
         String userId = memberUserPrefile.getLoginId();
         return bsPostService.editPost(postInput, userId);
     }
-
-
-
-
 
 }

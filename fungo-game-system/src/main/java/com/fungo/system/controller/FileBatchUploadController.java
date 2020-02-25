@@ -41,20 +41,17 @@ public class FileBatchUploadController {
      */
     @RequestMapping(value = "/api/upload/imgs", method = RequestMethod.POST)
     public WebAsyncTask uploadFileWithOtherOriginalNet(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody BatchUploadInput uploadInput) {
-
         List<String> imageUrlList = uploadInput.getImageUrl();
         List<UploadFileOutBean> uploadFileOutBeanList = new ArrayList<>();
 
         Callable<ResultDto<List<UploadFileOutBean>>> callable = new Callable<ResultDto<List<UploadFileOutBean>>>() {
             @Override
             public ResultDto<List<UploadFileOutBean>> call() throws Exception {
-
                 if (null == imageUrlList || imageUrlList.isEmpty()) {
                     return ResultDto.error("-1", "上传文件不能为空");
                 }
                 //执行上传
                 fileBatchUploadService.excuteUpload(imageUrlList, uploadFileOutBeanList);
-
                 ResultDto<List<UploadFileOutBean>> resultDto = new ResultDto<>();
                 resultDto.setData(uploadFileOutBeanList);
                 resultDto.setStatus(1);
@@ -62,14 +59,8 @@ public class FileBatchUploadController {
                 return resultDto;
             }
         };
-
-
-
         WebAsyncTask asyncTask = new WebAsyncTask(8000, callable);
-
-
-        asyncTask.onTimeout(
-                new Callable<ResultDto<List<UploadFileOutBean>>>() {
+        asyncTask.onTimeout( new Callable<ResultDto<List<UploadFileOutBean>>>() {
                     @Override
                     public ResultDto<List<UploadFileOutBean>> call() throws Exception {
                         ResultDto<List<UploadFileOutBean>> resultDto = new ResultDto<>();
@@ -80,7 +71,6 @@ public class FileBatchUploadController {
                     }
                 }
         );
-
         return asyncTask;
 
     }

@@ -21,7 +21,6 @@ import java.util.Map;
 @RestController
 public class MemberIncentSignInTaskController {
 
-
     @Autowired
     private IMemberIncentSignInTaskService iMemberIncentSignInTaskService;
 
@@ -37,7 +36,6 @@ public class MemberIncentSignInTaskController {
         return iMemberIncentSignInTaskService.exSignIn(userId);
     }
 
-
     /**
      * 用户获取签到信息
      * @param memberUserPrefile
@@ -48,6 +46,4 @@ public class MemberIncentSignInTaskController {
         String userId = memberUserPrefile.getLoginId();
         return iMemberIncentSignInTaskService.getMemberSignInInfo(userId);
     }
-
-    //---------
 }

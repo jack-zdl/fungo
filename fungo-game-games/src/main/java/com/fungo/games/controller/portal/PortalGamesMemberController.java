@@ -39,15 +39,9 @@ import javax.servlet.http.HttpServletRequest;
 public class PortalGamesMemberController {
 
     @Autowired
-    private IGameService iGameService;
-
-    @Autowired
     private IEvaluateService iEvaluateService;
     @Autowired
     private PortalGamesIGameService portalGamesIGameService;
-
-
-
 
     @ApiOperation(value = "PC2.0我的游戏列表", notes = "PC2.0我的游戏列表")
     @RequestMapping(value = "/api/portal/games/mine/gameList", method = RequestMethod.POST)
@@ -62,7 +56,6 @@ public class PortalGamesMemberController {
         return portalGamesIGameService.getMyGameList(memberId, inputPage,os);
     }
 
-
     /**
      * 杨磊编写看别人，废弃使用
      */
@@ -74,20 +67,16 @@ public class PortalGamesMemberController {
         return portalGamesIGameService.getOtherGameList(memberUserPrefile.getLoginId(), inputPage,os);
     }
 
-
-
     @ApiOperation(value = "PC2.0我的游戏评测(2.4.3)", notes = "PC2.0我的游戏评测")
     @RequestMapping(value = "/api/portal/games/mine/evaluationList", method = RequestMethod.POST)
     @ApiImplicitParams({})
     public FungoPageResultDto<MyEvaluationBean> getMyEvaluationList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody MermberSearchInput input) throws Exception {
-//		String loginId = memberUserPrefile.getLoginId();
         String memberId = input.getMemberId();
         if (CommonUtil.isNull(memberId)) {
             return FungoPageResultDto.error("-1", "未指定用户");
         }
         return iEvaluateService.getMyEvaluationList(memberId, input);
     }
-
 
     /**
      * 功能描述:PC2.0我的下载的游戏列表

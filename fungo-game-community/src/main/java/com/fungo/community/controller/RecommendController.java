@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -92,7 +91,7 @@ public class RecommendController {
 
         re = new FungoPageResultDto<>();
 
-        List<MoodOutBean> list = new ArrayList<MoodOutBean>();
+        List<MoodOutBean> list = new ArrayList<>();
         re.setData(list);
 
         Page<MooMood> page = null;
@@ -214,20 +213,15 @@ public class RecommendController {
                     authorBean = beanResultDto.getData();
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                LOGGER.error( "RecommendController获取作者信息异常",ex);
             }
-
             bean.setAuthor(authorBean);
-
-
             if (StringUtils.isNotBlank(mooMood.getContent())) {
                 String interactContent = FilterEmojiUtil.decodeEmoji(mooMood.getContent());
                 mooMood.setContent(interactContent);
             }
-
             //数据行id
             bean.setRowId(mooMood.getMooId());
-
             bean.setContent(CommonUtils.filterWord(mooMood.getContent()));
             bean.setCoverImage(mooMood.getCoverImage());
             bean.setCreatedAt(DateTools.fmtDate(mooMood.getCreatedAt()));
@@ -238,7 +232,7 @@ public class RecommendController {
                     imgs = (ArrayList<String>) objectMapper.readValue(mooMood.getImages(), ArrayList.class);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error( "RecommendController获取文章数目异常",e);
             }
 
             if (imgs == null) {
@@ -264,9 +258,8 @@ public class RecommendController {
 
                     followed = resultDto.getData();
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    LOGGER.error( "RecommendController获取获取动作数量异常",ex);
                 }
-
                 bean.setLiked(followed > 0 ? true : false);
             }
             bean.setLikeNum(mooMood.getLikeNum());
@@ -274,35 +267,28 @@ public class RecommendController {
             bean.setReplyNum(mooMood.getCommentNum());
             bean.setTimer("");
             bean.setUpdatedAt(DateTools.fmtDate(mooMood.getUpdatedAt()));
-
             //视频封面
             bean.setVideoCoverImage(mooMood.getVideoCoverImage());
-
             //视频详情
             if (!CommonUtil.isNull(mooMood.getVideoUrls())) {
                 ArrayList streams = objectMapper.readValue(mooMood.getVideoUrls(), ArrayList.class);
                 bean.setVideoList(streams);
             }
-
             //游戏链接
             if (!CommonUtil.isNull(mooMood.getGameList())) {
                 ArrayList<String> gameIdList = objectMapper.readValue(mooMood.getGameList(), ArrayList.class);
                 List<HashMap<String, Object>> gameList = new ArrayList<>();
                 for (String gameId : gameIdList) {
-
                     GameDto gameDto = null;
                     ResultDto<GameDto> gameDtoResultDto = null;
-
                     try {
                         gameDtoResultDto = gameFeignClient.selectGameDetails(gameId, 0);
                         if (null != gameDtoResultDto) {
                             gameDto = gameDtoResultDto.getData();
                         }
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        LOGGER.error( "RecommendController获取游戏详情异常",ex);
                     }
-
-
                     if (gameDto != null) {
                         HashMap<String, Object> map = new HashMap<>();
                         map.put("gameId", gameDto.getId());
@@ -319,21 +305,14 @@ public class RecommendController {
                 }
                 bean.setGameList(gameList);
             }
-
-
             bean.setVideo(mooMood.getVideo());
             list.add(bean);
         }
-
         //设置分页参数
         PageTools.pageToResultDto(re, total, inputPageDto.getLimit(), inputPageDto.getPage());
-
-        //redis cache
         fungoCacheMood.excIndexCache(true, keyPrefix, keySuffix, re);
-
         return re;
     }
-
 
     /**
      * 玩家推荐规则：
@@ -349,49 +328,29 @@ public class RecommendController {
     @ApiImplicitParams({
     })
     public FungoPageResultDto<FollowUserOutBean> getDynamicsUsersList(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPageDto) {
-
-
-        // LOGGER.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@/api/recommend/users----");
-
         FungoPageResultDto<FollowUserOutBean> re = new FungoPageResultDto<FollowUserOutBean>();
-
         List<FollowUserOutBean> list = new ArrayList<FollowUserOutBean>();
-
         re.setData(list);
-
         String memberId = "";
         if (memberUserPrefile != null) {
             memberId = memberUserPrefile.getLoginId();
         }
-
         //!fixme 关联用户 和 游戏评论
         //按规则一 查询出官方推荐的玩家数据
         List<MemberDto> members = iCommunityService.getRecomMembers(inputPageDto.getLimit(), memberId);
-
-
         Page<MemberDto> pageFormat = pageFormat(members, inputPageDto.getPage(), inputPageDto.getLimit());
         members = pageFormat.getRecords();
-
-
         for (MemberDto member : members) {
-
             FollowUserOutBean bean = new FollowUserOutBean();
             bean.setAvatar(member.getAvatar());
             bean.setCreatedAt(DateTools.fmtDate(member.getCreatedAt()));
-
             bean.setLevel(member.getLevel());
             bean.setMemberNo(member.getMemberNo());
             bean.setObjectId(member.getId());
             bean.setUpdatedAt(DateTools.fmtDate(member.getUpdatedAt()));
             bean.setUsername(member.getUserName());
             bean.setFollowed(member.isFollowed());
-
-
             try {
-
-                //!fixme  获取用户状态icon
-                //bean.setStatusImg(userService.getStatusImage(member.getId()));
-
                 ResultDto<List<HashMap<String, Object>>> statusImageRs = systemFeignClient.getStatusImage(member.getId());
                 if (null != statusImageRs) {
                     List<HashMap<String, Object>> statusImageList = statusImageRs.getData();
@@ -399,7 +358,6 @@ public class RecommendController {
                         bean.setStatusImg(statusImageList);
                     }
                 }
-
             } catch (Exception e) {
                 LOGGER.error("推荐用户列表",e);
             }
@@ -413,7 +371,6 @@ public class RecommendController {
         PageTools.pageToResultDto(re, pageFormat);
         return re;
     }
-
 
     @ApiOperation(value = "社区推荐列表(v2.3)", notes = "")
     @PostMapping(value = "/api/recommend/communitys")
@@ -432,14 +389,11 @@ public class RecommendController {
             bean.setFollowed(false);
             bean.setIntro(cmmCommunity.getIntro());
             if (memberUserPrefile != null) {
-
                 BasActionDto basActionDto = new BasActionDto();
-
                 basActionDto.setMemberId(memberUserPrefile.getLoginId());
                 basActionDto.setType(5);
                 basActionDto.setState(0);
                 basActionDto.setTargetId(cmmCommunity.getId());
-
                 int followed = 0;
                 try {
                     ResultDto<Integer> resultDto = systemFeignClient.countActionNum(basActionDto);
@@ -447,7 +401,7 @@ public class RecommendController {
                         followed = resultDto.getData();
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    LOGGER.error( "RecommendController社区推荐列表异常",ex);
                 }
                 bean.setFollowed(followed > 0 ? true : false);
             }
@@ -459,15 +413,11 @@ public class RecommendController {
         return re;
     }
 
-
     //手动分页
     public Page<MemberDto> pageFormat(List<MemberDto> members, int page, int limit) {
         int totalCount = members.size();//总条数
-
         int totalPage = (int) Math.ceil((double) totalCount / limit);//总页数
-
         if (members.size() == 0) {
-
         } else if (page == totalPage) {
             members = members.subList(limit * (page - 1), totalCount);
         } else {
@@ -477,10 +427,8 @@ public class RecommendController {
         memberPage.setRecords(members);
         memberPage.setCurrent(page);
         memberPage.setTotal(totalCount);
-
         return memberPage;
     }
-
 
     /**
      * 设置社区-心情分页查询条件
@@ -494,6 +442,4 @@ public class RecommendController {
             cmmPostEntityWrapper.le("updated_at", lastUpdateDate);
         }
     }
-
-    //-----
 }

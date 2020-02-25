@@ -9,7 +9,6 @@ import com.game.common.util.annotation.JsonView;
 import com.game.common.util.annotation.MD5ParanCheck;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +55,4 @@ public class MemberSNSController {
         ResultDto<MemberSNSBindOutput> outputResultDto = iMemberSNSService.bindThirdSNSWithLogged(mb_id, bindInput);
         return outputResultDto;
     }
-
-
 }

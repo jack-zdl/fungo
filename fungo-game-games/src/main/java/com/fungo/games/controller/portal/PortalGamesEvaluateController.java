@@ -1,8 +1,6 @@
 package com.fungo.games.controller.portal;
 
-
 import com.fungo.games.service.IEvaluateService;
-import com.fungo.games.service.impl.EvaluateServiceImpl;
 import com.fungo.games.service.portal.ProtalGameIEvaluateService;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
@@ -88,7 +86,6 @@ public class PortalGamesEvaluateController {
 		return this.evaluateService.getEvaluationDetail(memberId, commentId);
 	}
 	
-	
 	@ApiOperation(value="游戏评价列表", notes="")
 	@RequestMapping(value="/api/portal/games/content/evaluations", method= RequestMethod.POST)
 	@ApiImplicitParams({
@@ -131,7 +128,4 @@ public class PortalGamesEvaluateController {
 		return protalGameIEvaluateService.anliEvaluationDetail(memberId,evaluationId);
 	}
 
-	/**********************************************回复*******************************************************************/
-
-	
 }

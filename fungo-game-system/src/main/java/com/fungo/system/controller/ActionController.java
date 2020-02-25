@@ -1,5 +1,6 @@
 package com.fungo.system.controller;
 
+import com.fungo.system.controller.portal.PortalSystemVideoController;
 import com.fungo.system.service.IActionService;
 import com.fungo.system.service.TaskRechargeService;
 import com.game.common.dto.ActionInput;
@@ -15,13 +16,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-
 
 /**
  * 用户行为
@@ -32,6 +31,8 @@ import java.util.HashMap;
 @RestController
 @Api(value="")
 public class ActionController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( ActionController.class);
 
     @Resource(name = "actionServiceImpl")
     private IActionService actionService;

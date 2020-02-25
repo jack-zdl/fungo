@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,11 +75,9 @@ public class CommonController {
     @MD5ParanCheck(param = {"channelCode","version"})
     public ResultDto<Map<String, Boolean>> getAndroidAppConfig(@RequestBody AppConfigGetInput input, HttpServletRequest request) {
         String os = (String) request.getAttribute("os");
-
         ResultDto<Map<String, Boolean>> re = new ResultDto<>();
         Map<String, Boolean> map = new HashMap<>();
         SysVersion sysVersion = null;
-
         //查询对应版本
         if (os.equalsIgnoreCase("Android")) {
             sysVersion = versionService.selectOne(new EntityWrapper<SysVersion>().eq("version", input.getVersion()).eq("mobile_type", "Android"));
@@ -89,19 +86,14 @@ public class CommonController {
         } else {
             return ResultDto.error("-1", "请求只能由app端调用");
         }
-
-
         if (sysVersion == null) {
             return ResultDto.error("-1", "找不到对应版本号");
         }
-
         //查询对应渠道
-
         SysVersionChannel channelVersion = channelService.selectOne(new EntityWrapper<SysVersionChannel>().eq("channel_code", input.getChannelCode()).eq("version_id", sysVersion.getId()));
         if (channelVersion == null) {
             return ResultDto.error("-1", "找不到对应版本的目标渠道");
         }
-
         map.put("game_download_switch",sysVersion.getGameDownloadSwitch() == 1 ? true:  channelVersion.getGameDownloadSwitch() == 1 ? true : false);
         map.put("index_banner_switch", sysVersion.getIndexBannerSwitch() == 1 ? true: channelVersion.getIndexBannerSwitch() == 1 ? true : false);
         //返回是否登录授权字段
@@ -137,7 +129,6 @@ public class CommonController {
         map.put("is_force", true);
         re.setData(map);
         return re;
-
     }
 
     @ApiOperation(value = "检查更新(安卓2.4之后)", notes = "")
@@ -148,14 +139,10 @@ public class CommonController {
         ResultDto<Map<String, Object>> re = new ResultDto<>();
         //客户端当前版本
         String currentVersion = input.getCurrentVersion();
-
         //查看当前版本(如查找不到,直接强制升级)
         SysVersion version = versionService.selectOne(new EntityWrapper<SysVersion>().eq("version", currentVersion).eq("mobile_type", "Android"));
-
         SysVersion lastNewVersion = versionService.selectOne(new EntityWrapper<SysVersion>().eq("new_version", 1).eq("mobile_type", "Android"));
-
         Map<String, Object> map = new HashMap<>();
-
         if (null != lastNewVersion) {
             map.put("code", lastNewVersion.getCode());
             map.put("versionName", lastNewVersion.getVersion());
@@ -164,34 +151,24 @@ public class CommonController {
             map.put("is_force", false);
         }
         //验证当前版本与最新版本是否是同一个版本
-
-
         if (null != lastNewVersion) {
             if (null != version && null != lastNewVersion) {
-
                 if (!StringUtils.equalsIgnoreCase(version.getCode(), lastNewVersion.getCode()) && !StringUtils.equalsIgnoreCase(version.getVersion(),
                         lastNewVersion.getVersion())) {
-
                     try {
-
                         int c_code = Integer.parseInt(version.getCode());
                         int new_code = Integer.parseInt(lastNewVersion.getCode());
-
                         if(lastNewVersion.getIsForce() == null ){
                             map.put("versionName", input.getCurrentVersion());
                         }else if (new_code > c_code && 1 == lastNewVersion.getIsForce()) {
                             map.put("is_force", true);
                         }
-
                     } catch (Exception ex) {
                         LOGGER.error( "检查更新异常",ex );
                     }
-
                 }
-
             }
         }
-
         re.setData(map);
         return re;
     }
@@ -203,63 +180,47 @@ public class CommonController {
     public ResultDto<Map<String, Object>> checkIOSUpdate(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody VersionInput input) {
         ResultDto<Map<String, Object>> re = new ResultDto<>();
         String currentVersion = input.getCurrentVersion();
-
         //查看当前版本(如查找不到,直接强制升级)
         SysVersion version = versionService.selectOne(new EntityWrapper<SysVersion>().eq("version", currentVersion).eq("mobile_type", "IOS"));
-
         SysVersion lastNewVersion = versionService.selectOne(new EntityWrapper<SysVersion>().eq("new_version", 1).eq("mobile_type", "IOS"));
-
         Map<String, Object> map = new HashMap<>();
         if (null != lastNewVersion) {
-
             map.put("code", lastNewVersion.getCode());
             map.put("versionName", lastNewVersion.getVersion());
             map.put("content", lastNewVersion.getIntro());
             map.put("url", lastNewVersion.getApkUrl());
             map.put("is_force", false);
         }
-
         if (null != lastNewVersion) {
             if (null != version && null != lastNewVersion) {
-
                 if (!StringUtils.equalsIgnoreCase(version.getCode(), lastNewVersion.getCode()) && !StringUtils.equalsIgnoreCase(version.getVersion(),
                         lastNewVersion.getVersion())) {
-
                     try {
-
                         int c_code = Integer.parseInt(version.getCode());
                         int new_code = Integer.parseInt(lastNewVersion.getCode());
-
                         if (new_code > c_code) {
                             if(lastNewVersion.getIsForce() == null ) {
                                 map.put( "versionName", input.getCurrentVersion() );
                             }else {
                                 //查询新版本对应的渠道更新机制
                                 SysVersionChannel sysVersionChannel = channelService.selectOne(new EntityWrapper<SysVersionChannel>().eq("version_id", lastNewVersion.getId()).eq("channel_code", input.getChannelCode()));
-
                                 if (null != sysVersionChannel) {
-
                                     Integer isForce = sysVersionChannel.getIsForce();
                                     if (1 == isForce) {
                                         map.put("is_force", true);
                                     }
                                 }
                             }
-
                         }
                     } catch (Exception ex) {
                        LOGGER.error( "ios检查更新",ex );
                     }
-
                 }
-
             }
         }
-
         re.setData(map);
         return re;
     }
-
 
     @ApiOperation(value = "关于我们", notes = "")
     @RequestMapping(value = "/api/about", method = RequestMethod.GET)
@@ -271,7 +232,6 @@ public class CommonController {
         re.setData(map);
         return re;
     }
-
 
     @ApiOperation(value = "游戏评价打星说明 (v 2.4)", notes = "")
     @RequestMapping(value = "/api/starInfo", method = RequestMethod.GET)
@@ -309,6 +269,5 @@ public class CommonController {
     @RequestMapping(value = "/api/common/tools", method = RequestMethod.GET)
     public FungoPageResultDto<AidTool> getTools() {
         return null;
-
     }
 }

@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -34,14 +33,8 @@ public class RelyController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RelyController.class);
 
-
     @Autowired
     private IEvaluateService evaluateService;
-
-    //没用到
-    //@Autowired
-    //private IPushService pushService;
-
 
     @ApiOperation(value = "发表回复", notes = "")
     @PostMapping(value = "/api/content/reply")
@@ -50,7 +43,6 @@ public class RelyController {
             @ApiImplicitParam(name = "target_id", value = "目标对象id", paramType = "path", dataType = "string"),
             @ApiImplicitParam(name = "reply_to", value = "回复@用户id", paramType = "path", dataType = "string"),
             @ApiImplicitParam(name = "target_type", value = "目标对象类型	5", paramType = "path", dataType = "string")
-
     })
     @LogicCheck(loginc = {"BANNED_TEXT","BANNED_POST_AUTH"})
     public ResultDto<ReplyOutBean> addComment(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody ReplyInputBean reply) throws Exception {
@@ -63,7 +55,6 @@ public class RelyController {
         }
         return this.evaluateService.addReply(memberUserPrefile.getLoginId(), reply, appVersion);
     }
-
 
     @ApiOperation(value = "回复列表", notes = "")
     @PostMapping(value = "/api/content/replys")

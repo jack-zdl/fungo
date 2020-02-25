@@ -15,7 +15,6 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -93,7 +92,6 @@ public class PortalCommunityEvaluateController {
         if (memberUserPrefile != null) {
             memberId = memberUserPrefile.getLoginId();
         }
-
         return this.evaluateService.getMoodMessageDetail(memberId, commentId);
     }
 }

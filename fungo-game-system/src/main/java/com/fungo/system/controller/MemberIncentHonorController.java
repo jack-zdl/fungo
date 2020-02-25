@@ -36,17 +36,12 @@ public class MemberIncentHonorController {
     @Autowired
     private IMemberIncentHonorService iMemberIncentHonorService;
 
-
     @ApiOperation(value = "获取用户荣誉(v2.4.3)", notes = "")
     @RequestMapping(value = "/api/user/incents/spirit/honors", method = RequestMethod.GET)
     @ApiImplicitParams({})
     @MD5ParanCheck()
     public ResultDto<List<Map<String, Object>>> getUserHonors(MemberUserProfile memberUserPrefile) {
-
-        LOGGER.info("call /api/user/incents/spirit/honors");
-
         ResultDto<List<Map<String, Object>>> resultDto = new ResultDto<List<Map<String, Object>>>();
-
         List<Map<String, Object>> honorList = iMemberIncentHonorService.getMemberIncentHonor(memberUserPrefile.getLoginId());
         if (null != honorList) {
             resultDto.setData(honorList);
@@ -56,19 +51,12 @@ public class MemberIncentHonorController {
         return resultDto;
     }
 
-
-    //-----------
-    
     @ApiOperation(value = "获取其它用户荣誉(v2.4.3)", notes = "")
     @RequestMapping(value = "/api/user/incents/spirit/userhonors/{userId}", method = RequestMethod.GET)
     @ApiImplicitParams({})
     @MD5ParanCheck()
     public ResultDto<List<Map<String, Object>>> getHonors(MemberUserProfile memberUserPrefile,@PathVariable("userId") String userId) {
-
-        LOGGER.info("call /api/user/incents/spirit/honors");
-
         ResultDto<List<Map<String, Object>>> resultDto = new ResultDto<List<Map<String, Object>>>();
-
         List<Map<String, Object>> honorList = iMemberIncentHonorService.getMemberIncentHonor(userId);
         if (null != honorList) {
             resultDto.setData(honorList);

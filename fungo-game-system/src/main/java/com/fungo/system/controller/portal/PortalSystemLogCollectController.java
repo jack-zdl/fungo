@@ -32,7 +32,6 @@ public class PortalSystemLogCollectController {
     @Autowired
     private ISystemLogCollectService iSystemLogCollectService;
 
-
     /**
      * app和web系统运行 | 用户操作日志收集
      * dataParam 参数：
@@ -48,7 +47,6 @@ public class PortalSystemLogCollectController {
     @ApiImplicitParams({})
     @RequestMapping(value = "/api/portal/system/sys/log/collect", method = RequestMethod.POST)
     public ResultDto<String> bindThirdSNSWithLogged(@Anonymous MemberUserProfile memberprofile, @RequestBody LogCollectInput collectInput) throws Exception {
-
         String mb_id = "";
         if (null != memberprofile) {
             mb_id = memberprofile.getLoginId();
@@ -59,6 +57,4 @@ public class PortalSystemLogCollectController {
         iSystemLogCollectService.collectLog(collectInput);
         return ResultDto.success();
     }
-
-    //--------
 }

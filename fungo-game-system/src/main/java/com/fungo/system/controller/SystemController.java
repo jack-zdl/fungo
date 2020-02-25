@@ -2,14 +2,11 @@ package com.fungo.system.controller;
 
 import com.fungo.system.service.IMemberCircleService;
 import com.fungo.system.service.SystemService;
-import com.game.common.api.InputPageDto;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.action.BasActionDto;
-import com.game.common.dto.index.CardIndexBean;
-import com.game.common.dto.system.CircleFollow;
 import com.game.common.dto.system.CircleFollowVo;
 import com.game.common.dto.system.TaskDto;
 import com.game.common.dto.user.*;
@@ -24,12 +21,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 /**
  * <p>提供给外部使用的接口</p>
@@ -64,9 +59,8 @@ public class SystemController {
         }catch (Exception e){
             LOGGER.error("SystemController.getFollowerUserId",e);
             re = FungoPageResultDto.error("-1", "SystemController.getFollowerUserId执行service出现异常");
-        }finally {
-            return re;
         }
+        return re;
     }
 
     /**
@@ -85,9 +79,8 @@ public class SystemController {
         }catch (Exception e){
             LOGGER.error("SystemController.getFollowerUserId",e);
             re = FungoPageResultDto.error("-1", "SystemController.getMemberFollowerList执行service出现异常");
-        }finally {
-            return re;
         }
+        return re;
     }
 
     /**
@@ -102,9 +95,8 @@ public class SystemController {
         }catch (Exception e){
             LOGGER.error("SystemController.getMemberFollower1",e);
             re = ResultDto.error("-1", "SystemController.getMemberFollower1执行service出现异常");
-        }finally {
-            return re;
         }
+         return re;
     }
 
     /**
@@ -121,9 +113,8 @@ public class SystemController {
         }catch (Exception e){
             LOGGER.error("SystemController.getRecentBrowseCommunityByUserId",e);
             re = ResultDto.error("-1", "SystemController.getMemberFollower1执行service出现异常");
-        }finally {
-            return re;
         }
+        return re;
     }
 
     /**
@@ -142,9 +133,8 @@ public class SystemController {
         }catch (Exception e){
             LOGGER.error("SystemController.getFollowerUserId",e);
             re = FungoPageResultDto.error("-1", "SystemController.getMemberFollowerList执行service出现异常");
-        }finally {
-            return re;
         }
+        return re;
     }
 
     /**
@@ -161,9 +151,8 @@ public class SystemController {
         }catch (Exception e){
             LOGGER.error("SystemController.listMemberDtoPag",e);
             re = FungoPageResultDto.error("-1", "SystemController.listMemberDtoPag执行service出现异常");
-        }finally {
-            return re;
         }
+        return re;
     }
 
     /**
@@ -178,9 +167,8 @@ public class SystemController {
         }catch (Exception e){
             LOGGER.error("SystemController.listMembersByids",e);
             re = ResultDto.error("-1", "SystemController.listMembersByids执行service出现异常");
-        }finally {
-            return re;
         }
+        return re;
     }
 
     /**
@@ -195,9 +183,8 @@ public class SystemController {
         }catch (Exception e){
             LOGGER.error("SystemController.listWatchMebmber",e);
             re = ResultDto.error("-1", "SystemController.listWatchMebmber执行service出现异常");
-        }finally {
-            return re;
         }
+        return re;
     }
 
     /**
@@ -213,12 +200,10 @@ public class SystemController {
         try {
             re =  systemService.getMembersByid(id);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("SystemController.getMembersByid",e);
             re = ResultDto.error("-1", "SystemController.getMembersByid执行service出现异常");
-        }finally {
-            return re;
         }
+        return re;
     }
 
     /**
@@ -231,12 +216,10 @@ public class SystemController {
         try {
             re =  systemService.listIncentrankeByids(ids,rankType);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("SystemController.listIncentrankeByids",e);
             re = ResultDto.error("-1", "SystemController.listIncentrankeByids执行service出现异常");
-        }finally {
-            return re;
         }
+        return re;
     }
 
 
@@ -247,12 +230,10 @@ public class SystemController {
         try {
             re =  systemService.getIncentRankedList(incentRankedDto);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("SystemController.getFollowerUserId",e);
             re = FungoPageResultDto.error("-1", "SystemController.getMemberFollowerList执行service出现异常");
-        }finally {
-            return re;
         }
+         return re;
     }
 
    @ApiOperation(value="根据指定用户id变更用户到指定等级")
@@ -271,7 +252,6 @@ public class SystemController {
         try {
             re =  systemService.changeMemberLevel(memberDto);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("SystemController.changeMemberLevel",e);
             re = ResultDto.error("-1", "SystemController.changeMemberLevel执行service出现异常");
         }finally {
@@ -402,7 +382,6 @@ public class SystemController {
         try {
             re =  systemService.listActionByCondition(basActionDto);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("SystemController.listActionByCondition",e);
             re = ResultDto.error("-1", "SystemController.listActionByCondition执行service出现异常");
         }finally {
@@ -418,15 +397,12 @@ public class SystemController {
         try {
             re =  systemService.listGameHisIds(memberid);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("SystemController.listGameHisIds",e);
             re = ResultDto.error("-1", "SystemController.listGameHisIds执行service出现异常");
         }finally {
             return re;
         }
     }
-
-
 
     @RequestMapping(value = "/listtargetId")
     @ApiOperation(value=" 根据用户id，动作类型，目前类型，状态获取目前id集合")
@@ -681,7 +657,6 @@ public class SystemController {
         try {
             re = systemService.circleListFollow(circleFollowVo);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("获取活动列表异常",e);
             re = ResultDto.error("-1","获取活动列表异常，请联系管理员");
         }
@@ -703,7 +678,6 @@ public class SystemController {
         try {
             re = systemService.circleListMineFollow(circleFollowVo);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("根据圈子id查询是否关注",e);
             re = FungoPageResultDto.error("-1","根据圈子id查询是否关注，请联系管理员");
         }
@@ -725,7 +699,6 @@ public class SystemController {
         try {
             re = systemService.gameListMineDownload(circleFollowVo);
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("根据圈子id查询是否关注",e);
             re = FungoPageResultDto.error("-1","根据圈子id查询是否关注，请联系管理员");
         }
@@ -751,7 +724,6 @@ public class SystemController {
         return re;
     }
 
-
     /**
      * 更新荣誉 勋章 加精次数
      */
@@ -763,7 +735,6 @@ public class SystemController {
            return  systemService.updateRankedMedal(userId,rankidt);
     }
 
-
     /**
      * 查询圈主
      */
@@ -771,6 +742,4 @@ public class SystemController {
     public   ResultDto<List<MemberNameDTO>> getCircleMainByMemberId(@RequestParam("circleId") String circleId){
         return memberCircleServiceImpl.getCircleMainByMemberId(  circleId);
     }
-
-
 }

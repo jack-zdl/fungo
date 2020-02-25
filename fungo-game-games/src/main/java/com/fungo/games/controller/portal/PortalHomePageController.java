@@ -38,10 +38,6 @@ public class PortalHomePageController {
     @Autowired
     private GameHomeService gameHomeService;
 
-    @Autowired
-    private IIndexService indexService;
-
-
     @ApiOperation(value = "首页查询(pc2.1)", notes = "")
     @RequestMapping(value="/api/portal/games/content/game/queryHomePage", method= RequestMethod.POST)
     @ApiImplicitParams({})

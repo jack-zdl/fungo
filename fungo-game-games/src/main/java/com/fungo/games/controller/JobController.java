@@ -21,8 +21,6 @@ public class JobController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JobController.class);
 
-    @Autowired
-    private GamesJobService gamesJobService;
     /**
      * 功能描述: 定时检查游戏模块系统管控台系统消息
      * @return: com.game.common.dto.ResultDto<java.lang.String>

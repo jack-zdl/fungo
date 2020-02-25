@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -86,10 +85,8 @@ public class EvaluateController {
         if (memberUserPrefile != null) {
             memberId = memberUserPrefile.getLoginId();
         }
-
         return this.evaluateService.getMoodMessageDetail(memberId, commentId);
     }
-
 
     @ApiOperation(value = "帖子/心情评论列表", notes = "")
     @PostMapping(value = "/api/content/comments")
@@ -126,7 +123,6 @@ public class EvaluateController {
                 fungoCacheArticle.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_POST_CONTENT_COMMENTS, "", null);
                 //我的評論redis緩存
                 fungoCacheIndex.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_COMMENTS, "", null);
-
             }
             return resultDto;
         }catch (Exception e){
@@ -134,8 +130,5 @@ public class EvaluateController {
             return ResultDto.error( "-1","删除评论详情异常" );
         }
     }
-
-
-
 
 }

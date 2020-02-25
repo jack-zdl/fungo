@@ -88,7 +88,6 @@ public class MemberController {
             return FungoPageResultDto.error("-1", "找不到目标");
         }
         String myId = memberUserPrefile.getLoginId();
-
         return memberService.getFollower(myId, memberId, inputPage);
     }
 
@@ -128,10 +127,8 @@ public class MemberController {
     })
     @MD5ParanCheck(param = {"page","limit"})
     public FungoPageResultDto<Map<String, Object>> getLikeNotice(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPage) throws Exception {
-
         String appVersion = "";
         appVersion = request.getHeader("appversion");
-//		System.out.println("appVersion:"+appVersion);
         return memberService.getLikeNotice(memberUserPrefile.getLoginId(), inputPage, appVersion);
     }
 
@@ -144,7 +141,6 @@ public class MemberController {
     })
     @MD5ParanCheck(param = {"page","limit"})
     public FungoPageResultDto<Map<String, Object>> getCommentNotice(MemberUserProfile memberUserPrefile, HttpServletRequest request, @RequestBody InputPageDto inputPage) throws Exception {
-
         String appVersion =  request.getHeader("appversion");
         return memberService.getCommentNotice(memberUserPrefile.getLoginId(), inputPage, appVersion);
     }
@@ -215,14 +211,12 @@ public class MemberController {
     @MD5ParanCheck()
     public FungoPageResultDto<Map<String, Object>> getUserTimeline(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody TimeLineInputPage inputpage) throws ParseException {
         FungoPageResultDto<Map<String, Object>> re = null;
-
         String keySuffix = JSON.toJSONString(inputpage);
         re = (FungoPageResultDto<Map<String, Object>>) fungoCacheMember.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_TIME_LINE, keySuffix);
         if (null != re  && null != re.getData() && re.getData().size() > 0) {
             return re;
         }
-
-        re = new FungoPageResultDto<Map<String, Object>>();
+        re = new FungoPageResultDto<>();
         String[] types = {"8", "9", "11", "14"};
         Page<BasAction> page = actionService.selectPage(new Page<BasAction>(inputpage.getPage(), inputpage.getLimit()), new EntityWrapper<BasAction>()
                 .in("type", types).ne("state", "-1").eq("member_id", inputpage.getCardId()).orderBy("updated_at", false));
@@ -319,9 +313,6 @@ public class MemberController {
         return re;
     }
 
-
-
-
     @ApiOperation(value = "其他会员信息", notes = "其他会员信息")
     @RequestMapping(value = "/api/user/card/{cardId}", method = RequestMethod.GET)
     @ApiImplicitParams({
@@ -375,8 +366,6 @@ public class MemberController {
         return re;
     }
 
-
-
     @ApiOperation(value = "web端会员信息", notes = "web端会员信息")
     @RequestMapping(value = "/api/user/webInfo", method = RequestMethod.GET)
     @ApiImplicitParams({
@@ -400,9 +389,6 @@ public class MemberController {
 //        return memberService.getMyEvaluationList(memberId, input);
 //    }
 
-
-
-
     @ApiOperation(value = "我的文章(2.4.3)", notes = "我的文章")
     @RequestMapping(value = "/api/mine/posts", method = RequestMethod.POST)
     @ApiImplicitParams({})
@@ -418,8 +404,6 @@ public class MemberController {
         }
         return memberService.getMyPosts(loginId,memberId, input);
     }
-
-
 
     @ApiOperation(value = "我的心情(2.4.3)", notes = "我的心情")
     @RequestMapping(value = "/api/mine/moods", method = RequestMethod.POST)
@@ -451,9 +435,6 @@ public class MemberController {
         return memberService.getMyComments(loginId,memberId, input);
     }
 
-
-
-
     @ApiOperation(value = "我的等级信息(2.4.3)", notes = "我的等级信息(2.4.3)")
     @RequestMapping(value = "/api/user/incents/spirit/ranks", method = RequestMethod.GET)
     @ApiImplicitParams({})
@@ -462,8 +443,6 @@ public class MemberController {
         String loginId = memberUserPrefile.getLoginId();
         return memberService.getMemberLevel(loginId);
     }
-
-
 
     @ApiOperation(value = "获取我的发布", notes = "")
     @RequestMapping(value = "/api/mine/publish", method = RequestMethod.POST)
@@ -478,7 +457,6 @@ public class MemberController {
         return memberService.getPublishCount(memberId);
     }
 
-
     @ApiOperation(value = "获取我的中秋抽奖权限", notes = "")
     @RequestMapping(value = "/api/mine/lottery", method = RequestMethod.POST)
     @ApiImplicitParams({})
@@ -491,7 +469,6 @@ public class MemberController {
         return memberService.getPublishCount(memberId);
     }
 
-
     @ApiOperation(value = "获取我的中秋抽奖权限", notes = "")
     @RequestMapping(value = "/api/mine/push", method = RequestMethod.POST)
     @ApiImplicitParams({})
@@ -502,7 +479,6 @@ public class MemberController {
         }
         return memberService.getPublishCount(memberId);
     }
-
 
 }
 
@@ -522,9 +498,7 @@ class DateFun implements Comparator<Map<String, Object>> {
                 return -1;
             }
         } catch (ParseException e) {
-            e.printStackTrace();
             throw new BusinessException("-1", "操作失败");
         }
-
     }
 }

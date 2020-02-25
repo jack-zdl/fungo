@@ -1,8 +1,6 @@
 package com.fungo.games.controller;
 
-
 import com.fungo.games.service.IEvaluateService;
-import com.fungo.games.service.impl.EvaluateServiceImpl;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
@@ -11,7 +9,6 @@ import com.game.common.dto.evaluation.*;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.CommonEnum;
 import com.game.common.repo.cache.facade.FungoCacheGame;
-import com.game.common.util.StringUtil;
 import com.game.common.util.ValidateUtils;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.annotation.LogicCheck;
@@ -24,12 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import static com.game.common.consts.FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS;
 
 @RestController
 @Api(value="",description="评价接口")

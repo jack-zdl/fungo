@@ -57,7 +57,6 @@ public class PortalCommunityRelyController {
         return this.evaluateService.addReply(memberUserPrefile.getLoginId(), reply, appVersion);
     }
 
-
     @ApiOperation(value = "PC2.0回复列表", notes = "")
     @PostMapping(value = "/api/portal/community/content/replys")
     @ApiImplicitParams({
