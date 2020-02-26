@@ -1,6 +1,5 @@
 package com.fungo.system.aop;
 
-
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
