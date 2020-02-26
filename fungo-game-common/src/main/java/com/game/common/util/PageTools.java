@@ -1,9 +1,7 @@
 package com.game.common.util;
 
-
 import com.baomidou.mybatisplus.plugins.Page;
 import com.game.common.dto.FungoPageResultDto;
-
 
 public class PageTools {
 

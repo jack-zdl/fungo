@@ -126,7 +126,7 @@ class UserProfileArgumentResolver implements HandlerMethodArgumentResolver {
         String token = webRequest.getHeader(Constant.requestTokenParamName);
         MyThreadLocal.setToken(token);
         if (token == null || "".equals(token.trim()) || token.split("\\.").length != 3) {
-            logger.info("请求头中未包含token");
+//            logger.info("请求头中未包含token");
             if (!parameter.hasParameterAnnotation(Anonymous.class)) {  //针对部分接口即支持会员访问又支持匿名访问拦截处理
                 throw new BusinessException(CommonEnum.LOGIN_TIMEOUT);
             } else {
@@ -135,13 +135,13 @@ class UserProfileArgumentResolver implements HandlerMethodArgumentResolver {
         } else {
             try {
 
-                long start = System.currentTimeMillis();
+//                long start = System.currentTimeMillis();
                 Claims parseJWT = tokenService.parseJWT(token);
                 String subject = parseJWT.getSubject();
                 ObjectMapper objectMapper = new ObjectMapper();
                 Object readValue = objectMapper.readValue(subject, parameter.getParameterType());
 
-                logger.info("成功解析token，耗时：" + (System.currentTimeMillis() - start));
+//                logger.info("成功解析token，耗时：" + (System.currentTimeMillis() - start));
 
                 HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
                 nativeRequest.setAttribute("member", readValue);

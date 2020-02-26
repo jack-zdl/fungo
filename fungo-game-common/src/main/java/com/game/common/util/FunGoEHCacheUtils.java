@@ -4,7 +4,6 @@ import com.game.common.framework.runtime.SpringUtils;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
-import net.sf.ehcache.Element;
 import java.util.List;
 
 /**

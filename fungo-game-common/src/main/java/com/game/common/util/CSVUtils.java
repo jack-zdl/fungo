@@ -14,11 +14,8 @@ public class CSVUtils {
 
     /**
      * 导出
-     *
-     * @param file
-     *            csv文件(路径+文件名)，csv文件不存在会自动创建
-     * @param dataList
-     *            数据
+     * @param file  csv文件(路径+文件名)，csv文件不存在会自动创建
+     * @param dataList 数据
      * @return
      */
     public static boolean exportCsv(File file, List<String> dataList) {

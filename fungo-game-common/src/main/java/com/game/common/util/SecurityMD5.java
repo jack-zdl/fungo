@@ -1,4 +1,3 @@
-
 package com.game.common.util;
 
 import java.security.MessageDigest;

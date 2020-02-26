@@ -1,6 +1,5 @@
 package com.game.common.util.emoji;
 
-
 import org.apache.commons.lang.StringUtils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

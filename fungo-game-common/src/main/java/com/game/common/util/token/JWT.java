@@ -1,17 +1,11 @@
 package com.game.common.util.token;
-//
-//import javax.crypto.spec.SecretKeySpec;
-//import javax.xml.bind.DatatypeConverter;
-//import java.security.Key;
-//import io.jsonwebtoken.*;
-//import java.util.Date;
 
 import com.auth0.jwt.JWTSigner;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.internal.com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.HashMap;
 import java.util.Map;
+
 /**
  * 功能说明:使用jwt来生成token <br>
  * 系统版本: 1.0 <br>
@@ -19,7 +13,6 @@ import java.util.Map;
  * 开发时间: 2017/11/12 21:52<br>
  * <br>
  */
-
 public class JWT{
 
     private static final String SECRET = "XX#$%()(#*!()!KL<><MQLMNQNQJQK sdfkjsdrow32234545fdf>?N<:{LWPW";

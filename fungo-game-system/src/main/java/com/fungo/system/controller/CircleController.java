@@ -15,11 +15,11 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -132,14 +132,13 @@ public class CircleController {
      * @date: 2019/10/11 11:01
      */
     @ApiOperation(value = "v2.6", notes = "")
-    @RequestMapping(value = "/api/system/circle/event/queryOpenScreen", method = RequestMethod.GET)
+    @GetMapping(value = "/api/system/circle/event/queryOpenScreen")  //produces = {"application/json;charset=ISO-8859-1"}
     @ApiImplicitParams({})
     @MD5ParanCheck()
-    public ResultDto<CircleCardDataBean> queryOpenScreen(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request) {
+    public ResultDto<CircleCardDataBean> queryOpenScreen(@Anonymous MemberUserProfile memberUserPrefile, HttpServletRequest request, HttpServletResponse response) {
         ResultDto<CircleCardDataBean> re = null;
         //Android  iOS
-        String os = "";
-        os = (String) request.getAttribute("os");
+        String os =(String) request.getAttribute("os");
         re = indexService.queryOpenScreen(os);
         return re;
     }

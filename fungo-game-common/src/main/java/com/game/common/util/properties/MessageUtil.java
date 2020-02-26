@@ -1,20 +1,3 @@
-/*
- * 系统名称: cyp
- * 模块名称: JRES内核
- * 类 名 称: ErrorNoStore.java
- * 软件版权: ceyingfintech
- * 相关文档:
- * 修改记录:
- * 修改日期      修改人员                     修改说明<BR>
- * ========     ======  ============================================
- *   
- * ========     ======  ============================================
- * 评审记录：
- * 
- * 评审人员：
- * 评审日期：
- * 发现问题：
- */
 package com.game.common.util.properties;
 
 import javax.servlet.http.HttpServletResponse;

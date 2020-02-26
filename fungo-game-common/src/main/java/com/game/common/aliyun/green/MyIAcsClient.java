@@ -1,16 +1,13 @@
 package com.game.common.aliyun.green;
 
-
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
-
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import com.game.common.config.FungoConfig;
 
 /**
  * <p></p>
- *
  * @Author: dl.zhang
  * @Date: 2019/11/7
  */

@@ -3,7 +3,6 @@ package com.game.common.ts.mq.config;
 import com.alibaba.mq.amqp.utils.UserUtils;
 import com.rabbitmq.client.impl.CredentialsProvider;
 import org.apache.commons.lang3.StringUtils;
-
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 

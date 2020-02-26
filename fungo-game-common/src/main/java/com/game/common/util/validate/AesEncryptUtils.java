@@ -2,7 +2,6 @@ package com.game.common.util.validate;
 
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.internal.org.apache.commons.codec.binary.Base64;
-
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.SecretKeySpec;
@@ -32,7 +31,6 @@ public class AesEncryptUtils {
         byte[] b = cipher.doFinal(content.getBytes("utf-8"));
         // 采用base64算法进行转码,避免出现中文乱码
         return Base64.encodeBase64String(b);
-
     }
 
     /**
@@ -56,10 +54,10 @@ public class AesEncryptUtils {
     public static String encrypt(String content) throws Exception {
         return encrypt(content, KEY);
     }
+
     public static String decrypt(String encryptStr) throws Exception {
         return decrypt(encryptStr, KEY);
     }
-
 
     public static void main(String[] args) throws Exception {
         Map map = new HashMap<String, String>();
@@ -67,10 +65,8 @@ public class AesEncryptUtils {
         map.put("中文", "汉字");
         String content = JSONObject.toJSONString(map);
         System.out.println("加密前：" + content);
-
         String encrypt = encrypt(content, KEY);
         System.out.println("加密后：" + encrypt);
-
         String decrypt = decrypt(encrypt, KEY);
         System.out.println("解密后：" + decrypt);
     }

@@ -8,18 +8,14 @@ import java.util.Set;
 
 public class SensitiveWordUtil {
 
-
     public static final int MinMatchTYpe = 1;
     public static final int MaxMatchType = 2;
 
-
     public static HashMap sensitiveWordMap;
-
 
     public static synchronized void init(Set<String> sensitiveWordSet) {
         initSensitiveWordMap(sensitiveWordSet);
     }
-
 
     private static void initSensitiveWordMap(Set<String> sensitiveWordSet) {
         sensitiveWordMap = null;
@@ -75,7 +71,6 @@ public class SensitiveWordUtil {
                 i = i + length - 1;
             }
         }
-
         return sensitiveWordList;
     }
 
@@ -94,7 +89,6 @@ public class SensitiveWordUtil {
             replaceString = getReplaceChars(replaceChar, word.length());
             resultTxt = resultTxt.replaceAll(word, replaceString);
         }
-
         return resultTxt;
     }
 
@@ -111,7 +105,6 @@ public class SensitiveWordUtil {
             word = iterator.next();
             resultTxt = resultTxt.replaceAll(word, replaceStr);
         }
-
         return resultTxt;
     }
 

@@ -1,6 +1,5 @@
 package com.game.common.repo.cache.redis;
 
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +10,6 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.core.query.SortQuery;
 import org.springframework.stereotype.Component;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -20,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * @Author:Mxf <a href="mailto:m-java@163.com">m-java@163.com</a>
  * @Description:redis集群操作
- *
  * @Date: Create in 2019/3/12
  */
 @Component
@@ -30,21 +27,15 @@ public class RedisHandler {
 
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
-
-
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
-
-
     /**
      * 设置value
-     *
      * @param key
      * @param value
      */
     public void set(final String key, final String value) {
-
         if (StringUtils.isBlank(key) || StringUtils.isBlank(value)) {
             return;
         }
@@ -60,52 +51,41 @@ public class RedisHandler {
         });
     }
 
-
     /**
      * 设置value
-     *
      * @param key
      * @param value
      */
     public void set(final String key, final Object value) {
-
         if (StringUtils.isBlank(key) || null == value) {
             return;
         }
         redisTemplate.opsForValue().set(key, value);
-
     }
 
     /**
      * 设置value
-     *
      * @param key
      * @param value
      */
     public void setString(final String key, final String value) {
-
         if (StringUtils.isBlank(key) || null == value) {
             return;
         }
         stringRedisTemplate.opsForValue().set(key, value);
-
     }
-
 
     /**
      * 设置value
-     *
      * @param key
      * @param value
      * @param seconds 有效期，单位：秒
      * @return
      */
     public void set(final String key, final String value, final Integer seconds) {
-
         if (StringUtils.isBlank(key) || StringUtils.isBlank(value)) {
             return;
         }
-
         redisTemplate.execute(new RedisCallback<Object>() {
             @Override
             public Object doInRedis(RedisConnection connection)
@@ -120,21 +100,17 @@ public class RedisHandler {
         });
     }
 
-
     /**
      * 设置value
-     *
      * @param key
      * @param value
      * @param seconds 有效期，单位：秒
      * @return
      */
     public void set(final String key, final Object value, final Integer seconds) {
-
         if (StringUtils.isBlank(key) || null == value) {
             return;
         }
-
         redisTemplate.opsForValue().set(key, value, seconds,TimeUnit.SECONDS);
     }
 
@@ -144,7 +120,6 @@ public class RedisHandler {
      * @return
      */
     public String get(final String key) {
-
         if (StringUtils.isBlank(key)) {
             return null;
         }
@@ -165,28 +140,23 @@ public class RedisHandler {
         });
     }
 
-
     /**
      * 获取对象数据
      * @param key
      * @return
      */
     public Object getEntity(final String key) {
-
         if (StringUtils.isBlank(key)) {
             return null;
         }
         return redisTemplate.opsForValue().get(key);
     }
 
-
     /**
      * 删除数据
-     *
      * @param key
      */
     public void delete(final String key) {
-
         if (StringUtils.isBlank(key)) {
             return;
         }
@@ -199,14 +169,11 @@ public class RedisHandler {
         });
     }
 
-
     /**
      * 批量删除数据
-     *
      * @param keyPrefix
      */
     public void batchDelete(final String keyPrefix) {
-
         if (StringUtils.isBlank(keyPrefix)) {
             return;
         }
@@ -218,10 +185,8 @@ public class RedisHandler {
         });
     }
 
-
     /**
      * 模糊查询keys
-     *
      * @param keyPrefix
      * @return
      */
@@ -229,11 +194,8 @@ public class RedisHandler {
         if (StringUtils.isBlank(keyPrefix)) {
             return null;
         }
-
         return redisTemplate.keys(keyPrefix + "*");
-
     }
-
 
     /**
      * 获取 redisTemplate
@@ -250,7 +212,6 @@ public class RedisHandler {
      * @return
      */
     public <T> T execute(SessionCallback<T> sessionCallback) {
-
         return (T) getRedisTemplate().execute(sessionCallback);
     }
 
@@ -261,9 +222,7 @@ public class RedisHandler {
      * @return
      */
     public <T> T executeInTransactional(final SessionCallback<T> sessionCallback) {
-
         SessionCallback<T> transactionalSessionCallback = new SessionCallback<T>() {
-
             @Override
             public <K, V> T execute(RedisOperations<K, V> operations) throws DataAccessException {
                 operations.multi();

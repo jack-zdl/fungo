@@ -1,28 +1,5 @@
-/*
- * 系统名称: cyp
- * 模块名称: 基础业务框架common组件
- * 类 名 称:  UIExtendPropertiesUtil.java
- * 软件版权: ceyingfintech
- * 相关文档:
- * 修改记录: 
- * 修改日期                       修改人员                     修改说明<BR>
- * ===========     ===========  ======================================================
- * 2010.11.19      胡海亮                       新增 UIExtendPropertiesUtil类读取UI扩展配置文件
- * ===========     ===========  ======================================================
- * 评审记录：
- * 
- * 评审人员：
- * 评审日期：
- * 发现问题：
- */
 package com.game.common.util.properties;
 
-//import com.ceying.chx.common.exception.BizframeException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.MessageFormat;
-import java.util.Properties;
 
 /**
  * 

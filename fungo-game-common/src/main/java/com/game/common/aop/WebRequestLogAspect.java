@@ -15,7 +15,6 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -26,10 +25,6 @@ import java.util.Date;
 public class WebRequestLogAspect {
 
     private static Logger logger = LoggerFactory.getLogger(WebRequestLogAspect.class);
-
-//	@Autowired
-//	private ILogStorage  logStorage;
-
 
     @Pointcut("execution(public * com..*.controller..*.*(..))")
     public void webLog() {
@@ -121,7 +116,6 @@ public class WebRequestLogAspect {
                 }
             } catch (Exception e) {
                 logger.error("方法的请求处理出现异常:",e);
-                e.printStackTrace();
             }
             StringBuffer sb = new StringBuffer();
             sb.append("!");
@@ -129,8 +123,8 @@ public class WebRequestLogAspect {
             sb.append(request.getMethod());
             sb.append("|");
             weblog.setMethod(request.getMethod());
-            sb.append("|").append(request.getRequestURI().toString() + "|");
-            String path = request.getRequestURI().toString();
+            sb.append("|").append(request.getRequestURI() + "|");
+            String path = request.getRequestURI();
             weblog.setPath(path);
             String end = path.substring(path.lastIndexOf("/") + 1);
             if (32 == end.length()) {
@@ -153,11 +147,9 @@ public class WebRequestLogAspect {
             sb.append(input);
             weblog.setInputData(input);
             request.setAttribute("webLog", weblog);
-
-            logger.info("方法请求参数:{}", sb.toString());
+//            logger.info("方法请求参数:{}", sb.toString());
         } catch (Exception ex) {
             logger.error("方法的请求处理出现异常:",ex);
-            ex.printStackTrace();
         }
     }
 
@@ -166,9 +158,6 @@ public class WebRequestLogAspect {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             String out = objectMapper.writeValueAsString(ret);
-
-            logger.info("方法的返回值:{} ", out);
-
             WebLog weblog = (WebLog) RequestContextHolder.currentRequestAttributes().getAttribute("webLog", RequestAttributes.SCOPE_REQUEST);
             weblog.setEndTime(new Date());
             weblog.setOutData(out);
@@ -178,7 +167,6 @@ public class WebRequestLogAspect {
             }
         } catch (Exception ex) {
             logger.error("方法的返回处理出现异常:",ex);
-            ex.printStackTrace();
         }
     }
 

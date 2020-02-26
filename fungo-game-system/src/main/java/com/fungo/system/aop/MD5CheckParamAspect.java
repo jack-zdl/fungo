@@ -16,6 +16,8 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -35,11 +37,10 @@ import java.util.Arrays;
 @Order(1)
 @Aspect
 @Component
+@AutoConfigureAfter(NacosFungoCircleConfig.class)
 public class MD5CheckParamAspect {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( MD5CheckParamAspect.class);
-
-
 
     @Resource
     private MappingJackson2HttpMessageConverter converter;

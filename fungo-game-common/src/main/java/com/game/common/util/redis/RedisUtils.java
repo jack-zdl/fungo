@@ -1,6 +1,5 @@
 package com.game.common.util.redis;
 
-
 import com.game.common.util.response.RespJsonFactory;
 import com.game.common.util.exception.RedisConnectException;
 import com.game.common.util.response.RespJson;
@@ -9,7 +8,6 @@ import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.Resource;
 import java.util.Iterator;
 import java.util.Map;

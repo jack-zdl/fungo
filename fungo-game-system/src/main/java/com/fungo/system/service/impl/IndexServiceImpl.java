@@ -988,7 +988,6 @@ public class IndexServiceImpl implements IIndexService {
     public ResultDto<CircleCardDataBean> queryOpenScreen(String os) {
         ResultDto<CircleCardDataBean> re = new ResultDto<>();
         EntityWrapper<Banner> wrapper = new EntityWrapper<>();
-
         if(StringUtils.isNotBlank(os) && os.equals("iOS")){
             wrapper.in("display_platform","0,4");
         }else{

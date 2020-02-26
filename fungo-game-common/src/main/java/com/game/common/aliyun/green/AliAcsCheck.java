@@ -12,10 +12,8 @@ import com.game.common.util.CommonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
 import java.io.UnsupportedEncodingException;
 import java.util.*;
-
 import static com.game.common.aliyun.green.MyIAcsClient.getIAcsClient;
 import static com.game.common.aliyun.green.MyIAcsClient.recognitionClient;
 
@@ -131,11 +129,11 @@ public class AliAcsCheck {
                     System.out.println("response not success. status:" + httpResponse.getStatus());
                 }
             } catch (ServerException e) {
-                e.printStackTrace();
+                logger.error( "阿里内容检查服务端异常" ,e);
             } catch (ClientException e) {
-                e.printStackTrace();
+                logger.error( "阿里内容检查客户端异常" ,e);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error( "阿里内容检查异常" ,e);
             }
         }catch (Exception e){
             logger.error( "检查文本异常",e);

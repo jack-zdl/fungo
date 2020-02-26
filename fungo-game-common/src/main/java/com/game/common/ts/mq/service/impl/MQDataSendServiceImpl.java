@@ -1,6 +1,5 @@
 package com.game.common.ts.mq.service.impl;
 
-
 import com.game.common.ts.mq.dto.MQMessageSender;
 import com.game.common.ts.mq.service.MQDataSendService;
 import com.game.common.util.exception.BusinessException;
@@ -15,7 +14,6 @@ import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 @Service("sQDataSendService")
 public class MQDataSendServiceImpl implements RabbitTemplate.ConfirmCallback, MQDataSendService {
@@ -35,7 +33,6 @@ public class MQDataSendServiceImpl implements RabbitTemplate.ConfirmCallback, MQ
 
     }
 
-
     @Override
     public void sendtMQDirect(MQMessageSender msgSend) throws Exception {
         if (null == msgSend) {
@@ -48,7 +45,6 @@ public class MQDataSendServiceImpl implements RabbitTemplate.ConfirmCallback, MQ
         excuteMQSend(msgSend);
     }
 
-
     @Override
     public void sendMQTopic(MQMessageSender msg) throws Exception {
         if (null == msg) {
@@ -60,7 +56,6 @@ public class MQDataSendServiceImpl implements RabbitTemplate.ConfirmCallback, MQ
         LOGGER.info("MQDataSendServiceImpl-sendMQTopic-MQMessageSender:{}", msg.toString());
         excuteMQSend(msg);
     }
-
 
     /**
      * 执行MQ发送
@@ -89,6 +84,4 @@ public class MQDataSendServiceImpl implements RabbitTemplate.ConfirmCallback, MQ
             });
         }
     }
-
-//-----
 }
