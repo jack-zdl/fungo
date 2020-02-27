@@ -69,4 +69,6 @@ public interface MemberDao extends  BaseMapper<Member> {
 
     List<String> getMember(@Param("userName")String userName);
 
+    List<String> getMemberByName();
+
 }

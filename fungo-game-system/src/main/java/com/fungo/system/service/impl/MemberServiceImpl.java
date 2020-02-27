@@ -59,6 +59,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
+import static com.game.common.consts.MessageConstants.SYSTEM_USER_NAME_REPATITION;
 import static java.util.stream.Collectors.groupingBy;
 
 
@@ -2527,6 +2528,28 @@ public class MemberServiceImpl implements IMemberService {
             logger.error("",e);
         }
         return false;
+    }
+
+    @Async
+    @Override
+    public boolean checkAllUserName() {
+        try {
+            List<String> memberIdList = memberDao.getMemberByName();
+            memberIdList.stream().forEach( s ->{
+                BasNotice basNotice = new BasNotice();
+                basNotice.setType( 13 );
+                basNotice.setChannel( "");
+                basNotice.setIsRead( 0 );
+                basNotice.setIsPush( 0 );
+                basNotice.setMemberId( s );
+                basNotice.setCreatedAt( new Date() );
+                basNotice.setData( SYSTEM_USER_NAME_REPATITION );
+                basNotice.insert();
+            } );
+        }catch (Exception e){
+            logger.error("检查所有的用户的重复名字",e);
+        }
+        return true;
     }
 
 }

@@ -29,7 +29,7 @@ public class BasNotice extends Model<BasNotice> {
 0:点赞帖子 1:点赞评论 2:点赞游戏评价 7:点赞心情
 3:评论帖子 8:评论心情 4:回复评论 5:回复游戏
 9:回复心情评论 11:点赞心情评论 12:回复二级回复
-6:系统消息
+6:系统消息  13 跳转个人简介
      */
 	private Integer type;
 

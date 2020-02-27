@@ -214,4 +214,21 @@ public class JobController {
         return re;
     }
 
+    /**
+     * 功能描述: 检查所有的用户的重复名字
+     * @date: 2019/7/29 16:42
+     */
+    @GetMapping("/user/checkName")
+    public ResultDto<String> checkName( ){
+        ResultDto<String> re = null;
+        try {
+            memberServiceImpl.checkAllUserName();
+            re = ResultDto.success("检查所有的用户的重复名字执行成功");
+        }catch (Exception e){
+            LOGGER.error("检查所有的用户的重复名字执行异常",e);
+            re = ResultDto.error("-1","检查所有的用户的重复名字执行异常");
+        }
+        return re;
+    }
+
 }

@@ -252,4 +252,8 @@
     <select id="getMember" resultType="java.lang.String">
         SELECT id FROM t_member WHERE state = 0 and user_name = #{userName}
     </select>
+
+    <select id="getMemberByName" resultType="java.lang.String">
+        SELECT t.id  FROM (SELECT id, user_name,COUNT(1) as total  FROM t_member   GROUP BY user_name  ORDER BY total desc ) t WHERE t.total > 1
+    </select>
 </mapper>

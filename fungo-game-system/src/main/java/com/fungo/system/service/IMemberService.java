@@ -101,4 +101,6 @@ public interface IMemberService {
 
 	boolean getActiveMemeber(String memberId);
 
+	boolean checkAllUserName();
+
 }
