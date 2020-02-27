@@ -60,6 +60,6 @@ public interface GameDao extends BaseMapper<Game> {
 
     List<Game>  getGmaePage( Page page,@Param("keyword") String keyword);
 
-
+    List<Game> getGameByName(@Param( "androidPackageNameList" ) List<String> androidPackageNameList);
 
 }

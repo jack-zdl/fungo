@@ -2,17 +2,13 @@ package com.fungo.games.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.fungo.games.entity.Game;
-import com.fungo.games.feign.SystemFeignClient;
-import com.fungo.games.helper.MQProduct;
 import com.fungo.games.service.GameService;
 import com.fungo.games.service.IGameService;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
-import com.game.common.dto.AuthorBean;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
-import com.game.common.dto.action.BasActionDto;
 import com.game.common.dto.game.*;
 import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.util.AesUtil;
@@ -315,6 +311,21 @@ public class GameController {
         }
         return gameService.listGameByBang(memberId,bangGameDto);
     }
+
+    /**
+     * 功能描述: 根据包名集合获取要更新的游戏包集合
+     * @auther: dl.zhang
+     * @date: 2020/2/27 15:59
+     */
+    @PostMapping("/api/game/listGameByStatus")
+    public FungoPageResultDto<GameKuDto> listGameByStatus(@Anonymous MemberUserProfile memberUserPrefile,@RequestBody BangGameDto bangGameDto){
+        String memberId = null;
+        if(memberUserPrefile!=null){
+            memberId = memberUserPrefile.getLoginId();
+        }
+        return gameService.listGameByStatus(memberId,bangGameDto);
+    }
+
 
 
     private String getTagString(List<String> tags){

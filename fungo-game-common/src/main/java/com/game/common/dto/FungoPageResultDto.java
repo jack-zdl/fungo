@@ -128,12 +128,28 @@ public class FungoPageResultDto<T> extends AbstractResultDto {
             return re;
         }
 
+
+        /**
+         * 成功返回请求结果和结果信息和数据
+         * @param data 数据
+         * @return  RespJson
+         */
+        public static  FungoPageResultDto buildSuccess( Object data) {
+            FungoPageResultDto re =  buildInfo(CommonEnum.SUCCESS.code(), CommonEnum.SUCCESS.code(), CommonEnum.SUCCESS.message(), data, -1,-1);
+            return re;
+        }
+
         /**
          * 成功返回请求结果和结果信息和数据
          * @return  RespJson
          */
         public static  FungoPageResultDto buildSuccess( String code,String msg) {
             FungoPageResultDto re =  buildInfo(CommonEnum.SUCCESS.code(), code, msg, null, -1,-1);
+            return re;
+        }
+
+        public static  FungoPageResultDto buildSuccess( String msg) {
+            FungoPageResultDto re =  buildInfo(CommonEnum.SUCCESS.code(), CommonEnum.SUCCESS.code(), msg, null, -1,-1);
             return re;
         }
 
