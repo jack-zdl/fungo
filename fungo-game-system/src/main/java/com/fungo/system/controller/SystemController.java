@@ -1,5 +1,6 @@
 package com.fungo.system.controller;
 
+import com.fungo.system.service.IBasActionService;
 import com.fungo.system.service.IMemberCircleService;
 import com.fungo.system.service.SystemService;
 import com.game.common.dto.AuthorBean;
@@ -42,6 +43,8 @@ public class SystemController {
     private SystemService systemService;
     @Autowired
     private IMemberCircleService memberCircleServiceImpl;
+    @Autowired
+    private IBasActionService basActionServiceImpl;
 
     /**
      * 功能描述: 根据用户id查询被关注人的id集合
@@ -741,5 +744,13 @@ public class SystemController {
     @PostMapping("/getCircleMainByCircleId")
     public   ResultDto<List<MemberNameDTO>> getCircleMainByMemberId(@RequestParam("circleId") String circleId){
         return memberCircleServiceImpl.getCircleMainByMemberId(  circleId);
+    }
+
+    /**
+     * 查询收藏
+     */
+    @PostMapping("/getCollectByGameId")
+    public   ResultDto<Map<String,Object>> getCollectByGameId(@RequestParam("gameId") String gameId,@RequestParam("memberId") String memberId){
+        return basActionServiceImpl.getCollectByGame( gameId,memberId );
     }
 }

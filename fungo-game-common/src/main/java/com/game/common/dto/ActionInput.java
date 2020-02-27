@@ -78,6 +78,7 @@ public class ActionInput {
     }
 
     public enum ActionEnum implements BaseEnum<ActionEnum,String> {
+        GAME("3","game"),
         CIRCLE("11","circle");
 
         String key;

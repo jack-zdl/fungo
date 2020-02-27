@@ -219,4 +219,12 @@ public interface SystemFeignClient {
             @ApiImplicitParam(name = "information",value = "内容",paramType = "form",dataType = "string")
     })
     public ResultDto<String> addAction(@RequestBody BasActionDto basActionDto);
+
+
+    /**
+     * 查询游戏是否被收藏
+     */
+    @PostMapping("/getCollectByGameId")
+    public   ResultDto<Map<String,Object>> getCollectByGameId(@RequestParam("gameId") String gameId,@RequestParam("memberId") String memberId);
+
 }

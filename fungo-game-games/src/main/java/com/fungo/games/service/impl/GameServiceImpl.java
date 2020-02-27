@@ -16,6 +16,7 @@ import com.fungo.games.dao.GameTagDao;
 import com.fungo.games.entity.*;
 import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.feign.CommunityFeignClient;
+import com.fungo.games.feign.SystemFeignClient;
 import com.fungo.games.helper.es.ESDAOServiceImpl;
 import com.fungo.games.service.*;
 import com.game.common.api.InputPageDto;
@@ -101,9 +102,10 @@ public class GameServiceImpl implements IGameService {
     private ESDAOServiceImpl esdaoServiceImpl;
     @Autowired
     private GameTagDao gameTagDao;
-
     @Autowired
     private AsyncTaskService asyncTaskService;
+    @Autowired
+    private SystemFeignClient systemFeignClient;
 
     @Override
     public FungoPageResultDto<GameOutPage> getGameList(GameInputPageDto gameInputDto, String memberId, String os) {
@@ -422,6 +424,13 @@ public class GameServiceImpl implements IGameService {
             out.setCompany(game.getCompany());
             out.setPublisher(game.getPublisher());
 
+            if (!StringUtils.isNullOrEmpty(memberId)) {
+                ResultDto<Map<String,Object>> resultDto = systemFeignClient.getCollectByGameId(gameId,memberId);
+                if(resultDto!= null && resultDto.getData() != null){
+                    Map<String,Object> resultMap = resultDto.getData();
+                    out.setCollect( (boolean)resultMap.get( "collect" ));
+                }
+            }
             // 处理加速
             String origin = origin1;
             Boolean canFast = game.getCanFast();

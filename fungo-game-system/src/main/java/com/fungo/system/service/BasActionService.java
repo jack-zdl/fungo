@@ -12,4 +12,5 @@ import com.fungo.system.entity.BasAction;
  * @since 2018-05-07
  */
 public interface BasActionService extends IService<BasAction> {
+
 }

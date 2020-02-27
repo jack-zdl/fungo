@@ -121,6 +121,18 @@ public class GameOut {
      */
     private String publisher;
 
+    /**
+     * 功能描述: 是否被收藏
+     */
+    private boolean isCollect;
+
+    public boolean isCollect() {
+        return isCollect;
+    }
+
+    public void setCollect(boolean collect) {
+        isCollect = collect;
+    }
 
     public String getCompany() {
         return company;

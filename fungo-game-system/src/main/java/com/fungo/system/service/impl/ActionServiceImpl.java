@@ -341,7 +341,6 @@ public class ActionServiceImpl implements IActionService {
                 //gameProxy.addTaskCore(Setting.ACTION_TYPE_COLLECT, memberId, inputDto.getTarget_id(), inputDto.getTarget_type());
             }
         }
-
         //更新用户我的收藏Redis cache 2019-05-06 抽取冗余代码
         updateMyCollectionRedisCache(memberId, inputDto);
         return ResultDto.success("收藏成功");
@@ -359,7 +358,6 @@ public class ActionServiceImpl implements IActionService {
         }
         //更新用户我的收藏Redis cache 2019-05-06 抽取冗余代码
         updateMyCollectionRedisCache(memberId, inputDto);
-
         return ResultDto.success("取消成功");
     }
 
