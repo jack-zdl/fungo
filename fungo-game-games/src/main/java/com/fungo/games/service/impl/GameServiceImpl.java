@@ -343,8 +343,13 @@ public class GameServiceImpl implements IGameService {
             if (null != outResult) {
                 return ResultDto.success(outResult);
             }
-
-            Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", "0"));
+            Game game = null;
+            if(MemberIncentCommonUtils.checkNumber(gameId)){
+                game = gameService.selectOne(new EntityWrapper<Game>().eq("game_idt_sn", gameId).eq("state", "0"));
+            }else {
+                game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", "0"));
+            }
+//            Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", "0"));
             if (game == null) {
                 return ResultDto.error( AbstractResultEnum.CODE_GAME_THREE.getKey(), "找不到目标游戏");
             }
