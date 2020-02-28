@@ -9,7 +9,9 @@ import com.game.common.util.SpringBeanFactory;
 import com.game.common.util.annotation.MD5ParanCheck;
 import com.game.common.util.date.DateTools;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -99,6 +101,8 @@ public class MD5CheckParamAspect {
             LOGGER.error( "-----------------" );
         }
     }
+
+
 
     /**
      *

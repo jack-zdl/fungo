@@ -3,9 +3,11 @@ package com.fungo.system.feign;
 import com.fungo.system.facede.impl.GameFacedeHystrixService;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
+import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.*;
 import com.game.common.dto.index.CardIndexBean;
+import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -146,4 +148,12 @@ public interface GamesFeignClient {
     @ApiOperation(value = "根据游戏id集合获取FungoPageResultDto<GameOutBean>", notes = "")
     @RequestMapping(value = "/api/content/gameInfoList", method = RequestMethod.POST)
     ResultDto<List<GameOut>>   getGameInfoList(@RequestBody GameListVO input);
+
+    /**
+     * 功能描述: 根据包名集合获取要更新的游戏包集合
+     * @auther: dl.zhang
+     * @date: 2020/2/27 15:59
+     */
+    @PostMapping("/api/game/listGameByPackageName")
+    public FungoPageResultDto<GameOutBean> listGameByPackageName( @RequestBody BangGameDto bangGameDto);
 }

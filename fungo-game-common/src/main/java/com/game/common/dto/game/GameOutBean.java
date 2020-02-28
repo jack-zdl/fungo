@@ -17,6 +17,10 @@ public class GameOutBean {
 	private int iOState ;
 	private String icon;
 	private String coverImage;
+
+	private String gamePackageName;
+
+	private String gameVersion;
 	
 	public String getGameId() {
 		return gameId;
@@ -66,5 +70,20 @@ public class GameOutBean {
 	public void setCoverImage(String coverImage) {
 		this.coverImage = coverImage;
 	}
-	
+
+	public String getGamePackageName() {
+		return gamePackageName;
+	}
+
+	public void setGamePackageName(String gamePackageName) {
+		this.gamePackageName = gamePackageName;
+	}
+
+	public String getGameVersion() {
+		return gameVersion;
+	}
+
+	public void setGameVersion(String gameVersion) {
+		this.gameVersion = gameVersion;
+	}
 }

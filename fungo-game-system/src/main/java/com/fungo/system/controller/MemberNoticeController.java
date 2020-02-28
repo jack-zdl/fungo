@@ -54,17 +54,11 @@ public class MemberNoticeController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/api/user/notices", method = RequestMethod.POST)
+    @PostMapping(value = "/api/user/notices")
     public ResultDto<List<Map<String, Object>>> bindThirdSNSWithLogged(MemberUserProfile memberprofile,HttpServletRequest request, @Valid @RequestBody MemberNoticeInput noticeInput, BindingResult errors) throws Exception {
-
         if(errors.hasErrors()){
             return ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FIVE.getKey(),errors.getAllErrors().stream().map( ObjectError::getDefaultMessage).collect( Collectors.joining(",") ));
         }
-//        noticeInput.setMb_id(memberprofile.getLoginId());
-//        String os = request.getHeader("os");
-//        if(os == null){
-//            os = "";
-//        }
 //        List<Map<String, Object>> noticesList = iMemberNoticeService.queryMbNotices(os,noticeInput);
         String appVersion = "2.5.1";
         if(StringUtils.isNoneBlank(request.getHeader("appversion"))){
@@ -80,12 +74,6 @@ public class MemberNoticeController {
             re.setData( Arrays.asList(resultMap));
         }
         return re;
-//        if (null != noticesList && !noticesList.isEmpty()) {
-//            return ResultDto.success(noticesList);
-//        }
-//        ResultDto<List<Map<String, Object>>> resultDto = ResultDto.success("暂无消息");
-//        resultDto.setData(Collections.emptyList());
-//        return resultDto;
     }
 
     /**

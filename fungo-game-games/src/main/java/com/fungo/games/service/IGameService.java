@@ -179,5 +179,7 @@ public interface IGameService {
     FungoPageResultDto<GameKuDto> listGameByBang(String memberId, BangGameDto sortType);
 
 	FungoPageResultDto<GameKuDto> listGameByStatus(String memberId, BangGameDto sortType);
+
+	FungoPageResultDto<GameOutBean> listGameByPackageName(String memberId, BangGameDto sortType);
 }
 

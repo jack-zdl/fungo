@@ -36,6 +36,7 @@ import com.game.common.enums.CommonEnum;
 import com.game.common.repo.cache.facade.FungoCacheGame;
 import com.game.common.repo.cache.facade.FungoCacheMember;
 import com.game.common.util.CommonUtil;
+import com.game.common.util.CommonUtils;
 import com.game.common.util.PageTools;
 import com.game.common.util.StringUtil;
 import com.game.common.util.date.DateTools;
@@ -2476,36 +2477,76 @@ public class GameServiceImpl implements IGameService {
             List<Game> gameList = gameDao.getGameByName(gameNameList  );
             List<GameOutPage> gameOutPages = new ArrayList<>();
             for (Map<String,String> map : gameInfoList){
+
                 Game game = gameList.stream().filter(  c ->c.getAndroidPackageName().equals( map.get( "gamePackageName" ) )).findFirst().orElse( null);
                 if(game == null){
 
                 }else {
-                    GameOutPage out = new GameOutPage();
-                    out.setObjectId(game.getId());
-                    out.setName(game.getName());
-                    out.setIcon(game.getIcon());
-                    //2.4.3
-                    out.setAndroidState(game.getAndroidState());
-                    out.setIosState(game.getIosState());
-                    out.setRating(getGameRating(game.getId()));
-                    if (game.getAndroidPackageName() == null) {
-                        game.setAndroidPackageName("");
+                    String gameVersion = game.getVersionMain()+","+game.getVersionChild();
+                    if(CommonUtils.isNewVersion(map.get( "gameVersion" ),gameVersion)){
+                        GameOutPage out = new GameOutPage();
+                        out.setObjectId(game.getId());
+                        out.setName(game.getName());
+                        out.setIcon(game.getIcon());
+                        //2.4.3
+                        out.setAndroidState(game.getAndroidState());
+                        out.setIosState(game.getIosState());
+                        out.setRating(getGameRating(game.getId()));
+                        if (game.getAndroidPackageName() == null) {
+                            game.setAndroidPackageName("");
+                        }
+                        if (game.getApk() == null) {
+                            game.setApk("");
+                        }
+                        out.setApkUrl(game.getApk());
+                        out.setItunesId(game.getItunesId());
+                        out.setAndroidPackageName(game.getAndroidPackageName());
+                        out.setGame_size((long) game.getGameSize());
+                        //推荐数据 已弃用
+                        Integer recommend_total_count = game.getRecommendNum() + game.getUnrecommendNum();
+                        DecimalFormat df = new DecimalFormat("#.00");
+                        out.setRecommend_total_rate(recommend_total_count == 0 ? 0 : Double.parseDouble(df.format((double) game.getRecommendNum() / recommend_total_count * 100)));
+                        out.setRecommend_total_count(gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", game.getId()).and("state != -1")));
+                        out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
+                        out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
+                        gameOutPages.add(out);
                     }
-                    if (game.getApk() == null) {
-                        game.setApk("");
+                }
+            }
+            resultDto = FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(gameOutPages);
+        }catch (Exception e){
+            logger.error( "获取要更新的游戏异常",e);
+        }
+        return resultDto;
+    }
+
+    @Override
+    public FungoPageResultDto<GameOutBean> listGameByPackageName(String memberId, BangGameDto sortType) {
+        FungoPageResultDto<GameOutBean>  resultDto = null;
+        try {
+            List<Map<String,String>> gameInfoList = sortType.getGameInfo();
+            if(gameInfoList == null || gameInfoList.size() == 0) return FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess("暂无更新游戏包");
+            List<String> gameNameList = new ArrayList<>(  );
+            gameInfoList.stream().forEach( s ->{
+                gameNameList.add( s.get( "gamePackageName" ) );
+            } );
+            List<Game> gameList = gameDao.getGameByName(gameNameList  );
+            List<GameOutBean> gameOutPages = new ArrayList<>();
+            for (Map<String,String> map : gameInfoList){
+
+                Game game = gameList.stream().filter(  c ->c.getAndroidPackageName().equals( map.get( "gamePackageName" ) )).findFirst().orElse( null);
+                if(game == null){
+
+                }else {
+                    String gameVersion = game.getVersionMain()+","+game.getVersionChild();
+                    if(CommonUtils.isNewVersion(map.get( "gameVersion" ),gameVersion)){
+                        GameOutBean out = new GameOutBean();
+                        out.setGameId( game.getId());
+                        out.setName( game.getName());
+                        out.setGamePackageName(map.get( "gamePackageName" )  );
+                        out.setGameVersion(  map.get( "gameVersion" ));
+                        gameOutPages.add(out);
                     }
-                    out.setApkUrl(game.getApk());
-                    out.setItunesId(game.getItunesId());
-                    out.setAndroidPackageName(game.getAndroidPackageName());
-                    out.setGame_size((long) game.getGameSize());
-                    //推荐数据 已弃用
-                    Integer recommend_total_count = game.getRecommendNum() + game.getUnrecommendNum();
-                    DecimalFormat df = new DecimalFormat("#.00");
-                    out.setRecommend_total_rate(recommend_total_count == 0 ? 0 : Double.parseDouble(df.format((double) game.getRecommendNum() / recommend_total_count * 100)));
-                    out.setRecommend_total_count(gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", game.getId()).and("state != -1")));
-                    out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
-                    out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
-                    gameOutPages.add(out);
                 }
             }
             resultDto = FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess(gameOutPages);

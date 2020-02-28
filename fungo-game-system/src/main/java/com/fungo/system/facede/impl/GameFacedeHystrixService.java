@@ -169,6 +169,11 @@ public class GameFacedeHystrixService implements FallbackFactory<GamesFeignClien
                 logger.error("--------------------getGameInfoList--启动熔断:{}" , "getGameInfoList");
                 return null;
             }
+
+            @Override
+            public FungoPageResultDto<GameOutBean> listGameByPackageName(BangGameDto bangGameDto) {
+                return null;
+            }
         };
 
     }

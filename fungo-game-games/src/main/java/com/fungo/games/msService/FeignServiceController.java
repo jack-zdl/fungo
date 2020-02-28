@@ -15,6 +15,7 @@ import com.fungo.games.service.impl.GameEvaluationServiceImap;
 import com.game.common.bean.MemberPulishFromCommunity;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
+import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.evaluation.EvaluationInputPageDto;
 import com.game.common.dto.game.*;
@@ -22,6 +23,7 @@ import com.game.common.dto.index.CardDataBean;
 import com.game.common.dto.index.CardIndexBean;
 import com.game.common.dto.search.GameSearchOut;
 import com.game.common.util.PageTools;
+import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -1132,6 +1134,20 @@ public class FeignServiceController {
         return re;
     }
 
+
+    /**
+     * 功能描述: 根据包名集合获取要更新的游戏包集合
+     * @auther: dl.zhang
+     * @date: 2020/2/27 15:59
+     */
+    @PostMapping("/api/game/listGameByPackageName")
+    public FungoPageResultDto<GameOutBean> listGameByPackageName(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody BangGameDto bangGameDto){
+        String memberId = null;
+        if(memberUserPrefile!=null){
+            memberId = memberUserPrefile.getLoginId();
+        }
+        return iGameService.listGameByPackageName(memberId,bangGameDto);
+    }
     //---------
 
 }
