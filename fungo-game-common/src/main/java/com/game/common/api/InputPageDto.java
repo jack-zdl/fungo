@@ -4,6 +4,7 @@ import com.game.common.dto.InputDto;
 import com.game.common.validate.an.Min;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.omg.CORBA.PRIVATE_MEMBER;
 
 import javax.validation.constraints.Max;
 import java.io.Serializable;
@@ -31,6 +32,8 @@ public class InputPageDto extends InputDto implements Serializable {
 	private int sort;//排序
 
 	private String filter = "";//过滤查询条件
+
+	private int type;
 
 	public int getPageNum() {
 		return pageNum;
@@ -69,4 +72,11 @@ public class InputPageDto extends InputDto implements Serializable {
 		this.filter = filter;
 	}
 
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
 }

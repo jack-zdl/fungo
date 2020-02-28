@@ -25,6 +25,7 @@ import com.game.common.api.InputPageDto;
 import com.game.common.bean.CollectionBean;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.Setting;
+import com.game.common.consts.UserMessageTypeConstant;
 import com.game.common.dto.*;
 import com.game.common.dto.StreamInfo;
 import com.game.common.dto.community.*;
@@ -143,9 +144,13 @@ public class MemberServiceImpl implements IMemberService {
 
         re = new FungoPageResultDto<>();
         List<CollectionOutBean> list = new ArrayList<>();
+        FungoPageResultDto<CollectionBean>  cmmPostUsercollect = null;
+        if(inputPage.getType() == 1){
 
-        List<String> ids = actionDao.listArticleIds(memberId);
-        FungoPageResultDto<CollectionBean>  cmmPostUsercollect = communityFeignClient.listCmmPostUsercollect(inputPage.getPage(),inputPage.getLimit(),ids);
+        }else {
+            List<String> ids = actionDao.listArticleIds(memberId);
+            cmmPostUsercollect = communityFeignClient.listCmmPostUsercollect(inputPage.getPage(),inputPage.getLimit(),ids);
+        }
 
        // List<CollectionBean> plist = communityProxyService.getCollection(p, ids); //actionDao.getCollection(p, ids);
         List<CollectionBean> plist = cmmPostUsercollect.getData();
@@ -2537,7 +2542,7 @@ public class MemberServiceImpl implements IMemberService {
             List<String> memberIdList = memberDao.getMemberByName();
             memberIdList.stream().forEach( s ->{
                 BasNotice basNotice = new BasNotice();
-                basNotice.setType( 13 );
+                basNotice.setType( UserMessageTypeConstant.USER_EDIT_INFO );
                 basNotice.setChannel( "");
                 basNotice.setIsRead( 0 );
                 basNotice.setIsPush( 0 );

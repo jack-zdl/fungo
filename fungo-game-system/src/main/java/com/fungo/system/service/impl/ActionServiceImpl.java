@@ -361,6 +361,25 @@ public class ActionServiceImpl implements IActionService {
         return ResultDto.success("取消成功");
     }
 
+    @Override
+    public ResultDto<String> unCollectList(String memberId, ActionInput inputDto) throws Exception {
+        String targetIds = inputDto.getTarget_id();
+        List<String> targetIdList = Arrays.asList( targetIds.split( "," ) );
+        targetIdList.stream().forEach( s ->{
+            inputDto.setTarget_id(s);
+            BasAction action = this.getAction(memberId, Setting.ACTION_TYPE_COLLECT, inputDto);
+            if (action != null) {
+                action.setState(-1);
+                action.updateById();
+                //收藏数-1
+                this.subCounter(memberId, Setting.ACTION_TYPE_COLLECT, inputDto);
+            }
+            //更新用户我的收藏Redis cache 2019-05-06 抽取冗余代码
+            updateMyCollectionRedisCache(memberId, inputDto);
+        });
+        return ResultDto.success("取消成功");
+    }
+
     /**
      * 更新用户我的收藏Redis cache 2019-05-06 抽取冗余代码
      *

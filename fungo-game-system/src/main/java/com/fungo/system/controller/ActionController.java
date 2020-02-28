@@ -101,6 +101,19 @@ public class ActionController {
         return actionService.unCollect(memberUserPrefile.getLoginId(), inputDto);
     }
 
+
+    @ApiOperation(value="批量取消收藏", notes="")
+    @RequestMapping(value="/api/action/collects", method= RequestMethod.DELETE)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "target_id",value = "目标对象",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "target_type",value = "目标对象类型",paramType = "form",dataType = "string"),
+            @ApiImplicitParam(name = "information",value = "备注信息",paramType = "form",dataType = "string")
+    })
+    @MD5ParanCheck(param = {"target_id","target_type"})
+    public ResultDto<String> unCollectList(MemberUserProfile memberUserPrefile,@RequestBody ActionInput inputDto) throws Exception {
+        return actionService.unCollectList(memberUserPrefile.getLoginId(), inputDto);
+    }
+
     @ApiOperation(value="关注", notes="")
     @RequestMapping(value="/api/action/follow", method= RequestMethod.POST)
     @ApiImplicitParams({

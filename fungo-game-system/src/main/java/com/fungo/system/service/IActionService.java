@@ -16,6 +16,7 @@ public interface IActionService {
     public ResultDto<String>  share(String memberId,ActionInput inputDto)throws Exception;//分享
     public ResultDto<String>  collect(String memberId,ActionInput inputDto)throws Exception;//收藏
     public ResultDto<String>  unCollect(String memberId,ActionInput inputDto)throws Exception;//取消收藏
+    public ResultDto<String>  unCollectList(String memberId,ActionInput inputDto)throws Exception;//取消收藏
     public ResultDto<String>  follow(String memberId,ActionInput inputDto)throws Exception;//关注
     public ResultDto<String>  unFollow(String memberId,ActionInput inputDto)throws Exception;//取消关注
     public ResultDto<String>  report(String memberId,ActionInput inputDto)throws Exception;//举报
