@@ -157,6 +157,8 @@ public class MemberServiceImpl implements IMemberService {
                     list.add(collectionOutBean);
                 } );
             }
+            re.setData(list);
+            PageTools.newPageToResultDto(re, page.getTotal(),page.getPages(),inputPage.getPage());
         }else {
             List<String> ids = actionDao.listArticleIds(memberId);
             cmmPostUsercollect = communityFeignClient.listCmmPostUsercollect(inputPage.getPage(),inputPage.getLimit(),ids);
@@ -184,9 +186,10 @@ public class MemberServiceImpl implements IMemberService {
                 bean.setUpdatedAt(collectionBean.getUpdatedAt());
                 list.add(bean);
             }
+            re.setData(list);
+            PageTools.newPageToResultDto(re, cmmPostUsercollect.getCount(),cmmPostUsercollect.getPages(),inputPage.getPage());
         }
-        re.setData(list);
-        PageTools.newPageToResultDto(re, cmmPostUsercollect.getCount(),cmmPostUsercollect.getPages(),inputPage.getPage());
+
         fungoCacheMember.excIndexCache(true, keyPrefix, keySuffix, re);
         return re;
     }
