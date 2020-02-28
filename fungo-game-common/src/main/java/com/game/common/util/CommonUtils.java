@@ -1,5 +1,9 @@
 package com.game.common.util;
 
+import com.game.common.util.validate.ValidateUtil;
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.http.util.TextUtils;
+
 import java.io.*;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -231,6 +235,48 @@ public class CommonUtils {
 			e2.printStackTrace();
 		}
 		return obj;
+	}
+
+
+	public static boolean isNewVersion(String oldVersion, String newVersion) {
+		boolean b = false;
+
+//        oldVersion = formatVersion(oldVersion);
+//        newVersion = formatVersion(newVersion);
+
+		if (!CommonUtil.isNull(oldVersion) && !CommonUtil.isNull(newVersion)) {
+			String[] oldList = oldVersion.split("\\.");
+			String[] newList = newVersion.split("\\.");
+
+			List<String> filteredOldList = subZeroAndDot(oldList);
+			List<String> filteredNewList = subZeroAndDot(newList);
+
+			for (int i = 0; i < filteredNewList.size(); i++) {
+				if (filteredOldList.size() > i) {
+					b = Integer.valueOf( filteredNewList.get(i)) > Integer.valueOf( filteredOldList.get(i));
+					if (b) break;
+				} else {
+					b = true;
+					break;
+				}
+			}
+		}
+		return b;
+	}
+
+	public static List<String> subZeroAndDot(String[] input) {
+		int lastZeroPosition = 0;
+		for (int i = 0; i < input.length; i++) {
+			String numStr = input[i];
+			if (!TextUtils.isEmpty(numStr) && ValidateUtils.number(numStr)) {
+				int num = Integer.valueOf(numStr);
+				if (num != 0) {
+					lastZeroPosition = i;
+				}
+			}
+		}
+		List<String> inputList = Arrays.asList(input);
+		return inputList.subList(0, lastZeroPosition + 1);
 	}
 
 }

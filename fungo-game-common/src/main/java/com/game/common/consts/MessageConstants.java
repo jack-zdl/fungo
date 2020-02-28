@@ -41,4 +41,6 @@ public class MessageConstants {
 
 	public static final String SYSTEM_USER_NAME_REPATITION = "版本更新后检测到已有玩家与你同名，为了让其他玩家找到你，请更改昵称哦～";
 
+	public static final String SYSTEM_USER_GAME_UPDATE = "你在意的《{》更新了，快去下载吧！";
+
 }

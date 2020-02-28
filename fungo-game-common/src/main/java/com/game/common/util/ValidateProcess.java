@@ -26,6 +26,7 @@ class ValidateProcess {
     private final static String REGEX_PHONE = "^1(3[0-9]|4[57]|5[0-35-9]|7[01678]|8[0-9])\\d{8}$";
     private final static String REGEX_EMAIL = "\\w[-\\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\\.)+[A-Za-z]{2,14}";
 
+    public final static String NUMBER_CHECK = "-?[0-9]+.?[0-9]+";
     private final static int MIN_YEAR = 1700;
     private final static int MAX_YEAR = 2500;
 
@@ -44,6 +45,7 @@ class ValidateProcess {
     private final static String EnglishErrorMsg = "英文校验失败";
     private final static String EmailErrorMsg = "邮箱校验失败";
     private final static String PhoneNumErrorMsg = "手机号校验失败";
+
 
     static {
         zoneNum.put(11, "北京");

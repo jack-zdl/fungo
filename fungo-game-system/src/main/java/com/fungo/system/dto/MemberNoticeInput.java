@@ -6,6 +6,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -35,6 +37,14 @@ public class MemberNoticeInput extends InputDto {
     @NotNull (message = "ntc_type 不能为空")
     private Integer ntc_type;
 
+    /**
+     * 功能描述:
+     *  gamePackageName
+     *  version
+     * @auther: dl.zhang
+     * @date: 2020/2/28 13:05
+     */
+    private List<Map<String,String>> gameInfo;
 
 
 

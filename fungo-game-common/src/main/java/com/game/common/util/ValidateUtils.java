@@ -6,6 +6,8 @@ import org.apache.commons.beanutils.PropertyUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * ValidateUtils
@@ -310,6 +312,21 @@ public class ValidateUtils {
     public ValidateUtils ip(String msg) {
         ValidateHandler.ip(value, msg);
         return this;
+    }
+
+    /**
+     * 数字字符串校验
+     *
+     * @param msg 错误信息
+     * @return ValidateUtils
+     */
+    public static boolean number(String msg) {
+        Pattern pattern = Pattern.compile(ValidateProcess.NUMBER_CHECK);
+        Matcher isNum = pattern.matcher(msg);
+        if (!isNum.matches()) {
+            return false;
+        }
+        return true;
     }
 
     /**
