@@ -124,7 +124,7 @@ public class FeignServiceController {
     @ApiOperation(value = "查询游戏版本日志审批总数", notes = "")
     @RequestMapping(value = "/api/gameReleaseLog/selectCount", method = RequestMethod.POST)
     int gameReleaseLogSelectCount(@RequestBody GameReleaseLogDto gameReleaseLogDto) {
-        HashMap<String, Object> param = new HashMap<String, Object>();
+        HashMap<String, Object> param = new HashMap<>();
         gameReleaseLogFun(gameReleaseLogDto, param);
         return gameReleaseLogService.selectCount(new EntityWrapper<GameReleaseLog>().allEq(param));
     }
@@ -138,7 +138,7 @@ public class FeignServiceController {
     @ApiOperation(value = "查询游戏评价总数", notes = "")
     @RequestMapping(value = "/api/gameEvaluation/selectCount", method = RequestMethod.POST)
     int gameEvaluationSelectCount(@RequestBody GameEvaluationDto gameEvaluationDto) {
-        HashMap<String, Object> param = new HashMap<String, Object>();
+        HashMap<String, Object> param = new HashMap<>();
         gameEvaluationFun(gameEvaluationDto, param);
         return gameEvaluationServiceImap.selectCount(new EntityWrapper<GameEvaluation>().allEq(param));
     }
@@ -171,16 +171,14 @@ public class FeignServiceController {
         try {
             int page = gameEvaluationDto.getPage();
             int limit = gameEvaluationDto.getLimit();
-            EntityWrapper<GameEvaluation> evaluationWrapper = new EntityWrapper<GameEvaluation>();
-            HashMap<String, Object> param = new HashMap<String, Object>();
+            EntityWrapper<GameEvaluation> evaluationWrapper = new EntityWrapper<>();
+            HashMap<String, Object> param = new HashMap<>();
             Page<GameEvaluation> gameEvaluationPage = null;
             if (page > 0 && limit > 0) {
                 gameEvaluationPage = new Page<>(page, limit);
             }
             gameEvaluationFun(gameEvaluationDto, param);
-
             evaluationWrapper.allEq(param);
-
             //帖子内容
             String content = gameEvaluationDto.getContent();
             if (StringUtils.isNotBlank(content)) {
@@ -191,48 +189,33 @@ public class FeignServiceController {
             if (StringUtils.isNotBlank(gameName)) {
                 evaluationWrapper.orNew("game_name like '%" + gameName + "%'");
             }
-
             //根据修改时间倒叙
             evaluationWrapper.orderBy("updated_at", false);
-
             List<GameEvaluation> selectRecords = null;
-
             if (null != gameEvaluationPage) {
-
                 cmmPostPageSelect = this.gameEvaluationServiceImap.selectPage(gameEvaluationPage, evaluationWrapper);
-
                 if (null != cmmPostPageSelect) {
 //                    PageTools.pageToResultDto(fungoPageResultDto, cmmPostPageSelect);
                     selectRecords = cmmPostPageSelect.getRecords();
-
                     //设置分页数据
                     fungoPageResultDto.setCount(cmmPostPageSelect.getTotal());
                 }
-
             } else {
                 selectRecords = this.gameEvaluationServiceImap.selectList(evaluationWrapper);
             }
-
             if (null != selectRecords) {
-
                 gameEvaluationList = new ArrayList<GameEvaluationDto>();
-
                 for (GameEvaluation gameEvaluation : selectRecords) {
-
                     GameEvaluationDto gEvaluationDto = new GameEvaluationDto();
-
                     BeanUtils.copyProperties(gameEvaluation, gEvaluationDto);
-
                     gameEvaluationList.add(gEvaluationDto);
                 }
             }
-
         } catch (Exception ex) {
             LOGGER.error("/ms/service/game/api/evaluation/getGameEvaluationPage--getGameEvaluationPage-出现异常:", ex);
         }
 //        Page<GameEvaluationDto> gameEvaluationDtoPage = new Page<>();
 //        gameEvaluationDtoPage.setRecords(gameEvaluationList);
-
         fungoPageResultDto.setData(gameEvaluationList);
         PageTools.pageToResultDto(fungoPageResultDto, cmmPostPageSelect);
         return fungoPageResultDto;
@@ -809,6 +792,12 @@ public class FeignServiceController {
         return iGameService.getGameList1(input);
     }
 
+
+    @ApiOperation(value = "根据游戏id集合获取FungoPageResultDto<GameOutBean>", notes = "")
+    @RequestMapping(value = "/api/content/gameInfoList", method = RequestMethod.POST)
+    ResultDto<List<GameOut>>  getGameList(@RequestBody GameListVO input) {
+        return iGameService.listGameByids(input.getGameids());
+    }
     /**************************************************2019-05-18系統*****************************************************************************/
     @ApiOperation(value = "getGameSelectCountByLikeNameAndState", notes = "")
     @RequestMapping(value = "/api/game/getGameSelectCountByLikeNameAndState", method = RequestMethod.POST)

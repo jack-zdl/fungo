@@ -171,6 +171,9 @@ public interface IGameService {
 
     ResultDto<List<GameOut>> listGameByids(String gameIds);
 
+
+	FungoPageResultDto<GameOut> pageGameByids(String gameIds);
+
 	FungoPageResultDto<GameKuDto> listGameByTags(String memberId, TagGameDto tagGameDto);
 
     FungoPageResultDto<GameKuDto> listGameByBang(String memberId, BangGameDto sortType);

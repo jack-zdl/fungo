@@ -2387,6 +2387,16 @@ public class GameServiceImpl implements IGameService {
     }
 
     @Override
+    public FungoPageResultDto<GameOut> pageGameByids(String gameIds) {
+        try{
+
+        }catch (Exception e){
+            logger.error( "分页获取游戏列表异常",e );
+        }
+        return null;
+    }
+
+    @Override
     public FungoPageResultDto<GameKuDto> listGameByTags(String memberId, TagGameDto tagGameDto) {
         int page = tagGameDto.getPage();
         int limit = tagGameDto.getLimit();

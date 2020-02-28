@@ -31,6 +31,8 @@ import com.game.common.dto.*;
 import com.game.common.dto.StreamInfo;
 import com.game.common.dto.community.*;
 import com.game.common.dto.game.GameEvaluationDto;
+import com.game.common.dto.game.GameListVO;
+import com.game.common.dto.game.GameOut;
 import com.game.common.dto.game.GameSurveyRelDto;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
@@ -127,62 +129,64 @@ public class MemberServiceImpl implements IMemberService {
     @Autowired
     private IncentRuleRankGroupDao incentRuleRankGroupDao;
 
-
-    //
     @Override
     public FungoPageResultDto<CollectionOutBean> getCollection(String memberId, InputPageDto inputPage) {
-
         FungoPageResultDto<CollectionOutBean> re = null;
-
-        //from redis cache
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_COLLECTION + memberId;
         String keySuffix = JSON.toJSONString(inputPage);
-
         re = (FungoPageResultDto<CollectionOutBean>) fungoCacheMember.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
         }
-
         re = new FungoPageResultDto<>();
         List<CollectionOutBean> list = new ArrayList<>();
         FungoPageResultDto<CollectionBean>  cmmPostUsercollect = null;
         if("game".equals(inputPage.getFilter())){  // 代表收藏的游戏
-           List<String> gameIds =  actionDao.listGameCollectIds(memberId,String.valueOf( MemberActionTargetTypeConsts.MEMBER_ACTIOIN_TYPE_GAME ));
-
+            Page page = new Page(inputPage.getPage(),inputPage.getLimit() );
+           List<String> gameIds =  actionDao.listGameCollectIds(page,memberId,String.valueOf( MemberActionTargetTypeConsts.MEMBER_ACTIOIN_TYPE_GAME ));
+            GameListVO gameListVO = new GameListVO();
+            gameListVO.setGameids(String.join(",", gameIds));
+            gameListVO.setLimit(inputPage.getLimit());
+            gameListVO.setPage(inputPage.getPage());
+            ResultDto<List<GameOut>>  gameOutList =  gamesFeignClient.getGameInfoList(gameListVO);
+            if(gameOutList != null && gameOutList.getData() != null ){
+                List<GameOut> gameOuts = gameOutList.getData();
+                gameOuts.stream().forEach( x ->{
+                    CollectionOutBean collectionOutBean = new CollectionOutBean();
+                    collectionOutBean.setGameOut(x);
+                    list.add(collectionOutBean);
+                } );
+            }
         }else {
             List<String> ids = actionDao.listArticleIds(memberId);
             cmmPostUsercollect = communityFeignClient.listCmmPostUsercollect(inputPage.getPage(),inputPage.getLimit(),ids);
-        }
-
-       // List<CollectionBean> plist = communityProxyService.getCollection(p, ids); //actionDao.getCollection(p, ids);
-        List<CollectionBean> plist = cmmPostUsercollect.getData();
-        for (CollectionBean collectionBean : plist) {
-            CollectionOutBean bean = new CollectionOutBean();
-            bean.setAuthor(userService.getAuthor(collectionBean.getMemberId()));
-            if (org.apache.commons.lang3.StringUtils.isNotBlank(collectionBean.getContent())) {
-                String interactContent = FilterEmojiUtil.decodeEmoji(collectionBean.getContent());
-                collectionBean.setContent(interactContent);
+            // List<CollectionBean> plist = communityProxyService.getCollection(p, ids); //actionDao.getCollection(p, ids);
+            List<CollectionBean> plist = cmmPostUsercollect.getData();
+            for (CollectionBean collectionBean : plist) {
+                CollectionOutBean bean = new CollectionOutBean();
+                bean.setAuthor(userService.getAuthor(collectionBean.getMemberId()));
+                if (org.apache.commons.lang3.StringUtils.isNotBlank(collectionBean.getContent())) {
+                    String interactContent = FilterEmojiUtil.decodeEmoji(collectionBean.getContent());
+                    collectionBean.setContent(interactContent);
+                }
+                if (!CommonUtil.isNull(collectionBean.getContent())) {
+                    bean.setContent(CommonUtils.filterWord(collectionBean.getContent()));
+                }
+                bean.setContent(collectionBean.getContent());
+                bean.setCover_image(collectionBean.getCoverImage());
+                bean.setCreatedAt(collectionBean.getCreatedAt());
+                bean.setObjectId(collectionBean.getId());
+                if (org.apache.commons.lang3.StringUtils.isNotBlank(collectionBean.getTitle())) {
+                    String interactTitle = FilterEmojiUtil.decodeEmoji(collectionBean.getTitle());
+                    bean.setTitle(interactTitle);
+                }
+                bean.setVideo(collectionBean.getVideo());
+                bean.setUpdatedAt(collectionBean.getUpdatedAt());
+                list.add(bean);
             }
-
-            if (!CommonUtil.isNull(collectionBean.getContent())) {
-                bean.setContent(CommonUtils.filterWord(collectionBean.getContent()));
-            }
-            bean.setContent(collectionBean.getContent());
-            bean.setCover_image(collectionBean.getCoverImage());
-            bean.setCreatedAt(collectionBean.getCreatedAt());
-            bean.setObjectId(collectionBean.getId());
-            if (org.apache.commons.lang3.StringUtils.isNotBlank(collectionBean.getTitle())) {
-                String interactTitle = FilterEmojiUtil.decodeEmoji(collectionBean.getTitle());
-                bean.setTitle(interactTitle);
-            }
-            bean.setVideo(collectionBean.getVideo());
-            bean.setUpdatedAt(collectionBean.getUpdatedAt());
-            list.add(bean);
         }
         re.setData(list);
         PageTools.newPageToResultDto(re, cmmPostUsercollect.getCount(),cmmPostUsercollect.getPages(),inputPage.getPage());
-
-        //redis cache
         fungoCacheMember.excIndexCache(true, keyPrefix, keySuffix, re);
         return re;
     }

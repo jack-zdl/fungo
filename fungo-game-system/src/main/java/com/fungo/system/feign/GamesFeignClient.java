@@ -142,4 +142,8 @@ public interface GamesFeignClient {
     @GetMapping("/ms/service/game/api/game/notice")
     FungoPageResultDto<GameSurveyRelDto> getMemberNoticeByGame();
 
+
+    @ApiOperation(value = "根据游戏id集合获取FungoPageResultDto<GameOutBean>", notes = "")
+    @RequestMapping(value = "/api/content/gameInfoList", method = RequestMethod.POST)
+    ResultDto<List<GameOut>>   getGameInfoList(@RequestBody GameListVO input);
 }
