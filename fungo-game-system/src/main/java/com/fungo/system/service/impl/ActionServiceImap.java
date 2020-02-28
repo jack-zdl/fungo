@@ -8,6 +8,7 @@ import com.game.common.consts.Setting;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.ResultDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.Map;
  * @Author: dl.zhang
  * @Date: 2020/2/27
  */
+@Service
 public class ActionServiceImap implements IBasActionService {
 
     @Autowired
