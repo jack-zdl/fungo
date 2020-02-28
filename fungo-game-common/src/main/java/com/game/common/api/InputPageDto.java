@@ -33,7 +33,6 @@ public class InputPageDto extends InputDto implements Serializable {
 
 	private String filter = "";//过滤查询条件
 
-	private int type;
 
 	public int getPageNum() {
 		return pageNum;
@@ -72,11 +71,4 @@ public class InputPageDto extends InputDto implements Serializable {
 		this.filter = filter;
 	}
 
-	public int getType() {
-		return type;
-	}
-
-	public void setType(int type) {
-		this.type = type;
-	}
 }

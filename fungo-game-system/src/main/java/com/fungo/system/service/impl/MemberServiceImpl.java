@@ -24,6 +24,7 @@ import com.fungo.system.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.bean.CollectionBean;
 import com.game.common.consts.FungoCoreApiConstant;
+import com.game.common.consts.MemberActionTargetTypeConsts;
 import com.game.common.consts.Setting;
 import com.game.common.consts.UserMessageTypeConstant;
 import com.game.common.dto.*;
@@ -145,7 +146,8 @@ public class MemberServiceImpl implements IMemberService {
         re = new FungoPageResultDto<>();
         List<CollectionOutBean> list = new ArrayList<>();
         FungoPageResultDto<CollectionBean>  cmmPostUsercollect = null;
-        if(inputPage.getType() == 1){
+        if("game".equals(inputPage.getFilter())){  // 代表收藏的游戏
+           List<String> gameIds =  actionDao.listGameCollectIds(memberId,String.valueOf( MemberActionTargetTypeConsts.MEMBER_ACTIOIN_TYPE_GAME ));
 
         }else {
             List<String> ids = actionDao.listArticleIds(memberId);

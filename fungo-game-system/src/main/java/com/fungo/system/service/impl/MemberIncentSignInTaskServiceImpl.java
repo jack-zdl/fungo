@@ -16,7 +16,7 @@ import com.game.common.buriedpoint.model.BuriedPointProductModel;
 import com.game.common.buriedpoint.model.BuriedPointSignBtnModel;
 import com.game.common.buriedpoint.model.BuriedPointSignModel;
 import com.game.common.consts.FungoCoreApiConstant;
-import com.game.common.consts.MemberActionTypeConsts;
+import com.game.common.consts.MemberActionTargetTypeConsts;
 import com.game.common.consts.MemberIncentSignInConsts;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.dto.ResultDto;
@@ -806,7 +806,7 @@ public class MemberIncentSignInTaskServiceImpl implements IMemberIncentSignInTas
         newLog.setRuleName(taskedName);
 
         //签到动态类型 LOGIN,从V2.4.6修改为 signIn
-        newLog.setType(MemberActionTypeConsts.MEMBER_ACTIOIN_TYPE_CEHCKIN);
+        newLog.setType( MemberActionTargetTypeConsts.MEMBER_ACTIOIN_TYPE_CEHCKIN);
 
         newLog.setTaskType(taskType);
         newLog.setCodeIdt(taskRuleCodeIdt);

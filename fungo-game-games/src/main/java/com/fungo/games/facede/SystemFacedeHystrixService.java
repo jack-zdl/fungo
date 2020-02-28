@@ -153,6 +153,12 @@ public class SystemFacedeHystrixService implements FallbackFactory<SystemFeignCl
                 logger.error("--------------------addAction--启动熔断:{}", "addAction");
                 return null;
             }
+
+            @Override
+            public ResultDto<Map<String, Object>> getCollectByGameId(String gameId, String memberId) {
+                logger.error("--------------------getCollectByGameId--启动熔断:{}", "getCollectByGameId");
+                return null;
+            }
         };
     }
 }

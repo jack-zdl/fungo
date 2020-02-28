@@ -109,6 +109,11 @@ public class ProtalSystemActionServiceImpl implements IActionService {
         return null;
     }
 
+    @Override
+    public ResultDto<String> unCollectList(String memberId, ActionInput inputDto) throws Exception {
+        return null;
+    }
+
     //关注
     @Transactional
     public ResultDto<String> follow(String memberId, ActionInput inputDto) throws Exception {

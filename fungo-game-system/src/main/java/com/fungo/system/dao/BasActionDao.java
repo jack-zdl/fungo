@@ -74,4 +74,7 @@ public interface BasActionDao extends BaseMapper<BasAction> {
 
 	//查询followId是否是被关注用户id
 	List<String> getIdByFollowerId(@Param( "memberId" ) String memberId,@Param("actionType") String actionType,@Param("targetType") String targetType,@Param("followIds") List<String> followIds);
+
+
+	List<String> listGameCollectIds(@Param( "memberId" ) String memberId,@Param( "targetType" ) String targetType);
 }
