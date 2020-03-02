@@ -63,15 +63,17 @@ public class MemberNoticeAspect {
     @Around("webLog()")
     public Object arround(ProceedingJoinPoint joinPoint) throws Throwable {
         Object result = null;
+        result = joinPoint.proceed();
         for (Object arg : joinPoint.getArgs()) {
             if (arg instanceof MemberNoticeInput) {
                 List<Map<String,String>> mapList = ((MemberNoticeInput) arg).getGameInfo();
-                if(mapList.size() == 0) return null;
+                if(mapList == null || mapList.size() == 0) return result;
                 BangGameDto bangGameDto = new BangGameDto();
                 bangGameDto.setGameInfo(mapList );
                 FungoPageResultDto<GameOutBean>  gameOutBeanFungoPageResultDto = gamesFeignClient.listGameByPackageName(bangGameDto);
                 if(gameOutBeanFungoPageResultDto == null){
-                    return null;
+                    return result;
+//                    return null;
                 }
                 List<GameOutBean>  gameOutBeans = gameOutBeanFungoPageResultDto.getData();
                 ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
@@ -121,7 +123,7 @@ public class MemberNoticeAspect {
                 }
             }
         }
-        result = joinPoint.proceed();
+
         return result;
     }
 }

@@ -1325,7 +1325,7 @@ public class GameServiceImpl implements IGameService {
         }
 
         re = new FungoPageResultDto<MyGameBean>();
-        List<MyGameBean> list = new ArrayList<MyGameBean>();
+        List<MyGameBean> list = new ArrayList<>();
 
         if (2 == inputPage.getType()) {
             Page<GameSurveyRel> page = gameSurveyRelService.selectPage(new Page<GameSurveyRel>(inputPage.getPage(),
