@@ -1382,6 +1382,20 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public ResultDto<String> checkUserName(String memberId, String name) {
+        try {
+            List<String> memberIds = memberDao.getMember(name);
+            if(memberIds != null && memberIds.size() > 0){
+                return ResultDto.ResultDtoFactory.buildError("昵称已被使用，请更换");
+            }
+        }catch (Exception e){
+            LOGGER.error("检查姓名是否重复异常",e);
+            return ResultDto.ResultDtoFactory.buildError("昵称已被使用，请更换");
+        }
+        return ResultDto.ResultDtoFactory.buildSuccess( "昵称未被使用");
+    }
+
+    @Override
     public boolean checkFollowOfficialUser(String memberId) {
         try {
             List<String> officialUsers = nacosFungoCircleConfig.getOfficialUsers();

@@ -254,6 +254,6 @@
     </select>
 
     <select id="getMemberByName" resultType="java.lang.String">
-       SELECT t.id FROM t_member t WHERE user_name in  (SELECT  user_name FROM t_member WHERE state = 0 GROUP BY user_name having count(*) > 1  )  and state = 0 and id = '287c0f55aaf7436b89c0a73964efff3c' ;
+       SELECT t.id FROM t_member t WHERE user_name in  (SELECT  user_name FROM t_member WHERE state = 0 GROUP BY user_name having count(*) > 1  )  and state = 0
     </select>
 </mapper>

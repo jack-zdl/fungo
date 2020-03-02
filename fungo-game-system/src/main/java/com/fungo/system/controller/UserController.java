@@ -453,6 +453,22 @@ public class UserController {
         }
     }
 
+
+    @ApiOperation(value="检查用户姓名是否重复", notes="")
+    @PostMapping(value="/api/system/user/name")
+    @ApiImplicitParams({})
+    public ResultDto<String> checkUserName(MemberUserProfile memberUserPrefile,  @Valid @RequestBody UserBean msg, BindingResult errors){
+        if(errors.hasErrors()){
+            return ResultDto.ResultDtoFactory.buildSuccess( AbstractResultEnum.CODE_SYSTEM_FIVE.getKey(),errors.getAllErrors().stream().map( ObjectError::getDefaultMessage).collect(Collectors.joining(",") ));
+        }
+        String adminId = memberUserPrefile.getLoginId();
+        try {
+            return userService.checkUserName(adminId,msg.getUser_name());
+        } catch (Exception e) {
+            return ResultDto.error( "-1","昵称已被使用，请更换" );
+        }
+    }
+
     public String getAllowSuffix() {
         return allowSuffix;
     }
