@@ -1141,12 +1141,8 @@ public class FeignServiceController {
      * @date: 2020/2/27 15:59
      */
     @PostMapping("/api/game/listGameByPackageName")
-    public FungoPageResultDto<GameOutBean> listGameByPackageName(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody BangGameDto bangGameDto){
-        String memberId = null;
-        if(memberUserPrefile!=null){
-            memberId = memberUserPrefile.getLoginId();
-        }
-        return iGameService.listGameByPackageName(memberId,bangGameDto);
+    public FungoPageResultDto<GameOutBean> listGameByPackageName( @RequestBody BangGameDto bangGameDto){
+        return iGameService.listGameByPackageName(bangGameDto);
     }
     //---------
 

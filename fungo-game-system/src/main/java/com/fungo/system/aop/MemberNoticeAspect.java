@@ -70,6 +70,9 @@ public class MemberNoticeAspect {
                 BangGameDto bangGameDto = new BangGameDto();
                 bangGameDto.setGameInfo(mapList );
                 FungoPageResultDto<GameOutBean>  gameOutBeanFungoPageResultDto = gamesFeignClient.listGameByPackageName(bangGameDto);
+                if(gameOutBeanFungoPageResultDto == null){
+                    return null;
+                }
                 List<GameOutBean>  gameOutBeans = gameOutBeanFungoPageResultDto.getData();
                 ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
                 HttpServletRequest request = attributes.getRequest();

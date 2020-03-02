@@ -146,7 +146,7 @@ public interface GamesFeignClient {
 
 
     @ApiOperation(value = "根据游戏id集合获取FungoPageResultDto<GameOutBean>", notes = "")
-    @RequestMapping(value = "/api/content/gameInfoList", method = RequestMethod.POST)
+    @RequestMapping(value = "/ms/service/game/api/content/gameInfoList", method = RequestMethod.POST)
     ResultDto<List<GameOut>>   getGameInfoList(@RequestBody GameListVO input);
 
     /**
@@ -154,6 +154,6 @@ public interface GamesFeignClient {
      * @auther: dl.zhang
      * @date: 2020/2/27 15:59
      */
-    @PostMapping("/api/game/listGameByPackageName")
-    public FungoPageResultDto<GameOutBean> listGameByPackageName( @RequestBody BangGameDto bangGameDto);
+    @PostMapping("/ms/service/game/api/game/listGameByPackageName")
+    FungoPageResultDto<GameOutBean> listGameByPackageName( @RequestBody BangGameDto bangGameDto);
 }

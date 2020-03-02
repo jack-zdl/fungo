@@ -2482,7 +2482,7 @@ public class GameServiceImpl implements IGameService {
                 if(game == null){
 
                 }else {
-                    String gameVersion = game.getVersionMain()+","+game.getVersionChild();
+                    String gameVersion = game.getVersionMain()+"."+game.getVersionChild();
                     if(CommonUtils.isNewVersion(map.get( "gameVersion" ),gameVersion)){
                         GameOutPage out = new GameOutPage();
                         out.setObjectId(game.getId());
@@ -2521,7 +2521,7 @@ public class GameServiceImpl implements IGameService {
     }
 
     @Override
-    public FungoPageResultDto<GameOutBean> listGameByPackageName(String memberId, BangGameDto sortType) {
+    public FungoPageResultDto<GameOutBean> listGameByPackageName( BangGameDto sortType) {
         FungoPageResultDto<GameOutBean>  resultDto = null;
         try {
             List<Map<String,String>> gameInfoList = sortType.getGameInfo();
@@ -2538,7 +2538,7 @@ public class GameServiceImpl implements IGameService {
                 if(game == null){
 
                 }else {
-                    String gameVersion = game.getVersionMain()+","+game.getVersionChild();
+                    String gameVersion = game.getVersionMain()+"."+game.getVersionChild();
                     if(CommonUtils.isNewVersion(map.get( "gameVersion" ),gameVersion)){
                         GameOutBean out = new GameOutBean();
                         out.setGameId( game.getId());

@@ -23,10 +23,7 @@ import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
 import com.fungo.system.service.*;
 import com.game.common.api.InputPageDto;
 import com.game.common.bean.CollectionBean;
-import com.game.common.consts.FungoCoreApiConstant;
-import com.game.common.consts.MemberActionTargetTypeConsts;
-import com.game.common.consts.Setting;
-import com.game.common.consts.UserMessageTypeConstant;
+import com.game.common.consts.*;
 import com.game.common.dto.*;
 import com.game.common.dto.StreamInfo;
 import com.game.common.dto.community.*;
@@ -145,17 +142,19 @@ public class MemberServiceImpl implements IMemberService {
             Page page = new Page(inputPage.getPage(),inputPage.getLimit() );
            List<String> gameIds =  actionDao.listGameCollectIds(page,memberId,String.valueOf( MemberActionTargetTypeConsts.MEMBER_ACTIOIN_TYPE_GAME ));
             GameListVO gameListVO = new GameListVO();
-            gameListVO.setGameids(String.join(",", gameIds));
-            gameListVO.setLimit(inputPage.getLimit());
-            gameListVO.setPage(inputPage.getPage());
-            ResultDto<List<GameOut>>  gameOutList =  gamesFeignClient.getGameInfoList(gameListVO);
-            if(gameOutList != null && gameOutList.getData() != null ){
-                List<GameOut> gameOuts = gameOutList.getData();
-                gameOuts.stream().forEach( x ->{
-                    CollectionOutBean collectionOutBean = new CollectionOutBean();
-                    collectionOutBean.setGameOut(x);
-                    list.add(collectionOutBean);
-                } );
+            if(gameIds != null && gameIds.size() > 0){
+                gameListVO.setGameids(String.join(",", gameIds));
+                gameListVO.setLimit(inputPage.getLimit());
+                gameListVO.setPage(inputPage.getPage());
+                ResultDto<List<GameOut>>  gameOutList =  gamesFeignClient.getGameInfoList(gameListVO);
+                if(gameOutList != null && gameOutList.getData() != null ){
+                    List<GameOut> gameOuts = gameOutList.getData();
+                    gameOuts.stream().forEach( x ->{
+                        CollectionOutBean collectionOutBean = new CollectionOutBean();
+                        collectionOutBean.setGameOut(x);
+                        list.add(collectionOutBean);
+                    } );
+                }
             }
             re.setData(list);
             PageTools.newPageToResultDto(re, page.getTotal(),page.getPages(),inputPage.getPage());
@@ -1112,7 +1111,7 @@ public class MemberServiceImpl implements IMemberService {
 
         int comment_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).in("type", types1));
         int notice_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
-        List<BasNotice> basNotices = noticeService.selectList(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
+        List<BasNotice> basNotices = noticeService.selectList(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).in("type", new Integer[]{6, 15}));
         basNotices = basNotices.stream().filter( s -> os.equals(s.getChannel()) ||StringUtil.isNull(s.getChannel())).collect( Collectors.toList());
        /* List<BasNotice> noticeList = noticeService.selectList(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
         for (BasNotice notice : noticeList) {
@@ -1141,7 +1140,7 @@ public class MemberServiceImpl implements IMemberService {
         FungoPageResultDto<SysNoticeBean> re = new FungoPageResultDto<SysNoticeBean>();
         List<SysNoticeBean> list = new ArrayList<SysNoticeBean>();
         re.setData(list);
-        String[] types = {"6"};
+        String[] types = {"6","15"};
 
 //		Page<BasNotice> plist=noticeService.selectPage(new Page<BasNotice>(inputPage.getPage(),inputPage.getLimit()), new EntityWrapper<BasNotice>().in("type", types));
         //孟 根据是否推送来获取消息，add is_push = 0
@@ -2546,7 +2545,7 @@ public class MemberServiceImpl implements IMemberService {
 
     @Async
     @Override
-    public boolean checkAllUserName() {
+    public void checkAllUserName() {
         try {
             List<String> memberIdList = memberDao.getMemberByName();
             memberIdList.stream().forEach( s ->{
@@ -2557,13 +2556,23 @@ public class MemberServiceImpl implements IMemberService {
                 basNotice.setIsPush( 0 );
                 basNotice.setMemberId( s );
                 basNotice.setCreatedAt( new Date() );
-                basNotice.setData( SYSTEM_USER_NAME_REPATITION );
+                Map<String,String> dataMap = new HashMap<>();
+                // 3标志 不做跳转
+                dataMap.put("actionType", String.valueOf(UserMessageActionTypeConstant.ACTIONTYPE_ONE ));
+                dataMap.put("content", SYSTEM_USER_NAME_REPATITION);
+                dataMap.put("targetType","1");
+                dataMap.put("targetId","");
+                dataMap.put("userId", "0b8aba833f934452992a972b60e9ad10");
+                dataMap.put("userType", "1");
+                dataMap.put("userAvatar", "http://output-mingbo.oss-cn-beijing.aliyuncs.com/official.png");
+                dataMap.put("userName", "FunGo大助手");
+                dataMap.put("msgTime", DateTools.fmtDate(new Date()));
+                basNotice.setData( JSON.toJSONString( dataMap) );
                 basNotice.insert();
             } );
         }catch (Exception e){
             logger.error("检查所有的用户的重复名字",e);
         }
-        return true;
     }
 
 }

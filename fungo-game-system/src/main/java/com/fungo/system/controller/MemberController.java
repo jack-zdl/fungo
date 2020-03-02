@@ -69,7 +69,7 @@ public class MemberController {
     @ApiOperation(value = "获取我的收藏", notes = "获取我的收藏")
     @RequestMapping(value = "/api/mine/collection", method = RequestMethod.POST)
     @ApiImplicitParams({})
-    @MD5ParanCheck(param = {"sort","type","limit","page"})
+    @MD5ParanCheck(param = {"sort","limit","page"})
     public FungoPageResultDto<CollectionOutBean> getCollection(MemberUserProfile memberUserPrefile, @RequestBody InputPageDto inputPage) {
         return memberService.getCollection(memberUserPrefile.getLoginId(), inputPage);
     }
