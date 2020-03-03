@@ -2381,7 +2381,7 @@ public class GameServiceImpl implements IGameService {
             out.setName(game.getName());
             out.setIcon(game.getIcon());
             out.setObjectId(game.getId());
-            out.setVersion( game.getVersionMain()+"."+game.getVersionChild());
+            out.setVersion( CommonUtils.getVersion( game.getVersionMain() ,game.getVersionChild()));
             gameOuts.add(out);
         }
         return ResultDto.success(gameOuts);
@@ -2490,7 +2490,7 @@ public class GameServiceImpl implements IGameService {
                 if(game == null){
 
                 }else {
-                    String gameVersion = game.getVersionMain()+"."+game.getVersionChild();
+                    String gameVersion = CommonUtils.getVersion( game.getVersionMain(), game.getVersionChild()) ;
                     if(CommonUtils.isNewVersion(map.get( "gameVersion" ),gameVersion)){
                         GameOutPage out = new GameOutPage();
                         out.setObjectId(game.getId());

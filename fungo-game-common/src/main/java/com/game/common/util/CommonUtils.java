@@ -312,4 +312,15 @@ public class CommonUtils {
 		return inputList.subList(0, lastZeroPosition + 1);
 	}
 
+	public static String  getVersion(String mainVersion,String childVersion){
+		String version = null;
+		if(!CommonUtil.isNull( childVersion  )){
+			version = mainVersion +"."+childVersion;
+		}else {
+			version = mainVersion;
+		}
+		return  version;
+
+	}
+
 }
