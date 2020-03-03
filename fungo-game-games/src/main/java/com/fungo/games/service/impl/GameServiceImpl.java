@@ -121,7 +121,7 @@ public class GameServiceImpl implements IGameService {
         int page = gameInputDto.getPage();
         int sort = gameInputDto.getSort();
         String tag = gameInputDto.getTag();
-        if (tag != null && tag.replace(" ", "") != "") {
+        if (tag != null && !"".equals( tag.replace(" ", "")  ) ) {
             wrapper = wrapper.like("tags", tag);
         }
 
@@ -342,7 +342,7 @@ public class GameServiceImpl implements IGameService {
     public ResultDto<GameOut> getGameDetail(String gameId, String memberId, String ptype) throws Exception {
         GameOut out = new GameOut();
         try {
-            GameOut outResult = null; //(GameOut) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, memberId + ptype);
+            GameOut outResult = (GameOut) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, memberId + ptype);
             if (null != outResult) {
                 return ResultDto.success(outResult);
             }
@@ -436,9 +436,9 @@ public class GameServiceImpl implements IGameService {
             String origin = origin1;
             Boolean canFast = game.getCanFast();
             if(canFast == null){
-                canFast = true;
+                canFast = Boolean.TRUE;
             }
-            out.setCanFast(origin.equals("中国")?false:canFast);
+            out.setCanFast(origin.equals("中国")?Boolean.FALSE:canFast);
             // 处理描述
             out.setAndroidStatusDesc(gameStatusDesc(game.getAndroidStatusDesc()));
 
@@ -693,7 +693,7 @@ public class GameServiceImpl implements IGameService {
     @Override
     public ResultDto<GameOut> getGameDetailByNumber(String gameNumber, String memberId, String ptype) {
         GameOut out = new GameOut();
-        GameOut outResult = null; //(GameOut) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, memberId + ptype);
+        GameOut outResult = (GameOut) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameNumber, memberId + ptype);
         if (null != outResult) {
             return ResultDto.success(outResult);
         }
@@ -783,9 +783,9 @@ public class GameServiceImpl implements IGameService {
             String origin = origin1;
             Boolean canFast = game.getCanFast();
             if(canFast == null){
-                canFast = true;
+                canFast = Boolean.TRUE;
             }
-            out.setCanFast(origin.equals("中国")?false:canFast);
+            out.setCanFast(origin.equals("中国")?Boolean.FALSE:canFast);
             // 处理描述
             out.setAndroidStatusDesc(gameStatusDesc(game.getAndroidStatusDesc()));
 
@@ -1027,7 +1027,7 @@ public class GameServiceImpl implements IGameService {
             logger.error("游戏详情异常,游戏id="+gameId,e);
         }
         //redis cache
-        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId,
+        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameNumber,
                 memberId + ptype, out, 60 * 5);
 
         // vpc2.1 改版 记录用户浏览游戏详情
@@ -1231,7 +1231,7 @@ public class GameServiceImpl implements IGameService {
 
     @Override
     public FungoPageResultDto<GameOutBean> getGameList(GameListVO input, String memberId) {
-        List<Game> gameList = new ArrayList<>();
+        List<Game> gameList = null;
         FungoPageResultDto<GameOutBean> re = new FungoPageResultDto<GameOutBean>();
         try {
             Wrapper<Game> wrapper = new EntityWrapper<Game>().in("id", input.getGameids());
@@ -1376,7 +1376,7 @@ public class GameServiceImpl implements IGameService {
         if (keyword == null || "".equals(keyword.replace(" ", "")) || keyword.contains("%")) {
             return FungoPageResultDto.error("13", "请输入正确的关键字格式");
         }
-        FungoPageResultDto<GameSearchOut> re = new FungoPageResultDto<GameSearchOut>();
+        FungoPageResultDto<GameSearchOut> re = new FungoPageResultDto<>();
         try {
             Page<Game> gamePage = new Page<>(page, limit);
             List<Game> gameList = null;
@@ -1406,7 +1406,7 @@ public class GameServiceImpl implements IGameService {
             }
 
             if (gameList == null) {
-                gameList = gamePage.getRecords();
+//                gameList = gamePage.getRecords();
             } else { // 如果sort不存在,默认排序
                 if (gameList.size() == 0) {
                     return new FungoPageResultDto<GameSearchOut>();
@@ -1610,7 +1610,7 @@ public class GameServiceImpl implements IGameService {
                     gamePage = esdaoServiceImpl.getGameByES( 1,  10, keyword,  "",  "" );
             }
             if (gamePage != null) {
-                gameList = gamePage.getRecords();
+//                gameList = gamePage.getRecords();
                 re.setCount( gamePage.getTotal());
             } else {
                 re.setCount( gameList.size());
@@ -1778,8 +1778,7 @@ public class GameServiceImpl implements IGameService {
                     BasTagDto tagName = iEvaluateProxyService.getBasTagBySelectById(basTagDto);*/// 标签名称
                     if (tagName == null) {
                         return ResultDto.error("251", "找不到符合要求的标签");
-                    }
-                    if (tagName != null) {
+                    }else {
                         Integer likeNum = gameTag.getLikeNum();
                         Integer dislikeNum = gameTag.getDislikeNum();
                         gameTagMap.put("name", tagName.getName());
@@ -1828,7 +1827,7 @@ public class GameServiceImpl implements IGameService {
             return ResultDto.error("-1", "6级才能打标签哦~");
         }
         // 传入的游戏标签
-        if (idList.length == 0 || idList == null) {
+        if ( idList == null || idList.length == 0 ) {
             return ResultDto.error("13", "请选择1到3个标签");
         }
         if (idList.length > 3) {
@@ -1872,7 +1871,7 @@ public class GameServiceImpl implements IGameService {
         boolean delSuccess = true;
         boolean upSuccess = true;
 
-        Game game = gameService.selectById(gameId);
+//        Game game = gameService.selectById(gameId);
 //		List<String> tagsFormGame = new ArrayList<>();
 //		if(game.getTags() != null);{
 //			tagsFormGame = new ArrayList<String>(Arrays.asList(game.getTags().split(",")));
@@ -2237,7 +2236,7 @@ public class GameServiceImpl implements IGameService {
 //        迁移微服务 根据id集合获取bastag集合
 //        2019-05-15
 //        lyc
-        List<BasTag> tagList = basTagService.selectList(new EntityWrapper<BasTag>().in("id", TagIdList));
+//        List<BasTag> tagList = basTagService.selectList(new EntityWrapper<BasTag>().in("id", TagIdList));
         //List<BasTagDto> tagList = iEvaluateProxyService.getBasTagBySelectListInId(TagIdList);
         List<Map<String, Object>> tagByGameId = getTagByGameId(game_id, TagIdList).getData();
         List<Map<String, String>> selectedList = new ArrayList<>();
@@ -2273,7 +2272,7 @@ public class GameServiceImpl implements IGameService {
     public FungoPageResultDto<GameOutBean> getGameList1(GameItemInput input) {
         String[] split = input.getGroup_id().split(",");
         List<String> mlist = Arrays.asList(split);
-        List<Game> gameList = new ArrayList<Game>();
+        List<Game> gameList = null;
         FungoPageResultDto<GameOutBean> re = new FungoPageResultDto<GameOutBean>();
         if (mlist != null && mlist.size() > 0) {
             Wrapper<Game> wrapper = new EntityWrapper<Game>().in("id", mlist);
@@ -2464,11 +2463,19 @@ public class GameServiceImpl implements IGameService {
         return fungoPageResultDto;
     }
 
+    /**
+     * 功能描述:
+     * @param: memberId 用户id
+     * @param: bangGameDto  封装游戏集合信息
+     * @return: FungoPageResultDto
+     * @auther: dl.zhang
+     * @date: 2020/3/3 10:21
+     */
     @Override
-    public FungoPageResultDto<GameKuDto> listGameByStatus(String memberId, BangGameDto sortType) {
+    public FungoPageResultDto<GameKuDto> listGameByStatus(String memberId, BangGameDto bangGameDto) {
         FungoPageResultDto<GameKuDto>  resultDto = null;
         try {
-            List<Map<String,String>> gameInfoList = sortType.getGameInfo();
+            List<Map<String,String>> gameInfoList = bangGameDto.getGameInfo();
             if(gameInfoList == null || gameInfoList.size() == 0) return FungoPageResultDto.FungoPageResultDtoFactory.buildSuccess("暂无更新游戏包");
             List<String> gameNameList = new ArrayList<>(  );
             gameInfoList.stream().forEach( s ->{
@@ -2603,9 +2610,9 @@ public class GameServiceImpl implements IGameService {
         String origin = gameKuDto.getOrigin();
         Boolean canFast = gameKuDto.getCanFast();
         if(canFast == null){
-            canFast = true;
+            canFast = Boolean.TRUE;
         }
-        gameKuDto.setCanFast(origin.equals("中国")?false:canFast);
+        gameKuDto.setCanFast(origin.equals("中国")?Boolean.FALSE:canFast);
         gameKuDto.setOrigin(origin.equals("中国")?null:origin);
 
         // 处理 版本问题
@@ -2650,7 +2657,7 @@ public class GameServiceImpl implements IGameService {
 
            Long endDate = jsonObject.getLong("endDate");
 
-           if(starDate == null && endDate == null){
+           if(starDate == null || endDate == null){
                return dsc;
            }
 

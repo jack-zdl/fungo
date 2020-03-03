@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.fungo.games.entity.Game;
 import com.fungo.games.service.GameService;
 import com.fungo.games.service.IGameService;
+import com.fungo.games.utils.GameCommonUtil;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.FungoPageResultDto;
@@ -28,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+
+import static com.game.common.enums.AbstractResultEnum.CODE_GAME_FIVE;
 
 /**
  * 游戏
@@ -293,7 +296,7 @@ public class GameController {
             tagGameDto.setTagIds(null);
             tagGameDto.setSize(0);
         }else{
-            tagGameDto.setTagIds(getTagString(tags));
+            tagGameDto.setTagIds( GameCommonUtil.getTagString(tags));
             tagGameDto.setSize(tags.size());
         }
         String memberId = null;
@@ -319,33 +322,12 @@ public class GameController {
      */
     @PostMapping("/api/game/listGameByStatus")
     public FungoPageResultDto<GameKuDto> listGameByStatus(@Anonymous MemberUserProfile memberUserPrefile,@RequestBody BangGameDto bangGameDto){
-        String memberId = null;
-        if(memberUserPrefile!=null){
-            memberId = memberUserPrefile.getLoginId();
-        }
+        String memberId = memberUserPrefile!=null ? memberUserPrefile.getLoginId() : null;
+        if(bangGameDto == null || bangGameDto.getGameInfo() == null || bangGameDto.getGameInfo().size() == 0)
+            return FungoPageResultDto.FungoPageResultDtoFactory.buildWarning( CODE_GAME_FIVE.getKey(),CODE_GAME_FIVE.getFailevalue());
         return gameService.listGameByStatus(memberId,bangGameDto);
     }
 
 
 
-    private String getTagString(List<String> tags){
-        if(tags == null||tags.isEmpty()){
-            return null;
-        }
-        StringBuilder builder = new StringBuilder();
-        int size = tags.size();
-        for(int i = 0;i< size;i++){
-            String tag = tags.get(i);
-            if(i == (size -1)){
-                builder.append("'").append(tag).append("'");
-            }else {
-                builder.append("'").append(tag).append("'").append(",");
-            }
-        }
-        String tagIds = builder.toString();
-        if(CommonUtil.isNull(tagIds)){
-            return null;
-        }
-        return tagIds;
-    }
 }

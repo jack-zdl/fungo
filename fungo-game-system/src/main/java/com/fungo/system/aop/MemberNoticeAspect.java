@@ -1,7 +1,6 @@
 package com.fungo.system.aop;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fungo.system.dto.MemberNoticeInput;
@@ -16,12 +15,8 @@ import com.game.common.dto.game.BangGameDto;
 import com.game.common.dto.game.GameOutBean;
 import com.game.common.util.CommonUtils;
 import com.game.common.util.date.DateTools;
-import com.google.gson.JsonObject;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.*;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +24,12 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.*;
-
 import static com.game.common.consts.MessageConstants.SYSTEM_USER_GAME_UPDATE;
 
 /**
  * <p></p>
- *
  * @Author: dl.zhang
  * @Date: 2020/2/28
  */
@@ -71,10 +62,7 @@ public class MemberNoticeAspect {
                 BangGameDto bangGameDto = new BangGameDto();
                 bangGameDto.setGameInfo(mapList );
                 FungoPageResultDto<GameOutBean>  gameOutBeanFungoPageResultDto = gamesFeignClient.listGameByPackageName(bangGameDto);
-                if(gameOutBeanFungoPageResultDto == null){
-                    return result;
-//                    return null;
-                }
+                if(gameOutBeanFungoPageResultDto == null) return result;
                 List<GameOutBean>  gameOutBeans = gameOutBeanFungoPageResultDto.getData();
                 ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
                 HttpServletRequest request = attributes.getRequest();
@@ -123,7 +111,6 @@ public class MemberNoticeAspect {
                 }
             }
         }
-
         return result;
     }
 }

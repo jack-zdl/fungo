@@ -40,11 +40,7 @@ import com.game.common.util.*;
 import com.game.common.util.date.DateTools;
 import com.game.common.util.emoji.FilterEmojiUtil;
 import com.game.common.util.lingka.BindGiftcardDto;
-import com.game.common.util.lingka.LingKaDataUtil;
-import io.swagger.models.auth.In;
 import org.apache.commons.lang.StringUtils;
-import org.apache.curator.shaded.com.google.common.collect.Lists;
-import org.omg.PortableInterceptor.INACTIVE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,10 +48,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StopWatch;
-
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
@@ -125,6 +118,8 @@ public class MemberServiceImpl implements IMemberService {
     private UserTaskFilterService userTaskFilterService;
     @Autowired
     private IncentRuleRankGroupDao incentRuleRankGroupDao;
+    @Autowired
+    private FungoCacheMood fungoCacheMood;
 
     @Override
     public FungoPageResultDto<CollectionOutBean> getCollection(String memberId, InputPageDto inputPage) {
@@ -364,14 +359,14 @@ public class MemberServiceImpl implements IMemberService {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         re.setData(list);
 
-        String[] types = null;
+        String[] types =  new String[]{"0", "1", "2", "7" ,"10","11"};
         //版本不同获取的内容不同
-        if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
-            types = new String[]{"0", "1", "2", "7" ,"10","11"};
-        } else {
-//            types = new String[]{"0", "1", "2", "7"};
-              types = new String[]{"0", "1", "2", "7","10","11"};
-        }
+//        if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
+//            types = new String[]{"0", "1", "2", "7" ,"10","11"};
+//        } else {
+////            types = new String[]{"0", "1", "2", "7"};
+//              types = new String[]{"0", "1", "2", "7","10","11"};
+//        }
 
         Page<BasNotice> basNoticePage = new Page<>(inputPage.getPage(), inputPage.getLimit());
 
@@ -679,15 +674,15 @@ public class MemberServiceImpl implements IMemberService {
         FungoPageResultDto<Map<String, Object>> re = new FungoPageResultDto<Map<String, Object>>();
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         re.setData(list);
-        String[] types = null;
+        String[] types =  new String[]{"3", "4", "5", "8", "9", "12"};
 
         //版本不同获取的内容不同
-        if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
-
-            types = new String[]{"3", "4", "5", "8", "9", "12"};
-        } else {
-            types = new String[]{"3", "4", "5", "8", "9", "12"};
-        }
+//        if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
+//
+//            types = new String[]{"3", "4", "5", "8", "9", "12"};
+//        } else {
+//            types = new String[]{"3", "4", "5", "8", "9", "12"};
+//        }
 //		String[] types1= {"3","4","5","8"};
         Page<BasNotice> basNoticePage = new Page<>(inputPage.getPage(), inputPage.getLimit());
 
@@ -1033,15 +1028,15 @@ public class MemberServiceImpl implements IMemberService {
 
         Map<String, Object> map = new HashMap<String, Object>();
 
-        int count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId));
+//        int count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId));
 
-        Integer[] types = null;
+        Integer[] types  = new Integer[]{0, 1, 2, 7,11};;
         //版本不同获取的内容不同
-        if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
-            types = new Integer[]{0, 1, 2, 7, 11};
-        } else {
-            types = new Integer[]{0, 1, 2, 7};
-        }
+//        if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
+//            types = new Integer[]{0, 1, 2, 7, 11};
+//        } else {
+//            types = new Integer[]{0, 1, 2, 7,11};
+//        }
         int like_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).in("type", types));
 
         Integer[] types1 = null;
@@ -1057,7 +1052,7 @@ public class MemberServiceImpl implements IMemberService {
 
         int comment_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).in("type", types1));
         int notice_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
-        List<BasNotice> basNotices = noticeService.selectList(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
+//        List<BasNotice> basNotices = noticeService.selectList(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
 
        /* List<BasNotice> noticeList = noticeService.selectList(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
         for (BasNotice notice : noticeList) {
@@ -1087,24 +1082,24 @@ public class MemberServiceImpl implements IMemberService {
 
         Map<String, Object> map = new HashMap<String, Object>();
 
-        int count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId));
+//        int count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId));
 
-        Integer[] types = null;
+        Integer[] types = new Integer[]{0, 1, 2, 7,10, 11};
         //版本不同获取的内容不同
-        if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
-            types = new Integer[]{0, 1, 2, 7,10, 11};
-        } else {
-            types = new Integer[]{0, 1, 2, 7,10, 11};
-        }
+//        if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
+//            types = new Integer[]{0, 1, 2, 7,10, 11};
+//        } else {
+//            types = new Integer[]{0, 1, 2, 7,10, 11};
+//        }
         int like_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).in("type", types));
 
-        Integer[] types1 = null;
+        Integer[] types1 = new Integer[]{3, 4, 5, 8, 9, 12};
         //版本不同获取的内容不同
-        if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
-            types1 = new Integer[]{3, 4, 5, 8, 9, 12};
-        } else {
-            types1 = new Integer[]{3, 4, 5, 8, 9, 12};
-        }
+//        if (CommonUtils.versionAdapte(appVersion, "2.4.4")) {
+//            types1 = new Integer[]{3, 4, 5, 8, 9, 12};
+//        } else {
+//            types1 = new Integer[]{3, 4, 5, 8, 9, 12};
+//        }
 
 //		Integer[] types1= {3,4,5,8};
 //		types1= new Integer[]{3,4,5,8,9};
@@ -1141,29 +1136,21 @@ public class MemberServiceImpl implements IMemberService {
         List<SysNoticeBean> list = new ArrayList<SysNoticeBean>();
         re.setData(list);
         String[] types = {"6","15"};
-
 //		Page<BasNotice> plist=noticeService.selectPage(new Page<BasNotice>(inputPage.getPage(),inputPage.getLimit()), new EntityWrapper<BasNotice>().in("type", types));
         //孟 根据是否推送来获取消息，add is_push = 0
-
         Page<BasNotice> noticePage = new Page<>(inputPage.getPage(), inputPage.getLimit());
-
         EntityWrapper<BasNotice> noticeEntityWrapper = new EntityWrapper<>();
         noticeEntityWrapper.eq("member_id", memberId);
 //        noticeEntityWrapper.eq("is_read", 0);
         noticeEntityWrapper.in("type", types);
         noticeEntityWrapper.orderBy("created_at", false);
-
         Page<BasNotice> plist = noticeService.selectPage(noticePage, noticeEntityWrapper);
-
         List<BasNotice> basNotices = plist.getRecords();
         List<BasNotice> t = basNotices.stream().filter( s -> ( os.equals(s.getChannel()) || StringUtil.isNull(s.getChannel()) )).collect( Collectors.toList());
         ObjectMapper objectMapper = new ObjectMapper();
         for (BasNotice basNotice : t) {
-
             SysNoticeBean bean = new SysNoticeBean();
-
-            Map<String, String> map = new HashMap<String, String>();
-
+            Map<String, String> map = null;
             try {
                 try {
                     map = objectMapper.readValue(basNotice.getData(), Map.class);
@@ -1175,7 +1162,6 @@ public class MemberServiceImpl implements IMemberService {
                 Integer actionType = Integer.valueOf(map.get("actionType"));
                 bean.setContent(map.get("content"));
                 bean.setActionType(actionType);
-
                 if (actionType == 1) {
                     Integer targetType = Integer.valueOf(map.get("targetType"));
                     if (targetType == 1) {
@@ -1191,7 +1177,7 @@ public class MemberServiceImpl implements IMemberService {
                     bean.setTargetType(targetType);
                     bean.setUserAvatar(map.get("userAvatar"));
                     bean.setUserId(map.get("userId"));
-                    bean.setUserType(Integer.valueOf(map.get("userType")));
+                    bean.setUserType( Integer.parseInt( map.get("userType") ) );
                     bean.setUserName(map.get("userName"));
                     bean.setMsgTime(map.get("msgTime"));
                 } else {
@@ -1199,26 +1185,22 @@ public class MemberServiceImpl implements IMemberService {
                     bean.setMsgId(basNotice.getId());
                     bean.setMsgTime(map.get("msgTime"));
                 }
-
                 if (basNotice.getIsRead() == 0 || basNotice.getIsPush() == 0) {
                     basNotice.setIsRead(1);
                     basNotice.setIsPush(1);
 
                     basNotice.updateById();
                 }
-
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error( "插入个人消息异常",e );
             }
             list.add(bean);
         }
-
         Map<String, Object> map = new HashMap<>();
         map.put("memberId", memberId);
         map.put("typeList", types);
         map.put( "channel",os );
         noticeDao.setSystemIsRead(map);
-
         PageTools.pageToResultDto(re, plist);
         return re;
     }
@@ -1561,18 +1543,14 @@ public class MemberServiceImpl implements IMemberService {
      */
     @Override
     public FungoPageResultDto<MyPublishBean> getMyMoods(String loginId, InputPageDto input) throws Exception {
-
         FungoPageResultDto<MyPublishBean> re = null;
-
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_USER_MOODS;
         String keySuffix = loginId + JSON.toJSONString(input);
-        //re =  (FungoPageResultDto<MyPublishBean>) fungoCacheMood.getIndexCache(keyPrefix, keySuffix);
+        re =  (FungoPageResultDto<MyPublishBean>) fungoCacheMood.getIndexCache(keyPrefix, keySuffix);
         if (null != re && null != re.getData() && re.getData().size() > 0) {
             return re;
         }
-
-        re = new FungoPageResultDto<MyPublishBean>();
-        // @todo 社区接口
+        re = new FungoPageResultDto<>();
         MooMoodDto moomoodParam = new MooMoodDto();
         moomoodParam.setPage(input.getPage());
         moomoodParam.setLimit(input.getLimit());
@@ -1819,7 +1797,7 @@ public class MemberServiceImpl implements IMemberService {
                     CmmCommentDto comment =  (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;
                     bean.setParentId( comment != null ? comment.getPostId() : "");
                     CmmPostDto cmmPostDto = new CmmPostDto();
-                    cmmPostDto.setId(comment.getPostId());
+                    cmmPostDto.setId(comment != null ? comment.getPostId():"");
                     cmmPostDto.setQueryType(1);
                     cmmPostDto.setState(null);
                     CmmPostDto post = iGameProxyService.selectCmmPostById(cmmPostDto);    //postService.selectOne(Condition.create().setSqlSelect("id,content,title,video").eq("id", c.getTargetId()));
@@ -1834,12 +1812,15 @@ public class MemberServiceImpl implements IMemberService {
                     param.setSort(null);
                     FungoPageResultDto<GameEvaluationDto> resultDto = gamesFeignClient.getGameEvaluationPage(param);
                     GameEvaluationDto evaluation =  (resultDto.getData() != null && resultDto.getData().size() >0 ) ? resultDto.getData().get(0) : null ;
-                    bean.setParentId( evaluation != null ? evaluation.getGameId() : "");
-                    GameDto gameDto  = gamesFeignClient.selectOne(evaluation.getGameId());
-                    if(gameDto != null){
-                        bean.setGameIdtSn( gameDto.getGameIdtSn());
+                    if(evaluation != null){
+                        bean.setParentId(  evaluation.getGameId());
+                        GameDto gameDto  = gamesFeignClient.selectOne(evaluation.getGameId());
+                        if(gameDto != null){
+                            bean.setGameIdtSn( gameDto.getGameIdtSn());
+                        }
+                    }else {
+                        bean.setParentId( "");
                     }
-
                 }if(commentBean.getTargetType() == 8 ){
                     MooMessageDto mooMessageDto = new MooMessageDto();
                     mooMessageDto.setId(commentBean.getTargetId());
@@ -1869,13 +1850,11 @@ public class MemberServiceImpl implements IMemberService {
                     }else {
                         bean.setTargetDelType( post.getState()  == -1  ? -1 : ((post.getAuth() & 1 ) == 1) ?  -1 : 0);
                     }
-
                     String title = CommonUtils.filterWord(post.getTitle());
                     if (StringUtils.isNotBlank(title)) {
                         title = FilterEmojiUtil.decodeEmoji(title);
                         bean.setTargetConetnt(title);
                     }
-
                     if (!CommonUtil.isNull(post.getVideo())) {
                         bean.setVideo(post.getVideo());
                     }
@@ -1919,7 +1898,6 @@ public class MemberServiceImpl implements IMemberService {
                         contentCmmComment = FilterEmojiUtil.decodeEmoji(contentCmmComment);
                         bean.setTargetConetnt(contentCmmComment);
                     }
-
                     bean.setReplyToId(comment.getMemberId());
                     Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name as userName").eq("id", comment.getMemberId()));
                     if (m != null) {
@@ -1952,7 +1930,6 @@ public class MemberServiceImpl implements IMemberService {
                         contentGameEval = FilterEmojiUtil.decodeEmoji(contentGameEval);
                         bean.setTargetConetnt(contentGameEval);
                     }
-
                     bean.setReplyToId(evaluation.getMemberId());
                     Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name as userName").eq("id", evaluation.getMemberId()));
                     if (m != null) {
@@ -1978,7 +1955,6 @@ public class MemberServiceImpl implements IMemberService {
                         contentMoodMsg = FilterEmojiUtil.decodeEmoji(contentMoodMsg);
                         bean.setTargetConetnt(contentMoodMsg);
                     }
-
                     bean.setReplyToId(message.getMemberId());
                     Member m = memberService.selectOne(Condition.create().setSqlSelect("id,user_name as userName").eq("id", message.getMemberId()));
                     if (m != null) {
@@ -1991,9 +1967,7 @@ public class MemberServiceImpl implements IMemberService {
         }
         re.setData(blist);
         PageTools.newPageToResultDto(re,comments.getCount(),comments.getPages(),input.getPage());
-        //redis cache
         fungoCacheArticle.excIndexCache(true, keyPrefix, keySuffix, re);
-
         return re;
     }
 
@@ -2305,10 +2279,10 @@ public class MemberServiceImpl implements IMemberService {
          countDownLatch.await();
          long t2=System.currentTimeMillis();
          logger.error("------------------"+(t2-t1));
-         resultDto = ResultDto.ResultDtoFactory.buildSuccess( "检查所有用户的奖励成功" );
+//         resultDto = ResultDto.ResultDtoFactory.buildSuccess( "检查所有用户的奖励成功" );
      }catch (Exception e){
          logger.error( "检查所有用户的奖励异常",e );
-         resultDto = ResultDto.ResultDtoFactory.buildError( "检查所有用户的奖励失败" );
+//         resultDto = ResultDto.ResultDtoFactory.buildError( "检查所有用户的奖励失败" );
      }
     }
 
@@ -2332,10 +2306,10 @@ public class MemberServiceImpl implements IMemberService {
                 memberCouponMap.put( String.valueOf( s.get( "key" ) ), String.valueOf( s.get( "value" ) ));
             } );
             InviteInfoVO inviteInfoVO = new InviteInfoVO();
-            inviteInfoVO.setInviteUserNum(  memberCouponMap.get("31") == null ? 0 :  Long.valueOf( memberCouponMap.get("31")));
-            inviteInfoVO.setNewUserOneNum(  memberCouponMap.get("35") == null ? 0 :  Long.valueOf( memberCouponMap.get("35")));
-            inviteInfoVO.setNewUserThreeNum( memberCouponMap.get("36") == null ? 0 :  Long.valueOf( memberCouponMap.get("36")));
-            inviteInfoVO.setNewUserSixNum(  memberCouponMap.get("37") == null ? 0 :  Long.valueOf( memberCouponMap.get("37")));
+            inviteInfoVO.setInviteUserNum(  memberCouponMap.get("31") == null ? 0 : Long.parseLong( memberCouponMap.get("31") ) );
+            inviteInfoVO.setNewUserOneNum(  memberCouponMap.get("35") == null ? 0 :  Long.parseLong( memberCouponMap.get("35")));
+            inviteInfoVO.setNewUserThreeNum( memberCouponMap.get("36") == null ? 0 :  Long.parseLong( memberCouponMap.get("36")));
+            inviteInfoVO.setNewUserSixNum(  memberCouponMap.get("37") == null ? 0 :  Long.parseLong( memberCouponMap.get("37")));
             resultDto = ResultDto.ResultDtoFactory.buildSuccess( inviteInfoVO );
         }catch (Exception e){
             logger.error( "查询邀请人礼品卡数目异常",e );
@@ -2521,11 +2495,11 @@ public class MemberServiceImpl implements IMemberService {
     public boolean getActiveMemeber(String memberId){
         try {
             String startDate = nacosFungoCircleConfig.getStartDate();
-            String endDate = nacosFungoCircleConfig.getEndDate();
+//            String endDate = nacosFungoCircleConfig.getEndDate();
             int days = nacosFungoCircleConfig.getFestivalDays();
 
             startDate = startDate+ " " + FungoMallSeckillConsts.SECKILL_START_TIME;
-            endDate = endDate + " " + FungoMallSeckillConsts.SECKILL_END_TIME;
+//            endDate = endDate + " " + FungoMallSeckillConsts.SECKILL_END_TIME;
 
             //查询log日志 获取用户签到累计天数
             EntityWrapper<ScoreLog> scoreLogEntityWrapper = new EntityWrapper<ScoreLog>();
