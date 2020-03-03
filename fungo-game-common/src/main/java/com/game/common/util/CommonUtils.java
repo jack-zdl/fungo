@@ -1,10 +1,12 @@
 package com.game.common.util;
 
+import com.alibaba.fastjson.JSONObject;
 import com.game.common.util.validate.ValidateUtil;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.http.util.TextUtils;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -213,6 +215,37 @@ public class CommonUtils {
 		@SuppressWarnings("unchecked")
 		List<T> dest = (List<T>) in.readObject();
 		return dest;
+	}
+
+
+	//泛型+反射实现json数据读取到java类
+	public static <T> T getJsonClass(String json, Class<T> beanclass) {
+		try {
+			JSONObject jsonObject = JSONObject.parseObject(json);
+			Object obj = beanclass.newInstance();
+			//拿到所以元素
+			Field[] declaredFields = beanclass.getDeclaredFields();
+			for (Field field : declaredFields) {
+				field.setAccessible(true);
+
+				if (field.getGenericType().toString().equals(String.class.toString())) {
+					String value=jsonObject.getString(field.getName());
+					if(value!=null){
+						field.set(obj,value);
+						System.out.println(value);
+					}
+				} else if (field.getGenericType().toString().equals(int.class.toString())) {
+					if(jsonObject.getInteger(field.getName())!=null)
+						field.set(obj,jsonObject.getInteger(field.getName()));
+
+				}
+
+			}
+			return (T) obj;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public static Object deepCopy(Object from) {

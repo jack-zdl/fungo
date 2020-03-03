@@ -132,7 +132,6 @@ public class SystemServiceImpl implements SystemService {
             re.setData(followerIdList);
 //            PageTools.pageToResultDto(re, plist);
         } catch (Exception e) {
-            e.printStackTrace();
             LOGGER.error("SystemServiceImpl.getFollowerUserId", e);
             re = FungoPageResultDto.error("-1", "找不到目标");
         } finally {
@@ -156,7 +155,7 @@ public class SystemServiceImpl implements SystemService {
         FungoPageResultDto<MemberFollowerDto> re = null;
         try {
             Page<MemberFollower> basNoticePage = new Page<>(vo.getPage(), vo.getLimit());
-            re = new FungoPageResultDto<MemberFollowerDto>();
+            re = new FungoPageResultDto<>();
             MemberFollower memberFollower = new MemberFollower();
             BeanUtils.copyProperties(memberFollower, vo);
             EntityWrapper<MemberFollower> memberFollowerWrapper = new EntityWrapper<>(memberFollower);
@@ -166,7 +165,6 @@ public class SystemServiceImpl implements SystemService {
             re.setData(memberFollowerDtos);
             PageTools.pageToResultDto(re, page);
         } catch (Exception e) {
-            e.printStackTrace();
             LOGGER.error("SystemServiceImpl.getMemberFollowerList", e);
             re = FungoPageResultDto.error("-1", "找不到目标");
         }
@@ -200,7 +198,6 @@ public class SystemServiceImpl implements SystemService {
             PageTools.pageToResultDto(re, page);
 
         } catch (Exception e) {
-            e.printStackTrace();
             LOGGER.error("SystemServiceImpl.getMemberFollowerList", e);
             re = FungoPageResultDto.error("-1", "找不到目标");
         }
@@ -262,7 +259,6 @@ public class SystemServiceImpl implements SystemService {
             PageTools.pageToResultDto(re, page);
 
         } catch (Exception e) {
-            e.printStackTrace();
             LOGGER.error("SystemServiceImpl.getMemberFollowerList", e);
             re = FungoPageResultDto.error("-1", "找不到目标");
         }
@@ -735,7 +731,6 @@ public class SystemServiceImpl implements SystemService {
         try {
             BeanUtils.copyProperties(memberDto, member);
         } catch (Exception e) {
-            e.printStackTrace();
             LOGGER.error("SystemServiceImpl.getMembersByid", e);
             return ResultDto.error("-1", "异常");
         }
@@ -939,7 +934,6 @@ public class SystemServiceImpl implements SystemService {
                 }
             }
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("根据传递的圈子集合查询是否关注",e);
         }
         return ResultDto.success(circleFollowVo);
@@ -973,7 +967,6 @@ public class SystemServiceImpl implements SystemService {
                 PageTools.pageToResultDto(re, p);
             }
         }catch (Exception e){
-            e.printStackTrace();
             LOGGER.error("根据传递的圈子集合查询是否关注",e);
         }
         return re;
