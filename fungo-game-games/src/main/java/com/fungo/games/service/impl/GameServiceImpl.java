@@ -2381,6 +2381,7 @@ public class GameServiceImpl implements IGameService {
             out.setName(game.getName());
             out.setIcon(game.getIcon());
             out.setObjectId(game.getId());
+            out.setVersion( game.getVersionMain()+"."+game.getVersionChild());
             gameOuts.add(out);
         }
         return ResultDto.success(gameOuts);
@@ -2516,6 +2517,7 @@ public class GameServiceImpl implements IGameService {
                         out.setRecommend_total_count(gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", game.getId()).and("state != -1")));
                         out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
                         out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
+                        out.setVersion(gameVersion);
                         gameOutPages.add(out);
                     }
                 }

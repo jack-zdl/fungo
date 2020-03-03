@@ -47,6 +47,8 @@ public class GameOutPage {
 	//ios状态描述
 	private String tags;
 
+	private String version;
+
 	
 	public String getObjectId() {
 		return objectId;
@@ -201,5 +203,17 @@ public class GameOutPage {
 
 	public void setTags(String tags) {
 		this.tags = tags;
+	}
+
+	public void setRecommend_total_count(int recommend_total_count) {
+		this.recommend_total_count = recommend_total_count;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
 }
