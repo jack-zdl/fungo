@@ -341,12 +341,12 @@ public class GameServiceImpl implements IGameService {
     @Override
     public ResultDto<GameOut> getGameDetail(String gameId, String memberId, String ptype) throws Exception {
         GameOut out = new GameOut();
+        Game game = null;
         try {
             GameOut outResult = (GameOut) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, memberId + ptype);
             if (null != outResult) {
                 return ResultDto.success(outResult);
             }
-            Game game = null;
             if(MemberIncentCommonUtils.checkNumber(gameId)){
                 game = gameService.selectOne(new EntityWrapper<Game>().eq("game_idt_sn", gameId).eq("state", "0"));
             }else {
@@ -383,11 +383,11 @@ public class GameServiceImpl implements IGameService {
             //根据当前运行环境生成链接
             String env = Setting.RUN_ENVIRONMENT;
             if (env.equals("dev")) {
-                out.setLink_url(Setting.DEFAULT_SHARE_URL_DEV + "/game/" + gameId);
+                out.setLink_url(Setting.DEFAULT_SHARE_URL_DEV + "/game/" + game.getId());
             } else if (env.equals("pro")) {
-                out.setLink_url(Setting.DEFAULT_SHARE_URL_PRO + "/game/" + gameId);
+                out.setLink_url(Setting.DEFAULT_SHARE_URL_PRO + "/game/" + game.getId());
             } else if (env.equals("uat")) {
-                out.setLink_url(Setting.DEFAULT_SHARE_URL_DEV + "/game/" + gameId);
+                out.setLink_url(Setting.DEFAULT_SHARE_URL_DEV + "/game/" + game.getId());
             }
 
             // 上架计划增加下载按钮的开关（关）
@@ -426,7 +426,7 @@ public class GameServiceImpl implements IGameService {
             out.setPublisher(game.getPublisher());
 
             if (!StringUtils.isNullOrEmpty(memberId)) {
-                ResultDto<Map<String,Object>> resultDto = systemFeignClient.getCollectByGameId(gameId,memberId);
+                ResultDto<Map<String,Object>> resultDto = systemFeignClient.getCollectByGameId(game.getId(),memberId);
                 if(resultDto!= null && resultDto.getData() != null){
                     Map<String,Object> resultMap = resultDto.getData();
                     out.setCollect( (boolean)resultMap.get( "collect" ));
@@ -444,7 +444,7 @@ public class GameServiceImpl implements IGameService {
 
             // 生成推荐相关数据
             //fix bug: 修改排序规则 按时间升序 [by mxf 2019-03-01]
-            List<GameEvaluation> recoList = gameEvaluationService.selectList(new EntityWrapper<GameEvaluation>().eq("game_id", gameId).eq("state", 0).orderBy("created_at", true));
+            List<GameEvaluation> recoList = gameEvaluationService.selectList(new EntityWrapper<GameEvaluation>().eq("game_id", game.getId()).eq("state", 0).orderBy("created_at", true));
             //end
 //		List<BasAction> recoList = actionService.selectList(new EntityWrapper<BasAction>().eq("target_id", gameId).in("type", new Integer[] { 8, 9 }).and("state != -1").orderBy("created_at", false));
             // List<String> userIdList =
@@ -513,14 +513,14 @@ public class GameServiceImpl implements IGameService {
             //ends
 
             // 查询评论数量
-            int evaCount = gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", gameId).and("state != -1")); //.ne( "type","2" )
+            int evaCount = gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", game.getId()).and("state != -1")); //.ne( "type","2" )
             out.setEvaluation_num(evaCount);
 
             //2.4  平均分 每颗星占比 雷达图
             //没人评分 有人评分
-            int count = gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", gameId));
+            int count = gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", game.getId()));
             if (count > 0) {
-                HashMap<String, BigDecimal> rateData = gameDao.getRateData(gameId);
+                HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
                 if (rateData != null) {
                     if (rateData.get("avgRating") != null) {
                         out.setRating(Double.parseDouble(rateData.get("avgRating").toString()));
@@ -538,7 +538,7 @@ public class GameServiceImpl implements IGameService {
                 out.setTraitList(traitFormat(rateData));
 
                 //获取每个游戏评分所占百分比 key:评分  value:百分比
-                HashMap<String, BigDecimal> percentData = gameDao.getPercentData(gameId);
+                HashMap<String, BigDecimal> percentData = gameDao.getPercentData(game.getId());
                 HashMap<String, Double> perMap = new HashMap<>();
 
                 if (percentData != null) {//评分两两分组,统计占比 1：1-2分， 2：3-4分， 3：5-6分， 4：7-8分， 5：9-10分
@@ -635,7 +635,7 @@ public class GameServiceImpl implements IGameService {
 
             //从系统微服务获取该游戏的礼包数量
             MallGoodsInput mallGoodsInput = new MallGoodsInput();
-            mallGoodsInput.setGameId(gameId);
+            mallGoodsInput.setGameId(game.getId());
             Integer goodsCountWithGame = iEvaluateProxyService.queryGoodsCountWithGame(mallGoodsInput);
             out.setGoodsCount(goodsCountWithGame);
 
@@ -654,7 +654,7 @@ public class GameServiceImpl implements IGameService {
                 e.printStackTrace();
                 logger.error("根据游戏id询圈子id异常,游戏id：" + game.getId(), e);
             }
-            List<GameCollectionGroup> gameCollectionGroupList = collectionGroupDao.selectGameCollectionGroupByGameId( gameId);
+            List<GameCollectionGroup> gameCollectionGroupList = collectionGroupDao.selectGameCollectionGroupByGameId( game.getId());
             List<GameOut.GameGroup> gameGroups = new ArrayList<>(  );
             if(gameCollectionGroupList != null && gameCollectionGroupList.size() > 0){
                 gameCollectionGroupList.stream().forEach( x ->{
@@ -668,7 +668,7 @@ public class GameServiceImpl implements IGameService {
             //
             out.setUserAndroidState("0");
             out.setUserIosState("0");
-            List<GameSurveyRel> surs = surveyRelService.selectList(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", gameId).eq( "state","0" ));
+            List<GameSurveyRel> surs = surveyRelService.selectList(new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("game_id", game.getId()).eq( "state","0" ));
             surs.stream().forEach( s ->{
                 if("Android".equals(s.getPhoneModel())){
                     out.setUserAndroidState("1");
@@ -684,8 +684,8 @@ public class GameServiceImpl implements IGameService {
                 memberId + ptype, out, 60 * 5);
 
         // vpc2.1 改版 记录用户浏览游戏详情
-        if(StringUtil.isNotNull(gameId)&&StringUtil.isNotNull(memberId)){
-            asyncTaskService.recordGameView(memberId,gameId);
+        if(StringUtil.isNotNull(game.getId())&&StringUtil.isNotNull(memberId)){
+            asyncTaskService.recordGameView(memberId,game.getId());
         }
         return ResultDto.success(out);
     }

@@ -1,10 +1,8 @@
 package com.fungo.community.aop;
 
-
 import com.alibaba.fastjson.JSON;
 import com.fungo.community.dao.mapper.CmmPostDao;
 import com.fungo.community.entity.CmmPost;
-import com.fungo.community.feign.SystemFeignClient;
 import com.fungo.community.feign.TSFeignClient;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
@@ -20,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
@@ -38,8 +35,6 @@ public class BrowseActionAspect {
     private TSFeignClient tsFeignClient;
     @Autowired
     private CmmPostDao cmmPostDao;
-
-
 
     @Pointcut("execution(public * com.fungo.community.controller.CommunityController.getCommunityDetail(..)) || execution(public * com.fungo.community.controller.portal.PortalCommunityController.getCommunityDetail(..)) || execution(public * com.fungo.community.controller.PostController.getPostDetail(..)) || execution(public * com.fungo.community.controller.portal.PortalCommunityPostController.getPostDetail(..))")
     public void webLog() {}
@@ -96,8 +91,6 @@ public class BrowseActionAspect {
             logger.error("浏览切面error______________________");
             e.printStackTrace();
         }
-
     }
-
 
 }
