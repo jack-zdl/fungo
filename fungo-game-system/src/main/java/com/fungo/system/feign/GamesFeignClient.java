@@ -7,6 +7,7 @@ import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.*;
 import com.game.common.dto.index.CardIndexBean;
+import com.game.common.dto.search.GameSearchOut;
 import com.game.common.util.annotation.Anonymous;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -147,7 +148,7 @@ public interface GamesFeignClient {
 
     @ApiOperation(value = "根据游戏id集合获取FungoPageResultDto<GameOutBean>", notes = "")
     @RequestMapping(value = "/ms/service/game/api/content/gameInfoList", method = RequestMethod.POST)
-    ResultDto<List<GameDto>>   getGameInfoList(@RequestBody GameListVO input);
+    ResultDto<List<GameSearchOut>>   getGameInfoList(@RequestBody GameListVO input);
 
     /**
      * 功能描述: 根据包名集合获取要更新的游戏包集合

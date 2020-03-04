@@ -16,6 +16,8 @@ public class GameListVO extends InputPageDto {
 
 	private String gameId;
 
+	private String memberId;
+
 	public String getGameids() {
 		return gameids;
 	}
@@ -38,5 +40,13 @@ public class GameListVO extends InputPageDto {
 
 	public void setGameId(String gameId) {
 		this.gameId = gameId;
+	}
+
+	public String getMemberId() {
+		return memberId;
+	}
+
+	public void setMemberId(String memberId) {
+		this.memberId = memberId;
 	}
 }

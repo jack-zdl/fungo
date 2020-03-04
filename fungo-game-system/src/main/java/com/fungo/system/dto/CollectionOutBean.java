@@ -4,6 +4,7 @@ package com.fungo.system.dto;
 import com.game.common.dto.AuthorBean;
 import com.game.common.dto.GameDto;
 import com.game.common.dto.game.GameOut;
+import com.game.common.dto.search.GameSearchOut;
 
 public class CollectionOutBean {
 	private String content;
@@ -15,7 +16,7 @@ public class CollectionOutBean {
 	private String updatedAt;
 	private String video;
 
-	private GameDto game;
+	private GameSearchOut game;
 	public String getContent() {
 		return content;
 	}
@@ -65,11 +66,11 @@ public class CollectionOutBean {
 		this.video = video;
 	}
 
-	public GameDto getGame() {
+	public GameSearchOut getGame() {
 		return game;
 	}
 
-	public void setGame(GameDto game) {
+	public void setGame(GameSearchOut game) {
 		this.game = game;
 	}
 }

@@ -8,6 +8,7 @@ import com.game.common.dto.GameDto;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.*;
 import com.game.common.dto.index.CardIndexBean;
+import com.game.common.dto.search.GameSearchOut;
 import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -165,8 +166,8 @@ public class GameFacedeHystrixService implements FallbackFactory<GamesFeignClien
             }
 
             @Override
-            public ResultDto<List<GameDto>> getGameInfoList(GameListVO input) {
-                logger.error("--------------------getGameInfoList--启动熔断:{}" , "getGameInfoList");
+            public ResultDto<List<GameSearchOut>> getGameInfoList(GameListVO input) {
+                logger.error("--------------------GameFeignClient--启动熔断:{}" , "getGameInfoList");
                 return null;
             }
 

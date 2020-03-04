@@ -31,6 +31,7 @@ import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.game.GameListVO;
 import com.game.common.dto.game.GameOut;
 import com.game.common.dto.game.GameSurveyRelDto;
+import com.game.common.dto.search.GameSearchOut;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.repo.cache.facade.FungoCacheArticle;
 import com.game.common.repo.cache.facade.FungoCacheGame;
@@ -139,11 +140,12 @@ public class MemberServiceImpl implements IMemberService {
             GameListVO gameListVO = new GameListVO();
             if(gameIds != null && gameIds.size() > 0){
                 gameListVO.setGameids(String.join(",", gameIds));
+                gameListVO.setMemberId( memberId );
                 gameListVO.setLimit(inputPage.getLimit());
                 gameListVO.setPage(inputPage.getPage());
-                ResultDto<List<GameDto>>  gameOutList =  gamesFeignClient.getGameInfoList(gameListVO);
+                ResultDto<List<GameSearchOut>>  gameOutList =  gamesFeignClient.getGameInfoList(gameListVO);
                 if(gameOutList != null && gameOutList.getData() != null ){
-                    List<GameDto> gameOuts = gameOutList.getData();
+                    List<GameSearchOut> gameOuts = gameOutList.getData();
                     gameOuts.stream().forEach( x ->{
                         CollectionOutBean collectionOutBean = new CollectionOutBean();
                         collectionOutBean.setGame(x);
