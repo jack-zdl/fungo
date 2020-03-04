@@ -165,7 +165,7 @@ public class GameFacedeHystrixService implements FallbackFactory<GamesFeignClien
             }
 
             @Override
-            public ResultDto<List<GameOut>> getGameInfoList(GameListVO input) {
+            public ResultDto<List<GameDto>> getGameInfoList(GameListVO input) {
                 logger.error("--------------------getGameInfoList--启动熔断:{}" , "getGameInfoList");
                 return null;
             }

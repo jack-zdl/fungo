@@ -141,12 +141,12 @@ public class MemberServiceImpl implements IMemberService {
                 gameListVO.setGameids(String.join(",", gameIds));
                 gameListVO.setLimit(inputPage.getLimit());
                 gameListVO.setPage(inputPage.getPage());
-                ResultDto<List<GameOut>>  gameOutList =  gamesFeignClient.getGameInfoList(gameListVO);
+                ResultDto<List<GameDto>>  gameOutList =  gamesFeignClient.getGameInfoList(gameListVO);
                 if(gameOutList != null && gameOutList.getData() != null ){
-                    List<GameOut> gameOuts = gameOutList.getData();
+                    List<GameDto> gameOuts = gameOutList.getData();
                     gameOuts.stream().forEach( x ->{
                         CollectionOutBean collectionOutBean = new CollectionOutBean();
-                        collectionOutBean.setGameOut(x);
+                        collectionOutBean.setGame(x);
                         list.add(collectionOutBean);
                     } );
                 }

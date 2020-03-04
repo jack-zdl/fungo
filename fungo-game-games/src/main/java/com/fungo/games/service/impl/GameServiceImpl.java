@@ -25,6 +25,7 @@ import com.game.common.common.MemberIncentCommonUtils;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.consts.Setting;
 import com.game.common.dto.FungoPageResultDto;
+import com.game.common.dto.GameDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.game.*;
@@ -2381,6 +2382,22 @@ public class GameServiceImpl implements IGameService {
             out.setName(game.getName());
             out.setIcon(game.getIcon());
             out.setObjectId(game.getId());
+            out.setVersion( CommonUtils.getVersion( game.getVersionMain() ,game.getVersionChild()));
+            gameOuts.add(out);
+        }
+        return ResultDto.success(gameOuts);
+    }
+
+
+    @Override
+    public ResultDto<List<GameDto>> listGameDtoByids(String gameIds) {
+        Wrapper<Game> wrapper = new EntityWrapper<Game>();
+        wrapper.in("id", gameIds);
+        List<Game> games = gameService.selectList(wrapper);
+        List<GameDto> gameOuts = new ArrayList<>();
+        for (Game game : games) {
+            GameDto out = new GameDto();
+            BeanUtils.copyProperties(game,out);
             out.setVersion( CommonUtils.getVersion( game.getVersionMain() ,game.getVersionChild()));
             gameOuts.add(out);
         }

@@ -1,6 +1,5 @@
 package com.fungo.system.service.impl;
 
-
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.fungo.system.dao.MemberDao;
 import com.fungo.system.entity.Member;

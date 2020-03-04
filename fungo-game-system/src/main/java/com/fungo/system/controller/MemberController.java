@@ -3,7 +3,6 @@ package com.fungo.system.controller;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.fungo.system.dao.BasActionDao;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.BasAction;
 import com.fungo.system.facede.ICommunityProxyService;
@@ -11,8 +10,6 @@ import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.service.BasActionService;
 import com.fungo.system.service.IMemberService;
 import com.fungo.system.service.IUserService;
-import com.fungo.system.service.MemberService;
-import com.fungo.system.service.impl.UserServiceImpl;
 import com.game.common.api.InputPageDto;
 import com.game.common.consts.FungoCoreApiConstant;
 import com.game.common.dto.AuthorBean;
@@ -36,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.ParseException;
@@ -51,10 +47,6 @@ public class MemberController {
 
     @Autowired
     private IMemberService memberService;
-    @Autowired
-    private BasActionDao actionDao;
-    @Autowired
-    private MemberService imemberService;
     @Autowired
     private IUserService iUserService;
     @Autowired
@@ -449,7 +441,7 @@ public class MemberController {
     @ApiImplicitParams({})
     @MD5ParanCheck()
     public ResultDto<Map<String, Integer>> getPublishCount(MemberUserProfile memberUserPrefile, @RequestBody MermberSearchInput input) {
-        String memberId = "";
+        String memberId = input.getMemberId();
         if (CommonUtil.isNull(memberId)) {
             return ResultDto.error("-1", "未指定用户");
         }

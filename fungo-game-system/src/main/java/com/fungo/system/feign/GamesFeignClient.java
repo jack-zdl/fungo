@@ -147,7 +147,7 @@ public interface GamesFeignClient {
 
     @ApiOperation(value = "根据游戏id集合获取FungoPageResultDto<GameOutBean>", notes = "")
     @RequestMapping(value = "/ms/service/game/api/content/gameInfoList", method = RequestMethod.POST)
-    ResultDto<List<GameOut>>   getGameInfoList(@RequestBody GameListVO input);
+    ResultDto<List<GameDto>>   getGameInfoList(@RequestBody GameListVO input);
 
     /**
      * 功能描述: 根据包名集合获取要更新的游戏包集合

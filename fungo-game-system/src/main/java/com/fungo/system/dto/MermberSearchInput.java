@@ -5,9 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class MermberSearchInput extends InputPageDto {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@ApiModelProperty(value="用户id",example="")
@@ -21,7 +18,5 @@ public class MermberSearchInput extends InputPageDto {
 		this.memberId = memberId;
 	}
 
-	
-	
 
 }
