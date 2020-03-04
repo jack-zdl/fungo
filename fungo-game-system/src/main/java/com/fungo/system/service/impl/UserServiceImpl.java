@@ -1383,16 +1383,19 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ResultDto<String> checkUserName(String memberId, String name) {
+        Map<String,Boolean> map = new HashMap<>( );
+        map.put( "result",false);
         try {
             List<String> memberIds = memberDao.getMember(name);
             if(memberIds != null && memberIds.size() > 0){
-                return ResultDto.ResultDtoFactory.buildError("昵称已被使用，请更换");
+                map.put( "result",true);
+                return ResultDto.ResultDtoFactory.buildSuccess(AbstractResultEnum.CODE_CLOUD_USER_NAME.getKey(),AbstractResultEnum.CODE_CLOUD_USER_NAME.getFailevalue(),map);
             }
         }catch (Exception e){
             LOGGER.error("检查姓名是否重复异常",e);
-            return ResultDto.ResultDtoFactory.buildError("昵称已被使用，请更换");
+            return ResultDto.ResultDtoFactory.buildError("检查姓名是否重复异常");
         }
-        return ResultDto.ResultDtoFactory.buildSuccess( "昵称未被使用");
+        return ResultDto.ResultDtoFactory.buildSuccess( map);
     }
 
     @Override

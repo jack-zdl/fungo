@@ -465,7 +465,7 @@ public class UserController {
         try {
             return userService.checkUserName(adminId,msg.getUser_name());
         } catch (Exception e) {
-            return ResultDto.error( "-1","昵称已被使用，请更换" );
+            return ResultDto.ResultDtoFactory.buildError("检查姓名是否重复异常");
         }
     }
 

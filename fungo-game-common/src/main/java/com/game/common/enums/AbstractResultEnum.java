@@ -47,7 +47,8 @@ public enum AbstractResultEnum {
     CODE_CLOUD_MD5_AUTHORITY("4002","","参数验证失败"),
     CODE_CLOUD_IP_LIMIT_AUTHORITY("4003","","访问过于频繁"),
     CODE_CLOUD_NOT_FOUND("4004","","查询不到指定内容"),
-    CODE_CLOUD_NOT_AUTH("4005","","对不起该用户已被禁言");
+    CODE_CLOUD_NOT_AUTH("4005","","对不起该用户已被禁言"),
+    CODE_CLOUD_USER_NAME("4006","","昵称已被使用，请更换");
 
     String key;
     String successValue;
