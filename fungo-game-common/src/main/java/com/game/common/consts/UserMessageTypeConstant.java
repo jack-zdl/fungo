@@ -55,4 +55,7 @@ public class UserMessageTypeConstant {
     public static final int USER_EDIT_INFO = 15;
     /** 用户已注销  */
     public static final int USER_TWO_REPLY = 20 ;
+
+    /** 用户已注销  */
+    public static final int USER_GAME_UPDATE_SYSTEM = 61 ;
 }

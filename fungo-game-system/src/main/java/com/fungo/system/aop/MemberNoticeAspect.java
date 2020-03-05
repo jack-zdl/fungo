@@ -27,6 +27,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import static com.game.common.consts.MessageConstants.SYSTEM_USER_GAME_UPDATE;
+import static com.game.common.consts.UserMessageTypeConstant.USER_GAME_UPDATE_SYSTEM;
 
 /**
  * <p></p>
@@ -68,7 +69,7 @@ public class MemberNoticeAspect {
                 HttpServletRequest request = attributes.getRequest();
                 MemberUserProfile member = (MemberUserProfile)request.getAttribute("member");
                 if(member !=null){
-                    List<BasNotice> basNotices = noticeService.selectList(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", member.getLoginId()).eq("type", 61));
+                    List<BasNotice> basNotices = noticeService.selectList(new EntityWrapper<BasNotice>().eq("member_id", member.getLoginId()).eq("type", USER_GAME_UPDATE_SYSTEM)); //.eq("is_read", 0)
                     gameOutBeans.stream().filter( c ->{
                         for(BasNotice basNotice :basNotices){
                             String basNoticeString = basNotice.getData();
@@ -88,7 +89,7 @@ public class MemberNoticeAspect {
                         String gameId =  x.getGameId();
                         String gameName =  x.getName();
                         BasNotice basNotice = new BasNotice();
-                        basNotice.setType( 6 );
+                        basNotice.setType( USER_GAME_UPDATE_SYSTEM );
                         basNotice.setChannel( "");
                         basNotice.setIsRead( 0 );
                         basNotice.setIsPush( 0 );
@@ -105,6 +106,8 @@ public class MemberNoticeAspect {
                         dataMap.put("userAvatar", "http://output-mingbo.oss-cn-beijing.aliyuncs.com/official.png");
                         dataMap.put("userName", "FunGo大助手");
                         dataMap.put("msgTime", DateTools.fmtDate(new Date()));
+                        dataMap.put("gamePackageName", x.getGamePackageName());
+                        dataMap.put("gameVersion", x.getGameVersion());
                         basNotice.setData( JSON.toJSONString( dataMap));
                         basNotice.insert();
                     });

@@ -770,7 +770,7 @@ public class ProtalSystemMemberServiceImpl implements PortalSystemIMemberService
         FungoPageResultDto<SysNoticeBean> re = new FungoPageResultDto<SysNoticeBean>();
         List<SysNoticeBean> list = new ArrayList<SysNoticeBean>();
         re.setData(list);
-        String[] types = {"6","15"};
+        String[] types = {"6","15","61"};
 
 //		Page<BasNotice> plist=noticeService.selectPage(new Page<BasNotice>(inputPage.getPage(),inputPage.getLimit()), new EntityWrapper<BasNotice>().in("type", types));
         //孟 根据是否推送来获取消息，add is_push = 0

@@ -1108,7 +1108,7 @@ public class MemberServiceImpl implements IMemberService {
 
         int comment_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).in("type", types1));
         int notice_count = noticeService.selectCount(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
-        List<BasNotice> basNotices = noticeService.selectList(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).in("type", new Integer[]{6, 15}));
+        List<BasNotice> basNotices = noticeService.selectList(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).in("type", new Integer[]{6, 15,61}));
         basNotices = basNotices.stream().filter( s -> os.equals(s.getChannel()) ||StringUtil.isNull(s.getChannel())).collect( Collectors.toList());
        /* List<BasNotice> noticeList = noticeService.selectList(new EntityWrapper<BasNotice>().eq("is_read", 0).eq("member_id", memberId).eq("type", 6));
         for (BasNotice notice : noticeList) {
@@ -1137,7 +1137,7 @@ public class MemberServiceImpl implements IMemberService {
         FungoPageResultDto<SysNoticeBean> re = new FungoPageResultDto<SysNoticeBean>();
         List<SysNoticeBean> list = new ArrayList<SysNoticeBean>();
         re.setData(list);
-        String[] types = {"6","15"};
+        String[] types = {"6","15","61"};
 //		Page<BasNotice> plist=noticeService.selectPage(new Page<BasNotice>(inputPage.getPage(),inputPage.getLimit()), new EntityWrapper<BasNotice>().in("type", types));
         //孟 根据是否推送来获取消息，add is_push = 0
         Page<BasNotice> noticePage = new Page<>(inputPage.getPage(), inputPage.getLimit());
