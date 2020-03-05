@@ -1,7 +1,5 @@
 package com.fungo.system.facede.impl;
 
-
-
 import com.fungo.system.feign.GamesFeignClient;
 import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.GameDto;
@@ -13,7 +11,6 @@ import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -173,6 +170,7 @@ public class GameFacedeHystrixService implements FallbackFactory<GamesFeignClien
 
             @Override
             public FungoPageResultDto<GameOutBean> listGameByPackageName(BangGameDto bangGameDto) {
+                logger.error("--------------------GameFeignClient--启动熔断:{}" , "listGameByPackageName");
                 return null;
             }
         };

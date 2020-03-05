@@ -2526,7 +2526,7 @@ public class MemberServiceImpl implements IMemberService {
             List<String> memberIdList = memberDao.getMemberByName();
             memberIdList.stream().forEach( s ->{
                 BasNotice basNotice = new BasNotice();
-                basNotice.setType( UserMessageTypeConstant.USER_EDIT_INFO );
+                basNotice.setType( UserMessageTypeConstant.SYSTEM );
                 basNotice.setChannel( "");
                 basNotice.setIsRead( 0 );
                 basNotice.setIsPush( 0 );
@@ -2536,7 +2536,7 @@ public class MemberServiceImpl implements IMemberService {
                 // 3标志 不做跳转
                 dataMap.put("actionType", String.valueOf(UserMessageActionTypeConstant.ACTIONTYPE_ONE ));
                 dataMap.put("content", SYSTEM_USER_NAME_REPATITION);
-                dataMap.put("targetType","1");
+                dataMap.put("targetType",String.valueOf(UserMessageTypeConstant.USER_EDIT_INFO));
                 dataMap.put("targetId","");
                 dataMap.put("userId", "0b8aba833f934452992a972b60e9ad10");
                 dataMap.put("userType", "1");
