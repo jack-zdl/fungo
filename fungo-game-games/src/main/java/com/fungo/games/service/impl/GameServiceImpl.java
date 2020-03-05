@@ -2677,13 +2677,13 @@ public class GameServiceImpl implements IGameService {
                 if(game == null){
 
                 }else {
-                    String gameVersion = game.getVersionMain()+"."+game.getVersionChild();
+                    String gameVersion = CommonUtils.getVersion(game.getVersionMain(),  game.getVersionChild());
                     if(CommonUtils.isNewVersion(map.get( "gameVersion" ),gameVersion)){
                         GameOutBean out = new GameOutBean();
                         out.setGameId( game.getId());
                         out.setName( game.getName());
                         out.setGamePackageName(map.get( "gamePackageName" )  );
-                        out.setGameVersion(  map.get( "gameVersion" ));
+                        out.setGameVersion( gameVersion);
                         gameOutPages.add(out);
                     }
                 }
