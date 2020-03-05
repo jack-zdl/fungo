@@ -301,7 +301,7 @@ public class CommonUtils {
 		int lastZeroPosition = 0;
 		for (int i = 0; i < input.length; i++) {
 			String numStr = input[i];
-			if (!TextUtils.isEmpty(numStr) && ValidateUtils.number(numStr)) {
+			if (!TextUtils.isEmpty(numStr) && ValidateUtils.numberToInt(numStr)) {
 				int num = Integer.valueOf(numStr);
 				if (num != 0) {
 					lastZeroPosition = i;

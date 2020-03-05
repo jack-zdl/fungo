@@ -76,7 +76,7 @@ public class MemberNoticeAspect {
                             String gamePackageName = (String) dataObject.get("gamePackageName");
                             String gameVersion = (String) dataObject.get("gameVersion");
                             if(c.getGamePackageName().equals( gamePackageName)){
-                                if(CommonUtils.isNewVersion(c.getGameVersion(),gameVersion)) {
+                                if(CommonUtils.isNewVersion(gameVersion,c.getGameVersion())) {
                                     return true;
                                 }else {
                                     return false;

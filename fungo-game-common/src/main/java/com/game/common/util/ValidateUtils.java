@@ -1,6 +1,7 @@
 package com.game.common.util;
 
 import com.game.common.validate.an.*;
+import io.swagger.models.auth.In;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import java.lang.annotation.Annotation;
@@ -327,6 +328,22 @@ public class ValidateUtils {
             return false;
         }
         return true;
+    }
+
+    /**
+     * 数字字符串校验
+     *
+     * @param msg 错误信息
+     * @return ValidateUtils
+     */
+    public static boolean numberToInt(String msg) {
+        try {
+            Integer value =  Integer.valueOf( msg);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+
     }
 
     /**
