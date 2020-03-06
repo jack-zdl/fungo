@@ -1330,7 +1330,7 @@ public class GameServiceImpl implements IGameService {
 
         if (2 == inputPage.getType()) {
             Page<GameSurveyRel> page = gameSurveyRelService.selectPage(new Page<GameSurveyRel>(inputPage.getPage(),
-                    inputPage.getLimit()), new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0));
+                    inputPage.getLimit()), new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0).eq( "phone_model" ,os.trim()));
             List<GameSurveyRel> plist = page.getRecords();
             for (GameSurveyRel gameSurveyRel : plist) {
                 Game game = gameService.selectById(gameSurveyRel.getGameId());
