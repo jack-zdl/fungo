@@ -62,6 +62,13 @@ public class GameSearchOut {
 
 	private List<String> images = new ArrayList<>();
 
+	private String gameContent;
+
+	@ApiModelProperty(value="消息数量",example="")
+	private int msgCount;
+	@ApiModelProperty(value="手机型号",example="")
+	private String phoneModel;
+
 //	@ApiModelProperty(value="是否同意条款",example="")
 //	private boolean isClause=false;
 //	@ApiModelProperty(value="是否绑定appleId",example="")
@@ -310,5 +317,29 @@ public class GameSearchOut {
 
 	public void setCoverImage(String coverImage) {
 		this.coverImage = coverImage;
+	}
+
+	public String getGameContent() {
+		return gameContent;
+	}
+
+	public void setGameContent(String gameContent) {
+		this.gameContent = gameContent;
+	}
+
+	public int getMsgCount() {
+		return msgCount;
+	}
+
+	public void setMsgCount(int msgCount) {
+		this.msgCount = msgCount;
+	}
+
+	public String getPhoneModel() {
+		return phoneModel;
+	}
+
+	public void setPhoneModel(String phoneModel) {
+		this.phoneModel = phoneModel;
 	}
 }

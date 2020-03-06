@@ -1448,7 +1448,16 @@ public class GameServiceImpl implements IGameService {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                list.add(out);
+                out.setGameContent(game.getDetail());
+                out.setMsgCount(0);
+                out.setPhoneModel(gameSurveyRel.getPhoneModel());
+                if (os.equalsIgnoreCase(out.getPhoneModel())) {
+                    list.add(out);
+                }
+//                if (os.equalsIgnoreCase(bean.getPhoneModel())) {
+//                    list.add(bean);
+//                }
+//                list.add(out);
 //                if(game.getState() != 0){
 //                    continue;
 //                }
