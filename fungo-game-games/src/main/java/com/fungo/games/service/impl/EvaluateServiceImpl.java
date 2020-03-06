@@ -669,6 +669,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
                 ctem.setTrait3( cmmComment.getTrait3()== null ? 0 : cmmComment.getTrait3() );
                 ctem.setTrait4( cmmComment.getTrait4()== null ? 0 : cmmComment.getTrait4() );
                 ctem.setTrait5( cmmComment.getTrait5() == null ? 0 : cmmComment.getTrait5());
+                Map<String,Integer> map = new HashMap<>();
+                map.put( "trait1",cmmComment.getTrait1()== null ? 0 : cmmComment.getTrait1() );
+                map.put( "trait2",cmmComment.getTrait2()== null ? 0 : cmmComment.getTrait2() );
+                map.put( "trait3",cmmComment.getTrait3()== null ? 0 : cmmComment.getTrait3() );
+                map.put( "trait4",cmmComment.getTrait4()== null ? 0 : cmmComment.getTrait4() );
+                map.put( "trait5",cmmComment.getTrait5()== null ? 0 : cmmComment.getTrait5() );
+                ctem.setTraitMap(map);
 //            迁移微服务 根据用户id获取authorbean对象 feignclient
 //            ctem.setAuthor(this.userService.getAuthor(cmmComment.getMemberId()));
 //            2019-05-11

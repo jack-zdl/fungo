@@ -7,6 +7,7 @@ import com.game.common.dto.community.ReplyBean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class EvaluationOutPageDto {
 	private String content;
@@ -47,6 +48,8 @@ public class EvaluationOutPageDto {
 	private int trait3;
 	private int trait4;
 	private int trait5;
+
+	private Map<String,Integer> traitMap;
 
 	private String evaluationMemberId;
 	
@@ -198,5 +201,13 @@ public class EvaluationOutPageDto {
 
 	public void setEvaluationMemberId(String evaluationMemberId) {
 		this.evaluationMemberId = evaluationMemberId;
+	}
+
+	public Map<String, Integer> getTraitMap() {
+		return traitMap;
+	}
+
+	public void setTraitMap(Map<String, Integer> traitMap) {
+		this.traitMap = traitMap;
 	}
 }
