@@ -94,7 +94,7 @@ public interface IGameService {
 	 * @param os
 	 * @return
 	 */
-	FungoPageResultDto<MyGameBean> getMyGameList(String loginId, MyGameInputPageDto inputPage, String os);
+	FungoPageResultDto<GameSearchOut> getMyGameList(String loginId, MyGameInputPageDto inputPage, String os);
 
 	/**
 	 * 搜索游戏

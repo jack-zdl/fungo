@@ -8,6 +8,7 @@ import com.game.common.dto.evaluation.MyEvaluationBean;
 import com.game.common.dto.game.MermberSearchInput;
 import com.game.common.dto.game.MyGameBean;
 import com.game.common.dto.game.MyGameInputPageDto;
+import com.game.common.dto.search.GameSearchOut;
 import com.game.common.util.CommonUtil;
 import com.game.common.util.annotation.Anonymous;
 import com.game.common.util.annotation.MD5ParanCheck;
@@ -33,7 +34,7 @@ public class MemberController {
     @RequestMapping(value = "/api/mine/gameList", method = RequestMethod.POST)
     @ApiImplicitParams({})
     @MD5ParanCheck(param = {"page","limit","type"})
-    public FungoPageResultDto<MyGameBean> getGameList(MemberUserProfile memberUserPrefile, @RequestBody MyGameInputPageDto inputPage, HttpServletRequest request) {
+    public FungoPageResultDto<GameSearchOut> getGameList(MemberUserProfile memberUserPrefile, @RequestBody MyGameInputPageDto inputPage, HttpServletRequest request) {
         String os = (String) request.getAttribute("os");
         return iGameService.getMyGameList(memberUserPrefile.getLoginId(), inputPage,os);
     }

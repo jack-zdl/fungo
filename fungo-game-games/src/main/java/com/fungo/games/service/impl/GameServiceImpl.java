@@ -1314,19 +1314,19 @@ public class GameServiceImpl implements IGameService {
      * @return
      */
     @Override
-    public FungoPageResultDto<MyGameBean> getMyGameList(String memberId, MyGameInputPageDto inputPage, String os) {
-        FungoPageResultDto<MyGameBean> re = null;
+    public FungoPageResultDto<GameSearchOut> getMyGameList(String memberId, MyGameInputPageDto inputPage, String os) {
+        FungoPageResultDto<GameSearchOut> re = null;
 
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_GAMELIST + memberId;
         String keySuffix = JSON.toJSONString(inputPage + os);
 
-        re = (FungoPageResultDto<MyGameBean>) fungoCacheMember.getIndexCache(keyPrefix, keySuffix);
+        re = (FungoPageResultDto<GameSearchOut>) fungoCacheMember.getIndexCache(keyPrefix, keySuffix);
         if (null != re) {
             return re;
         }
 
-        re = new FungoPageResultDto<MyGameBean>();
-        List<MyGameBean> list = new ArrayList<>();
+        re = new FungoPageResultDto<GameSearchOut>();
+        List<GameSearchOut> list = new ArrayList<>();
 
         if (2 == inputPage.getType()) {
             Page<GameSurveyRel> page = gameSurveyRelService.selectPage(new Page<GameSurveyRel>(inputPage.getPage(),
@@ -1334,21 +1334,136 @@ public class GameServiceImpl implements IGameService {
             List<GameSurveyRel> plist = page.getRecords();
             for (GameSurveyRel gameSurveyRel : plist) {
                 Game game = gameService.selectById(gameSurveyRel.getGameId());
-                if(game.getState() != 0){
-                    continue;
+                GameSearchOut out = new GameSearchOut();
+                HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
+                if (rateData != null) {
+                    if (rateData.get("avgRating") != null) {
+                        out.setRating(Double.parseDouble(rateData.get("avgRating").toString()));
+                    } else {
+                        out.setRating(0.0);
+                    }
+                } else {
+                    out.setRating(0.0);
                 }
-                MyGameBean bean = new MyGameBean();
-                bean.setAndroidState(game.getAndroidState());
-                bean.setGameContent(game.getDetail());
-                bean.setGameIcon(game.getIcon());
-                bean.setGameId(gameSurveyRel.getGameId());
-                bean.setGameName(game.getName());
-                bean.setIosState(game.getIosState());
-                bean.setMsgCount(0);
-                bean.setPhoneModel(gameSurveyRel.getPhoneModel());
-                if (os.equalsIgnoreCase(bean.getPhoneModel())) {
-                    list.add(bean);
+                out.setObjectId(game.getId());
+                out.setName(game.getName());
+                List<String> gameTags = gameTagDao.selectGameTag( game.getId());
+                String gameTagStrs = String.join(",", gameTags);
+                out.setTag(gameTagStrs);
+                out.setIcon(game.getIcon());
+                out.setCover_image(game.getCoverImage());
+                out.setCoverImage(game.getCoverImage());
+                out.setIntro(game.getIntro());
+                out.setDeveloper(game.getDeveloper());
+                out.setLink_community(game.getCommunityId());
+                Integer reNum = game.getRecommendNum();
+                Integer unredNum = game.getUnrecommendNum();
+
+//			out.setRecommend_num(reNum);
+//			out.setUnrecommend_num(unredNum);
+//			out.setEvaluation_num(reNum + unredNum);
+                int evaCount = gameEvaluationService.selectCount(new EntityWrapper<GameEvaluation>().eq("game_id", game.getId()).and("state != -1"));
+                out.setEvaluation_num(evaCount);
+                out.setGame_size(game.getGameSize());
+
+                out.setAndroidPackageName(game.getAndroidPackageName() == null ? "" : game.getAndroidPackageName());
+                out.setAndroidState(game.getAndroidState());
+                out.setIosState(game.getIosState());
+                out.setItunesId(game.getItunesId());
+                out.setApkUrl(game.getApk() == null ? "" : game.getApk());
+
+                if (unredNum != 0) {
+                    DecimalFormat df = new DecimalFormat("#.00");
+                    out.setScore((reNum != null ? (int) Double.parseDouble(df.format((double) reNum / (reNum + unredNum) * 100)) : 0));
                 }
+                out.setCreatedAt(DateTools.fmtDate(game.getCreatedAt()));
+                out.setUpdatedAt(DateTools.fmtDate(game.getUpdatedAt()));
+                out.setGameIdtSn( game.getGameIdtSn());
+                out.setCategory(gameTagStrs);
+                /**
+                 * 功能描述: 添加游戏关联圈子
+                 * @auther: dl.zhang
+                 * @date: 2019/6/24 13:50
+                 */
+                try {
+                    CircleGamePostVo circleGamePostVo = new CircleGamePostVo(CircleGamePostVo.CircleGamePostTypeEnum.GAMESID.getKey(),game.getId(),"");
+                    ResultDto<String> reString = communityFeignClient.getCircleByGame(circleGamePostVo);
+                    if (CommonEnum.SUCCESS.code().equals(String.valueOf(reString.getStatus())) && !reString.getData().equals("")) {
+                        out.setLink_circle(reString.getData());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.error("根据游戏id询圈子id异常,游戏id：" + game.getId(), e);
+                }
+                // 琪琪说  有厂商展示厂商，没有厂商展示发行商
+                out.setCompany( org.apache.commons.lang3.StringUtils.isNoneBlank(game.getCompany()) ? game.getCompany() : "" );
+                out.setPublisher( org.apache.commons.lang3.StringUtils.isNoneBlank(game.getPublisher()) ? game.getPublisher() : "" );
+                out.setAddress( game.getOrigin());
+                out.setCanFast(  "中国".equals( game.getOrigin())? false: game.getCanFast() != null ? game.getCanFast() : false );
+                String androidStatusDesc = game.getAndroidStatusDesc();
+                /**
+                 * 功能描述:
+                 *  {
+                 *      dsc:””,
+                 *      starDate:””,
+                 *      endDate:””
+                 *  }
+                 */
+                Long starDate = null;
+                Long endDate = null;
+                JSONObject jsonObject = JSON.parseObject( androidStatusDesc);
+                if(jsonObject != null){
+                    String dsc = jsonObject.getString("dsc");
+                    out.setGameStatus( (String) jsonObject.get( "dsc" ) );
+                    try {
+                        if(!CommonUtil.isNull(dsc)){
+                            starDate = (Long) jsonObject.get( "starDate" );
+                            endDate = (Long) jsonObject.get( "endDate" );
+                            if( starDate == null || endDate == null ){
+                                out.setGameStatus( (String) jsonObject.get( "dsc" ) );
+                            }else {
+                                out.setGameStatus(  DateTools.betweenDate(new Date( starDate ),new Date( endDate ),new Date( )  ) ? (String) jsonObject.get( "dsc" ) : "" );
+                            }
+                        }
+                    }catch (Exception e){
+                        logger.error( "androidStatusDesc转换失败",e );
+                    }
+
+                }
+
+                out.setTags(gameTagStrs);
+
+                if(!CommonUtil.isNull(memberId)){
+                    List<GameSurveyRel> gameSurveyRels = gameSurveyRelService.selectList( new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0).eq( "game_id",game.getId()));
+                    if(gameSurveyRels != null && gameSurveyRels.size() >0){
+                        out.setMake(true);
+                    }
+                }
+                out.setVersion( CommonUtil.isNull(game.getVersionChild()) ? game.getVersionMain() : game.getVersionMain()+"."+game.getVersionChild() );
+                try {
+                    if (game.getImages() != null) {
+                        ObjectMapper mapper = new ObjectMapper();
+                        out.setImages((ArrayList<String>) mapper.readValue(game.getImages(), ArrayList.class));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                list.add(out);
+//                if(game.getState() != 0){
+//                    continue;
+//                }
+//                MyGameBean bean = new MyGameBean();
+//                bean.setAndroidState(game.getAndroidState());
+//                bean.setGameContent(game.getDetail());
+//                bean.setGameIcon(game.getIcon());
+//                bean.setGameId(gameSurveyRel.getGameId());
+//                bean.setGameName(game.getName());
+//                bean.setIosState(game.getIosState());
+//                bean.setMsgCount(0);
+//                bean.setPhoneModel(gameSurveyRel.getPhoneModel());
+//                if (os.equalsIgnoreCase(bean.getPhoneModel())) {
+//                    list.add(bean);
+//                }
             }
             re.setData(list);
             PageTools.pageToResultDto(re, page);
