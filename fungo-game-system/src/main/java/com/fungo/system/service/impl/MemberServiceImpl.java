@@ -2566,11 +2566,13 @@ public class MemberServiceImpl implements IMemberService {
                 List<String> idList = list.get().stream().map( x ->CommonUtils.comparingByName(x)).collect( Collectors.toList());
                 idList.stream().forEach( s ->{
                     fungoCacheMember.setRedisSetCache( memberId,s);
+                    p.setSize(  1000);
                     list.set( actionDao.getFollowerUser( p, s ) );
                     List<String> xList = list.get().stream().map( x ->CommonUtils.comparingByName(x)).collect( Collectors.toList());
                     xList.stream().forEach( x ->{
                         fungoCacheMember.setRedisSetCache( s,x);
                     });
+                    fungoCacheMember.setExpireTime(s);
                 });
                 Set<String> memberIds = fungoCacheMember.getRedisSet( memberId,idList );
                 System.out.println("------------"+JSON.toJSONString( memberIds));

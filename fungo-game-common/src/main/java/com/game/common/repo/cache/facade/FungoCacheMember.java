@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author:Mxf <a href="mailto:m-java@163.com">m-java@163.com</a>
@@ -113,12 +114,18 @@ public class FungoCacheMember {
      * @return
      */
     public void setRedisSetCache(String keyPrefix, String... keySuffix) {
-        redisTemplate.opsForSet().add(keyPrefix,keySuffix );
-//        redisTemplate.opsForSet()
+        redisTemplate.opsForSet().add(keyPrefix,keySuffix);
+        //设置过期时间
+
     }
 
     public Set<String> getRedisSet(String set1, List<String> set2){
-        return redisTemplate.opsForSet().intersect(set1, set2);
+        long result=  redisTemplate.opsForSet().intersectAndStore(set1, set2,set1+"+join");
+        return redisTemplate.opsForSet().members(set1+"+join");
+    }
+
+    public void setExpireTime(String keyPrefix){
+        redisTemplate.expire(keyPrefix,5000 , TimeUnit.HOURS);
     }
 
     //-----------

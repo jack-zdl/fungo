@@ -82,7 +82,7 @@ public class EventTaskListern implements ApplicationListener<AbstractTaskEventDt
             fungoCacheTask.excIndexCache(false,keyPreffix,null,null  );
             fungoCacheTask.excIndexCache(false,FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + userId,null,null  );
             fungoCacheTask.excIndexCache(false,FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_RANKS_LEVEL + userId,null,null  );
-            fungoCacheArticle.removeIndexDecodeCache(false,"*"  );
+//            fungoCacheArticle.removeIndexDecodeCache(false,"*"  );
         }
     }
 

@@ -156,7 +156,7 @@ public class EventPostListern implements ApplicationListener<AbstractEventDto> {
             fungoCacheTask.excIndexCache(false,keyPreffix,null,null  );
             fungoCacheTask.excIndexCache(false,FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_INFO + memberId,null,null  );
             fungoCacheTask.excIndexCache(false,FungoCoreApiConstant.FUNGO_CORE_API_MEMBER_MINE_RANKS_LEVEL + memberId,null,null  );
-            fungoCacheArticle.removeIndexDecodeCache(false,"*"  );
+//            fungoCacheArticle.removeIndexDecodeCache(false,"*"  );
         }
 
     }

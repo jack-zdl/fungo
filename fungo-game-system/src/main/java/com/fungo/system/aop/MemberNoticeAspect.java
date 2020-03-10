@@ -73,7 +73,7 @@ public class MemberNoticeAspect {
                         HttpServletRequest request = attributes.getRequest();
                         MemberUserProfile member = (MemberUserProfile)request.getAttribute("member");
                         if(member !=null){
-                            List<BasNotice> basNotices = noticeService.selectList(new EntityWrapper<BasNotice>().eq("member_id", member.getLoginId()).eq("type", USER_GAME_UPDATE_SYSTEM)); //.eq("is_read", 0)
+                            List<BasNotice> basNotices = noticeService.selectList(new EntityWrapper<BasNotice>().eq("member_id", member.getLoginId()).eq("type", USER_GAME_UPDATE_SYSTEM).orderBy("created_at", false)); //.eq("is_read", 0)
                             gameOutBeans.stream().filter( c ->{
                                 for(BasNotice basNotice :basNotices){
                                     String basNoticeString = basNotice.getData();
