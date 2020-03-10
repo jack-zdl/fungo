@@ -12,6 +12,7 @@ import com.fungo.system.entity.Member;
 import com.fungo.system.entity.MemberApple;
 import com.fungo.system.function.MemberLoginedStatisticsService;
 import com.fungo.system.service.*;
+import com.game.common.common.MemberIncentCommonUtils;
 import com.game.common.consts.GameConstant;
 import com.game.common.consts.MemberIncentTaskConsts;
 import com.game.common.dto.MemberUserProfile;
@@ -34,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -111,7 +113,7 @@ public class PortalSystemUserController {
             MemberUserProfile userPrefile = new MemberUserProfile();
             userPrefile.setLoginId(bean.getObjectId());
             userPrefile.setName(bean.getUsername());
-            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), 1000 * 60 * 60 * 60 * 24 * 30));
+            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), MemberIncentCommonUtils.pastDate()));
         }
         return re;
     }
@@ -138,7 +140,7 @@ public class PortalSystemUserController {
             MemberUserProfile userPrefile = new MemberUserProfile();
             userPrefile.setLoginId(bean.getObjectId());
             userPrefile.setName(bean.getUsername());
-            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), 1000 * 60 * 60 * 60 * 24 * 30));
+            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), MemberIncentCommonUtils.pastDate()));
         }
         return re;
     }
@@ -150,7 +152,7 @@ public class PortalSystemUserController {
             @ApiImplicitParam(name = "password", value = "密码", paramType = "form", dataType = "string"),
             @ApiImplicitParam(name = "code", value = "验证码", paramType = "form", dataType = "string")
     })
-    public ResultDto<LoginMemberBean> login(HttpServletRequest request, @RequestBody MsgInput msg) throws JsonProcessingException, Exception {
+    public ResultDto<LoginMemberBean> login(HttpServletRequest request, @RequestBody MsgInput msg) throws  Exception {
 //		ValidateUtils.is(msg.getMobile()).notNull().maxLength(11).minLength(11);
 //		String os = "";
 //		os = (String)request.getAttribute("os");
@@ -161,7 +163,7 @@ public class PortalSystemUserController {
             MemberUserProfile userPrefile = new MemberUserProfile();
             userPrefile.setLoginId(bean.getObjectId());
             userPrefile.setName(bean.getUsername());
-            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), 1000 * 60 * 60 * 60 * 24 * 30));
+            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), MemberIncentCommonUtils.pastDate()));
         }
         return re;
     }

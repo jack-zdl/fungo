@@ -7,6 +7,7 @@ import com.fungo.system.entity.*;
 import com.fungo.system.function.MemberLoginedStatisticsService;
 import com.fungo.system.service.*;
 import com.game.common.buriedpoint.BuriedPointUtils;
+import com.game.common.common.MemberIncentCommonUtils;
 import com.game.common.consts.GameConstant;
 import com.game.common.dto.AbstractEventDto;
 import com.game.common.dto.MemberUserProfile;
@@ -34,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -88,7 +90,7 @@ public class UserController {
             MemberUserProfile userPrefile = new MemberUserProfile();
             userPrefile.setLoginId(bean.getObjectId());
             userPrefile.setName(bean.getUsername());
-            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), 1000 * 60 * 60 * 60 * 24 * 30));
+            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), MemberIncentCommonUtils.pastDate()));
         }
         return re;
     }
@@ -112,7 +114,7 @@ public class UserController {
             MemberUserProfile userPrefile = new MemberUserProfile();
             userPrefile.setLoginId(bean.getObjectId());
             userPrefile.setName(bean.getUsername());
-            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), 1000 * 60 * 60 * 60 * 24 * 30));
+            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), MemberIncentCommonUtils.pastDate()));
         }
         return re;
     }
@@ -138,7 +140,8 @@ public class UserController {
             MemberUserProfile userPrefile = new MemberUserProfile();
             userPrefile.setLoginId(bean.getObjectId());
             userPrefile.setName(bean.getUsername());
-            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), 1000 * 60 * 60 * 60 * 24 * 30));
+
+            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), MemberIncentCommonUtils.pastDate()));
         }
         return re;
     }
@@ -166,7 +169,7 @@ public class UserController {
             MemberUserProfile userPrefile = new MemberUserProfile();
             userPrefile.setLoginId(bean.getObjectId());
             userPrefile.setName(bean.getUsername());
-            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), 1000 * 60 * 60 * 60 * 24 * 30));
+            bean.setToken(tokenService.createJWT("jwt", objectMapper.writeValueAsString(userPrefile), MemberIncentCommonUtils.pastDate()));
         }
         return re;
     }

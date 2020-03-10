@@ -1,5 +1,7 @@
 package com.game.common.common;
 
+import java.math.BigInteger;
+
 /**
  * <p>
  * 			用户成长体系基础业务工具类
@@ -49,5 +51,8 @@ public final class MemberIncentCommonUtils {
 
     }
 
+    public static Long pastDate(){
+        return new Long( "2592000000" );
+    }
 
 }

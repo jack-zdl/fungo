@@ -12,6 +12,7 @@ import org.springframework.util.Base64Utils;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.math.BigInteger;
 import java.util.Date;
 
 @Service
@@ -38,10 +39,17 @@ public class TokenService implements ITokenService{
 	 * @return
 	 * @throws Exception
 	 */
+	public  String createJWT(String id, String subject, BigInteger ttlMillis) throws Exception {
+		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+		SecretKey key = generalKey();
+		JwtBuilder builder = Jwts.builder().setExpiration(new Date( BigInteger.valueOf(  System.currentTimeMillis() ).add(   ttlMillis ).toString())).setId(id).setIssuedAt(new Date()).setSubject(subject).signWith(signatureAlgorithm, key);
+		return builder.compact();
+	}
+//
 	public  String createJWT(String id, String subject, long ttlMillis) throws Exception {
 		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 		SecretKey key = generalKey();
-		JwtBuilder builder = Jwts.builder().setExpiration(new Date(System.currentTimeMillis() + ttlMillis)).setId(id).setIssuedAt(new Date()).setSubject(subject).signWith(signatureAlgorithm, key);
+		JwtBuilder builder = Jwts.builder().setExpiration(new Date(  System.currentTimeMillis() +  ttlMillis )).setId(id).setIssuedAt(new Date()).setSubject(subject).signWith(signatureAlgorithm, key);
 		return builder.compact();
 	}
 
