@@ -7,6 +7,7 @@ import com.fungo.system.dto.MemberNoticeInput;
 import com.fungo.system.entity.BasNotice;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.service.BasNoticeService;
+import com.game.common.consts.MemberActionTargetTypeConsts;
 import com.game.common.consts.UserMessageActionTypeConstant;
 import com.game.common.consts.UserMessageTypeConstant;
 import com.game.common.dto.FungoPageResultDto;
@@ -102,7 +103,7 @@ public class MemberNoticeAspect {
                                 // 3标志 不做跳转
                                 dataMap.put("actionType",String.valueOf(  UserMessageActionTypeConstant.ACTIONTYPE_ONE ));
                                 dataMap.put("content",SYSTEM_USER_GAME_UPDATE.replace("{", gameName) );
-                                dataMap.put("targetType", String.valueOf( UserMessageTypeConstant.USER_REPLY_GAME));
+                                dataMap.put("targetType", String.valueOf( MemberActionTargetTypeConsts.MEMBER_ACTIOIN_TYPE_GAME));
                                 dataMap.put("targetId",gameId);
                                 dataMap.put("userId", "0b8aba833f934452992a972b60e9ad10");
                                 dataMap.put("userType", "1");

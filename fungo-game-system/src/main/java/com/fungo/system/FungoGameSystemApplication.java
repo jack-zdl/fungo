@@ -79,13 +79,16 @@ public class FungoGameSystemApplication {
 		return factory.createMultipartConfig();
 	}
 
-/*	*//**
+
+	/**
 	 * 埋点初始化
 	 * @return
-	 *//*
+	 */
+	/*
 	@Bean
 	public AnalysysJavaSdk analysysJavaSdk() {
 		System.out.println("释放埋点连接..........................");
 		return new AnalysysJavaSdk(new SyncCollecter(BuriedPointUtils.ANALYSYS_SERVICE_URL), BuriedPointUtils.APP_KEY);
-	}*/
+	}
+	*/
 }

@@ -7,7 +7,11 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * @Author:Mxf <a href="mailto:m-java@163.com">m-java@163.com</a>
@@ -33,6 +37,10 @@ public class FungoCacheMember {
 
     @Autowired
     private RedisHandler redisHandler;
+
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
 
     /**
@@ -97,6 +105,21 @@ public class FungoCacheMember {
         return redisHandler.getEntity(redisKey);
     }
 
+
+    /**
+     *  获取缓存数据
+     * @param keyPrefix 缓存key的前缀 （对象是json字符串，非对象是字符串）
+     * @param keySuffix 缓存key的后缀 （对象是json字符串，非对象是字符串）
+     * @return
+     */
+    public void setRedisSetCache(String keyPrefix, String... keySuffix) {
+        redisTemplate.opsForSet().add(keyPrefix,keySuffix );
+//        redisTemplate.opsForSet()
+    }
+
+    public Set<String> getRedisSet(String set1, List<String> set2){
+        return redisTemplate.opsForSet().intersect(set1, set2);
+    }
 
     //-----------
 }

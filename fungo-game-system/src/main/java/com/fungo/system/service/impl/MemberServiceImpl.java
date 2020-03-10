@@ -1,7 +1,6 @@
 package com.fungo.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -10,7 +9,6 @@ import com.fungo.system.config.NacosFungoCircleConfig;
 import com.fungo.system.dao.*;
 import com.fungo.system.dto.*;
 import com.fungo.system.entity.*;
-import com.fungo.system.facede.ICommunityProxyService;
 import com.fungo.system.facede.IDeveloperProxyService;
 import com.fungo.system.facede.IGameProxyService;
 import com.fungo.system.facede.IMemeberProxyService;
@@ -18,7 +16,6 @@ import com.fungo.system.feign.CommunityFeignClient;
 import com.fungo.system.feign.GamesFeignClient;
 import com.fungo.system.function.UserTaskFilterService;
 import com.fungo.system.helper.lingka.LingKaHelper;
-import com.fungo.system.helper.zookeeper.DistributedLockByCurator;
 import com.fungo.system.mall.service.consts.FungoMallSeckillConsts;
 import com.fungo.system.service.*;
 import com.game.common.api.InputPageDto;
@@ -29,7 +26,6 @@ import com.game.common.dto.StreamInfo;
 import com.game.common.dto.community.*;
 import com.game.common.dto.game.GameEvaluationDto;
 import com.game.common.dto.game.GameListVO;
-import com.game.common.dto.game.GameOut;
 import com.game.common.dto.game.GameSurveyRelDto;
 import com.game.common.dto.search.GameSearchOut;
 import com.game.common.enums.AbstractResultEnum;
@@ -52,6 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static com.game.common.consts.MessageConstants.SYSTEM_USER_NAME_REPATITION;
@@ -121,6 +118,7 @@ public class MemberServiceImpl implements IMemberService {
     private IncentRuleRankGroupDao incentRuleRankGroupDao;
     @Autowired
     private FungoCacheMood fungoCacheMood;
+
 
     @Override
     public FungoPageResultDto<CollectionOutBean> getCollection(String memberId, InputPageDto inputPage) {
@@ -2549,6 +2547,40 @@ public class MemberServiceImpl implements IMemberService {
         }catch (Exception e){
             logger.error("检查所有的用户的重复名字",e);
         }
+    }
+
+    /**
+     * 功能描述: 检查用户共同关注的人和关注人也关注的人
+     * @param: [myId, memberId, inputPage]
+     * @return: com.game.common.dto.FungoPageResultDto<java.util.Map<java.lang.String,java.lang.Object>>
+     * @auther: dl.zhang
+     * @date: 2020/3/10 10:19
+     */
+    @Override
+    public FungoPageResultDto<Map<String, Object>> getUserFollower(String myId, String memberId,  FollowInptPageDao inputPage) throws Exception {
+        AtomicReference<List<Map<String, Object>>> list = new AtomicReference<>();
+        try {
+            Page p = new Page(inputPage.getPage(), inputPage.getLimit());
+            if (0 == inputPage.getType()) {//关注的用户
+                list.set( actionDao.getFollowerUser( p, memberId ) );
+                List<String> idList = list.get().stream().map( x ->CommonUtils.comparingByName(x)).collect( Collectors.toList());
+                idList.stream().forEach( s ->{
+                    fungoCacheMember.setRedisSetCache( memberId,s);
+                    list.set( actionDao.getFollowerUser( p, s ) );
+                    List<String> xList = list.get().stream().map( x ->CommonUtils.comparingByName(x)).collect( Collectors.toList());
+                    xList.stream().forEach( x ->{
+                        fungoCacheMember.setRedisSetCache( s,x);
+                    });
+                });
+                Set<String> memberIds = fungoCacheMember.getRedisSet( memberId,idList );
+                System.out.println("------------"+JSON.toJSONString( memberIds));
+            } else if (4 == inputPage.getType()) { //关注的社区
+
+            }
+        }catch (Exception e){
+            logger.error("查询用户共同关注的人和关注人也关注的人",e);
+        }
+        return null;
     }
 
 }

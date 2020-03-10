@@ -320,7 +320,10 @@ public class CommonUtils {
 			version = mainVersion;
 		}
 		return  version;
+	}
 
+	public static String comparingByName(Map<String, Object> map){
+		return (String) map.get("objectId");
 	}
 
 }

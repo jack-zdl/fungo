@@ -472,6 +472,23 @@ public class MemberController {
         return memberService.getPublishCount(memberId);
     }
 
+    @ApiOperation(value = "检查用户共同关注的人和关注人也关注的人 ", notes = "检查用户共同关注的人和关注人也关注的人 ")
+    @RequestMapping(value = "/api/user/follow", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "type", value = "关注目标的类型[0:用户,4:社区]", paramType = "form", dataType = "number"),
+            @ApiImplicitParam(name = "page", value = "请求页", paramType = "form", dataType = "number"),
+            @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "number")
+    })
+    @MD5ParanCheck(param = {"memberId","type","limit","page"})
+    public FungoPageResultDto<Map<String, Object>> getUserFollower(MemberUserProfile memberUserPrefile, @RequestBody FollowInptPageDao inputPage) throws Exception {
+        String memberId = inputPage.getMemberId();
+        if (CommonUtil.isNull(memberId)) {
+            return FungoPageResultDto.error("-1", "找不到目标");
+        }
+        String myId = memberUserPrefile.getLoginId();
+        return memberService.getUserFollower(myId, memberId, inputPage);
+    }
+
 }
 
 

@@ -103,4 +103,14 @@ public interface IMemberService {
 
 	void checkAllUserName();
 
+	/**
+	 * 获取用户关注
+	 * @param memberId 当前登录用户id
+	 * @param memberId2 目标用户id
+	 * @param inputPage
+	 * @return
+	 * @throws Exception
+	 */
+	FungoPageResultDto<Map<String,Object>> getUserFollower(String memberId, String memberId2, FollowInptPageDao inputPage) throws Exception;
+
 }
