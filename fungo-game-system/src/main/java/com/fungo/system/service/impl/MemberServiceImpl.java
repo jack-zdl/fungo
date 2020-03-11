@@ -42,6 +42,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.geo.*;
+import org.springframework.data.redis.connection.RedisGeoCommands;
+import org.springframework.data.redis.core.GeoOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -2601,6 +2604,45 @@ public class MemberServiceImpl implements IMemberService {
             }
         }catch (Exception e){
             logger.error("查询用户共同关注的人和关注人也关注的人",e);
+        }
+        return resultDto;
+    }
+
+    /**
+     * 功能描述: 获取附近的人
+     * @param: [memberId, userGeoDto]
+     * @return: com.game.common.dto.ResultDto<java.util.Map<java.lang.String,java.lang.Object>>
+     * @auther: dl.zhang
+     * @date: 2020/3/11 10:57
+     */
+    @Override
+    public ResultDto<Map<String, Object>> getUserNearGeo(String memberId, UserGeoDto userGeoDto) throws Exception {
+        ResultDto<Map<String, Object>> resultDto = new ResultDto<>(  );
+        String GEO_KEY = "ah-cities";
+        try {
+            logger.info("start to save city info: {}.", JSON.toJSONString(userGeoDto));
+            GeoOperations<String, String> ops = redisTemplate.opsForGeo();
+
+            Set<RedisGeoCommands.GeoLocation<String>> locations = new HashSet<>();
+            locations.add(new RedisGeoCommands.GeoLocation<String>(
+                    userGeoDto.getGeoName(), new Point(userGeoDto.getX(), userGeoDto.getY())
+            ));
+            ops.add( GEO_KEY, locations);
+
+            Point center = new Point(userGeoDto.getX(), userGeoDto.getY());
+            Distance radius = new Distance(200, Metrics.KILOMETERS);
+            Circle within = new Circle(center, radius);
+
+            RedisGeoCommands.GeoRadiusCommandArgs args = null;
+            GeoResults<RedisGeoCommands.GeoLocation<String>> results = (args == null) ?
+                    ops.radius(GEO_KEY, within) : ops.radius(GEO_KEY, within, args);
+            args = RedisGeoCommands.GeoRadiusCommandArgs.newGeoRadiusArgs().includeDistance().limit(2).sortAscending();
+            results = (args == null) ? ops.radius(GEO_KEY, within) : ops.radius(GEO_KEY, within, args);
+            Map<String,Object> hashMap = new HashMap<>();
+            hashMap.put( "result",results );
+            resultDto.setData(hashMap );
+        }catch (Exception e){
+            logger.error("获取附近的人",e);
         }
         return resultDto;
     }

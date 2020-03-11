@@ -113,4 +113,13 @@ public interface IMemberService {
 	 */
 	ResultDto<Map<String,Object>> getUserFollower(String memberId, String memberId2, FollowInptPageDao inputPage) throws Exception;
 
+	/**
+	 * 获取用户关注
+	 * @param memberId 当前登录用户id
+	 * @param userGeoDto 用户的坐标
+	 * @return
+	 * @throws Exception
+	 */
+	ResultDto<Map<String,Object>> getUserNearGeo(String memberId,UserGeoDto userGeoDto) throws Exception;
+
 }

@@ -489,6 +489,22 @@ public class MemberController {
         return memberService.getUserFollower(myId, memberId, inputPage);
     }
 
+    @ApiOperation(value = "查询附近的人", notes = " ")
+    @RequestMapping(value = "/api/user/geo", method = RequestMethod.POST)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "type", value = "关注目标的类型[0:用户,4:社区]", paramType = "form", dataType = "number"),
+            @ApiImplicitParam(name = "page", value = "请求页", paramType = "form", dataType = "number"),
+            @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "number")
+    })
+    @MD5ParanCheck(param = {"memberId","type","limit","page"})
+    public ResultDto<Map<String, Object>> getUserNearGeo(MemberUserProfile memberUserPrefile, @RequestBody UserGeoDto userGeoDto) throws Exception {
+        String memberId = memberUserPrefile.getLoginId();
+        if (CommonUtil.isNull(memberId)) {
+            return ResultDto.error("-1", "找不到目标");
+        }
+        return memberService.getUserNearGeo(memberId, userGeoDto);
+    }
+
 }
 
 
