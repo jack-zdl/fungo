@@ -26,4 +26,6 @@ public interface ICommonService {
 	
 	//弃用
 	public ResultDto<String> unFollowUser(ActionInput input);
+
+//	ResultDto<String> uploadFile();
 }

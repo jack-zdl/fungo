@@ -73,7 +73,7 @@ public class FungoGameSystemApplication {
 	public MultipartConfigElement multipartConfigElement() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
 		//文件最大  KB,MB-10MB
-		factory.setMaxFileSize("10240KB");
+		factory.setMaxFileSize("102400KB");
 		/// 设置总上传数据总大小 100MB
 		factory.setMaxRequestSize("102400KB");
 		return factory.createMultipartConfig();

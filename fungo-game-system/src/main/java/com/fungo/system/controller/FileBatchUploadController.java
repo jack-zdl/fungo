@@ -3,20 +3,22 @@ package com.fungo.system.controller;
 
 
 import com.fungo.system.service.impl.FileBatchUploadService;
+import com.fungo.system.service.impl.MemberServiceImpl;
 import com.fungo.system.upload.bean.req.BatchUploadInput;
 import com.fungo.system.upload.bean.resp.UploadFileOutBean;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
+import com.game.common.framework.file.IFileService;
 import com.game.common.util.annotation.Anonymous;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.WebAsyncTask;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
@@ -30,9 +32,12 @@ import java.util.concurrent.Callable;
 @RestController
 public class FileBatchUploadController {
 
+    private static final Logger logger = LoggerFactory.getLogger( FileBatchUploadController.class);
 
     @Autowired
     private FileBatchUploadService fileBatchUploadService;
+    @Autowired
+    private IFileService fileService;
 
     /**
      *  批量上传其他平台的图片文件
@@ -72,6 +77,37 @@ public class FileBatchUploadController {
                 }
         );
         return asyncTask;
+
+    }
+
+
+    /**
+     *  批量上传apk包
+     * @param appFile
+     * @return
+     */
+    @PostMapping(value = "/api/upload/apk")
+    public ResultDto<Map<String,Object>> uploadFileWithApk(@Anonymous MemberUserProfile memberUserPrefile, @RequestParam("file") MultipartFile appFile) {
+        String allowSuffix = "jpg,png,gif,jpeg,apk";
+        ResultDto<Map<String,Object>> resultDto = new ResultDto<>(  );
+        Map<String,Object> map = new HashMap<>();
+        try {
+            String suffix = appFile.getOriginalFilename().substring(appFile.getOriginalFilename().lastIndexOf(".") + 1);
+            suffix = suffix.toLowerCase();
+            int length = allowSuffix.indexOf(suffix);
+            if (length == -1) {
+//                return ResultDto.ResultDtoFactory.buildError( "请上传允许格式的文件" );
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+            String datePath = sdf.format(new Date());
+            String name = UUID.randomUUID().toString();
+            String imagePath =  fileService.saveFile(datePath + "/" + name + "." + suffix, suffix, appFile.getInputStream());
+            map.put("url", imagePath);
+            resultDto.setData( map);
+        }catch (Exception e){
+            logger.error( "批量上传apk包失败",e);
+        }
+        return resultDto;
 
     }
 

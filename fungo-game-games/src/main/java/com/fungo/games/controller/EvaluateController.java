@@ -6,6 +6,7 @@ import com.game.common.dto.FungoPageResultDto;
 import com.game.common.dto.MemberUserProfile;
 import com.game.common.dto.ResultDto;
 import com.game.common.dto.evaluation.*;
+import com.game.common.dto.game.GameOut;
 import com.game.common.enums.AbstractResultEnum;
 import com.game.common.enums.CommonEnum;
 import com.game.common.repo.cache.facade.FungoCacheGame;
@@ -52,6 +53,7 @@ public class EvaluateController {
 			resultDto =  this.evaluateService.addGameEvaluation(memberUserPrefile.getLoginId(), commentInput);
 			if(CommonEnum.SUCCESS.code().equals( String.valueOf( resultDto.getStatus() ) )){
 				fungoCacheGame.excIndexCache(false, FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS, "", null);
+				fungoCacheGame.excIndexCache(false,FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + commentInput.getTarget_id(),"", null);
 			}
 		}catch (Exception e){
 			logger.error( "发表评价（游戏）异常",e );
