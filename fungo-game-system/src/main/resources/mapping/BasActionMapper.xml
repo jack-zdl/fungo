@@ -283,9 +283,9 @@
 
 	<!-- 获取我的收藏（文章）id列表 -->
 	<select id="listGameCollectIds" resultType="java.lang.String" parameterType="String"><![CDATA[
-		select target_id
-		from t_bas_action a where
-			a.member_id=#{memberId} and a.type=4 and a.state<>-1  and target_type = #{targetType}
-			order by a.created_at desc
+		select a.target_id
+		from t_bas_action a  , t_game g where
+			a.member_id=#{memberId} and a.type=4 and a.state<>-1  and a.target_type = #{targetType} and g.id = a.target_id and g.state = 0
+			order by a.updated_at desc
 	]]></select>
 </mapper>
