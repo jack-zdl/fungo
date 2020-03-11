@@ -344,18 +344,20 @@ public class GameServiceImpl implements IGameService {
         GameOut out = new GameOut();
         Game game = null;
         try {
-            GameOut outResult = (GameOut) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, memberId + ptype);
-            if (null != outResult) {
-                return ResultDto.success(outResult);
-            }
+
             if(MemberIncentCommonUtils.checkNumber(gameId)){
                 game = gameService.selectOne(new EntityWrapper<Game>().eq("game_idt_sn", gameId).eq("state", "0"));
             }else {
                 game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", "0"));
             }
+
 //            Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", "0"));
             if (game == null) {
                 return ResultDto.error( AbstractResultEnum.CODE_GAME_THREE.getKey(), "找不到目标游戏");
+            }
+            GameOut outResult = (GameOut) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + game.getId(), memberId + ptype);
+            if (null != outResult) {
+                return ResultDto.success(outResult);
             }
             // 根据图片比例数据生成相应的返回字段
             int width = 16, height = 9;
@@ -681,7 +683,7 @@ public class GameServiceImpl implements IGameService {
             logger.error("游戏详情异常,游戏id="+gameId,e);
         }
         //redis cache
-        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId,
+        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + game.getId(),
                 memberId + ptype, out, 60 * 5);
 
         // vpc2.1 改版 记录用户浏览游戏详情
@@ -694,10 +696,7 @@ public class GameServiceImpl implements IGameService {
     @Override
     public ResultDto<GameOut> getGameDetailByNumber(String gameNumber, String memberId, String ptype) {
         GameOut out = new GameOut();
-        GameOut outResult = (GameOut) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameNumber, memberId + ptype);
-        if (null != outResult) {
-            return ResultDto.success(outResult);
-        }
+
 //            Game game = gameService.selectOne(new EntityWrapper<Game>().eq("id", gameId).eq("state", "0"));
         Game game = null;
         if(MemberIncentCommonUtils.checkNumber(gameNumber)){
@@ -710,6 +709,11 @@ public class GameServiceImpl implements IGameService {
             return ResultDto.error( AbstractResultEnum.CODE_GAME_THREE.getKey(), AbstractResultEnum.CODE_GAME_THREE.getFailevalue());
         }
         String gameId = game.getId();
+        GameOut outResult = (GameOut) fungoCacheGame.getIndexCache(FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId, memberId + ptype);
+        if (null != outResult) {
+            return ResultDto.success(outResult);
+        }
+
         try {
             // 根据图片比例数据生成相应的返回字段
             int width = 16, height = 9;
@@ -1028,7 +1032,7 @@ public class GameServiceImpl implements IGameService {
             logger.error("游戏详情异常,游戏id="+gameId,e);
         }
         //redis cache
-        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameNumber,
+        fungoCacheGame.excIndexCache(true, FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + gameId,
                 memberId + ptype, out, 60 * 5);
 
         // vpc2.1 改版 记录用户浏览游戏详情

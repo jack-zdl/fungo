@@ -534,6 +534,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
         try {
             commentIdList.stream().forEach( s ->{
                 Game game = gameDao.getGameByEvaluateId(s);
+
                 int number  = gameEvaluationDao.updateGameEvaluation( Arrays.asList(s) );
                 if(number == 1){
                     //扣除经验
@@ -595,6 +596,7 @@ public class EvaluateServiceImpl implements IEvaluateService {
                     //执行MQ发送
                     ResultDto<Long> messageResult1 = mqFeignClient.saveAndSendMessage(transactionMessageDto1);
                 }
+                fungoCacheGame.excIndexCache(false,FungoCoreApiConstant.FUNGO_CORE_API_GAME_DETAIL + game.getId(),"", null);
             } );
 
             //--end 扣减10fun币
@@ -779,13 +781,10 @@ public class EvaluateServiceImpl implements IEvaluateService {
         FungoPageResultDto<EvaluationOutPageDto> re = null;
 
         String keyPrefix = FungoCoreApiConstant.FUNGO_CORE_API_GAME_EVALUATIONS;
-        String gameNumber = pageDto.getGame_sn();
-        String keySuffix = gameNumber + JSON.toJSONString(pageDto);
+        String gameNumber = null; // pageDto.getGame_sn();
+        String keySuffix = null; //gameNumber + JSON.toJSONString(pageDto);
         try {
-            re = (FungoPageResultDto<EvaluationOutPageDto>) fungoCacheGame.getIndexCache(keyPrefix, keySuffix);
-            if (null != re) {
-                return re;
-            }
+
             re = new FungoPageResultDto<>();
             List<EvaluationOutPageDto> relist = new ArrayList<EvaluationOutPageDto>();
             Game game = null;
@@ -798,6 +797,13 @@ public class EvaluateServiceImpl implements IEvaluateService {
             if (game == null) {
                 return FungoPageResultDto.FungoPageResultDtoFactory.buildWarning(AbstractResultEnum.CODE_GAME_THREE.getKey(), AbstractResultEnum.CODE_GAME_THREE.getFailevalue());
             }
+            gameNumber =  game.getId();
+            keySuffix = gameNumber + JSON.toJSONString(pageDto);
+            re = (FungoPageResultDto<EvaluationOutPageDto>) fungoCacheGame.getIndexCache(keyPrefix, keySuffix);
+            if (null != re) {
+                return re;
+            }
+
             Wrapper<GameEvaluation> commentWrapper = new EntityWrapper<>();
             commentWrapper.eq("game_id", game.getId());
             commentWrapper.and("state !={0}", -1);
