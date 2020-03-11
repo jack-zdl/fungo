@@ -31,7 +31,8 @@ import static com.game.common.consts.MessageConstants.SYSTEM_USER_GAME_UPDATE;
 import static com.game.common.consts.UserMessageTypeConstant.USER_GAME_UPDATE_SYSTEM;
 
 /**
- * <p></p>
+ * <p>aop  programing of user notice ,</p>
+ * <p>because of , insert into notice of update game version</p>
  * @Author: dl.zhang
  * @Date: 2020/2/28
  */
@@ -82,7 +83,14 @@ public class MemberNoticeAspect {
                                     String gameVersion = (String) dataObject.get("gameVersion");
                                     if(c.getGamePackageName().equals( gamePackageName)){
                                         if(CommonUtils.isNewVersion(gameVersion,c.getGameVersion())) {
-                                            return true;
+                                           boolean innerresult =  basNotices.stream().anyMatch( g ->{
+                                                String basNoticeData = g.getData();
+                                               JSONObject basNoticeObject = JSON.parseObject( basNoticeData);
+                                                String gamePackageNameData = (String) basNoticeObject.get("gamePackageName");
+                                                String gameVersionData = (String) basNoticeObject.get("gameVersion");
+                                                return c.getGamePackageName().equals( gamePackageNameData) && gameVersionData.equals( c.getGameVersion());
+                                            } );
+                                            return !innerresult;
                                         }else {
                                             return false;
                                         }

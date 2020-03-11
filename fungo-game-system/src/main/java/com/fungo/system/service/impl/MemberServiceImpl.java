@@ -42,12 +42,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -118,6 +120,8 @@ public class MemberServiceImpl implements IMemberService {
     private IncentRuleRankGroupDao incentRuleRankGroupDao;
     @Autowired
     private FungoCacheMood fungoCacheMood;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
 
     @Override
@@ -2557,8 +2561,10 @@ public class MemberServiceImpl implements IMemberService {
      * @date: 2020/3/10 10:19
      */
     @Override
-    public FungoPageResultDto<Map<String, Object>> getUserFollower(String myId, String memberId,  FollowInptPageDao inputPage) throws Exception {
+    public ResultDto<Map<String, Object>> getUserFollower(String myId, String memberId,  FollowInptPageDao inputPage) throws Exception {
+        ResultDto<Map<String, Object>> resultDto = new ResultDto<>(  );
         AtomicReference<List<Map<String, Object>>> list = new AtomicReference<>();
+        Map<String,Object> map = new HashMap<>();
         try {
             Page p = new Page(inputPage.getPage(), inputPage.getLimit());
             if (0 == inputPage.getType()) {//关注的用户
@@ -2572,17 +2578,31 @@ public class MemberServiceImpl implements IMemberService {
                     xList.stream().forEach( x ->{
                         fungoCacheMember.setRedisSetCache( s,x);
                     });
-                    fungoCacheMember.setExpireTime(s);
                 });
-                Set<String> memberIds = fungoCacheMember.getRedisSet( memberId,idList );
-                System.out.println("------------"+JSON.toJSONString( memberIds));
+                Set<String> idsSet = new HashSet<>();
+                idList.stream().forEach( f ->{
+                    long result=  redisTemplate.opsForSet().intersectAndStore(memberId, f,memberId+"+join");
+                    Set<String> innerIdsSet =redisTemplate.opsForSet().members(memberId+"+join");
+                    innerIdsSet.stream().forEach( d ->{
+                        Long dResult =  redisTemplate.opsForZSet().rank("idsZSet", d);
+                        if(dResult != null){
+                            dResult ++;
+                            redisTemplate.opsForZSet().add("idsZSet", d, dResult);
+                        }else {
+                            redisTemplate.opsForZSet().add("idsZSet", d, 1);
+                        }
+                    } );
+                } );
+                Set<String>  idStringSet =  redisTemplate.opsForZSet().reverseRange("idsZSet", 0,10);
+                map.put( "focusOn ",idStringSet );
+                resultDto.setData( map);
             } else if (4 == inputPage.getType()) { //关注的社区
 
             }
         }catch (Exception e){
             logger.error("查询用户共同关注的人和关注人也关注的人",e);
         }
-        return null;
+        return resultDto;
     }
 
 }

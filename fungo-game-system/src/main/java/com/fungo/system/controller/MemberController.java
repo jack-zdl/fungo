@@ -480,10 +480,10 @@ public class MemberController {
             @ApiImplicitParam(name = "limit", value = "每页条数", paramType = "form", dataType = "number")
     })
     @MD5ParanCheck(param = {"memberId","type","limit","page"})
-    public FungoPageResultDto<Map<String, Object>> getUserFollower(MemberUserProfile memberUserPrefile, @RequestBody FollowInptPageDao inputPage) throws Exception {
+    public ResultDto<Map<String, Object>> getUserFollower(MemberUserProfile memberUserPrefile, @RequestBody FollowInptPageDao inputPage) throws Exception {
         String memberId = inputPage.getMemberId();
         if (CommonUtil.isNull(memberId)) {
-            return FungoPageResultDto.error("-1", "找不到目标");
+            return ResultDto.error("-1", "找不到目标");
         }
         String myId = memberUserPrefile.getLoginId();
         return memberService.getUserFollower(myId, memberId, inputPage);

@@ -115,11 +115,14 @@ public class FungoCacheMember {
      */
     public void setRedisSetCache(String keyPrefix, String... keySuffix) {
         redisTemplate.opsForSet().add(keyPrefix,keySuffix);
+        redisTemplate.expire(keyPrefix,5000 , TimeUnit.HOURS);
         //设置过期时间
 
     }
 
     public Set<String> getRedisSet(String set1, List<String> set2){
+        redisTemplate.opsForSet().add(set1+"+join","11111");
+        redisTemplate.expire(set1+"+join",5000 , TimeUnit.HOURS);
         long result=  redisTemplate.opsForSet().intersectAndStore(set1, set2,set1+"+join");
         return redisTemplate.opsForSet().members(set1+"+join");
     }

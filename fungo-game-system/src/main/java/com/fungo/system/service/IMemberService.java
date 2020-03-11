@@ -111,6 +111,6 @@ public interface IMemberService {
 	 * @return
 	 * @throws Exception
 	 */
-	FungoPageResultDto<Map<String,Object>> getUserFollower(String memberId, String memberId2, FollowInptPageDao inputPage) throws Exception;
+	ResultDto<Map<String,Object>> getUserFollower(String memberId, String memberId2, FollowInptPageDao inputPage) throws Exception;
 
 }
