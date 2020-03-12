@@ -142,6 +142,7 @@ public class MakeAndInviteServiceGameImpl implements IMakeAndInviteGameService {
             GameSurveyRel gameSurveyRel = new GameSurveyRel();
             gameSurveyRel.setState(0); //  等于 0
             gameSurveyRel.setNotice(0); //通知状态 0没通知，1已通知  PC2.0
+            gameSurveyRel.setUpdatedAt( new Date( ) );
             surveyRelService.update(gameSurveyRel, gameSurveyRelEntityWrapper.eq("member_id", memberId).eq("phone_model", phoneModel).eq("game_id", gameId));
         }
         ResultDto<String> re = new ResultDto<String>();

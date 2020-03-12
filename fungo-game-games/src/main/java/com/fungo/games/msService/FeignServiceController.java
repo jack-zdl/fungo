@@ -798,7 +798,7 @@ public class FeignServiceController {
     @ApiOperation(value = "根据游戏id集合获取FungoPageResultDto<GameOutBean>", notes = "")
     @RequestMapping(value = "/api/content/gameInfoList", method = RequestMethod.POST)
     ResultDto<List<GameSearchOut>>  getGameList(@RequestBody GameListVO input) {
-        return iGameService.listGameDtoByids(input.getGameids(),input.getMemberId());
+        return iGameService.listGameDtoByids(input.getGameList(),input.getMemberId());
     }
 
     /**************************************************2019-05-18系統*****************************************************************************/

@@ -3,6 +3,8 @@ package com.game.common.dto.game;
 import com.game.common.api.InputPageDto;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.List;
+
 public class GameListVO extends InputPageDto {
 
 	/**
@@ -11,6 +13,8 @@ public class GameListVO extends InputPageDto {
 	private static final long serialVersionUID = 1L;
 	@ApiModelProperty("游戏合集id")
 	private String gameids;
+
+	private List<String> gameList;
 
 	private String key;
 
@@ -48,5 +52,13 @@ public class GameListVO extends InputPageDto {
 
 	public void setMemberId(String memberId) {
 		this.memberId = memberId;
+	}
+
+	public List<String> getGameList() {
+		return gameList;
+	}
+
+	public void setGameList(List<String> gameList) {
+		this.gameList = gameList;
 	}
 }

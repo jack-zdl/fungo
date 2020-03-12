@@ -172,7 +172,7 @@ public interface IGameService {
 
     ResultDto<List<GameOut>> listGameByids(String gameIds);
 
-	ResultDto<List<GameSearchOut>> listGameDtoByids(String gameIds,String memberId);
+	ResultDto<List<GameSearchOut>> listGameDtoByids(List<String> gameIdList,String memberId);
 
 
 	FungoPageResultDto<GameOut> pageGameByids(String gameIds);

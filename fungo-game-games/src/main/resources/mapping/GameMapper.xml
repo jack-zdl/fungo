@@ -390,4 +390,22 @@
 
     </select>
 
+
+    <select id="getGameByids" resultType="com.fungo.games.entity.Game">
+        select
+        <include refid="Base_Column_List"></include>
+        from  t_game
+        where  state = 0  and id in
+        <foreach item="item" index="index" collection="gameIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        order by  field(
+        id,
+        <foreach item="item" index="index" collection="gameIds" separator="," >
+            #{item}
+        </foreach>
+        )
+
+    </select>
+
 </mapper>

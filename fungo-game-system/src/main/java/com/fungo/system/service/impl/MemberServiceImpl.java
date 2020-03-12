@@ -145,6 +145,7 @@ public class MemberServiceImpl implements IMemberService {
             GameListVO gameListVO = new GameListVO();
             if(gameIds != null && gameIds.size() > 0){
                 gameListVO.setGameids(String.join(",", gameIds));
+                gameListVO.setGameList( gameIds);
                 gameListVO.setMemberId( memberId );
                 gameListVO.setLimit(inputPage.getLimit());
                 gameListVO.setPage(inputPage.getPage());

@@ -2518,10 +2518,10 @@ public class GameServiceImpl implements IGameService {
 
 
     @Override
-    public ResultDto<List<GameSearchOut>> listGameDtoByids(String gameIds,String memberId) {
-        Wrapper<Game> wrapper = new EntityWrapper<Game>();
-        wrapper.in("id", gameIds);
-        List<Game> games = gameService.selectList(wrapper);
+    public ResultDto<List<GameSearchOut>> listGameDtoByids(List<String> gameIdList,String memberId) {
+//        Wrapper<Game> wrapper = new EntityWrapper<Game>();
+//        wrapper.in("id", gameIds);
+        List<Game> games =  gameDao.getGameByids( gameIdList ); //gameService.selectList(wrapper);
         List<GameSearchOut> gameOuts = new ArrayList<>();
         for (Game game : games) {
             //
