@@ -1209,6 +1209,7 @@ public class GameServiceImpl implements IGameService {
                 }
                 it.setCategory(game.getTags());
                 it.setOrigin(game.getOrigin());
+                it.setVersion( CommonUtils.getVersion( game.getVersionMain(),game.getVersionChild()) );
                 ilist.add(it);
             }
             re.setData(ilist);

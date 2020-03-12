@@ -42,6 +42,8 @@ public class GameItem {
 
 	private String origin;
 
+	private String version;
+
 	public String getOrigin() {
 		return origin;
 	}
@@ -167,5 +169,13 @@ public class GameItem {
 
 	public void setCoverImage(String coverImage) {
 		this.coverImage = coverImage;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
 }

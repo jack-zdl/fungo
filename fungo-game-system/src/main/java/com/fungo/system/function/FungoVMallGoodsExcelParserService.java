@@ -48,7 +48,7 @@ public class FungoVMallGoodsExcelParserService {
     private static String googleexcelPath = "D:/workspace/a2.6/file/谷歌账号样式.xls";
 
 
-    private static String jingdongkapath = "D:/workspace/apc2.1/file/虚拟商品补货信息1213.xlsx";
+    private static String jingdongkapath = "D:/workspace/AA/虚拟商品补货信息3月11.xlsx";
 
     @Autowired
     private MallVirtualCardDaoService mallVirtualCardDaoService;
@@ -62,7 +62,7 @@ public class FungoVMallGoodsExcelParserService {
     public  void excuteParserToVCard() {
 
         try {
-            File excel = new File("");
+            File excel = new File(jingdongkapath);
 
             if (excel.isFile() && excel.exists()) {
 

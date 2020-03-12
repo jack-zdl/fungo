@@ -21,7 +21,7 @@ import java.text.ParseException;
 
 @RestController
 @Api(value="",description="推送")
-public class PushController {
+public class  PushController {
 	@Autowired
 	private IPushService pushService;
 	
