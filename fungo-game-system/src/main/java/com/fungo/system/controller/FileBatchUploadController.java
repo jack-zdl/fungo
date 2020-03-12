@@ -48,7 +48,6 @@ public class FileBatchUploadController {
     public WebAsyncTask uploadFileWithOtherOriginalNet(@Anonymous MemberUserProfile memberUserPrefile, @RequestBody BatchUploadInput uploadInput) {
         List<String> imageUrlList = uploadInput.getImageUrl();
         List<UploadFileOutBean> uploadFileOutBeanList = new ArrayList<>();
-
         Callable<ResultDto<List<UploadFileOutBean>>> callable = new Callable<ResultDto<List<UploadFileOutBean>>>() {
             @Override
             public ResultDto<List<UploadFileOutBean>> call() throws Exception {
@@ -77,9 +76,7 @@ public class FileBatchUploadController {
                 }
         );
         return asyncTask;
-
     }
-
 
     /**
      *  批量上传apk包

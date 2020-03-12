@@ -779,7 +779,7 @@ public class UserServiceImpl implements IUserService {
     public ResultDto<String> editUser(String memberId, UserBean msg) throws Exception {
         Member member = this.memberService.selectById(memberId);
         if(!CommonUtil.isNull(msg.getUser_name())){
-            List<String> memberIds = memberDao.getMember(msg.getUser_name());
+            List<String> memberIds = memberDao.getMember(msg.getUser_name(),memberId);
             if(memberIds != null && memberIds.size() > 0){
                 return ResultDto.ResultDtoFactory.buildError("姓名重复");
             }
@@ -1386,7 +1386,7 @@ public class UserServiceImpl implements IUserService {
         Map<String,Boolean> map = new HashMap<>( );
         map.put( "result",false);
         try {
-            List<String> memberIds = memberDao.getMember(name);
+            List<String> memberIds = memberDao.getMember(name,memberId);
             if(memberIds != null && memberIds.size() > 0){
                 map.put( "result",true);
                 return ResultDto.ResultDtoFactory.buildSuccess(AbstractResultEnum.CODE_CLOUD_USER_NAME.getKey(),AbstractResultEnum.CODE_CLOUD_USER_NAME.getFailevalue(),map);
