@@ -63,4 +63,6 @@ public interface GameDao extends BaseMapper<Game> {
     List<Game> getGameByName(@Param( "androidPackageNameList" ) List<String> androidPackageNameList);
 
     List<Game> getGameByids(@Param( "gameIds" )List<String> gameIds);
+
+    List<Game> getGameBySurveyRel(Page page,String memberId, String phoneModel);
 }

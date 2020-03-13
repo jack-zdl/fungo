@@ -408,4 +408,8 @@
 
     </select>
 
+    <select id="getGameBySurveyRel" resultType="com.fungo.games.entity.Game">
+
+    </select>
+
 </mapper>

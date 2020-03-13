@@ -42,4 +42,9 @@
 		</foreach>
 	</update>
 
+	<select id="getGameSurveyRelIds" resultType="java.lang.String">
+		SELECT game_id FROM  t_game_survey_rel s , t_game g WHERE s.member_id = #{memberId} and s.state =  0 and  s.phone_model = #{phoneModel}
+		and s.game_id = g.id and g.state = 0
+		ORDER BY s.updated_at desc
+	</select>
 </mapper>

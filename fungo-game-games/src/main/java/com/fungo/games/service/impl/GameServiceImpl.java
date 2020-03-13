@@ -9,10 +9,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fungo.games.config.NacosFungoCircleConfig;
-import com.fungo.games.dao.BasTagDao;
-import com.fungo.games.dao.GameCollectionGroupDao;
-import com.fungo.games.dao.GameDao;
-import com.fungo.games.dao.GameTagDao;
+import com.fungo.games.dao.*;
 import com.fungo.games.entity.*;
 import com.fungo.games.facede.IEvaluateProxyService;
 import com.fungo.games.feign.CommunityFeignClient;
@@ -108,6 +105,8 @@ public class GameServiceImpl implements IGameService {
     private AsyncTaskService asyncTaskService;
     @Autowired
     private SystemFeignClient systemFeignClient;
+    @Autowired
+    private GameSurveyRelDao surveyRelDao;
 
     @Override
     public FungoPageResultDto<GameOutPage> getGameList(GameInputPageDto gameInputDto, String memberId, String os) {
@@ -1332,13 +1331,14 @@ public class GameServiceImpl implements IGameService {
 
         re = new FungoPageResultDto<GameSearchOut>();
         List<GameSearchOut> list = new ArrayList<>();
-
+        Page page = new Page<GameSurveyRel>(inputPage.getPage(),inputPage.getLimit());
         if (2 == inputPage.getType()) {
-            Page<GameSurveyRel> page = gameSurveyRelService.selectPage(new Page<GameSurveyRel>(inputPage.getPage(),
-                    inputPage.getLimit()), new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0).eq( "phone_model" ,os.trim()).orderBy( "updated_at",false ));
-            List<GameSurveyRel> plist = page.getRecords();
-            for (GameSurveyRel gameSurveyRel : plist) {
-                Game game = gameService.selectById(gameSurveyRel.getGameId());
+                List<String> ids = surveyRelDao.getGameSurveyRelIds( page,memberId, os.trim());
+//            Page<GameSurveyRel> page = gameSurveyRelService.selectPage(new Page<GameSurveyRel>(inputPage.getPage(),
+//                    inputPage.getLimit()), new EntityWrapper<GameSurveyRel>().eq("member_id", memberId).eq("state", 0).eq( "phone_model" ,os.trim()).orderBy( "updated_at",false ));
+//            List<GameSurveyRel> plist = page.getRecords();
+            for (String gameId : ids) {
+                Game game = gameService.selectById(gameId);
                 GameSearchOut out = new GameSearchOut();
                 HashMap<String, BigDecimal> rateData = gameDao.getRateData(game.getId());
                 if (rateData != null) {
@@ -1455,7 +1455,7 @@ public class GameServiceImpl implements IGameService {
                 }
                 out.setGameContent(game.getDetail());
                 out.setMsgCount(0);
-                out.setPhoneModel(gameSurveyRel.getPhoneModel());
+                out.setPhoneModel(os.trim());
                 if (os.equalsIgnoreCase(out.getPhoneModel())) {
                     list.add(out);
                 }
