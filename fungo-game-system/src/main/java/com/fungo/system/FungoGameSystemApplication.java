@@ -1,5 +1,6 @@
 package com.fungo.system;
 
+import com.fungo.system.config.KafkaSender;
 import com.game.common.framework.MyProperties;
 import com.game.common.framework.runtime.SpringUtils;
 import com.netflix.hystrix.contrib.metrics.eventstream.HystrixMetricsStreamServlet;
@@ -13,6 +14,7 @@ import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboard;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
@@ -37,7 +39,16 @@ import javax.servlet.MultipartConfigElement;
 public class FungoGameSystemApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(FungoGameSystemApplication.class, args);
+		ConfigurableApplicationContext context =	SpringApplication.run(FungoGameSystemApplication.class, args);
+		KafkaSender sender = context.getBean(KafkaSender.class);
+		for (int i = 0; i < 122; i++) {
+			sender.send();
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 

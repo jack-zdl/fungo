@@ -39,14 +39,14 @@ public class RabbitMQExchangeQueueBindConfig {
     }
 
 
-    @Bean
-    DirectExchange createDirectExchange() {
-        //配置持久化
-        Map<String, Object> arguments = new HashMap<>(4);
-        DirectExchange contractDirectExchange = new DirectExchange(RabbitMQEnum.Exchange.EXCHANGE_DIRECT.getName(), true, false, arguments);
-        LOGGER.info("RabbitMqExchangeQueueBindConfig-createDirectExchange-create-success");
-        return contractDirectExchange;
-    }
+//    @Bean
+//    DirectExchange createDirectExchange() {
+//        //配置持久化
+//        Map<String, Object> arguments = new HashMap<>(4);
+//        DirectExchange contractDirectExchange = new DirectExchange(RabbitMQEnum.Exchange.EXCHANGE_DIRECT.getName(), true, false, arguments);
+//        LOGGER.info("RabbitMqExchangeQueueBindConfig-createDirectExchange-create-success");
+//        return contractDirectExchange;
+//    }
 
 
     //queue bing exchange

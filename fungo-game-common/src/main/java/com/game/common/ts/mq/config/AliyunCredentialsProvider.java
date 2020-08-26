@@ -1,6 +1,5 @@
 package com.game.common.ts.mq.config;
 
-import com.alibaba.mq.amqp.utils.UserUtils;
 import com.rabbitmq.client.impl.CredentialsProvider;
 import org.apache.commons.lang3.StringUtils;
 import java.security.InvalidKeyException;
@@ -44,21 +43,22 @@ public class AliyunCredentialsProvider implements CredentialsProvider {
     @Override
     public String getUsername() {
         if (StringUtils.isNotEmpty(securityToken)) {
-            return UserUtils.getUserName(accessKeyId, resourceOwnerId, securityToken);
+//            return UserUtils.getUserName(accessKeyId, resourceOwnerId, securityToken);
         } else {
-            return UserUtils.getUserName(accessKeyId, resourceOwnerId);
+//            return UserUtils.getUserName(accessKeyId, resourceOwnerId);
         }
+        return null;
     }
 
     @Override
     public String getPassword() {
-        try {
-            return UserUtils.getPassord(accessKeySecret);
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            return UserUtils.getPassord(accessKeySecret);
+//        } catch (InvalidKeyException e) {
+//            e.printStackTrace();
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 }

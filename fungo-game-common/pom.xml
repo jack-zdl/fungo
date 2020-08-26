@@ -193,16 +193,17 @@
         </dependency>
 
         <!-- 阿里云 rabbit mq-->
-        <dependency>
-            <groupId>com.rabbitmq</groupId>
-            <artifactId>amqp-client</artifactId>
-            <version>5.5.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba.mq-amqp</groupId>
-            <artifactId>mq-amqp-client</artifactId>
-            <version>1.0.3</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.rabbitmq</groupId>-->
+<!--            <artifactId>amqp-client</artifactId>-->
+<!--            <version>5.5.0</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba.mq-amqp</groupId>-->
+<!--            <artifactId>mq-amqp-client</artifactId>-->
+<!--            <version>1.0.3</version>-->
+<!--        </dependency>-->
+
         <!--易观埋点-->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

@@ -7,6 +7,8 @@ import com.fungo.system.service.IBasActionService;
 import com.game.common.consts.Setting;
 import com.game.common.dto.ActionInput;
 import com.game.common.dto.ResultDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,8 @@ import java.util.Map;
  */
 @Service
 public class ActionServiceImap implements IBasActionService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActionServiceImpl.class);
 
     @Autowired
     private BasActionService actionService;
@@ -53,6 +57,10 @@ public class ActionServiceImap implements IBasActionService {
                 .eq("target_type", targetType)
                 .eq("type", type)
                 .eq("state", 0));
+    }
+
+    public void insertKafkaLog(){
+        LOGGER.error("错误日志推送kafka");
     }
 
 }

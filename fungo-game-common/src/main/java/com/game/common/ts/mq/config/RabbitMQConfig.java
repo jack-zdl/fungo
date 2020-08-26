@@ -27,39 +27,39 @@ public class RabbitMQConfig {
     private RabbitProperties rabbitProperties;
 
 
-    @Bean
-    public ConnectionFactory connectionFactory() {
-        com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory =
-                new com.rabbitmq.client.ConnectionFactory();
-        rabbitConnectionFactory.setHost(rabbitProperties.getHost());
-        rabbitConnectionFactory.setPort(rabbitProperties.getPort());
-        rabbitConnectionFactory.setVirtualHost(rabbitProperties.getVirtualHost());
-
-        AliyunCredentialsProvider credentialsProvider = new AliyunCredentialsProvider(
-                rabbitProperties.getUsername(), rabbitProperties.getPassword(), RESOURCE_OWNER_ID);
-        rabbitConnectionFactory.setCredentialsProvider(credentialsProvider);
-        rabbitConnectionFactory.setAutomaticRecoveryEnabled(true);
-        rabbitConnectionFactory.setNetworkRecoveryInterval(5000);
-        ConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitConnectionFactory);
-        ((CachingConnectionFactory) connectionFactory).setPublisherConfirms(rabbitProperties.isPublisherConfirms());
-        ((CachingConnectionFactory) connectionFactory).setPublisherReturns(rabbitProperties.isPublisherReturns());
-        return connectionFactory;
-    }
-
-
-    @Bean
-    public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
-        RabbitAdmin rabbitAdmin = new RabbitAdmin(connectionFactory);
-        rabbitAdmin.setIgnoreDeclarationExceptions(true);
-        return rabbitAdmin;
-    }
+//    @Bean
+//    public ConnectionFactory connectionFactory() {
+//        com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory =
+//                new com.rabbitmq.client.ConnectionFactory();
+//        rabbitConnectionFactory.setHost(rabbitProperties.getHost());
+//        rabbitConnectionFactory.setPort(rabbitProperties.getPort());
+//        rabbitConnectionFactory.setVirtualHost(rabbitProperties.getVirtualHost());
+//
+//        AliyunCredentialsProvider credentialsProvider = new AliyunCredentialsProvider(
+//                rabbitProperties.getUsername(), rabbitProperties.getPassword(), RESOURCE_OWNER_ID);
+//        rabbitConnectionFactory.setCredentialsProvider(credentialsProvider);
+//        rabbitConnectionFactory.setAutomaticRecoveryEnabled(true);
+//        rabbitConnectionFactory.setNetworkRecoveryInterval(5000);
+//        ConnectionFactory connectionFactory = new CachingConnectionFactory(rabbitConnectionFactory);
+//        ((CachingConnectionFactory) connectionFactory).setPublisherConfirms(rabbitProperties.isPublisherConfirms());
+//        ((CachingConnectionFactory) connectionFactory).setPublisherReturns(rabbitProperties.isPublisherReturns());
+//        return connectionFactory;
+//    }
 
 
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public RabbitTemplate rabbitTemplate() {
-        RabbitTemplate template = new RabbitTemplate(connectionFactory());
-        return template;
-    }
+//    @Bean
+//    public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
+//        RabbitAdmin rabbitAdmin = new RabbitAdmin(connectionFactory);
+//        rabbitAdmin.setIgnoreDeclarationExceptions(true);
+//        return rabbitAdmin;
+//    }
+
+
+//    @Bean
+//    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+//    public RabbitTemplate rabbitTemplate() {
+//        RabbitTemplate template = new RabbitTemplate(connectionFactory());
+//        return template;
+//    }
 
 }

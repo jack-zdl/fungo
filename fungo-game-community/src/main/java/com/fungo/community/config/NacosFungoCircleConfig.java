@@ -32,7 +32,7 @@ public class NacosFungoCircleConfig   {
     @Value(value = "${fungo.redis.key.tag:v2.5}")
     private String tag;
 
-    @Value(value = "${es.cluster-nodes.ip}")
+    @Value(value = "${es.post.cluster-nodes.ip}")
     private String esHttpIp;
 
     @Value(value = "${es.cluster-nodes.port}")
