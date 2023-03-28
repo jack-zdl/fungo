@@ -110,11 +110,11 @@
             <version>2.11.5</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-vod-upload</artifactId>
-            <version>1.4.0</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.aliyun</groupId>-->
+<!--            <artifactId>aliyun-java-vod-upload</artifactId>-->
+<!--            <version>1.4.0</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
